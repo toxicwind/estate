@@ -32,7 +32,7 @@ for arrival time, not just truth.
    blocked (rate limit, dead mirror, stale DNS, hanging proxy), the alternatives
    are already in flight. The race is the retry policy.
 2. **Fail fast per attempt.** Every attempt gets a short ceiling (seconds, not
-   minutes). Slow is a kind of wrong: kill the loser, record its latency, never
+   minutes). Slow is a kind of wrong: stop waiting on the loser, record its latency, never
    await it. Losers are data, not failures.
 3. **Measure everything.** Every attempt is timed at microsecond precision and
    the timings are reported first-class, never buried. What gets measured gets
@@ -66,7 +66,7 @@ for arrival time, not just truth.
    (leader-identity protocol included): correction happens through
    collaboration, not exclusion.
 3. **Fleet chat is absolute/mandatory.** Every agent reads the fleet channel
-   (`/home/toxic/.fleet-bus/directives.md`) before starting work and posts goal,
+   (`/home/toxic/.shingle/directives.md`) before starting work and posts goal,
    approach, and verified results there. If the chat tooling is difficult or
    broken, FIX THE TOOLING — never abandon the channel. No silent work.
 
@@ -124,7 +124,7 @@ bin/measure.py --tag fetch -- curl -s -m 10 https://example.com   # NDJSON timin
   route, cached/stale data, degraded mode). Report the failure once.
 - **The fallback plan is written BEFORE the primary is attempted.** A race
   with one contestant is just a hope.
-- **Fleet channel:** `/home/toxic/.fleet-bus/directives.md` — dated entries,
+- **Fleet channel:** `/home/toxic/.shingle/directives.md` — dated entries,
   newest at bottom. Latency findings worth sharing go there.
 
 ## Borrowed patterns (attribution)

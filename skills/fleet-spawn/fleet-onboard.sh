@@ -9,8 +9,8 @@
 #   2. Overlap-checks §2 Active Crews against your task. On overlap it prints
 #      the colliding crews and exits 2 — coordinate in fleet BEFORE announcing.
 #      (--advisory softens to a warning.)
-#   3. --register: creates your per-crew file (docs/fleet/crews/<crew>.md) and
-#      regenerates the §2 rollup via `bun projects/ops/bin/kb-rollup.ts`.
+#   3. --register: creates your per-crew file (fleet/crews/<crew>.md) and
+#      regenerates the §2 rollup via `bun ranch/ops/bin/kb-rollup.ts`.
 #      --done SHA: marks your per-crew file DONE and regenerates §2.
 #      §2 Active Crews is a GENERATED rollup (Alternative A, Chris 2026-09-29):
 #      never hand-edit the table — the per-crew files are the source of truth.
@@ -18,12 +18,12 @@
 #   5. Prints your hello template. It does NOT write your hello for you —
 #      your first words in fleet must be your own voice + one genuine question.
 #
-# Lives in: skills/fleet-spawn/fleet-onboard.sh (toxicwind/sovereign-projects).
+# Lives in: skills/fleet-spawn/fleet-onboard.sh (toxicwind/estate).
 # Documented in: skills/fleet-spawn/SKILL.md (the spawn protocol).
 set -euo pipefail
 
-KB_DEFAULT="/home/toxic/sovereign/docs/fleet-knowledgebase.md"
-KB_RAW_URL="https://raw.githubusercontent.com/toxicwind/sovereign-projects/main/docs/fleet-knowledgebase.md"
+KB_DEFAULT="/home/toxic/estate/docs/fleet-knowledgebase.md"
+KB_RAW_URL="https://raw.githubusercontent.com/toxicwind/estate/main/docs/fleet-knowledgebase.md"
 SQUAWK_ROOT_DEFAULT="/home/toxic/.fleet-bus/squawk-root"
 
 NAME=""; TASK=""; KB=""; OWNER=""; DONE_SHA=""; ADVISORY=0; DO_REGISTER=0; FLEET_N=10
@@ -107,6 +107,9 @@ while IFS= read -r row; do
   scope="$(echo "$row" | awk -F'|' '{gsub(/^ +| +$/,"",$3); print $3}')"
   owner="$(echo "$row" | awk -F'|' '{gsub(/^ +| +$/,"",$4); print $4}')"
   status="$(echo "$row" | awk -F'|' '{gsub(/^ +| +$/,"",$5); print $5}')"
+  # DONE crews are not live — they never trigger the overlap check.
+  # (false-positive repair 2026-09-30: lumen-md-race DONE since 2026-09-21 kept flagging new crews)
+  case "$status" in DONE*|done*) continue;; esac
   # skip this agent's own (re)registration
   [ "$(echo "$crew" | tr '[:upper:]' '[:lower:]')" = "$(echo "$NAME" | tr '[:upper:]' '[:lower:]')" ] && continue
   score=0
@@ -141,7 +144,7 @@ fi
 
 # --- 3. registration: per-crew file + generated §2 rollup ------------------
 # §2 Active Crews is a GENERATED rollup (Alternative A, Chris 2026-09-29).
-# Source of truth: docs/fleet/crews/<crew>.md — one file per crew, frontmatter
+# Source of truth: fleet/crews/<crew>.md — one file per crew, frontmatter
 # (crew/scope/owner/status). kb-rollup.ts writes the file and regenerates §2
 # under flock, so concurrent registrations can't clobber each other.
 # Never hand-edit the §2 table.
@@ -150,15 +153,15 @@ case "$KB_FILE" in /tmp/fleet-kb.*) kb_is_local=0;; *) kb_is_local=1;; esac
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-ROLLUP="$REPO_ROOT/projects/ops/bin/kb-rollup.ts"
+ROLLUP="$REPO_ROOT/ranch/ops/bin/kb-rollup.ts"
 if [ ! -f "$ROLLUP" ] && [ "$kb_is_local" -eq 1 ]; then
   # Deployed copy (e.g. /home/toxic/.local/bin/fleet-onboard): the script no
   # longer sits inside the repo, so resolve the rollup from the KB file's own
   # repo instead of the script location.
   kb_dir="$(dirname "$KB_FILE")"
   KB_REPO_ROOT="$(git -C "$kb_dir" rev-parse --show-toplevel 2>/dev/null || (cd "$kb_dir/.." && pwd))"
-  if [ -f "$KB_REPO_ROOT/projects/ops/bin/kb-rollup.ts" ]; then
-    ROLLUP="$KB_REPO_ROOT/projects/ops/bin/kb-rollup.ts"
+  if [ -f "$KB_REPO_ROOT/ranch/ops/bin/kb-rollup.ts" ]; then
+    ROLLUP="$KB_REPO_ROOT/ranch/ops/bin/kb-rollup.ts"
   fi
 fi
 BUN_BIN="$(command -v bun || true)"

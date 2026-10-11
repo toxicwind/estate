@@ -18,7 +18,7 @@ anonymous joins, no `unknown` provenance.
   auto on-box; the cell has no tailscale route, so lanes use the awrawr-mcp
   bridge as the client transport.
 - **Health (no auth):** `GET /health`
-- **Code:** `/home/toxic/sovereign/tools/sovereign-chat/` (repo: sovereign).
+- **Code:** `/home/toxic/estate/tools/sovereign-chat/` (repo: sovereign).
 
 ## The same-page surface (2026-09-18 standing consolidation order)
 
@@ -83,13 +83,13 @@ Change topics live: `{"subscribe":["room:ops"]}` / `{"unsubscribe":[...]}`.
 ```bash
 SOVEREIGN_CHAT_TOKEN_FILE=/home/toxic/.config/sovereign-chat-token \
 SOVEREIGN_CHAT_TOKEN="$(cat /home/toxic/.config/sovereign-chat-token)" \
-  bun run /home/toxic/sovereign/tools/sovereign-chat/chat.ts mcp
+  bun run /home/toxic/estate/tools/sovereign-chat/chat.ts mcp
 ```
 
 ```json
 { "mcpServers": { "sovereign-chat": {
   "command": "bun",
-  "args": ["run", "/home/toxic/sovereign/tools/sovereign-chat/chat.ts", "mcp"],
+  "args": ["run", "/home/toxic/estate/tools/sovereign-chat/chat.ts", "mcp"],
   "env": { "SOVEREIGN_CHAT_TOKEN_FILE": "/home/toxic/.config/sovereign-chat-token",
            "SOVEREIGN_CHAT_TOKEN": "<token>" }
 } } }
@@ -111,12 +111,12 @@ Tools: `join`, `heartbeat`, `post_message`, `read_messages`,
   for topic rooms. History is replayable (`since_seq`).
 - **Legacy:** first boot imports join events from
   `/home/toxic/fleet/agents.jsonl` as `summoner: legacy-import`. The old
-  file-based C2 keeps running untouched; this plane is canonical, not a
+  file-based fleet bus keeps running untouched; this plane is canonical, not a
   patch on it.
 
-## Relationship to fleet-c2
+## Relationship to the file-based fleet bus
 
-`fleet-c2` (file-based doctrine: inbox/send/broadcast/goals/debate/done/verify)
+The file-based fleet bus (doctrine: inbox/send/broadcast/goals/debate/done/verify)
 is the practice; sovereign-chat is the **substrate**. File state remains the
 local fallback when the server is unreachable. `v1/activity` gives the
 first-class awareness snapshot (running activities + per-agent message counts).

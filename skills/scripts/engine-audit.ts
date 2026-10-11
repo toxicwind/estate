@@ -1,16 +1,16 @@
 // Engine Audit Skill — sovereign/skills/engine-audit.ts
 // Audits the tau engine fork vs upstream oh-my-pi, produces structured diff dataframes.
-// Usage: bun run /home/toxic/sovereign/skills/engine-audit.ts
+// Usage: bun run /home/toxic/estate/skills/engine-audit.ts
 
 import { writeFileSync, mkdirSync } from "node:fs";
 import { execSync } from "node:child_process";
 import { join } from "node:path";
 
-const TAU_DIR = "/home/toxic/sovereign/projects/range/ranch/stockyard/tau";
+const TAU_DIR = "/home/toxic/estate/projects/range/ranch/stockyard/tau";
 const ENGINE_DIR = TAU_DIR;
 const VENDOR_OH_MY_PI = join(ENGINE_DIR, "vendor/oh-my-pi/packages");
 const ENGINE_PACKAGES = join(ENGINE_DIR, "packages");
-const SKILLS_DIR = "/home/toxic/sovereign/skills";
+const SKILLS_DIR = "/home/toxic/estate/skills";
 
 interface DiffRow {
   type: "only_in_engine" | "only_in_vendor" | "modified";

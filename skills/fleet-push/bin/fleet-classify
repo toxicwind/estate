@@ -13,7 +13,7 @@ import sys
 BRIDGE = "/home/hatch/workspace/awrawr-bridge/exec.py"  # legacy transport (kept as fallback)
 YOTE_CONN = "/home/hatch/workspace/bin/yote-conn"  # canonical transport
 SQUAWK = "/home/hatch/workspace/bin/squawk"
-ROOT = "/home/toxic/.fleet-bus/squawk-root/fleet"
+ROOT = "/home/toxic/.shingle/squawk-root/fleet"
 
 LANE_TAGS = {
     "ports": ["ports", "pitchfork"],

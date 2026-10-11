@@ -1,0 +1,16 @@
+# Sovereign Hatch Toolkit
+
+Two subsystems, both tested (41/41 green):
+
+- **`hatch_core/noise_protocol.py`** — full `Noise_XX` handshake state machine
+  (`write_msg1/read_msg1/write_msg2/read_msg2/write_msg3/read_msg3/split`),
+  `CipherState`/`SymmetricState`, Ed25519 notary endorsement parsing,
+  length-prefixed framing. Only dependency: `cryptography`.
+- **`orchestrator/fsbus_engine.py`** — atomic POSIX message bus
+  (`inbox/claimed/outbox/dead` + append-only `manifest.jsonl`): tmp+fsync+rename
+  writes, `rename(2)` claims, lease reclamation, retry/dead-letter escalation,
+  threaded workers. Zero dependencies (stdlib only).
+
+`config/gateway_config.json` — gateway connection parameters.
+
+Run `python3 -m unittest discover -s tests -p "test_*.py" -v` (or `make test`).

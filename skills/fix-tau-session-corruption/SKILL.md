@@ -1,6 +1,7 @@
 ---
 name: fix-tau-session-corruption
-description: Fix tau session store corruption caused by over-broad sed operations that double-replace paths
+description: >
+  Tau session JSONL repair. Finds and rewrites doubly-prefixed paths such as $HOME/.local/home/toxic/.local/bin/tau that over-broad sed operations left behind, restoring the session store. Triggers on: "session corruption", "corrupted paths", "session jsonl", "double prefix".
 ---
 
 # Fix Tau Session Store Corruption
@@ -37,7 +38,7 @@ When tau session JSONL files contain corrupted paths like `$HOME/.local/home/tox
      echo "Fixing: $f"
      
      # Fix the double-replaced path using word boundaries to prevent re-corruption
-     sed -i -E 's:(HOME/\.local)/home/toxic/\.local/bin/tau:\1/.local/bin/tau:g' "$f"
+     sed -i -E 's:(HOME/\.local)/home/toxic/\.local/bin/tau:\1/bin/tau:g' "$f"
      
      # Verify fix
      BAD=$(grep -c 'HOME/.local/home/toxic' "$f" 2>/dev/null || echo 0)

@@ -21,7 +21,7 @@ while [[ $# -gt 0 ]]; do
     *) shift;;
   esac
 done
-DIR="/home/toxic/.fleet-bus/squawk-root/${CHANNEL}"
+DIR="/home/toxic/.shingle/squawk-root/${CHANNEL}"
 /home/hatch/workspace/bin/yote-conn exec \
   "inotifywait -e close_write,moved_to --timeout ${TIMEOUT} --format 'FILE %f' ${DIR}/ 2>/dev/null"
 rc=$?

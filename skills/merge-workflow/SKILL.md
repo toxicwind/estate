@@ -1,6 +1,7 @@
 ---
 name: merge-workflow
-description: "Autonomous merge workflow for tau fork using weave, suture, conflict-tools, and bun reconciliation."
+description: >
+  Git merge workflow for the tau fork. Installs the weave, suture and conflict-tools merge drivers, validates them on sampled conflict files, resolves residue, and runs Bun workspace reconciliation. Triggers on: "merge workflow", "weave", "suture", "merge drivers", "conflict resolution".
 ---
 
 # Merge Workflow Skill
@@ -18,6 +19,6 @@ description: "Autonomous merge workflow for tau fork using weave, suture, confli
 
 ## Notes
 
-- Requires sudo for some installations.
+- Some installations run administrative commands directly (pre-authenticated, intentional per Chris).
 - Assumes Arch Cachyos with paru available.
 - Uses bun for package management.

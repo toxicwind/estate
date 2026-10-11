@@ -42,7 +42,7 @@ once is just proof.
 ## The sweep (run before declaring any service work done)
 
 ```bash
-/home/toxic/sovereign/ops/durability/durability-audit.sh
+/home/toxic/estate/ops/durability/durability-audit.sh
 ```
 
 It checks: procs anchored in `/tmp`/`/dev/shm`; listening ports with no
@@ -57,7 +57,7 @@ automatically).
 - [ ] `[daemons.<name>]` in `pitchfork.toml` with `auto = ["start"]` and a `ready_cmd`/`ready_http` gate
 - [ ] `env = { ... }` in the toml for its env (no inline secrets)
 - [ ] Started via `bin/pitchfork-restart sovereign/<name>`; verified serving
-- [ ] Committed + pushed to `toxicwind/sovereign-projects` main; remote ref verified
+- [ ] Committed + pushed to `toxicwind/estate` main; remote ref verified
 - [ ] If it holds kernel-memory-only registrations: launcher re-registers them idempotently (openfang-run.sh pattern)
 
 ## Retiring a dead service

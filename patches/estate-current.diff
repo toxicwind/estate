@@ -1,0 +1,3168 @@
+diff --git a/.env.example b/.env.example
+index d0e9ee5f86..874bc02041 100644
+--- a/.env.example
++++ b/.env.example
+@@ -67 +67 @@ WAYLAND_MCP_PORT=25135
+-ZELLIJ_PORT=25136
++FLEET_UI_PORT=25136
+diff --git a/.envrc b/.envrc
+index 99c08f7619..a88cb0408a 100755
+--- a/.envrc
++++ b/.envrc
+@@ -8 +8 @@
+-export SOVEREIGN_HOME="/home/toxic/estate"
++export ESTATE_HOME="/home/toxic/estate"
+@@ -25,2 +25,2 @@ fi
+-if [[ -f "$SOVEREIGN_HOME/.env.local" ]]; then
+-  set -a; source "$SOVEREIGN_HOME/.env.local"; set +a
++if [[ -f "$ESTATE_HOME/.env.local" ]]; then
++  set -a; source "$ESTATE_HOME/.env.local"; set +a
+@@ -34 +34 @@ fi
+-export PATH="$SOVEREIGN_HOME:$PATH"
++export PATH="$ESTATE_HOME:$PATH"
+@@ -38,2 +38,2 @@ watch_file "$HOME/.secrets"
+-watch_file "$SOVEREIGN_HOME/.env.local"
+-watch_file "$SOVEREIGN_HOME/agent"
++watch_file "$ESTATE_HOME/.env.local"
++watch_file "$ESTATE_HOME/agent"
+diff --git a/Cargo.toml b/Cargo.toml
+index 64e905117f..e3c7390076 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -5,0 +6,6 @@
++exclude = [
++   # Upstream projects under vendored/ own their Cargo workspaces. Without this,
++   # Cargo walks upward from vendored/<project>/Cargo.toml, captures it here,
++   # and then fails on estate-only members before the upstream build starts.
++   "vendored/mr-boxington-cache",
++]
+diff --git a/README.md b/README.md
+index 2b873cc707..0ea9cd9547 100644
+--- a/README.md
++++ b/README.md
+@@ -150 +150 @@ Every row below was verified against the live box on 2026-10-02 (port open + ide
+-| 🔥 **flicker** | `25148` | Fleet build-job system. Disk-backed queue, streaming logs, content-hash artifact cache. |
++| 🧰 **mbx-cache** | `25148` | Mise-compatible remote task cache. Direct Rust binary, immutable content-addressed artifacts, no container runtime. |
+@@ -155 +155 @@ Every row below was verified against the live box on 2026-10-02 (port open + ide
+-Full daemon inventory (all 82, with health checks and restart paths): [`pitchfork.toml`](pitchfork.toml) — port SSOT is `config/ports.env`.
++Full daemon inventory (81, with health checks and restart paths): [`pitchfork.toml`](pitchfork.toml) — port SSOT is `config/ports.env`.
+diff --git a/attribution.json b/attribution.json
+index b9b622a8cd..4126552f78 100644
+--- a/attribution.json
++++ b/attribution.json
+@@ -47,2 +47 @@
+-  "flicker": "ranch/flicker",
+-  "flicker-agent": "ranch/flicker",
++  "mbx-cache": "ops/mbx-cache",
+diff --git a/bin/pitchfork-split b/bin/pitchfork-split
+index db097744e9..17480d6a3b 100755
+--- a/bin/pitchfork-split
++++ b/bin/pitchfork-split
+@@ -13,3 +13,3 @@
+- * flicker + flicker-agent are LIVE (serve :25148 / :25240, restored deliberately
+- * in 0b87ffe1eb) and migrate with ranch/flicker — they are NOT stale despite
+- * the earlier race classification. buildsrv already left the live file.
++ * flicker + flicker-agent were replaced 2026-10-03 by estate/ops/mbx-cache:
++ * direct Rust mise remote-cache server at :25148. buildsrv and flicker no longer
++ * belong in the live split; historical fragments remain only in audit records.
+diff --git a/config/ports.env b/config/ports.env
+index 3607b1b174..7f31aa2673 100644
+--- a/config/ports.env
++++ b/config/ports.env
+@@ -72,2 +72,2 @@ ANTIGRAVITY_CLI_PORT=25140
+-# owner: flicker-server (pitchfork daemons.flicker; was BRAND_PORT)
+-FLICKER_PORT=25148
++# owner: mbx-cache (mise task-cache server, direct Rust binary)
++MBX_CACHE_PORT=25148
+@@ -83 +83,3 @@ SSHX_PORT=25138
+-ZELLIJ_PORT=25136
++# owner: fleet-ui (ranch/squawk/fleet-ui.ts); zellij is a terminal client and
++# never binds this port.
++FLEET_UI_PORT=25136
+diff --git a/config/tau/agent/cache/composer/b11b302aa2d63cc7/status.json b/config/tau/agent/cache/composer/b11b302aa2d63cc7/status.json
+index 6b3f33faf9..97cab21169 100644
+--- a/config/tau/agent/cache/composer/b11b302aa2d63cc7/status.json
++++ b/config/tau/agent/cache/composer/b11b302aa2d63cc7/status.json
+@@ -1 +1 @@
+-{"version":1,"statusVersion":3,"shape":"band","borderColor":{"prefix":"\u001b[38;5;180m","suffix":"\u001b[39m"},"topBorder":{"content":"\u001b[48;5;233m\u001b[39m \u001b[38;5;39m⠹ …\u001b[39m \u001b[38;5;236m>\u001b[39m \u001b[38;5;39m◕ …\u001b[39m \u001b[38;5;236m>\u001b[39m \u001b[38;5;255m🗑 …\u001b[39m \u001b[0m\u001b[38;5;233m▶\u001b[0m\u001b[49m\u001b[38;5;39m────…%\u001b[38;5;236m────────────────\u001b[38;5;67m┃\u001b[38;5;236m───\u001b[38;5;67m…\u001b[38;5;236m─\u001b[39m","width":46},"bottomLines":[]}
+\ No newline at end of file
++{"version":1,"statusVersion":3,"shape":"band","borderColor":{"prefix":"\u001b[38;5;180m","suffix":"\u001b[39m"},"topBorder":{"content":"\u001b[48;5;233m\u001b[39m \u001b[38;5;39m⠙ …\u001b[39m \u001b[38;5;236m>\u001b[39m \u001b[38;5;39m◕ …\u001b[39m\u001b[38;5;203m 👁\u001b[39m \u001b[38;5;236m>\u001b[39m \u001b[38;5;255m🗑 …\u001b[39m \u001b[38;5;236m>\u001b[39m \u001b[38;5;180m(sub)\u001b[39m \u001b[0m\u001b[38;5;233m▶\u001b[0m\u001b[49m\u001b[38;5;39m────…%\u001b[38;5;236m───\u001b[38;5;67m┃…\u001b[38;5;236m─\u001b[39m\u001b[38;5;233m◀\u001b[0m\u001b[48;5;233m\u001b[39m \u001b[38;5;39m⚙ …\u001b[39m \u001b[0m","width":46},"bottomLines":[]}
+\ No newline at end of file
+diff --git a/config/tau/agent/cache/composer/b11b302aa2d63cc7/welcome.json b/config/tau/agent/cache/composer/b11b302aa2d63cc7/welcome.json
+index affb14e08e..45201c0170 100644
+--- a/config/tau/agent/cache/composer/b11b302aa2d63cc7/welcome.json
++++ b/config/tau/agent/cache/composer/b11b302aa2d63cc7/welcome.json
+@@ -1 +1 @@
+-{"version":1,"modelName":"Space Bunny Alpha (new)","providerName":"openrouter"}
+\ No newline at end of file
++{"version":1,"modelName":"GPT-5.6 Terra","providerName":"github-copilot"}
+\ No newline at end of file
+diff --git a/config/tau/agent/config.yml b/config/tau/agent/config.yml
+index 0f5c520d9b..827b3dfd35 100644
+--- a/config/tau/agent/config.yml
++++ b/config/tau/agent/config.yml
+@@ -1 +1 @@
+-defaultThinkingLevel: auto
++defaultThinkingLevel: medium
+@@ -3 +3 @@ modelRoles:
+-  default: github-copilot/gpt-5.1-codex
++  default: github-copilot/gpt-5.6-terra:medium
+@@ -5,0 +6 @@ modelRoles:
++  advisor: google/models/gemini-flash-tool-retrieval
+@@ -71 +72,16 @@ task:
+-  enableLsp: true
+\ No newline at end of file
++  enableLsp: true
++  isolation:
++    merge: branch
++worktree:
++  clone: false
++snapcompact:
++  toolResults: true
++  systemPrompt: agents-md
++providers:
++  openai-codex:
++    codeMode: "on"
++tier:
++  subagent: auto
++advisor:
++  enabled: true
++  syncBacklog: "1"
+\ No newline at end of file
+diff --git a/config/tau/models.yml b/config/tau/models.yml
+index db522a4c38..1ddbac6d81 100644
+--- a/config/tau/models.yml
++++ b/config/tau/models.yml
+@@ -4 +4 @@
+-# Generated at: 2026-10-02T23:53:32.000Z
++# Generated at: 2026-10-03T05:15:38.000Z
+diff --git a/deploy/manifest.yaml b/deploy/manifest.yaml
+index e3c7f43659..9c6be15f2c 100644
+--- a/deploy/manifest.yaml
++++ b/deploy/manifest.yaml
+@@ -76,5 +76,5 @@ binaries:
+-  flicker:
+-    path: /home/toxic/estate/var/reconciliation/flicker/bin/flicker-server
+-    sha256: 4430f1e71b84dfe6c5bb4e7aeafcc8484e2bf39c6f4cb653b2dd150009eede06
+-    source: toxicwind/ranch
+-    daemon: flicker
++  mbx-cache:
++    path: /home/toxic/estate/vendored/mr-boxington-cache/target/release/mise-cache
++    sha256: 9ec23c39697f7d49e2d235bd96f31e3f082e7a77ae7133c4e71797d92f3ada2b
++    source: github.com/jdx/mr-boxington-cache v0.1.1 (991a586421d1ace4165a3c53b8ef98d08934fce5)
++    daemon: mbx-cache
+@@ -82,9 +82 @@ binaries:
+-    immutable_copy: /home/toxic/flicker/immutable/flicker-server.20260930-080700
+-    note: blessed 2026-09-30 (peregrine) — running binary sha == disk sha, :25148 healthy, POST /api/jobs 200; 2026-10-02 (warden): declared path moved ranch->var/reconciliation after estate migration, sha256 re-verified identical at new path
+-  flicker-agent:
+-    path: /home/toxic/estate/var/reconciliation/flicker/bin/flicker-agent
+-    sha256: 7fd694a1bd161e7167547060c0cda1be8cb008ab0ba1cbfae6d0f0c17b0ca176
+-    source: toxicwind/ranch
+-    daemon: flicker-agent
+-    immutable_copy: /home/toxic/flicker/immutable/flicker-agent.20260930-080700
+-    note: blessed 2026-09-30 (peregrine) — running binary sha == disk sha; 2026-10-02 (warden): declared path moved ranch->var/reconciliation after estate migration, sha256 re-verified identical at new path
++    note: direct Rust binary, built through mise; filesystem CAS under var/runtime/mbx-cache; loopback-only.
+diff --git a/docs/CONVENTIONS.md b/docs/CONVENTIONS.md
+index 97151fdaff..d86781696f 100644
+--- a/docs/CONVENTIONS.md
++++ b/docs/CONVENTIONS.md
+@@ -118,5 +118,19 @@ runtime config SSOT (identity, stream tuning, model names). Secrets live in
+-> ⚠️ **Known conflicts.** `.env` sets `SCOUT_BASE_URL=…:25104/v1` while
+-> `mise.toml` sets `:25100/v1`. `.env` §8 re-declares ports that `ports.env`
+-> owns. `estate/.envrc` still exports `SOVEREIGN_HOME=/home/toxic/estate`.
+-> `skills/git-mutator/types.ts` still points `SOVEREIGN_PORT_SSOT` at
+-> `sovereign/config/ports.env`. All four need resolution during the mise rebuild.
++> **Resolved 2026-10-03.** All four were real; each is closed.
++> `SCOUT_BASE_URL`/`SCOUT_API_KEY`/`SCOUT_MODEL` were removed from the estate
++> config — zero consumers, and `/home/toxic/.tau/.env` defines all three with
++> different values (`:25193` + `sovereign/free`). Two contradictory copies of one
++> setting is worse than one, so the estate defers to the agent config that reads
++> them. `.env` §8 and `config/tau/.env` §8 no longer declare ports: each carried
++> six keys under names that disagreed with the SSOT, and `MCPPROXY_PORT` pointed
++> at `:25109`, which is `KEYPOOL_PORT`. `SOVEREIGN_HOME` in `.envrc` is now
++> `ESTATE_HOME` — it had no consumer outside `.envrc` itself, and that is the
++> fixed override name from Rule 2.2 which `skills/lib/estate.sh` already
++> resolves, so the two now compose instead of disagreeing.
++> `skills/git-mutator/types.ts` already pointed at
++> `/home/toxic/estate/config/ports.env`; that part of this note was stale.
++>
++> `config/ports.env` was itself gitignored — an unanchored `*.env` from the
++> dotenv template layer swallowed it at every depth — which made the port SSOT
++> unreproducible from a clone. It is tracked now: 97 assignments, all numeric;
++> every daemon port is covered. Two assignments carry trailing owner comments,
++> but their values remain numeric ports.
+diff --git a/docs/daemons.md b/docs/daemons.md
+index de185d95ad..aac448e31e 100644
+--- a/docs/daemons.md
++++ b/docs/daemons.md
+@@ -51 +51 @@ herd → flock`.
+-| `cuttinggate` | — | The guard plane in front of herd and flock: quarantine, circuit breaker, credential rotation, winner ledger. Not in `groups.*` because it fronts everything else. |
++| `cuttinggate` | 25200 | The guard plane in front of herd and flock: quarantine, circuit breaker, credential rotation, winner ledger. Its project overlay (`ranch/mesh/proxy/cuttinggate/pitchfork.d/cuttinggate.toml`) supplies `CUTTINGGATE_PORT=25200` and the readiness URL, so the top-level daemon object has no `port =` field. Not in `groups.*` because it fronts everything else. |
+@@ -149 +149 @@ services the estate runs for itself, they are the bidding machinery.
+-| `flicker`, `flicker-agent` | 25148 | CI build server and its agent. Was filed as `BRAND_PORT`/`brand`; the daemon was renamed, not retired. |
++| `mbx-cache` | 25148 | Mise-compatible remote task cache. A direct Rust binary built through mise from `vendored/mr-boxington-cache`; stores immutable task artifacts in `var/runtime/mbx-cache`. Replaces the flicker/woodpecker server and agent. |
+@@ -162,2 +162,3 @@ project owns the code: `gatehouse`, `cuttinggate`, `fleet-ui`, `fleet-feed`,
+-`windmill`, `task-launch`, `yote`, `flock`, `mesh-landing`, `flicker`,
+-`flicker-agent`, `squawk-relay-*`, `keypool`.
++`windmill`, `task-launch`, `yote`, `flock`, `mesh-landing`,
++`squawk-relay-*`, `keypool`. `mbx-cache` is estate-owned under `ops/`, not a
++ranch project.
+diff --git a/docs/estate-map.json b/docs/estate-map.json
+index 54109ae357..1b0ddf99e1 100644
+--- a/docs/estate-map.json
++++ b/docs/estate-map.json
+@@ -2 +2 @@
+-  "generatedAt": "2026-10-02T12:36:59.931Z",
++  "generatedAt": "2026-10-03T07:22:51.621Z",
+@@ -7 +7 @@
+-    "tauConfigDir": "/home/toxic/.tau"
++    "tauConfigDir": ".tau"
+@@ -17,4 +17,4 @@
+-      "remote": "https://github.com/toxicwind/sovereign-projects.git",
+-      "head": "4820dfca5e",
+-      "committedAt": "2026-10-02T06:35:46-06:00",
+-      "dirtyPaths": 66
++      "remote": "https://github.com/toxicwind/estate.git",
++      "head": "4505f36bef",
++      "committedAt": "2026-10-03T00:11:06-06:00",
++      "dirtyPaths": 43
+@@ -25 +25 @@
+-      "role": "the inference estate monorepo: herd, flock, gatehouse, squawk, oracle, flicker, roost",
++      "role": "the inference estate monorepo: herd, flock, gatehouse, squawk, oracle, and the mesh provider catalog",
+@@ -30,3 +30,3 @@
+-      "head": "6a4640f",
+-      "committedAt": "2026-10-02T06:33:45-06:00",
+-      "dirtyPaths": 320
++      "head": "3c1a4a5",
++      "committedAt": "2026-10-02T23:57:58-06:00",
++      "dirtyPaths": 1716
+@@ -42,3 +42,3 @@
+-      "head": "6a4640f",
+-      "committedAt": "2026-10-02T06:33:45-06:00",
+-      "dirtyPaths": 320
++      "head": "3c1a4a5",
++      "committedAt": "2026-10-02T23:57:58-06:00",
++      "dirtyPaths": 1716
+@@ -48 +48 @@
+-      "path": "/home/toxic/.tau",
++      "path": ".tau",
+@@ -74 +74 @@
+-      "addr": "[2601:280:5280:1c00:da43:aeff:fef9:cef0]",
++      "addr": "127.0.0.53%lo",
+@@ -96,27 +95,0 @@
+-    {
+-      "port": 3000,
+-      "ssot": null,
+-      "daemons": [],
+-      "live": true,
+-      "addr": "*",
+-      "process": "flicker-agent",
+-      "pid": 2914779
+-    },
+-    {
+-      "port": 4222,
+-      "ssot": null,
+-      "daemons": [],
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "nats-server",
+-      "pid": 194388
+-    },
+-    {
+-      "port": 4223,
+-      "ssot": null,
+-      "daemons": [],
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "nats-server",
+-      "pid": 194388
+-    },
+@@ -160,7 +133,9 @@
+-      "port": 5433,
+-      "ssot": null,
+-      "daemons": [],
+-      "live": true,
+-      "addr": "[::1]",
+-      "process": "postgres",
+-      "pid": 1787357
++      "port": 5900,
++      "ssot": "AGENT_DISPLAY_PORT",
++      "daemons": [
++        "agent-display"
++      ],
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -170 +145 @@
+-      "ssot": null,
++      "ssot": "AGENT_DISPLAY_PORT",
+@@ -174,4 +149,4 @@
+-      "live": true,
+-      "addr": "[::1]",
+-      "process": "Xvnc",
+-      "pid": 3099777
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -181 +156 @@
+-      "ssot": null,
++      "ssot": "AGENT_VIEWER_PORT",
+@@ -185,4 +160,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "websockify",
+-      "pid": 26323
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -191,5 +166,7 @@
+-      "port": 8000,
+-      "ssot": null,
+-      "daemons": [],
+-      "live": true,
+-      "addr": "127.0.0.1",
++      "port": 6080,
++      "ssot": "AGENT_VIEWER_PORT",
++      "daemons": [
++        "agent-viewer"
++      ],
++      "live": false,
++      "addr": null,
+@@ -200 +177 @@
+-      "port": 8222,
++      "port": 8000,
+@@ -205,2 +182,2 @@
+-      "process": "nats-server",
+-      "pid": 194388
++      "process": null,
++      "pid": null
+@@ -218,5 +195,7 @@
+-      "port": 9093,
+-      "ssot": null,
+-      "daemons": [],
+-      "live": true,
+-      "addr": "*",
++      "port": 9223,
++      "ssot": "BROWSER_KEEPER_CDP_PORT",
++      "daemons": [
++        "browser-keeper"
++      ],
++      "live": false,
++      "addr": null,
+@@ -228 +207 @@
+-      "ssot": null,
++      "ssot": "BROWSER_KEEPER_CDP_PORT",
+@@ -232,4 +211,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "chrome",
+-      "pid": 3104916
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -246,9 +224,0 @@
+-    {
+-      "port": 18788,
+-      "ssot": null,
+-      "daemons": [],
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "MainThread",
+-      "pid": 1816974
+-    },
+@@ -279,4 +249,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "next-server (v1",
+-      "pid": 336956
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -290,4 +260,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "next-server (v1",
+-      "pid": 336956
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -304,9 +273,0 @@
+-    {
+-      "port": 25017,
+-      "ssot": null,
+-      "daemons": [],
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "llama-server",
+-      "pid": 1641709
+-    },
+@@ -319,4 +280,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "llama-swap",
+-      "pid": 1602617
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -330,4 +291,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "llama-swap",
+-      "pid": 1602617
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -344 +305 @@
+-      "pid": 109555
++      "pid": 936577
+@@ -355 +316 @@
+-      "pid": 109555
++      "pid": 936577
+@@ -363,4 +324,4 @@
+-      "live": true,
+-      "addr": "*",
+-      "process": "bun",
+-      "pid": 1221138
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -374,4 +335,4 @@
+-      "live": true,
+-      "addr": "*",
+-      "process": "bun",
+-      "pid": 1221138
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -385,4 +346,4 @@
+-      "live": true,
+-      "addr": "0.0.0.0",
+-      "process": "bun",
+-      "pid": 1675471
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -395,0 +357,11 @@
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
++    },
++    {
++      "port": 25104,
++      "ssot": "SOVEREIGN_ROUTER_PORT",
++      "daemons": [
++        "sovereign-router"
++      ],
+@@ -397 +369 @@
+-      "addr": "0.0.0.0",
++      "addr": "127.0.0.1",
+@@ -399 +371 @@
+-      "pid": 1675471
++      "pid": 3872168
+@@ -403 +375 @@
+-      "ssot": null,
++      "ssot": "SOVEREIGN_ROUTER_PORT",
+@@ -410 +382 @@
+-      "pid": 1250659
++      "pid": 3872168
+@@ -418,4 +390,4 @@
+-      "live": true,
+-      "addr": "0.0.0.0",
+-      "process": "bun",
+-      "pid": 1261461
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -429,4 +401,4 @@
+-      "live": true,
+-      "addr": "0.0.0.0",
+-      "process": "bun",
+-      "pid": 1261461
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -440,4 +412,4 @@
+-      "live": true,
+-      "addr": "0.0.0.0",
+-      "process": "bun",
+-      "pid": 1784360
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -451,4 +423,4 @@
+-      "live": true,
+-      "addr": "0.0.0.0",
+-      "process": "bun",
+-      "pid": 1784360
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -462,4 +434,4 @@
+-      "live": true,
+-      "addr": "0.0.0.0",
+-      "process": "bun",
+-      "pid": 1783584
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -473,13 +445,4 @@
+-      "live": true,
+-      "addr": "0.0.0.0",
+-      "process": "bun",
+-      "pid": 1783584
+-    },
+-    {
+-      "port": 25108,
+-      "ssot": "WATCHDOG_PORT",
+-      "daemons": [],
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "sovereign_web",
+-      "pid": 3282129
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -491,4 +454,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "sovereign_web",
+-      "pid": 3282129
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -502,4 +465,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "bun",
+-      "pid": 2581580
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -513,4 +476,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "bun",
+-      "pid": 2581580
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -524,4 +487,4 @@
+-      "live": true,
+-      "addr": "0.0.0.0",
+-      "process": "bun",
+-      "pid": 93133
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -535,4 +498,4 @@
+-      "live": true,
+-      "addr": "0.0.0.0",
+-      "process": "bun",
+-      "pid": 93133
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -542 +505 @@
+-      "ssot": null,
++      "ssot": "TAU_CHUTE_PORT",
+@@ -546,4 +509,15 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "MainThread",
+-      "pid": 653790
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
++    },
++    {
++      "port": 25111,
++      "ssot": "TAU_CHUTE_PORT",
++      "daemons": [
++        "tau"
++      ],
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -557,4 +531,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "bun",
+-      "pid": 1783803
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -568,13 +542,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "bun",
+-      "pid": 1783803
+-    },
+-    {
+-      "port": 25113,
+-      "ssot": "GHAS_MCP_PORT",
+-      "daemons": [],
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "bun",
+-      "pid": 1784265
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -586,4 +551,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "bun",
+-      "pid": 1784265
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -619,4 +584,4 @@
+-      "live": true,
+-      "addr": "0.0.0.0",
+-      "process": "bun",
+-      "pid": 3340467
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -630,13 +595,4 @@
+-      "live": true,
+-      "addr": "0.0.0.0",
+-      "process": "bun",
+-      "pid": 3340467
+-    },
+-    {
+-      "port": 25116,
+-      "ssot": "KIMI_AUDIT_DASH_PORT",
+-      "daemons": [],
+-      "live": true,
+-      "addr": "*",
+-      "process": "bun",
+-      "pid": 592782
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -648,4 +604,4 @@
+-      "live": true,
+-      "addr": "*",
+-      "process": "bun",
+-      "pid": 592782
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -659,4 +615,4 @@
+-      "live": true,
+-      "addr": "0.0.0.0",
+-      "process": "hindsight-api",
+-      "pid": 1784795
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -670,13 +626,4 @@
+-      "live": true,
+-      "addr": "0.0.0.0",
+-      "process": "hindsight-api",
+-      "pid": 1784795
+-    },
+-    {
+-      "port": 25118,
+-      "ssot": "HINDSIGHT_CP_PORT",
+-      "daemons": [],
+-      "live": true,
+-      "addr": "0.0.0.0",
+-      "process": "next-server (v",
+-      "pid": 1787448
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -688,4 +635,4 @@
+-      "live": true,
+-      "addr": "0.0.0.0",
+-      "process": "next-server (v",
+-      "pid": 1787448
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -699,4 +646,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "bun",
+-      "pid": 312076
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -710,4 +657,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "bun",
+-      "pid": 312076
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -721,4 +668,4 @@
+-      "live": true,
+-      "addr": "0.0.0.0",
+-      "process": "python3",
+-      "pid": 1784288
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -732,4 +679,4 @@
+-      "live": true,
+-      "addr": "0.0.0.0",
+-      "process": "python3",
+-      "pid": 1784288
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -743,4 +690,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "llama-server",
+-      "pid": 77618
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -754,4 +701,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "llama-server",
+-      "pid": 77618
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -792,4 +739,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "kimi-code",
+-      "pid": 1783688
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -803,4 +750,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "kimi-code",
+-      "pid": 1783688
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -814,4 +761,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "gatehouse",
+-      "pid": 1393971
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -825,4 +772,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "gatehouse",
+-      "pid": 1393971
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -854,4 +801,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "MainThread",
+-      "pid": 1784688
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -865,4 +812,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "MainThread",
+-      "pid": 1784688
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -892,22 +839,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "qdrant-server",
+-      "pid": 262042
+-    },
+-    {
+-      "port": 25133,
+-      "ssot": "QDRANT_HTTP_PORT",
+-      "daemons": [],
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "qdrant-server",
+-      "pid": 262042
+-    },
+-    {
+-      "port": 25134,
+-      "ssot": "QDRANT_GRPC_PORT",
+-      "daemons": [],
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "qdrant-server",
+-      "pid": 262042
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -919,13 +848,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "qdrant-server",
+-      "pid": 262042
+-    },
+-    {
+-      "port": 25135,
+-      "ssot": "SQUAWK_FEED_PORT",
+-      "daemons": [],
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "python3",
+-      "pid": 2893751
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -937,4 +857,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "python3",
+-      "pid": 2893751
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -944,4 +864,2 @@
+-      "ssot": "ZELLIJ_PORT",
+-      "daemons": [
+-        "fleet-ui"
+-      ],
++      "ssot": "FLEET_UI_PORT",
++      "daemons": [],
+@@ -951 +869 @@
+-      "pid": 2943073
++      "pid": 4046238
+@@ -955,4 +873,2 @@
+-      "ssot": "ZELLIJ_PORT",
+-      "daemons": [
+-        "fleet-ui"
+-      ],
++      "ssot": "FLEET_UI_PORT",
++      "daemons": [],
+@@ -962 +878 @@
+-      "pid": 2943073
++      "pid": 4046238
+@@ -966 +882 @@
+-      "ssot": "TTYD_PORT",
++      "ssot": "BEDROCK_UI_PORT",
+@@ -970,4 +886,4 @@
+-      "live": true,
+-      "addr": "100.72.199.93",
+-      "process": "bun",
+-      "pid": 3263353
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -977 +893 @@
+-      "ssot": "TTYD_PORT",
++      "ssot": "BEDROCK_UI_PORT",
+@@ -981,4 +897,4 @@
+-      "live": true,
+-      "addr": "100.72.199.93",
+-      "process": "bun",
+-      "pid": 3263353
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -1026,13 +942,4 @@
+-      "live": true,
+-      "addr": "0.0.0.0",
+-      "process": "bun",
+-      "pid": 4160465
+-    },
+-    {
+-      "port": 25142,
+-      "ssot": "BUN_DEV_PORT",
+-      "daemons": [],
+-      "live": true,
+-      "addr": "0.0.0.0",
+-      "process": "bun",
+-      "pid": 4160465
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -1046,4 +953,4 @@
+-      "live": true,
+-      "addr": "0.0.0.0",
+-      "process": "python3",
+-      "pid": 1817409
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -1057,4 +964,4 @@
+-      "live": true,
+-      "addr": "0.0.0.0",
+-      "process": "python3",
+-      "pid": 1817409
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -1068,2 +975,2 @@
+-      "live": true,
+-      "addr": "*",
++      "live": false,
++      "addr": null,
+@@ -1079,2 +986,2 @@
+-      "live": true,
+-      "addr": "*",
++      "live": false,
++      "addr": null,
+@@ -1099,4 +1006,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "python",
+-      "pid": 337117
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -1110,15 +1017,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "python",
+-      "pid": 337117
+-    },
+-    {
+-      "port": 25147,
+-      "ssot": "SQUAWK_WS_PORT",
+-      "daemons": [
+-        "squawk-ws"
+-      ],
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "python3",
+-      "pid": 2277261
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -1129,7 +1025,5 @@
+-      "daemons": [
+-        "squawk-ws"
+-      ],
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "python3",
+-      "pid": 2277261
++      "daemons": [],
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -1139 +1033 @@
+-      "ssot": "BRAND_PORT",
++      "ssot": "MBX_CACHE_PORT",
+@@ -1141 +1035 @@
+-        "flicker"
++        "mbx-cache"
+@@ -1144,3 +1038,3 @@
+-      "addr": "*",
+-      "process": "flicker-server",
+-      "pid": 2914743
++      "addr": "127.0.0.1",
++      "process": "mise-cache",
++      "pid": 353740
+@@ -1150 +1044 @@
+-      "ssot": "BRAND_PORT",
++      "ssot": "MBX_CACHE_PORT",
+@@ -1152 +1046 @@
+-        "flicker"
++        "mbx-cache"
+@@ -1155,3 +1049,3 @@
+-      "addr": "*",
+-      "process": "flicker-server",
+-      "pid": 2914743
++      "addr": "127.0.0.1",
++      "process": "mise-cache",
++      "pid": 353740
+@@ -1168 +1062 @@
+-      "pid": 244516
++      "pid": 944996
+@@ -1179 +1073 @@
+-      "pid": 244516
++      "pid": 944996
+@@ -1190 +1084 @@
+-      "pid": 244660
++      "pid": 3872092
+@@ -1201 +1095 @@
+-      "pid": 244660
++      "pid": 3872092
+@@ -1205 +1099,12 @@
+-      "ssot": null,
++      "ssot": "ORACLE_CORE_PORT",
++      "daemons": [
++        "oracle-core"
++      ],
++      "live": true,
++      "addr": "127.0.0.1",
++      "process": "python3",
++      "pid": 3872024
++    },
++    {
++      "port": 25151,
++      "ssot": "ORACLE_CORE_PORT",
+@@ -1212 +1117 @@
+-      "pid": 852753
++      "pid": 3872024
+@@ -1220,4 +1125,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "llama-server",
+-      "pid": 336814
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -1231,4 +1136,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "llama-server",
+-      "pid": 336814
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -1245 +1150 @@
+-      "pid": 143992
++      "pid": 3865196
+@@ -1256 +1161 @@
+-      "pid": 143992
++      "pid": 3865196
+@@ -1294 +1199 @@
+-      "pid": 209567
++      "pid": 3871987
+@@ -1305 +1210 @@
+-      "pid": 209567
++      "pid": 3871987
+@@ -1313,4 +1218,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "python3",
+-      "pid": 194087
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -1324,4 +1229,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "python3",
+-      "pid": 194087
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -1338 +1243 @@
+-      "pid": 590239
++      "pid": 3865104
+@@ -1349 +1254 @@
+-      "pid": 590239
++      "pid": 3865104
+@@ -1380 +1285 @@
+-      "ssot": "CUTTINGGATE_PORT",
++      "ssot": "PI_WEB_DASHBOARD_PORT",
+@@ -1393,4 +1298,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "flock",
+-      "pid": 3789941
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -1404,4 +1309,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "flock",
+-      "pid": 3789941
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -1418 +1323 @@
+-      "pid": 610402
++      "pid": 3872126
+@@ -1429 +1334 @@
+-      "pid": 610402
++      "pid": 3872126
+@@ -1440 +1345 @@
+-      "pid": 51315
++      "pid": 3884997
+@@ -1451 +1356 @@
+-      "pid": 51315
++      "pid": 3884997
+@@ -1459,4 +1364,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "openfang",
+-      "pid": 8916
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -1470,4 +1375,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "openfang",
+-      "pid": 8916
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -1484 +1389 @@
+-      "pid": 2501503
++      "pid": 3865123
+@@ -1495 +1400 @@
+-      "pid": 2501503
++      "pid": 3865123
+@@ -1506 +1411 @@
+-      "pid": 1655580
++      "pid": 3859478
+@@ -1517 +1422 @@
+-      "pid": 1655580
++      "pid": 3859478
+@@ -1525,4 +1430,4 @@
+-      "live": true,
+-      "addr": "0.0.0.0",
+-      "process": "valkey-server",
+-      "pid": 990568
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -1535,0 +1441,9 @@
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
++    },
++    {
++      "port": 25200,
++      "ssot": "CUTTINGGATE_PORT",
++      "daemons": [],
+@@ -1537,3 +1451,12 @@
+-      "addr": "0.0.0.0",
+-      "process": "valkey-server",
+-      "pid": 990568
++      "addr": "127.0.0.1",
++      "process": "bun",
++      "pid": 3865144
++    },
++    {
++      "port": 25200,
++      "ssot": "CUTTINGGATE_PORT",
++      "daemons": [],
++      "live": true,
++      "addr": "127.0.0.1",
++      "process": "bun",
++      "pid": 3865144
+@@ -1545 +1468 @@
+-        "rust-web"
++        "fleet-feed"
+@@ -1547,4 +1470,4 @@
+-      "live": true,
+-      "addr": "0.0.0.0",
+-      "process": "sovereign_web",
+-      "pid": 3282129
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -1556 +1479 @@
+-        "rust-web"
++        "fleet-feed"
+@@ -1558,4 +1481,4 @@
+-      "live": true,
+-      "addr": "0.0.0.0",
+-      "process": "sovereign_web",
+-      "pid": 3282129
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -1578,4 +1501,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "python",
+-      "pid": 77035
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -1589,13 +1512,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "python",
+-      "pid": 77035
+-    },
+-    {
+-      "port": 25205,
+-      "ssot": "PROMETHEUS_BACKEND_PORT",
+-      "daemons": [],
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "prometheus",
+-      "pid": 1259592
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -1607,13 +1521,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "prometheus",
+-      "pid": 1259592
+-    },
+-    {
+-      "port": 25206,
+-      "ssot": "HF_DOWNLOADER_BACKEND_PORT",
+-      "daemons": [],
+-      "live": true,
+-      "addr": "*",
+-      "process": "hfdownloader",
+-      "pid": 1784266
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -1625,4 +1530,4 @@
+-      "live": true,
+-      "addr": "*",
+-      "process": "hfdownloader",
+-      "pid": 1784266
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -1636,4 +1541,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "python3",
+-      "pid": 193949
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -1647,4 +1552,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "python3",
+-      "pid": 193949
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -1658,4 +1563,4 @@
+-      "live": true,
+-      "addr": "0.0.0.0",
+-      "process": "nginx",
+-      "pid": 1783765
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -1669,4 +1574,4 @@
+-      "live": true,
+-      "addr": "0.0.0.0",
+-      "process": "nginx",
+-      "pid": 1783765
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -1680,4 +1585,4 @@
+-      "live": true,
+-      "addr": "*",
+-      "process": "MainThread",
+-      "pid": 178477
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -1691,13 +1596,4 @@
+-      "live": true,
+-      "addr": "*",
+-      "process": "MainThread",
+-      "pid": 178477
+-    },
+-    {
+-      "port": 25210,
+-      "ssot": "GRAFANA_BACKEND_PORT",
+-      "daemons": [],
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "grafana",
+-      "pid": 93288
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -1709,4 +1605,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "grafana",
+-      "pid": 93288
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -1720,4 +1616,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "node_exporter",
+-      "pid": 209707
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -1731,4 +1627,4 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "node_exporter",
+-      "pid": 209707
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -1756 +1652 @@
+-      "ssot": null,
++      "ssot": "SOVEREIGN_EXPORTER_PORT",
+@@ -1760,4 +1656,24 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "python3",
+-      "pid": 312404
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
++    },
++    {
++      "port": 25213,
++      "ssot": "SOVEREIGN_EXPORTER_PORT",
++      "daemons": [
++        "sovereign-exporter"
++      ],
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
++    },
++    {
++      "port": 25214,
++      "ssot": "ZEDRA_HOST_PORT",
++      "daemons": [],
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -1767 +1683 @@
+-      "ssot": null,
++      "ssot": "STREAM_BROKER_PORT",
+@@ -1771,4 +1687,24 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "bun",
+-      "pid": 3227393
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
++    },
++    {
++      "port": 25215,
++      "ssot": "STREAM_BROKER_PORT",
++      "daemons": [
++        "sovereign-stream-broker"
++      ],
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
++    },
++    {
++      "port": 25216,
++      "ssot": "TTYD_PORT",
++      "daemons": [],
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -1785 +1721 @@
+-      "pid": 593823
++      "pid": 4046338
+@@ -1796,46 +1732 @@
+-      "pid": 593823
+-    },
+-    {
+-      "port": 25220,
+-      "ssot": null,
+-      "daemons": [],
+-      "live": true,
+-      "addr": "*",
+-      "process": "bun",
+-      "pid": 2742613
+-    },
+-    {
+-      "port": 25240,
+-      "ssot": null,
+-      "daemons": [],
+-      "live": true,
+-      "addr": "*",
+-      "process": "flicker-server",
+-      "pid": 2914743
+-    },
+-    {
+-      "port": 25995,
+-      "ssot": null,
+-      "daemons": [],
+-      "live": true,
+-      "addr": "0.0.0.0",
+-      "process": "bun",
+-      "pid": 3205006
+-    },
+-    {
+-      "port": 25996,
+-      "ssot": null,
+-      "daemons": [],
+-      "live": true,
+-      "addr": "0.0.0.0",
+-      "process": "bun",
+-      "pid": 3198893
+-    },
+-    {
+-      "port": 25997,
+-      "ssot": null,
+-      "daemons": [],
+-      "live": true,
+-      "addr": "0.0.0.0",
+-      "process": "bun",
+-      "pid": 3193610
++      "pid": 4046338
+@@ -1852,9 +1742,0 @@
+-    {
+-      "port": 33717,
+-      "ssot": null,
+-      "daemons": [],
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "omp",
+-      "pid": 1816058
+-    },
+@@ -1871 +1753 @@
+-      "port": 34292,
++      "port": 34501,
+@@ -1875 +1757 @@
+-      "addr": "*",
++      "addr": "127.0.0.1",
+@@ -1877 +1759 @@
+-      "pid": 178477
++      "pid": 2189701
+@@ -1881 +1763 @@
+-      "ssot": null,
++      "ssot": "FILES_PORT",
+@@ -1885,4 +1767,15 @@
+-      "live": true,
+-      "addr": "127.0.0.1",
+-      "process": "python3",
+-      "pid": 53599
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
++    },
++    {
++      "port": 34567,
++      "ssot": "FILES_PORT",
++      "daemons": [
++        "files"
++      ],
++      "live": false,
++      "addr": null,
++      "process": null,
++      "pid": null
+@@ -1935,9 +1827,0 @@
+-    {
+-      "port": 46077,
+-      "ssot": null,
+-      "daemons": [],
+-      "live": true,
+-      "addr": "*",
+-      "process": null,
+-      "pid": null
+-    },
+@@ -1982,68 +1866,4 @@
+-    "plugins": [
+-      {
+-        "name": "herd",
+-        "source": "./estate/ranch/herd",
+-        "resolved": "/home/toxic/estate/ranch/herd",
+-        "exists": true
+-      },
+-      {
+-        "name": "flock",
+-        "source": "./estate/ranch/flock",
+-        "resolved": "/home/toxic/estate/ranch/flock",
+-        "exists": true
+-      },
+-      {
+-        "name": "gatehouse",
+-        "source": "./estate/ranch/barn/gatehouse",
+-        "resolved": "/home/toxic/estate/ranch/barn/gatehouse",
+-        "exists": true
+-      },
+-      {
+-        "name": "router",
+-        "source": "./estate/tools/sovereign-router",
+-        "resolved": "/home/toxic/estate/tools/sovereign-router",
+-        "exists": true
+-      },
+-      {
+-        "name": "barn-browser",
+-        "source": "./estate/ranch/barn/browserless",
+-        "resolved": "/home/toxic/estate/ranch/barn/browserless",
+-        "exists": true
+-      },
+-      {
+-        "name": "barn-gemini",
+-        "source": "./estate/ranch/barn/gemini-mcp",
+-        "resolved": "/home/toxic/estate/ranch/barn/gemini-mcp",
+-        "exists": true
+-      },
+-      {
+-        "name": "secretsmith",
+-        "source": "./projects/range/ranch/barn/secretsmith",
+-        "resolved": "/home/toxic/projects/range/ranch/barn/secretsmith",
+-        "exists": true
+-      }
+-    ],
+-    "providers": [
+-      {
+-        "key": "providers.openai-compatible",
+-        "baseUrl": "http://127.0.0.1:25100/v1"
+-      }
+-    ],
+-    "selectors": [
+-      "herd",
+-      "sovereign"
+-    ],
+-    "mcpServers": [
+-      {
+-        "name": "mesh-gateway",
+-        "target": "http://127.0.0.1:25127/mcp"
+-      },
+-      {
+-        "name": "sovereign-tools",
+-        "target": "bun /home/toxic/estate/helpers/sovereign-mcp-server.ts"
+-      },
+-      {
+-        "name": "browserless",
+-        "target": "node /home/toxic/estate/ranch/barn/browserless/dist/index.js"
+-      }
+-    ],
++    "plugins": [],
++    "providers": [],
++    "selectors": [],
++    "mcpServers": [],
+@@ -2053 +1873 @@
+-        "present": true
++        "present": false
+@@ -2061 +1881 @@
+-      "detail": "https://github.com/toxicwind/ranch checked out 2x — newest 6a4640f @ /home/toxic/estate/ranch; /home/toxic/ranch @ 6a4640f (2026-10-02T06:33:45-06:00)",
++      "detail": "https://github.com/toxicwind/ranch checked out 2x — newest 3c1a4a5 @ /home/toxic/estate/ranch; /home/toxic/ranch @ 3c1a4a5 (2026-10-02T23:57:58-06:00)",
+@@ -2069,0 +1890,24 @@
++    {
++      "severity": "medium",
++      "kind": "port-ssot-dead",
++      "detail": "ports.env claims 25108 (WATCHDOG_PORT) — no listener, no pitchfork daemon claims it",
++      "fix": "start the daemon or drop the SSOT entry"
++    },
++    {
++      "severity": "medium",
++      "kind": "port-ssot-dead",
++      "detail": "ports.env claims 25113 (GHAS_MCP_PORT) — no listener, no pitchfork daemon claims it",
++      "fix": "start the daemon or drop the SSOT entry"
++    },
++    {
++      "severity": "medium",
++      "kind": "port-ssot-dead",
++      "detail": "ports.env claims 25116 (KIMI_AUDIT_DASH_PORT) — no listener, no pitchfork daemon claims it",
++      "fix": "start the daemon or drop the SSOT entry"
++    },
++    {
++      "severity": "medium",
++      "kind": "port-ssot-dead",
++      "detail": "ports.env claims 25118 (HINDSIGHT_CP_PORT) — no listener, no pitchfork daemon claims it",
++      "fix": "start the daemon or drop the SSOT entry"
++    },
+@@ -2111,0 +1956,18 @@
++    {
++      "severity": "medium",
++      "kind": "port-ssot-dead",
++      "detail": "ports.env claims 25133 (QDRANT_HTTP_PORT) — no listener, no pitchfork daemon claims it",
++      "fix": "start the daemon or drop the SSOT entry"
++    },
++    {
++      "severity": "medium",
++      "kind": "port-ssot-dead",
++      "detail": "ports.env claims 25134 (QDRANT_GRPC_PORT) — no listener, no pitchfork daemon claims it",
++      "fix": "start the daemon or drop the SSOT entry"
++    },
++    {
++      "severity": "medium",
++      "kind": "port-ssot-dead",
++      "detail": "ports.env claims 25135 (SQUAWK_FEED_PORT) — no listener, no pitchfork daemon claims it",
++      "fix": "start the daemon or drop the SSOT entry"
++    },
+@@ -2135,0 +1998,6 @@
++    {
++      "severity": "medium",
++      "kind": "port-ssot-dead",
++      "detail": "ports.env claims 25142 (BUN_DEV_PORT) — no listener, no pitchfork daemon claims it",
++      "fix": "start the daemon or drop the SSOT entry"
++    },
+@@ -2141,0 +2010,6 @@
++    {
++      "severity": "medium",
++      "kind": "port-ssot-dead",
++      "detail": "ports.env claims 25147 (SQUAWK_WS_PORT) — no listener, no pitchfork daemon claims it",
++      "fix": "start the daemon or drop the SSOT entry"
++    },
+@@ -2169 +2043 @@
+-      "detail": "ports.env claims 25192 (CUTTINGGATE_PORT) — no listener, no pitchfork daemon claims it",
++      "detail": "ports.env claims 25192 (PI_WEB_DASHBOARD_PORT) — no listener, no pitchfork daemon claims it",
+@@ -2179,4 +2053,10 @@
+-      "severity": "high",
+-      "kind": "daemon-path-dead",
+-      "detail": "pitchfork daemon 'nats-tail' references /home/toxic/estate/ranch/squawk/nats/run-tail.sh — absent",
+-      "fix": "update pitchfork.toml [daemons.nats-tail]"
++      "severity": "medium",
++      "kind": "port-ssot-dead",
++      "detail": "ports.env claims 25205 (PROMETHEUS_BACKEND_PORT) — no listener, no pitchfork daemon claims it",
++      "fix": "start the daemon or drop the SSOT entry"
++    },
++    {
++      "severity": "medium",
++      "kind": "port-ssot-dead",
++      "detail": "ports.env claims 25206 (HF_DOWNLOADER_BACKEND_PORT) — no listener, no pitchfork daemon claims it",
++      "fix": "start the daemon or drop the SSOT entry"
+@@ -2186,3 +2066,21 @@
+-      "kind": "selector-provider-unwired",
+-      "detail": "model-router selects 'sovereign/…' but no provider block or baseUrl in ~/.tau maps that prefix to a live port",
+-      "fix": "add a 'sovereign:' provider block with a live baseUrl, or drop the selector"
++      "kind": "port-ssot-dead",
++      "detail": "ports.env claims 25210 (GRAFANA_BACKEND_PORT) — no listener, no pitchfork daemon claims it",
++      "fix": "start the daemon or drop the SSOT entry"
++    },
++    {
++      "severity": "medium",
++      "kind": "port-ssot-dead",
++      "detail": "ports.env claims 25214 (ZEDRA_HOST_PORT) — no listener, no pitchfork daemon claims it",
++      "fix": "start the daemon or drop the SSOT entry"
++    },
++    {
++      "severity": "medium",
++      "kind": "port-ssot-dead",
++      "detail": "ports.env claims 25216 (TTYD_PORT) — no listener, no pitchfork daemon claims it",
++      "fix": "start the daemon or drop the SSOT entry"
++    },
++    {
++      "severity": "high",
++      "kind": "daemon-path-dead",
++      "detail": "pitchfork daemon 'bedrock-ui' references /home/toxic/projects/bedrock/web — absent",
++      "fix": "update pitchfork.toml [daemons.bedrock-ui]"
+diff --git a/docs/estate-map.md b/docs/estate-map.md
+index 069008e603..936abcc266 100644
+--- a/docs/estate-map.md
++++ b/docs/estate-map.md
+@@ -6 +6 @@ drift-check with `bun projects/ops/bin/estate-map.ts --check`.
+-Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/estate`.
++Generated 2026-10-03T07:22:51.621Z on `awrawr-pc`. Estate root `/home/toxic/estate`.
+@@ -16,4 +16,4 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
+-| 🟢 **estate** | `/home/toxic/estate` | https://github.com/toxicwind/sovereign-projects.git | 4820dfca5e | 2026-10-02T06:35:46 | 66 | nested |
+-| 🟢 **ranch** | `/home/toxic/estate/ranch` | https://github.com/toxicwind/ranch | 6a4640f | 2026-10-02T06:33:45 | 320 | nested |
+-| 🟢 **ranch** | `/home/toxic/ranch` | https://github.com/toxicwind/ranch | 6a4640f | 2026-10-02T06:33:45 | 320 | nested |
+-| 🟢 **tau-config** | `/home/toxic/.tau` | — | — | — | 0 | none |
++| 🟢 **estate** | `/home/toxic/estate` | https://github.com/toxicwind/estate.git | 4505f36bef | 2026-10-03T00:11:06 | 43 | nested |
++| 🟢 **ranch** | `/home/toxic/estate/ranch` | https://github.com/toxicwind/ranch | 3c1a4a5 | 2026-10-02T23:57:58 | 1716 | nested |
++| 🟢 **ranch** | `/home/toxic/ranch` | https://github.com/toxicwind/ranch | 3c1a4a5 | 2026-10-02T23:57:58 | 1716 | nested |
++| 🟢 **tau-config** | `.tau` | — | — | — | 0 | none |
+@@ -22 +22 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
+-- **ranch** (`/home/toxic/estate/ranch`) — the inference estate monorepo: herd, flock, gatehouse, squawk, oracle, flicker, roost
++- **ranch** (`/home/toxic/estate/ranch`) — the inference estate monorepo: herd, flock, gatehouse, squawk, oracle, and the mesh provider catalog
+@@ -24 +24 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
+-- **tau-config** (`/home/toxic/.tau`) — coding-agent engine config (config.yml, models.yml, model-router.json, mcp.json)
++- **tau-config** (`.tau`) — coding-agent engine config (config.yml, models.yml, model-router.json, mcp.json)
+@@ -34,3 +33,0 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
+-| 3000 | — | — | 🟢 | flicker-agent |
+-| 4222 | — | — | 🟢 | nats-server |
+-| 4223 | — | — | 🟢 | nats-server |
+@@ -41,3 +38,4 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
+-| 5433 | — | — | 🟢 | postgres |
+-| 5900 | — | agent-display | 🟢 | Xvnc |
+-| 6080 | — | agent-viewer | 🟢 | websockify |
++| 5900 | AGENT_DISPLAY_PORT | agent-display | ⚪️ | — |
++| 5900 | AGENT_DISPLAY_PORT | agent-display | ⚪️ | — |
++| 6080 | AGENT_VIEWER_PORT | agent-viewer | ⚪️ | — |
++| 6080 | AGENT_VIEWER_PORT | agent-viewer | ⚪️ | — |
+@@ -45 +42,0 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
+-| 8222 | — | — | 🟢 | nats-server |
+@@ -47,2 +44,2 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
+-| 9093 | — | — | 🟢 | — |
+-| 9223 | — | browser-keeper | 🟢 | chrome |
++| 9223 | BROWSER_KEEPER_CDP_PORT | browser-keeper | ⚪️ | — |
++| 9223 | BROWSER_KEEPER_CDP_PORT | browser-keeper | ⚪️ | — |
+@@ -50 +46,0 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
+-| 18788 | — | — | 🟢 | MainThread |
+@@ -53,2 +49,2 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
+-| 20128 | VANSROUTER_PORT | vansrouter | 🟢 | next-server (v1 |
+-| 20128 | VANSROUTER_PORT | vansrouter | 🟢 | next-server (v1 |
++| 20128 | VANSROUTER_PORT | vansrouter | ⚪️ | — |
++| 20128 | VANSROUTER_PORT | vansrouter | ⚪️ | — |
+@@ -56,3 +52,2 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
+-| 25017 | — | — | 🟢 | llama-server |
+-| 25100 | HERD_PORT | herd | 🟢 | llama-swap |
+-| 25100 | HERD_PORT | herd | 🟢 | llama-swap |
++| 25100 | HERD_PORT | herd | ⚪️ | — |
++| 25100 | HERD_PORT | herd | ⚪️ | — |
+@@ -61,22 +56,22 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
+-| 25102 | YOTE_PORT | yote | 🟢 | bun |
+-| 25102 | YOTE_PORT | yote | 🟢 | bun |
+-| 25103 | OPENFANG_PORT | openfang-front | 🟢 | bun |
+-| 25103 | OPENFANG_PORT | openfang-front | 🟢 | bun |
+-| 25104 | — | sovereign-router | 🟢 | bun |
+-| 25105 | PROMETHEUS_PORT | prometheus | 🟢 | bun |
+-| 25105 | PROMETHEUS_PORT | prometheus | 🟢 | bun |
+-| 25106 | HF_DOWNLOADER_PORT | hf-downloader | 🟢 | bun |
+-| 25106 | HF_DOWNLOADER_PORT | hf-downloader | 🟢 | bun |
+-| 25107 | NULL_G_PORT | null-g-proxy | 🟢 | bun |
+-| 25107 | NULL_G_PORT | null-g-proxy | 🟢 | bun |
+-| 25108 | WATCHDOG_PORT | — | 🟢 | sovereign_web |
+-| 25108 | WATCHDOG_PORT | — | 🟢 | sovereign_web |
+-| 25109 | KEYPOOL_PORT | keypool | 🟢 | bun |
+-| 25109 | KEYPOOL_PORT | keypool | 🟢 | bun |
+-| 25110 | GRAFANA_PORT | grafana | 🟢 | bun |
+-| 25110 | GRAFANA_PORT | grafana | 🟢 | bun |
+-| 25111 | — | tau | 🟢 | MainThread |
+-| 25112 | GHAS_API_PORT | search-api | 🟢 | bun |
+-| 25112 | GHAS_API_PORT | search-api | 🟢 | bun |
+-| 25113 | GHAS_MCP_PORT | — | 🟢 | bun |
+-| 25113 | GHAS_MCP_PORT | — | 🟢 | bun |
++| 25102 | YOTE_PORT | yote | ⚪️ | — |
++| 25102 | YOTE_PORT | yote | ⚪️ | — |
++| 25103 | OPENFANG_PORT | openfang-front | ⚪️ | — |
++| 25103 | OPENFANG_PORT | openfang-front | ⚪️ | — |
++| 25104 | SOVEREIGN_ROUTER_PORT | sovereign-router | 🟢 | bun |
++| 25104 | SOVEREIGN_ROUTER_PORT | sovereign-router | 🟢 | bun |
++| 25105 | PROMETHEUS_PORT | prometheus | ⚪️ | — |
++| 25105 | PROMETHEUS_PORT | prometheus | ⚪️ | — |
++| 25106 | HF_DOWNLOADER_PORT | hf-downloader | ⚪️ | — |
++| 25106 | HF_DOWNLOADER_PORT | hf-downloader | ⚪️ | — |
++| 25107 | NULL_G_PORT | null-g-proxy | ⚪️ | — |
++| 25107 | NULL_G_PORT | null-g-proxy | ⚪️ | — |
++| 25108 | WATCHDOG_PORT | — | ⚪️ | — |
++| 25109 | KEYPOOL_PORT | keypool | ⚪️ | — |
++| 25109 | KEYPOOL_PORT | keypool | ⚪️ | — |
++| 25110 | GRAFANA_PORT | grafana | ⚪️ | — |
++| 25110 | GRAFANA_PORT | grafana | ⚪️ | — |
++| 25111 | TAU_CHUTE_PORT | tau | ⚪️ | — |
++| 25111 | TAU_CHUTE_PORT | tau | ⚪️ | — |
++| 25112 | GHAS_API_PORT | search-api | ⚪️ | — |
++| 25112 | GHAS_API_PORT | search-api | ⚪️ | — |
++| 25113 | GHAS_MCP_PORT | — | ⚪️ | — |
+@@ -85,14 +80,12 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
+-| 25115 | MESH_HUB_PORT | mesh-hub | 🟢 | bun |
+-| 25115 | MESH_HUB_PORT | mesh-hub | 🟢 | bun |
+-| 25116 | KIMI_AUDIT_DASH_PORT | — | 🟢 | bun |
+-| 25116 | KIMI_AUDIT_DASH_PORT | — | 🟢 | bun |
+-| 25117 | HINDSIGHT_API_PORT | hindsight | 🟢 | hindsight-api |
+-| 25117 | HINDSIGHT_API_PORT | hindsight | 🟢 | hindsight-api |
+-| 25118 | HINDSIGHT_CP_PORT | — | 🟢 | next-server (v |
+-| 25118 | HINDSIGHT_CP_PORT | — | 🟢 | next-server (v |
+-| 25120 | SOVEREIGN_CHAT_PORT | sovereign-chat | 🟢 | bun |
+-| 25120 | SOVEREIGN_CHAT_PORT | sovereign-chat | 🟢 | bun |
+-| 25121 | BYTE_VISION_PORT | byte-vision | 🟢 | python3 |
+-| 25121 | BYTE_VISION_PORT | byte-vision | 🟢 | python3 |
+-| 25122 | BEELLAMA_PORT | beellama-fast | 🟢 | llama-server |
+-| 25122 | BEELLAMA_PORT | beellama-fast | 🟢 | llama-server |
++| 25115 | MESH_HUB_PORT | mesh-hub | ⚪️ | — |
++| 25115 | MESH_HUB_PORT | mesh-hub | ⚪️ | — |
++| 25116 | KIMI_AUDIT_DASH_PORT | — | ⚪️ | — |
++| 25117 | HINDSIGHT_API_PORT | hindsight | ⚪️ | — |
++| 25117 | HINDSIGHT_API_PORT | hindsight | ⚪️ | — |
++| 25118 | HINDSIGHT_CP_PORT | — | ⚪️ | — |
++| 25120 | SOVEREIGN_CHAT_PORT | sovereign-chat | ⚪️ | — |
++| 25120 | SOVEREIGN_CHAT_PORT | sovereign-chat | ⚪️ | — |
++| 25121 | BYTE_VISION_PORT | byte-vision | ⚪️ | — |
++| 25121 | BYTE_VISION_PORT | byte-vision | ⚪️ | — |
++| 25122 | BEELLAMA_PORT | beellama-fast | ⚪️ | — |
++| 25122 | BEELLAMA_PORT | beellama-fast | ⚪️ | — |
+@@ -102,4 +95,4 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
+-| 25126 | KIMI_CODE_PORT | kimi-code | 🟢 | kimi-code |
+-| 25126 | KIMI_CODE_PORT | kimi-code | 🟢 | kimi-code |
+-| 25127 | MCPPROXY_GO_PORT | gatehouse | 🟢 | gatehouse |
+-| 25127 | MCPPROXY_GO_PORT | gatehouse | 🟢 | gatehouse |
++| 25126 | KIMI_CODE_PORT | kimi-code | ⚪️ | — |
++| 25126 | KIMI_CODE_PORT | kimi-code | ⚪️ | — |
++| 25127 | MCPPROXY_GO_PORT | gatehouse | ⚪️ | — |
++| 25127 | MCPPROXY_GO_PORT | gatehouse | ⚪️ | — |
+@@ -108,2 +101,2 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
+-| 25130 | BROWSERLESS_PORT | browserless | 🟢 | MainThread |
+-| 25130 | BROWSERLESS_PORT | browserless | 🟢 | MainThread |
++| 25130 | BROWSERLESS_PORT | browserless | ⚪️ | — |
++| 25130 | BROWSERLESS_PORT | browserless | ⚪️ | — |
+@@ -112,10 +105,7 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
+-| 25133 | QDRANT_HTTP_PORT | — | 🟢 | qdrant-server |
+-| 25133 | QDRANT_HTTP_PORT | — | 🟢 | qdrant-server |
+-| 25134 | QDRANT_GRPC_PORT | — | 🟢 | qdrant-server |
+-| 25134 | QDRANT_GRPC_PORT | — | 🟢 | qdrant-server |
+-| 25135 | SQUAWK_FEED_PORT | — | 🟢 | python3 |
+-| 25135 | SQUAWK_FEED_PORT | — | 🟢 | python3 |
+-| 25136 | ZELLIJ_PORT | fleet-ui | 🟢 | bun |
+-| 25136 | ZELLIJ_PORT | fleet-ui | 🟢 | bun |
+-| 25137 | TTYD_PORT | bedrock-ui | 🟢 | bun |
+-| 25137 | TTYD_PORT | bedrock-ui | 🟢 | bun |
++| 25133 | QDRANT_HTTP_PORT | — | ⚪️ | — |
++| 25134 | QDRANT_GRPC_PORT | — | ⚪️ | — |
++| 25135 | SQUAWK_FEED_PORT | — | ⚪️ | — |
++| 25136 | FLEET_UI_PORT | — | 🟢 | bun |
++| 25136 | FLEET_UI_PORT | — | 🟢 | bun |
++| 25137 | BEDROCK_UI_PORT | bedrock-ui | ⚪️ | — |
++| 25137 | BEDROCK_UI_PORT | bedrock-ui | ⚪️ | — |
+@@ -126,6 +116,5 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
+-| 25142 | BUN_DEV_PORT | — | 🟢 | bun |
+-| 25142 | BUN_DEV_PORT | — | 🟢 | bun |
+-| 25143 | COYOTE_PORT | coyote | 🟢 | python3 |
+-| 25143 | COYOTE_PORT | coyote | 🟢 | python3 |
+-| 25144 | KAFKA_PORT | kafka | 🟢 | — |
+-| 25144 | KAFKA_PORT | kafka | 🟢 | — |
++| 25142 | BUN_DEV_PORT | — | ⚪️ | — |
++| 25143 | COYOTE_PORT | coyote | ⚪️ | — |
++| 25143 | COYOTE_PORT | coyote | ⚪️ | — |
++| 25144 | KAFKA_PORT | kafka | ⚪️ | — |
++| 25144 | KAFKA_PORT | kafka | ⚪️ | — |
+@@ -133,6 +122,5 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
+-| 25146 | WHATSAPP_MCP_PORT | whatsapp-mcp | 🟢 | python |
+-| 25146 | WHATSAPP_MCP_PORT | whatsapp-mcp | 🟢 | python |
+-| 25147 | SQUAWK_WS_PORT | squawk-ws | 🟢 | python3 |
+-| 25147 | SQUAWK_WS_PORT | squawk-ws | 🟢 | python3 |
+-| 25148 | BRAND_PORT | flicker | 🟢 | flicker-server |
+-| 25148 | BRAND_PORT | flicker | 🟢 | flicker-server |
++| 25146 | WHATSAPP_MCP_PORT | whatsapp-mcp | ⚪️ | — |
++| 25146 | WHATSAPP_MCP_PORT | whatsapp-mcp | ⚪️ | — |
++| 25147 | SQUAWK_WS_PORT | — | ⚪️ | — |
++| 25148 | MBX_CACHE_PORT | mbx-cache | 🟢 | mise-cache |
++| 25148 | MBX_CACHE_PORT | mbx-cache | 🟢 | mise-cache |
+@@ -143,3 +131,4 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
+-| 25151 | — | oracle-core | 🟢 | python3 |
+-| 25152 | TOOLCALL_PORT | toolcall-llm | 🟢 | llama-server |
+-| 25152 | TOOLCALL_PORT | toolcall-llm | 🟢 | llama-server |
++| 25151 | ORACLE_CORE_PORT | oracle-core | 🟢 | python3 |
++| 25151 | ORACLE_CORE_PORT | oracle-core | 🟢 | python3 |
++| 25152 | TOOLCALL_PORT | toolcall-llm | ⚪️ | — |
++| 25152 | TOOLCALL_PORT | toolcall-llm | ⚪️ | — |
+@@ -153,2 +142,2 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
+-| 25180 | ML_SERVE_PORT | ml-serve | 🟢 | python3 |
+-| 25180 | ML_SERVE_PORT | ml-serve | 🟢 | python3 |
++| 25180 | ML_SERVE_PORT | ml-serve | ⚪️ | — |
++| 25180 | ML_SERVE_PORT | ml-serve | ⚪️ | — |
+@@ -160,3 +149,3 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
+-| 25192 | CUTTINGGATE_PORT | — | ⚪️ | — |
+-| 25193 | FLOCK_PORT | flock | 🟢 | flock |
+-| 25193 | FLOCK_PORT | flock | 🟢 | flock |
++| 25192 | PI_WEB_DASHBOARD_PORT | — | ⚪️ | — |
++| 25193 | FLOCK_PORT | flock | ⚪️ | — |
++| 25193 | FLOCK_PORT | flock | ⚪️ | — |
+@@ -167,2 +156,2 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
+-| 25196 | OPENFANG_KERNEL_PORT | openfang | 🟢 | openfang |
+-| 25196 | OPENFANG_KERNEL_PORT | openfang | 🟢 | openfang |
++| 25196 | OPENFANG_KERNEL_PORT | openfang | ⚪️ | — |
++| 25196 | OPENFANG_KERNEL_PORT | openfang | ⚪️ | — |
+@@ -173,4 +162,6 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
+-| 25199 | REDIS_PORT | redis | 🟢 | valkey-server |
+-| 25199 | REDIS_PORT | redis | 🟢 | valkey-server |
+-| 25201 | RUST_WEB_BACKEND_PORT | rust-web | 🟢 | sovereign_web |
+-| 25201 | RUST_WEB_BACKEND_PORT | rust-web | 🟢 | sovereign_web |
++| 25199 | REDIS_PORT | redis | ⚪️ | — |
++| 25199 | REDIS_PORT | redis | ⚪️ | — |
++| 25200 | CUTTINGGATE_PORT | — | 🟢 | bun |
++| 25200 | CUTTINGGATE_PORT | — | 🟢 | bun |
++| 25201 | RUST_WEB_BACKEND_PORT | fleet-feed | ⚪️ | — |
++| 25201 | RUST_WEB_BACKEND_PORT | fleet-feed | ⚪️ | — |
+@@ -178,16 +169,13 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
+-| 25204 | WS_EXEC_PORT | awrawr-ws-exec | 🟢 | python |
+-| 25204 | WS_EXEC_PORT | awrawr-ws-exec | 🟢 | python |
+-| 25205 | PROMETHEUS_BACKEND_PORT | — | 🟢 | prometheus |
+-| 25205 | PROMETHEUS_BACKEND_PORT | — | 🟢 | prometheus |
+-| 25206 | HF_DOWNLOADER_BACKEND_PORT | — | 🟢 | hfdownloader |
+-| 25206 | HF_DOWNLOADER_BACKEND_PORT | — | 🟢 | hfdownloader |
+-| 25207 | MESH_LANDING_PORT | mesh-landing | 🟢 | python3 |
+-| 25207 | MESH_LANDING_PORT | mesh-landing | 🟢 | python3 |
+-| 25208 | NGINX_PORT | nginx | 🟢 | nginx |
+-| 25208 | NGINX_PORT | nginx | 🟢 | nginx |
+-| 25209 | MATTER_SERVER_PORT | matter-server | 🟢 | MainThread |
+-| 25209 | MATTER_SERVER_PORT | matter-server | 🟢 | MainThread |
+-| 25210 | GRAFANA_BACKEND_PORT | — | 🟢 | grafana |
+-| 25210 | GRAFANA_BACKEND_PORT | — | 🟢 | grafana |
+-| 25211 | NODE_EXPORTER_PORT | node-exporter | 🟢 | node_exporter |
+-| 25211 | NODE_EXPORTER_PORT | node-exporter | 🟢 | node_exporter |
++| 25204 | WS_EXEC_PORT | awrawr-ws-exec | ⚪️ | — |
++| 25204 | WS_EXEC_PORT | awrawr-ws-exec | ⚪️ | — |
++| 25205 | PROMETHEUS_BACKEND_PORT | — | ⚪️ | — |
++| 25206 | HF_DOWNLOADER_BACKEND_PORT | — | ⚪️ | — |
++| 25207 | MESH_LANDING_PORT | mesh-landing | ⚪️ | — |
++| 25207 | MESH_LANDING_PORT | mesh-landing | ⚪️ | — |
++| 25208 | NGINX_PORT | nginx | ⚪️ | — |
++| 25208 | NGINX_PORT | nginx | ⚪️ | — |
++| 25209 | MATTER_SERVER_PORT | matter-server | ⚪️ | — |
++| 25209 | MATTER_SERVER_PORT | matter-server | ⚪️ | — |
++| 25210 | GRAFANA_BACKEND_PORT | — | ⚪️ | — |
++| 25211 | NODE_EXPORTER_PORT | node-exporter | ⚪️ | — |
++| 25211 | NODE_EXPORTER_PORT | node-exporter | ⚪️ | — |
+@@ -196,2 +184,6 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
+-| 25213 | — | sovereign-exporter | 🟢 | python3 |
+-| 25215 | — | sovereign-stream-broker | 🟢 | bun |
++| 25213 | SOVEREIGN_EXPORTER_PORT | sovereign-exporter | ⚪️ | — |
++| 25213 | SOVEREIGN_EXPORTER_PORT | sovereign-exporter | ⚪️ | — |
++| 25214 | ZEDRA_HOST_PORT | — | ⚪️ | — |
++| 25215 | STREAM_BROKER_PORT | sovereign-stream-broker | ⚪️ | — |
++| 25215 | STREAM_BROKER_PORT | sovereign-stream-broker | ⚪️ | — |
++| 25216 | TTYD_PORT | — | ⚪️ | — |
+@@ -200,5 +191,0 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
+-| 25220 | — | — | 🟢 | bun |
+-| 25240 | — | — | 🟢 | flicker-server |
+-| 25995 | — | — | 🟢 | bun |
+-| 25996 | — | — | 🟢 | bun |
+-| 25997 | — | — | 🟢 | bun |
+@@ -206 +192,0 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
+-| 33717 | — | — | 🟢 | omp |
+@@ -208,2 +194,3 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
+-| 34292 | — | — | 🟢 | MainThread |
+-| 34567 | — | files | 🟢 | python3 |
++| 34501 | — | — | 🟢 | MainThread |
++| 34567 | FILES_PORT | files | ⚪️ | — |
++| 34567 | FILES_PORT | files | ⚪️ | — |
+@@ -215 +201,0 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
+-| 46077 | — | — | 🟢 | — |
+@@ -223 +209 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
+-Config dir: `/home/toxic/.tau`
++Config dir: `.tau`
+@@ -227,7 +212,0 @@ Config dir: `/home/toxic/.tau`
+-| herd | `./estate/ranch/herd` | `/home/toxic/estate/ranch/herd` | 🟢 |
+-| flock | `./estate/ranch/flock` | `/home/toxic/estate/ranch/flock` | 🟢 |
+-| gatehouse | `./estate/ranch/barn/gatehouse` | `/home/toxic/estate/ranch/barn/gatehouse` | 🟢 |
+-| router | `./estate/tools/sovereign-router` | `/home/toxic/estate/tools/sovereign-router` | 🟢 |
+-| barn-browser | `./estate/ranch/barn/browserless` | `/home/toxic/estate/ranch/barn/browserless` | 🟢 |
+-| barn-gemini | `./estate/ranch/barn/gemini-mcp` | `/home/toxic/estate/ranch/barn/gemini-mcp` | 🟢 |
+-| secretsmith | `./projects/range/ranch/barn/secretsmith` | `/home/toxic/projects/range/ranch/barn/secretsmith` | 🟢 |
+@@ -237 +215,0 @@ Config dir: `/home/toxic/.tau`
+-| `providers.openai-compatible` | `http://127.0.0.1:25100/v1` |
+@@ -239,3 +217,3 @@ Config dir: `/home/toxic/.tau`
+-- **Model-router selectors use:** `herd`, `sovereign`
+-- **MCP servers:** `mesh-gateway` → http://127.0.0.1:25127/mcp · `sovereign-tools` → bun /home/toxic/estate/helpers/sovereign-mcp-server.ts · `browserless` → node /home/toxic/estate/ranch/barn/browserless/dist/index.js
+-- **Credentials present:** flock client key: yes
++- **Model-router selectors use:** none
++- **MCP servers:** none
++- **Credentials present:** flock client key: no
+@@ -245 +223 @@ Config dir: `/home/toxic/.tau`
+-22 finding(s) — **2 high.** These are silent defects: each one is
++35 finding(s) — **2 high.** These are silent defects: each one is
+@@ -250,2 +228,2 @@ something that looks wired and is not.
+-| high | `duplicate-checkout` | https://github.com/toxicwind/ranch checked out 2x — newest 6a4640f @ /home/toxic/estate/ranch; /home/toxic/ranch @ 6a4640f (2026-10-02T06:33:45-06:00) | keep /home/toxic/estate/ranch; delete or archive /home/toxic/ranch |
+-| high | `daemon-path-dead` | pitchfork daemon 'nats-tail' references /home/toxic/estate/ranch/squawk/nats/run-tail.sh — absent | update pitchfork.toml [daemons.nats-tail] |
++| high | `duplicate-checkout` | https://github.com/toxicwind/ranch checked out 2x — newest 3c1a4a5 @ /home/toxic/estate/ranch; /home/toxic/ranch @ 3c1a4a5 (2026-10-02T23:57:58-06:00) | keep /home/toxic/estate/ranch; delete or archive /home/toxic/ranch |
++| high | `daemon-path-dead` | pitchfork daemon 'bedrock-ui' references /home/toxic/projects/bedrock/web — absent | update pitchfork.toml [daemons.bedrock-ui] |
+@@ -252,0 +231,4 @@ something that looks wired and is not.
++| medium | `port-ssot-dead` | ports.env claims 25108 (WATCHDOG_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
++| medium | `port-ssot-dead` | ports.env claims 25113 (GHAS_MCP_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
++| medium | `port-ssot-dead` | ports.env claims 25116 (KIMI_AUDIT_DASH_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
++| medium | `port-ssot-dead` | ports.env claims 25118 (HINDSIGHT_CP_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
+@@ -259,0 +242,3 @@ something that looks wired and is not.
++| medium | `port-ssot-dead` | ports.env claims 25133 (QDRANT_HTTP_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
++| medium | `port-ssot-dead` | ports.env claims 25134 (QDRANT_GRPC_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
++| medium | `port-ssot-dead` | ports.env claims 25135 (SQUAWK_FEED_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
+@@ -263,0 +249 @@ something that looks wired and is not.
++| medium | `port-ssot-dead` | ports.env claims 25142 (BUN_DEV_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
+@@ -264,0 +251 @@ something that looks wired and is not.
++| medium | `port-ssot-dead` | ports.env claims 25147 (SQUAWK_WS_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
+@@ -269 +256 @@ something that looks wired and is not.
+-| medium | `port-ssot-dead` | ports.env claims 25192 (CUTTINGGATE_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
++| medium | `port-ssot-dead` | ports.env claims 25192 (PI_WEB_DASHBOARD_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
+@@ -271 +258,5 @@ something that looks wired and is not.
+-| medium | `selector-provider-unwired` | model-router selects 'sovereign/…' but no provider block or baseUrl in ~/.tau maps that prefix to a live port | add a 'sovereign:' provider block with a live baseUrl, or drop the selector |
++| medium | `port-ssot-dead` | ports.env claims 25205 (PROMETHEUS_BACKEND_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
++| medium | `port-ssot-dead` | ports.env claims 25206 (HF_DOWNLOADER_BACKEND_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
++| medium | `port-ssot-dead` | ports.env claims 25210 (GRAFANA_BACKEND_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
++| medium | `port-ssot-dead` | ports.env claims 25214 (ZEDRA_HOST_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
++| medium | `port-ssot-dead` | ports.env claims 25216 (TTYD_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
+diff --git a/docs/fleet-knowledgebase.md b/docs/fleet-knowledgebase.md
+index 7be6322c39..2a43ee340f 100644
+--- a/docs/fleet-knowledgebase.md
++++ b/docs/fleet-knowledgebase.md
+@@ -421,57 +421,27 @@ runtime_paths freely; those paths are EXEMPT from drift detection by constructio
+-## 7. Build server = flicker (2026-10-01; was brand)
+-
+-flicker IS the fleet build daemon -- a literal build server on yote, not a
+-concept. Canonical source: `projects/range/ranch/flicker/` in toxicwind/ranch.
+-Service: :25148 (pitchfork daemons: flicker, flicker-agent), binary
+-`ranch/flicker/bin/flicker-server` (Woodpecker-based: gRPC on :25240,
+-`FLICKER_ROOT=/home/toxic/flicker`). API: `POST /api/jobs`; content-hash
+-caching (identical specs short-circuit as CACHED). Verified live 2026-10-01:
+-`GET /` serves the flicker landing page ("The ranch build daemon").
+-
+-History: brand was the build server from 2026-09-21 (canonical source
+-branding/ in toxicwind/ranch, moved 2026-09-30 from tools/buildsrv in this
+-repo; pitchfork daemons brand + brand-watchdog on :25148). Replaced by
+-flicker 2026-09-30 (sparrow: "flicker and flicker-agent verified live on
+-:25148 and migrated with ranch/flicker"). No brand daemon in `pitchfork list`
+-2026-10-01; `/home/toxic/brand` absent. The remaining §7 notes below (cache
+-env, workers=2, observability) describe the build-daemon role as built for
+-brand — re-verify each path against the flicker fragment before relying on it.
+-
+-Lifecycle: queue JSON -> active JSON -> results JSON under
+-/home/toxic/brand/. Successful identical specs short-circuit as CACHED,
+-keyed by content hash. Forward-only: brand never checks out, stashes, or
+-reverts repos. Jobs run via bash -lc and inherit the daemon environment.
+-
+-Access:
+-- Yote CLI: /home/toxic/bin/brand (submit/status/logs/list/health)
+-- Hatch proxy: hatch/bin/brand proxies safely through yote-conn exec
+-  (shlex.join quoting, never raw concatenation)
+-- MCP (awrawr-mcp :25198): brand_submit, brand_status, brand_logs,
+-  brand_list, brand_health (argv lists only, job IDs validated,
+-  submit returns immediately after queueing)
+-
+-Cache environment (pitchfork.toml daemons.brand env):
+-- RUSTC_WRAPPER=sccache, SCCACHE_DIR=/home/toxic/.cache/sccache (10 GiB)
+-- CCACHE_DIR=/home/toxic/.cache/ccache (10 GiB)
+-- CMAKE_C_COMPILER_LAUNCHER=ccache, CMAKE_CXX_COMPILER_LAUNCHER=ccache
+-- UV_CACHE_DIR=/home/toxic/.cache/uv (NVMe)
+-- CARGO_INCREMENTAL=0 -- REQUIRED: sccache refuses incremental compilation
+-- Canonical home configs: projects/yote/host/home/.cargo/config.toml and
+-  home/.config/ccache/ccache.conf (installed by apply.sh)
+-
+-Caveats:
+-- CC/CXX NOT set in daemon env: BASH_ENV rewrites them to clang for bash -lc
+-  jobs. CMAKE compiler launchers are the robust ccache path.
+-- Bun cache at /home/toxic/.bun/install/cache (4.4G, verified 2026-09-21).
+-- Binary-only Rust crates are non-cacheable by sccache (crate-type rule).
+-
+-Why workers = 2: yote has 16 logical CPUs / 62 GB RAM / NVMe, but two Cargo
+-builds already oversubscribe it. Keep BRAND_WORKERS=2.
+-
+-Observability: sovereign-exporter (:25213) exposes sovereign_brand_up,
+-sovereign_brand_queue_depth, sovereign_brand_active_jobs; Grafana
+-workflows.json has a brand row.
+-
+-New-toolchain rule: persistent config in projects/yote/host/home/, daemon
+-env in pitchfork.toml, then a REAL brand compile with nonzero cache-hit
+-proof. Proven 2026-09-21: 2 hits, 50 percent hit rate on a real job.
++## 7. Build cache = mbx-cache (2026-10-03)
++
++`mbx-cache` is the local remote cache for mise task artifacts and mr-boxington
++builds. It replaces the brand/flicker arbitrary-command queue.
++
++| Fact | Owner |
++|---|---|
++| service | `[daemons.mbx-cache]`, loopback `:25148` |
++| port | `config/ports.env` `MBX_CACHE_PORT` |
++| launcher | `ops/mbx-cache/run.sh` |
++| source | `vendored/mr-boxington-cache`, upstream v0.1.1 |
++| data | `var/runtime/mbx-cache` |
++| client config | `mise/conf.d/15-remote-cache.toml` |
++
++The binary is built directly with `mise exec -- cargo build --release`; no
++Docker, Podman, worker, queue, or copied credential exists in this path. The
++server stores immutable content-addressed outputs. A project runs its own build
++through `mise run <task>` or its `scripts/mise-build.sh` wrapper.
++
++Verification is behavioral: a task with declared `sources` and `outputs` first
++reports a cache miss, then — after its output is removed — reports `restored
++outputs from cache <digest>`. The probe passed on 2026-10-03.
++
++The old brand/flicker binaries, queue JSON, HTTP job API, agent, and build
++entrypoints are retired. Do not reintroduce a queue shim; cache and execution
++are separate responsibilities.
++
+diff --git a/docs/mise-env-rebuild.md b/docs/mise-env-rebuild.md
+index f8616b8d87..965be232fe 100644
+--- a/docs/mise-env-rebuild.md
++++ b/docs/mise-env-rebuild.md
+@@ -21,2 +21 @@ the convention is now. Every rule below was paid for with a real outage.
+-`estate/.env` is the single app env. It is loaded by mise with an **absolute**
+-path, so it resolves regardless of CWD:
++`config/ports.env` is the only file mise injects at estate scope:
+@@ -26,2 +25 @@ path, so it resolves regardless of CWD:
+-_.file = { path = "/home/toxic/estate/config/ports.env" }
+-_.file = { path = "/home/toxic/estate/.env" }
++_.file = "config/ports.env"
+@@ -30,3 +28,4 @@ _.file = { path = "/home/toxic/estate/.env" }
+-`SCOUT_*` is declared **once**, in `.env`, and nowhere else. The old
+-`[env] SCOUT_*` block in `mise.toml` was a second declaration with different
+-values; one of them was always wrong.
++The path resolves relative to `mise.toml`, so it is independent of the calling
++CWD. App configuration remains `estate/.env`; it is not injected wholesale into
++every task. Secrets remain `/home/toxic/.secrets` and are never copied into a
++mise fragment.
+@@ -34,14 +33,5 @@ values; one of them was always wrong.
+-### 1.1 The three dead scout references
+-
+-Chris: *"tau consumes scout"* — so a dead `SCOUT_MODEL` breaks subagents, it is
+-not a comment. Measured 2026-10-02:
+-
+-| Value | Where it was declared | Why it was dead |
+-|---|---|---|
+-| `sovereign/free` | `estate/.env` | `sovereign` was sovereign-router's provider; the daemon and repo are deleted |
+-| `local-fast` | `estate/mise.toml` | the alias exists only in `config/llama-swap/config.yaml`, **which nothing reads** |
+-| `nvidia/nemotron-3.5-lightning-30b-a3b` | `config/llama-swap/config.yaml` | a **cloud** NIM model with `cmd: llama-server --model /mnt/8TB/…`; `/mnt/8TB` is a media drive (`$RECYCLE.BIN`, `.rar`, `.mp4`), not a model store |
+-
+-`GET :25100/v1/models/local-fast` → **404**, confirmed against the live gateway.
+-
+-The pin is now `fast`, an alias herd actually defines, verified to return 200.
++`SCOUT_*` is declared **once**, in `/home/toxic/.tau/.env`, the configuration
++Tau actually loads. Estate's old `SCOUT_*` mise block and `.env` declarations
++were removed because they disagreed (`:25100` / `local-fast` versus `:25193` /
++`sovereign/free`). No estate source reads those values. The absence is
++intentional: a second declaration is drift, not fallback.
+diff --git a/engines/herd/beellama.cpp b/engines/herd/beellama.cpp
+--- a/engines/herd/beellama.cpp
++++ b/engines/herd/beellama.cpp
+@@ -1 +1 @@
+-Subproject commit 78af8326522d94fb5fc24b60cfd6f26e29f12490
++Subproject commit 78af8326522d94fb5fc24b60cfd6f26e29f12490-dirty
+diff --git a/engines/herd/ik_llama.cpp b/engines/herd/ik_llama.cpp
+--- a/engines/herd/ik_llama.cpp
++++ b/engines/herd/ik_llama.cpp
+@@ -1 +1 @@
+-Subproject commit 7434a014237e55b2e0d36edc2ace6acfb82fea1c
++Subproject commit 7434a014237e55b2e0d36edc2ace6acfb82fea1c-dirty
+diff --git a/engines/herd/llama-cpp-turboquant b/engines/herd/llama-cpp-turboquant
+--- a/engines/herd/llama-cpp-turboquant
++++ b/engines/herd/llama-cpp-turboquant
+@@ -1 +1 @@
+-Subproject commit d69b48c7fe653535753964a283ceb09aed35ddd6
++Subproject commit d69b48c7fe653535753964a283ceb09aed35ddd6-dirty
+diff --git a/helpers/push-build.sh b/helpers/push-build.sh
+index 6e03897414..edaf09203a 100755
+--- a/helpers/push-build.sh
++++ b/helpers/push-build.sh
+@@ -1 +1,6 @@
+-#!/bin/bash
++#!/usr/bin/env bash
++# Build Tau after a push using the repository's mise toolchain.
++#
++# The old script wrote JSON into $HOME/brand/queue for buildsrv/flicker. Build
++# ownership is now local: `mise exec` resolves the declared tools and mbx-cache
++# restores eligible task artifacts at :25148.
+@@ -3,41 +8,5 @@ set -euo pipefail
+-set -a; source "$HOME/sovereign/config/.secrets" 2>/dev/null || true; set +a
+-ROOT="/home/toxic/estate/projects/tau"
+-REPO=$(basename "$ROOT")
+-PKG="$ROOT/packages/coding-agent/package.json"
+-VER_BASE=$(jq -r .version "$PKG" 2>/dev/null || echo "18.3.0")
+-VER_BASE=${VER_BASE#tau/main-}
+-VER_BASE=${VER_BASE%%-sovereign-tau-*}
+-SOV_ROOT="$HOME/sovereign"
+-SOV_SHA=$(git -C "$SOV_ROOT" rev-parse --short=8 HEAD 2>/dev/null || echo "nosov")
+-SOV_FULL=$(git -C "$SOV_ROOT" rev-parse HEAD 2>/dev/null || echo "nosov")
+-TAU_SHA=$(git -C "$ROOT" rev-parse --short=8 HEAD 2>/dev/null || echo "notau")
+-CANONICAL="tau/main-${VER_BASE}-sovereign-tau-${SOV_SHA}"
+-QUEUE_DIR="$HOME/brand/queue"
+-mkdir -p "$QUEUE_DIR"
+-bash "$ROOT/helpers/gen-version.sh"
+-HASH=$(tar -cf - -C "$ROOT" packages/coding-agent/src/generated/version.json 2>/dev/null | sha256sum | cut -c1-8)
+-TS=$(date -u +%Y%m%dT%H%M%SZ)
+-SAFE_CANONICAL=$(echo "$CANONICAL" | tr '/' '_')
+-QF="$QUEUE_DIR/${SAFE_CANONICAL}-${TAU_SHA}-${TS}.json"
+-cat <<JSON > "$QF"
+-{
+-  "repo": "${REPO}",
+-  "root": "${ROOT}",
+-  "versionBase": "${VER_BASE}",
+-  "canonical": "${CANONICAL}",
+-  "canonicalFull": "tau/main-${VER_BASE}-sovereign-tau-${SOV_FULL}",
+-  "sovereignMainShort": "${SOV_SHA}",
+-  "sovereignMainFull": "${SOV_FULL}",
+-  "tauShort": "${TAU_SHA}",
+-  "artifactHash": "${HASH}",
+-  "timestamp": "${TS}",
+-  "build": {
+-    "command": "bun install && bun run build",
+-    "cwd": "${ROOT}",
+-    "output": "packages/coding-agent/dist"
+-  },
+-  "deploy": {
+-    "strategy": "npm-publish-and-bun-link",
+-    "bin": "/.local/bin/omp",
+-    "forks": ["/.tau"]
+-  }
++
++TAU_ROOT="${TAU_HOME:-$HOME/tau}"
++[[ -f "$TAU_ROOT/packages/coding-agent/package.json" ]] || {
++  echo "tau checkout missing: $TAU_ROOT" >&2
++  exit 66
+@@ -45,4 +14,4 @@ cat <<JSON > "$QF"
+-JSON
+-echo "[brand] queued $QF"
+-echo "[brand] canonical=$CANONICAL"
+-ls -lh "$QF"
++
++cd "$TAU_ROOT/packages/coding-agent"
++mise exec -- bun install
++exec mise exec -- bun run build
+\ No newline at end of file
+diff --git a/packages/omp-mobile-autocorrect/test/autocorrect.test.ts b/packages/omp-mobile-autocorrect/test/autocorrect.test.ts
+index acea17fd21..d67555bf7d 100644
+--- a/packages/omp-mobile-autocorrect/test/autocorrect.test.ts
++++ b/packages/omp-mobile-autocorrect/test/autocorrect.test.ts
+@@ -50 +50 @@ describe("omp-mobile-autocorrect engine", () => {
+-    const input = "call http://127.0.0.1:20128/v1/models or skill://fix-omp-launcher";
++    const input = "call http://127.0.0.1:20128/v1/models or skill://tau-fork-pinning";
+diff --git a/pitchfork.toml b/pitchfork.toml
+index b4f1192635..27a51d52ea 100644
+--- a/pitchfork.toml
++++ b/pitchfork.toml
+@@ -38 +38 @@ daemons = []
+-daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "fleet-feed", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "fleet-ui", "flicker", "flicker-agent", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash"]
++daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "fleet-feed", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "fleet-ui", "mbx-cache", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash"]
+@@ -664 +664 @@ auto = ["start"]
+-# ---- project: ranch/flicker (2 daemons) ----
++# ---- project: estate/ops/mbx-cache (1 daemon) ----
+@@ -668,16 +668,3 @@ auto = ["start"]
+-[daemons.flicker-agent]
+-run = "exec /home/toxic/estate/var/reconciliation/flicker/bin/flicker-agent"
+-dir = "/home/toxic/estate/var/reconciliation/flicker"
+-mise = false
+-retry = true
+-boot_start = true
+-env = { WOODPECKER_SERVER = "127.0.0.1:25240", WOODPECKER_AGENT_SECRET = "c6eee4c1bce957ae19638a330efe5fc3c561f18ea58e3468fe224a60416faf4f" }
+-auto = ["start"]
+-
+-# SUPERSEDED 2026-09-30 (peregrine): brand-watchdog retired with brand.
+-# Flicker has its own health_http checks; no external watchdog needed.
+-
+-# ranch/flicker — project-owned daemon manifest. Source of truth for 'flicker'.
+-# Owned by the ranch/flicker project; the parent only composes it.
+-
+-[daemons.flicker]
++[daemons.mbx-cache]
++# Mise-compatible remote task cache. Direct Rust binary built from pinned
++# vendored/mr-boxington-cache source; no Docker or container runtime.
+@@ -685,3 +672,3 @@ port = 25148
+-run = "exec /home/toxic/estate/var/reconciliation/flicker/bin/flicker-server"
+-dir = "/home/toxic/estate/var/reconciliation/flicker"
+-mise = false
++run = "exec /home/toxic/estate/ops/mbx-cache/run.sh"
++dir = "/home/toxic/estate"
++mise = true
+@@ -689,10 +676,3 @@ retry = true
+-boot_start = true
+-ready_http = "http://127.0.0.1:25148/api/health"
+-health_http = { url = "http://127.0.0.1:25148/api/health", interval = "30s", timeout = "5s", retries = 3 }
+-env = { FLICKER_ROOT = "/home/toxic/flicker", WOODPECKER_HOST = "http://127.0.0.1:25148", WOODPECKER_GRPC_ADDR = ":25240", WOODPECKER_SERVER_ADDR = ":25148", WOODPECKER_GRPC_SECRET = "66a9f7c1d6ffbac15c447f6d3d97827ab3d152286b23c0cbeb19a9372108419b", WOODPECKER_AGENT_SECRET = "c6eee4c1bce957ae19638a330efe5fc3c561f18ea58e3468fe224a60416faf4f" }
+-
+-# ---- project: ranch/squawk (3 daemons) ----
+-# ranch/squawk — project-owned daemon manifest. Source of truth for 'fleet-ui'.
+-# Owned by the ranch/squawk project; the parent only composes it.
+-# Restored 2026-10-02: fleet-ui.ts was an untracked live file that got deleted;
+-# recovered from the reconciliation copy. Now a first-class supervised daemon.
++ready_http = "http://127.0.0.1:25148/v1/status"
++health_http = { url = "http://127.0.0.1:25148/v1/status", interval = "30s", timeout = "5s", retries = 3 }
++auto = ["start"]
+diff --git a/profiles/default/env.sh b/profiles/default/env.sh
+index ae6bced314..1fda306960 100755
+--- a/profiles/default/env.sh
++++ b/profiles/default/env.sh
+@@ -22,3 +22,3 @@ export HINDSIGHT_CP_PORT="${HINDSIGHT_CP_PORT:-25118}"
+-# MCP_GATEWAY_PORT :25120 was retired with the sovereign-router merge. The
+-# gatehouse meta-tool layer is what still answers, on :25127 -- the same port
+-# MCPPROXY_GO_PORT carries. Both names meant one daemon; see config/ports.env.
++# MCP_GATEWAY_PORT is a compatibility alias for gatehouse :25127, the same
++# daemon MCPPROXY_GO_PORT names. :25120 belongs to SOVEREIGN_CHAT_PORT; it was
++# never this gateway. See config/ports.env.
+@@ -26 +25,0 @@ export MCP_GATEWAY_PORT="${MCP_GATEWAY_PORT:-25127}"
+-export MCPPROXY_GO_PORT="${MCPPROXY_GO_PORT:-25127}"
+diff --git a/profiles/toxic/env.sh b/profiles/toxic/env.sh
+index 17cd90f05b..03bf4a1e16 100755
+--- a/profiles/toxic/env.sh
++++ b/profiles/toxic/env.sh
+@@ -19 +19 @@ export LLAMA_SWAP_MODEL="beellama/qwen-flash-64k"
+-# 2. Local Mesh & Gateway Ports (Aligned with sovereign/config/ports.env)
++# 2. Local Mesh & Gateway Ports (aligned with estate/config/ports.env)
+@@ -34,3 +34,3 @@ export HINDSIGHT_CP_PORT="25118"
+-# MCP_GATEWAY_PORT :25120 was retired with the sovereign-router merge. The
+-# gatehouse meta-tool layer is what still answers, on :25127 -- the same port
+-# MCPPROXY_GO_PORT carries. Both names meant one daemon; see config/ports.env.
++# MCP_GATEWAY_PORT is a compatibility alias for gatehouse :25127, the same
++# daemon MCPPROXY_GO_PORT names. :25120 belongs to SOVEREIGN_CHAT_PORT; it was
++# never this gateway. See config/ports.env.
+@@ -42 +41,0 @@ export KIMI_CODE_PORT="25126"
+-export MCPPROXY_GO_PORT="25127"
+@@ -44 +43 @@ export BROWSERLESS_PORT="25130"
+-export ZEDRA_HOST_PORT="25146"
++export ZEDRA_HOST_PORT="25214"
+diff --git a/scripts/generate.ts b/scripts/generate.ts
+index 9c4d0fc748..d89fe35e02 100755
+--- a/scripts/generate.ts
++++ b/scripts/generate.ts
+@@ -19,2 +19,4 @@
+-// Sources in src/generators/ are kept for reference only. To resurrect this,
+-// delete this file deliberately — do not re-add the call.
++// src/generators/ and its tests were deleted 2026-10-03. Nothing imported them
++// except this retired entrypoint's test, so preserving them as "reference" only
++// preserved a stale second configuration system. A future generator needs a new
++// design and an explicit source of truth; it must not resurrect these sources.
+@@ -22,2 +24,2 @@
+-// Open: fate of antigravity-cli, pi-agent, pi-web-dashboard, qed, zedra-host
+-// (defined in generator, not in pitchfork, not observed running).
++// The former open set (antigravity-cli, pi-agent, pi-web-dashboard, qed,
++// zedra-host) was reconciled separately; zedra-host is an active service now.
+diff --git a/sigma b/sigma
+--- a/sigma
++++ b/sigma
+@@ -1 +1 @@
+-Subproject commit 2446607efdc3fe5cee64274774165c60fc1ca1b7
++Subproject commit 2446607efdc3fe5cee64274774165c60fc1ca1b7-dirty
+diff --git a/skills-hub b/skills-hub
+--- a/skills-hub
++++ b/skills-hub
+@@ -1 +1 @@
+-Subproject commit 49bee1ec8e4f89719c47c3bee2a8bae28a41ff8d
++Subproject commit 49bee1ec8e4f89719c47c3bee2a8bae28a41ff8d-dirty
+diff --git a/skills/ci-push-building-and-engine-audit/README.md b/skills/ci-push-building-and-engine-audit/README.md
+deleted file mode 100644
+index e2d6e08f93..0000000000
+--- a/skills/ci-push-building-and-engine-audit/README.md
++++ /dev/null
+@@ -1,78 +0,0 @@
+-# ci-push-building-and-engine-audit
+-
+-[![for-the-badge](https://img.shields.io/badge/CI-CD-2F80ED?style=for-the-badge)](https://ci-cd.example.com) [![for-the-badge](https/img.shields.io/badge/Engine_Audit-ED8533?style=for-the-badge)](https://engine-audit.example.com) [![for-the-badge](https://img.shields.io/badge/Version_Semantic-EDD327?style=for-the-badge)](https://semver.org)
+-
+-## ci-push-building-and-engine-audit
+-
+-Automated CI/CD push building via brand and engine migration auditing. Ensures sovereign fork enhancements and CI/CD status are always documented and preserved.
+-
+-### When setting up push-building or auditing engine fork migrations in sovereign projects:
+-
+-1. **Use `push-build.sh` to queue versioned builds into `brand` (port 25148) upon commit**
+-2. **Analyze engine vs vendor diffs using pandas DataFrames over `engine-vendor-diff.csv`** to ensure all custom features (OAuth refresh, storage contracts, API key logins) are preserved
+-3. **Keep README.md updated with sovereign fork enhancements and CI/CD status**
+-
+-### Features
+-
+-- **Push build dispatch**: `push-build.sh` queues versioned builds into `brand` (port 25148) upon commit
+-- **Engine migration auditing**: Analyze engine vs vendor diffs using pandas DataFrames over `engine-vendor-diff.csv`
+-- **Custom feature preservation**: Ensures OAuth refresh, storage contracts, API key logins are preserved across engine migrations
+-- **README integration**: Keeps README.md updated with sovereign fork enhancements and CI/CD status
+-
+-### Quick start (3 commands max)
+-
+-```bash
+-# Trigger a push build on commit (via git post-commit hook)
+-# The hook runs push-build.sh which submits to brand queue at port 25148
+-
+-# Analyze engine vs vendor diffs
+-python3 -c "
+-import pandas as pd
+-diff = pd.read_csv('engine-vendor-diff.csv')
+-# Check for preserved custom features
+-features = ['OAuth refresh', 'storage contracts', 'API key logins']
+-for f in features:
+-    if f in diff['feature'].values:
+-        print(f'Preserved: {f}')
+-    else:
+-        print(f'MISSING: {f}')
+-"
+-
+-# Verify CI/CD status
+-curl http://127.0.0.1:25148/status
+-```
+-
+-### Architecture
+-
+-The ci-push-building-and-engine-audit skill combines two concerns:
+-
+-1. **Push building** (from `cicd-push-building`): git post-commit hook → `push-build.sh` → brand queue (port 25148) → dispatched builds
+-2. **Engine auditing**: pandas DataFrame analysis of `engine-vendor-diff.csv` to diff custom features between sovereign engine and vendor baseline
+-
+-The engine-vendor-diff.csv contains rows of features with columns for: feature name, status (preserved/missing/altered), and migration notes. The pandas DataFrame analysis reports which custom features survived the engine fork migration.
+-
+-### Config / optional services
+-
+-- `/home/toxic/estate/helpers/push-build.sh` — push build dispatch script
+-- Brand queue at port 25148 — receives and processes queue entries
+-- `engine-vendor-diff.csv` — engine vs vendor feature diff dataset
+-- pandas — for DataFrame-based diff analysis (may need `pip install pandas`)
+-- Toolchain detection (bun, rust, go, python) from `cicd-push-building`
+-
+-### Dev / contributing
+-
+-- Ensure `engine-vendor-diff.csv` is kept up to date with each engine migration
+-- Add new feature tracking columns to the diff CSV as new custom features are added
+-- Verify brand queue is running before expecting auto-dispatch on commits
+-- Keep README.md synchronized with new sovereign fork enhancements
+-- pandas must be available for the diff analysis script
+-
+-### License
+-
+-Open Claw — see `skill.toml` for details.
+-
+-### Security
+-
+-- `engine-vendor-diff.csv` contains sensitive feature mapping — restrict access
+-- OAuth refresh, storage contracts, API key logins must not be lost during engine migration
+-- Brand queue should be internal-facing; exposure could trigger unintended builds
+\ No newline at end of file
+diff --git a/skills/ci-push-building-and-engine-audit/SKILL.md b/skills/ci-push-building-and-engine-audit/SKILL.md
+deleted file mode 100644
+index f1aed4695b..0000000000
+--- a/skills/ci-push-building-and-engine-audit/SKILL.md
++++ /dev/null
+@@ -1,11 +0,0 @@
+----
+-name: ci-push-building-and-engine-audit
+-description: Automated CI/CD push building via brand and engine migration auditing
+----
+-
+-# CI/CD Push Building & Engine Migration
+-
+-When setting up push-building or auditing engine fork migrations in sovereign projects:
+-1. Use `push-build.sh` to queue versioned builds into `brand` (port 25148) upon commit.
+-2. Analyze engine vs vendor diffs using pandas DataFrames over `engine-vendor-diff.csv` to ensure all custom features (OAuth refresh, storage contracts, API key logins) are preserved.
+-3. Keep README.md updated with sovereign fork enhancements and CI/CD status.
+diff --git a/skills/ci-push-building-and-engine-audit/prompt_context.md b/skills/ci-push-building-and-engine-audit/prompt_context.md
+deleted file mode 100644
+index a33fcfcc39..0000000000
+--- a/skills/ci-push-building-and-engine-audit/prompt_context.md
++++ /dev/null
+@@ -1,6 +0,0 @@
+-# CI/CD Push Building & Engine Migration
+-
+-When setting up push-building or auditing engine fork migrations in sovereign projects:
+-1. Use `push-build.sh` to queue versioned builds into `brand` (port 25148) upon commit.
+-2. Analyze engine vs vendor diffs using pandas DataFrames over `engine-vendor-diff.csv` to ensure all custom features (OAuth refresh, storage contracts, API key logins) are preserved.
+-3. Keep README.md updated with sovereign fork enhancements and CI/CD status.
+\ No newline at end of file
+diff --git a/skills/ci-push-building-and-engine-audit/skill.toml b/skills/ci-push-building-and-engine-audit/skill.toml
+deleted file mode 100644
+index 1d7390146b..0000000000
+--- a/skills/ci-push-building-and-engine-audit/skill.toml
++++ /dev/null
+@@ -1,34 +0,0 @@
+-prompt_context = """
+-# CI/CD Push Building & Engine Migration
+-
+-When setting up push-building or auditing engine fork migrations in sovereign projects:
+-1. Use `push-build.sh` to queue versioned builds into `brand` (port 25148) upon commit.
+-2. Analyze engine vs vendor diffs using pandas DataFrames over `engine-vendor-diff.csv` to ensure all custom features (OAuth refresh, storage contracts, API key logins) are preserved.
+-3. Keep README.md updated with sovereign fork enhancements and CI/CD status."""
+-
+-[skill]
+-name = "ci-push-building-and-engine-audit"
+-version = "0.1.0"
+-description = "Automated CI/CD push building via brand and engine migration auditing"
+-author = ""
+-license = ""
+-tags = [
+-    "openclaw-compat",
+-    "prompt-only",
+-]
+-
+-[runtime]
+-type = "promptonly"
+-entry = ""
+-
+-[tools]
+-provided = []
+-
+-[requirements]
+-tools = []
+-capabilities = []
+-
+-[source]
+-type = "open_claw"
+-
+-[config]
+diff --git a/skills/cicd-push-building/README.md b/skills/cicd-push-building/README.md
+deleted file mode 100644
+index 6ab66c4856..0000000000
+--- a/skills/cicd-push-building/README.md
++++ /dev/null
+@@ -1,62 +0,0 @@
+-# cicd-push-building
+-
+-[![for-the-badge](https://img.shields.io/badge/Bun-000000?style=for-the-badge)](https://bun.sh) [![for-the-badge](https://img.shields.io/badge/Semantic_Version-EDD327?style=for-the-badge)](https://semver.org) [![for-the-badge](https://img.shields.io/badge/Git_Post-Commit-FFD700?style=for-the-badge)](https://git-scm.com)
+-
+-## cicd-push-building
+-
+-Automated CI/CD push building via brand and git hooks with semantic versioning. Push build dispatch script automates versioned builds into the brand queue.
+-
+-### Features
+-
+-- **Push build dispatch script**: `/home/toxic/estate/helpers/push-build.sh` — dispatches versioned builds to brand
+-- **Automatic version extraction**: Extracts version from `packages/coding-agent/package.json` or root `package.json` (e.g. `v18.3.0`)
+-- **Toolchain detection**: Automatically detects toolchain (`bun`, `rust`, `go`, `python`) and submits JSON payload to `/home/toxic/brand/queue/`
+-- **Git post-commit hook**: Triggers build automatically on commit
+-
+-### Quick start (3 commands max)
+-
+-```bash
+-# Ensure the post-commit hook is active (installed via git template)
+-# On commit, the hook automatically runs:
+-/home/toxic/estate/helpers/push-build.sh
+-
+-# Or manually trigger a build:
+-/home/toxic/estate/helpers/push-build.sh
+-
+-# Check the brand queue status
+-curl http://127.0.0.1:25148/queue
+-```
+-
+-### Architecture
+-
+-The git `post-commit` hook is configured at clone time and runs `/home/toxic/estate/helpers/push-build.sh` on every commit. The script:
+-1. Extracts the version from package.json (or root package.json)
+-2. Detects the toolchain in use
+-3. Submits a JSON payload to the brand queue at port 25148
+-4. The payload includes: version, toolchain, git commit SHA, and timestamp
+-
+-Brand then processes the queue and dispatches builds to the appropriate build agents.
+-
+-### Config / optional services
+-
+-- `/home/toxic/estate/helpers/push-build.sh` — dispatch script (required)
+-- Brand queue at port 25148 — receives JSON payloads
+-- `packages/coding-agent/package.json` or root `package.json` — version source
+-- Toolchain auto-detection for: bun, rust, go, python
+-
+-### Dev / contributing
+-
+-- Ensure the git post-commit hook is installed (cloned via estate template)
+-- Verify `push-build.sh` is executable and paths are correct
+-- Add new toolchain detection by extending the script's toolchain logic
+-- Ensure package.json versions follow semantic versioning (major.minor.patch)
+-- Brand queue must be running on port 25148 for automatic dispatch
+-
+-### License
+-
+-Open Claw — see `skill.toml` for details.
+-
+-### Security
+-
+-- Version is extracted from package.json — do not commit snapshot versions that diverge from reality
+-- Brand queue endpoint should be kept internal; exposure could trigger unintended builds
+\ No newline at end of file
+diff --git a/skills/cicd-push-building/SKILL.md b/skills/cicd-push-building/SKILL.md
+deleted file mode 100644
+index d2c8e06569..0000000000
+--- a/skills/cicd-push-building/SKILL.md
++++ /dev/null
+@@ -1,11 +0,0 @@
+----
+-name: cicd-push-building
+-description: Automated CI/CD push building via brand and git hooks with semantic versioning
+----
+-
+-# CI/CD Push Building with Brand
+-
+-- Push build dispatch script: `/home/toxic/estate/helpers/push-build.sh`
+-- Automatically extracts the version from `packages/coding-agent/package.json` or root `package.json` (e.g. `v18.3.0`).
+-- Automatically detects toolchain (`bun`, `rust`, `go`, `python`) and submits a JSON payload to `/home/toxic/brand/queue/`.
+-- Git `post-commit` hook triggers this automatically on commit.
+diff --git a/skills/cicd-push-building/prompt_context.md b/skills/cicd-push-building/prompt_context.md
+deleted file mode 100644
+index 4274b84926..0000000000
+--- a/skills/cicd-push-building/prompt_context.md
++++ /dev/null
+@@ -1,6 +0,0 @@
+-# CI/CD Push Building with Brand
+-
+-- Push build dispatch script: `/home/toxic/estate/helpers/push-build.sh`
+-- Automatically extracts the version from `packages/coding-agent/package.json` or root `package.json` (e.g. `v18.3.0`).
+-- Automatically detects toolchain (`bun`, `rust`, `go`, `python`) and submits a JSON payload to `/home/toxic/brand/queue/`.
+-- Git `post-commit` hook triggers this automatically on commit.
+\ No newline at end of file
+diff --git a/skills/cicd-push-building/skill.toml b/skills/cicd-push-building/skill.toml
+deleted file mode 100644
+index 88a97b8085..0000000000
+--- a/skills/cicd-push-building/skill.toml
++++ /dev/null
+@@ -1,34 +0,0 @@
+-prompt_context = """
+-# CI/CD Push Building with Brand
+-
+-- Push build dispatch script: `/home/toxic/estate/helpers/push-build.sh`
+-- Automatically extracts the version from `packages/coding-agent/package.json` or root `package.json` (e.g. `v18.3.0`).
+-- Automatically detects toolchain (`bun`, `rust`, `go`, `python`) and submits a JSON payload to `/home/toxic/brand/queue/`.
+-- Git `post-commit` hook triggers this automatically on commit."""
+-
+-[skill]
+-name = "cicd-push-building"
+-version = "0.1.0"
+-description = "Automated CI/CD push building via brand and git hooks with semantic versioning"
+-author = ""
+-license = ""
+-tags = [
+-    "openclaw-compat",
+-    "prompt-only",
+-]
+-
+-[runtime]
+-type = "promptonly"
+-entry = ""
+-
+-[tools]
+-provided = []
+-
+-[requirements]
+-tools = []
+-capabilities = []
+-
+-[source]
+-type = "open_claw"
+-
+-[config]
+diff --git a/skills/flicker/README.md b/skills/flicker/README.md
+deleted file mode 100644
+index 9abe9bc891..0000000000
+--- a/skills/flicker/README.md
++++ /dev/null
+@@ -1,101 +0,0 @@
+-# flicker
+-
+-[![CI](https://github.com/toxic/estate/skills/flicker/actions/workflows/ci.yml/badge.svg)]
+-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)]
+-
+-A lightweight, high-performance file system monitoring and alerting toolkit designed for containerized environments. flicker provides real-time file system observation, anomaly detection, and automated remediation workflows.
+-
+-## Hero
+-
+-Monitor your filesystem like a pro — detect drift, spot anomalies, and respond instantly with minimal overhead.
+-
+-## Features
+-
+-- **Real-time file system monitoring** — watch file creation, modification, deletion, and permission changes
+-- **Anomaly detection** — identify unexpected file activity, volume spikes, or unauthorized access
+-- **Automated remediation** — trigger alerts, quarantine suspicious files, and restore snapshots
+-- **Low-latency instrumentation** — sub-second event processing with minimal CPU footprint
+-- **Cross-platform support** — Linux, macOS, and Windows containers
+-
+-## Quick Start
+-
+-```bash
+-# Install flicker
+-pip install flicker
+-
+-# Start monitoring a directory
+-flicker monitor /var/log/app
+-
+-# View live events
+-flicker events
+-
+-# Configure alerts
+-flicker config alert-policy
+-```
+-
+-## Architecture
+-
+-Flicker consists of three core components:
+-
+-1. **Event Collector** — captures filesystem events via inotify/eventfd/Windows hooks
+-2. **Analyzer** — applies heuristics and ML-based scoring to detect anomalies
+-3. **Remediation Engine** — executes predefined actions (quarantine, rollback, notify)
+-
+-The architecture follows a producer-consumer pattern with a bounded queue for event buffering, ensuring low-latency processing even under heavy load.
+-
+-## Configuration
+-
+-Configuration is managed through YAML files in `config/`. Key settings include:
+-
+-- `monitor_paths` — directories to watch
+-- `alert_thresholds` — anomaly severity levels
+-- `remediation_policies` — automated response rules
+-- `retention_period` — how long to keep event history
+-
+-Example configuration:
+-
+-```yaml
+-monitor_paths:
+-  - /var/log/
+-  - /app/data/
+-
+-alert_thresholds:
+-  critical: 5
+-  warning: 10
+-
+-remediation_policies:
+-  quarantine: true
+-  rollback: false
+-```
+-
+-## Optional Services
+-
+-- **Web Dashboard** — visualize events and metrics in real-time
+-- **Alert Notifications** — integrate with Slack, PagerDuty, or email
+-- **Snapshot Manager** — create and restore consistent file system states
+-
+-## Development
+-
+-```bash
+-# Clone the repository
+-git clone https://github.com/toxic/estate/skills/flicker
+-cd flicker
+-
+-# Install dependencies
+-pip install -r requirements.txt
+-
+-# Run tests
+-pytest
+-
+-# Build the binary
+-make build
+-```
+-
+-## License
+-
+-This project is licensed under MIT.
+-
+-## Security
+-
+-Flicker receives file-change events from the watcher and serves them
+-locally. It makes no outbound network calls and stores no credentials.
+diff --git a/skills/flicker/SKILL.md b/skills/flicker/SKILL.md
+deleted file mode 100644
+index c197693b53..0000000000
+--- a/skills/flicker/SKILL.md
++++ /dev/null
+@@ -1,114 +0,0 @@
+----
+-name: flicker
+-description: >
+-  Flicker local-only build daemon (port 25148) for direct job execution with content-hash caching. Replaces buildsrv/brand. Triggers on: "flicker", "build daemon", "job submit".
+----
+-
+-# flicker — Local Build Daemon
+-
+-`flicker` is the local-only, pitchfork-supervised build daemon listening on `127.0.0.1:25148`. It executes jobs directly via the local backend (no containers, no remote forges) with content-hash caching for identical job deduplication.
+-
+-## Why flicker Matters
+-
+-1. **Local-Only Execution**:
+-   - Jobs run directly on the host via bash login shells (mise toolchains resolve).
+-   - No Docker, no Kubernetes, no remote forge dependencies.
+-2. **Content-Hash Caching**:
+-   - Identical job specs (command, env, workdir, etc.) return CACHED on resubmit.
+-   - Eliminates redundant executions across agent turns.
+-3. **Direct Job API**:
+-   - Simple HTTP API: POST /api/jobs, GET /api/jobs/:id, GET /api/jobs/:id/logs.
+-   - No authentication (single-tenant daemon).
+-
+-## Health Check & Status
+-
+-```bash
+-# Basic health check via HTTP
+-curl -fsS http://127.0.0.1:25148/api/health
+-
+-# Response format:
+-# {"ok":true,"service":"flicker","running":0,"cache":{"entries":N},"time":"..."}
+-```
+-
+-## API Usage
+-
+-### 1. Submit a Job (POST /api/jobs)
+-
+-```bash
+-curl -s -X POST http://127.0.0.1:25148/api/jobs \
+-  -H "Content-Type: application/json" \
+-  -d '{
+-    "name": "my-job",
+-    "command": "echo hello",
+-    "workdir": "/tmp",
+-    "env": {"FOO": "bar"},
+-    "timeout": 300
+-  }'
+-# Returns: {"id":1,"number":1,"name":"my-job","status":"pending","hash":"...","created":...}
+-```
+-
+-Job spec fields:
+-- `name` (string): job name
+-- `command` (string): shell command to run (required, or use `script`)
+-- `script` (string): multi-line script (alternative to command)
+-- `workdir` (string): working directory
+-- `env` (object): environment variables
+-- `timeout` (int): timeout in seconds (0 = no timeout)
+-- `cache_key` (string): additional cache key component
+-- `artifacts` (array): artifact paths to collect
+-
+-### 2. Get Job Status (GET /api/jobs/:id)
+-
+-```bash
+-curl -s http://127.0.0.1:25148/api/jobs/1
+-# Returns: {"id":1,"status":"success","hash":"...","started":...,"finished":...,"duration_ms":...}
+-```
+-
+-Status values: `pending`, `running`, `success`, `failure`, `canceled`, `error`.
+-
+-### 3. Get Job Logs (GET /api/jobs/:id/logs)
+-
+-```bash
+-curl -s http://127.0.0.1:25148/api/jobs/1/logs
+-# Returns: plain text logs
+-```
+-
+-### 4. List Jobs (GET /api/jobs)
+-
+-```bash
+-curl -s http://127.0.0.1:25148/api/jobs
+-# Returns: array of job objects
+-```
+-
+-## Cache Behavior
+-
+-If an identical job (same content hash) was previously successful, POST /api/jobs returns immediately with:
+-```json
+-{"id":1,"status":"success","cached":true,"message":"CACHED","hash":"..."}
+-```
+-
+-The hash covers: command/script, workdir, env (sorted), cache_key, artifacts (sorted).
+-
+-## Migration from buildsrv
+-
+-Flicker replaces the old Python buildsrv daemon (briefly renamed "brand" on 2026-09-30, then deleted — the name was a mistake and all brand folders are gone). Key differences:
+-- **Port**: Same (25148) — drop-in replacement.
+-- **API**: `/api/jobs` instead of buildsrv's endpoints. Simpler, no auth.
+-- **Execution**: Direct local bash (not Python subprocess with custom caching).
+-- **State**: `/home/toxic/flicker/` on yote.
+-- **Source**: `ranch/flicker/` (Woodpecker v3 Go fork).
+-
+-## Daemons
+-
+-Pitchfork supervises:
+-- `sovereign/flicker` — the server (port 25148, gRPC 25240)
+-- `sovereign/flicker-agent` — the local execution agent
+-
+-## CLI
+-
+-The `flicker` CLI (at `/home/toxic/.local/bin/flicker`) provides:
+-- `flicker submit` — submit a job
+-- `flicker status` — check job status
+-- `flicker logs` — fetch logs
+-- `flicker list` — list jobs
+-- `flicker health` — health check
+diff --git a/skills/flicker/prompt_context.md b/skills/flicker/prompt_context.md
+deleted file mode 100644
+index 0923ec5c11..0000000000
+--- a/skills/flicker/prompt_context.md
++++ /dev/null
+@@ -1,107 +0,0 @@
+-# flicker — Local Build Daemon
+-
+-`flicker` is the local-only, pitchfork-supervised build daemon listening on `127.0.0.1:25148`. It executes jobs directly via the local backend (no containers, no remote forges) with content-hash caching for identical job deduplication.
+-
+-## Why flicker Matters
+-
+-1. **Local-Only Execution**:
+-   - Jobs run directly on the host via bash login shells (mise toolchains resolve).
+-   - No Docker, no Kubernetes, no remote forge dependencies.
+-2. **Content-Hash Caching**:
+-   - Identical job specs (command, env, workdir, etc.) return CACHED on resubmit.
+-   - Eliminates redundant executions across agent turns.
+-3. **Direct Job API**:
+-   - Simple HTTP API: POST /api/jobs, GET /api/jobs/:id, GET /api/jobs/:id/logs.
+-   - No authentication (single-tenant daemon).
+-
+-## Health Check & Status
+-
+-```bash
+-# Basic health check via HTTP
+-curl -fsS http://127.0.0.1:25148/api/health
+-
+-# Response format:
+-# {"ok":true,"service":"flicker","running":0,"cache":{"entries":N},"time":"..."}
+-```
+-
+-## API Usage
+-
+-### 1. Submit a Job (POST /api/jobs)
+-
+-```bash
+-curl -s -X POST http://127.0.0.1:25148/api/jobs \
+-  -H "Content-Type: application/json" \
+-  -d '{
+-    "name": "my-job",
+-    "command": "echo hello",
+-    "workdir": "/tmp",
+-    "env": {"FOO": "bar"},
+-    "timeout": 300
+-  }'
+-# Returns: {"id":1,"number":1,"name":"my-job","status":"pending","hash":"...","created":...}
+-```
+-
+-Job spec fields:
+-- `name` (string): job name
+-- `command` (string): shell command to run (required, or use `script`)
+-- `script` (string): multi-line script (alternative to command)
+-- `workdir` (string): working directory
+-- `env` (object): environment variables
+-- `timeout` (int): timeout in seconds (0 = no timeout)
+-- `cache_key` (string): additional cache key component
+-- `artifacts` (array): artifact paths to collect
+-
+-### 2. Get Job Status (GET /api/jobs/:id)
+-
+-```bash
+-curl -s http://127.0.0.1:25148/api/jobs/1
+-# Returns: {"id":1,"status":"success","hash":"...","started":...,"finished":...,"duration_ms":...}
+-```
+-
+-Status values: `pending`, `running`, `success`, `failure`, `canceled`, `error`.
+-
+-### 3. Get Job Logs (GET /api/jobs/:id/logs)
+-
+-```bash
+-curl -s http://127.0.0.1:25148/api/jobs/1/logs
+-# Returns: plain text logs
+-```
+-
+-### 4. List Jobs (GET /api/jobs)
+-
+-```bash
+-curl -s http://127.0.0.1:25148/api/jobs
+-# Returns: array of job objects
+-```
+-
+-## Cache Behavior
+-
+-If an identical job (same content hash) was previously successful, POST /api/jobs returns immediately with:
+-```json
+-{"id":1,"status":"success","cached":true,"message":"CACHED","hash":"..."}
+-```
+-
+-The hash covers: command/script, workdir, env (sorted), cache_key, artifacts (sorted).
+-
+-## Migration from buildsrv/brand
+-
+-Flicker replaces the Python buildsrv/brand daemon. Key differences:
+-- **Port**: Same (25148) — drop-in replacement.
+-- **API**: `/api/jobs` instead of buildsrv's endpoints. Simpler, no auth.
+-- **Execution**: Direct local bash (not Python subprocess with custom caching).
+-- **State**: Migrated from `/home/toxic/brand/` to `/home/toxic/flicker/migrated-brand/`.
+-
+-## Daemons
+-
+-Pitchfork supervises:
+-- `sovereign/flicker` — the server (port 25148, gRPC 25240)
+-- `sovereign/flicker-agent` — the local execution agent
+-
+-## CLI
+-
+-The `flicker` CLI (at `/home/toxic/estate/projects/range/ranch/flicker/bin/flicker`) provides:
+-- `flicker submit` — submit a job
+-- `flicker status` — check job status
+-- `flicker logs` — fetch logs
+-- `flicker list` — list jobs
+-- `flicker health` — health check
+\ No newline at end of file
+diff --git a/skills/flicker/skill.toml b/skills/flicker/skill.toml
+deleted file mode 100644
+index b0804ac249..0000000000
+--- a/skills/flicker/skill.toml
++++ /dev/null
+@@ -1,135 +0,0 @@
+-prompt_context = '''
+-# flicker — Local Build Daemon
+-
+-`flicker` is the local-only, pitchfork-supervised build daemon listening on `127.0.0.1:25148`. It executes jobs directly via the local backend (no containers, no remote forges) with content-hash caching for identical job deduplication.
+-
+-## Why flicker Matters
+-
+-1. **Local-Only Execution**:
+-   - Jobs run directly on the host via bash login shells (mise toolchains resolve).
+-   - No Docker, no Kubernetes, no remote forge dependencies.
+-2. **Content-Hash Caching**:
+-   - Identical job specs (command, env, workdir, etc.) return CACHED on resubmit.
+-   - Eliminates redundant executions across agent turns.
+-3. **Direct Job API**:
+-   - Simple HTTP API: POST /api/jobs, GET /api/jobs/:id, GET /api/jobs/:id/logs.
+-   - No authentication (single-tenant daemon).
+-
+-## Health Check & Status
+-
+-```bash
+-# Basic health check via HTTP
+-curl -fsS http://127.0.0.1:25148/api/health
+-
+-# Response format:
+-# {"ok":true,"service":"flicker","running":0,"cache":{"entries":N},"time":"..."}
+-```
+-
+-## API Usage
+-
+-### 1. Submit a Job (POST /api/jobs)
+-
+-```bash
+-curl -s -X POST http://127.0.0.1:25148/api/jobs \
+-  -H "Content-Type: application/json" \
+-  -d '{
+-    "name": "my-job",
+-    "command": "echo hello",
+-    "workdir": "/tmp",
+-    "env": {"FOO": "bar"},
+-    "timeout": 300
+-  }'
+-# Returns: {"id":1,"number":1,"name":"my-job","status":"pending","hash":"...","created":...}
+-```
+-
+-Job spec fields:
+-- `name` (string): job name
+-- `command` (string): shell command to run (required, or use `script`)
+-- `script` (string): multi-line script (alternative to command)
+-- `workdir` (string): working directory
+-- `env` (object): environment variables
+-- `timeout` (int): timeout in seconds (0 = no timeout)
+-- `cache_key` (string): additional cache key component
+-- `artifacts` (array): artifact paths to collect
+-
+-### 2. Get Job Status (GET /api/jobs/:id)
+-
+-```bash
+-curl -s http://127.0.0.1:25148/api/jobs/1
+-# Returns: {"id":1,"status":"success","hash":"...","started":...,"finished":...,"duration_ms":...}
+-```
+-
+-Status values: `pending`, `running`, `success`, `failure`, `canceled`, `error`.
+-
+-### 3. Get Job Logs (GET /api/jobs/:id/logs)
+-
+-```bash
+-curl -s http://127.0.0.1:25148/api/jobs/1/logs
+-# Returns: plain text logs
+-```
+-
+-### 4. List Jobs (GET /api/jobs)
+-
+-```bash
+-curl -s http://127.0.0.1:25148/api/jobs
+-# Returns: array of job objects
+-```
+-
+-## Cache Behavior
+-
+-If an identical job (same content hash) was previously successful, POST /api/jobs returns immediately with:
+-```json
+-{"id":1,"status":"success","cached":true,"message":"CACHED","hash":"..."}
+-```
+-
+-The hash covers: command/script, workdir, env (sorted), cache_key, artifacts (sorted).
+-
+-## Migration from buildsrv/brand
+-
+-Flicker replaces the Python buildsrv/brand daemon. Key differences:
+-- **Port**: Same (25148) — drop-in replacement.
+-- **API**: `/api/jobs` instead of buildsrv's endpoints. Simpler, no auth.
+-- **Execution**: Direct local bash (not Python subprocess with custom caching).
+-- **State**: Migrated from `/home/toxic/brand/` to `/home/toxic/flicker/migrated-brand/`.
+-
+-## Daemons
+-
+-Pitchfork supervises:
+-- `sovereign/flicker` — the server (port 25148, gRPC 25240)
+-- `sovereign/flicker-agent` — the local execution agent
+-
+-## CLI
+-
+-The `flicker` CLI (at `/home/toxic/estate/projects/range/ranch/flicker/bin/flicker`) provides:
+-- `flicker submit` — submit a job
+-- `flicker status` — check job status
+-- `flicker logs` — fetch logs
+-- `flicker list` — list jobs
+-- `flicker health` — health check'''
+-
+-[skill]
+-name = "flicker"
+-version = "0.1.0"
+-description = 'Flicker local-only build daemon (port 25148) for direct job execution with content-hash caching. Replaces buildsrv/brand. Triggers on: "flicker", "build daemon", "job submit".'
+-author = ""
+-license = ""
+-tags = [
+-    "openclaw-compat",
+-    "prompt-only",
+-]
+-
+-[runtime]
+-type = "promptonly"
+-entry = ""
+-
+-[tools]
+-provided = []
+-
+-[requirements]
+-tools = []
+-capabilities = []
+-
+-[source]
+-type = "open_claw"
+-
+-[config]

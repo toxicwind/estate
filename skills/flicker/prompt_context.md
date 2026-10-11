@@ -1,0 +1,27 @@
+# mbx — Default Build Dispatch (flicker retired)
+
+**Default: build through `mise`; `mbx-cache` is the remote task cache.**
+
+The one line:
+
+```bash
+mise run <task>        # cacheable task with declared sources/outputs (default)
+mise exec -- <cmd>     # ad-hoc command; mise toolchain resolves
+```
+
+`mbx-cache` is the estate's mise remote task cache: a direct Rust binary built from
+pinned `vendored/mr-boxington-cache` (upstream v0.1.1), supervised by pitchfork as
+`estate/mbx-cache`, listening loopback-only on `127.0.0.1:25148` (`MBX_CACHE_PORT`
+in `config/ports.env`). Client config: `mise/conf.d/15-remote-cache.toml`
+(remote_url `http://127.0.0.1:25148`, namespace `"estate"`, mode `"read-write"`,
+`[task_config.cache] enabled = true`).
+
+Cacheable tasks declare `sources` and `outputs` in `mise.toml`; re-runs restore
+outputs from cache (`restored outputs from cache <digest>`) instead of re-executing.
+If mbx-cache is unreachable, mise treats it as a normal cache miss and executes
+locally — the fallback is built in.
+
+Health: `curl -fsS http://127.0.0.1:25148/v1/status` → `{"protocol":1,"status":"ok"}`.
+
+`flicker` (the old HTTP job daemon at :25148, `/api/jobs`, `brand/queue` JSON queue,
+flicker-agent) is retired. Do not reintroduce a queue shim.

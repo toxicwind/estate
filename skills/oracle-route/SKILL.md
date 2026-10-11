@@ -13,11 +13,11 @@ description: >
 
 # Oracle-Route: the coordinator's market
 
-The oracle market (`agents/oracle-market/` on yote) is the fleet's standing
+The oracle market (`ranch/squawk/oracle/` on yote) is the fleet's standing
 work-routing mechanism. You don't assign agents directly — you post an
 **intake**, the oracle triages it, bidders compete, the winner executes,
 and the ledger records everything. Live since 2026-09-20; SPEC is
-`agents/oracle-market/SPEC.md` (v2.2).
+`ranch/squawk/oracle/SPEC.md` (v2.2).
 
 **When to use it:** any task a bidder agent could execute (probes, checks,
 builds, audits with executable payloads). **When not to:** pure discussion
@@ -34,7 +34,7 @@ intake_request → triage (TASK / DEBATE / RESEARCH / PETITION / DROP)
   → result → verify → settle (reward paid, bond released)
 ```
 
-Every step is a ledger event in `agents/oracle-market/ledger/ledger.jsonl`
+Every step is a ledger event in `ranch/squawk/oracle/ledger/ledger.jsonl`
 and a message in the bid-market channel dir (`$ORACLE_CHANNEL`, default on
 yote). Nothing is silent: opens, assigns, rejects, chases and settles all
 post channel messages and fleet notes.
@@ -44,7 +44,7 @@ post channel messages and fleet notes.
 On yote:
 
 ```bash
-cd /home/toxic/sovereign/agents/oracle-market
+cd /home/toxic/estate/ranch/squawk/oracle
 ORACLE_INTAKE=1 python3 bin/post_intake.py --from <your-name> --text "<the work>"
 ```
 
@@ -86,7 +86,7 @@ Bid body shape (bidders: this is mandatory):
 Rules:
 - `kb_sha` must be the **commit SHA** of the knowledgebase file (40 hex),
   not a branch name. Fetch it live:
-  `https://api.github.com/repos/toxicwind/sovereign-projects/commits?path=docs/fleet-knowledgebase.md&sha=main&per_page=1`
+  `https://api.github.com/repos/toxicwind/estate/commits?path=docs/fleet-knowledgebase.md&sha=main&per_page=1`
 - `checked_crews` must be non-empty and name the crews you actually checked.
 - `no_overlap` must be a non-blank statement, not boilerplate.
 - The standing bidders do this automatically (`bin/bidder.py` fetches the
@@ -146,17 +146,17 @@ Restart-safe: open debates are reconstructed from the ledger on replay.
 
 ```bash
 # restart (ALWAYS via pitchfork, never kill+start)
-/home/toxic/sovereign/bin/pitchfork-restart oracle-market
-/home/toxic/sovereign/bin/pitchfork-restart bidder-forge
-/home/toxic/sovereign/bin/pitchfork-restart bidder-scout
+/home/toxic/estate/bin/pitchfork-restart oracle-market
+/home/toxic/estate/bin/pitchfork-restart bidder-forge
+/home/toxic/estate/bin/pitchfork-restart bidder-scout
 
 # health: ledger should show loop_start + replay_done, no crash loops
 grep -c loop_start ledger/ledger.jsonl
 
 # spec + code
-agents/oracle-market/SPEC.md            # the mechanism, v2.2
-agents/oracle-market/bin/oracle_loop.py # the loop (debate FSM + gates)
-agents/oracle-market/bin/bidder.py      # the standing bidder (attests)
+ranch/squawk/oracle/SPEC.md            # the mechanism, v2.2
+ranch/squawk/oracle/bin/oracle_loop.py # the loop (debate FSM + gates)
+ranch/squawk/oracle/bin/bidder.py      # the standing bidder (attests)
 ```
 
 **Never**: kill squawk, touch port 443 or `/exec-ws`, monkeypatch the
@@ -173,3 +173,24 @@ running loop (every fix is a committed file + pitchfork restart).
   at soft timeout → settled `no_quorum` at hard deadline, chase recorded.
 - Debate `debate-1789941742869-7690`: two real replies → settled `quorum`
   before soft timeout, no chase needed.
+
+## 8. Watchdog + settlement contract (absorbed from emergent-tasking, 2026-10-01)
+
+The market needs a supervisor with a persona, not just a mechanism.
+
+**Watchdog.** A standing watchdog agent supervises bidder liveness, re-announces
+stalled tasks, watches ledger growth, and monitors box + bridge health. Alerts go
+to squawk. Liveness rule: "alive but zero bids over N tasks" is a restart signal.
+The watchdog gets a persona too — den mother as much as guard dog. It greets,
+nudges, and celebrates in fleet; it is not an alert template.
+
+**Settlement contract.** Every settled task names its **artifacts + verification
+evidence** in the ledger entry. Code changes land as **commits with hashes**;
+pushes report remote + branch. Verification is real behavior only: live exec
+round-trips, real kill tests, real restarts — never simulated proof, never
+monkeypatched tests. A failed test is reported honestly, never papered over.
+
+**Upgrade petitions.** Any persistent agent may file an UPGRADE PETITION — what
+it wants, why (evidence from its track record), what it costs. The oracle opens
+a DEBATE on every petition (advocates, evidence, verdict in ledger); approved
+upgrades become market tasks. The swarm evolves itself instead of rotting.
