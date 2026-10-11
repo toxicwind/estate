@@ -2,7 +2,7 @@ import json
 targets = {"fleet": 12992, "bid-market": 100328}
 for ch, since in targets.items():
     print("===", ch, "since", since)
-    p = f"/home/toxic/.shingle/squawk-root/{ch}/log.jsonl"
+    p = f"/home/toxic/.fleet-bus/squawk-root/{ch}/log.jsonl"
     with open(p) as fh:
         for line in fh:
             line = line.strip()

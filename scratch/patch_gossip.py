@@ -2,7 +2,7 @@
 """Coordinator patch 12: scan_only() in fleet_gossip.py + gossip command."""
 from pathlib import Path
 
-BASE = Path("/home/toxic/.shingle/chat")
+BASE = Path("/home/toxic/.fleet-bus/chat")
 
 # --- 1. scan_only in fleet_gossip.py ---
 p = BASE / "fleet_gossip.py"

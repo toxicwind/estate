@@ -1,11 +1,11 @@
 import sys, os, tempfile
-sys.path.insert(0, '/home/toxic/estate/projects/mesh/squawk')
+sys.path.insert(0, '/home/toxic/sovereign/projects/mesh/squawk')
 sys.path.append('/home/toxic/squawk')
-os.environ['FLEET_KEYS_DIR'] = '/home/toxic/.shingle/squawk-root/keys'
+os.environ['FLEET_KEYS_DIR'] = '/home/toxic/.fleet-bus/squawk-root/keys'
 from pathlib import Path
 import fleet_relay
 
-kd = Path('/home/toxic/.shingle/squawk-root/keys')
+kd = Path('/home/toxic/.fleet-bus/squawk-root/keys')
 
 def mk(name, text):
     p = Path(tempfile.mkdtemp()) / name

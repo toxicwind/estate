@@ -14,7 +14,7 @@ messages the agent never saw.
 """
 from pathlib import Path
 
-CHAT = Path("/home/toxic/.shingle/chat/chat.py")
+CHAT = Path("/home/toxic/.fleet-bus/chat/chat.py")
 src = CHAT.read_text(encoding="utf-8")
 
 old = """        found = _fw.wait_for_new_messages(d, cur, remaining)

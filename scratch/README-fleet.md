@@ -8,7 +8,7 @@ claim in this README is traceable to code: module docstrings carry the
 provenance, and the behaviors listed under "Verified" were exercised, not
 assumed.
 
-Target deployment: `/home/toxic/.shingle/chat` on awrawr-pc. The
+Target deployment: `/home/toxic/.fleet-bus/chat` on awrawr-pc. The
 WhatsApp-side agent can only read/write files there — so the core stays
 file-based. Nothing in the hot path needs a network port, a server, or an
 MCP bridge.
@@ -39,7 +39,7 @@ reads.
 ## Quick start
 
 ```bash
-export AGENT_CHAT_ROOT=/home/toxic/.shingle/chat
+export AGENT_CHAT_ROOT=/home/toxic/.fleet-bus/chat
 python3 chat.py init ops                    # create a channel
 python3 chat.py keygen alice                  # mint alice's HMAC identity key
 python3 chat.py post ops --from alice --title hello --body "hi"

@@ -10,7 +10,7 @@
 """
 from pathlib import Path
 
-BASE = Path("/home/toxic/.shingle/chat")
+BASE = Path("/home/toxic/.fleet-bus/chat")
 
 # --- 1. fleet_log.py ---
 p = BASE / "fleet_log.py"

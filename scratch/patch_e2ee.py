@@ -14,7 +14,7 @@ Digest: priv-* snippets are decrypted for the agent's own triage view
 """
 from pathlib import Path
 
-BASE = Path("/home/toxic/.shingle/chat")
+BASE = Path("/home/toxic/.fleet-bus/chat")
 
 # --- 1. fleet_identity.verify_on_read: return the verified body ---
 p = BASE / "fleet_identity.py"

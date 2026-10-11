@@ -24,7 +24,7 @@
 ```mermaid
 flowchart TB
     LOOP[loop.sh<br/>pitchfork daemon sovereign/openfang-health<br/>every OPENFANG_HEALTH_INTERVAL s (default 300)] --> PROBE[openfang-health.sh<br/>fail-fast probes]
-    PROBE --> JSON[/home/toxic/shingle/var/openfang-health/openfang-health.json]
+    PROBE --> JSON[/home/toxic/.fleet-bus/var/openfang-health/openfang-health.json]
     PROBE --> HTML[openfang-health.html<br/>auto-refresh 300s]
     PROBE -->|transition or daily digest| FLEET[squawk fleet post]
     PROBE -->|supervisor, daemons, kernel, agents,<br/>audit chain, llama_swap, kimi_auto,<br/>providers, endpoints, memory, GPU| ROLLUP{worst wins}
@@ -53,7 +53,7 @@ flowchart TB
 ```bash
 OPENFANG_HEALTH_INTERVAL=300 ./loop.sh   # under pitchfork in production
 ./openfang-health.sh                     # one-shot probe
-cat /home/toxic/shingle/var/openfang-health/openfang-health.json
+cat /home/toxic/.fleet-bus/var/openfang-health/openfang-health.json
 ```
 
 ## Research lineage

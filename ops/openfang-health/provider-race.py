@@ -27,7 +27,7 @@ import sys
 import time
 import urllib.request
 
-SHINGLE = os.environ.get("SHINGLE_HOME", "/home/toxic/shingle")
+SHINGLE = os.environ.get("SHINGLE_HOME", "/home/toxic/.fleet-bus")
 VAR = os.path.join(SHINGLE, "var", "openfang-health")
 LEDGER = os.path.join(VAR, "provider-race-winners.jsonl")
 CACHE = os.path.join(VAR, "provider-race-winner.json")

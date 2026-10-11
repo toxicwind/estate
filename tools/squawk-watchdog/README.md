@@ -32,7 +32,7 @@ stop/start/--force` (5x that day), which kills every managed child, and
 each replacement supervisor was started WITHOUT `--boot`, so `boot_start`
 daemons never came back on their own. `retry = true` only covers crashes
 under a LIVE supervisor. A third "death" was a direct `kill` by a
-concurrent worker. See `/home/toxic/.shingle/directives.md` 2026-09-14
+concurrent worker. See `/home/toxic/.fleet-bus/directives.md` 2026-09-14
 entries for the evidence trail.
 
 ## What it does

@@ -19,9 +19,9 @@
 # Documented in: skills/fleet-spawn/SKILL.md (the spawn protocol).
 set -euo pipefail
 
-KB_DEFAULT="/home/toxic/estate/docs/fleet-knowledgebase.md"
+KB_DEFAULT="/home/toxic/sovereign/docs/fleet-knowledgebase.md"
 KB_RAW_URL="https://raw.githubusercontent.com/toxicwind/sovereign-projects/main/docs/fleet-knowledgebase.md"
-SQUAWK_ROOT_DEFAULT="/home/toxic/.shingle/squawk-root"
+SQUAWK_ROOT_DEFAULT="/home/toxic/.fleet-bus/squawk-root"
 
 NAME=""; TASK=""; KB=""; OWNER=""; DONE_SHA=""; ADVISORY=0; DO_REGISTER=0; FLEET_N=10
 

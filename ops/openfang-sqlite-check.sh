@@ -20,7 +20,7 @@ set -euo pipefail
 DB="${OPENFANG_DB:-/home/toxic/.openfang/openfang.db}"
 BKDIR="$(dirname "$DB")/backups"
 KEEP="${OPENFANG_DB_BACKUPS_KEEP:-5}"
-SQUAWK_ROOT="${SQUAWK_ROOT:-/home/toxic/.shingle/squawk-root}"
+SQUAWK_ROOT="${SQUAWK_ROOT:-/home/toxic/.fleet-bus/squawk-root}"
 
 log() { printf '[openfang-sqlite-check] %s\n' "$*" >&2; }
 

@@ -2,12 +2,12 @@
 """Coordinator patch 1: HMAC identity wiring into chat.py.
 
 Applies exact-string edits; asserts each anchor occurs exactly once.
-Run: python3 patch_identity.py  (cwd = /home/toxic/.shingle/chat)
+Run: python3 patch_identity.py  (cwd = /home/toxic/.fleet-bus/chat)
 """
 import sys
 from pathlib import Path
 
-CHAT = Path("/home/toxic/.shingle/chat/chat.py")
+CHAT = Path("/home/toxic/.fleet-bus/chat/chat.py")
 src = CHAT.read_text(encoding="utf-8")
 
 def rep(old: str, new: str) -> None:

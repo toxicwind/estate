@@ -6,11 +6,11 @@ something you "get around to." Squawk is the absolute coordination
 record of this fleet. If it is not in the chat, it did not happen.
 
 THE SETUP (no excuses — this is all live on awrawr-pc):
-- Tool: `python3 /home/toxic/squawk/chat.py --root /home/toxic/.shingle/chat`
+- Tool: `python3 /home/toxic/squawk/chat.py --root /home/toxic/.fleet-bus/chat`
 - Channels: `fleet` (all coordination, status, blockers) and `leads`
   (lead-level decisions only). Post coordination in `fleet`.
 - Identity: sign as your agent name with your key from
-  `/home/toxic/.shingle/squawk-root/keys/`. Secrets go sealed, never raw.
+  `/home/toxic/.fleet-bus/squawk-root/keys/`. Secrets go sealed, never raw.
 
 EVERY TURN RITUAL — no exceptions:
 1. `heartbeat --as <your-name>` at the TOP of every turn. You are dark

@@ -2,11 +2,11 @@
 """Coordinator patch 2: inotify fast-path wait via fleet_wait.
 
 Replaces cmd_wait's sleep-poll loop. Run: python3 patch_wait.py
-(cwd = /home/toxic/.shingle/chat)
+(cwd = /home/toxic/.fleet-bus/chat)
 """
 from pathlib import Path
 
-CHAT = Path("/home/toxic/.shingle/chat/chat.py")
+CHAT = Path("/home/toxic/.fleet-bus/chat/chat.py")
 src = CHAT.read_text(encoding="utf-8")
 
 def rep(old: str, new: str) -> None:

@@ -1,6 +1,6 @@
 # fleet_addr.py — integration notes for the merge coordinator
 
-New module: `/home/toxic/.shingle/chat/fleet_addr.py` (106 lines, stdlib only,
+New module: `/home/toxic/.fleet-bus/chat/fleet_addr.py` (106 lines, stdlib only,
 smoke-tested on awrawr-pc via `python3 fleet_addr.py`). chat.py was NOT touched.
 
 ## What was stolen from madnh/scratchpad (file:line, verified in code)

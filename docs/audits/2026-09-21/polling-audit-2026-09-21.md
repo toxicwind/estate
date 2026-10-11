@@ -106,7 +106,7 @@ timer suspects read line-by-line, live PIDs + CPU verified)
 1. **paper-poller — every 30s** — `/home/toxic/paper-poller/bin/poller.py`
    L269–274: `while True: poll_once(); time.sleep(INTERVAL)`, INTERVAL=30s
    (L42, env `PAPER_POLLER_INTERVAL`). `poll_once()` (L203–228) reads
-   `CHANNEL = "/home/toxic/.shingle/directives.md"` (L43) — **a local file** —
+   `CHANNEL = "/home/toxic/.fleet-bus/directives.md"` (L43) — **a local file** —
    scanning for PAPER-TASK entries. Live PID 190380, 18h uptime, firing every
    30s. **Replacement:** inotify watch on directives.md (or parent dir, re-armed
    like bidder.py's self-healing watches) → `poll_once()` on modify/close_write;
@@ -114,25 +114,25 @@ timer suspects read line-by-line, live PIDs + CPU verified)
    violation. Payoff is latency, not CPU: PAPER-TASK pickup goes 30s → instant,
    compounding with the lane's HFT race rules.
 2. **stash-guard fast path — every 90s** —
-   `/home/toxic/estate/tools/stash-guard/stash-guard.py` L599–609:
+   `/home/toxic/sovereign/tools/stash-guard/stash-guard.py` L599–609:
    `while True: once(); time.sleep(args.interval)`, interval=90s (L48, daemon
    runs `--deep --interval 90`, live PID 190776). `once()` full-scans
-   `/home/toxic/estate` + all worktrees for dirty state every 90s — the most
+   `/home/toxic/sovereign` + all worktrees for dirty state every 90s — the most
    expensive periodic job in the fleet. **Replacement:** recursive inotify on the
    watched dirs with ~60s debounce → run `once()` only when files changed; keep
    the hourly `--deep` scan as the LEGIT backstop. Snapshots become
    change-driven (better semantics for a flight recorder); the idle box goes
    truly quiet.
 3. **squawk-relay forward.py — 30s full-sweep backstop** —
-   `/home/toxic/.shingle/squawk-relay/forward.py` L41 (`SWEEP_INTERVAL = 30.0`),
+   `/home/toxic/.fleet-bus/squawk-relay/forward.py` L41 (`SWEEP_INTERVAL = 30.0`),
    L267–281: inotify primary + full sweep every 30s as backstop.
    **Replacement:** trust inotify (local ext4, reliable) or raise backstop to 10m.
 4. **squawk-relay sink.py — 60s full-sweep backstop** —
-   `/home/toxic/.shingle/squawk-relay/sink.py` L29 (`FULL_SWEEP_INTERVAL = 60.0`),
+   `/home/toxic/.fleet-bus/squawk-relay/sink.py` L29 (`FULL_SWEEP_INTERVAL = 60.0`),
    L202–216: same pattern (the 5s `ino.wait(5.0)` wake does no work unless
    events fired). **Replacement:** same as forward.py; convert the pair together.
 5. **bench-radar — 10s stat poll fallback** —
-   `/home/toxic/estate/tools/bench-radar/server.ts` L529–557:
+   `/home/toxic/sovereign/tools/bench-radar/server.ts` L529–557:
    `fs.watch` (inotify-backed) is primary, but `setInterval(..., POLL_MS)`
    with POLL_MS=10000 (L29) stat-checks the log every 10s.
    **Replacement:** drop the setInterval; keep fs.watch + initial `scan(true)`.

@@ -14,7 +14,7 @@ import shutil
 import subprocess
 import sys
 
-CHAT = "/home/toxic/.shingle/chat"
+CHAT = "/home/toxic/.fleet-bus/chat"
 ROOT = "/tmp/hmacv2-test"
 KEYS = "/tmp/smoke-keys"
 ENV = {**os.environ, "FLEET_KEYS_DIR": KEYS, "AGENT_CHAT_ROOT": ROOT}
@@ -36,7 +36,7 @@ text = open(md).read()
 assert "lamport:" in text and "parents:" in text
 r = subprocess.run(
     [sys.executable, "-c",
-     "import sys; sys.path.insert(0, '/home/toxic/.shingle/chat');"
+     "import sys; sys.path.insert(0, '/home/toxic/.fleet-bus/chat');"
      "import fleet_identity, os;"
      "os.environ['FLEET_KEYS_DIR']='/tmp/smoke-keys';"
      "m = fleet_identity.verify_on_read('/tmp/hmacv2-test/c/0001-alice-t.md');"
@@ -78,7 +78,7 @@ legacy = "\n".join(
      "hmac: PLACEHOLDER", "---", "legacy body", ""])
 r = subprocess.run(
     [sys.executable, "-c",
-     "import sys; sys.path.insert(0, '/home/toxic/.shingle/chat');"
+     "import sys; sys.path.insert(0, '/home/toxic/.fleet-bus/chat');"
      "import fleet_identity;"
      "c = fleet_identity.canonical_message(seq=7, sender='alice', to='all',"
      " reply_to='', channel='c', ts='2026-01-01T00:00:00+00:00',"
@@ -90,7 +90,7 @@ assert len(sig) == 64, r.stderr
 open(f"{ROOT}/c/0007-alice-old.md", "w").write(legacy.replace("PLACEHOLDER", sig))
 r = subprocess.run(
     [sys.executable, "-c",
-     "import sys; sys.path.insert(0, '/home/toxic/.shingle/chat');"
+     "import sys; sys.path.insert(0, '/home/toxic/.fleet-bus/chat');"
      "import fleet_identity;"
      "m = fleet_identity.verify_on_read('/tmp/hmacv2-test/c/0007-alice-old.md', '/tmp/smoke-keys');"
      "print(m['hmac_version'])"],
@@ -106,7 +106,7 @@ trans = "\n".join(
      "hmac: PLACEHOLDER", "---", "transitional body", ""])
 r = subprocess.run(
     [sys.executable, "-c",
-     "import sys; sys.path.insert(0, '/home/toxic/.shingle/chat');"
+     "import sys; sys.path.insert(0, '/home/toxic/.fleet-bus/chat');"
      "import fleet_identity;"
      "c = fleet_identity.canonical_message(seq=8, sender='alice', to='all',"
      " reply_to='', channel='c', ts='2026-01-01T00:00:00+00:00',"
@@ -117,7 +117,7 @@ sig = r.stdout.strip()
 open(f"{ROOT}/c/0008-alice-trans.md", "w").write(trans.replace("PLACEHOLDER", sig))
 r = subprocess.run(
     [sys.executable, "-c",
-     "import sys; sys.path.insert(0, '/home/toxic/.shingle/chat');"
+     "import sys; sys.path.insert(0, '/home/toxic/.fleet-bus/chat');"
      "import fleet_identity;"
      "m = fleet_identity.verify_on_read('/tmp/hmacv2-test/c/0008-alice-trans.md', '/tmp/smoke-keys');"
      "print(m['hmac_version'])"],
@@ -128,7 +128,7 @@ print("PASS 6: transitional message (fields, v1 HMAC) verifies as v1")
 # 7. fleet_dag msg_ids unchanged (v1 byte stability)
 r = subprocess.run(
     [sys.executable, "-c",
-     "import sys; sys.path.insert(0, '/home/toxic/.shingle/chat');"
+     "import sys; sys.path.insert(0, '/home/toxic/.fleet-bus/chat');"
      "import fleet_dag, fleet_identity;"
      "meta = {'seq':'1','from':'alice','to':'all','reply_to':'',"
      " 'channel':'c','ts':'t','status':'s','title':'ti'};"

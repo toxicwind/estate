@@ -13,14 +13,14 @@ Date: 2026-09-14. Owner: Agent 2 (openfang workstream). Status: draft for Chris/
 
 - Rig Rust daemon 0.6.9 healthy on `127.0.0.1:25203` (pid 482688). Agents: `coyote` (llama-swap/kimi-auto — **broken**: `kimi-auto` isn't a valid llama-swap alias → "no router"), `assistant` (anthropic — **dead key** in daemon env).
 - Separate TS `axiom` service on `:25103` (pitchfork-owned, distinct from the Rust daemon — architecture still needs reconciling).
-- llama-swap on `:25100` (config `/home/toxic/estate/config/herd.yaml`): local models + a `pollinations-free` peer. **Pollinations closed the anonymous gate** — the dummy-bearer workaround is dead, so `kimi-k3`, `gpt-oss`, `muse-spark-1.2` etc. all 401 now.
+- llama-swap on `:25100` (config `/home/toxic/sovereign/config/herd.yaml`): local models + a `pollinations-free` peer. **Pollinations closed the anonymous gate** — the dummy-bearer workaround is dead, so `kimi-k3`, `gpt-oss`, `muse-spark-1.2` etc. all 401 now.
 - **Agent 2 pilot: NOT green.** Spawn/persist/message/capabilities all work; the LLM path is the blocker:
   - Daemon provider keys all stale (verified from daemon env, keys never left the box): nvidia 401, anthropic invalid, groq/cerebras 403, deepseek 402 (out of credits).
   - Only local model `fast` (= exaone-1.2b-iq4xs, 1.2B) answers, and it **cannot tool-call** — the pilot agent narrated the task as a bash script instead of invoking `file_read`/`shell_exec`; no proof file created.
   - `openfang agent set` has a provider/model parsing bug (stuffs `"nvidia:..."` into the model field, keeps the old provider).
   - Per Chris's stop-flailing rule: no more retries until the model situation changes.
-- **Agent 1: blocked** — persona definition requested from Agent 1's lead in `/home/toxic/.shingle/directives.md` (2026-09-14 12:39 MDT). Nothing to instantiate until that lands.
-- **squawk: code deployed, never bootstrapped.** Smoke test 2026-09-14: `init`/`keygen`/`post`/`read` all work (signed, Lamport clocks, HMAC). But until today: no keys (`/home/toxic/.shingle/keys/` was empty), no channels, no agent ever wired to `chat.py`.
+- **Agent 1: blocked** — persona definition requested from Agent 1's lead in `/home/toxic/.fleet-bus/directives.md` (2026-09-14 12:39 MDT). Nothing to instantiate until that lands.
+- **squawk: code deployed, never bootstrapped.** Smoke test 2026-09-14: `init`/`keygen`/`post`/`read` all work (signed, Lamport clocks, HMAC). But until today: no keys (`/home/toxic/.fleet-bus/keys/` was empty), no channels, no agent ever wired to `chat.py`.
 
 ## Why the fleet runs on directives.md instead of squawk
 
@@ -37,7 +37,7 @@ Date: 2026-09-14. Owner: Agent 2 (openfang workstream). Status: draft for Chris/
 - [ ] Re-run the Agent 2 pilot (file read + shell + proof file + fleet-channel post). **No live cutover until pilot green.**
 
 ### Phase 1 — squawk as the agent bus
-- [ ] Bootstrap real identities: `fleet_identity.py keygen` for `breaker`, `shingle`, `agent1`, `yote` (+ future members). Keys live in `/home/toxic/.shingle/keys/` (0600).
+- [ ] Bootstrap real identities: `fleet_identity.py keygen` for `breaker`, `shingle`, `agent1`, `yote` (+ future members). Keys live in `/home/toxic/.fleet-bus/keys/` (0600).
 - [ ] Init real channels under a dedicated root (not `~/agent-chat` default): e.g. `fleet` (all-hands), `leads` (breaker+shingle+agent1), per-workstream task channels.
 - [ ] Thin wrapper so any agent posts/reads in one bridge call (or one local exec on awrawr-pc).
 - [ ] Register chat root + identity in each rig agent's manifest/env; add "check squawk before each work block" to agent system prompts (same standing order as directives.md today).

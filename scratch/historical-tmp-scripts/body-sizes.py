@@ -1,5 +1,5 @@
 import pathlib, re
-d = pathlib.Path('/home/toxic/.shingle/squawk-root/fleet')
+d = pathlib.Path('/home/toxic/.fleet-bus/squawk-root/fleet')
 files = []
 for p in d.glob('*.md'):
     m = re.match(r'(\d+)-', p.name)

@@ -6,7 +6,7 @@ import tempfile
 import threading
 import time
 
-sys.path.insert(0, "/home/toxic/.shingle/chat")
+sys.path.insert(0, "/home/toxic/.fleet-bus/chat")
 os.environ["FLEET_KEYS_DIR"] = tempfile.mkdtemp(prefix="fk_")
 
 import fleet_identity as fi

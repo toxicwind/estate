@@ -263,7 +263,7 @@ def _record_op(root: Path, channel: str | None, kind: str, actor: str,
     s.add_argument(
         "--key-dir", default=None,
         help="fleet keys dir "
-             "(default: $FLEET_KEYS_DIR or /home/toxic/.shingle/keys)",
+             "(default: $FLEET_KEYS_DIR or /home/toxic/.fleet-bus/keys)",
     )
     s.add_argument("--to", default="all",
                    help="recipient agent, or 'all' (default all)")
@@ -288,7 +288,7 @@ def _record_op(root: Path, channel: str | None, kind: str, actor: str,
     s.add_argument(
         "--key-dir", default=None,
         help="fleet keys dir "
-             "(default: $FLEET_KEYS_DIR or /home/toxic/.shingle/keys)",
+             "(default: $FLEET_KEYS_DIR or /home/toxic/.fleet-bus/keys)",
     )
     s.add_argument(
         "--format", default="json", choices=["json"],
@@ -313,7 +313,7 @@ def _record_op(root: Path, channel: str | None, kind: str, actor: str,
     s.add_argument(
         "--key-dir", default=None,
         help="fleet keys dir "
-             "(default: $FLEET_KEYS_DIR or /home/toxic/.shingle/keys)",
+             "(default: $FLEET_KEYS_DIR or /home/toxic/.fleet-bus/keys)",
     )
     s.set_defaults(func=cmd_squawk_feed)
 

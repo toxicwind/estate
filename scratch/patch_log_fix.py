@@ -7,7 +7,7 @@ lost/corrupt log is always rebuildable from them.
 """
 from pathlib import Path
 
-CHAT = Path("/home/toxic/.shingle/chat/chat.py")
+CHAT = Path("/home/toxic/.fleet-bus/chat/chat.py")
 src = CHAT.read_text(encoding="utf-8")
 
 old = """            fleet_log.append(

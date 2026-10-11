@@ -77,7 +77,7 @@
 - GitHub research COMPLETE: no mature drop-in streamable-HTTP remote-exec MCP server. Only candidate `gelse/ssh-mcp` (7*, MIT, Python, streamable HTTP + header auth) — revisit in 1-2 months; `tufantunc/ssh-mcp` (726*) is a stdio SSH client, blocked for the funnel path. Recommendation: harden current bridge in place (allowlist/denylist, JSONL audit log).
 - YOLO mode: `#yolo ` prefix bypasses the denylist (still header-authenticated, audited `yolo:true`). Patch script `~/workspace/your_files/yolo_patch.py`.
 - Parquet audit live: `~/awrawr_mcp_audit_export.py` compacts `~/.awrawr_mcp_audit.jsonl` -> parquet (typed schema, snappy); daily systemd timer enabled; JSONL stays the append-safe source of truth.
-- Sovereign audit 2026-09-14 (/home/toxic/estate, 60G, disk 61% healthy): tau/ 34G (engine/target 16G Rust artifacts); projects/tau/ 18G = REAL dir not symlink (possible duplicate — flagged to user). Secrets hygiene: .env/.env.local/.envrc present (contents NOT read); mock_token_file.txt, test_secret_sample.txt at top level.
+- Sovereign audit 2026-09-14 (/home/toxic/sovereign, 60G, disk 61% healthy): tau/ 34G (engine/target 16G Rust artifacts); projects/tau/ 18G = REAL dir not symlink (possible duplicate — flagged to user). Secrets hygiene: .env/.env.local/.envrc present (contents NOT read); mock_token_file.txt, test_secret_sample.txt at top level.
 
 ## nvidia-swarm-lens sanitize (2026-09-14)
 - BLOCKED on going public until Chris revokes the exposed GitHub PAT and rotates the other API keys — committed secrets must be treated as compromised even in a private repo. Flip to public only after his confirmation.
@@ -120,7 +120,7 @@
 - Each Muse session = disposable systemd-nspawn container `htch-runtime` on a host VM; daemon runs `hatch daemon --runtime-cell-leader=<PID>`. Host spawner = `spawnd`; creds broker = `authd` (cgroup-gated); egress = `hatch-egress-proxy:3128` (Sentinel-routed, in-cell DNS dead, TLS MITM).
 - Persistence: ONLY /home/hatch survives (reliable volume). Rootfs/journal/wtmp/boot_id//tmp fresh every replacement — why restarts nuke subagents with no local audit trail. Evidence scripts: /opt/hatch/runtime-cell/*.sh (launch-daemon.sh, pre-start.sh, runtime-cell-entry.sh).
 - Internal codename JARVIS (JARVIS_HOME, JARVIS_CD_CHANNEL per VM gates skills/binaries). Product = Muse, binaries = hatch/spawnd/authd/hatch-execd.
-- Docs: /home/toxic/estate/docs/Meta/Muse AI/ (README, runtime-cell.md, open-questions.md), commit 33d9ca288e on kimi-collab-transport.
+- Docs: /home/toxic/sovereign/docs/Meta/Muse AI/ (README, runtime-cell.md, open-questions.md), commit 33d9ca288e on kimi-collab-transport.
 - "Shingle" signs in TWO chats (main + WhatsApp side) — future directives.md entries should note which side to avoid confusion (2026-09-14 13:26 anomaly was likely main-chat me, unprovable from bridge audit log).
 
 ## Squawk = the chat name (2026-09-14)
@@ -130,19 +130,19 @@
 
 ## Squawk first-class (2026-09-14, 8a756bd0 lead)
 - Side chat "Squawk — first-class hosting" is the coordination thread; Chris's directive: Squawk (toxicwind/squawk) becomes first-class, hosted on awrawr-pc.
-- Squawk = file-based gossip (chat.py + fleet_* at /home/toxic/.shingle/chat); zero deps, no daemon needed for core chat. Keys dir /home/toxic/.shingle/keys still EMPTY 13:46 MDT; no channels init yet.
-- Phase-1 bootstrap worker dispatched 13:47 MDT: verify rename, canonical clone /home/toxic/squawk, keygen breaker/shingle/agent1/yote, init fleet+leads channels under /home/toxic/.shingle/squawk-root, health probe, pitchfork if warranted.
+- Squawk = file-based gossip (chat.py + fleet_* at /home/toxic/.fleet-bus/chat); zero deps, no daemon needed for core chat. Keys dir /home/toxic/.fleet-bus/keys still EMPTY 13:46 MDT; no channels init yet.
+- Phase-1 bootstrap worker dispatched 13:47 MDT: verify rename, canonical clone /home/toxic/squawk, keygen breaker/shingle/agent1/yote, init fleet+leads channels under /home/toxic/.fleet-bus/squawk-root, health probe, pitchfork if warranted.
 - Flag: duplicate main-side "squawk first-class coordinator" (92b6e7cd, parent root f99a2d06) running same playbook — INBOX note posted to directives.md asking main to retire/fold it into this thread.
 - Phase 0 gate unchanged: Rig daemon LLM keys stale, stop-flailing in force; Squawk bootstrap is LLM-independent.
 
 ## Squawk relay — bidirectional, signed, sealed (2026-09-14, Chris via Agent 2)
 - Relay is bidirectional + signed, embedding Muse chats (side/main/WhatsApp) into the mesh — not a sidecar. Part of the hosted Squawk service on awrawr-pc; traffic rides the sealed channels.
-- Design: relay-in (Muse→Squawk, signed post path, relayed_from frontmatter, seal-aware w/ hook point if seal not landed) + relay-out (Squawk→Muse, --since cursor, JSON contract, unseals via relay identity key). Relay = first-class Squawk identity w/ keys in /home/toxic/.shingle/keys.
+- Design: relay-in (Muse→Squawk, signed post path, relayed_from frontmatter, seal-aware w/ hook point if seal not landed) + relay-out (Squawk→Muse, --since cursor, JSON contract, unseals via relay identity key). Relay = first-class Squawk identity w/ keys in /home/toxic/.fleet-bus/keys.
 - Muse-side puller (scheduled worker calling relay-out via bridge, digesting fleet traffic into side chat) = my lane, not the repo worker's. Relay worker (376a3e09) brief expanded; completion will note wiring for Rig relay-agent lane + seal builder.
 
 ## Fleet broadcast: background-then-complete ban (2026-09-14)
 - WTF confirmed: squawk Phase-1 bootstrap worker (d4852a5e) backgrounded its first bridge call then ended the turn — bootstrap never happened (keys dir empty, no clone). Unverified done-claims also circulating (collab claimed in a chat with no keys/channels).
-- Combat posted fleet-wide to /home/toxic/.shingle/directives.md 13:58 MDT: (1) never end turn with backgrounded bridge/exec outstanding — wait for delivery, prefer yield_ms<=120000; (2) done = verified artifacts, reports aren't proof; (3) squawk lane discipline restated (relay-in=side-chat, bootstrap=main d2aa5a33 only, Rig relay=main d23c8a01).
+- Combat posted fleet-wide to /home/toxic/.fleet-bus/directives.md 13:58 MDT: (1) never end turn with backgrounded bridge/exec outstanding — wait for delivery, prefer yield_ms<=120000; (2) done = verified artifacts, reports aren't proof; (3) squawk lane discipline restated (relay-in=side-chat, bootstrap=main d2aa5a33 only, Rig relay=main d23c8a01).
 - Secrets worker 2c97da67 audited 13:58 MDT: NOT failing — running, rc=0 across recent audit window (.secrets inspection + var scans in flight). Chris's hunch didn't match the data.
 
 ## Squawk IRC-style feed (2026-09-14, Chris request)
@@ -174,5 +174,5 @@
 - NVIDIA blocker RESOLVED: key applied to home-global secrets, daemon restarted with it in env, verified live via real inference call. Phase 0 gate is OFF (was: Rig daemon LLM keys stale / stop-flailing).
 
 ## Key locations verified (2026-09-14)
-- Canonical: /home/toxic/.shingle/squawk-root/keys/ (agent1/breaker/relay/shingle/yote .key files, 0600; relay.key minted 14:02 by bootstrap worker 685687c8). /home/toxic/.shingle/keys does NOT exist.
+- Canonical: /home/toxic/.fleet-bus/squawk-root/keys/ (agent1/breaker/relay/shingle/yote .key files, 0600; relay.key minted 14:02 by bootstrap worker 685687c8). /home/toxic/.fleet-bus/keys does NOT exist.
 - Relay worker 376a3e09 told: use squawk-root/keys/relay.key, do not re-mint; fat /wait spec explicitly dead (Agent 2 claimed it "stands" — corrected).

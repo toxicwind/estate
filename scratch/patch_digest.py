@@ -2,7 +2,7 @@
 """Coordinator patch 7: `digest` command (fleet_delta slow-path)."""
 from pathlib import Path
 
-CHAT = Path("/home/toxic/.shingle/chat/chat.py")
+CHAT = Path("/home/toxic/.fleet-bus/chat/chat.py")
 src = CHAT.read_text(encoding="utf-8")
 
 def rep(old: str, new: str) -> None:

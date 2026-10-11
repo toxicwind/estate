@@ -6,7 +6,7 @@
 #   2. listening TCP ports with no pitchfork.toml daemon coverage
 #   3. shell profiles containing daemon logic (belongs in pitchfork/systemd)
 #   4. cron files / systemd units referencing ephemeral paths
-#   5. uncommitted live edits in /home/toxic/estate (state paths excluded)
+#   5. uncommitted live edits in /home/toxic/sovereign (state paths excluded)
 #
 # Alerts to squawk fleet ONLY when findings exist (alert on conditions, not on
 # a timer). Exit 0 = clean, 2 = findings reported.
@@ -14,10 +14,10 @@
 # Usage: durability-audit.sh [--alert]   # --alert posts to fleet; default prints
 set -uo pipefail
 
-REPO="${SOVEREIGN_REPO:-/home/toxic/estate}"
+REPO="${SOVEREIGN_REPO:-/home/toxic/sovereign}"
 TOML="$REPO/pitchfork.toml"
 ALLOW="$REPO/ops/durability/allowlist.txt"
-SQUAWK_ROOT="${SQUAWK_ROOT:-/home/toxic/shingle/squawk-root}"
+SQUAWK_ROOT="${SQUAWK_ROOT:-/home/toxic/.fleet-bus/squawk-root}"
 CHANNEL="fleet"
 ALERT=0
 [[ "${1:-}" == "--alert" ]] && ALERT=1
@@ -106,9 +106,7 @@ if [[ -f "$TOML" ]]; then
     for p in "${!PORT_OWNER[@]}"; do
         ss -ltn 2>/dev/null | grep -qE "[:.]$p([^0-9]|$)" && continue
         d="${PORT_OWNER[$p]}"
-        # pitchfork namespaces daemons as estate/<name>, so the sovereign/<name>
-        # form never resolved and STALE-READY could never be reported.
-        st="$("$PF_BIN" status --json "estate/$d" 2>/dev/null | \
+        st="$("$PF_BIN" status --json "sovereign/$d" 2>/dev/null | \
               python3 -c 'import json,sys; print(json.load(sys.stdin).get("status",""))' 2>/dev/null)"
         [[ "$st" == "running" ]] && \
             note "STALE-READY :$p (daemon $d reports running but nothing listens; re-register via bin/pitchfork-restart)"

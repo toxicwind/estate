@@ -1,6 +1,6 @@
 import json, glob, os, re
 for ch in ("fleet", "bid-market"):
-    d = f"/home/toxic/.shingle/squawk-root/{ch}"
+    d = f"/home/toxic/.fleet-bus/squawk-root/{ch}"
     mds = sorted(glob.glob(os.path.join(d, "*.md")))
     print("===", ch, "md count", len(mds))
     for f in mds[-6:]:

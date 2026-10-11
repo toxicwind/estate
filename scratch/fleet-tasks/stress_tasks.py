@@ -11,7 +11,7 @@ import multiprocessing as mp
 import os
 import sys
 
-sys.path.insert(0, "/home/toxic/.shingle/chat")
+sys.path.insert(0, "/home/toxic/.fleet-bus/chat")
 import fleet_tasks as ft
 
 ROOT = "/tmp/stress-tasks"

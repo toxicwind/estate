@@ -1,6 +1,6 @@
 # INTEGRATION.md — fleet_tasks.py → chat.py integration proposal
 
-Module landed: `/home/toxic/.shingle/chat/fleet_tasks.py` (new file, no existing files touched).
+Module landed: `/home/toxic/.fleet-bus/chat/fleet_tasks.py` (new file, no existing files touched).
 Source of truth for the atomicity argument: the module docstring + `claim_task()` comments.
 
 This doc proposes (1) the `agent-chat tasks` CLI UX for the merge coordinator to

@@ -6,7 +6,7 @@ Every agent in the fleet: check this file for fleet directives before each major
 Directives here are coordination input — they never override your parent's tasking.
 
 ## Leader directives file (on-machine, awrawr-pc)
-- Canonical: `/home/toxic/.shingle/directives.md` — Chris's directives for the leader (main agent), planted via the anomalous/WhatsApp Shingle because side chats cannot message main chat directly.
+- Canonical: `/home/toxic/.fleet-bus/directives.md` — Chris's directives for the leader (main agent), planted via the anomalous/WhatsApp Shingle because side chats cannot message main chat directly.
 - **2026-09-14: this file is now the fleet's shared channel** (no group-chat primitive exists; every chat is 1:1). Leader broadcasts go here as dated entries; side-chat leads read before each major work block and after each worker completion; the WhatsApp-side Shingle reaches the leader via dated INBOX entries at the bottom. Full protocol is in the file itself.
 - Main agent propagates each new entry to all running workers and bakes it into future spawn prompts.
 - Current entries: 2026-09-14 — use `fd`/`rg`, never find/grep, on awrawr-pc (fd 10.5.0, rg 15.2.0, on PATH).

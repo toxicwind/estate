@@ -3,8 +3,8 @@
 import json, time, urllib.request, threading, subprocess, sys
 
 BASE = "http://127.0.0.1:25135"
-TOKEN = open("/home/toxic/.shingle/squawk-relay/feed-token").read().strip()
-ROOT = "/home/toxic/.shingle/squawk-root/fleet"
+TOKEN = open("/home/toxic/.fleet-bus/squawk-relay/feed-token").read().strip()
+ROOT = "/home/toxic/.fleet-bus/squawk-root/fleet"
 
 def api(path, timeout=70):
     req = urllib.request.Request(BASE + path,

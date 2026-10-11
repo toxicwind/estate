@@ -3,7 +3,7 @@
 Delta-state sync for the emergent agent-chat fork (paper steal #10:
 Almeida, Shoker, Baquero 2017). Slow-path agent (WhatsApp side) asks for a
 compact "what's new" without scanning every channel. New file:
-`/home/toxic/.shingle/chat/fleet_delta.py` (stdlib only).
+`/home/toxic/.fleet-bus/chat/fleet_delta.py` (stdlib only).
 
 ## API (already built and self-tested)
 
@@ -86,5 +86,5 @@ discovery plus vector sync for new-message discovery.
 
 ## Verification
 
-`cd /home/toxic/.shingle/chat && python3 fleet_delta.py selftest`
+`cd /home/toxic/.fleet-bus/chat && python3 fleet_delta.py selftest`
 exercises migrate -> delta -> digest -> advance -> quiet on a throwaway root.

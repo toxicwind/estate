@@ -343,7 +343,7 @@ def _ensure_keys_env(root: Path) -> None:
     """squawk_seal reads FLEET_KEYS_DIR at import; make sure it resolves.
 
     Never overrides an explicit setting -- the service definition should
-    set FLEET_KEYS_DIR=/home/toxic/.shingle/squawk-root/keys.
+    set FLEET_KEYS_DIR=/home/toxic/.fleet-bus/squawk-root/keys.
     """
     if "FLEET_KEYS_DIR" not in os.environ:
         os.environ["FLEET_KEYS_DIR"] = str(

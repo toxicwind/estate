@@ -75,7 +75,7 @@ def main() -> None:
     s.add_argument(
         "--key-dir", default=None,
         help="fleet keys dir "
-             "(default: $FLEET_KEYS_DIR or /home/toxic/.shingle/keys)",
+             "(default: $FLEET_KEYS_DIR or /home/toxic/.fleet-bus/keys)",
     )
     s.set_defaults(func=cmd_squawk_feed)
 ''',
@@ -93,7 +93,7 @@ def main() -> None:
     s.add_argument(
         "--key-dir", default=None,
         help="fleet keys dir "
-             "(default: $FLEET_KEYS_DIR or /home/toxic/.shingle/keys)",
+             "(default: $FLEET_KEYS_DIR or /home/toxic/.fleet-bus/keys)",
     )
     s.add_argument(
         "--zipfs-dir", default=None,

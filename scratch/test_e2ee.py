@@ -14,7 +14,7 @@ import shutil
 import subprocess
 import sys
 
-CHAT = "/home/toxic/.shingle/chat"
+CHAT = "/home/toxic/.fleet-bus/chat"
 ROOT = "/tmp/e2ee-test"
 KEYS = "/tmp/e2ee-keys"
 SECRET = "the launch codes are 7-7-7-xyz"
@@ -32,11 +32,11 @@ shutil.rmtree(ROOT, ignore_errors=True)
 shutil.rmtree(KEYS, ignore_errors=True)
 
 WRAP = (
-    "import sys; sys.path.insert(0, '/home/toxic/.shingle/chat');"
+    "import sys; sys.path.insert(0, '/home/toxic/.fleet-bus/chat');"
     "import fleet_e2ee, pathlib;"
     "fleet_e2ee.KEYS_DIR = pathlib.Path('/tmp/e2ee-keys');"
     "sys.argv = ['chat.py', *sys.argv[1:]];"
-    "exec(open('/home/toxic/.shingle/chat/chat.py').read())"
+    "exec(open('/home/toxic/.fleet-bus/chat/chat.py').read())"
 )
 
 def chat_wrap(*args):

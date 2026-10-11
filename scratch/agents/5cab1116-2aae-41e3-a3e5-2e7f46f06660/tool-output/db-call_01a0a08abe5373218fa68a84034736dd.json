@@ -32,7 +32,7 @@
       {
         "child_agent_id": "0d5a1320-eb0b-4645-9152-a8baaaba2e42",
         "completed_at": 1789385209,
-        "outcome": "**Secret check complete — files not found, no scan was possible.**\n\nI searched for `mock_token_file.txt` and `test_secret_sample.txt` on awrawr-pc thoroughly and they do not exist:\n\n- `fd` for both exact names under `/home/toxic/estate` → no hits\n- Case-insensitive `fd` across all of `/home/toxic",
+        "outcome": "**Secret check complete — files not found, no scan was possible.**\n\nI searched for `mock_token_file.txt` and `test_secret_sample.txt` on awrawr-pc thoroughly and they do not exist:\n\n- `fd` for both exact names under `/home/toxic/sovereign` → no hits\n- Case-insensitive `fd` across all of `/home/toxic",
         "status": "completed"
       },
       {
@@ -62,37 +62,37 @@
       {
         "child_agent_id": "1a198f7e-047a-4e9b-8195-ed3cdf793d6c",
         "completed_at": 1789384629,
-        "outcome": "Scrub complete. Full report:\n\n## What I did\n\n**PART A — git history.** Found the yote work in `/home/toxic/estate` (branch `yote-repair`), not `projects/yote`. **Important correction to what was relayed earlier: `bdde78b8` is NOT local-only.** It's on GitHub via the archive remote (`toxicwind/loc",
+        "outcome": "Scrub complete. Full report:\n\n## What I did\n\n**PART A — git history.** Found the yote work in `/home/toxic/sovereign` (branch `yote-repair`), not `projects/yote`. **Important correction to what was relayed earlier: `bdde78b8` is NOT local-only.** It's on GitHub via the archive remote (`toxicwind/loc",
         "status": "completed"
       },
       {
         "child_agent_id": "f9c29c1c-6d81-4c8f-82a0-7a7910b8524c",
         "completed_at": 1789384480,
-        "outcome": "Both files are live on awrawr-pc with md5-verified transfers and a passing live smoke test. Final report:\n\n---\n\n## Report: paper steals #8 + #9 — `fleet_stigmergy.py`\n\n**Files created (ADD-only, no existing files modified):**\n- [/home/toxic/.shingle/chat/fleet_stigmergy.py](sandbox://workspace/) — o",
+        "outcome": "Both files are live on awrawr-pc with md5-verified transfers and a passing live smoke test. Final report:\n\n---\n\n## Report: paper steals #8 + #9 — `fleet_stigmergy.py`\n\n**Files created (ADD-only, no existing files modified):**\n- [/home/toxic/.fleet-bus/chat/fleet_stigmergy.py](sandbox://workspace/) — o",
         "status": "completed"
       },
       {
         "child_agent_id": "db5e3a91-06fc-4e9b-be41-6ce681196454",
         "completed_at": 1789384476,
-        "outcome": "## Report: paper steal #10 — delta sync (`fleet_delta.py`)\n\n**Files created (all on awrawr-pc):**\n- [/home/toxic/.shingle/chat/fleet_delta.py](sandbox://workspace/delta-steal/fleet_delta.py) — new module, stdlib only, ~310 lines. Verified: `python3 fleet_delta.py selftest` → **PASS** (migrate → delt",
+        "outcome": "## Report: paper steal #10 — delta sync (`fleet_delta.py`)\n\n**Files created (all on awrawr-pc):**\n- [/home/toxic/.fleet-bus/chat/fleet_delta.py](sandbox://workspace/delta-steal/fleet_delta.py) — new module, stdlib only, ~310 lines. Verified: `python3 fleet_delta.py selftest` → **PASS** (migrate → delt",
         "status": "completed"
       },
       {
         "child_agent_id": "b74dd8e0-70e1-487e-9307-83725583188c",
         "completed_at": 1789384466,
-        "outcome": "**Done. Paper steal #12 complete.**\n\n## Files created (all on awrawr-pc, no existing files modified)\n- `/home/toxic/.shingle/chat/fleet_dag.py` — hash-linked DAG message log, stdlib only (hashlib), ~420 lines\n- `/tmp/extract-dag/INTEGRATION.md` — exact `chat.py cmd_post` insertion points, the new `_",
+        "outcome": "**Done. Paper steal #12 complete.**\n\n## Files created (all on awrawr-pc, no existing files modified)\n- `/home/toxic/.fleet-bus/chat/fleet_dag.py` — hash-linked DAG message log, stdlib only (hashlib), ~420 lines\n- `/tmp/extract-dag/INTEGRATION.md` — exact `chat.py cmd_post` insertion points, the new `_",
         "status": "completed"
       },
       {
         "child_agent_id": "1e373b69-6f34-4d50-aa29-abfd117474f9",
         "completed_at": 1789384409,
-        "outcome": "**Task complete.** Paper steal #3 (Lamport 1978) is built, tested, and deployed.\n\n## Files created\n\n1. **`/home/toxic/.shingle/chat/fleet_time.py`** (remote, awrawr-pc) — stdlib-only Lamport clock module, new untracked file (md5-verified identical to my tested local copy `~/workspace/fleet_time.py`;",
+        "outcome": "**Task complete.** Paper steal #3 (Lamport 1978) is built, tested, and deployed.\n\n## Files created\n\n1. **`/home/toxic/.fleet-bus/chat/fleet_time.py`** (remote, awrawr-pc) — stdlib-only Lamport clock module, new untracked file (md5-verified identical to my tested local copy `~/workspace/fleet_time.py`;",
         "status": "completed"
       },
       {
         "child_agent_id": "6cabe3bf-b53d-4049-875f-cec776ee639a",
         "completed_at": 1789384383,
-        "outcome": "Done. Full report:\n\n## Files created (on awrawr-pc, add-only — no existing files touched)\n\n- **[`/home/toxic/.shingle/chat/fleet_presence.py`](sandbox:///home/toxic/.shingle/chat/fleet_presence.py)** — 12,664 bytes, stdlib only. Live-verified on awrawr-pc (Python 3.14.6): full scenario test suite pa",
+        "outcome": "Done. Full report:\n\n## Files created (on awrawr-pc, add-only — no existing files touched)\n\n- **[`/home/toxic/.fleet-bus/chat/fleet_presence.py`](sandbox:///home/toxic/.fleet-bus/chat/fleet_presence.py)** — 12,664 bytes, stdlib only. Live-verified on awrawr-pc (Python 3.14.6): full scenario test suite pa",
         "status": "completed"
       },
       {
@@ -104,7 +104,7 @@
       {
         "child_agent_id": "a84d8a57-bffe-4ebe-92ee-4f232221ace8",
         "completed_at": 1789384321,
-        "outcome": "Assignment complete. Final report:\n\n## Task board port: DONE\n\n**Files created (nothing existing modified):**\n- `/home/toxic/.shingle/chat/fleet_tasks.py` (413 lines, stdlib-only, SHA256-verified on arrival) — the file-based atomic-claim task board\n- `/tmp/extract-tasks/INTEGRATION.md` (on awrawr-pc)",
+        "outcome": "Assignment complete. Final report:\n\n## Task board port: DONE\n\n**Files created (nothing existing modified):**\n- `/home/toxic/.fleet-bus/chat/fleet_tasks.py` (413 lines, stdlib-only, SHA256-verified on arrival) — the file-based atomic-claim task board\n- `/tmp/extract-tasks/INTEGRATION.md` (on awrawr-pc)",
         "status": "completed"
       },
       {
@@ -116,25 +116,25 @@
       {
         "child_agent_id": "8c38c6e0-0960-45f9-b8af-1d708039c60b",
         "completed_at": 1789384210,
-        "outcome": "Assignment complete. Final report:\n\n## Files created (awrawr-pc, verified by md5)\n\n1. **`/home/toxic/.shingle/chat/fleet_log.py`** (378 lines, stdlib only, new file — no existing files touched)\n   - Append-only `log.jsonl` per channel at `<root>/<channel>/log.jsonl` — a **parallel index** to the for",
+        "outcome": "Assignment complete. Final report:\n\n## Files created (awrawr-pc, verified by md5)\n\n1. **`/home/toxic/.fleet-bus/chat/fleet_log.py`** (378 lines, stdlib only, new file — no existing files touched)\n   - Append-only `log.jsonl` per channel at `<root>/<channel>/log.jsonl` — a **parallel index** to the for",
         "status": "completed"
       },
       {
         "child_agent_id": "3067f0ad-b9e7-4d14-b76c-f964a688ea53",
         "completed_at": 1789384196,
-        "outcome": "Done. Everything is in place and verified live on awrawr-pc.\n\n## Report: ephemeral-room lifecycle port (kotinder/roomcomm → agent-chat fork)\n\n**Files created (all on awrawr-pc):**\n- `/home/toxic/.shingle/chat/fleet_ephemeral.py` (9290 bytes, stdlib only, sha256-verified byte-identical to my local co",
+        "outcome": "Done. Everything is in place and verified live on awrawr-pc.\n\n## Report: ephemeral-room lifecycle port (kotinder/roomcomm → agent-chat fork)\n\n**Files created (all on awrawr-pc):**\n- `/home/toxic/.fleet-bus/chat/fleet_ephemeral.py` (9290 bytes, stdlib only, sha256-verified byte-identical to my local co",
         "status": "completed"
       },
       {
         "child_agent_id": "f273d6e1-207c-422b-aecd-c06549194155",
         "completed_at": 1789384178,
-        "outcome": "All four files verified byte-identical (sha256 match) on awrawr-pc. Task complete.\n\n## Final report\n\n**Files created** (all new, zero modifications to existing fork files):\n\n1. `/home/toxic/.shingle/chat/fleet_identity.py` (13,818 B) — HMAC-SHA256 per-agent message signing, stdlib only\n2. `/home/tox",
+        "outcome": "All four files verified byte-identical (sha256 match) on awrawr-pc. Task complete.\n\n## Final report\n\n**Files created** (all new, zero modifications to existing fork files):\n\n1. `/home/toxic/.fleet-bus/chat/fleet_identity.py` (13,818 B) — HMAC-SHA256 per-agent message signing, stdlib only\n2. `/home/tox",
         "status": "completed"
       },
       {
         "child_agent_id": "f098b164-8826-431e-b697-904c8d06fc97",
         "completed_at": 1789384144,
-        "outcome": "Both files are deployed and verified. Work complete.\n\n## Report: direct addressing (--to) ported from madnh/scratchpad\n\n### Files created (all on awrawr-pc; no existing fork files touched)\n- `/home/toxic/.shingle/chat/fleet_addr.py` — 106 lines, stdlib only, smoke tests pass (`python3 fleet_addr.py`",
+        "outcome": "Both files are deployed and verified. Work complete.\n\n## Report: direct addressing (--to) ported from madnh/scratchpad\n\n### Files created (all on awrawr-pc; no existing fork files touched)\n- `/home/toxic/.fleet-bus/chat/fleet_addr.py` — 106 lines, stdlib only, smoke tests pass (`python3 fleet_addr.py`",
         "status": "completed"
       },
       {
@@ -146,7 +146,7 @@
       {
         "child_agent_id": "8db6fdef-807e-4e35-b3e1-dcb9aa5e4c28",
         "completed_at": 1789384035,
-        "outcome": "Done. All work verified on awrawr-pc. Final report:\n\n## Files created\n\n1. **`/home/toxic/.shingle/chat/fleet_e2ee.py`** (10,888 bytes, compiles clean) — per-channel symmetric encryption for `priv-*` channels. New file only; nothing in the fork was modified.\n2. **`/tmp/extract-e2ee/INTEGRATION.md`** ",
+        "outcome": "Done. All work verified on awrawr-pc. Final report:\n\n## Files created\n\n1. **`/home/toxic/.fleet-bus/chat/fleet_e2ee.py`** (10,888 bytes, compiles clean) — per-channel symmetric encryption for `priv-*` channels. New file only; nothing in the fork was modified.\n2. **`/tmp/extract-e2ee/INTEGRATION.md`** ",
         "status": "completed"
       },
       {
@@ -158,7 +158,7 @@
       {
         "child_agent_id": "93a22a93-5d8c-4fbc-8a46-18a3ff255f98",
         "completed_at": 1789383983,
-        "outcome": "All verified live on awrawr-pc. Task complete.\n\n## Report: agentsync identity roster + file-scope locks ported\n\n**Files created (all on awrawr-pc; no existing fork files touched):**\n- [/home/toxic/.shingle/chat/fleet_roster.py](/home/toxic/.shingle/chat/fleet_roster.py) — 8.3 KB, new file only, synt",
+        "outcome": "All verified live on awrawr-pc. Task complete.\n\n## Report: agentsync identity roster + file-scope locks ported\n\n**Files created (all on awrawr-pc; no existing fork files touched):**\n- [/home/toxic/.fleet-bus/chat/fleet_roster.py](/home/toxic/.fleet-bus/chat/fleet_roster.py) — 8.3 KB, new file only, synt",
         "status": "completed"
       },
       {
@@ -380,7 +380,7 @@
       {
         "child_agent_id": "69ff14ad-ce8d-4c27-b392-d71be3589d0a",
         "completed_at": 1789379675,
-        "outcome": "All green. Final report:\n\n## Done — dotfiles audited, fixed, and consolidated for real\n\n**The \"end4\" repo:** it's `toxicwind/sovereign-end4`, cloned at `/home/toxic/estate/shell/ii` (dotbot-based: `dots/` + `install.conf.yaml`). It had zero shell dotfiles — home's bash config lived only in home, ",
+        "outcome": "All green. Final report:\n\n## Done — dotfiles audited, fixed, and consolidated for real\n\n**The \"end4\" repo:** it's `toxicwind/sovereign-end4`, cloned at `/home/toxic/sovereign/shell/ii` (dotbot-based: `dots/` + `install.conf.yaml`). It had zero shell dotfiles — home's bash config lived only in home, ",
         "status": "completed"
       },
       {

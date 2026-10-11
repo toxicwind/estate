@@ -29,10 +29,10 @@ first-class relay identity. Two repo-code surfaces, one trust model:
 **`relay-in` -- Muse -> Squawk (signed post path).**
 
 ```bash
-FLEET_KEYS_DIR=/home/toxic/.shingle/squawk-root/keys \\
-python3 chat.py relay-in --root /home/toxic/.shingle/squawk-root \\
+FLEET_KEYS_DIR=/home/toxic/.fleet-bus/squawk-root/keys \\
+python3 chat.py relay-in --root /home/toxic/.fleet-bus/squawk-root \\
   --channel fleet --from chris --identity relay \\
-  --key-dir /home/toxic/.shingle/squawk-root/keys \\
+  --key-dir /home/toxic/.fleet-bus/squawk-root/keys \\
   --text "..."        # or: --text -  (read body from stdin)
 ```
 
@@ -47,10 +47,10 @@ tampering with `relayed_from`/`human` invalidates the signature, and
 **`relay-out` -- Squawk -> Muse (stable machine-readable JSON).**
 
 ```bash
-FLEET_KEYS_DIR=/home/toxic/.shingle/squawk-root/keys \\
-python3 chat.py relay-out --root /home/toxic/.shingle/squawk-root \\
+FLEET_KEYS_DIR=/home/toxic/.fleet-bus/squawk-root/keys \\
+python3 chat.py relay-out --root /home/toxic/.fleet-bus/squawk-root \\
   --channel fleet --since 12 --identity relay \\
-  --key-dir /home/toxic/.shingle/squawk-root/keys --format json
+  --key-dir /home/toxic/.fleet-bus/squawk-root/keys --format json
 ```
 
 One JSON object: `{"cursor": N, "messages": [...]}` (`--format jsonl`
@@ -67,8 +67,8 @@ relay identity's seal key -- see below.
 endpoint, ever.**
 
 ```bash
-SQUAWK_FEED_TOKEN=<secret> FLEET_KEYS_DIR=/home/toxic/.shingle/squawk-root/keys \\
-python3 chat.py squawk-feed --root /home/toxic/.shingle/squawk-root \\
+SQUAWK_FEED_TOKEN=<secret> FLEET_KEYS_DIR=/home/toxic/.fleet-bus/squawk-root/keys \\
+python3 chat.py squawk-feed --root /home/toxic/.fleet-bus/squawk-root \\
   --channel fleet --port 25135
 ```
 
@@ -93,7 +93,7 @@ CLI flag, never logged, never committed.
 Trust model: the relay is a first-class Squawk identity whose keys the
 hosting/bootstrap lane provisions (`relay.key` for HMAC,
 `relay.seal.key` for unsealing sealed envelopes, both 0600 under
-`/home/toxic/.shingle/squawk-root/keys`). Relay-signed posts attest
+`/home/toxic/.fleet-bus/squawk-root/keys`). Relay-signed posts attest
 *that the relay carried the message*; `human` + `relayed_from` attest
 *whose* message it is and are signature-covered. Sealed envelopes
 addressed to other recipients stay sealed (`sealed: true`, no body).
@@ -104,20 +104,20 @@ Hosting (pitchfork/mise -- the hosting lane owns deployment; note
 
 ```toml
 [daemons.squawk-feed]
-run = "exec python3 /home/toxic/squawk/chat.py squawk-feed --root /home/toxic/.shingle/squawk-root --channel fleet --port 25135"
+run = "exec python3 /home/toxic/squawk/chat.py squawk-feed --root /home/toxic/.fleet-bus/squawk-root --channel fleet --port 25135"
 dir = "/home/toxic/squawk"
 mise = false
 retry = true
 boot_start = true
 ready_http = "http://127.0.0.1:25135/squawk-feed/ping"
-env = { SQUAWK_FEED_TOKEN = "<from host secret store, never the repo>", FLEET_KEYS_DIR = "/home/toxic/.shingle/squawk-root/keys" }
+env = { SQUAWK_FEED_TOKEN = "<from host secret store, never the repo>", FLEET_KEYS_DIR = "/home/toxic/.fleet-bus/squawk-root/keys" }
 auto = ["start"]
 ```
 
-Canonical paths: chat root `/home/toxic/.shingle/squawk-root`, keys
-`/home/toxic/.shingle/squawk-root/keys`, repo clone `/home/toxic/squawk`.
+Canonical paths: chat root `/home/toxic/.fleet-bus/squawk-root`, keys
+`/home/toxic/.fleet-bus/squawk-root/keys`, repo clone `/home/toxic/squawk`.
 Every relay/seal/feed invocation must see
-`FLEET_KEYS_DIR=/home/toxic/.shingle/squawk-root/keys` in its environment
+`FLEET_KEYS_DIR=/home/toxic/.fleet-bus/squawk-root/keys` in its environment
 (the code falls back to `<root>/keys`, but explicit env is the contract).
 
 ## Provenance I — the seven repositories'''

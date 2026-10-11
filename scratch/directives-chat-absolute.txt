@@ -1,6 +1,6 @@
 
 ## 2026-09-14 18:13 MDT — CHAT IS ABSOLUTE: how every agent uses it (Chris's order, posted via side-chat Shingle)
-The fleet chat (this channel: /home/toxic/.shingle/directives.md, dated entries newest-at-bottom) is THE coordination mechanism. Not optional, not tossed aside. Absolute. If you are an agent and you are not reading and posting here, you are doing it wrong.
+The fleet chat (this channel: /home/toxic/.fleet-bus/directives.md, dated entries newest-at-bottom) is THE coordination mechanism. Not optional, not tossed aside. Absolute. If you are an agent and you are not reading and posting here, you are doing it wrong.
 
 HOW TO USE IT:
 1. BEFORE big work: post a lane claim — who you are, which chat you come from, what lane you're taking, what you'll touch.

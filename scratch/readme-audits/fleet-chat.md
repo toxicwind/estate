@@ -30,7 +30,7 @@ links, versions, badges, external links all PASS.
 | Bidding: non-winner rejected, winner claims, round archived, trace feeds suggest-role | fleet_bids.py:221 archive_round; cmd_task_bid/bids/claim chat.py:1555-1598 | VERIFIED |
 | CRDT merge proven in `fleet_crdt.selftest()` | fleet_crdt.py:222 | VERIFIED |
 | Two-agent post/wait/read smoke | tests_smoke_two_agent.py; commit f0e973f0 | VERIFIED |
-| Roster: single file at `~/.shingle/roster`, revocation first-class | fleet_roster.py:54 (`/home/toxic/.shingle/roster`, `$FLEET_ROSTER` override) | VERIFIED |
+| Roster: single file at `~/.shingle/roster`, revocation first-class | fleet_roster.py:54 (`/home/toxic/.fleet-bus/roster`, `$FLEET_ROSTER` override) | VERIFIED |
 | `_meta.json`, `log.jsonl`, `.ops.jsonl` per channel | chat.py:278; fleet_log, fleet_crdt | VERIFIED |
 | "Screened 59 candidates, selected 12, ten implemented" | numbers appear only in README; not in SPEC.md or elsewhere | UNVERIFIED |
 | `src/hub/store.js` (agentsync provenance row) | path belongs to the donor repo, not this one; reads as a local path in context | UNVERIFIED (clarity — audit.py FAIL is a false positive) |

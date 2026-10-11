@@ -4,7 +4,7 @@ import json, time, urllib.parse, urllib.request, base64, sys
 import websocket
 
 CDP = "http://127.0.0.1:9223"
-token = open("/home/toxic/.shingle/squawk-relay/feed-token").read().strip()
+token = open("/home/toxic/.fleet-bus/squawk-relay/feed-token").read().strip()
 url = f"http://127.0.0.1:25135/squawk-feed/ui?token={token}"
 enc = urllib.parse.urlencode({"url": url})
 req = urllib.request.Request(f"{CDP}/json/new?{enc}", method="PUT")

@@ -44,7 +44,7 @@ The 18:04 squawk-ws restart sequence is the first WITH a log trail:
 
 ## 5. Secrets hygiene flag
 
-`/home/toxic/.shingle/squawk-relay/run-feed.sh` exports `SQUAWK_FEED_TOKEN` as a **plaintext token in a shell script** on disk (not in a repo). Working, but worth moving to a 0600 env file or pitchfork env block at some point. Value NOT recorded here.
+`/home/toxic/.fleet-bus/squawk-relay/run-feed.sh` exports `SQUAWK_FEED_TOKEN` as a **plaintext token in a shell script** on disk (not in a repo). Working, but worth moving to a 0600 env file or pitchfork env block at some point. Value NOT recorded here.
 
 ## 6. Still open
 

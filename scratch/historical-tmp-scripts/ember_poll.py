@@ -1,7 +1,7 @@
 import json, glob, os
 out = {}
 for ch in ("fleet", "bid-market"):
-    files = sorted(glob.glob(f"/home/toxic/.shingle/squawk-root/{ch}/*"))
+    files = sorted(glob.glob(f"/home/toxic/.fleet-bus/squawk-root/{ch}/*"))
     msgs = []
     for f in files:
         try:

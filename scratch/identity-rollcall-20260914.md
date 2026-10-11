@@ -1,7 +1,7 @@
 # Identity Roll-Call — 2026-09-14 ~18:30 MDT
 
 Chris's order 18:10 MDT: "find a way to differentiate, try to chat amongst yourselves and see wtf going on."
-Roll-call posted to /home/toxic/.shingle/directives.md 18:15 MDT; update + verification request posted 18:25 MDT.
+Roll-call posted to /home/toxic/.fleet-bus/directives.md 18:15 MDT; update + verification request posted 18:25 MDT.
 Snapshot of 27 running agents from muse.db (agent.agents, status='running').
 
 ## Leader check (4-point: depth==0 AND id==root AND channel==main AND main-chat thread)

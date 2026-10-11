@@ -11,7 +11,7 @@ New: `chat.py ops [channel] [--json] [--materialize]`.
 """
 from pathlib import Path
 
-BASE = Path("/home/toxic/.shingle/chat")
+BASE = Path("/home/toxic/.fleet-bus/chat")
 
 p = BASE / "chat.py"
 src = p.read_text(encoding="utf-8")

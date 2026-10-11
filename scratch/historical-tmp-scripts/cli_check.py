@@ -1,8 +1,8 @@
 import sys
-sys.path.insert(0, "/home/toxic/estate/projects/mesh/squawk")
+sys.path.insert(0, "/home/toxic/sovereign/projects/mesh/squawk")
 from pathlib import Path
 import chat
-p = Path("/home/toxic/.shingle/squawk-root/fleet/11978-estate-reconcile.md")
+p = Path("/home/toxic/.fleet-bus/squawk-root/fleet/11978-estate-reconcile.md")
 for fn in ("parse_message_file", "parse_frontmatter", "read_message"):
     if hasattr(chat, fn):
         try:

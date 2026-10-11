@@ -1,5 +1,5 @@
 import json, urllib.request
-tok = open("/home/toxic/.shingle/squawk-relay/feed-token").read().strip()
+tok = open("/home/toxic/.fleet-bus/squawk-relay/feed-token").read().strip()
 base = json.loads(urllib.request.urlopen(
     "http://127.0.0.1:25135/squawk-feed/seq?channel=fleet",
     timeout=10).read().decode())["seq"]

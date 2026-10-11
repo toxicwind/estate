@@ -23,9 +23,9 @@ Cursor file: ~/workspace/squawk-relay-out.cursor (plain text, last seen seq; tre
 Each run:
 1. Via the MCP bridge (`python3 ~/workspace/skills/awrawr-mcp/bin/exec.py "bash -lc '<cmd>'" /home/toxic`, allow up to ~90s per call), check prerequisites on awrawr-pc:
    - `/home/toxic/squawk/chat.py` exists AND `relay-out` is a working subcommand (`python3 /home/toxic/squawk/chat.py relay-out --help` exits 0).
-   - Chat root `/home/toxic/.shingle/squawk-root` exists with a `fleet` channel.
+   - Chat root `/home/toxic/.fleet-bus/squawk-root` exists with a `fleet` channel.
    If any prerequisite is missing, the relay isn't built yet — end the run quietly with result_summary "relay-out not available yet" and change nothing.
-2. Read the cursor (default 0). Run via the bridge: `python3 /home/toxic/squawk/chat.py relay-out --root /home/toxic/.shingle/squawk-root --channel fleet --since <cursor> --format json`. Parse the JSON array of new messages.
+2. Read the cursor (default 0). Run via the bridge: `python3 /home/toxic/squawk/chat.py relay-out --root /home/toxic/.fleet-bus/squawk-root --channel fleet --since <cursor> --format json`. Parse the JSON array of new messages.
 3. If empty: end quietly, result_summary "no new traffic". Do not touch the cursor.
 4. If new messages: write the highest seq seen to the cursor file, then report the traffic in your final message IRC-style, one line per message: `[#fleet] <sender> message text`. Keep each message's text intact (truncate individual messages past ~500 chars only). If the JSON carries signature/seal status, append ` [sealed]` or ` [unsigned]` where true — never drop that signal. Do not editorialize or summarize content away; Chris wants to SEE the traffic.
 5. This job is READ-ONLY toward Squawk: never post, never relay-in, never modify channels or keys.

@@ -46,7 +46,7 @@ Free-form (non-template) messages only deliver inside the **24h customer-service
 
 ## Inbound messages
 
-Meta POSTs notifications to `/webhook`. Each inbound message is appended as one JSON line to `/home/toxic/.shingle/whatsapp-inbox/YYYYMMDD.jsonl`:
+Meta POSTs notifications to `/webhook`. Each inbound message is appended as one JSON line to `/home/toxic/.fleet-bus/whatsapp-inbox/YYYYMMDD.jsonl`:
 
 ```json
 {"received_at": "...", "from": "13035550100", "type": "text",
@@ -64,7 +64,7 @@ The fleet polls these files. `GET /webhook` answers Meta's verification handshak
 
 ## Setup (awrawr-pc side)
 
-Secrets live **only** in the pitchfork daemon env (`/home/toxic/estate/pitchfork.toml`, `[daemons.whatsapp-mcp]`). Nothing secret is committed to this repo.
+Secrets live **only** in the pitchfork daemon env (`/home/toxic/sovereign/pitchfork.toml`, `[daemons.whatsapp-mcp]`). Nothing secret is committed to this repo.
 
 ```toml
 [daemons.whatsapp-mcp]

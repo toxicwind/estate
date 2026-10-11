@@ -1,5 +1,5 @@
 import sys, os, random, shutil
-sys.path.insert(0, "/home/toxic/.shingle/chat")
+sys.path.insert(0, "/home/toxic/.fleet-bus/chat")
 import fleet_presence as fp
 
 root = "/tmp/presence-test"

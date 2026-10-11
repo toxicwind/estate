@@ -32,7 +32,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | `/home/toxic/shingle` (+ `.shingle` symlink) | Shingle root; squawk lives here — BOTH are now symlinks to `sovereign/hatch/agents/ember/` in-repo (reorg 2026-09-20); squawk-root is gitignored at .gitignore:295 |
 | `/home/toxic/estate/shingle-workspace/` | -> `scratch/` symlink (non-production staging; production bridge home is `bridge/`) |
 | `/home/toxic/estate/config/herd.yaml` | Herd router config (the model herd) |
-| `/home/toxic/estate/skills/paper-search/` | Paper-search skill (canonical home) |
+| `/home/toxic/estate/skills-hub/paper-search/` | Paper-search skill (canonical home) |
 | `/home/toxic/super-ralph` | Super Ralph source |
 | `/home/toxic/estate/ranch/squawk/oracle/` | Oracle market loop + watchdog |
 
@@ -378,7 +378,7 @@ Full protocol: `ranch/squawk/oracle/SPEC.md` § oracle-as-approval.
 - Master README: [/home/toxic/estate/README.md](../README.md) — every sub-README links back here.
 - This knowledgebase: `docs/fleet-knowledgebase.md` (this file)
 - Spawn brief template: `docs/spawn-brief-template.md` — canonical template every brief is generated from; autonomy doctrine in its header (removing it is a visible diff)
-- Paper-search skill: `/home/toxic/estate/skills/paper-search/SKILL.md`
+- Paper-search skill: `/home/toxic/estate/skills-hub/paper-search/SKILL.md`
 - Tau engine docs: `/home/toxic/estate/projects/tau/engine/docs/`
 - Yote ops: `/home/toxic/estate/projects/yote/ops/` (yote-doctor.sh, yote-fix.sh)
 - Scheduler audit 2026-09-20: `/home/toxic/estate/projects/audits/scheduler-audit-2026-09-20.md`

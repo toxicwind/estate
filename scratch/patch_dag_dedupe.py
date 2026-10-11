@@ -2,7 +2,7 @@
 """Coordinator patch 5b: dedupe DAG parents (reply target == previous)."""
 from pathlib import Path
 
-CHAT = Path("/home/toxic/.shingle/chat/chat.py")
+CHAT = Path("/home/toxic/.fleet-bus/chat/chat.py")
 src = CHAT.read_text(encoding="utf-8")
 
 old = """    target_id = _resolve_reply_target(d, reply) if reply else None

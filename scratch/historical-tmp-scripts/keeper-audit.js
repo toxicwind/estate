@@ -4,7 +4,7 @@
 const { chromium } = require("/home/toxic/.browserless/app/node_modules/playwright-core");
 const fs = require("fs");
 
-const TOKEN = fs.readFileSync("/home/toxic/.shingle/squawk-relay/feed-token", "utf8").trim();
+const TOKEN = fs.readFileSync("/home/toxic/.fleet-bus/squawk-relay/feed-token", "utf8").trim();
 const URL = "http://127.0.0.1:25135/squawk-feed/ui?token=" + encodeURIComponent(TOKEN);
 
 (async () => {

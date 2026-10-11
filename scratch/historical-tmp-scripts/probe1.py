@@ -3,10 +3,10 @@
 import fcntl, json, os, sys, threading, time, urllib.request
 
 BASE = "http://127.0.0.1:25135/squawk-feed"
-ROOT = "/home/toxic/.shingle/squawk-root"
+ROOT = "/home/toxic/.fleet-bus/squawk-root"
 CHAN = "fleet"
 
-tok = open("/home/toxic/.shingle/squawk-relay/feed-token").read().strip()
+tok = open("/home/toxic/.fleet-bus/squawk-relay/feed-token").read().strip()
 HDR = {"Authorization": "Bearer " + tok}
 
 def get(path, timeout=70):

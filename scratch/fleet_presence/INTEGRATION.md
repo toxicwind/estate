@@ -1,7 +1,7 @@
 # INTEGRATION.md — fleet_presence into chat.py
 
 Module landed (new file, nothing modified):
-`/home/toxic/.shingle/chat/fleet_presence.py` (stdlib only, tests pass on
+`/home/toxic/.fleet-bus/chat/fleet_presence.py` (stdlib only, tests pass on
 awrawr-pc). Exposes: `heartbeat`, `heartbeat_age`, `get_view`,
 `update_view`, `gossip_round`, `suspect`, `suspect_marks`, `is_alive`,
 `alive_agents`, `peer_sample`, constants `VIEW_K=8`, `T_SUSPECT=60`,

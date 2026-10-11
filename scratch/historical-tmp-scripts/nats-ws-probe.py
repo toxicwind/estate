@@ -8,7 +8,7 @@ HOST = "github-mcp-host.tailc9ac71.ts.net"
 PORT = 443
 PATH = "/nats-ws"
 
-token = open("/home/toxic/.shingle/squawk-relay/feed-token").read().strip()
+token = open("/home/toxic/.fleet-bus/squawk-relay/feed-token").read().strip()
 
 key = base64.b64encode(os.urandom(16)).decode()
 req = (
@@ -99,7 +99,7 @@ try:
                 # trigger a live message now that we're subscribed
                 import subprocess
                 probe = "funnel-ws-probe-live"
-                subprocess.run(["/home/toxic/shingle/bin/squawk", "post", "fleet",
+                subprocess.run(["/home/toxic/.fleet-bus/bin/squawk", "post", "fleet",
                                 "--from", "taps", "--title", "taps-e2e",
                                 "--body", probe],
                                capture_output=True, timeout=30)

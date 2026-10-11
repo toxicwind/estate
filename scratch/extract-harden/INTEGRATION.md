@@ -2,9 +2,9 @@
 
 Three new files (add-only; no existing files were touched):
 
-- `/home/toxic/.shingle/chat/fleet_identity.py` — HMAC-SHA256 per-agent signing
-- `/home/toxic/.shingle/chat/fleet_wait.py` — inotify fast-path wait, poll fallback
-- `/home/toxic/.shingle/chat/fleet_watch.py` — `.channels-index` channel discovery
+- `/home/toxic/.fleet-bus/chat/fleet_identity.py` — HMAC-SHA256 per-agent signing
+- `/home/toxic/.fleet-bus/chat/fleet_wait.py` — inotify fast-path wait, poll fallback
+- `/home/toxic/.fleet-bus/chat/fleet_watch.py` — `.channels-index` channel discovery
 
 All three are **stdlib-only**, import-safe (no side effects on import), and were
 verified against the base's exact byte-level message format (see `verify_on_read`
@@ -17,7 +17,7 @@ round-trip tests: signed file in base `cmd_post` layout verifies; body tamper,
 
 ### Key directory (NEVER inside the chat root)
 
-`/home/toxic/.shingle/keys/<agent_id>.key` — 64 lowercase hex chars (32 bytes),
+`/home/toxic/.fleet-bus/keys/<agent_id>.key` — 64 lowercase hex chars (32 bytes),
 mode `0600`; directory mode `0700`. Override for tests via `FLEET_KEYS_DIR` env.
 
 **Recommended keygen CLI UX** (add a `keygen` subcommand to chat.py, or run the

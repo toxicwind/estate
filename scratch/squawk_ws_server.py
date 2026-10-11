@@ -39,7 +39,7 @@ WS_DIR = Path(os.environ.get("SQUAWK_WS_DIR", "/home/toxic/squawk-ws"))
 TOKEN_FILE = Path(os.environ.get("SQUAWK_WS_TOKEN_FILE", str(WS_DIR / "token")))
 STATE_FILE = WS_DIR / "state.json"
 HISTORY_FILE = WS_DIR / "history.jsonl"
-CHAT_ROOT = Path(os.environ.get("SQUAWK_CHAT_ROOT", "/home/toxic/.shingle/squawk-root"))
+CHAT_ROOT = Path(os.environ.get("SQUAWK_CHAT_ROOT", "/home/toxic/.fleet-bus/squawk-root"))
 VAULT_ZIP = Path(os.environ.get("SQUAWK_VAULT_ZIP",
                                 "/home/toxic/workspace/skills/zipfs-vault/store/vault.zip"))
 CHANNELS = [c for c in os.environ.get("SQUAWK_WS_CHANNELS", "fleet,leads").split(",") if c]

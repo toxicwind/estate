@@ -3,7 +3,7 @@
 import multiprocessing as mp
 import sys
 
-sys.path.insert(0, "/home/toxic/.shingle/chat")
+sys.path.insert(0, "/home/toxic/.fleet-bus/chat")
 import fleet_log
 
 ROOT = "/tmp/fltest2"

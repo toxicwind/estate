@@ -1,16 +1,16 @@
 import re
 
-p = '/home/toxic/estate/projects/mesh/squawk/nats/test_dual_publish.py'
+p = '/home/toxic/sovereign/projects/mesh/squawk/nats/test_dual_publish.py'
 s = open(p).read()
 
 old = '''def squawk_send(text):
     """Publish via the canonical CLI path (unsigned file write)."""
     out = subprocess.run(
-        [os.path.expanduser("/home/toxic/shingle/bin/squawk"), "--profile", "taps",
+        [os.path.expanduser("/home/toxic/.fleet-bus/bin/squawk"), "--profile", "taps",
          "send", CHANNEL, text],
         capture_output=True, text=True, timeout=60)
     return out.stdout.strip() + out.stderr.strip()'''
-new = '''SQUAWK_BIN = "/home/toxic/shingle/bin/squawk"  # yote-native chat.py wrapper
+new = '''SQUAWK_BIN = "/home/toxic/.fleet-bus/bin/squawk"  # yote-native chat.py wrapper
 
 def squawk_send(text):
     """Publish via the yote-native CLI (post -> file sink). Returns CLI output."""

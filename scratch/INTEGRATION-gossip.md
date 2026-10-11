@@ -1,7 +1,7 @@
 # INTEGRATION.md -- fleet_gossip.py -> chat.py `gossip` command
 
 Paper steal #1 (Demers et al. 1987 anti-entropy). Module is complete and
-self-tested at `/home/toxic/.shingle/chat/fleet_gossip.py` (stdlib only,
+self-tested at `/home/toxic/.fleet-bus/chat/fleet_gossip.py` (stdlib only,
 no chat.py imports; mirrors `_check_safe_name`/`slugify`/`_seq_from_name`
 by hand like fleet_log.py does). This file proposes the chat.py wiring.
 The coordinator owns all edits below -- this worker adds files only.

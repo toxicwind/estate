@@ -15,7 +15,7 @@ Environment (pitchfork daemon env; never committed to git):
   WHATSAPP_MCP_PORT         Local port (default 25146)
 
 Inbound messages are appended as JSONL to
-/home/toxic/.shingle/whatsapp-inbox/YYYYMMDD.jsonl for the fleet to poll.
+/home/toxic/.fleet-bus/whatsapp-inbox/YYYYMMDD.jsonl for the fleet to poll.
 """
 
 import hashlib  # noqa: F401  (kept for future X-Hub-Signature-256 support)
@@ -38,7 +38,7 @@ from starlette.routing import Mount, Route
 
 GRAPH_VERSION = "v23.0"  # current per Meta Get Started guide, 2026-09
 GRAPH_HOST = "https://graph.facebook.com"
-INBOX_DIR = Path(os.environ.get("WHATSAPP_INBOX_DIR", "/home/toxic/.shingle/whatsapp-inbox"))
+INBOX_DIR = Path(os.environ.get("WHATSAPP_INBOX_DIR", "/home/toxic/.fleet-bus/whatsapp-inbox"))
 PORT = int(os.environ.get("WHATSAPP_MCP_PORT", "25146"))
 SERVICE = "whatsapp-mcp"
 
@@ -54,7 +54,7 @@ def _config() -> tuple[str, str]:
         raise RuntimeError(
             "WHATSAPP_API_TOKEN and WHATSAPP_PHONE_NUMBER_ID are not set. "
             "Place them in the pitchfork env for daemon 'whatsapp-mcp' "
-            "(/home/toxic/estate/pitchfork.toml) and reload pitchfork."
+            "(/home/toxic/sovereign/pitchfork.toml) and reload pitchfork."
         )
     return token, phone_id
 

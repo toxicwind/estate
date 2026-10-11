@@ -4,7 +4,7 @@ const { execSync } = require('child_process');
 const { chromium } = require('/home/toxic/.browserless/app/node_modules/playwright-core');
 
 (async () => {
-  const token = execSync("cat /home/toxic/.shingle/squawk-relay/feed-token",
+  const token = execSync("cat /home/toxic/.fleet-bus/squawk-relay/feed-token",
     { encoding: 'utf8' }
   ).trim().split('\n').pop().trim();
 

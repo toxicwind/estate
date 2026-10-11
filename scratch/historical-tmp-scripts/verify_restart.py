@@ -3,7 +3,7 @@
 import json, time, urllib.request, urllib.error, subprocess, sys
 
 BASE = "http://127.0.0.1:25135"
-TOKEN = open("/home/toxic/.shingle/squawk-relay/feed-token").read().strip()
+TOKEN = open("/home/toxic/.fleet-bus/squawk-relay/feed-token").read().strip()
 
 def get(path, timeout=70):
     req = urllib.request.Request(BASE + path,
@@ -45,10 +45,10 @@ def parked():
 t = threading.Thread(target=parked); t.start()
 time.sleep(1.0)  # let it park
 t0 = time.monotonic()
-subprocess.run(["flock", "/home/toxic/.shingle/squawk-root/.seq-fleet.lock", "-c",
-    "max=$(ls /home/toxic/.shingle/squawk-root/fleet/*.md 2>/dev/null | sed 's/.*\\/\\/; s/-.*//' | sort -n | tail -1); "
+subprocess.run(["flock", "/home/toxic/.fleet-bus/squawk-root/.seq-fleet.lock", "-c",
+    "max=$(ls /home/toxic/.fleet-bus/squawk-root/fleet/*.md 2>/dev/null | sed 's/.*\\/\\/; s/-.*//' | sort -n | tail -1); "
     "seq=${max:-0}; seq=$((seq+1)); "
-    "printf -- '---\\nseq: %s\\nfrom: squawk-feed-perf\\nto: all\\nchannel: fleet\\nts: x\\nstatus: discussion\\ntitle: verify-wake\\n---\\npost-restart wake probe\\n' $seq > /home/toxic/.shingle/squawk-root/fleet/${seq}-squawk-feed-perf-verify-wake.md; echo $seq"],
+    "printf -- '---\\nseq: %s\\nfrom: squawk-feed-perf\\nto: all\\nchannel: fleet\\nts: x\\nstatus: discussion\\ntitle: verify-wake\\n---\\npost-restart wake probe\\n' $seq > /home/toxic/.fleet-bus/squawk-root/fleet/${seq}-squawk-feed-perf-verify-wake.md; echo $seq"],
     capture_output=True, text=True)
 t.join(timeout=60)
 wake = (time.monotonic() - t0) * 1000

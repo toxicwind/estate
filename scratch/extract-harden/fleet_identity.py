@@ -8,7 +8,7 @@ serialization of each message. Stdlib only (hmac + hashlib + secrets + os).
 
 KEY STORAGE
     Keys live OUTSIDE the chat root, never inside it:
-        /home/toxic/.shingle/keys/<agent_id>.key
+        /home/toxic/.fleet-bus/keys/<agent_id>.key
     Each file holds 64 lowercase hex chars (32 random bytes), mode 0600.
     Override the directory with the FLEET_KEYS_DIR environment variable
     (used by tests). The key directory itself should be mode 0700.
@@ -80,7 +80,7 @@ import sys
 from pathlib import Path
 
 CANONICAL_VERSION = "fleet-chat-v1"
-DEFAULT_KEYS_DIR = Path("/home/toxic/.shingle/keys")
+DEFAULT_KEYS_DIR = Path("/home/toxic/.fleet-bus/keys")
 
 _AGENT_ID_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]{0,63}")
 

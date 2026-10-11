@@ -11,7 +11,7 @@ import subprocess
 import sys
 import time
 
-CHAT = "/home/toxic/.shingle/chat"
+CHAT = "/home/toxic/.fleet-bus/chat"
 ROOT = "/tmp/wait-test"
 ENV = {
     **os.environ,

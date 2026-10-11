@@ -56,7 +56,7 @@ def main() -> None:
     src = rep(
         src,
         '''        help="fleet keys dir "
-             "(default: $FLEET_KEYS_DIR or /home/toxic/.shingle/keys)",
+             "(default: $FLEET_KEYS_DIR or /home/toxic/.fleet-bus/keys)",
 ''',
         '''        help="fleet keys dir (default: $FLEET_KEYS_DIR, "
              "else <root>/keys if present)",

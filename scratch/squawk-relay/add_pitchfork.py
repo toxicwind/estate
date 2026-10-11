@@ -3,7 +3,7 @@
 import re
 from pathlib import Path
 
-TOML = Path("/home/toxic/estate/pitchfork.toml")
+TOML = Path("/home/toxic/sovereign/pitchfork.toml")
 text = TOML.read_text()
 
 # 1. Add to [groups.all] daemons list (idempotent)
@@ -23,12 +23,12 @@ text = new_text
 # 2. Append stanza if missing
 if "[daemons.squawk-feed]" not in text:
     text = text.rstrip("\n") + "\n\n" + """[daemons.squawk-feed]
-run = "exec python3 /home/toxic/.shingle/squawk-relay/feed.py"
-dir = "/home/toxic/.shingle/squawk-relay"
+run = "exec python3 /home/toxic/.fleet-bus/squawk-relay/feed.py"
+dir = "/home/toxic/.fleet-bus/squawk-relay"
 mise = false
 retry = true
 boot_start = true
-env = { SQUAWK_FEED_PORT = "25135", SQUAWK_CHAT_ROOT = "/home/toxic/.shingle/squawk-root" }
+env = { SQUAWK_FEED_PORT = "25135", SQUAWK_CHAT_ROOT = "/home/toxic/.fleet-bus/squawk-root" }
 auto = ["start"]
 """
 

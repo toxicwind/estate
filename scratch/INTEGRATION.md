@@ -1,6 +1,6 @@
 # INTEGRATION.md — wiring `fleet_log.py` into chat.py
 
-`fleet_log.py` (`/home/toxic/.shingle/chat/fleet_log.py`) is a **new file only**.
+`fleet_log.py` (`/home/toxic/.fleet-bus/chat/fleet_log.py`) is a **new file only**.
 chat.py stays the source of truth: per-message `NNNN-slug.md` files with
 frontmatter. `log.jsonl` is a parallel per-channel index for fast catch-up
 reads. If the log is ever lost or corrupt, it can be rebuilt from the message

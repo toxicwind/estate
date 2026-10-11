@@ -16,7 +16,7 @@ sign_archive_file: migrates to v2 when the file carries the fields.
 """
 from pathlib import Path
 
-BASE = Path("/home/toxic/.shingle/chat")
+BASE = Path("/home/toxic/.fleet-bus/chat")
 
 # --- 1. fleet_identity.py ---
 p = BASE / "fleet_identity.py"

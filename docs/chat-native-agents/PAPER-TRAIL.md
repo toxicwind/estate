@@ -1,7 +1,7 @@
 # Paper trail + build-vs-borrow verdict
 
 Research for the chat-native agent design (2026-09-21). Driven through the paper-search
-skill: `PAPER-TASK` entries posted to `/home/toxic/.shingle/directives.md`, raced live
+skill: `PAPER-TASK` entries posted to `/home/toxic/.fleet-bus/directives.md`, raced live
 with `race_papers.py` (arXiv + alphaXiv legs, HFT-raced) on yote — 10 queries, ~60
 candidates. What follows is what survived contact with the actual problem.
 
