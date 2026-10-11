@@ -4,13 +4,42 @@ description: >
   Run parallel tau experiments in tmux and audit the live tau install. Triggers on: "tau tmux", "parallel experiments", "tmux lab", "live tau audit".
 ---
 
-# tau-tmux — tmux lab + live tau audit
+# tau-tmux — tmux lab, agent swarms & live tau audit
 
-Two jobs: (1) a tmux lab for running multiple tau experiments in parallel,
-(2) a real audit of the tau install on this box. Every check below verifies
-something that exists. Nothing here audits files that were deleted.
+Powered by [`corral`](https://github.com/toxicwind/ranch/tree/main/barn/corral) — the universal Sovereign Ranch terminal multiplexer and agent swarm orchestrator (`~/.local/bin/corral`).
 
-## tmux lab recipes
+Jobs:
+1. Multi-agent swarms and parallel tau experiments via `corral swarm` and `corral lab`.
+2. Developer solo sessions with multi-socket discovery (`corral solo`).
+3. Live `o200k_harmony` token counting and output telemetry (`corral tok`).
+4. Real production audit of the live tau install on this host (`helper/audit.ts`).
+
+## corral & tmux lab recipes
+
+```bash
+# Start an isolated developer session
+corral solo dev
+
+# Start a 3-pane experiment lab
+corral lab tau-lab 3
+
+# Launch a 4-agent swarm grid
+corral swarm agent-grid 4
+
+# Send command to pane 0 (non-focus-stealing)
+corral send agent-grid:0 "tau -p 'reply PANE0_READY'"
+
+# Measure output token usage live (crashless o200k_harmony)
+corral tok agent-grid:0
+
+# Capture output non-destructively
+corral capture agent-grid:0
+
+# Clean shutdown
+corral kill agent-grid
+```
+
+### Raw tmux lab recipes
 
 ```bash
 # New detached lab session with 3 panes
