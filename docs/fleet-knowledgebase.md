@@ -9,7 +9,7 @@ Also viewable at: https://github.com/toxicwind/sovereign-projects/blob/main/docs
 
 ## 1. The estate
 
-Two boxes, one swarm. Run heavy work on yote; keep hatch light.
+A swarm of boxes. Run heavy work on yote / dedicated iron; keep hatch light.
 
 ### hatch 🐣 — this runtime cell
 - 2 vCPUs, saturates fast (30 agents pushed it to ~5x). Keep cell load under ~4x cores.

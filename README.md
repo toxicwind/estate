@@ -2,7 +2,7 @@
 
 # 🏰 estate
 
-**One human's entire compute estate — two boxes, one swarm, 86 supervised daemons.**
+**One human's entire compute estate — a swarm of distributed boxes, 86 supervised daemons.**
 
 [![Stars](https://img.shields.io/github/stars/toxicwind/estate?style=for-the-badge)](https://github.com/toxicwind/estate/stargazers)
 [![Last commit](https://img.shields.io/github/last-commit/toxicwind/estate?style=for-the-badge)](https://github.com/toxicwind/estate/commits/main)
@@ -68,7 +68,7 @@ curl -s http://127.0.0.1:25155/status
 <summary><b>Table of Contents</b></summary>
 
 1. [About](#-about)
-2. [The two boxes](#-the-two-boxes)
+2. [The swarm topology](#-the-swarm-topology)
 3. [Repo topology](#-repo-topology)
 4. [Service map](#-service-map)
 5. [The ranch](#-the-ranch)
@@ -84,7 +84,7 @@ curl -s http://127.0.0.1:25155/status
 
 ## 🏔️ About
 
-**estate** is Chris's personal infrastructure monorepo — the whole laboratory, not a demo of one. It answers a single question: *what does it take for one human to run a serious AI operation from two machines?*
+**estate** is Chris's personal infrastructure monorepo — the whole laboratory, not a demo of one. It answers a single question: *what does it take for one human to run a serious AI operation across an interconnected swarm of machines?*
 
 The answer, as committed here:
 
@@ -98,14 +98,18 @@ The answer, as committed here:
 
 Go · Rust · Python · TypeScript (Bun) · llama.cpp · pitchfork · NATS · Qdrant — and a standing rule that the fastest correct path wins.
 
-## 📦 The two boxes
+## 🐝 The swarm topology
 
-| Box | What it is | What lives there |
+The estate runs across an interconnected swarm of compute nodes, edge workers, and dedicated iron coordinated over Tailscale and NATS/Funnel:
+
+| Node / Tier | Hardware / Profile | Role & Services |
 |---|---|---|
-| 🐣 **hatch** | 2-vCPU container on a 126-core EPYC host | Coordination only. Ember runs here, briefs agents, reads the fleet. The cell filesystem is scratch — nothing durable lives here. |
-| 🖥️ **yote** | 16 cores / 62 GB RAM / RTX 3090 24 GB | Everything else. All 82 daemons, all repos, all heavy work — reached from hatch through the `yote-conn` bridge, running as Chris himself with full admin. |
+| 🖥️ **yote** (`awrawr-pc`) | 16 cores (Ryzen 7 8700F) / 62 GiB DDR5 / RTX 3090 24 GB | **Heavy Core**: Local LLM herd (llama.cpp/116 GGUFs on :25100), strategy router (:25104), gatehouse MCP (:25127), keypool (:25109), build caches (:25148/:25155), and persistent state. |
+| 🐣 **hatch** | 2-vCPU cell container on 126-core EPYC host | **Control Cell**: High-velocity agent coordination, Ember dispatch, and fleet briefs over the `yote-conn` bridge. |
+| 🌐 **Dedicated Servers (dedis)** | Heterogeneous remote Linux iron | High-throughput distributed task execution, automated CI/CD runners, and background scraper workloads. |
+| 📱 **Edge & Fleet Nodes** | Pixel 9 Pro XL (ADB/Termux), Android fleet | Sensor endpoints, mobile testing harness, and localized satellite runners. |
 
-The rule is absolute: **heavy work belongs on yote, never on hatch.** The cell saturates fast; yote swallows swarms whole.
+The rule is absolute: **heavy work belongs on yote and dedicated worker nodes, never on lightweight coordination cells.** Keep coordination snappy and fan out compute to iron.
 
 ## 🗂️ Repo topology — three repos, one estate
 
