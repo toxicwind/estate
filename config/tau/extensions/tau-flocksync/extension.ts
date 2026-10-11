@@ -564,7 +564,7 @@ export async function createOmniExtension(pi: OmniPI, options: AgentHomeOptions)
 				.map((value) => ({ value, label: value }));
 		},
 		async handler(args, ctx) {
-			const omniCmd = pi.commands.get("omni");
+			const omniCmd = pi.commands?.get("omni");
 			if (omniCmd) return omniCmd.handler(args, ctx);
 		},
 	});
