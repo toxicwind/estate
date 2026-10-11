@@ -175,10 +175,22 @@ export interface HealthProbeResult {
 
 export async function probeHealth(config: OmniConfig, signal?: AbortSignal): Promise<HealthProbeResult> {
 	try {
-		const res = await fetch(`${config.serverUrl}/api/health/ping`, {
+		let res = await fetch(`${config.serverUrl}/health`, {
 			headers: authHeaders(config),
 			signal: requestSignal(3_000, signal),
 		});
+		if (!res.ok) {
+			res = await fetch(`${config.serverUrl}/api/health`, {
+				headers: authHeaders(config),
+				signal: requestSignal(3_000, signal),
+			});
+		}
+		if (!res.ok) {
+			res = await fetch(`${config.serverUrl}/v1/models`, {
+				headers: authHeaders(config),
+				signal: requestSignal(3_000, signal),
+			});
+		}
 		return { ok: res.ok, unreachable: res.status === 408 || res.status >= 500 };
 	} catch (error) {
 		if (signal?.aborted) throw error;
