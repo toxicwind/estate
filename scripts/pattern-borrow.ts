@@ -31,10 +31,65 @@
  * Run: bun run scripts/pattern-borrow.ts "hot reload" "session restore" --top 3
  */
 import { parseArgs } from "node:util";
+import { existsSync, readFileSync } from "node:fs";
 
-const TOKEN = Bun.env.GITHUB_TOKEN ?? Bun.env.GH_TOKEN;
+const { values, positionals } = parseArgs({
+  args: Bun.argv.slice(2),
+  options: {
+    top: { type: "string" },
+    perPage: { type: "string" },
+    "per-page": { type: "string" },
+    weights: { type: "string" },
+    json: { type: "boolean" },
+    interactive: { type: "boolean" },
+    help: { type: "boolean" },
+  },
+  allowPositionals: true,
+});
+
+if (values.help) {
+  console.log(
+    `Usage: bun run pattern-borrow.ts [patterns...] [--top N] [--per-page N] [--weights k=v,...] [--json] [--interactive]`,
+  );
+  process.exit(0);
+}
+
+function resolveGitHubToken(): string {
+  const envToken = Bun.env.GITHUB_TOKEN ?? Bun.env.GH_TOKEN;
+  if (envToken?.trim()) return envToken.trim();
+
+  const home = Bun.env.HOME ?? "/home/toxic";
+  for (const envFile of [`${home}/.secrets`, `${home}/.bashrc.env`]) {
+    if (existsSync(envFile)) {
+      try {
+        const content = readFileSync(envFile, "utf8");
+        const hit = content.match(/^\s*(?:export\s+)?(?:GITHUB_TOKEN|GH_TOKEN)\s*=\s*["']?([^"'\n#]+)["']?/m);
+        if (hit?.[1]?.trim()) return hit[1].trim();
+      } catch {}
+    }
+  }
+
+  const hostsPath = `${home}/.config/gh/hosts.yml`;
+  if (existsSync(hostsPath)) {
+    try {
+      const content = readFileSync(hostsPath, "utf8");
+      const match = content.match(/oauth_token:\s*([^\s]+)/);
+      if (match && match[1]) return match[1].trim();
+    } catch {}
+  }
+
+  try {
+    const proc = Bun.spawnSync(["gh", "auth", "token"]);
+    const tok = proc.stdout.toString().trim();
+    if (tok && !tok.startsWith("HTTP") && !tok.includes("error")) return tok;
+  } catch {}
+
+  return "";
+}
+
+const TOKEN = resolveGitHubToken();
 if (!TOKEN) {
-  console.error("no GITHUB_TOKEN/GH_TOKEN");
+  console.error("no GITHUB_TOKEN/GH_TOKEN found (checked env, ~/.secrets, ~/.bashrc.env, and gh auth token)");
   process.exit(1);
 }
 
@@ -85,27 +140,6 @@ const DEFAULT_W: Weight = {
   testFrac: 0.06,
   bugRel: 0.28,
 };
-
-const { values, positionals } = parseArgs({
-  args: Bun.argv.slice(2),
-  options: {
-    top: { type: "string" },
-    perPage: { type: "string" },
-    "per-page": { type: "string" },
-    weights: { type: "string" },
-    json: { type: "boolean" },
-    interactive: { type: "boolean" },
-    help: { type: "boolean" },
-  },
-  allowPositionals: true,
-});
-
-if (values.help) {
-  console.log(
-    `Usage: bun run pattern-borrow.ts [patterns...] [--top N] [--per-page N] [--weights k=v,...] [--json] [--interactive]`,
-  );
-  process.exit(0);
-}
 
 const PATTERNS = positionals.length ? positionals : DEFAULT_PATTERNS;
 const TOP = Number(values.top ?? (positionals.length ? positionals.length : 5));

@@ -102,23 +102,43 @@ async function fetchJson(url: string, init: RequestInit & { timeoutMs?: number }
   const { timeoutMs = 15_000, ...rest } = init;
   const res = await fetch(url, { ...rest, signal: AbortSignal.timeout(timeoutMs) });
   if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
-  return { data: await res.json(), ms: performance.now() - t0 };
+  const text = await res.text();
+  const trimmed = text.trim();
+  if (trimmed.startsWith("<")) {
+    throw new Error(`Non-JSON response (HTML/Challenge) from ${url.split("?")[0]}`);
+  }
+  try {
+    return { data: JSON.parse(text), ms: performance.now() - t0 };
+  } catch (err) {
+    throw new Error(`Failed to parse JSON: ${err instanceof Error ? err.message : String(err)}`);
+  }
 }
 
 /**
- * Resolve the GitHub token. Order: the environment, then `$HOME/.secrets`
- * (secretsmith vault). GitHub's code-search endpoint requires authentication;
- * without a token the call 401s, so callers skip the leg instead of trying.
+ * Resolve the GitHub token. Order: the environment (GITHUB_TOKEN / GH_TOKEN),
+ * then `$HOME/.secrets`, `$HOME/.bashrc.env`, then `gh auth token`.
+ * GitHub's code-search endpoint requires authentication.
  */
 export function resolveGithubToken(): { key: string; from: string } {
-  const fromEnv = process.env.GITHUB_TOKEN;
+  const fromEnv = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
   if (fromEnv?.trim()) return { key: fromEnv.trim(), from: "environment" };
+  for (const envFile of [join(homedir(), ".secrets"), join(homedir(), ".bashrc.env")]) {
+    try {
+      const vault = readFileSync(envFile, "utf8");
+      const hit = vault.match(/^\s*(?:export\s+)?(?:GITHUB_TOKEN|GH_TOKEN)\s*=\s*["']?([^"'\n#]+)["']?/m);
+      if (hit?.[1]?.trim()) return { key: hit[1].trim(), from: `${envFile} (vault)` };
+    } catch {
+      /* continue */
+    }
+  }
   try {
-    const vault = readFileSync(join(homedir(), ".secrets"), "utf8");
-    const hit = vault.match(/^\s*(?:export\s+)?GITHUB_TOKEN\s*=\s*["']?([^"'\n#]+)["']?/m);
-    if (hit?.[1]?.trim()) return { key: hit[1].trim(), from: "$HOME/.secrets (secretsmith vault)" };
+    const proc = Bun.spawnSync(["gh", "auth", "token"]);
+    const tok = proc.stdout.toString().trim();
+    if (tok && !tok.startsWith("HTTP") && !tok.includes("error")) {
+      return { key: tok, from: "gh auth token" };
+    }
   } catch {
-    /* no vault */
+    /* gh cli not available */
   }
   return { key: "", from: "not found" };
 }
