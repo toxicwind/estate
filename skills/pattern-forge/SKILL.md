@@ -1,12 +1,38 @@
 ---
 name: pattern-forge
-description: Retrieve, race, and borrow. One tool for finding code in our own tree (AST-BM25 hybrid retrieval), proving which implementation is fastest (concurrent first-valid-wins racing with hedging and a persistent winner ledger), searching the outside world for prior art (7 academic and code sources in parallel), and inducting a call subgraph from a traceback. Use when you need to find code you half-remember, choose between competing approaches, benchmark candidate implementations in nanoseconds, mine papers or GitHub for prior art, or debug by narrowing a failing traceback to the files that matter. Pure Bun, zero npm dependencies.
+description: Unified pattern engine consolidating race-borrow, ast-bm25-racer, and code-racer-swe. Provides in-tree AST-BM25 hybrid retrieval, concurrent local + 7 external sources prior art borrowing, first-valid-wins racing with hedging and persistent winner ledgers, nanosecond candidate benchmarking, AST claim verification (ast-grep), and dynamic traceback subgraph induction. Pure Bun, zero npm dependencies.
 ---
 
 # pattern-forge
 
-Four legs that share one doctrine: **many readers, one writer; the first valid
-answer wins; the slow path stays hot because we write down who won.**
+Unified sovereign pattern engine consolidating **`race-borrow`**, **`ast-bm25-racer`**, and **`code-racer-swe`** into a single cohesive runtime.
+
+Doctrine: **Many readers, one writer; first valid answer wins; local tree and external art race concurrently; slow path stays hot via persistent winner ledgers.**
+
+### Unified Subcommands
+
+```bash
+# 1. RETRIEVE: In-tree AST-BM25 hybrid symbol search across local codebase
+forge retrieve --root <dir> --query "<query>" [--top N]
+
+# 2. BORROW: Concurrent parallel race across local codebase + 7 external sources (GitHub, arXiv, OpenAlex, etc.)
+forge borrow "<query>" [--per-source N] [--skip source1,source2]
+
+# 3. RACE: Concurrent first-valid-wins strategy racing with hedging
+forge race --strategies <file.json> [--hedge-ms MS] [--race-timeout S]
+
+# 4. BENCH: Nanosecond microbenchmarks across candidate patches
+forge bench [--warmup N] [--runs N]
+
+# 5. AUDIT: Structural AST pattern verification via ast-grep
+forge audit --root <dir> --claim "<claim>" | --pattern '<pattern>' --lang <lang>
+
+# 6. SUBGRAPH: Call graph induction from stack trace frames
+forge subgraph --root <dir> --trace <error.log> [--depth N]
+
+# 7. MCTS: Monte Carlo Tree Search candidate selection
+forge mcts --candidates "optA,optB,optC" [--depth N] [--timeout S]
+```
 
 Everything here is pure Bun. No npm dependencies — TypeScript and JavaScript
 get a real AST from `Bun.Transpiler.scan()`; Python uses a lexical extractor.

@@ -176,6 +176,29 @@ async function gh(path: string, params?: Record<string, string>): Promise<any> {
   return null;
 }
 
+async function scanLocalCode(term: string, limit = 5): Promise<Array<{ file: string; line: string }>> {
+  try {
+    const estateRoot = Bun.env.ESTATE ?? "/home/toxic/estate";
+    const proc = Bun.spawn(["ffs", "grep", term, "--root", estateRoot, "--limit", String(limit)], {
+      stdout: "pipe",
+      stderr: "pipe",
+    });
+    const out = await new Response(proc.stdout).text();
+    const hits: Array<{ file: string; line: string }> = [];
+    for (const raw of out.split("\n")) {
+      const line = raw.trim();
+      if (!line || line.startsWith("#") || line.startsWith("[")) continue;
+      const parts = line.split(":");
+      if (parts.length >= 2) {
+        hits.push({ file: parts[0], line: parts.slice(1).join(":") });
+      }
+    }
+    return hits;
+  } catch {
+    return [];
+  }
+}
+
 async function repoStats(full: string): Promise<any> {
   const r = await gh(`/repos/${full}`);
   if (!r) return { stars: 0, issues: 0, forks: 0, pushed: 0, hasTest: 0, description: "", language: "", license: "", url: `https://github.com/${full}` };
@@ -204,11 +227,28 @@ async function repoStats(full: string): Promise<any> {
 
 const rows: any[] = [];
 for (const term of PATTERNS) {
-  const data = await gh("/search/code", {
-    q: term,
-    per_page: String(PER_PAGE),
-  });
+  const [data, localHits] = await Promise.all([
+    gh("/search/code", { q: term, per_page: String(PER_PAGE) }),
+    scanLocalCode(term, PER_PAGE),
+  ]);
   const repos: Record<string, any> = {};
+
+  if (localHits.length) {
+    for (const h of localHits) {
+      const rel = h.file.replace("/home/toxic/estate/", "");
+      repos[`local:${rel}`] = {
+        stars: 9999, // First-class in-tree priority
+        issues: 0,
+        forks: 1,
+        pushed: Math.floor(Date.now() / 1000),
+        hasTest: 1,
+        description: `In-tree pattern: ${h.line.trim().slice(0, 100)}`,
+        language: rel.split(".").pop() ?? "ts",
+        license: "estate",
+        url: `file://${h.file}`,
+      };
+    }
+  }
   const matchedFiles: Record<string, string[]> = {};
   const sizes: number[] = [];
   if (data?.items) {

@@ -19,6 +19,9 @@ import { appendFileSync, mkdirSync, readFileSync, renameSync, writeFileSync } fr
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { emit } from "./concurrent";
+import { buildIndex } from "./repo-index";
+import { Bm25Index } from "./bm25";
+import { ESTATE } from "./paths";
 
 export const ARXIV_BASE = "https://export.arxiv.org";
 export const OPENALEX_BASE = "https://api.openalex.org";
@@ -484,6 +487,38 @@ export async function safeCall(name: string, fn: () => Promise<SourceResult>): P
     emit({ event: "source_degraded", source: name, error: message,
            expected: isExpectedDegrade(message) });
     return { ok: false, items: [], cost: "free", error: message.slice(0, 160) };
+  }
+}
+
+/** In-tree AST-BM25 hybrid local code search. */
+export async function localTreeSearch(query: string, maxResults = 10, root = ESTATE): Promise<SourceResult> {
+  const t0 = performance.now();
+  try {
+    const idx = buildIndex(root, 10_000);
+    const bm = new Bm25Index(idx.files);
+    const hits = bm.search(query, maxResults);
+    const items: CodeItem[] = hits.map((h) => ({
+      name: h.path.split("/").pop() ?? h.path,
+      path: h.path,
+      repo: "local/estate",
+      html_url: `file://${h.path}`,
+      score: h.score,
+    }));
+    return {
+      ok: true,
+      items,
+      cost: "free",
+      timingMs: performance.now() - t0,
+      totalCount: items.length,
+    };
+  } catch (err) {
+    return {
+      ok: false,
+      items: [],
+      cost: "free",
+      timingMs: performance.now() - t0,
+      error: String(err),
+    };
   }
 }
 

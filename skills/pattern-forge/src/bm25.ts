@@ -204,4 +204,13 @@ export class Bm25Index {
     ranked.sort((a, b) => b.hybrid - a.hybrid || b.bm25 - a.bm25);
     return ranked.length > topK ? ranked.slice(0, topK) : ranked;
   }
+
+  /** Unified search interface returning scored file matches. */
+  search(query: string, topK = 10): (Ranked & { file: string; score: number })[] {
+    return this.hybrid(query, topK).map((r) => ({
+      ...r,
+      file: r.path,
+      score: r.hybrid,
+    }));
+  }
 }

@@ -15,7 +15,7 @@ import { emit } from "./concurrent";
 import { measure } from "./measure";
 import * as P from "./providers";
 
-export type SourceName = "github" | "arxiv" | "openalex" | "semanticscholar" | "dblp" | "hf_papers" | "exa";
+export type SourceName = "local" | "github" | "arxiv" | "openalex" | "semanticscholar" | "dblp" | "hf_papers" | "exa";
 
 export type BorrowOptions = {
   perSource?: number;
@@ -76,6 +76,21 @@ export function rankItems(
   const year = now.getFullYear();
   const ranked = items.map(({ source, item }) => {
     const reasons: string[] = [];
+
+    // Distinct ranking logic for code vs papers
+    if (source === "local" || source === "github" || "repo" in item) {
+      const asCode = item as P.CodeItem;
+      let score = (asCode.score ?? 5) * 1.5;
+      if (source === "local") {
+        score += 8.0;
+        reasons.push("local codebase in-tree match");
+      } else {
+        reasons.push("github repository");
+      }
+      if (asCode.repo) reasons.push(asCode.repo);
+      return { source, item, score, reasons };
+    }
+
     const asPaper = item as P.PaperItem;
 
     const citations = (asPaper.citedByCount ?? asPaper.citationCount ?? 0) as number;
@@ -139,6 +154,7 @@ export async function borrow(query: string, opts: BorrowOptions = {}): Promise<B
   const t0 = performance.now();
 
   const legs: { name: SourceName; enabled: boolean; run: () => Promise<P.SourceResult> }[] = [
+    { name: "local", enabled: !skip.has("local"), run: () => P.localTreeSearch(query, perSource) },
     { name: "github", enabled: !skip.has("github") && gh.key.length > 0, run: () => P.githubCodeSearch(query, perSource) },
     { name: "arxiv", enabled: !skip.has("arxiv"), run: () => P.arxivSearch(query, perSource) },
     { name: "openalex", enabled: !skip.has("openalex"), run: () => P.openAlexSearch(query, perSource) },
@@ -221,12 +237,21 @@ export function renderBorrow(result: BorrowResult, topN = 10): string {
   if (result.creditsSpent) lines.push("  CREDITS SPENT (exa ran; see the exa audit log for costUsd)");
   lines.push("");
   for (const [i, row] of result.ranked.slice(0, topN).entries()) {
-    const item = row.item as P.PaperItem;
-    const title = item.title ?? ("repo" in item ? String((item as unknown as P.CodeItem).repo) : "(untitled)");
-    const url = item.url ?? "";
+    const item = row.item;
+    let title = "(untitled)";
+    let url = "";
+    if ("repo" in item && item.repo) {
+      title = item.name ? `${item.repo}: ${item.name}` : (item.repo ?? "(code)");
+      url = item.html_url ?? item.path ?? "";
+    } else {
+      const p = item as P.PaperItem;
+      title = p.title ?? "(untitled paper)";
+      url = p.url ?? p.pdfUrl ?? "";
+    }
     lines.push(`${String(i + 1).padStart(2)}. [${row.score.toFixed(2)}] ${title}`);
     if (url) lines.push(`    ${url}`);
-    if (item.authors?.length) lines.push(`    ${item.authors.slice(0, 3).join(", ")}${item.authors.length > 3 ? " et al" : ""}`);
+    const authors = (item as P.PaperItem).authors;
+    if (authors?.length) lines.push(`    ${authors.slice(0, 3).join(", ")}${authors.length > 3 ? " et al" : ""}`);
     if (row.reasons.length) lines.push(`    ${row.reasons.join(" · ")}`);
   }
   if (!result.ranked.length) lines.push("  (no items from any source)");
