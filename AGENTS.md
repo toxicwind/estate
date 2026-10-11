@@ -25,10 +25,10 @@
 6. **Use emergence tools first.** GHAS (`:25113`) → ast-grep (`ast-grep` binary) → Tombi for TOML.
 7. **call_tool_destructive is DEFAULT for state changes.** Write/edit/modify = destructive. Read-only = inspection only.
 8. **No `/dev/null`, no banner `echo`.** Both waste tokens.
-   8b. **BANNED/SLOW TOOLS — do NOT use, ever:** `find`, `head`, `tail`, `/dev/null`, and system-wide `lsof`.
-   - `find` over a large/full disk is slow + wasteful -> use `fd` (fast, gitignore-aware)
-     or scope `du`/`fd` to a SPECIFIC directory, never the whole `/home`/`/`.
-   - `head`/`tail` truncation -> read full files with the `read` tool (1M context).
+   8b. **BANNED/SLOW TOOLS — do NOT use, ever:** `find`/`fd`, `grep`/`rg`, `head`, `tail`, `/dev/null`, and system-wide `lsof`.
+   - `find`/`fd` -> use `ffs find` or `ffs glob` (fast, gitignore-aware, token-budgeted). Never bare `find` or `fd`.
+   - `grep`/`rg` -> use `ffs grep` or `ffs multi-grep`. Never bare `grep` or `rg`.
+   - `head`/`tail` truncation -> read full files with the `read` tool or `ffs read` (token-budgeted).
    - `/dev/null` -> fail loud; never silence errors.
    - `lsof` (esp. system-wide) is INSANELY SLOW -> use INSTANT `/proc/<pid>/fd` symlink
      reads (`readlink /proc/$PID/fd/*`) to see what a process has open. Scope to known PIDs.
@@ -57,9 +57,10 @@
 
 | Tool        | Binary                               | Purpose                                                       |
 | ----------- | ------------------------------------ | ------------------------------------------------------------- |
-| `fd`        | `/usr/bin/fd`                        | Fast find (respects .gitignore)                               |
-| `rg`        | `/usr/bin/rg`                        | Fast grep (respects .gitignore)                               |
+| `ffs`       | `/home/toxic/.local/bin/ffs`         | Unified token-aware search/read (find, grep, glob, symbol)    |
+| `tok`       | `/home/toxic/.local/bin/tok`         | Emergent token counter CLI (o200k_harmony / cl100k, crashless)|
 | `ast-grep`  | `~/.local/share/mise/shims/ast-grep` | AST structural search/rewrite                                 |
+| `tombi`     | mise installed (1.7.3)               | TOML toolkit                                                  |
 | `eza`       | `/usr/bin/eza`                       | Modern ls (git-aware)                                         |
 | `mise`      | `~/.local/bin/mise`                  | Runtime manager                                               |
 | `bun`       | mise shim                            | Fast JS runtime                                               |
@@ -72,15 +73,16 @@
 
 | Tool     | Install Command     | Purpose                             |
 | -------- | ------------------- | ----------------------------------- |
-| `tombi`  | `mise use -g tombi` | TOML toolkit                        |
 | `tsgo`   | `npx tsgo`          | TypeScript type-check (use via npx) |
 | `vitest` | `npx vitest`        | Test runner (use via npx)           |
 
-### 🚫 NEVER USE (removed/confusing)
+### 🚫 NEVER USE (removed/confusing/banned)
 
-| Name | Why                                                        |
-| ---- | ---------------------------------------------------------- |
-| `sg` | That's SGLang, NOT ast-grep. Removed shim. Use `ast-grep`. |
+| Name          | Why                                                                             |
+| ------------- | ------------------------------------------------------------------------------- |
+| `fd` / `find` | Superseded by `ffs find` or `ffs glob`. Never bare fd/find.                      |
+| `rg` / `grep` | Superseded by `ffs grep` or `ffs multi-grep`. Never bare rg/grep.               |
+| `sg`          | That's SGLang, NOT ast-grep. Removed shim. Use `ast-grep`.                      |
 
 ---
 
