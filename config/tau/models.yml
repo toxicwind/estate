@@ -89,3 +89,33 @@ providers:
     apiKey: PARASAIL_API_KEY
     discovery:
       type: openai-models-list
+  vercel-gateway:
+    baseUrl: https://ai-gateway.vercel.sh/v1
+    api: openai-completions
+    apiKey: VERCEL_AI_GATEWAY_KEY
+    compat:
+      thinkingFormat: "openai"
+      reasoningDisableMode: "none-effort"
+      supportsReasoningParams: true
+      replayUnsignedThinking: false
+
+models:
+  inclusionai/ling-3.1-flash:
+    provider: vercel-gateway
+    thinkingLevel: off
+    thinkingLevelMap:
+      off: "none"
+    maxTokens: 16384
+    contextWindow: 262144
+
+  qwen/qwen3-coder:
+    provider: zenmux
+    thinkingLevel: off
+    contextWindow: 256000
+    maxTokens: 65536
+
+  x-ai/grok-code-fast-1:
+    provider: zenmux
+    thinkingLevel: off
+    contextWindow: 256000
+    maxTokens: 64000
