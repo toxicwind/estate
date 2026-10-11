@@ -2,10 +2,10 @@ advisor:
   enabled: false
   immuneTurns: 3
   maxNotesPerUpdate: 4
-  syncBacklog: 'off'
+  syncBacklog: "off"
 ask:
   enabled: true
-  notify: 'on'
+  notify: "on"
   timeout: 15
 astEdit:
   enabled: true
@@ -35,46 +35,36 @@ bash:
 bashInterceptor:
   enabled: true
   patterns:
-  - pattern: ^\s*(cat|head|tail|less|more)\s+
-    tool: read
-    message: Use the `read` tool instead of cat/head/tail. It provides better context
-      and handles binary files.
-  - pattern: ^\s*(grep|rg|ripgrep|ag|ack)\s+
-    tool: grep
-    message: Use the `grep` tool instead of grep/rg. It respects .gitignore and provides
-      structured output.
-  - pattern: ^\s*(find|fd|locate)\s+.*(-name|-iname|-type|--type|-glob)
-    tool: glob
-    message: Use the `glob` tool instead of find/fd. It respects .gitignore and is
-      faster for glob patterns.
-  - pattern: ^\s*sed\s+(-i|--in-place)
-    tool: edit
-    message: Use the `edit` tool instead of sed -i. It provides diff preview and fuzzy
-      matching.
-  - pattern: ^\s*perl\s+.*-[pn]?i
-    tool: edit
-    message: Use the `edit` tool instead of perl -i. It provides diff preview and
-      fuzzy matching.
-  - pattern: ^\s*awk\s+.*-i\s+inplace
-    tool: edit
-    message: Use the `edit` tool instead of awk -i inplace. It provides diff preview
-      and fuzzy matching.
-  - pattern: ^\s*(echo|printf|cat\s*<<)\s+(?:(?:[^"'>]|"[^"]*"|'[^']*')|(?<!\|)>{1,2}\|?\s*(?:"/dev/(?:null|tty|stdout|stderr)"|'/dev/(?:null|tty|stdout|stderr)'|/dev/(?:null|tty|stdout|stderr))(?:[\s;&|]|$))*(?<!\|)>{1,2}\|?\s*(?!(?:"/dev/(?:null|tty|stdout|stderr)"|'/dev/(?:null|tty|stdout|stderr)'|/dev/(?:null|tty|stdout|stderr))(?:[\s;&|]|$))[$\w./~"'-]
-    tool: write
-    message: Use the `write` tool instead of echo/cat redirection. It handles encoding
-      and provides confirmation.
-  - pattern: ^\s*nohup\s+|(?<!&)\&\s*$
-    tool: bash
-    message: Use `bash` with `name` instead of nohup or background shell syntax so
-      the service stays observable and managed.
-  - pattern: ^\s*(?:(?:bun|npm|pnpm|yarn)\s+(?:run\s+)?(?:dev|start)(?:\s|$)|(?:vite|next\s+dev|nuxt\s+dev|nodemon|lldb|gdb|tail\s+-f)(?:\s|$)|docker\s+compose\s+up(?!.*(?:\s-d(?:\s|$)|--detach))(?:\s|$))
-    tool: bash
-    message: Use `bash` with `name` for services, watchers, and debuggers; inspect
-      with `read proc://<name>`.
-  - pattern: ^\s*(?:(?:bun|npm|pnpm|yarn)\s+(?:run\s+)?\S+|cargo\s+watch|watchexec|pytest|vitest|jest|tsc)(?:.|\n)*(?:--watch|-w)(?:\s|$)
-    tool: bash
-    message: Use `bash` with `name` for watch mode so its output, input, and lifecycle
-      stay managed.
+    - pattern: ^\s*(cat|head|tail|less|more)\s+
+      tool: read
+      message: "Use the `read` tool instead of cat/head/tail. It provides better context and handles binary files."
+    - pattern: ^\s*(grep|rg|ripgrep|ag|ack)\s+
+      tool: grep
+      message: "Use the `grep` tool instead of grep/rg. It respects .gitignore and provides structured output."
+    - pattern: ^\s*(find|fd|locate)\s+.*(-name|-iname|-type|--type|-glob)
+      tool: glob
+      message: "Use the `glob` tool instead of find/fd. It respects .gitignore and is faster for glob patterns."
+    - pattern: ^\s*sed\s+(-i|--in-place)
+      tool: edit
+      message: "Use the `edit` tool instead of sed -i. It provides diff preview and fuzzy matching."
+    - pattern: "^\\s*perl\\s+.*-[pn]?i"
+      tool: edit
+      message: "Use the `edit` tool instead of perl -i. It provides diff preview and fuzzy matching."
+    - pattern: ^\s*awk\s+.*-i\s+inplace
+      tool: edit
+      message: "Use the `edit` tool instead of awk -i inplace. It provides diff preview and fuzzy matching."
+    - pattern: "^\\s*(echo|printf|cat\\s*<<)\\s+(?:(?:[^\"'>]|\"[^\"]*\"|'[^']*')|(?<!\\|)>{1,2}\\|?\\s*(?:\"/dev/(?:null|tty|stdout|stderr)\"|'/dev/(?:null|tty|stdout|stderr)'|/dev/(?:null|tty|stdout|stderr))(?:[\\s;&|]|$))*(?<!\\|)>{1,2}\\|?\\s*(?!(?:\"/dev/(?:null|tty|stdout|stderr)\"|'/dev/(?:null|tty|stdout|stderr)'|/dev/(?:null|tty|stdout|stderr))(?:[\\s;&|]|$))[$\\w./~\"'-]"
+      tool: write
+      message: "Use the `write` tool instead of echo/cat redirection. It handles encoding and provides confirmation."
+    - pattern: ^\s*nohup\s+|(?<!&)\&\s*$
+      tool: bash
+      message: "Use `bash` with `name` instead of nohup or background shell syntax so the service stays observable and managed."
+    - pattern: ^\s*(?:(?:bun|npm|pnpm|yarn)\s+(?:run\s+)?(?:dev|start)(?:\s|$)|(?:vite|next\s+dev|nuxt\s+dev|nodemon|lldb|gdb|tail\s+-f)(?:\s|$)|docker\s+compose\s+up(?!.*(?:\s-d(?:\s|$)|--detach))(?:\s|$))
+      tool: bash
+      message: "Use `bash` with `name` for services, watchers, and debuggers; inspect with `read proc://<name>`."
+    - pattern: ^\s*(?:(?:bun|npm|pnpm|yarn)\s+(?:run\s+)?\S+|cargo\s+watch|watchexec|pytest|vitest|jest|tsc)(?:.|\n)*(?:--watch|-w)(?:\s|$)
+      tool: bash
+      message: "Use `bash` with `name` for watch mode so its output, input, and lifecycle stay managed."
 branchSummary:
   enabled: true
   reserveTokens: 16384
@@ -93,15 +83,15 @@ claudeResets:
   minBlockedMinutes: 60
   salvageHorizonHours: 12
 codexResets:
-  autoRedeem: 'yes'
+  autoRedeem: "yes"
   keepCredits: 0
   minBlockedMinutes: 60
   salvageHorizonHours: 12
 collab:
-  autoStart: 'off'
-  displayName: ''
+  autoStart: "off"
+  displayName: ""
   relayUrl: wss://my.omp.sh
-  webUrl: ''
+  webUrl: ""
 colorBlindMode: false
 commands:
   enableClaudeProject: true
@@ -127,10 +117,10 @@ compaction:
   idleTimeoutSeconds: 300
   keepRecentTokens: 20000
   methodOrder:
-  - shake
-  - soft
-  - remote
-  - handoff
+    - shake
+    - soft
+    - remote
+    - handoff
   midTurnEnabled: true
   remoteStreamingV2Enabled: true
   supersedeReads: true
@@ -138,7 +128,7 @@ compaction:
   thresholdTokens: -1
   v2RetainedMessageBudget: 64000
 completion:
-  notify: 'on'
+  notify: "on"
 composer:
   recallClearedDrafts: true
   shape: box
@@ -151,9 +141,9 @@ computer:
 contextPromotion:
   enabled: true
 cycleOrder:
-- smol
-- default
-- slow
+  - smol
+  - default
+  - slow
 debug:
   enabled: true
 defaultThinkingLevel: auto
@@ -163,8 +153,8 @@ dev:
   autoqaPush:
     endpoint: https://qa.omp.sh/v1/grievances
 disabledExtensions:
-- airspeak
-- pi-omniroute-sync
+  - airspeak
+  - pi-omniroute-sync
 disabledProviders: []
 display:
   cacheMissMarker: true
@@ -189,10 +179,13 @@ edit:
   recoverInlineEdits: true
   streamingAbort: true
 emojiAutocomplete: true
-enabledModels: &id001 []
-enabledProviders: *id001
+enabledModels:
+  &enabledModels
+  []
+enabledProviders:
+  *enabledModels
 error:
-  notify: 'on'
+  notify: "on"
 eval:
   autoBackground:
     enabled: true
@@ -213,16 +206,16 @@ extendedContext: true
 extensionHandlers:
   toolCallTimeoutMs: 30000
 extensions:
-- /home/toxic/estate/ranch/tau-extensions/packages/rawhide/src/index.ts
-- /home/toxic/estate/config/tau/extensions/tau-flocksync/tau.ts
-- /home/toxic/.tau/extensions/strict-bash-guard.ts
+  - /home/toxic/estate/ranch/tau-extensions/packages/rawhide/src/index.ts
+  - /home/toxic/estate/config/tau/extensions/tau-flocksync/tau.ts
+  - /home/toxic/.tau/extensions/strict-bash-guard.ts
 externalThinking: false
 features:
   unexpectedStopDetection: smart
 fetch:
   enabled: true
 find:
-  enabled: 'off'
+  enabled: "off"
 followUpMode: all
 gc:
   archive: true
@@ -245,7 +238,7 @@ glob:
   enabled: true
 goal:
   continuationModes:
-  - interactive
+    - interactive
   enabled: true
   statusInFooter: true
 grep:
@@ -267,8 +260,8 @@ hindsight:
   recallMaxTokens: 1024
   recallTimeoutMs: 30000
   recallTypes:
-  - world
-  - experience
+    - world
+    - experience
   reflectTimeoutMs: 120000
   requestTimeoutMs: 30000
   retainContext: tau
@@ -284,10 +277,10 @@ images:
   questionTimeoutMs: 300000
   urls:
     backends:
-    - provider-files
-    - tailscale
-    - cloudflared
-    - litterbox
+      - provider-files
+      - tailscale
+      - cloudflared
+      - litterbox
     bindHost: 127.0.0.1
     enabled: false
     options: {}
@@ -295,7 +288,7 @@ images:
     ttlHours: 72
 includeModelInPrompt: true
 includeWorkspaceTree: false
-inlineToolDescriptors: 'off'
+inlineToolDescriptors: "off"
 interruptMode: wait
 isolation:
   backend: auto
@@ -372,12 +365,13 @@ model:
   toolCallLoopGuard:
     enabled: true
     exemptTools:
-    - hub
+      - hub
     threshold: 5
-modelProviderOrder: *id001
+modelProviderOrder:
+  *enabledModels
 modelRoleStorage: global
 modelRoles:
-  default: openrouter/stealth/space-bunny-alpha:off
+  default: cohere/command-a-plus-05-2026:off
   smol: openrouter/liquid/lfm-2.5-2.6b:free
   slow: openrouter/nvidia/nemotron-3-ultra-550b-a55b:free
   vision: openrouter/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free
@@ -420,7 +414,7 @@ providers:
   ollama-cloud:
     maxConcurrency: 3
   openai-codex:
-    codeMode: 'on'
+    codeMode: "on"
     codeModeDirectTools: []
   openaiWebsockets: auto
   openrouterVariant: default
@@ -433,10 +427,10 @@ providers:
     baseUrl: http://127.0.0.1:25100/v1
     apiKey: llama-swap
   unboundedRetryAfter:
-  - opencode-go
-  - opencode-zen
+    - opencode-go
+    - opencode-zen
 python:
-  interpreter: ''
+  interpreter: ""
   kernelMode: session
 read:
   defaultLimit: 5000
@@ -460,40 +454,40 @@ retry:
   enabled: true
   fallbackChains:
     openrouter/*:
-    - openrouter/liquid/lfm-2.5-2.6b:free
-    - openrouter/nvidia/nemotron-3-super-120b-a12b:free
-    - openrouter/nvidia/nemotron-3.5-lightning:free
+      - openrouter/liquid/lfm-2.5-2.6b:free
+      - openrouter/nvidia/nemotron-3-super-120b-a12b:free
+      - openrouter/nvidia/nemotron-3.5-lightning:free
     google-antigravity/*:
-    - openrouter/nvidia/nemotron-3.5-lightning:free
-    - openrouter/nvidia/nemotron-3-super-120b-a12b:free
+      - openrouter/nvidia/nemotron-3.5-lightning:free
+      - openrouter/nvidia/nemotron-3-super-120b-a12b:free
     web:
-    - web/perplexity
-    - web/zai
-    - web/tinyfish
-    - web/jina
-    - web/kagi
-    - web/tavily
-    - web/firecrawl
-    - web/brave
-    - web/kimi
-    - web/parallel
-    - web/synthetic
-    - web/searxng
-    - web/startpage
-    - web/duckduckgo
-    - web/ecosia
-    - web/google
-    - web/mojeek
-    - web/public
-    - web/ollama
-    - google/gemini-2.5-flash
-    - anthropic/claude-haiku-4-5
-    - openai-codex/gpt-5.6-luna
-    - openai-codex/gpt-5.6
-    - openai-codex/gpt-5.5
-    - xai/grok-4.5
-    - xai-oauth/grok-4.5
-    - google-antigravity/gemini-2.5-flash
+      - web/perplexity
+      - web/zai
+      - web/tinyfish
+      - web/jina
+      - web/kagi
+      - web/tavily
+      - web/firecrawl
+      - web/brave
+      - web/kimi
+      - web/parallel
+      - web/synthetic
+      - web/searxng
+      - web/startpage
+      - web/duckduckgo
+      - web/ecosia
+      - web/google
+      - web/mojeek
+      - web/public
+      - web/ollama
+      - google/gemini-2.5-flash
+      - anthropic/claude-haiku-4-5
+      - openai-codex/gpt-5.6-luna
+      - openai-codex/gpt-5.6
+      - openai-codex/gpt-5.5
+      - xai/grok-4.5
+      - xai-oauth/grok-4.5
+      - google-antigravity/gemini-2.5-flash
   fallbackRevertPolicy: cooldown-expiry
   maxDelayMs: 300000
   maxRetries: 10
@@ -516,17 +510,19 @@ sharpshooter:
   intervalMinutes: 5
 shellMinimizer:
   enabled: true
-  except: *id001
+  except:
+    *enabledModels
   maxCaptureBytes: 4194304
-  only: *id001
+  only:
+    *enabledModels
   sourceOutlineLevel: default
 showHardwareCursor: true
 skillful: true
 skills:
   customDirectories:
-  - /home/toxic/estate/skills
-  - /home/toxic/estate/ranch/gear
-  - /home/toxic/estate/skills-hub/flat
+    - /home/toxic/estate/skills
+    - /home/toxic/estate/ranch/gear
+    - /home/toxic/estate/skills-hub/flat
   enableAgentsProject: true
   enableAgentsUser: true
   enableClaudeProject: true
@@ -564,18 +560,18 @@ statusLine:
   compactThinkingLevel: true
   contextLine: embedded
   leftSegments:
-  - vim
-  - model
-  - mode
-  - path
-  - git
-  - pr
+    - vim
+    - model
+    - mode
+    - path
+    - git
+    - pr
   preset: nerd
   rightSegments:
-  - session_name
-  - token_total
-  - cost
-  - context_pct
+    - session_name
+    - token_total
+    - cost
+    - context_pct
   segmentOptions: {}
   separator: powerline
   sessionAccent: true
@@ -583,7 +579,8 @@ statusLine:
   transparent: false
 steeringMode: all
 stream:
-  redactPatterns: *id001
+  redactPatterns:
+    *enabledModels
   serverUrl: https://live.tau.sh
 stt:
   enabled: false
@@ -668,8 +665,8 @@ treeFilterMode: default
 tts:
   localVoice: af_heart
 ttsr:
-  builtinRules: true
-  contextMode: discard
+  builtinRules: false
+  contextMode: keep
   disabledRules: []
   enabled: true
   interruptMode: never
@@ -687,7 +684,7 @@ tui:
   reactions: true
   renderMermaid: true
   resizeScrollback: rebuild
-  textSizing: false
+  textSizing: true
   tight: true
   titleSpinner: braille
   titleState: true
@@ -706,43 +703,43 @@ worktree:
   cleanSource: false
   clone: false
 plugins:
-- name: herd
-  source: ./estate/ranch/mesh/router/herd
-  merged: sovereign-swap
-  privileged: true
-- name: flock
-  source: ./estate/ranch/flock
-  privileged: true
-- name: gatehouse
-  source: ./estate/ranch/barn/gatehouse
-  privileged: true
-  role: MCP federation gateway
-- name: router
-  source: ./estate/ranch/mesh/router/sovereign-router
-  merged:
-  - router-legacy
-  - stockyard-flock-router
-  privileged: true
-- name: barn-browser
-  source: ./estate/ranch/barn/browserless
-  privileged: false
-- name: barn-gemini
-  source: ./estate/ranch/barn/gemini-mcp
-  privileged: false
-- name: secretsmith
-  source: ./projects/range/ranch/barn/secretsmith
-  privileged: true
+  - name: herd
+    source: ./estate/ranch/mesh/router/herd
+    merged: sovereign-swap
+    privileged: true
+  - name: flock
+    source: ./estate/ranch/flock
+    privileged: true
+  - name: gatehouse
+    source: ./estate/ranch/barn/gatehouse
+    privileged: true
+    role: MCP federation gateway
+  - name: router
+    source: ./estate/ranch/mesh/router/sovereign-router
+    merged:
+      - router-legacy
+      - stockyard-flock-router
+    privileged: true
+  - name: barn-browser
+    source: ./estate/ranch/barn/browserless
+    privileged: false
+  - name: barn-gemini
+    source: ./estate/ranch/barn/gemini-mcp
+    privileged: false
+  - name: secretsmith
+    source: ./projects/range/ranch/barn/secretsmith
+    privileged: true
 subagents:
   can_spawn_subagents: true
   whitelist:
-  - task
-  - plan
-  - review
-  - auditor
-  - critic
-  - explorer
-  - analyst
-  - debugger
+    - task
+    - plan
+    - review
+    - auditor
+    - critic
+    - explorer
+    - analyst
+    - debugger
   defaultModel: openrouter/nvidia/nemotron-3.5-lightning:free
   subagent: inherit
 appearance:
@@ -762,8 +759,8 @@ mnemopi:
   noEmbeddings: false
   llmMode: smol
 ruby:
-  interpreter: ''
+  interpreter: ""
 julia:
-  interpreter: ''
+  interpreter: ""
 irc:
   timeoutMs: 120000

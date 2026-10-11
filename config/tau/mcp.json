@@ -13,7 +13,7 @@
     }
     ,
     "browserless": {
-      "command": "node",
+      "command": "bun",
       "args": ["/home/toxic/estate/ranch/barn/browserless/dist/index.js"],
       "env": { "BROWSER_KEEPER_CDP": "http://127.0.0.1:9223" },
       "enabled": true
