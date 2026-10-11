@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync, appendFileSync } from "node:fs";
 import { join, dirname } from "node:path";
-import { getAgentDir } from "@oh-my-pi/pi-coding-agent";
-import type { ExtensionContext } from "@oh-my-pi/pi-coding-agent";
+import { getAgentDir } from "tau";
+import type { ExtensionContext } from "tau";
 import type {
 	RouterPersistedState,
 	CustomSessionEntry,

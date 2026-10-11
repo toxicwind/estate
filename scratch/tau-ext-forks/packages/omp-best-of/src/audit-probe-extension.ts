@@ -1,7 +1,7 @@
 import { access, mkdtemp, realpath, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import type { ExtensionAPI } from "@oh-my-pi/pi-coding-agent";
+import type { ExtensionAPI } from "tau";
 
 const MAX_OUTPUT_CHARS = 12_000;
 const MAX_PREFLIGHT_DIAGNOSTIC_CHARS = 1_000;

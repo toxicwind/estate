@@ -7,12 +7,12 @@ import test from "node:test";
 import { promisify } from "node:util";
 
 const execFile = promisify(execFileCallback);
-const buildModules = ["typescript", "typebox", "@earendil-works/pi-coding-agent", "@earendil-works/pi-tui"];
+const buildModules = ["typescript", "typebox", "tau", "@earendil-works/pi-tui"];
 
 for (const [description, missingPath] of [
 	["builds without installing when import-only dependencies exist", undefined],
 	["installs before building when a dependency is missing", "node_modules/typescript"],
-	["installs before building when an exported target is missing", "node_modules/@earendil-works/pi-coding-agent/index.js"],
+	["installs before building when an exported target is missing", "node_modules/tau/index.js"],
 ] as const) {
 	test(`prepare ${description}`, async (t) => {
 		const tempDir = await mkdtemp(join(tmpdir(), "pi-agent-browser-prepare-"));

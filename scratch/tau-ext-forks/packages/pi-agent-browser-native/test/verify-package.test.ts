@@ -244,7 +244,7 @@ test("package metadata keeps Pi peers host-provided and declares the Windows spa
 	};
 
 	assert.equal(packageJson.dependencies?.["cross-spawn"], "7.0.6", "the spawner must not rely on Pi's private transitive dependencies");
-	for (const packageName of ["@earendil-works/pi-ai", "@earendil-works/pi-coding-agent", "@earendil-works/pi-tui", "typebox"]) {
+	for (const packageName of ["@earendil-works/pi-ai", "tau", "@earendil-works/pi-tui", "typebox"]) {
 		assert.equal(packageJson.peerDependencies?.[packageName], "*", `${packageName} should stay host-provided per Pi package docs`);
 	}
 	assert.equal(

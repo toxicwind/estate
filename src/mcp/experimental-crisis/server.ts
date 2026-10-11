@@ -6,7 +6,7 @@
  * Loads skills from experimental-crisis repo as MCP tools.
  * Profiles control which skills are available:
  *   - local: Full access, all skills (toxic machine)
- *   - kimi: Container-specific paths (/mnt/agents/output/)
+ *   - kimi: Container-specific paths (/home/toxic/estate/var/agents/output/)
  *   - generic: Portable paths, no container deps
  *
  * Skills:
@@ -44,11 +44,11 @@ const PROFILES: Record<string, Profile> = {
   },
   kimi: {
     name: "kimi",
-    skillRoot: "/mnt/portal-overlay/.user/skills",
-    scriptRoot: "/mnt/agents/output",
+    skillRoot: "/home/toxic/estate/skills-hub",
+    scriptRoot: "/home/toxic/estate/var/agents/output",
     pythonBin: "/tmp/av/bin/python",
     extraEnv: {
-      PYTHONPATH: "/mnt/agents/output:/tmp/av/lib/python3.12/site-packages",
+      PYTHONPATH: "/home/toxic/estate/var/agents/output:/tmp/av/lib/python3.12/site-packages",
     },
   },
   generic: {

@@ -1,5 +1,5 @@
-import type { ExtensionContext } from "@oh-my-pi/pi-coding-agent";
-import { getAgentDir } from "@oh-my-pi/pi-coding-agent";
+import type { ExtensionContext } from "tau";
+import { getAgentDir } from "tau";
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import type { RouterState } from "../state";

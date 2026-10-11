@@ -8,7 +8,7 @@ import {
 	type IsolationHandle,
 	parseIsolationMode,
 	type WorktreeBaseline,
-} from "@oh-my-pi/pi-coding-agent/task/worktree";
+} from "tau/task/worktree";
 import { parseDurationMs } from "./args";
 import { ensurePrivateDirectory, secureExistingFile, writePrivateFile } from "./artifacts";
 import { assertAuditSandboxSupported } from "./audit-probe-extension";

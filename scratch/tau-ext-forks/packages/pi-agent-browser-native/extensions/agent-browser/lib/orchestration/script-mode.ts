@@ -1,6 +1,6 @@
 import { open } from "node:fs/promises";
 
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import type { ExtensionAPI } from "tau";
 
 import {
 	AGENT_BROWSER_SCRIPT_FINAL_OUTPUT_MAX_BYTES,

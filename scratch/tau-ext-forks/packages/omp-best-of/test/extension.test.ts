@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import type { ExtensionAPI } from "@oh-my-pi/pi-coding-agent";
+import type { ExtensionAPI } from "tau";
 import extension from "../src/extension";
 
 test("registers the best-of slash command", () => {

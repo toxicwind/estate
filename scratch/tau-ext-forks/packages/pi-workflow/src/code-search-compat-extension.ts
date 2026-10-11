@@ -1,4 +1,4 @@
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import type { ExtensionAPI } from "tau";
 import { Type } from "typebox";
 
 const EXA_MCP_URL = "https://mcp.exa.ai/mcp";

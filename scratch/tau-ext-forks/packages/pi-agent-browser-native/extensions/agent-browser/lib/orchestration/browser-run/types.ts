@@ -1,6 +1,6 @@
 import type { ChildProcess } from "node:child_process";
 
-import type { AgentToolResult } from "@earendil-works/pi-coding-agent";
+import type { AgentToolResult } from "tau";
 import type { ElectronCleanupResult, ElectronLaunchStatus } from "../../electron/cleanup.js";
 import type { ElectronCdpTarget, ElectronLaunchRecord, ElectronLaunchSuccess } from "../../electron/launch.js";
 import type { AgentBrowserNetworkSourceLookupAnalysis, AgentBrowserQaPresetAnalysis, AgentBrowserSourceLookupAnalysis, CompiledAgentBrowserElectron, CompiledAgentBrowserJob, CompiledAgentBrowserNetworkSourceLookup, CompiledAgentBrowserQaPreset, CompiledAgentBrowserSemanticAction, CompiledAgentBrowserSourceLookup } from "../../input-modes/types.js";

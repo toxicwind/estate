@@ -1,22 +1,13 @@
 #!/usr/bin/env bash
-# NativeLink launcher for pitchfork.
-#
-# Why the mkdir: NativeLink's FilesystemStore does NOT create its `temp_path`,
-# and it does not report a health failure when that directory is missing -- it
-# just answers "No route for ..." on every RE endpoint while the process still
-# logs "Ready". Verified against 1.7.6: with content_path present and
-# temp_path absent, /status 404s; with both present, /status 200s.
-#
-# So the store layout is materialized here, before exec, every start. Keep the
-# four paths in sync with config/nativelink/nativelink.json5.
+# NativeLink launcher — prefers cargo/mise binary
 set -euo pipefail
-
 ROOT=/home/toxic/var/runtime/nativelink
-install -d -m 0755 \
-	"$ROOT/cas/content" \
-	"$ROOT/cas/tmp" \
-	"$ROOT/ac/content" \
-	"$ROOT/ac/tmp"
-
-exec /home/toxic/.local/bin/nativelink \
-	/home/toxic/estate/config/nativelink/nativelink.json5
+install -d -m 0755 "$ROOT/cas/content" "$ROOT/cas/tmp" "$ROOT/ac/content" "$ROOT/ac/tmp" "$ROOT/work"
+BIN=${NATIVELINK_BIN:-}
+if [[ -z "$BIN" ]]; then
+  for c in /home/toxic/.cargo/bin/nativelink /home/toxic/.local/bin/nativelink; do
+    [[ -x "$c" ]] && BIN=$c && break
+  done
+fi
+[[ -n "$BIN" ]] || { echo nativelink binary not found; exit 1; }
+exec "$BIN" /home/toxic/estate/config/nl/nativelink.json5

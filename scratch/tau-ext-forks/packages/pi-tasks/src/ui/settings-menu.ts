@@ -6,7 +6,7 @@
  * own settings panel style.
  */
 
-import { getSettingsListTheme } from "@earendil-works/pi-coding-agent";
+import { getSettingsListTheme } from "tau";
 import { Container, type SettingItem, SettingsList, Spacer, Text } from "@earendil-works/pi-tui";
 import { BUILT_IN_SORT_ORDERS } from "../task-sort.js";
 import { saveTasksConfig, type TasksConfig } from "../tasks-config.js";

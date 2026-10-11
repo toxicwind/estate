@@ -6,7 +6,7 @@ import { dirname, extname, join, relative, resolve, sep } from "node:path";
  * into the package's public subpath import.
  *
  *   ../src/format                  ->  @oh-my-pi/pi-utils/format
- *   ../../src/task/repair-args     ->  @oh-my-pi/pi-coding-agent/task/repair-args
+ *   ../../src/task/repair-args     ->  tau/task/repair-args
  *   ../src/index                   ->  @oh-my-pi/pi-utils
  *
  * Only specifiers that resolve onto a file under `<pkg>/src/` are touched, and

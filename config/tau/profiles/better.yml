@@ -7,9 +7,10 @@ models: ["nvidia/nemotron-3.5-lightning-30b-a3b","deepseek-ai/deepseek-v4-flash-
 provider:
   herd:
     base_url: http://127.0.0.1:25100/v1
-    api_key: npk_ea1662622a4d417a14c97722eecc47e9
+    # local llama-swap key — remote keys live in config/.secrets, never here
+    api_key: llama-swap-local-key
     timeout_ms: 15000
   flock:
     base_url: http://127.0.0.1:25193/v1
-    api_key: npk_ea1662622a4d417a14c97722eecc47e9
+    api_key: sovereign-free
     timeout_ms: 30000

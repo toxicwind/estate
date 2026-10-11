@@ -611,5 +611,6 @@ cycleOrder:
 - default
 - slow
 disabledProviders: []
-disabledExtensions: []
+disabledExtensions:
+  - airspeak
 skillful: true

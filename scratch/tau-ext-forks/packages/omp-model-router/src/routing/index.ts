@@ -3,7 +3,7 @@
  */
 
 import { type Context, type AssistantMessageEvent, streamSimple } from "@oh-my-pi/pi-ai";
-import type { ExtensionContext } from "@oh-my-pi/pi-coding-agent";
+import type { ExtensionContext } from "tau";
 import { parseCanonicalModelRef } from "../config";
 import { shortenModelRef } from "../ui/theme.js";
 import { buildClassifierPrompt, parseClassifierOutput } from "../calibration/classifier-utils";

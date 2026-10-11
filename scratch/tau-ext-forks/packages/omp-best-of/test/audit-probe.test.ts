@@ -3,7 +3,7 @@ import { mkdtemp, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import * as zod from "zod";
-import type { ExtensionAPI } from "@oh-my-pi/pi-coding-agent";
+import type { ExtensionAPI } from "tau";
 import auditProbeExtension, { assertAuditSandboxSupported } from "../src/audit-probe-extension";
 
 const sandboxTest = process.platform === "linux" || process.platform === "darwin" ? test : test.skip;

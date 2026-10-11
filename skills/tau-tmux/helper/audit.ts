@@ -29,21 +29,22 @@ function sh(cmd: string, args: string[], timeoutMs = 15000): string {
 try {
   const which = sh("sh", ["-c", "command -v tau"]);
   // tau is a compiled ELF binary, not a script — check file type instead
-  const fileType = sh("file", ["-b", which]);
-  const isBinary = fileType.includes("ELF") || fileType.includes("executable");
+  const fileType = sh("file", ["-bL", which]);
+  const isExecutable = fileType.includes("ELF") || fileType.includes("executable") || fileType.includes("script");
+  const isBinary = isExecutable;
   let resolved = "unresolved";
   if (isBinary) {
-    const distBin = join(SOVEREIGN, "projects/tau/engine/packages/coding-agent/dist/tau");
-    if (existsSync(distBin)) resolved = `tau (dist/tau -> ${which})`;
-    else resolved = "bun src fallback";
+    const distBin = join(HOME, "estate/ranch/tau/packages/coding-agent/dist/tau");
+    const pinScript = join(HOME, "estate/ranch/tau/scripts/tau-pin");
+    if (existsSync(distBin) || existsSync(pinScript)) resolved = `tau (estate/ranch/tau -> ${which})`;
   }
-  check("tau launcher resolves", isBinary && resolved !== "unresolved", `${which} -> ${resolved}`);
+  check("tau launcher resolves", isExecutable && resolved !== "unresolved", `${which} -> ${resolved}`);
 } catch (e: any) { check("tau launcher resolves", false, e.message); }
 
 // 2. Engine version
 try {
   const ver = sh("tau", ["--version"], 30000);
-  check("tau engine version", /18\.2\.\d+/.test(ver), ver.split("\n")[0]);
+  check("tau engine version", /18\.[2-9]\.\d+/.test(ver), ver.split("\n")[0]);
 } catch (e: any) { check("tau engine version", false, e.message.slice(0, 120)); }
 
 // 3. PI_CONFIG_DIR honored

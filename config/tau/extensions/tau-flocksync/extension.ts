@@ -437,7 +437,16 @@ export async function createOmniExtension(pi: OmniPI, options: AgentHomeOptions)
 		label: "flocksync Status",
 		description: "Return flocksync / OmniRoute health and provider registration status.",
 		parameters: { type: "object", properties: {} },
-		execute: (id, params, signal) => pi.tools.get?.("omniroute_status")?.execute(id, params, signal) ?? Promise.resolve({ content: [] }),
+		async execute(_id, _params, signal) {
+			const current = loadProbeConfig(agentHome);
+			const hop = loadHopSettings(agentHome);
+			const result = await unreachable.probe(current, signal);
+			const configured = isConfigured(agentHome);
+			return {
+				content: [{ type: "text", text: `flocksync ${result.ok ? "reachable" : result.unreachable ? "unreachable" : "health check failed"}; configured: ${configured}; provider: ${current.providerName}.` }],
+				details: { ok: result.ok, unreachable: result.unreachable, configured, serverUrl: current.serverUrl, providerName: current.providerName, onUnreachable: hop.onUnreachable, fallbackModel: hop.fallbackModel },
+			};
+		},
 	});
 
 
@@ -460,7 +469,14 @@ export async function createOmniExtension(pi: OmniPI, options: AgentHomeOptions)
 		label: "flocksync Sync",
 		description: "Fetch /v1/models from flocksync / OmniRoute and register them as a provider.",
 		parameters: { type: "object", properties: {} },
-		execute: (id, params, signal) => pi.tools.get?.("omniroute_sync")?.execute(id, params, signal) ?? Promise.resolve({ content: [] }),
+		async execute(_id, _params, signal) {
+			const current = loadConfig(agentHome);
+			const models = await registerOmniProvider(pi, agentHome, current, loadSettings(agentHome), signal);
+			return {
+				content: [{ type: "text", text: `flocksync synced ${models.length} model(s).` }],
+				details: { count: models.length, provider: current.providerName },
+			};
+		},
 	});
 
 

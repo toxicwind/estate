@@ -1310,7 +1310,7 @@ export function buildWorkflowWebSourceExtensionWrapper(
 			? "const providerExtension = providerExtension0;"
 			: `const providerExtension = [${providerPaths.map((_, index) => `providerExtension${index}`).join(", ")}];`;
 	return [
-		`import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";`,
+		`import type { ExtensionAPI } from "tau";`,
 		...providerImports,
 		providerValue,
 		`import { registerWorkflowWebSourceExtension } from ${JSON.stringify(extensionImportSpecifier(options.importPath))};`,

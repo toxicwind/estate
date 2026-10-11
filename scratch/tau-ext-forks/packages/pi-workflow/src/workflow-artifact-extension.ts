@@ -2,7 +2,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, isAbsolute, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import type { ExtensionAPI } from "tau";
 
 import {
 	handleWorkflowArtifactToolCall,
@@ -141,7 +141,7 @@ export function buildWorkflowArtifactExtensionWrapper(
 ): string {
 	const importSpecifier = extensionImportSpecifier(options.importPath);
 	return [
-		`import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";`,
+		`import type { ExtensionAPI } from "tau";`,
 		`import { registerWorkflowArtifactTool } from ${JSON.stringify(importSpecifier)};`,
 		"",
 		"export default function workflowArtifactGeneratedExtension(pi: ExtensionAPI): void {",

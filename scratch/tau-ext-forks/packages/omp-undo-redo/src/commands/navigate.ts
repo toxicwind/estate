@@ -1,4 +1,4 @@
-import type { ExtensionCommandContext } from "@oh-my-pi/pi-coding-agent";
+import type { ExtensionCommandContext } from "tau";
 import type {
   CommandNavigationResult,
   FileCheckpointUnavailableReason,

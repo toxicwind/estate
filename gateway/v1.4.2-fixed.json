@@ -6,6 +6,6 @@
   "forbidden": ["mimo-v2.5-pro","mmf/mimo-auto"],
   "reason_forbidden": "Not in priority_order hidden 2048 injection loops theory vs bruteforce pkill wl-copy",
   "use": "openai/gpt-4o via ai-gateway.vercel.ai ast-grep first-class + bruteforce datetime loops integrate directly",
-  "bruteforce": ["pkill -9 -f 'wl-copy --type image'","mv mobile-autocorrect.ts{,.disabled}","bun install -g @oh-my-pi/pi-coding-agent@18.5.0"],
+  "bruteforce": ["pkill -9 -f 'wl-copy --type image'","mv mobile-autocorrect.ts{,.disabled}","bun install -g tau@18.5.0"],
   "clipboard_fix": "single Clipboard for lifetime owner thread keeps serving no xclip/wl-copy subprocess honors OMP_CLIPBOARD_COMMAND shell-string escape hatch tries wl-copy/xclip/xsel before arboard"
 }

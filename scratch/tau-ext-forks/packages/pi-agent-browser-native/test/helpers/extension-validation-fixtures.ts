@@ -7,7 +7,7 @@
 import { chmod, mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
-import { Theme } from "@earendil-works/pi-coding-agent";
+import { Theme } from "tau";
 
 import type { ElectronAppDiscovery } from "../../extensions/agent-browser/lib/electron/discovery.js";
 import type { AgentBrowserToolParams, AgentBrowserToolRenderContext } from "./agent-browser-harness.js";

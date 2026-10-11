@@ -30,7 +30,7 @@ import {
 	SettingsManager,
 	type AgentSession,
 	type ExtensionFactory,
-} from "@earendil-works/pi-coding-agent";
+} from "tau";
 
 import agentBrowserExtension from "../extensions/agent-browser/index.js";
 import {

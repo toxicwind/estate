@@ -546,7 +546,7 @@ export async function assertSubagentExtensionsLoadable(
 				(value): value is string => typeof value === "string" && value.length > 0,
 			)
 		: undefined;
-	const piSdk = await import("@earendil-works/pi-coding-agent");
+	const piSdk = await import("tau");
 	const resourceLoader = new piSdk.DefaultResourceLoader({
 		cwd,
 		agentDir: piSdk.getAgentDir(),

@@ -4,7 +4,7 @@ export { readFileLinesBounded } from "./workflow-preview.js";
 import {
 	copyToClipboard,
 	type ExtensionCommandContext,
-} from "@earendil-works/pi-coding-agent";
+} from "tau";
 
 import {
 	workflowRunPath,

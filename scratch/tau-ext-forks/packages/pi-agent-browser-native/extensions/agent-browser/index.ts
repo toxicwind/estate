@@ -8,7 +8,7 @@ import type {
 	ExtensionAPI,
 	ExtensionContext,
 	ToolDefinition,
-} from "@earendil-works/pi-coding-agent";
+} from "tau";
 import { Text } from "@earendil-works/pi-tui";
 import { batchHasSuccessfulCloseAll, getSuccessfulBatchCloseLifecycle } from "./lib/batch-lifecycle.js";
 import {

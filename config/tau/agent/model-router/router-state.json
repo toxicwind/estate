@@ -1,0 +1,11 @@
+{
+  "enabled": false,
+  "selectedProfile": "auto",
+  "thinkingByProfile": {},
+  "debugEnabled": false,
+  "widgetEnabled": false,
+  "debugHistory": [],
+  "lastNonRouterModel": "anthropic/claude-opus-5-5",
+  "accumulatedCost": 0,
+  "timestamp": 1791718576923
+}

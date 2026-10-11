@@ -1,4 +1,4 @@
-import type { ExtensionContext } from "@oh-my-pi/pi-coding-agent";
+import type { ExtensionContext } from "tau";
 import type { RouterState } from "../state";
 import type { Actions } from "./shared";
 import { patchConfigFile, profileNames } from "../config";

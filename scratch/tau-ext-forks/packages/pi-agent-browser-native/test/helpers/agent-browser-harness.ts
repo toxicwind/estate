@@ -21,7 +21,7 @@ import type {
 	Theme,
 	ToolDefinition,
 	ToolRenderResultOptions,
-} from "@earendil-works/pi-coding-agent";
+} from "tau";
 import type { Component } from "@earendil-works/pi-tui";
 import type { TSchema } from "typebox";
 

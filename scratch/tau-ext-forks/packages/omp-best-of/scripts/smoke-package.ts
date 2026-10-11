@@ -25,7 +25,7 @@ try {
 			{
 				private: true,
 				dependencies: {
-					"@oh-my-pi/pi-coding-agent": "17.3.5",
+					"tau": "17.3.5",
 					"omp-best-of": `file:${tarball}`,
 				},
 			},

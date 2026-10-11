@@ -1,4 +1,4 @@
-import type { Theme } from "@oh-my-pi/pi-coding-agent";
+import type { Theme } from "tau";
 import type {
 	RoutingDecision,
 	RouterConfig,

@@ -21,7 +21,7 @@ export default function (pi: ExtensionAPI) {
         msg: "BLOCKED: Use 'read' (with line ranges) instead of sed/awk.",
       },
       {
-        regex: /\b(?:cat|head|tail)\s+[^-]/,
+        regex: /\b(?:cat|head|tail)\s+\S/,
         msg: "BLOCKED: Use 'read' instead of shell file reading.",
       },
     ];

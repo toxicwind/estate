@@ -65,15 +65,15 @@
     "verify": "npm run format:check && npm run lint && npm run typecheck && npm test && npm run build && npm run smoke:package && npm run pack:check"
   },
   "peerDependencies": {
-    "@oh-my-pi/pi-coding-agent": ">=16.5.2"
+    "tau": ">=16.5.2"
   },
   "peerDependenciesMeta": {
-    "@oh-my-pi/pi-coding-agent": {
+    "tau": {
       "optional": true
     }
   },
   "devDependencies": {
-    "@oh-my-pi/pi-coding-agent": "18.1.14",
+    "tau": "18.1.14",
     "@types/node": "^26.4.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",

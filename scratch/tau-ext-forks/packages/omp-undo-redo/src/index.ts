@@ -1,5 +1,5 @@
 import "./core/compat.js";
-import type { ExtensionAPI, ExtensionCommandContext } from "@oh-my-pi/pi-coding-agent";
+import type { ExtensionAPI, ExtensionCommandContext } from "tau";
 import { randomUUID } from "node:crypto";
 import { readFile, readdir, rename, rm, stat } from "node:fs/promises";
 import { tmpdir } from "node:os";

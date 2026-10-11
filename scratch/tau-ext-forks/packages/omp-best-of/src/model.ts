@@ -3,7 +3,7 @@
  * provider works without a plugin-specific API key: the registry mints, and
  * refreshes, the same credential the calling session would have used.
  */
-import type { ModelRegistry } from "@oh-my-pi/pi-coding-agent/config/model-registry";
+import type { ModelRegistry } from "tau/config/model-registry";
 
 /** The fields this plugin reads from an omp catalog model. */
 export interface RegistryModel {
@@ -103,8 +103,8 @@ export function modelSourceFromRegistry(registry: ModelRegistry, close?: () => v
 export async function createModelSource(): Promise<ModelSource> {
 	try {
 		const [{ ModelRegistry: Registry }, { discoverAuthStorage }] = await Promise.all([
-			import("@oh-my-pi/pi-coding-agent/config/model-registry"),
-			import("@oh-my-pi/pi-coding-agent/session/auth-broker-config"),
+			import("tau/config/model-registry"),
+			import("tau/session/auth-broker-config"),
 		]);
 		const authStorage = await discoverAuthStorage();
 		const registry = new Registry(authStorage);

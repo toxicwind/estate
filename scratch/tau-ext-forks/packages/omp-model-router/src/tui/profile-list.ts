@@ -7,7 +7,7 @@ import {
 	replaceTabs,
 	truncateToWidth,
 } from "@oh-my-pi/pi-tui";
-import type { ModelRegistry, Theme, KeybindingsManager } from "@oh-my-pi/pi-coding-agent";
+import type { ModelRegistry, Theme, KeybindingsManager } from "tau";
 import type { RouterConfig, RouterProfile, RouterTier } from "../types";
 import type { CalibrationConfig } from "../calibration/types";
 import { ProfileEditorComponent } from "./profile-editor";

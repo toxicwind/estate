@@ -6,7 +6,7 @@
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { getAgentDir } from "@earendil-works/pi-coding-agent";
+import { getAgentDir } from "tau";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { globalSessionTasksDir, projectKey, sessionTaskFile } from "../src/task-paths.js";
 

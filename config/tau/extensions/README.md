@@ -296,5 +296,5 @@ bunx oxfmt --check ~/.tau/extensions/*.ts
 - Installed plugins: [`../plugins/README.md`](../plugins/README.md)
 - Registry: `~/.tau/plugins/omp-plugins.lock.json`
 - Extension API: `@oh-my-pi/pi-coding-agent` → `ExtensionAPI`
-- Session audit: `bun run /home/toxic/estate/skills/tau-session-audit/helper/audit.ts`
-- Live install audit: `bun run /home/toxic/estate/skills/tau-tmux/helper/audit.ts`
+- Session audit: `bun run /home/toxic/estate/skills-hub/tau-session-audit/helper/audit.ts`
+- Live install audit: `bun run /home/toxic/estate/skills-hub/tau-tmux/helper/audit.ts`

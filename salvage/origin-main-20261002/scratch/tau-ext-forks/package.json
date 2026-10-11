@@ -6,7 +6,7 @@
   ],
   "devDependencies": {
     "@biomejs/biome": "^1.9.0",
-    "@oh-my-pi/pi-coding-agent": "^18.0.11",
+    "tau": "^18.0.11",
     "typescript": "^5.6.0"
   },
   "scripts": {

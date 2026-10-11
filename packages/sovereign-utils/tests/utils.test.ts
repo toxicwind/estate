@@ -11,7 +11,7 @@ describe("@sovereign/utils", () => {
       generatedAt: new Date().toISOString(),
       entries: [
         {
-          name: "@oh-my-pi/pi-coding-agent#keyText",
+          name: "tau#keyText",
           kind: "export",
           provider: "src/extensibility/shim.ts",
           aliases: ["@mariozechner/pi-coding-agent#keyText"],
@@ -22,7 +22,7 @@ describe("@sovereign/utils", () => {
 
     it("resolves primary capability name", () => {
       setManifest(testManifest);
-      expect(resolveCapability("@oh-my-pi/pi-coding-agent#keyText")).toBe("src/extensibility/shim.ts");
+      expect(resolveCapability("tau#keyText")).toBe("src/extensibility/shim.ts");
     });
 
     it("resolves alias", () => {
@@ -37,7 +37,7 @@ describe("@sovereign/utils", () => {
 
     it("returns synthesis hint", () => {
       setManifest(testManifest);
-      expect(getSynthesisHint("@oh-my-pi/pi-coding-agent#keyText")).toContain("keyText");
+      expect(getSynthesisHint("tau#keyText")).toContain("keyText");
     });
 
     it("returns all capabilities", () => {

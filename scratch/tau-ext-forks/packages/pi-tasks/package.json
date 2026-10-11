@@ -26,7 +26,7 @@
     "coordination"
   ],
   "peerDependencies": {
-    "@earendil-works/pi-coding-agent": ">=0.80.5",
+    "tau": ">=0.80.5",
     "@earendil-works/pi-tui": ">=0.80.5"
   },
   "dependencies": {
@@ -43,7 +43,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.13",
-    "@earendil-works/pi-coding-agent": "0.84.2",
+    "tau": "0.84.2",
     "@earendil-works/pi-tui": "0.84.2",
     "@types/node": "^25.0.0",
     "typescript": "^6.0.0",

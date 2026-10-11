@@ -1,7 +1,7 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, basename, dirname, sep } from "node:path";
 import { homedir } from "node:os";
-import type { ExtensionContext } from "@oh-my-pi/pi-coding-agent";
+import type { ExtensionContext } from "tau";
 import type { RouterState } from "../state";
 import type { PromptLogRecord } from "../calibration/trace";
 import { createLogViewerFactory, createSessionPickerFactory, parseJsonlFile, type SessionLogEntry } from "../tui/log-viewer";

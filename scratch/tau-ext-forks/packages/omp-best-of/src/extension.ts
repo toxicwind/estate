@@ -1,4 +1,4 @@
-import type { ExtensionAPI, ExtensionCommandContext } from "@oh-my-pi/pi-coding-agent";
+import type { ExtensionAPI, ExtensionCommandContext } from "tau";
 import type { BestOfCliOptions } from "./args";
 import { DEFAULT_CRITERIA, HELP, parseArgs, tokenize } from "./args";
 import { modelSourceFromRegistry } from "./model";

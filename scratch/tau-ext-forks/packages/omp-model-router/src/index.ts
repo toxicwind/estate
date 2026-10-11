@@ -1,7 +1,7 @@
 import type {
 	ExtensionAPI,
 	ExtensionContext,
-} from "@oh-my-pi/pi-coding-agent";
+} from "tau";
 import {
 	loadRouterConfig,
 	patchConfigFile,

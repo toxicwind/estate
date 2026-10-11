@@ -1,4 +1,4 @@
-import type { AgentToolResult, Theme, ToolResultEvent } from "@earendil-works/pi-coding-agent";
+import type { AgentToolResult, Theme, ToolResultEvent } from "tau";
 import { getKeybindings, Text, truncateToWidth } from "@earendil-works/pi-tui";
 
 import { compileAgentBrowserElectron } from "./input-modes/electron.js";

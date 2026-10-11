@@ -1,7 +1,7 @@
 import {
 	BorderedLoader,
 	type ExtensionContext,
-} from "@earendil-works/pi-coding-agent";
+} from "tau";
 
 import type { WorkflowIndexRecord } from "./types.js";
 

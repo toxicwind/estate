@@ -417,7 +417,7 @@ export function buildWorkflowFetchCacheExtensionWrapper(
 	options: Omit<WorkflowFetchCacheExtensionWrapperOptions, "wrapperPath">,
 ): string {
 	return [
-		`import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";`,
+		`import type { ExtensionAPI } from "tau";`,
 		`import webAccessExtension from ${JSON.stringify(extensionImportSpecifier(options.webAccessExtensionPath))};`,
 		`import * as webAccessStorage from ${JSON.stringify(extensionImportSpecifier(options.webAccessStoragePath))};`,
 		`import { registerWorkflowFetchCacheExtension } from ${JSON.stringify(extensionImportSpecifier(options.importPath))};`,

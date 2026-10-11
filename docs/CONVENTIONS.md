@@ -63,7 +63,7 @@ symlink never leaks into a report or a string comparison.
 
 **Rule 2.1 — No skill hardcodes an estate path.** If you catch
 `/home/toxic/estate/...` or `~/workspace/skills/...` in a script, that is a bug.
-The skills home moved to `estate/skills` on 2026-10-02; `~/workspace/skills` and
+The skills home moved to `estate/skills-hub` on 2026-10-02; `~/workspace/skills` and
 `~/.tau/skills` are symlinks to it.
 
 **Rule 2.2 — Override names are fixed:** `ESTATE_HOME`, `RANCH_HOME`,

@@ -1,6 +1,6 @@
 import { isAbsolute } from "node:path";
 
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import type { ExtensionAPI } from "tau";
 
 import { getAgentBrowserSessionIdentityKey } from "./argv-grammar.js";
 import { isRecord } from "./parsing.js";

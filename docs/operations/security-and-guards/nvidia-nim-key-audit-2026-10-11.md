@@ -6,7 +6,7 @@
 
 **Root cause:** Four `nvapi-*` keys in `NVIDIA_API_KEYS` (flock env) belonged to NGC account `iuh5eKGaKSnWglC73O7UeZBzNHZ5aP7TLHyJpM-rxWY` — an account **missing the "Public API Endpoints" NGC entitlement**.
 
-**Resolution:** Removed `NVIDIA_API_KEYS` from flock config. The working `npk_` proxy key (`NVIDIA_API_KEY=npk_ea1662622a4d417a14c97722eecc47e9`) is now the sole NVIDIA credential; flock proxy handles entitlement internally.
+**Resolution:** Removed `NVIDIA_API_KEYS` from flock config. The working `npk_` proxy key (value: `config/.secrets` → `NVIDIA_API_KEY`, masked `npk_ea166…47e9`) is now the sole NVIDIA credential; flock proxy handles entitlement internally. Keys are never inlined in docs — always read them from `config/.secrets`.
 
 ---
 
@@ -38,16 +38,16 @@ Source: `~/.tau/logs/http-400-requests/1791701662567-3otza2kh038ha.json`
 
 ### 1. `/home/toxic/estate/config/flock-ssot/flock.env` (line 16)
 ```diff
-- NVIDIA_API_KEYS=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,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,nvapi-Zhp-AL_WC2vsHOO8haKHxTWGJRwIGhDvcj0duY7LpCZLTc,nvapi-kaK-AFO2dsp9H64iOXCJxQiJFS5vcBUsqr3j_KDg8Yt0E
+- NVIDIA_API_KEYS=<4× nvapi-… keys, retired; original values were in flock.env + config/.secrets → NVIDIA_API_KEYS, now removed>
 + # NVIDIA_API_KEYS removed - keys belonged to failing NGC account iuh5eKGaKSnWglC73O7UeZBzNHZ5aP7TLHyJpM-rxWY
-+ # Working key is in NVIDIA_API_KEY / NIM_API_KEY (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)
++ # Working key is in NVIDIA_API_KEY / NIM_API_KEY (nvapi-FSFzZ…WLOk; full value: config/.secrets → NVIDIA_API_KEY)
 ```
 
 ### 2. `/home/toxic/estate/config/.secrets` (line 120)
 ```diff
-- NVIDIA_API_KEYS=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,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,nvapi-Zhp-AL_WC2vsHOO8haKHxTWGJRwIGhDvcj0duY7LpCZLTc,nvapi-kaK-AFO2dsp9H64iOXCJxQiJFS5vcBUsqr3j_KDg8Yt0E
+- NVIDIA_API_KEYS=<4× nvapi-… keys, retired; see config/.secrets → NVIDIA_API_KEYS history>
 + # NVIDIA_API_KEYS removed - keys belonged to failing NGC account iuh5eKGaKSnWglC73O7UeZBzNHZ5aP7TLHyJpM-rxWY
-+ # Working key is in NVIDIA_API_KEY / NIM_API_KEY (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)
++ # Working key is in NVIDIA_API_KEY / NIM_API_KEY (nvapi-FSFzZ…WLOk; full value: config/.secrets → NVIDIA_API_KEY)
 ```
 
 ---

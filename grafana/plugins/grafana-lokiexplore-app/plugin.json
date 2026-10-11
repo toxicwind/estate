@@ -37,8 +37,8 @@
                 "path": "img/table.png"
             }
         ],
-        "version": "2.6.0",
-        "updated": "2026-09-22",
+        "version": "3.0.0",
+        "updated": "2026-10-08",
         "links": [
             {
                 "name": "Github",
@@ -62,7 +62,7 @@
     ],
     "roles": [],
     "dependencies": {
-        "grafanaDependency": ">=11.6.11-0 <12 || >=12.0.10-0 <12.1 || >=12.1.7-0 <12.2 || >=12.2.5-0",
+        "grafanaDependency": ">=13.1.0-0",
         "plugins": [],
         "extensions": {
             "exposedComponents": [
@@ -76,7 +76,25 @@
     },
     "preload": true,
     "languages": [
-        "en-US"
+        "en-US",
+        "cs-CZ",
+        "de-DE",
+        "es-ES",
+        "fr-FR",
+        "hu-HU",
+        "id-ID",
+        "it-IT",
+        "ja-JP",
+        "ko-KR",
+        "nl-NL",
+        "pl-PL",
+        "pt-BR",
+        "pt-PT",
+        "ru-RU",
+        "sv-SE",
+        "tr-TR",
+        "zh-Hans",
+        "zh-Hant"
     ],
     "extensions": {
         "addedComponents": [],
