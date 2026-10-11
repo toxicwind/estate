@@ -1,13 +1,15 @@
 ---
 name: race-borrow
 description: >
-  Race multiple providers for GitHub patterns and borrow the best results.
-  Combines parallel racing (first valid response wins) with pattern ranking.
+  Race multiple providers for GitHub patterns; consolidated into pattern-forge (use forge borrow).
   Triggers on: "race borrow", "race patterns", "borrow patterns",
   "multi-provider search", "race and rank", "find best repo".
 ---
 
-# Race-Borrow Skill
+# Race-Borrow Skill (Consolidated into pattern-forge)
+
+> **CONSOLIDATION NOTICE**: This skill's capabilities are fully consolidated into **`pattern-forge`** (`forge borrow`).
+> `forge borrow` concurrently races in-tree local codebase and 7 external providers in parallel.
 
 ## Concept
 

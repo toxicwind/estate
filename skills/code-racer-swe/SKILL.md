@@ -2,7 +2,9 @@
 name: code-racer-swe
 description: Universal Code Racer and Dynamic AST Engine for autonomous software engineering agents. Enables empirical multi-route symbol indexing and candidate patch benchmarking.
 ---
-# Code Racer SWE Engine
+# Code Racer SWE Engine (Consolidated into pattern-forge)
+
+> **CONSOLIDATION NOTICE**: Consolidated into **`pattern-forge`** (`forge bench` & `forge race`). Use `forge race` and `forge bench` for nanosecond candidate patch racing.
 
 ## Summary
 Integrates the `universal-code-racer` benchmarking paradigm directly into the autonomous agent loop. Dynamically benchmarks competing retrieval routes and candidate patch fixes under strict garbage collection isolation and nanosecond timing.

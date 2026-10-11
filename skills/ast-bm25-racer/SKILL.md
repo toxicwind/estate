@@ -4,7 +4,9 @@ description: >
   Sovereign AST-BM25 Racer, local-heavy edition: hybrid code retrieval plus nanosecond candidate racing. Triggers on: code retrieval, candidate racing, AST search.
 ---
 
-# Sovereign AST-BM25 Racer — LOCAL-HEAVY edition
+# Sovereign AST-BM25 Racer — LOCAL-HEAVY edition (Consolidated into pattern-forge)
+
+> **CONSOLIDATION NOTICE**: Consolidated into **`pattern-forge`** (`forge retrieve`). Use `forge retrieve` for AST-BM25 hybrid in-tree retrieval.
 
 Hybrid code retrieval + nanosecond candidate racing. Adapted 2026-09-29 by Forge
 per Chris's direction: **Dropbox sync removed entirely**. Everything runs and
