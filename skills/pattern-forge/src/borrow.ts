@@ -1,6 +1,9 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { HOME } from "./paths";
+import { MLDictionary } from "./ml-dictionary";
+
+const mlDict = new MLDictionary();
 /**
  * Borrow — race every free source at once, rank what comes back.
  *
@@ -248,11 +251,17 @@ export function renderBorrow(result: BorrowResult, topN = 10): string {
       title = p.title ?? "(untitled paper)";
       url = p.url ?? p.pdfUrl ?? "";
     }
-    lines.push(`${String(i + 1).padStart(2)}. [${row.score.toFixed(2)}] ${title}`);
+    lines.push(`${String(i + 1).padStart(2)}. [${row.score.toFixed(2)}] [${row.source}] ${title}`);
     if (url) lines.push(`    ${url}`);
     const authors = (item as P.PaperItem).authors;
     if (authors?.length) lines.push(`    ${authors.slice(0, 3).join(", ")}${authors.length > 3 ? " et al" : ""}`);
     if (row.reasons.length) lines.push(`    ${row.reasons.join(" · ")}`);
+    const snippet = (item as any).abstract || (item as any).snippet || (item as any).summary;
+    if (snippet) {
+      const clean = String(snippet).replace(/\s+/g, " ").trim();
+      const truncated = clean.length > 180 ? `${clean.slice(0, 180)}…` : clean;
+      lines.push(`    > "${truncated}"`);
+    }
   }
   if (!result.ranked.length) lines.push("  (no items from any source)");
   return lines.join("\n");

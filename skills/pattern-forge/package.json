@@ -4,11 +4,23 @@
   "private": true,
   "type": "module",
   "description": "Retrieve, race, borrow, search. Pure Bun, zero npm dependencies.",
-  "bin": { "forge": "./bin/forge.ts" },
+  "bin": {
+    "forge": "./bin/forge.ts",
+    "pattern-borrow": "./bin/pattern-borrow.ts"
+  },
   "scripts": {
     "forge": "bun bin/forge.ts",
+    "borrow": "bun bin/pattern-borrow.ts",
     "doctor": "bun bin/forge.ts doctor",
     "test": "bun test"
   },
-  "engines": { "bun": ">=1.4.0" }
+  "engines": {
+    "bun": ">=1.4.0"
+  },
+  "dependencies": {
+    "@hono/zod-openapi": "^1.6.3",
+    "@scalar/hono-api-reference": "^0.12.12",
+    "hono": "^4.13.13",
+    "zod": "^4.6.7"
+  }
 }

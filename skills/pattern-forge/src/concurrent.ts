@@ -51,7 +51,10 @@ export type RaceOutcome = {
   results: Record<string, AttemptResult>;
 };
 
-let emitStream: (line: string) => void = (line) => process.stderr.write(`${line}\n`);
+let emitStream: (line: string) => void = (line) => {
+  if (process.env.FORGE_QUIET === "1") return;
+  process.stderr.write(`${line}\n`);
+};
 
 /** JSONL telemetry on stderr, exactly as the Python engine emitted it. */
 export function emit(event: Record<string, unknown>): void {
