@@ -13,12 +13,31 @@ import os
 import signal
 import subprocess
 import sys
+import re
 import time
 
 sys.path.insert(0, os.path.expanduser("~/workspace/bin"))
 import watchdog_lib as wl
 
 STATE = os.path.expanduser("~/.cache/shingle/swarm-paused.json")
+
+# Tier-0 protected services — never frozen, even as hatch-execd descendants.
+# Same set as swarm-throttle PROTECTED (cell): the yote-connector, its
+# supervisor, death-watch, squawk, tailscale, pitchfork must survive a pause.
+# (2026-10-12: swarm-pause froze connector+supervisor+death-watch in a load
+# spike because it had no exclusion list.)
+PROTECTED = re.compile(
+    r"squawk|tailscale|sshd|systemd|dbus|pitchfork|watchdog|death-watch|connector|swarm-throttle|supervise",
+    re.I,
+)
+
+
+def cmdline(pid):
+    try:
+        with open(f"/proc/{pid}/cmdline", "rb") as f:
+            return f.read().replace(b"\0", b" ").decode("utf-8", "replace")
+    except (FileNotFoundError, PermissionError):
+        return ""
 
 
 def exacd_pid():
@@ -73,6 +92,8 @@ def main():
             except OSError:
                 pass
         if root in ancestors(pid, pm):
+            if PROTECTED.search(cmdline(pid)):
+                continue  # Tier-0 protected service — never freeze the bridge, squawk, tailscale, etc.
             try:
                 os.kill(pid, signal.SIGSTOP)
                 stopped.append(pid)
