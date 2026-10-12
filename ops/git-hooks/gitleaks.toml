@@ -1,0 +1,17 @@
+# Gate config for ops/git-hooks. Extends the default ruleset and allowlists
+# known false positives so the box-wide gate stays useful instead of being
+# bypassed. Add an entry only with the reason it is not a credential.
+title = "estate secret gate"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Known non-credentials"
+paths = [
+  # Kotlin @Metadata bytecode strings in decompiled Android sources match the
+  # generic-api-key entropy heuristic; they are compiler metadata, not keys.
+  '''(?i)extracted/.*\.java$''',
+  # Vendored upstream trees keep their own test fixtures and examples.
+  '''(?i)(vendor|vendored|node_modules|testdata|fixtures)/''',
+]
