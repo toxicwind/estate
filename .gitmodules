@@ -41,3 +41,6 @@
 [submodule "work/tau-extensions"]
 	path = work/tau-extensions
 	url = https://github.com/toxicwind/tau-extensions.git
+[submodule "submodules/phone-sentinel"]
+	path = submodules/phone-sentinel
+	url = /home/toxic/phone-sentinel
