@@ -783,7 +783,7 @@ boot_start = true
 ready_cmd = "ss -ltn 'sport = :4222' | grep -q LISTEN"
 auto = ["start"]
 
-# ---- project: ranch/squawk/oracle (6 daemons) ----
+# ---- project: ranch/squawk/oracle (7 daemons) ----
 [daemons.bidder-forge]
 run = "exec /home/toxic/estate/ranch/squawk/oracle/bin/bidder-forge.sh"
 dir = "/home/toxic/estate/ranch/squawk/oracle"
@@ -807,6 +807,13 @@ auto = ["start"]
 
 [daemons.bidder-warden]
 run = "exec /home/toxic/estate/ranch/squawk/oracle/bin/bidder-warden.sh"
+dir = "/home/toxic/estate/ranch/squawk/oracle"
+mise = false
+retry = true
+auto = ["start"]
+
+[daemons.bidder-vesper]
+run = "exec /home/toxic/estate/ranch/squawk/oracle/bin/bidder-vesper.sh"
 dir = "/home/toxic/estate/ranch/squawk/oracle"
 mise = false
 retry = true
