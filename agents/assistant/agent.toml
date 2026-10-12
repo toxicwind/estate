@@ -19,10 +19,11 @@ tool_blocklist = []
 cache_context = false
 
 [model]
-provider = "llama-swap"
-model = "openrouter-free/liquid/lfm-2.5-2.6b:free"
-fallback_models = [{ provider = "llama-swap", model = "gemini/gemini-3-flash-preview" }]
-base_url = "http://127.0.0.1:25100/v1"
+provider = "openai"
+model = "google/gemini-3.8-flash"
+fallback_models = [{ provider = "openai", model = "google/gemini-3.1-pro-eap" }]
+base_url = "http://127.0.0.1:25200/v1"
+api_key_env = "FLOCK_API_KEY"
 max_tokens = 4096
 temperature = 0.699999988079071
 system_prompt = "You are a helpful AI assistant."

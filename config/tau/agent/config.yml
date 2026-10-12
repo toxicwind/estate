@@ -21,16 +21,16 @@ autoResume: false
 autocompleteMaxVisible: 20
 autolearn:
   autoContinue: true
-  enabled: true
+  enabled: false
   minToolCalls: 5
 bash:
-  allowCompoundCommands: false
+  allowCompoundCommands: true
   autoBackground:
     enabled: true
     thresholdMs: 60000
   direnv: auto
   direnvLoadTimeoutMs: 30000
-  enabled: false
+  enabled: true
   patterns: []
 bashInterceptor:
   enabled: true
@@ -69,7 +69,7 @@ branchSummary:
   enabled: true
   reserveTokens: 16384
 browser:
-  cmux: true
+  cmux: false
   enabled: true
   freezeOnTurnEnd: true
   headless: false
@@ -191,7 +191,7 @@ eval:
     enabled: true
     thresholdMs: 60000
   autoProvision: true
-  js: false
+  js: true
   py: true
   tools:
     enabled: true
@@ -288,7 +288,7 @@ images:
     ttlHours: 72
 includeModelInPrompt: true
 includeWorkspaceTree: false
-inlineToolDescriptors: "off"
+inlineToolDescriptors: auto
 interruptMode: wait
 isolation:
   backend: auto
@@ -371,7 +371,7 @@ modelProviderOrder:
   *enabledModels
 modelRoleStorage: global
 modelRoles:
-  default: cohere/command-a-plus-05-2026:off
+  default: omni/oc/longcat-2.5-preview-free:off
   smol: openrouter/liquid/lfm-2.5-2.6b:free
   slow: openrouter/nvidia/nemotron-3-ultra-550b-a55b:free
   vision: openrouter/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free
@@ -398,14 +398,14 @@ power:
 presencePenalty: -1
 prewalk:
   enabled: false
-proseOnlyThinking: true
+proseOnlyThinking: false
 provider:
   appendOnlyContext: auto
 providers:
   anthropic:
     serverSideFallback: true
   antigravityEndpoint: auto
-  autoThinkingMaxEffort: xhigh
+  autoThinkingMaxEffort: max
   cacheRetention: auto
   fetch: auto
   fireworksTier: standard
@@ -414,7 +414,7 @@ providers:
   ollama-cloud:
     maxConcurrency: 3
   openai-codex:
-    codeMode: "on"
+    codeMode: auto
     codeModeDirectTools: []
   openaiWebsockets: auto
   openrouterVariant: default
@@ -515,7 +515,7 @@ shellMinimizer:
   maxCaptureBytes: 4194304
   only:
     *enabledModels
-  sourceOutlineLevel: default
+  sourceOutlineLevel: aggressive
 showHardwareCursor: true
 skillful: true
 skills:

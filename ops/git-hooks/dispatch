@@ -45,7 +45,9 @@ gate_pre_push() {
 	while read -r lref lsha rref rsha; do
 		[ -n "${lsha:-}" ] || continue
 		[ "$lsha" = "$zero" ] && continue # branch delete
-		if [ "$rsha" = "$zero" ]; then
+		if [ "$rsha" = "$zero" ] || ! git cat-file -e "$rsha^{commit}" 2>/dev/null; then
+			# New branch, or the pre-push remote sha is not in this object DB
+			# (never fetched). Either way scan what this ref adds over the remotes.
 			range="$lsha --not --remotes"
 		else
 			range="$rsha..$lsha"

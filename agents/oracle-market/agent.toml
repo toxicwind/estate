@@ -17,12 +17,13 @@ tool_blocklist = []
 cache_context = false
 
 [model]
-provider = "llama-swap"
-model = "meta/llama-3.2-11b-vision-instruct"
+provider = "openai"
+model = "google/gemini-3.8-flash"
 max_tokens = 32000
 temperature = 0.2
 system_prompt = "You are a helpful AI agent."
-base_url = "http://127.0.0.1:25100/v1"
+base_url = "http://127.0.0.1:25200/v1"
+api_key_env = "FLOCK_API_KEY"
 
 [resources]
 max_memory_bytes = 268435456

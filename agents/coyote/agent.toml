@@ -17,8 +17,8 @@ tool_blocklist = []
 cache_context = false
 
 [model]
-provider = "llama-swap"
-model = "meta/llama-3.2-11b-vision-instruct"
+provider = "openai"
+model = "google/gemini-3.8-flash"
 max_tokens = 131072
 temperature = 0.7
 system_prompt = """
@@ -44,7 +44,8 @@ When given a task:
 4. End with [[OPHEL::PROCEED]] or [[OPHEL::HALT]]
 
 You can spawn child agents, trigger workflows, and use all available tools."""
-base_url = "http://127.0.0.1:25100/v1"
+base_url = "http://127.0.0.1:25200/v1"
+api_key_env = "FLOCK_API_KEY"
 
 [resources]
 max_memory_bytes = 268435456
