@@ -45,6 +45,7 @@ const { values, positionals } = parseArgs({
     help: { type: "boolean" },
   },
   allowPositionals: true,
+  strict: false,
 });
 
 if (values.help) {
