@@ -7,7 +7,7 @@ export default async function (pi: ExtensionAPI): Promise<void> {
 	await createOmniExtension(pi as unknown as OmniPI, {
 		homeEnvVar: "PI_CODING_AGENT_DIR",
 		defaultHome: "~/.tau/agent",
-		inferenceApi: "openai-responses",
+		inferenceApi: "openai-completions",
 		matchesKey,
 		createInput: (initialValue) => {
 			const input = new Input();
