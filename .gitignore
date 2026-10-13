@@ -1388,3 +1388,4 @@ id_ed25519*
 /dump.rdb
 dump.rdb
 hf-downloader/
+config/environment.d/
