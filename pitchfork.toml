@@ -467,8 +467,8 @@ auto = ["start"]
 [daemons.openfang-front]
 env = { SOVEREIGN_ROOT = "/home/toxic/estate" }
 port = 25103
-run = "exec ./stack/services/_consolidated_herd_20260924/openfang.sh"
-dir = "."
+run = "exec /home/toxic/estate/stack/services/_consolidated_herd_20260924/openfang.sh"
+dir = "/home/toxic/estate"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25103/api/health"
@@ -834,7 +834,7 @@ run = "exec /home/toxic/estate/ranch/squawk/oracle/bin/oracle_chat.py"
 dir = "/home/toxic/estate/ranch/squawk/oracle"
 mise = false
 retry = true
-env = { ORACLE_CHANNEL = "/home/toxic/hatch/agents/ember/squawk-root/bid-market" }
+env = { ORACLE_CHANNEL = "/home/toxic/.fleet-bus/squawk-root/bid-market" }
 auto = ["start"]
 
 # ranch/squawk/oracle — project-owned daemon manifest. Source of truth for 'oracle-core'.
