@@ -7,11 +7,21 @@ title = "estate secret gate"
 useDefault = true
 
 [allowlist]
-description = "Known non-credentials"
+description = "Known non-credentials and build artifacts"
 paths = [
   # Kotlin @Metadata bytecode strings in decompiled Android sources match the
   # generic-api-key entropy heuristic; they are compiler metadata, not keys.
   '''(?i)extracted/.*\.java$''',
   # Vendored upstream trees keep their own test fixtures and examples.
   '''(?i)(vendor|vendored|node_modules|testdata|fixtures)/''',
+  # Bundled / minified distribution artifacts in projects and extensions
+  '''(?i)(dist|build|\.build|out)/''',
+  '''(?i)\.(min\.js|bundle\.js|map|pak|wasm)$''',
+]
+regexes = [
+  # Telemetry instrumentation keys and dummy UUIDs
+  '''(?i)InstrumentationKey=[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}''',
+  '''(?i)00000000-0000-0000-0000-000000000000''',
+  # Example placeholders
+  '''(?i)(example|dummy|placeholder|fake|test)[-_]?(api[-_]?key|secret|token)''',
 ]
