@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Fix script for hindsight daemon - clears state and restarts with 25100 local provider
+# Fix script for hindsight daemon - clears state and restarts with flock :25193 provider
 set -euo pipefail
 
 echo "[fix-hindsight] Stopping any running hindsight..."
@@ -13,18 +13,18 @@ echo "[fix-hindsight] Clearing port conflicts..."
 fuser -k 25117/tcp 2>/dev/null || true
 fuser -k 25118/tcp 2>/dev/null || true
 
-echo "[fix-hindsight] Ensuring herd (25100) is running..."
-if ! curl -sf -m 2 http://127.0.0.1:25100/health >/dev/null 2>&1; then
+echo "[fix-hindsight] Ensuring flock (25193) is running..."
+if ! curl -sf -m 2 http://127.0.0.1:25193/health >/dev/null 2>&1; then
     echo "[fix-hindsight] Starting herd..."
     SOVEREIGN_ROOT=/home/toxic/estate bash /home/toxic/estate/stack/services/herd.sh &
     sleep 2
 fi
 
-echo "[fix-hindsight] Restarting hindsight with Qwen Flash 64K (25100)..."
+echo "[fix-hindsight] Restarting hindsight with openai/gpt-oss-20b via flock (25193)..."
 export HINDSIGHT_API_LLM_PROVIDER="openai"
-export HINDSIGHT_API_LLM_API_KEY="llama-swap-local-key"
-export HINDSIGHT_API_LLM_BASE_URL="http://127.0.0.1:25100/v1"
-export HINDSIGHT_API_LLM_MODEL="beellama/qwen-flash-64k"
+export HINDSIGHT_API_LLM_API_KEY="$(cat /home/toxic/.flock-data/client-key.corral 2>/dev/null)"
+export HINDSIGHT_API_LLM_BASE_URL="http://127.0.0.1:25193/v1"
+export HINDSIGHT_API_LLM_MODEL="openai/gpt-oss-20b"
 
 (cd /home/toxic/estate && ./stack/services/hindsight.sh) &
 echo "[fix-hindsight] Waiting 15s for startup..."

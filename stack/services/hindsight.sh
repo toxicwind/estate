@@ -14,10 +14,10 @@ CP_PORT="$HINDSIGHT_CP_PORT"
 
 # Resolve LLM credentials — prefer Hindsight-specific, fallback to OpenAI
 # 25+ providers supported via HINDSIGHT_API_LLM_PROVIDER (openai, anthropic, groq, ollama, etc.)
-LLM_KEY="${HINDSIGHT_API_LLM_API_KEY:-${OPENAI_API_KEY:-llama-swap-local-key}}"
+LLM_KEY="${HINDSIGHT_API_LLM_API_KEY:-$(cat /home/toxic/.flock-data/client-key.corral 2>/dev/null)}"
 LLM_PROVIDER="${HINDSIGHT_API_LLM_PROVIDER:-openai}"
-HINDSIGHT_API_LLM_BASE_URL="${HINDSIGHT_API_LLM_BASE_URL:-http://127.0.0.1:25100/v1}"
-LLM_MODEL="${HINDSIGHT_API_LLM_MODEL:-beellama/qwen-flash-64k}"
+HINDSIGHT_API_LLM_BASE_URL="${HINDSIGHT_API_LLM_BASE_URL:-http://127.0.0.1:25193/v1}"
+LLM_MODEL="${HINDSIGHT_API_LLM_MODEL:-openai/gpt-oss-20b}"
 # Allow empty key for local providers (ollama, lmstudio) or Cloud-bypass;
 # container still starts but retain/reflect requiring LLM will error until key is set.
 if [[ -z "${LLM_KEY}" ]]; then
