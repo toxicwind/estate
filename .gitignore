@@ -1362,6 +1362,10 @@ credentials.json
 # non-secret flock route; secrets remain in ignored flock.env
 !config/flock-ssot/route.env
 
+# config/environment.d/ — purged stale configs (2026-10-12); directory is
+# managed outside git, ignore it to prevent accidental tracking.
+config/environment.d/
+
 # 50-secrets — credential material is never committed.
 # LAST layer on purpose: no earlier negation can re-include anything below.
 # Enforced twice: here (untracked files) and by the global gitleaks hooks in
