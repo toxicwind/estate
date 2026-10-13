@@ -791,6 +791,13 @@ mise = false
 retry = true
 auto = ["start"]
 
+[daemons.bidder-finch]
+run = "exec /home/toxic/estate/ranch/squawk/oracle/bin/bidder-finch.sh"
+dir = "/home/toxic/estate/ranch/squawk/oracle"
+mise = false
+retry = true
+auto = ["start"]
+
 [daemons.bidder-raccoon]
 run = "exec /home/toxic/estate/ranch/squawk/oracle/bin/bidder-raccoon.sh"
 dir = "/home/toxic/estate/ranch/squawk/oracle"
