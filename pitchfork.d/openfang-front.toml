@@ -3,6 +3,7 @@
 
 
 [daemons.openfang-front]
+env = { SOVEREIGN_ROOT = "/home/toxic/estate" }
 port = 25103
 run = "exec ./stack/services/_consolidated_herd_20260924/openfang.sh"
 dir = "."

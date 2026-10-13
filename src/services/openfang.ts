@@ -27,7 +27,7 @@ loadSovereignPorts();
 const HOME = process.env.HOME || "/home/toxic";
 const PUBLIC = requirePort("OPENFANG_PORT");
 const KERNEL = requirePort("OPENFANG_KERNEL_PORT");
-const SOV = process.env.SOVEREIGN_ROOT || resolve(HOME, "sovereign");
+const SOV = process.env.SOVEREIGN_ROOT || resolve(HOME, "estate");
 
 function loadSecretsFile(path: string) {
   if (!existsSync(path)) return;
