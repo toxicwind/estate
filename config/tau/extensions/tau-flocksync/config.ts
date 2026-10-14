@@ -162,9 +162,12 @@ export function loadConfig(agentHome: string): FlockConfig {
 	return sanitizeConfig({
 		...settings,
 		serverUrl: process.env.FLOCKSYNC_URL ?? settings.serverUrl,
-		// FLOCKSYNC_API_KEY wins; the legacy OMNIROUTE_API_KEY is only honored when no
-		// flock key is configured, so a stale OmniRoute secret can never override it.
-		apiKey: process.env.FLOCKSYNC_API_KEY ?? (process.env.OMNIROUTE_API_KEY || undefined) ?? settings.apiKey,
+		// Only FLOCKSYNC_API_KEY can override the stored key. The legacy
+		// OMNIROUTE_API_KEY is deliberately NOT consulted: it is a different
+		// system's management token (OmniRoute on :20130), it cannot
+		// authenticate against flock's client-key gate, and a stale export
+		// of it in ~/.env silently broke every auto-sync with 401s.
+		apiKey: process.env.FLOCKSYNC_API_KEY ?? settings.apiKey,
 		providerName: process.env.FLOCKSYNC_PROVIDER_NAME ?? settings.providerName,
 	});
 }

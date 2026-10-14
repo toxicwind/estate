@@ -175,6 +175,9 @@ export interface HealthProbeResult {
 
 export async function probeHealth(config: FlockConfig, signal?: AbortSignal): Promise<HealthProbeResult> {
 	try {
+		// flock's own client-key-gated liveness probe (client_api.rs). The
+		// OmniRoute /api/health/ping path does not exist on flock; the
+		// session-gated operator surface 401s a Bearer client key.
 		const res = await fetch(`${config.serverUrl}/api/health/ping`, {
 			headers: authHeaders(config),
 			signal: requestSignal(3_000, signal),
@@ -352,7 +355,10 @@ export function usableProviderAliases(connections: ProviderConnection[], pricing
 async function fetchUsableProviders(config: FlockConfig, signal?: AbortSignal): Promise<Set<string> | undefined> {
 	try {
 		const [providers, pricing] = await Promise.all([
-			requestJson<{ connections?: ProviderConnection[] }>(config, "/api/providers?limit=10000", {}, 10_000, signal),
+			// flock client-key endpoints (client_api.rs): /api/client/providers
+			// and /api/pricing/models. The OmniRoute /api/providers path is
+			// session-gated on flock and 401s a Bearer client key.
+			requestJson<{ connections?: ProviderConnection[] }>(config, "/api/client/providers", {}, 10_000, signal),
 			requestJson<Record<string, PricingProvider>>(config, "/api/pricing/models", {}, 10_000, signal),
 		]);
 		return usableProviderAliases(providers.connections ?? [], Object.values(pricing));
@@ -364,8 +370,15 @@ async function fetchUsableProviders(config: FlockConfig, signal?: AbortSignal): 
 
 async function fetchPricing(config: FlockConfig, signal?: AbortSignal): Promise<Record<string, ModelPricing>> {
 	try {
-		const providers = await requestJson<Record<string, Record<string, ModelPricing>>>(config, "/api/pricing", {}, 10_000, signal);
+		// flock's client-key-gated cost catalog (client_api.rs).
 		const result: Record<string, ModelPricing> = {};
+		const providers = await requestJson<Record<string, Record<string, ModelPricing>>>(
+			config,
+			"/api/pricing",
+			{},
+			10_000,
+			signal,
+		);
 		for (const [provider, models] of Object.entries(providers)) {
 			if (!models || typeof models !== "object") continue;
 			for (const [model, pricing] of Object.entries(models)) {
