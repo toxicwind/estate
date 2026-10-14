@@ -13,7 +13,7 @@ Also `power_cap: 350` (max) with no soft undervolt, so load ramps heat/fans hard
 | **`lactd`** (`systemctl status lactd`) | Primary GPU fan + power control |
 | Config | `/etc/lact/config.yaml` |
 | CLI | `lact cli stats`, `lact cli power-limit get\|set` |
-| Backup script | `sovereign/bin/nvidia-fan-curve.py` (exits if lactd active) |
+| Backup script | `estate/bin/nvidia-fan-curve.py` (exits if lactd active) |
 
 ## Applied quiet profile
 - **Fan curve**: hold **30%** (hardware minimum on this 3090) until ~50°C, then gentle ramp

@@ -127,7 +127,7 @@ const FEATURES: Feat[] = [
     services: ["mesh-hub"],
     path: "/mesh/mesh-graph",
     proof_cmd: "curl -sf http://127.0.0.1:25115/mesh/mesh-graph",
-    description: "Full node graph of sovereign ports",
+    description: "Full node graph of estate ports",
   },
   {
     id: "f11-chain-health",

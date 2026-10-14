@@ -1,7 +1,7 @@
 # Port SSOT — `config/ports.env`
 
 `config/ports.env` is the single source of truth for every port on the
-sovereign estate. Pitchfork (`pitchfork.toml`) sources it at daemon launch;
+estate estate. Pitchfork (`pitchfork.toml`) sources it at daemon launch;
 `bin/claim-port` allocates from it; `bin/port-audit` diffs it against
 live listeners.
 
@@ -81,7 +81,7 @@ Fixed:
 - Registered: `EXEC_WS_PORT=8379` (bridge), `ORACLE_CORE_PORT=25151`
   (oracle-core), `AWR_MCP_PORT=25198` (MCP bridge).
 
-Left unregistered (non-sovereign / third-party, reported not fixed):
+Left unregistered (non-estate / third-party, reported not fixed):
 `:25193` flock, `:25194` ralph-dashboard, `:25195` codebase-memory-mcp
 (transient), `:25197` boundless.
 

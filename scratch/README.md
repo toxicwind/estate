@@ -1,4 +1,4 @@
-![sovereign](https://img.shields.io/badge/sovereign--projects-blue?style=for-the-badge)
+![estate](https://img.shields.io/badge/estate--projects-blue?style=for-the-badge)
 ![staging](https://img.shields.io/badge/staging--only-orange?style=for-the-badge)
 
 # scratch/ — non-production staging

@@ -1,5 +1,5 @@
 # projects/ — the estate's project workspaces
-![sovereign](https://img.shields.io/badge/sovereign--projects-blue?style=for-the-badge) ![index](https://img.shields.io/badge/projects--index-4A4A4A?style=for-the-badge)
+![estate](https://img.shields.io/badge/estate--projects-blue?style=for-the-badge) ![index](https://img.shields.io/badge/projects--index-4A4A4A?style=for-the-badge)
 
 Every directory here is a real project or research workspace on yote (Arch/CachyOS, `toxic`).
 Root-level symlinks (`herd/`, `tau/`, `yote/`, `mesh/`, `shell/`, `qed/`, `openfang/`) point here for historical paths —
@@ -8,7 +8,7 @@ follow the symlink to the project home under `projects/`.
 ## Why this exists
 
 One monorepo, many machines. `projects/` is the working layer of
-[toxicwind/sovereign-projects](https://github.com/toxicwind/sovereign-projects):
+[toxicwind/estate-projects](https://github.com/toxicwind/estate-projects):
 live services, agents, harnesses, and research probes — all committed, all durable,
 nothing as `/tmp` scratch.
 
@@ -20,7 +20,7 @@ nothing as `/tmp` scratch.
 | [`tau/`](tau/) | Tau AI agent engine | `:25125` |
 | [`yote/`](yote/) | Yote, the lightweight embeddable agent runtime | `:25102` |
 | [`openfang/`](openfang/) | OpenFang agent OS mirror (daemon `axiom`) | `:25103` |
-| [`mesh/`](mesh/) | Tool federation & routing layer — MCP gateway, sovereign-router | `:25104` |
+| [`mesh/`](mesh/) | Tool federation & routing layer — MCP gateway, estate-router | `:25104` |
 | [`qed/`](qed/) | Editor layer: the zed fork + zedra remote substrate | — |
 | [`shell/`](shell/) | Chris's quickshell home (`ii` fork of end-4 illogical-impulse) | — |
 
@@ -57,7 +57,7 @@ bash projects/ops/bin/readme-linkcheck.sh          # verify no stale links
 ## Submodules
 
 - [`projects/tau/vendors`](tau/vendors) — MoonshotAI/kimi-cli (git submodule)
-- [`projects/shell/ii`](shell/ii) — toxicwind/sovereign-end4 (git submodule)
+- [`projects/shell/ii`](shell/ii) — toxicwind/estate-end4 (git submodule)
 
 Their READMEs belong to those repos, not this one.
 
@@ -71,7 +71,7 @@ it must exit 0.
 ## License & security
 
 Unlicensed — internal estate code in the private
-[toxicwind/sovereign-projects](https://github.com/toxicwind/sovereign-projects) repo,
+[toxicwind/estate-projects](https://github.com/toxicwind/estate-projects) repo,
 not open source. Security: no provider keys or credentials are committed anywhere
 under `projects/` — keys live in `/home/toxic/.secrets` on yote. Credential-shaped
 values found in the open are honeytokens ("canaries"): never trust them at face value,

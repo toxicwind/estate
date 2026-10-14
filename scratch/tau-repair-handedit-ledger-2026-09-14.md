@@ -22,7 +22,7 @@ Conventions: `dir` is the working directory; paths below are absolute unless not
 - **Health:** `dig +short @127.0.0.1 openclaw` → `10.0.0.218`
 - **Restart policy:** retry=true, auto=start
 - **mise:** false (system binary)
-- **Groups:** core, main, all, sovereign-core
+- **Groups:** core, main, all, estate-core
 - **Replaces:** raw systemd `dnsmasq.service` — DISABLED + MASKED 2026-09-14. Never re-enable.
 - **Config:** `/etc/dnsmasq.conf` (system file, verified `dnsmasq --test` clean)
 
@@ -43,10 +43,10 @@ Conventions: `dir` is the working directory; paths below are absolute unless not
   ⚠️ NOTE: `mise.toml` health-kafka currently expects HTTP on :25144 — WRONG for real
   Kafka (binary protocol). Use TCP readiness, not HTTP.
 - **Health:** `/usr/share/kafka/bin/kafka-topics.sh --bootstrap-server 127.0.0.1:25144 --list`
-  → `__consumer_offsets`, `sovereign.events`, `sovereign.alerts`
+  → `__consumer_offsets`, `estate.events`, `estate.alerts`
 - **Restart policy:** retry=true, auto=start
 - **mise:** true
-- **Groups:** main, all, sovereign-core (NOT in core)
+- **Groups:** main, all, estate-core (NOT in core)
 - **Replaces:** raw systemd `kafka.service` — DISABLED + MASKED 2026-09-14. Never re-enable.
   (Unit failed because KAFKA_PID_DIR=/run/kafka was never created.)
 - **Config:** `/etc/kafka/server.properties` (system file; listeners 25144/9093)
@@ -54,13 +54,13 @@ Conventions: `dir` is the working directory; paths below are absolute unless not
 ## 3. tau-code (PORT MOVED 2026-09-14: 25144 → 25145)
 
 - **Start command:** `exec bun run src/server.ts --port 25145`
-- **Working dir:** `/home/toxic/projects/sovereign-projects/tau/engine/packages/metaharness`
+- **Working dir:** `/home/toxic/projects/estate-projects/tau/engine/packages/metaharness`
 - **Ports bound:** 25145/tcp (HTTP)
 - **Env vars:** `TAU_CODE_PORT=25145`
 - **Readiness:** HTTP `http://127.0.0.1:25145/`
 - **Restart policy:** retry=true, auto=start
 - **mise:** true (needs bun)
-- **Groups:** main, agents, all, sovereign-core
+- **Groups:** main, agents, all, estate-core
 - **Rationale:** 25144 belonged to kafka (6+ references incl. system config); tau-code had
   only 2. Moved to free 25145; `TAU_CODE_PORT` updated in `config/ports.env`.
 
@@ -74,10 +74,10 @@ Conventions: `dir` is the working directory; paths below are absolute unless not
 - **Restart policy:** retry=true, auto=start
 - **mise:** false (system binary)
 - **Groups:** ⚠️ NONE ASSIGNED — sibling did not add to any group. Needs decision
-  (suggest `all` + `sovereign-core`; not `core` — it's a peripheral proxy).
+  (suggest `all` + `estate-core`; not `core` — it's a peripheral proxy).
 - **Config:** `/etc/nginx/nginx.conf` — 2026-09-14 DISABLED dead upstreams:
   `/scanner/` → 127.0.0.1:62201 and `/agent/` → 127.0.0.1:62010 (both dead, zero code
-  references anywhere in sovereign/tau/mist-factory; commented out, backup at
+  references anywhere in estate/tau/mist-factory; commented out, backup at
   `/etc/nginx/nginx.conf.bak-20260914`, `nginx -t` clean). Remaining: `/crypto/` static
   alias → /home/toxic/mist-factory/dashboard/ (target dir does not exist — 404s, harmless).
 - **Replaces:** raw systemd `nginx.service` — disable pending pitchfork takeover (sibling's item).
@@ -92,13 +92,13 @@ Conventions: `dir` is the working directory; paths below are absolute unless not
 - **Health:** returns `{"title":"qdrant - vector search engine","version":"1.19.1",...}`
 - **Restart policy:** retry=true, auto=start
 - **mise:** false
-- **Groups:** core, main, all, sovereign-core
+- **Groups:** core, main, all, estate-core
 - **Note:** binary was missing; restored 2026-09-14 with official static build 1.19.1.
   Data dir `/home/toxic/estate/qdrant_data` intact.
 
 ## 6. tau daemon (BROKEN — do NOT migrate as-is)
 
-- **Current (broken):** `exec bun run /home/toxic/projects/sovereign-projects/tau/packages/coding-agent/src/cli.ts`
+- **Current (broken):** `exec bun run /home/toxic/projects/estate-projects/tau/packages/coding-agent/src/cli.ts`
   — file does not exist (repo restructured to `engine/packages/coding-agent/src/cli/*.ts`).
 - **Status 2026-09-14:** stopped + disabled after error-loop. Needs tau maintainer to pick
   the correct entrypoint. Stale copy with old layout: `/home/toxic/estate/tau/...`.

@@ -1,7 +1,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
-import { modelsJsonPath, saveSettings, type OmniConfig, type OmniSettings } from "./config.ts";
-import type { OmniPI, OmniRequestModel, OmniThinking, ProviderApi, ProviderCompat, ProviderEntry, ProviderModelConfig, ProviderThinkingLevel, ProviderThinkingLevelMap } from "./contracts.ts";
+import { modelsJsonPath, saveSettings, type FlockConfig, type FlockSettings } from "./config.ts";
+import type { FlockPI, FlockRequestModel, FlockThinking, ProviderApi, ProviderCompat, ProviderEntry, ProviderModelConfig, ProviderThinkingLevel, ProviderThinkingLevelMap } from "./contracts.ts";
 
 const DEFAULT_PROVIDER_API: ProviderApi = "openai-responses";
 export const PROVIDER_COMPAT: ProviderCompat = {
@@ -44,7 +44,7 @@ function modelCompat(omitMaxOutputTokens = false): ProviderCompat {
 	};
 }
 
-interface OmniApiModel {
+interface FlockApiModel {
 	id?: string;
 	name?: string;
 	owned_by?: string;
@@ -83,7 +83,7 @@ interface SyncedModel {
 	omitMaxOutputTokens?: boolean;
 	reasoning?: boolean;
 	supportsTools?: boolean;
-	thinking?: OmniThinking;
+	thinking?: FlockThinking;
 	thinkingLevelMap?: ProviderThinkingLevelMap;
 	input?: string[];
 }
@@ -117,7 +117,7 @@ interface ModelsJson {
 	providers?: Record<string, Partial<ProviderEntry>>;
 }
 
-function authHeaders(config: OmniConfig): Record<string, string> {
+function authHeaders(config: FlockConfig): Record<string, string> {
 	return config.apiKey ? { Authorization: `Bearer ${config.apiKey}` } : {};
 }
 
@@ -126,7 +126,7 @@ function requestSignal(timeoutMs: number, signal?: AbortSignal | null): AbortSig
 }
 
 async function requestJson<T>(
-	config: OmniConfig,
+	config: FlockConfig,
 	path: string,
 	init: RequestInit = {},
 	timeoutMs = 10_000,
@@ -143,7 +143,7 @@ async function requestJson<T>(
 }
 
 /** Older hosts build these fields without reading newer catalog capability metadata. */
-export function transformProviderPayload(payload: unknown, model: OmniRequestModel | undefined, providerName: string): unknown {
+export function transformProviderPayload(payload: unknown, model: FlockRequestModel | undefined, providerName: string): unknown {
 	if (!model || model.provider !== providerName || typeof payload !== "object" || payload === null || Array.isArray(payload)) return payload;
 
 	const next = { ...(payload as Record<string, unknown>) };
@@ -173,24 +173,12 @@ export interface HealthProbeResult {
 	unreachable: boolean;
 }
 
-export async function probeHealth(config: OmniConfig, signal?: AbortSignal): Promise<HealthProbeResult> {
+export async function probeHealth(config: FlockConfig, signal?: AbortSignal): Promise<HealthProbeResult> {
 	try {
-		let res = await fetch(`${config.serverUrl}/health`, {
+		const res = await fetch(`${config.serverUrl}/api/health/ping`, {
 			headers: authHeaders(config),
 			signal: requestSignal(3_000, signal),
 		});
-		if (!res.ok) {
-			res = await fetch(`${config.serverUrl}/api/health`, {
-				headers: authHeaders(config),
-				signal: requestSignal(3_000, signal),
-			});
-		}
-		if (!res.ok) {
-			res = await fetch(`${config.serverUrl}/v1/models`, {
-				headers: authHeaders(config),
-				signal: requestSignal(3_000, signal),
-			});
-		}
 		return { ok: res.ok, unreachable: res.status === 408 || res.status >= 500 };
 	} catch (error) {
 		if (signal?.aborted) throw error;
@@ -198,11 +186,11 @@ export async function probeHealth(config: OmniConfig, signal?: AbortSignal): Pro
 	}
 }
 
-export async function checkHealth(config: OmniConfig, signal?: AbortSignal): Promise<boolean> {
+export async function checkHealth(config: FlockConfig, signal?: AbortSignal): Promise<boolean> {
 	return (await probeHealth(config, signal)).ok;
 }
 
-export async function checkModelsEndpoint(config: OmniConfig, signal?: AbortSignal): Promise<boolean> {
+export async function checkModelsEndpoint(config: FlockConfig, signal?: AbortSignal): Promise<boolean> {
 	try {
 		const res = await fetch(`${config.serverUrl}/v1/models`, {
 			headers: authHeaders(config),
@@ -220,7 +208,7 @@ function rawModalities(value: unknown): string[] {
 	return value.map((item) => String(item).trim().toLowerCase()).filter(Boolean);
 }
 
-function normalizeInputModalities(model: OmniApiModel): string[] {
+function normalizeInputModalities(model: FlockApiModel): string[] {
 	const raw = rawModalities(model.input_modalities ?? model.input);
 	const capabilities = model.capabilities;
 	const visual =
@@ -232,7 +220,7 @@ function normalizeInputModalities(model: OmniApiModel): string[] {
 	return visual ? ["text", "image"] : ["text"];
 }
 
-function isPiChatModel(model: OmniApiModel): boolean {
+function isPiChatModel(model: FlockApiModel): boolean {
 	const type = String(model.type || "chat").toLowerCase();
 	if (NON_CHAT_TYPES.has(type)) return false;
 	const output = rawModalities(model.output_modalities ?? model.output);
@@ -240,7 +228,7 @@ function isPiChatModel(model: OmniApiModel): boolean {
 	return output.includes("text");
 }
 
-function mapThinking(model: OmniApiModel): OmniThinking | undefined {
+function mapThinking(model: FlockApiModel): FlockThinking | undefined {
 	const raw = Array.isArray(model.effort_tiers)
 		? model.effort_tiers
 		: Array.isArray(model.capabilities?.effort_tiers)
@@ -259,7 +247,7 @@ function mapThinking(model: OmniApiModel): OmniThinking | undefined {
 	return { mode: "effort", efforts };
 }
 
-function thinkingLevelMap(thinking: OmniThinking | undefined): ProviderThinkingLevelMap | undefined {
+function thinkingLevelMap(thinking: FlockThinking | undefined): ProviderThinkingLevelMap | undefined {
 	if (!thinking) return undefined;
 	const supported = new Set(thinking.efforts);
 	return {
@@ -295,6 +283,20 @@ function upsertSyncedModel(models: SyncedModel[], next: SyncedModel): void {
 	};
 }
 
+// Effusion patch: dynamic model resolution for Vercel AI Gateway (race A: provider export)
+const VERCEL_GATEWAY_ALIAS: Record<string, string> = {
+	"bytedance/seed-2.1-turbo": "auto",
+	"openai/gpt-oss-120b": "auto/smart",
+	"openai/gpt-oss-20b": "auto/fast",
+};
+
+export function resolveVercelAiGatewayModel(modelId: string): string {
+	if (!modelId) return "auto";
+	if (VERCEL_GATEWAY_ALIAS[modelId]) return VERCEL_GATEWAY_ALIAS[modelId];
+	if (modelId.startsWith("auto")) return modelId;
+	return VERCEL_GATEWAY_ALIAS[modelId] ?? "auto";
+}
+
 export function isGlobalRoutingModel(id: string): boolean {
 	return id === "auto" || id.startsWith("auto/");
 }
@@ -306,7 +308,7 @@ export function globMatches(value: string, pattern: string): boolean {
 
 export function shouldIncludeModel(
 	model: { enabled?: boolean; id: string; owned_by?: string },
-	settings: Pick<OmniSettings, "onlyShowUsableModels" | "showGlobalRoutingModels" | "includeModels" | "excludeModels">,
+	settings: Pick<FlockSettings, "onlyShowUsableModels" | "showGlobalRoutingModels" | "includeModels" | "excludeModels">,
 	usableProviders?: ReadonlySet<string>,
 ): boolean {
 	if (!settings.showGlobalRoutingModels && isGlobalRoutingModel(model.id)) return false;
@@ -347,7 +349,7 @@ export function usableProviderAliases(connections: ProviderConnection[], pricing
 	return aliases;
 }
 
-async function fetchUsableProviders(config: OmniConfig, signal?: AbortSignal): Promise<Set<string> | undefined> {
+async function fetchUsableProviders(config: FlockConfig, signal?: AbortSignal): Promise<Set<string> | undefined> {
 	try {
 		const [providers, pricing] = await Promise.all([
 			requestJson<{ connections?: ProviderConnection[] }>(config, "/api/providers?limit=10000", {}, 10_000, signal),
@@ -360,7 +362,7 @@ async function fetchUsableProviders(config: OmniConfig, signal?: AbortSignal): P
 	}
 }
 
-async function fetchPricing(config: OmniConfig, signal?: AbortSignal): Promise<Record<string, ModelPricing>> {
+async function fetchPricing(config: FlockConfig, signal?: AbortSignal): Promise<Record<string, ModelPricing>> {
 	try {
 		const providers = await requestJson<Record<string, Record<string, ModelPricing>>>(config, "/api/pricing", {}, 10_000, signal);
 		const result: Record<string, ModelPricing> = {};
@@ -392,13 +394,13 @@ export function modelCost(pricing?: ModelPricing): ProviderModelConfig["cost"] {
 	};
 }
 
-async function fetchSyncedModels(config: OmniConfig, signal?: AbortSignal): Promise<SyncedModel[]> {
-	const data = await requestJson<{ data?: Array<OmniApiModel | string> }>(config, "/v1/models", {}, 10_000, signal);
+async function fetchSyncedModels(config: FlockConfig, signal?: AbortSignal): Promise<SyncedModel[]> {
+	const data = await requestJson<{ data?: Array<FlockApiModel | string> }>(config, "/v1/models", {}, 10_000, signal);
 	const rawModels = Array.isArray(data.data) ? data.data : [];
 	const results: SyncedModel[] = [];
 
 	for (const rawModel of rawModels) {
-		const model: OmniApiModel = typeof rawModel === "string" ? { id: rawModel } : rawModel;
+		const model: FlockApiModel = typeof rawModel === "string" ? { id: rawModel } : rawModel;
 		if (!model.id || !isPiChatModel(model)) continue;
 
 		const contextWindow = positiveNumber(model.context_length) ?? positiveNumber(model.max_input_tokens);
@@ -469,7 +471,7 @@ function buildAutoModel(id: string): ProviderModelConfig {
 	});
 }
 
-export async function discoverModels(config: OmniConfig, settings: OmniSettings, signal?: AbortSignal): Promise<ProviderModelConfig[]> {
+export async function discoverModels(config: FlockConfig, settings: FlockSettings, signal?: AbortSignal): Promise<ProviderModelConfig[]> {
 	const [synced, usableProviders, pricing] = await Promise.all([
 		fetchSyncedModels(config, signal),
 		settings.onlyShowUsableModels ? fetchUsableProviders(config, signal) : undefined,
@@ -492,7 +494,7 @@ export async function discoverModels(config: OmniConfig, settings: OmniSettings,
 	];
 }
 
-function buildProviderEntry(config: OmniConfig, models: ProviderModelConfig[]): ProviderEntry {
+function buildProviderEntry(config: FlockConfig, models: ProviderModelConfig[]): ProviderEntry {
 	return {
 		baseUrl: `${config.serverUrl}/v1`,
 		apiKey: config.apiKey || "omniroute-public",
@@ -511,7 +513,7 @@ function readModelsJson(agentHome: string): ModelsJson {
 	}
 }
 
-function persistModels(agentHome: string, config: OmniConfig, models: ProviderModelConfig[]): void {
+function persistModels(agentHome: string, config: FlockConfig, models: ProviderModelConfig[]): void {
 	const path = modelsJsonPath(agentHome);
 	const file = readModelsJson(agentHome);
 	file.providers ??= {};
@@ -532,11 +534,11 @@ function persistModels(agentHome: string, config: OmniConfig, models: ProviderMo
 	writeFileSync(path, JSON.stringify(file, null, 2));
 }
 
-export async function registerOmniProvider(
-	pi: OmniPI,
+export async function registerFlockProvider(
+	pi: FlockPI,
 	agentHome: string,
-	config: OmniConfig,
-	settings: OmniSettings,
+	config: FlockConfig,
+	settings: FlockSettings,
 	signal?: AbortSignal,
 ): Promise<ProviderModelConfig[]> {
 	const models = await discoverModels(config, settings, signal);
@@ -575,13 +577,13 @@ export function normalizePersistedModels(models: Array<Partial<ProviderModelConf
 }
 
 export function isSyncStale(
-	settings: Pick<OmniSettings, "lastSuccessfulSyncAt" | "modelCacheTtlMinutes">,
+	settings: Pick<FlockSettings, "lastSuccessfulSyncAt" | "modelCacheTtlMinutes">,
 	now = Date.now(),
 ): boolean {
 	return settings.lastSuccessfulSyncAt === 0 || now - settings.lastSuccessfulSyncAt >= settings.modelCacheTtlMinutes * 60_000;
 }
 
-export function reloadOmniProvider(pi: OmniPI, agentHome: string, config: OmniConfig): void {
+export function reloadFlockProvider(pi: FlockPI, agentHome: string, config: FlockConfig): void {
 	const persisted = readModelsJson(agentHome).providers?.[config.providerName];
 	if (!persisted?.baseUrl || !persisted.models) return;
 	const models = normalizePersistedModels(persisted.models);
@@ -600,7 +602,7 @@ interface ResponsesResult {
 	output?: Array<{ content?: Array<{ text?: string }> }>;
 }
 
-export async function testChat(config: OmniConfig, model: string, signal?: AbortSignal): Promise<string> {
+export async function testChat(config: FlockConfig, model: string, signal?: AbortSignal): Promise<string> {
 	if (providerApi() === "openai-completions") {
 		const data = await requestJson<{ choices?: Array<{ message?: { content?: string } }> }>(
 			config,

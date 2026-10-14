@@ -18,7 +18,7 @@
 │   │ Tau Coding Agent                                                │   │
 │   │ Executable: /home/toxic/estate/agent                         │   │
 │   │ Config: ~/.tau/config.yml (memory.backend: hindsight)           │   │
-│   │ Client: /home/toxic/projects/sovereign-projects/tau/.../client.ts│  │
+│   │ Client: /home/toxic/projects/estate-projects/tau/.../client.ts│  │
 │   └────────────────────────────────┬────────────────────────────────┘   │
 │                                    │ Recall / Reflect                   │
 │                                    ▼                                    │
@@ -51,7 +51,7 @@
 | **25117** | **Hindsight API** | HTTP / REST | Memory ingest, semantic recall, agentic reflection |
 | **25118** | **Hindsight Control Plane** | HTTP / Web | Interactive UI dashboard and bank management |
 
-### Hindsight Container Environment (`sovereign/stack/services/hindsight.sh`)
+### Hindsight Container Environment (`estate/stack/services/hindsight.sh`)
 ```bash
 HINDSIGHT_API_PORT="25117"
 HINDSIGHT_CP_PORT="25118"

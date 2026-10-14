@@ -123,5 +123,5 @@ cp target/release/flock /home/toxic/.flock/flock   # daemon runs this copy
   **ignores an explicit `apiKey` constructor argument** when either is set. For probes use
   `env -u GOOGLE_API_KEY -u GEMINI_API_KEY`.
 - `FLOCK_API_KEY` shares a value with `NVIDIA_API_KEY` in `.secrets`. flock clients must
-  send `Authorization: Bearer $FLOCK_API_KEY`; the literal `local-sovereign` in
+  send `Authorization: Bearer $FLOCK_API_KEY`; the literal `local-estate` in
   `pitchfork.toml` is rejected by the proxy.

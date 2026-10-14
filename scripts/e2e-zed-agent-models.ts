@@ -36,7 +36,7 @@ async function chat(
       {
         role: "system",
         content:
-          "You are the Zed agent on sovereign llama-swap. Be terse. No thinking dump.",
+          "You are the Zed agent on estate llama-swap. Be terse. No thinking dump.",
       },
       { role: "user", content },
     ],

@@ -4,8 +4,8 @@ Machine-level tau agent configs — the repo-side source for the tau MCP wiring.
 
 <div align="right">
 
-[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -75,4 +75,4 @@ Verified 2026-09-19: raw MCP initialize + `tools/list` handshake OK; a live `con
 
 ## License & security
 
-MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). The gateway URL is localhost-only by design — `127.0.0.1:25127` is not on the funnel. If you ever point `mcp.json` at a non-localhost endpoint, you're exposing 31 upstream tool servers to the network: don't.
+MIT where marked — [LICENSE](https://github.com/toxicwind/estate-projects#license). The gateway URL is localhost-only by design — `127.0.0.1:25127` is not on the funnel. If you ever point `mcp.json` at a non-localhost endpoint, you're exposing 31 upstream tool servers to the network: don't.

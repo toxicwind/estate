@@ -150,6 +150,7 @@ Every row below was verified against the live box on 2026-10-02 (port open + ide
 | 🦅 **flock** | `25193` | External provider router (Rust). Strategies, key pools, 429 rotation, circuit breakers, health/Elo. Auth-gated — bring a `Bearer` key. |
 | 🧭 **sovereign-router-ts** | `25104` | Strategy router, `v3.2`. Auto strategy, 52 live models at time of writing. |
 | 🏠 **gatehouse** | `25127` | MCP gateway — tool serving, a peer of the routers, not their parent. Has a `/ui/`. |
+| 📱 **phone-sentinel** | `25178` | Network-reactive ADB sentinel for Pixel 9 Pro XL across LAN (`10.0.0.77`) & Tailscale (`100.123.57.58`). |
 | 🔑 **keypool** | `25109` | Provider key pool sidecar. `/health` → `{"ok":true,"service":"keypool"}`. |
 | 🛡️ **model-guard** | `25101` | Inference safety layer. *(Fleet note 2026-10-02: was serving its upstream-unreachable fallback when this table was written — tracked as a live issue, not doc drift.)* |
 | 💬 **squawk-ws** | `25147` | Fleet websocket — the live socket the pack talks over. |

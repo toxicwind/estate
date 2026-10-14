@@ -22,7 +22,7 @@
 
 ```typescript
 // TypeScript: spawn Go binary with structured JSON over stdin/stdout
-// Use for: llama-swap, flock, sovereign-router
+// Use for: llama-swap, flock, estate-router
 import { $ } from "bun";
 
 const result = await $`/home/toxic/bin/llama-swap --json`.json();
@@ -133,7 +133,7 @@ rust = "nightly"
 ```json
 // src/ts/package.json (Bun workspace)
 {
-  "name": "@sovereign/ts",
+  "name": "@estate/ts",
   "private": true,
   "workspaces": ["packages/*"],
   "scripts": {
@@ -176,10 +176,10 @@ Every service (Go/Rust/TS) exposes:
 /debug/pprof     # pprof (Go/Rust only)
 ```
 
-**Metrics naming**: `sovereign_<service>_<operation>_<unit>`
-- `sovereign_llama_swap_requests_total`
+**Metrics naming**: `estate_<service>_<operation>_<unit>`
+- `estate_llama_swap_requests_total`
 - `flock_request_latency_seconds`
-- `sovereign_mcp_tool_calls_total`
+- `estate_mcp_tool_calls_total`
 
 ---
 

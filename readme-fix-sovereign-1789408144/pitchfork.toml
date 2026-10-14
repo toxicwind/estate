@@ -71,7 +71,7 @@ auto = ["start"]
 
 [daemons.search-api]
 run = "exec bun --hot run apps/api/src/server.ts"
-dir = "/home/toxic/projects/sovereign-projects/sovereign-github-search"
+dir = "/home/toxic/projects/estate-projects/estate-github-search"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25112/health"
@@ -82,7 +82,7 @@ auto = ["start"]
 
 [daemons.search-ui]
 run = "exec ./node_modules/.bin/next dev -p 25114"
-dir = "/home/toxic/projects/sovereign-projects/sovereign-github-search/apps/frontend"
+dir = "/home/toxic/projects/estate-projects/estate-github-search/apps/frontend"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25114/"
@@ -159,7 +159,7 @@ auto = ["start"]
 
 [daemons.mcp-gateway]
 run = "exec bun run gateway.ts"
-dir = "./tools/sovereign-router/sovereign-mcp-gateway"
+dir = "./tools/estate-router/estate-mcp-gateway"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25120/health"
@@ -213,7 +213,7 @@ env = {
 auto = ["start"]
 
 [daemons.tau]
-run = "exec bun run /home/toxic/projects/sovereign-projects/tau/packages/coding-agent/src/cli.ts"
+run = "exec bun run /home/toxic/projects/estate-projects/tau/packages/coding-agent/src/cli.ts"
 dir = "/home/toxic"
 mise = true
 retry = true
@@ -232,7 +232,7 @@ auto = ["stop"]
 
 [daemons.tau-code]
 run = "exec bun run src/server.ts --port 25126"
-dir = "/home/toxic/projects/sovereign-projects/tau/engine/packages/metaharness"
+dir = "/home/toxic/projects/estate-projects/tau/engine/packages/metaharness"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25126/"
@@ -242,8 +242,8 @@ env = {
 auto = ["start"]
 
 [daemons.mesh]
-run = "exec /home/toxic/projects/sovereign-projects/mesh/gateway/mcpproxy-go serve --config=/home/toxic/.mcpproxy/mcp_config.json --log-level=warn --log-to-file --listen=127.0.0.1:25127"
-dir = "/home/toxic/projects/sovereign-projects/mesh/gateway"
+run = "exec /home/toxic/projects/estate-projects/mesh/gateway/mcpproxy-go serve --config=/home/toxic/.mcpproxy/mcp_config.json --log-level=warn --log-to-file --listen=127.0.0.1:25127"
+dir = "/home/toxic/projects/estate-projects/mesh/gateway"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25127/health"
@@ -273,7 +273,7 @@ daemons = ["prometheus", "grafana"]
 [groups.all]
 daemons = ["herd", "qdrant", "redis", "kafka", "hal-substrate", "yote", "search-api", "search-ui", "mesh-hub", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "hindsight", "prometheus", "grafana", "tau", "tau-code", "mesh", "build-server"]
 
-[groups.sovereign-core]
+[groups.estate-core]
 daemons = ["herd", "qdrant", "redis", "kafka", "hal-substrate", "yote", "search-api", "search-ui", "mesh-hub", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "hindsight", "prometheus", "grafana", "tau", "tau-code", "mesh", "build-server"]
 
 

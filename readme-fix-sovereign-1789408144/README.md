@@ -1,7 +1,7 @@
 <div align="right">
 
-[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-1f6feb?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-1f6feb?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -37,7 +37,7 @@ mise run health
 
 ## License & security
 
-- **License:** [MIT](https://github.com/toxicwind/sovereign-projects#license)
+- **License:** [MIT](https://github.com/toxicwind/estate-projects#license)
 - **Security:** No app auth — treat as localhost + Tailscale only. Never expose `:25100`/`:25101` to the open internet without your own gate. Zed/OpenCode provider configs and bounty providers are documented in the body.
 
 ---
@@ -123,7 +123,7 @@ clients (Zed / OpenFang / Grok / IDEs)
 
 ### flock Go port (in llama-swap fork)
 
-The TypeScript flock router (`tools/sovereign-router/sovereign-router-ts/router.ts`) has been ported to Go inside the llama-swap fork at `~/projects/llama-swap-main/internal/flock/`. This gives llama-swap native multi-provider routing with:
+The TypeScript flock router (`tools/estate-router/estate-router-ts/router.ts`) has been ported to Go inside the llama-swap fork at `~/projects/llama-swap-main/internal/flock/`. This gives llama-swap native multi-provider routing with:
 
 - **6 strategies:** hybrid, ast_race, sticky_affinity, weighted_elo, circuit_chain, fifo_matrix
 - **ELO scoring** with circuit breaker (closed/open/half)
@@ -131,11 +131,11 @@ The TypeScript flock router (`tools/sovereign-router/sovereign-router-ts/router.
 - **7 providers:** llama-swap (local), OpenRouter, NVIDIA NIM, Groq, Cerebras, Google, Mistral
 - **40+ model aliases** mapped to CODING categories
 
-The standalone Bun `sovereign-router` (`tools/sovereign-router/sovereign-router-ts/`) remains in-tree for external tooling use — no port assigned in `config/ports.env`, not started by `mise run up`. The Go port inside llama-swap is the primary router.
+The standalone Bun `estate-router` (`tools/estate-router/estate-router-ts/`) remains in-tree for external tooling use — no port assigned in `config/ports.env`, not started by `mise run up`. The Go port inside llama-swap is the primary router.
 
 ### Sovereign Monitor — Agentic Runtime Intelligence
 
-`tools/sovereign-monitor/` provides kernel-aware, autonomous failure-recovery primitives used by the agent loop itself:
+`tools/estate-monitor/` provides kernel-aware, autonomous failure-recovery primitives used by the agent loop itself:
 
 | Module                  | Coverage | Purpose                                                                                                           |
 | ----------------------- | -------- | ----------------------------------------------------------------------------------------------------------------- |
@@ -156,7 +156,7 @@ Two complementary audit systems live in this repo:
 - `projects.map` — benign path map of known projects (renamed from `projects.env` — the `.env` suffix was misleading)
 - Outputs: CSV, Parquet, JSON (`repo-audit.csv`, `repo-audit.parquet`, `repo-audit.json`)
 
-**`src/maximal-sovereign-agentic-audit/`** — maximal modular audit framework (`local-audit.ts` entry):
+**`src/maximal-estate-agentic-audit/`** — maximal modular audit framework (`local-audit.ts` entry):
 
 - `modules/precheck.ts` — pre-flight checks; `modules/autofix.ts` — `--fix` auto-remediation
 - `modules/git-scanner.ts` + `modules/parser.ts` + `modules/dataframe.ts` — repo discovery and shaping
@@ -164,7 +164,7 @@ Two complementary audit systems live in this repo:
 - `benchmark.ts` — audit benchmarking harness
 
 ```bash
-bun src/maximal-sovereign-agentic-audit/src/index.ts -- [--json] [--parquet] [--fix] [--completions]
+bun src/maximal-estate-agentic-audit/src/index.ts -- [--json] [--parquet] [--fix] [--completions]
 ```
 
 ### Quickshell Screenshot Integration
@@ -209,12 +209,12 @@ Access services **directly** on their ports (LAN or Tailscale MagicDNS). Optiona
 
 ---
 
-## Workspaces (`toxicwind/sovereign-projects`)
+## Workspaces (`toxicwind/estate-projects`)
 
 The **Sovereign Workspaces** repo is the unified workspace layer that operates in tandem with this control plane.
 
-- **GitHub**: [toxicwind/sovereign-projects](https://github.com/toxicwind/sovereign-projects)
-- **Local**: `/home/toxic/projects/sovereign-projects/`
+- **GitHub**: [toxicwind/estate-projects](https://github.com/toxicwind/estate-projects)
+- **Local**: `/home/toxic/projects/estate-projects/`
 - **Subfolders**: `herd`, `mesh`, `tau`, `yote`, `openfang`, `qed`, `shell`, `boundless`, `packages`
 
 | Workspace | Directory | Role | Port |
@@ -230,7 +230,7 @@ The **Sovereign Workspaces** repo is the unified workspace layer that operates i
 
 ```bash
 # Clone the workspaces
-git clone https://github.com/toxicwind/sovereign-projects.git /home/toxic/projects/sovereign-projects
+git clone https://github.com/toxicwind/estate-projects.git /home/toxic/projects/estate-projects
 ```
 
 Orchestration: `pitchfork.toml` (native config, no generation). `mise run up` starts the `core` group.
@@ -265,7 +265,7 @@ Never invent port numbers in app code — use env / `src/lib/ports.ts` / `stack/
 ## Project layout
 
 ```text
-sovereign/
+estate/
 ├── README.md
 ├── AGENTS.md                 → global rules (symlink)
 ├── config/ports.env          # SSOT ports
@@ -273,11 +273,11 @@ sovereign/
 ├── pitchfork.toml            # native config (no generation)
 ├── stack/services/*.sh       # entry shims (llama-swap.sh, rust-web-hot.sh, ...)
 ├── src/                      # Bun apps (services, deploy, mcp, lib)
-├── src/maximal-sovereign-agentic-audit/  # maximal modular audit framework (local-audit.ts)
+├── src/maximal-estate-agentic-audit/  # maximal modular audit framework (local-audit.ts)
 ├── skills/repo-audit/        # repo-audit skill (repo_audit.py, local_audit.py, projects.map)
 ├── rust_algo_web/            # rust-web dashboard + watchdog
-├── tools/sovereign-router/   # TS sovereign-router (standalone; no SSOT port)
-├── tools/sovereign-monitor/  # recursive-fallback, watchdog, repo-radar (agentic runtime)
+├── tools/estate-router/   # TS estate-router (standalone; no SSOT port)
+├── tools/estate-monitor/  # recursive-fallback, watchdog, repo-radar (agentic runtime)
 ├── tests/                    # unit + integration tests (≥88% coverage enforced)
 ├── grafana/provisioning/     # plugins/ + alerting/ dirs (empty but required)
 └── tailscale/                # optional Funnel (no Caddy)
@@ -295,7 +295,7 @@ Zed is configured to connect directly to Sovereign Stack services. All provider 
 | ----------------- | ------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------- |
 | **nvidia**        | `NvidiaLanguageModelProvider`   | external | Direct NVIDIA NIM access (`integrate.api.nvidia.com/v1`). Inkling SUDO MAX, full JSON Schema, interleaved reasoning. |
 | **llama-swap**    | `LlamaCppLanguageModelProvider` | `:25100` | Local GGUF inference via the toxicwind fork. Routes to beellama (`:25122`), ik_llama (`:25123`), turboquant (`:25124`) backends. |
-| **mcpproxy**      | `mcpproxy-sovereign` context server | `:25127` | MCP federation (30+ MCPs → 1 endpoint). Connected via `mcp-remote` HTTP→stdio bridge.                          |
+| **mcpproxy**      | `mcpproxy-estate` context server | `:25127` | MCP federation (30+ MCPs → 1 endpoint). Connected via `mcp-remote` HTTP→stdio bridge.                          |
 
 ### OpenCode provider
 
@@ -303,7 +303,7 @@ The **OpenCode** provider (`opencode` in settings) connects to a subscription-ba
 
 ### Bounty providers (OpenAI-compatible)
 
-Free/keyless endpoints configured under `language_models.openai_compatible` (via the standalone sovereign-router — no SSOT port assigned):
+Free/keyless endpoints configured under `language_models.openai_compatible` (via the standalone estate-router — no SSOT port assigned):
 
 | Name                             | Model                       | Auth             |
 | -------------------------------- | --------------------------- | ---------------- |

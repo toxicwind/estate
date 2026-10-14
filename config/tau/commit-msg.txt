@@ -1,0 +1,27 @@
+feat(ai,agent): preserve reasoning_details on replay + general tool-arg chunking (Dots 3 bundle)
+
+Replay (fix-replay): reasoning_details arriving at message level (no owning
+tool call, e.g. reasoning-only turns) were silently dropped during stream
+capture, and reasoning-only assistant turns were skipped from replay
+history entirely — providers that validate reasoning history (OpenRouter/
+Dots) then kill the continuation (finish=length, zero content).
+- AssistantMessage.messageReasoningDetails captures unowned details.
+- Replay merges them into reasoning_details, deduped by (id, data)
+  against per-tool-call details; reasoning-only turns now survive replay.
+
+Chunking (fix-large-payload): general mechanism, not tied to any tool or
+call site. Models collapse oversized argument payloads (~200 items /
+~2.9k tokens) to {} with finish=error.
+- @tau/tau-ai/utils/chunk-tool-args: pure planner (80-item ceiling) +
+  sequential executor.
+- AgentTool.chunking {field, maxItems}: tools opt in; the agent loop
+  splits oversized calls into sequential chunked calls and merges results
+  (content concatenated; array details concatenated, else last wins).
+
+Also fixes a pre-existing type error: roost loadProviderDefs opts type
+was missing dropIns (ranch auto-loader parity) — repo check:types was red.
+
+Tests: chunk-tool-args (12), reasoning-details-replay (3),
+agent-loop-chunking (2); regressions: forced-tool-retry/dots floors/
+coercion (33), completions suites (132), agent-loop (132). Typecheck +
+oxlint clean.

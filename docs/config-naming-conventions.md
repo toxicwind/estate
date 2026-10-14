@@ -1,4 +1,4 @@
-# Config naming conventions (sovereign)
+# Config naming conventions (estate)
 
 Written 2026-09-21 after the config-naming audit (Chris: the old mix was
 confusing). This is the convention the tree now follows. The repeatable

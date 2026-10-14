@@ -15,7 +15,7 @@ import {
 
 const SCRATCH =
   process.env.SCRATCH ||
-  join(process.env.HOME || "/home/toxic", "sovereign/.state/rank-route");
+  join(process.env.HOME || "/home/toxic", "estate/.state/rank-route");
 mkdirSync(SCRATCH, { recursive: true });
 
 const V1 = swapV1Url();

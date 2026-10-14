@@ -7,22 +7,22 @@ both are the source of truth, this file explains them.
 **Read this first.** `pitchfork.toml` groups daemons by *which project owns the
 directory*; that is a filing question, not a "what does this do" question. The
 categories below answer the second question. The two do not agree — 38 daemons
-filed under one section called `sovereign` include nginx, qdrant, grafana and
+filed under one section called `estate` include nginx, qdrant, grafana and
 the agent runtime, which have nothing in common.
 
 ## Naming
 
-The `sovereign` prefix is dead. The control plane is `estate/`; the namespace
+The `estate` prefix is dead. The control plane is `estate/`; the namespace
 survives in env var names (`SOVEREIGN_ROOT`, `SOVEREIGN_PROFILE`,
-`SOVEREIGN_TRUSTED_PARENT`), in the `sovereign_session` cookie, and in four
+`SOVEREIGN_TRUSTED_PARENT`), in the `estate_session` cookie, and in four
 daemon names that are kept because renaming them breaks live state:
 
 | daemon | reality |
 |---|---|
-| `sovereign-router` `:25104` | live and healthy (`sovereign-router-ts v3.2`). **Not** merged into flock — `ports.env` claimed that and it was wrong; flock `:25193` is stopped. Two different routers. Owned by `ranch/mesh/router/`, so it is ranch, not estate. |
-| `sovereign-exporter` `:25213` | a prometheus textfile collector. estate-owned. |
-| `sovereign-chat` `:25120` | `tools/sovereign-chat`, a real tool directory. |
-| `sovereign-stream-broker` `:25215` | `ranch/stream-broker`. ranch-owned. |
+| `estate-router` `:25104` | live and healthy (`estate-router-ts v3.2`). **Not** merged into flock — `ports.env` claimed that and it was wrong; flock `:25193` is stopped. Two different routers. Owned by `ranch/mesh/router/`, so it is ranch, not estate. |
+| `estate-exporter` `:25213` | a prometheus textfile collector. estate-owned. |
+| `estate-chat` `:25120` | `tools/estate-chat`, a real tool directory. |
+| `estate-stream-broker` `:25215` | `ranch/stream-broker`. ranch-owned. |
 
 ## Ports
 
@@ -46,18 +46,18 @@ herd → flock`.
 | daemon | port | why it exists |
 |---|---|---|
 | `herd` | 25100 | The local model router. ELO-ranks providers, enforces the circuit breaker, owns the 25xxx model path. |
-| `sovereign-router` | 25104 | The older TS router, still serving. Runs *beside* herd, not behind it. Superseded but not retired — killing it is a separate decision. |
+| `estate-router` | 25104 | The older TS router, still serving. Runs *beside* herd, not behind it. Superseded but not retired — killing it is a separate decision. |
 | `flock` | 25193 | The cloud/paid provider router. Holds the `VANSROUTER_API_KEY` namespace vansrouter used to own. |
 | `cuttinggate` | 25200 | The guard plane in front of herd and flock: quarantine, circuit breaker, credential rotation, winner ledger. Its project overlay (`ranch/mesh/proxy/cuttinggate/pitchfork.d/cuttinggate.toml`) supplies `CUTTINGGATE_PORT=25200` and the readiness URL, so the top-level daemon object has no `port =` field. Not in `groups.*` because it fronts everything else. |
 | `mesh-hub` | 25115 | MCP registry. Answers "which MCPs exist". |
 | `gatehouse` | 25127 | MCP meta-tool layer — the gatehouse MCP endpoint itself. The SSOT still names this port `MCPPROXY_GO_PORT`. |
 | `null-g-proxy` | 25107 | Edge proxy that returns null for blocked traffic. |
-| `keypool` | 25109 | Key lifecycle for the paid providers. `sovereign-router` depends on it. |
+| `keypool` | 25109 | Key lifecycle for the paid providers. `estate-router` depends on it. |
 | `model-guard` | 25101 | Card-derived model request-contract enforcement. |
 | `coyote` | 25143 | Agent runtime. |
 | `yote` | 25102 | Minimal agent runtime. |
 | `duet-yote` | — | Second yote instance. |
-| `sovereign-chat` | 25120 | Fleet chat over tailnet + loopback. |
+| `estate-chat` | 25120 | Fleet chat over tailnet + loopback. |
 | `fleet-feed` | 25201 | Fleet roster + per-agent history + live ws feed. Was `rust-web`'s `rust_algo_web/src/agents.rs`, ported to TS. |
 | `fleet-ui` | — | The squawk shell; fleet is one tab among channels. |
 | `tau` | 25111 | The agent engine, behind `chute.mjs`. |
@@ -77,7 +77,7 @@ depends on it.
 | `nats`, `nats-tail` | — | NATS bus and its tail. |
 | `squawk-relay-sink`, `squawk-relay-forward` | — | The fleet message spool; sink receives, forward relays cell↔host. |
 | `windmill` | 25219 | GPU/PCIe telemetry daemon. |
-| `sovereign-stream-broker` | 25215 | Stream broker. ranch-owned. |
+| `estate-stream-broker` | 25215 | Stream broker. ranch-owned. |
 | `task-launch` | — | Long-running task launcher. |
 
 ## 3. Estate — observability (10)
@@ -87,7 +87,7 @@ depends on it.
 | `prometheus` | 25105 | Metrics. |
 | `grafana` | 25110 | Dashboards. |
 | `node-exporter` | 25211 | Host metrics. |
-| `sovereign-exporter` | 25213 | Estate-specific metrics into the prometheus textfile collector. |
+| `estate-exporter` | 25213 | Estate-specific metrics into the prometheus textfile collector. |
 | `openfang`, `openfang-front` | 25196/25103 | The inference engine and its public proxy. |
 | `openfang-health` | — | Live liveness + provider audit for the openfang stack. |
 | `bench-radar` | 25181 | Nightly benchmark regression radar. |
@@ -159,7 +159,7 @@ services the estate runs for itself, they are the bidding machinery.
 
 `ranch/` is its own git repo. These are composed into the parent config but the
 project owns the code: `gatehouse`, `cuttinggate`, `fleet-ui`, `fleet-feed`,
-`nats`, `nats-tail`, the six oracle daemons, `sovereign-stream-broker`,
+`nats`, `nats-tail`, the six oracle daemons, `estate-stream-broker`,
 `windmill`, `task-launch`, `yote`, `flock`, `mesh-landing`,
 `squawk-relay-*`, `keypool`. `mbx-cache` is estate-owned under `ops/`, not a
 ranch project.

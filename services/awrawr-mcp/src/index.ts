@@ -322,8 +322,22 @@ async function runArgv(
 
 function capOut(prefix: string, out: string): { text: string; truncated: boolean } {
   const truncated = out.length > OUT_CAP;
-  const text = out ? prefix + out.slice(0, OUT_CAP) : prefix + "(no output)";
-  return { text, truncated };
+  if (!truncated) {
+    const text = out ? prefix + out.slice(0, OUT_CAP) : prefix + "(no output)";
+    return { text, truncated: false };
+  }
+  // First-class truncated output: save full version to tmp for retrieval
+  const tmpDir = "/tmp/awrawr-mcp";
+  try {
+    require("node:fs").mkdirSync(tmpDir, { recursive: true });
+  } catch {}
+  const tmpFile = `${tmpDir}/out-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.txt`;
+  try {
+    require("node:fs").writeFileSync(tmpFile, out, "utf8");
+  } catch {}
+  const text = prefix + out.slice(0, OUT_CAP) + `
+...[TRUNCATED ${out.length} chars total, full output saved to ${tmpFile}]`;
+  return { text, truncated: true };
 }
 
 function elapsedMs(t0: number): number {

@@ -117,7 +117,7 @@ sequence.)
      `LONGCTX_2M_MODEL` in `callOne` with a filtered 2M-candidate selection
      keyed on `v.estTokens`; secondary point `longctx2MPinEligible` ~905
      post-gate.
-   - Nested duplicate found: `sovereign-router-ts/sovereign-router-ts/`
+   - Nested duplicate found: `estate-router-ts/estate-router-ts/`
      (stale-vs-canonical mapping needed before edits).
 2. **de308637's in-progress item** ("verify live endpoints") — live receipts:
    - `GET :25104/health` → **200**; `POST :25104/v1/bodybuilder` → **200**.

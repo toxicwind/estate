@@ -158,7 +158,7 @@ async function runMcp(
     params: {
       protocolVersion: "2024-11-05",
       capabilities: {},
-      clientInfo: { name: "sovereign-zed-proof", version: "1.0.0" },
+      clientInfo: { name: "estate-zed-proof", version: "1.0.0" },
     },
   });
   const init = await c.read(25000);
@@ -237,7 +237,7 @@ async function agentTurn(model: string, prompt: string, maxTokens: number) {
     content: visible.slice(0, 800),
     content_visible: content.slice(0, 800),
     usage: json?.usage,
-    path: "Zed language_models → http://127.0.0.1:25100 (llama.cpp + sovereign-llama-swap)",
+    path: "Zed language_models → http://127.0.0.1:25100 (llama.cpp + estate-llama-swap)",
   };
 }
 
@@ -318,7 +318,7 @@ const settingsRaw = readFileSync(
 const settingsProof = {
   ghas_enabled: settingsRaw.includes("ghas-mcp-stdio"),
   llama_cpp_25100: settingsRaw.includes("127.0.0.1:25100"),
-  sovereign_llama_swap: settingsRaw.includes("sovereign-llama-swap"),
+  estate_llama_swap: settingsRaw.includes("estate-llama-swap"),
   model_a: settingsRaw.includes(MODEL_A),
   model_b: settingsRaw.includes(MODEL_B),
   enable_all_context_servers: settingsRaw.includes(

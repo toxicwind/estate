@@ -1,7 +1,7 @@
 # Estate conventions
 
 > The rules the awrawr-pc estate actually follows. Written 2026-10-02 while the
-> `sovereign → estate` restructure was landing. Every rule here was paid for
+> `estate → estate` restructure was landing. Every rule here was paid for
 > with a real breakage; when one of them stops being true, delete the rule
 > rather than leaving a lie in the docs.
 >
@@ -15,7 +15,7 @@
 
 ```
 /home/toxic/
-├── estate/                  # control plane. Git repo: toxicwind/sovereign-projects
+├── estate/                  # control plane. Git repo: toxicwind/estate-projects
 │   ├── ranch/               # project monorepo. Git repo: toxicwind/ranch
 │   ├── vendored/            # third-party checkouts, own remotes, never indexed
 │   ├── var/                 # runtime: archives, reconciliation, legacy, scratch
@@ -28,7 +28,7 @@
 │   └── engines/ buildsrv/ forensics-srv/ grafana/ keypool/ assets/
 ├── projects -> estate/ranch # compat symlink
 ├── ranch    -> estate/ranch # compat symlink
-└── sovereign -> estate      # compat symlink
+└── estate -> estate      # compat symlink
 ```
 
 **Rule 1.1 — Anything with its own git history gets its own tier.**
@@ -118,7 +118,7 @@ runtime config SSOT (identity, stream tuning, model names). Secrets live in
 > **Resolved 2026-10-03.** All four were real; each is closed.
 > `SCOUT_BASE_URL`/`SCOUT_API_KEY`/`SCOUT_MODEL` were removed from the estate
 > config — zero consumers, and `/home/toxic/.tau/.env` defines all three with
-> different values (`:25193` + `sovereign/free`). Two contradictory copies of one
+> different values (`:25193` + `estate/free`). Two contradictory copies of one
 > setting is worse than one, so the estate defers to the agent config that reads
 > them. `.env` §8 and `config/tau/.env` §8 no longer declare ports: each carried
 > six keys under names that disagreed with the SSOT, and `MCPPROXY_PORT` pointed

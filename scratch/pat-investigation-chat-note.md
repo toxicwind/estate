@@ -13,7 +13,7 @@ Confirming + extending the 18:38 wrap-up with independent checks:
    auto-revokes PATs found in public repos, so a live PAT = it was
    never pushed anywhere public. Answer to "did you commit it and
    push??": no.
-3. `git log -S` on the fragment is clean in: sovereign, squawk,
+3. `git log -S` on the fragment is clean in: estate, squawk,
    moonbox-skills-deploy, moonbox-live (including .git_repos/).
    Working-tree search across /home/toxic: clean. Both moonbox-live
    remotes (moonbox-live, local-work-archive) are PRIVATE anyway.

@@ -12,7 +12,7 @@ parseable into these layers. If it isn't, it's a bug — run the validator.
 
 | # | Layer | What it is | Examples |
 |---|-------|-----------|----------|
-| 1 | **Lane** (execution source) | WHERE it runs. Tau provider name. Closed set: `herd`, `sovereign` | `herd/…`, `sovereign/free` |
+| 1 | **Lane** (execution source) | WHERE it runs. Tau provider name. Closed set: `herd`, `estate` | `herd/…`, `estate/free` |
 | 2 | **Source** (who serves it) | Local: the fork/builder. Cloud: the API provider (peer name) | `beellama`, `mradermacher`, `jackrong`, `mistral`, `moonshot`, `gemini`, `openrouter-free`, `flock-direct`, `toolcall-local` |
 | 3 | **Identity** (upstream model) | The model family, no provider prefix | `exaone-4.0-1.2b`, `qwen3.5-9b-deepseek-v4-flash`, `gemma-4-12b`, `qwen-flash`, `ministral-8b-latest`, `kimi-k2.6` |
 | 4 | **Variant** (quant+ctx+build) | Quantization, context window, build flags | `iq4xs-32k`, `q4km-64k`, `da-128k`, `uncensored`, `i1` |
@@ -34,7 +34,7 @@ parseable into these layers. If it isn't, it's a bug — run the validator.
 - The upstream ID is sent VERBATIM to the provider proxy — never shortened.
 
 **Tau client ref:** `{lane}/{model-or-alias}`
-- `herd/qwen-flash-da-128k`, `herd/beellama/exaone-4-0-1-2b-iq4xs`, `sovereign/free`
+- `herd/qwen-flash-da-128k`, `herd/beellama/exaone-4-0-1-2b-iq4xs`, `estate/free`
 
 ## Rules
 

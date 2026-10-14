@@ -6,13 +6,13 @@ import type { AgentHomeOptions } from "./contracts.ts";
 export const ON_UNREACHABLE_VALUES = ["none", "host-fallback"] as const;
 export type OnUnreachable = (typeof ON_UNREACHABLE_VALUES)[number];
 
-export interface OmniConfig {
+export interface FlockConfig {
 	serverUrl: string;
 	apiKey: string;
 	providerName: string;
 }
 
-export interface OmniSettings {
+export interface FlockSettings {
 	serverUrl: string;
 	providerName: string;
 	onlyShowUsableModels: boolean;
@@ -23,7 +23,7 @@ export interface OmniSettings {
 	modelCacheTtlMinutes: number;
 	/** Background catalog refresh while the host is running. 0 disables. Default 300 seconds. */
 	autoSyncIntervalSeconds: number;
-	/** Display gateway-reported tok/s after OmniRoute turns. */
+	/** Display gateway-reported tok/s after flock turns. */
 	showGatewayTokensPerSecond: boolean;
 	lastSuccessfulSyncAt: number;
 	onUnreachable: OnUnreachable;
@@ -38,15 +38,15 @@ export interface OmniSettings {
  * reading it here keeps the extension from hardcoding another service's port.
  */
 function defaultServerUrl(): string {
-	const port = process.env.FLOCKSYNC_PORT ?? process.env.OMNIROUTE_PORT ?? "20130";
+	const port = process.env.FLOCKSYNC_PORT ?? "25193";
 	return `http://127.0.0.1:${port}`;
 }
 
 export const EXTENSION_STATE_DIR = "tau-flocksync";
 export const LEGACY_EXTENSION_STATE_DIR = "pi-omniroute-sync";
-const DEFAULT_SETTINGS: OmniSettings = {
+const DEFAULT_SETTINGS: FlockSettings = {
 	serverUrl: defaultServerUrl(),
-	providerName: "omni",
+	providerName: "flock",
 	onlyShowUsableModels: true,
 	showGlobalRoutingModels: true,
 	includeModels: [],
@@ -80,7 +80,7 @@ export function settingsPath(agentHome: string): string {
 	return primary;
 }
 
-export function sanitizeSettings(input: Partial<OmniSettings>): OmniSettings {
+export function sanitizeSettings(input: Partial<FlockSettings>): FlockSettings {
 	// Accept settings written by the short-lived millisecond version of autosync.
 	const legacyIntervalMs = (input as { autoSyncIntervalMs?: unknown }).autoSyncIntervalMs;
 	const intervalSeconds = input.autoSyncIntervalSeconds ?? (typeof legacyIntervalMs === "number" ? legacyIntervalMs / 1000 : undefined);
@@ -111,7 +111,7 @@ export function sanitizeSettings(input: Partial<OmniSettings>): OmniSettings {
 	};
 }
 
-export function loadSettings(agentHome: string): OmniSettings {
+export function loadSettings(agentHome: string): FlockSettings {
 	try {
 		return sanitizeSettings(JSON.parse(readFileSync(settingsPath(agentHome), "utf8")));
 	} catch {
@@ -135,15 +135,15 @@ export function resolveConfiguredServerUrl(agentHome: string): string {
 	return normalizeServerUrl(process.env.OMNIROUTE_URL ?? settings.serverUrl);
 }
 
-export function loadProbeConfig(agentHome: string): OmniConfig {
+export function loadProbeConfig(agentHome: string): FlockConfig {
 	const runtime = loadConfig(agentHome);
 	return { ...runtime, serverUrl: resolveConfiguredServerUrl(agentHome) };
 }
 
-export function loadHopSettings(agentHome: string): Pick<OmniSettings, "onUnreachable" | "fallbackModel"> {
+export function loadHopSettings(agentHome: string): Pick<FlockSettings, "onUnreachable" | "fallbackModel"> {
 	const settings = loadSettings(agentHome);
-	const onUnreachable = process.env.OMNIROUTE_ON_UNREACHABLE;
-	const fallbackModel = process.env.OMNIROUTE_FALLBACK_MODEL;
+	const onUnreachable = process.env.FLOCKSYNC_ON_UNREACHABLE ?? process.env.OMNIROUTE_ON_UNREACHABLE;
+	const fallbackModel = process.env.FLOCKSYNC_FALLBACK_MODEL ?? process.env.OMNIROUTE_FALLBACK_MODEL;
 	return {
 		onUnreachable: ON_UNREACHABLE_VALUES.includes(onUnreachable as OnUnreachable)
 			? (onUnreachable as OnUnreachable)
@@ -152,22 +152,24 @@ export function loadHopSettings(agentHome: string): Pick<OmniSettings, "onUnreac
 	};
 }
 
-export function sanitizeConfig(input: Partial<OmniConfig>): OmniConfig {
+export function sanitizeConfig(input: Partial<FlockConfig>): FlockConfig {
 	const settings = sanitizeSettings(input);
 	return { serverUrl: settings.serverUrl, apiKey: String(input.apiKey ?? ""), providerName: settings.providerName };
 }
 
-export function loadConfig(agentHome: string): OmniConfig {
+export function loadConfig(agentHome: string): FlockConfig {
 	const settings = loadSettings(agentHome);
 	return sanitizeConfig({
 		...settings,
-		serverUrl: process.env.OMNIROUTE_URL ?? settings.serverUrl,
-		apiKey: process.env.OMNIROUTE_API_KEY ?? settings.apiKey,
-		providerName: process.env.OMNIROUTE_PROVIDER_NAME ?? settings.providerName,
+		serverUrl: process.env.FLOCKSYNC_URL ?? settings.serverUrl,
+		// FLOCKSYNC_API_KEY wins; the legacy OMNIROUTE_API_KEY is only honored when no
+		// flock key is configured, so a stale OmniRoute secret can never override it.
+		apiKey: process.env.FLOCKSYNC_API_KEY ?? (process.env.OMNIROUTE_API_KEY || undefined) ?? settings.apiKey,
+		providerName: process.env.FLOCKSYNC_PROVIDER_NAME ?? settings.providerName,
 	});
 }
 
-export function saveSettings(agentHome: string, settings: OmniSettings): void {
+export function saveSettings(agentHome: string, settings: FlockSettings): void {
 	const path = settingsPath(agentHome);
 	mkdirSync(dirname(path), { recursive: true, mode: 0o700 });
 	writeFileSync(path, JSON.stringify(sanitizeSettings(settings), null, 2), { mode: 0o600 });
@@ -175,7 +177,7 @@ export function saveSettings(agentHome: string, settings: OmniSettings): void {
 	chmodSync(path, 0o600);
 }
 
-export function saveConfig(agentHome: string, config: OmniConfig, currentSettings = loadSettings(agentHome)): void {
+export function saveConfig(agentHome: string, config: FlockConfig, currentSettings = loadSettings(agentHome)): void {
 	saveSettings(agentHome, sanitizeSettings({ ...currentSettings, ...config }));
 }
 

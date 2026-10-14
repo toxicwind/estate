@@ -1,32 +1,32 @@
 export type NotificationType = "info" | "warning" | "error";
 
-export interface OmniComponent {
+export interface FlockComponent {
 	render(width: number): readonly string[];
 	handleInput?(data: string): void;
 	invalidate(): void;
 }
 
-export interface OmniInput extends OmniComponent {
+export interface FlockInput extends FlockComponent {
 	onSubmit?: (value: string) => void;
 	onEscape?: () => void;
 	getValue(): string;
 	setValue(value: string): void;
 }
 
-export interface OmniTheme {
+export interface FlockTheme {
 	fg(color: "accent" | "dim" | "error" | "muted" | "success" | "text" | "warning", text: string): string;
 	bold(text: string): string;
 }
 
-export interface OmniTUI {
+export interface FlockTUI {
 	requestRender(): void;
 }
 
-export interface OmniUI {
+export interface FlockUI {
 	input(title: string, placeholder?: string): Promise<string | undefined>;
 	confirm(title: string, message: string): Promise<boolean>;
 	custom<T>(
-		factory: (tui: OmniTUI, theme: OmniTheme, keybindings: unknown, done: (result: T) => void) => OmniComponent,
+		factory: (tui: FlockTUI, theme: FlockTheme, keybindings: unknown, done: (result: T) => void) => FlockComponent,
 		options?: {
 			overlay?: boolean;
 			overlayOptions?: { width?: number | string; minWidth?: number; anchor?: string; margin?: number };
@@ -36,7 +36,7 @@ export interface OmniUI {
 	setStatus(key: string, text: string | undefined): void;
 }
 
-export interface OmniRequestModel {
+export interface FlockRequestModel {
 	provider?: string;
 	id?: string;
 	omitMaxOutputTokens?: boolean;
@@ -72,24 +72,24 @@ export interface AgentEndEvent {
 	messages: AgentEndMessage[];
 }
 
-export interface OmniModelRegistry {
+export interface FlockModelRegistry {
 	find(provider: string, id: string): unknown;
 }
 
-export interface OmniContext {
+export interface FlockContext {
 	hasUI: boolean;
 	mode: "tui" | "rpc" | "json" | "print";
-	model?: OmniRequestModel;
+	model?: FlockRequestModel;
 	signal?: AbortSignal;
-	ui: OmniUI;
-	modelRegistry?: OmniModelRegistry;
+	ui: FlockUI;
+	modelRegistry?: FlockModelRegistry;
 }
 
 export type ProviderApi = "openai-completions" | "openai-responses";
 export type ProviderThinkingLevel = "off" | "minimal" | "low" | "medium" | "high" | "xhigh" | "max";
 export type ProviderThinkingLevelMap = Partial<Record<ProviderThinkingLevel, string | null>>;
 
-export interface OmniThinking {
+export interface FlockThinking {
 	mode: "effort";
 	efforts: string[];
 }
@@ -125,7 +125,7 @@ export interface ProviderModelConfig {
 	omitMaxOutputTokens?: boolean;
 	supportsTools?: boolean;
 	thinkingLevelMap?: ProviderThinkingLevelMap;
-	thinking?: OmniThinking;
+	thinking?: FlockThinking;
 	compat?: ProviderCompat;
 }
 
@@ -144,7 +144,7 @@ interface ToolResult<TDetails> {
 	details: TDetails;
 }
 
-export interface OmniPI {
+export interface FlockPI {
 	registerProvider(name: string, config: ProviderEntry): void;
 	registerTool<TDetails>(tool: {
 		name: string;
@@ -158,22 +158,22 @@ export interface OmniPI {
 		opts: {
 			description: string;
 			getArgumentCompletions?(prefix: string): { value: string; label: string }[];
-			handler(args: string, ctx: OmniContext): Promise<void>;
+			handler(args: string, ctx: FlockContext): Promise<void>;
 		},
 	): void;
-	on(event: "session_start", handler: (event: unknown, ctx: OmniContext) => void | Promise<void>): void;
-	on(event: "agent_start", handler: (event: AgentStartEvent, ctx: OmniContext) => void | Promise<void>): void;
-	on(event: "turn_start", handler: (event: unknown, ctx: OmniContext) => void | Promise<void>): void;
-	on(event: "agent_end", handler: (event: AgentEndEvent, ctx: OmniContext) => void | Promise<void>): void;
-	on(event: "after_provider_response", handler: (event: ProviderResponseEvent, ctx: OmniContext) => void | Promise<void>): void;
-	on(event: "agent_settled", handler: (event: AgentSettledEvent, ctx: OmniContext) => void | Promise<void>): void;
-	on(event: "before_provider_request", handler: (event: ProviderRequestEvent, ctx: OmniContext) => unknown | Promise<unknown>): void;
+	on(event: "session_start", handler: (event: unknown, ctx: FlockContext) => void | Promise<void>): void;
+	on(event: "agent_start", handler: (event: AgentStartEvent, ctx: FlockContext) => void | Promise<void>): void;
+	on(event: "turn_start", handler: (event: unknown, ctx: FlockContext) => void | Promise<void>): void;
+	on(event: "agent_end", handler: (event: AgentEndEvent, ctx: FlockContext) => void | Promise<void>): void;
+	on(event: "after_provider_response", handler: (event: ProviderResponseEvent, ctx: FlockContext) => void | Promise<void>): void;
+	on(event: "agent_settled", handler: (event: AgentSettledEvent, ctx: FlockContext) => void | Promise<void>): void;
+	on(event: "before_provider_request", handler: (event: ProviderRequestEvent, ctx: FlockContext) => unknown | Promise<unknown>): void;
 	on(event: "session_shutdown", handler: () => void): void;
 	on(
 		event: "model_select",
-		handler: (event: { model?: { id?: string; provider?: string } }, ctx: OmniContext) => void | Promise<void>,
+		handler: (event: { model?: { id?: string; provider?: string } }, ctx: FlockContext) => void | Promise<void>,
 	): void;
-	on(event: "before_agent_start", handler: (event: unknown, ctx: OmniContext) => void | Promise<void>): void;
+	on(event: "before_agent_start", handler: (event: unknown, ctx: FlockContext) => void | Promise<void>): void;
 	setModel?(model: unknown): Promise<boolean> | boolean;
 }
 
@@ -181,7 +181,7 @@ export interface AgentHomeOptions {
 	homeEnvVar: string;
 	defaultHome: string;
 	matchesKey(data: string, key: string): boolean;
-	createInput(initialValue: string): OmniInput;
-	/** Wire API for OmniRoute. OMP uses chat completions; Pi defaults to Responses. */
+	createInput(initialValue: string): FlockInput;
+	/** Wire API for the flock gateway. OMP uses chat completions; Pi defaults to Responses. */
 	inferenceApi?: ProviderApi;
 }

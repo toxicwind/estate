@@ -42,7 +42,7 @@ Such files are auto-appended to the ignore memory and the auto-clear is logged.
 
 ## Deploying
 
-- Canonical source: `toxicwind/sovereign-projects:bin/push-guard.sh`.
+- Canonical source: `toxicwind/estate-projects:bin/push-guard.sh`.
 - Live fleet copy: `/home/toxic/bin/push-guard.sh` — Sovereign's hook delegates
   here. Refresh after a repo update with:
   `install -Dm755 <repo-copy> /home/toxic/bin/push-guard.sh`

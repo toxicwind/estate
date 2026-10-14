@@ -1,4 +1,4 @@
-![sovereign](https://img.shields.io/badge/sovereign--projects-blue?style=for-the-badge)
+![estate](https://img.shields.io/badge/estate--projects-blue?style=for-the-badge)
 ![python](https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![websocket](https://img.shields.io/badge/websocket-stdlib-green?style=for-the-badge)
 
@@ -77,7 +77,7 @@ Self-binding guard: the daemon refuses to start a second copy — it detects an 
 
 ## Dev / contributing
 
-- `bridge/awrawr_ws_exec.py` is the canonical copy — tracked in `toxicwind/sovereign-projects`. Edit here, never a shadow copy.
+- `bridge/awrawr_ws_exec.py` is the canonical copy — tracked in `toxicwind/estate-projects`. Edit here, never a shadow copy.
 - Security policy changes belong in `awrawr_mcp` (single impl), not in this file.
 - Test: bind on a scratch port, handshake with the token, send a `cmd` and an `argv` message, verify `exit` frames and audit entries.
 

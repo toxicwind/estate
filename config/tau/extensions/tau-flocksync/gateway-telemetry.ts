@@ -1,4 +1,4 @@
-import type { OmniPI } from "./contracts.ts";
+import type { FlockPI } from "./contracts.ts";
 
 type FetchInput = Parameters<typeof fetch>[0];
 type HeaderSource = Headers | Record<string, string>;
@@ -124,7 +124,7 @@ export function formatGatewayTokensPerSecond(tps: number | undefined): string {
 }
 
 export function registerGatewayTelemetry(
-	pi: OmniPI,
+	pi: FlockPI,
 	options: { providerName: () => string; serverUrl: () => string; showTokensPerSecond: () => boolean },
 ): void {
 	let captured: number | undefined;

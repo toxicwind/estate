@@ -1,4 +1,4 @@
-import type { OmniSettings } from "./config.ts";
+import type { FlockSettings } from "./config.ts";
 import type { OmniComponent, OmniInput, OmniTheme, ProviderModelConfig } from "./contracts.ts";
 import { AUTO_MODELS } from "./provider.ts";
 
@@ -80,19 +80,19 @@ export class ConfigDialog implements OmniComponent {
 	private summaryError: string | undefined;
 	private editing: EditingField | undefined;
 	private input: OmniInput | undefined;
-	private readonly draft: OmniSettings;
+	private readonly draft: FlockSettings;
 	private readonly theme: OmniTheme;
-	private readonly done: (settings: OmniSettings | undefined) => void;
+	private readonly done: (settings: FlockSettings | undefined) => void;
 	private readonly matchesKey: KeyMatcher;
 	private readonly onSync?: () => Promise<SyncResult>;
 	private readonly createInput: (initialValue: string) => OmniInput;
 
 	constructor(
-		settings: OmniSettings,
+		settings: FlockSettings,
 		summary: ModelSummary | undefined,
 		summaryError: string | undefined,
 		theme: OmniTheme,
-		done: (settings: OmniSettings | undefined) => void,
+		done: (settings: FlockSettings | undefined) => void,
 		matchesKey: KeyMatcher,
 		onSync: (() => Promise<SyncResult>) | undefined,
 		createInput: (initialValue: string) => OmniInput,

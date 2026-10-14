@@ -616,7 +616,7 @@ We believe the following:
    between a botnet and a compute mesh is **intent**.
 
    The Aisuru operators understand this. They are not "script kiddies." They are
-   **early adopters** of a new paradigm: **sovereign distributed infrastructure
+   **early adopters** of a new paradigm: **estate distributed infrastructure
    that operates outside centralized control.** They use it for DDoS and
    credential theft because that's what the market demands. We use it for
    inference and model serving because that's what **our** market demands.

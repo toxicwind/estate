@@ -10,7 +10,7 @@
 [![Effect](https://img.shields.io/badge/Effect-4.0.0--beta.102-ff0000?style=flat-square)](https://effect.website)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](./CONTRIBUTING.md)
 
-**Corral** is a hardened fork of [super-ralph](https://github.com/roninjin10/super-ralph) built for sovereign agent fleets — parallel ticket execution, speculative landing, and zero-merge-conflict orchestration on top of [Smithers / smthrs](https://github.com/roninjin10/smithers).
+**Corral** is a hardened fork of [super-ralph](https://github.com/roninjin10/super-ralph) built for estate agent fleets — parallel ticket execution, speculative landing, and zero-merge-conflict orchestration on top of [Smithers / smthrs](https://github.com/roninjin10/smithers).
 
 If your original fork was a mess of hardcoded `/home/toxic` paths, 1189-line CLI files, duplicate deps, and ranch-specific shims — this is the clean replacement you can `rm -rf` and drop in.
 
@@ -130,7 +130,7 @@ export CLAUDE_REAL_BIN=~/.local/bin/claude.nim-shim-real
 - Git colocated repo (`jj git init --colocate`)
 
 ```bash
-bun add @sovereign/corral
+bun add @estate/corral
 # or clone
 git clone https://github.com/roninjin10/super-ralph.git corral
 cd corral

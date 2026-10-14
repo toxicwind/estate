@@ -26,7 +26,7 @@ afterEach(() => {
 
 // Import fresh each time — the module caches loadSovereignPorts internally,
 // but we set SOVEREIGN_ROOT so the paths resolve predictably.
-process.env.SOVEREIGN_ROOT = join(homedir(), "sovereign");
+process.env.SOVEREIGN_ROOT = join(homedir(), "estate");
 
 import {
   loadSovereignPorts,

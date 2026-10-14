@@ -9,14 +9,14 @@ The stale 15:10 "STOP all new work" channel entry was treated as dead data per C
 
 | Daemon | Port | Verdict | Evidence |
 |---|---|---|---|
-| squawk-ws (pitchfork `sovereign/squawk-ws`) | 127.0.0.1:25147 | **UP** | `ss -tlnp` shows `python3` pid 2248059; WS handshake local -> `101 Switching Protocols` (valid bearer), `401` (bad bearer); public `wss://github-mcp-host.tailc9ac71.ts.net/squawk-ws` handshake -> `101` |
-| squawk_feed.py (pitchfork `sovereign/squawk-feed`) | 127.0.0.1:25135 | **UP (recovered 18:08)** | `GET /squawk-feed/seq` -> `200 {"seq": 10002}` both locally and via funnel (0.32s). Note: the documented `/seq` path is actually `/squawk-feed/seq` (bare `/seq` -> 404) |
+| squawk-ws (pitchfork `estate/squawk-ws`) | 127.0.0.1:25147 | **UP** | `ss -tlnp` shows `python3` pid 2248059; WS handshake local -> `101 Switching Protocols` (valid bearer), `401` (bad bearer); public `wss://github-mcp-host.tailc9ac71.ts.net/squawk-ws` handshake -> `101` |
+| squawk_feed.py (pitchfork `estate/squawk-feed`) | 127.0.0.1:25135 | **UP (recovered 18:08)** | `GET /squawk-feed/seq` -> `200 {"seq": 10002}` both locally and via funnel (0.32s). Note: the documented `/seq` path is actually `/squawk-feed/seq` (bare `/seq` -> 404) |
 | awrawr-mcp (HTTPS) | :8377 | UP | pid 282976, uptime 15h |
 | awrawr-ws-exec (bridge WS) | :8379 | UP | pid 2315871 |
 | llama-swap / herd | :25100 | UP | pid 2113115 |
 | coyote | :25143 (0.0.0.0) | UP | pid 2094471 |
 | buildsrv | :25148 | UP | pid 2625628 |
-| shep, herd, nim-proxy, kimi-auto-resolver, sovereign-router | — | UP per `pitchfork status` | 9 daemons in `pitchfork list` |
+| shep, herd, nim-proxy, kimi-auto-resolver, estate-router | — | UP per `pitchfork status` | 9 daemons in `pitchfork list` |
 
 ### Incident found and resolved during this recon (18:07–18:08 MDT)
 `squawk_feed.py` died silently ~18:07 (3rd silent death today; `ss` showed it LISTEN at 18:06, `ECONNREFUSED` at ~18:07:30, process gone). My manual `setsid run-feed.sh` restart FAILED with `OSError: [Errno 98] Address already in use` (dying socket not yet released). **pitchfork's own retry loop then started it successfully at 18:08:08** ("serving #fleet ... Bearer <redacted>"), verified 200. No verified reason to redeploy anything.
@@ -59,7 +59,7 @@ The 18:04 squawk-ws restart sequence is the first WITH a log trail:
 - `curl http://127.0.0.1:25135/squawk-feed/seq` -> `{"seq": 10002}` HTTP 200
 - `curl https://github-mcp-host.tailc9ac71.ts.net/squawk-feed/seq` -> same, 0.32s
 - stdlib WS handshake (local + public, good/bad bearer) -> 101 / 401
-- `pitchfork list` / `pitchfork status sovereign/<id>` — 9 running
-- `pitchfork logs sovereign/squawk-ws` — 18:04 bind-crash sequence
+- `pitchfork list` / `pitchfork status estate/<id>` — 9 running
+- `pitchfork logs estate/squawk-ws` — 18:04 bind-crash sequence
 - `md5sum` both `squawk_ws_server.py` — different
 - `git log/merge-base` on toxicwind/squawk — divergence reconciled, pushed 48d8d85

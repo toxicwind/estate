@@ -1,9 +1,9 @@
 #!/usr/bin/env bun
 /**
- * sovereign-mcp-server.ts — First-class unified Bun MCP server.
+ * estate-mcp-server.ts — First-class unified Bun MCP server.
  * Hardcore stdout logging (live, never file-only). stdio JSON-RPC 2.0.
  */
-console.error(`[sovereign-mcp] STARTUP at ${new Date().toISOString()} pid=${process.pid}`);
+console.error(`[estate-mcp] STARTUP at ${new Date().toISOString()} pid=${process.pid}`);
 
 import { join, resolve } from "node:path";
 const SCRIPT_DIR = import.meta.dir;
@@ -21,7 +21,7 @@ const TOOLS: Record<string, { desc: string; params: any[] }> = {
 };
 
 function log(msg: string) {
-  const line = `[sovereign-mcp] ${new Date().toISOString()} ${msg}\n`;
+  const line = `[estate-mcp] ${new Date().toISOString()} ${msg}\n`;
   process.stderr.write(line);
 }
 
@@ -39,7 +39,7 @@ function handle(req: any) {
   log(`REQUEST id=${req.id} method=${req.method} params=${JSON.stringify(req.params ?? {})}`);
   try {
     if (req.method === "initialize") {
-      send({ jsonrpc: "2.0", id: req.id, result: { protocolVersion: "2024-11-05", capabilities: { tools: { listChanged: true } }, serverInfo: { name: "sovereign-tools", version: "1.0.0" } } });
+      send({ jsonrpc: "2.0", id: req.id, result: { protocolVersion: "2024-11-05", capabilities: { tools: { listChanged: true } }, serverInfo: { name: "estate-tools", version: "1.0.0" } } });
       return;
     }
     if (req.method === "notifications/initialized") return;

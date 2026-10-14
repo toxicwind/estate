@@ -10,12 +10,12 @@ stabilized the fleet.
 1. **pitchfork.toml stays the human source of truth.** Run lines, dirs, and
    env blocks are edited in the toml only.
 2. **The exporter regenerates units on toml change.** `bin/pitchfork-export-systemd
-   --daemon <name>` (or `--all`) writes `~/.config/systemd/user/sovereign-<name>.service`,
+   --daemon <name>` (or `--all`) writes `~/.config/systemd/user/estate-<name>.service`,
    then `systemctl --user daemon-reload`. Units are generated, never hand-edited.
 3. **pitchfork remains the status layer during transition.** A migrated daemon's
    pitchfork registration is kept but STOPPED (dual state, declared honestly):
    `pitchfork status` shows `stopped`; systemd is the source of truth for the
-   process (`systemctl --user status sovereign-<name>`). Do not `pitchfork start`
+   process (`systemctl --user status estate-<name>`). Do not `pitchfork start`
    a migrated daemon — that would double-bind its port.
 4. **Migrate incrementally, highest-churn first, one at a time.** Each migration
    is verified (serves + survives `restart` + survives stop/start) before the
@@ -36,7 +36,7 @@ reboot persistence of user units).
 
 | daemon | migrated | pitchfork state | systemd state | verified |
 |---|---|---|---|---|
-| forensics-srv | 2026-09-20 | stopped (registration kept) | `sovereign-forensics-srv.service` active, :25160/health | restart OK, stop/start cycle OK, NRestarts=0 |
+| forensics-srv | 2026-09-20 | stopped (registration kept) | `estate-forensics-srv.service` active, :25160/health | restart OK, stop/start cycle OK, NRestarts=0 |
 
 Chosen as PoC: highest supervisor churn in 7d (retry_count=31 in state.toml,
 mostly the post-reboot EADDRINUSE storm), self-contained venv, real HTTP
@@ -45,8 +45,8 @@ health probe (`curl -sf http://127.0.0.1:25160/health`), no env, no secrets.
 ## Rollback procedure (per daemon)
 
 ```sh
-systemctl --user stop sovereign-<name>.service
-systemctl --user disable sovereign-<name>.service   # keep the unit file for forensics
+systemctl --user stop estate-<name>.service
+systemctl --user disable estate-<name>.service   # keep the unit file for forensics
 cd /home/toxic/estate && pitchfork start <project>/<name>
 # verify via the daemon's ready probe
 ```

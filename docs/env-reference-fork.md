@@ -1,6 +1,6 @@
 # Sovereign / Ranch Fork Environment Variables Reference
 
-This reference documents custom, source-owned environment variables introduced specifically in the **Sovereign / Ranch** fork (`sovereign/projects/tau`, `brand`, `herd`, `shep`, and mesh infrastructure).
+This reference documents custom, source-owned environment variables introduced specifically in the **Sovereign / Ranch** fork (`estate/projects/tau`, `brand`, `herd`, `shep`, and mesh infrastructure).
 
 ---
 
@@ -30,6 +30,6 @@ This reference documents custom, source-owned environment variables introduced s
 | Variable | Default | Description |
 | :--- | :--- | :--- |
 | `OMP_SHELL_PATH` | `/bin/bash` | Override shell path for `brush-core` embedded shell execution bypasses. |
-| `GITHUB_ACTOR` | `toxicwind` | GitHub Packages and Maven authentication handle for sovereign registry pulls. |
+| `GITHUB_ACTOR` | `toxicwind` | GitHub Packages and Maven authentication handle for estate registry pulls. |
 | `CLX_NO_PROGRESS` | `1` | Suppresses progress bars in custom CLI utilities during headless agent execution. |
 | `CLX_TEXT_MODE` | `1` | Forces plain text mode for UI rendering in constrained terminal environments. |

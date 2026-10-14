@@ -1,1 +1,1 @@
-/home/toxic/estate/config/tau/extensions/mobile-autocorrect.ts
+/home/toxic/estate/ranch/tau/config/tau/extensions/mobile-autocorrect.ts

@@ -1,6 +1,6 @@
 # hatch/ — the cell side of the estate
 
-![sovereign](https://img.shields.io/badge/sovereign--projects-2E86DE?style=for-the-badge)
+![estate](https://img.shields.io/badge/estate--projects-2E86DE?style=for-the-badge)
 ![hatch](https://img.shields.io/badge/hatch--cell-7B2FF7?style=for-the-badge)
 ![bash](https://img.shields.io/badge/bash-4EAA25?style=for-the-badge)
 ![python](https://img.shields.io/badge/python-3776AB?style=for-the-badge)

@@ -150,14 +150,14 @@ focus trap). Port comment and code together.
 ### Already done
 
 - **`src/lib/surfaces.ts` + `src/lib/surfaces.test.ts`** — committed as
-  `a063741`. The surface registry (48 services from `sovereign/pitchfork.toml`)
+  `a063741`. The surface registry (48 services from `estate/pitchfork.toml`)
   with `kind: "ui" | "api"`, and `probeSurface` / `probeAllSurfaces` health via
   bounded-concurrency `no-cors` fetches. 8/8 tests pass. **Nothing consumes it
   yet** — no route, no sidebar entry. That is the next piece.
 
 ## Making it the master
 
-### Every sovereign surface becomes a tab
+### Every estate surface becomes a tab
 
 The registry already carries them. It needs a tab host route that renders
 `EMBEDDABLE_SURFACES` as tabs and frames the active one, plus a sidebar entry.
@@ -173,7 +173,7 @@ tracked in this repo and should be `git rm`'d once the port lands:
 
 | Path | Evidence |
 |---|---|
-| `stockyard/herd/ui` | 271 files, **zero consumers** — no mise task, no script, no reference in `sovereign/pitchfork.toml`, `mise.toml`, `bin/`, or `stack/`. |
+| `stockyard/herd/ui` | 271 files, **zero consumers** — no mise task, no script, no reference in `estate/pitchfork.toml`, `mise.toml`, `bin/`, or `stack/`. |
 | `stockyard/herd/ui-svelte` | Wired by `stockyard/herd/mise.toml:15-16` (`ui`, `ui:build`) but is the *dead twin* content. Repoint those tasks at `../../ui` first. |
 | `stockyard/herd/mesh/ui-svelte` | **Byte-identical** to `herd/ui-svelte` (`diff -rq` empty, source-map sha `1e6c1b1c5b3ebdf9`, 227 source files each). Pure duplicate. |
 
@@ -199,7 +199,7 @@ tracked, and both `bun.lock` and `package-lock.json` — pick one.
   `node_modules`. A correct root manifest needs an explicit allow-list of real
   packages, not a glob.
 - **Nothing serves any of the dashboards.** No `[daemons.*]` block in
-  `sovereign/pitchfork.toml` serves the master UI, so it has no origin to be
+  `estate/pitchfork.toml` serves the master UI, so it has no origin to be
   framed from until one is added.
 
 ## Front-end inventory, for reference
@@ -217,12 +217,12 @@ Six `web`/`ui`/`frontend`/`app` dirs with a `package.json` inside this repo:
 | `stockyard/vansrouter/cli/app` | vansrouter-app 0.91.30 | Next.js | separate product |
 | `stockyard/tau/python/robomp/web` | robomp-web 0.1.0 | Solid + Vite | in tau's own workspace |
 
-Pre-range sovereign front-ends outside this repo that the master should surface
+Pre-range estate front-ends outside this repo that the master should surface
 as tabs (several are already in the registry, some are not yet):
 `engines/herd/beellama.cpp/tools/ui` (llama-ui, SvelteKit), `python/robomp/web`
 (robomp ops console, served by its FastAPI app), `rust_algo_web/frontend`
 (effusionlabs-os, → `rust-web` :25201), `wt-hft-hygiene-build/upstream/frontend`
-(mcpproxy-frontend, Vue, gatehouse's control panel), `sovereign-github-search/apps/frontend`
+(mcpproxy-frontend, Vue, gatehouse's control panel), `estate-github-search/apps/frontend`
 (Next.js), `ranch/android-fleet/nuvio/nuvio-platform/submodules/subtitle-translator/app/frontend` (srt-translator), plus the
 static `scratch/squawk-ui/ui.html` and
 `hatch/agents/ember/var/openfang-health/openfang-health.html`.

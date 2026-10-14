@@ -1,0 +1,79 @@
+prompt_context = '''
+# Gatehouse Connector
+
+## Purpose
+Gatehouse (mcpproxy-go on yote :25127) as a first-class cell connector:
+`custom.gatehouse`. All 39 Gatehouse-registered MCP servers — including
+`huggingface` (https://huggingface.co/mcp) — accessible from the cell
+through the yote-conn bridge.
+
+## Connector
+- **ID**: `custom.gatehouse`
+- **Namespace**: `custom.gatehouse`
+- **Transport**: yote-conn bridge → http://127.0.0.1:25127/mcp (Streamable HTTP)
+- **Auth**: Gatehouse API key via Secure Vault (never in code/config)
+
+## HuggingFace MCP (via Gatehouse)
+
+Registered 2026-10-05 as Gatehouse server `huggingface`:
+- **URL**: https://huggingface.co/mcp
+- **Protocol**: http (StreamableHTTP)
+- **OAuth**: https://huggingface.co/mcp?login
+- **Bearer**: `Authorization: Bearer ${HF_TOKEN}` header
+
+Tools (via `custom.gatehouse`):
+- `huggingface:hub_repo_search` — search models/datasets/spaces
+- `huggingface:whoami` — inspect HF auth context
+
+## Tooling
+```sh
+# Via yote-conn (cell → yote → Gatehouse)
+~/workspace/bin/yote-conn exec "curl -s -X POST http://127.0.0.1:25127/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Mcp-Session-Id: <sid>' \
+  -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/call\",\
+       \"params\":{\"name\":\"retrieve_tools\",\"arguments\":{\"query\":\"huggingface\"}}}'"
+```
+
+## Credential resolution
+1. **authd broker** at `/run/hatch/auth/authd.sock` — surrogate token
+2. **secretsmith** — local KEY=value store fallback
+
+Gatehouse API key stored as `custom.gatehouse` credential. HF_TOKEN for
+the HuggingFace bearer header stored separately — never in Gatehouse
+config (which carries only `${HF_TOKEN}` reference).
+
+## Operating Rules
+1. Use when the user asks for Gatehouse, HF models/datasets, or any
+   Gatehouse-registered MCP server from the cell.
+2. Never print, log, or persist raw credentials or tokens.
+3. HF OAuth: direct user to https://huggingface.co/mcp?login for the
+   browser flow; bearer token goes in Secure Vault, not config.
+4. Gatehouse restart: `pitchfork restart estate/gatehouse` on yote only.'''
+
+[skill]
+name = "gatehouse"
+version = "0.1.0"
+description = "Gatehouse MCP proxy as a first-class cell connector (custom.gatehouse). Routes to all Gatehouse-registered MCP servers including HuggingFace."
+author = ""
+license = ""
+tags = [
+    "openclaw-compat",
+    "prompt-only",
+]
+
+[runtime]
+type = "promptonly"
+entry = ""
+
+[tools]
+provided = []
+
+[requirements]
+tools = []
+capabilities = []
+
+[source]
+type = "open_claw"
+
+[config]

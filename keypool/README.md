@@ -1,7 +1,7 @@
 # keypool
 
 Modular API-key rotation proxy for LLM providers, living under
-`~/sovereign/keypool/` and served by `~/sovereign/bin/herd-keypool.py`.
+`~/estate/keypool/` and served by `~/estate/bin/herd-keypool.py`.
 
 Listens on `127.0.0.1:25109`. Path-routed: `/<pool>/<rest>` forwards to
 the pool's `upstream + <rest>` with a health-checked key chosen per
@@ -38,7 +38,7 @@ Each lives in its own file and is imported where used.
 
 ## Layout
 
-    ~/sovereign/keypool/
+    ~/estate/keypool/
     ├── README.md         this file
     ├── __init__.py       version + docstring
     ├── __main__.py       entry point (`python3 -m keypool`)
@@ -60,13 +60,13 @@ Each lives in its own file and is imported where used.
     ├── proxy.py          HTTP handler + pattern 12
     └── selftest.py       pattern assertions, no network
 
-`~/sovereign/bin/herd-keypool.py` is a 5-line shim that calls
+`~/estate/bin/herd-keypool.py` is a 5-line shim that calls
 `keypool.__main__.main()`. Pitchfork and mise both point at that shim,
 so the interface to the supervisor never changed.
 
 ## Operations
 
-Managed by pitchfork (`~/sovereign/pitchfork.toml`, daemon `keypool`):
+Managed by pitchfork (`~/estate/pitchfork.toml`, daemon `keypool`):
 
     mise run restart-keypool
     mise run health-keypool
@@ -86,7 +86,7 @@ Reload after editing `keypools.yaml` (no restart, no dropped requests):
 
 ## Config
 
-`~/sovereign/config/keypools.yaml`:
+`~/estate/config/keypools.yaml`:
 
     pools:
       <pool>:
@@ -142,7 +142,7 @@ no credentials touched. Exit 0 = pass.
 
 ## What this replaced
 
-`~/sovereign/bin/herd-keypool.py` was a 38 KB monolith. The new entry
+`~/estate/bin/herd-keypool.py` was a 38 KB monolith. The new entry
 shim keeps the same filename so pitchfork and mise config are unchanged.
 The old file was backed up next to it as
 `herd-keypool.py.pre-modular.<timestamp>`.

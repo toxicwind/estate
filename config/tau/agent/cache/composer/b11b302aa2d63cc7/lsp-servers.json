@@ -1,1 +1,1 @@
-{"version":1,"servers":[]}
+{"version":1,"servers":[{"name":"typescript-native","status":"available","fileTypes":[".ts",".tsx",".js",".jsx",".mjs",".cjs"]}]}

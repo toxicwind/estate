@@ -4,12 +4,12 @@
 
 PostgreSQL runs on awrawr-pc as a raw systemd service (`postgresql.service`,
 `/usr/bin/postgres -D /var/lib/postgres/data`, active since 2026-08-28). It is
-**not** managed by pitchfork/mise, which own the rest of the sovereign stack.
+**not** managed by pitchfork/mise, which own the rest of the estate stack.
 
 ## Standing rule
 
 No dual init systems on awrawr-pc: mise + pitchfork own user toxic's services.
-Anomalous non-CachyOS-default systemd units get migrated into the sovereign
+Anomalous non-CachyOS-default systemd units get migrated into the estate
 pitchfork definitions, then the raw unit is disabled. **Never run both the
 systemd unit and a pitchfork daemon for PostgreSQL at the same time.**
 

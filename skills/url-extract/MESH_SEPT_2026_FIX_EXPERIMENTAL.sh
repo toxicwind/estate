@@ -17,8 +17,8 @@ which qemu-img || echo missing qemu-img
 
 # raw.githubusercontent.com maximal configs:
 # obsidian-vault-mind: <vault>/.vault-mind/ + vault-mind.env + PVM_API_TOKEN + 127.0.0.1:11435
-# pi-model-discovery: ~/.pi/agent/local-providers.json with debug, syncOnStartup, addToScope, providers.ollama.enabled, baseUrl, cleanupStale, cacheTtlHours
-# pi-model-router: ~/.pi/agent/model-router.json with defaultProfile, classifierModel, maxSessionBudget, largeContextThreshold, phaseBias, rules, profiles, features.rateLimitFallback, fallbackSequence
+# pi-model-discovery: ~/.tau/agent/local-providers.json with debug, syncOnStartup, addToScope, providers.ollama.enabled, baseUrl, cleanupStale, cacheTtlHours
+# pi-model-router: ~/.tau/agent/model-router.json with defaultProfile, classifierModel, maxSessionBudget, largeContextThreshold, phaseBias, rules, profiles, features.rateLimitFallback, fallbackSequence
 
 cat > rust-toolchain.toml <<'TOML'
 [toolchain]

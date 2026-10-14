@@ -1,6 +1,6 @@
 import { probeHealth, type HealthProbeResult } from "./provider.ts";
-import type { OmniConfig, OnUnreachable } from "./config.ts";
-import type { AgentEndMessage, OmniContext } from "./contracts.ts";
+import type { FlockConfig, OnUnreachable } from "./config.ts";
+import type { AgentEndMessage, FlockContext } from "./contracts.ts";
 
 export type { OnUnreachable };
 
@@ -16,7 +16,7 @@ export interface UnreachableEvent {
 export interface UnreachableHopOptions {
 	onUnreachable: OnUnreachable;
 	fallbackModel: string;
-	omniProviderName: string;
+	flockProviderName: string;
 	currentProvider?: string;
 	currentModelId?: string;
 	findModel?: (provider: string, id: string) => unknown;
@@ -42,33 +42,33 @@ export function isUnreachableHttpStatus(status?: number): boolean {
 const UNREACHABLE_ERROR_PATTERN =
 	/\b(?:408|5\d{2})\b|\b(?:ECONNREFUSED|ECONNRESET|ECONNABORTED|ETIMEDOUT|EHOSTUNREACH|ENETUNREACH|ENOTFOUND|EAI_AGAIN)\b|(?:fetch failed|network error|connection (?:error|failure|refused|reset|closed)|timed?\s*out|timeout|socket)/i;
 
-export function isUnreachableRequestFailure(message: AgentEndMessage | undefined, omniProviderName: string): boolean {
-	if (message?.role !== "assistant" || message.provider !== omniProviderName || message.stopReason !== "error") return false;
+export function isUnreachableRequestFailure(message: AgentEndMessage | undefined, flockProviderName: string): boolean {
+	if (message?.role !== "assistant" || message.provider !== flockProviderName || message.stopReason !== "error") return false;
 	return UNREACHABLE_ERROR_PATTERN.test(message.errorMessage ?? "");
 }
 
-export function isOmniActiveModel(
+export function isFlockActiveModel(
 	model: { provider?: string } | undefined,
-	omniProviderName: string,
+	flockProviderName: string,
 ): boolean {
-	return !model?.provider || model.provider === omniProviderName;
+	return !model?.provider || model.provider === flockProviderName;
 }
 
 export function shouldAttemptHop(
-	options: Pick<UnreachableHopOptions, "onUnreachable" | "omniProviderName" | "currentProvider" | "currentModelId" | "fallbackModel">,
+	options: Pick<UnreachableHopOptions, "onUnreachable" | "flockProviderName" | "currentProvider" | "currentModelId" | "fallbackModel">,
 ): boolean {
 	if (options.onUnreachable !== "host-fallback") return false;
-	if (options.currentProvider && options.currentProvider !== options.omniProviderName) return false;
+	if (options.currentProvider && options.currentProvider !== options.flockProviderName) return false;
 	const target = parseFallbackModel(options.fallbackModel);
-	if (!target || target.provider === options.omniProviderName) return false;
+	if (!target || target.provider === options.flockProviderName) return false;
 	return !(options.currentProvider === target.provider && options.currentModelId === target.id);
 }
 
 export async function hopOnUnreachable(event: UnreachableEvent, options: UnreachableHopOptions): Promise<boolean> {
 	const target = parseFallbackModel(options.fallbackModel);
 	if (!shouldAttemptHop(options)) {
-		const activeOmni = !options.currentProvider || options.currentProvider === options.omniProviderName;
-		if (options.onUnreachable === "host-fallback" && activeOmni && (!target || target.provider === options.omniProviderName)) {
+		const activeOmni = !options.currentProvider || options.currentProvider === options.flockProviderName;
+		if (options.onUnreachable === "host-fallback" && activeOmni && (!target || target.provider === options.flockProviderName)) {
 			options.notify?.(
 				`OmniRoute unreachable at ${event.serverUrl}. Configure fallbackModel as an authenticated host provider/id, or use /model <provider/id> manually.`,
 				"warning",
@@ -110,7 +110,7 @@ export async function hopOnUnreachable(event: UnreachableEvent, options: Unreach
 
 /** Coalesce compatible probes without allowing an older request to repopulate the success cache. */
 export function createUnreachableController(): {
-	probe(config: OmniConfig, signal?: AbortSignal, force?: boolean): Promise<HealthProbeResult>;
+	probe(config: FlockConfig, signal?: AbortSignal, force?: boolean): Promise<HealthProbeResult>;
 	reset(): void;
 } {
 	let lastSuccess: { url: string; at: number } | undefined;
@@ -148,8 +148,8 @@ export function createUnreachableController(): {
 }
 
 export function hopOptionsFromContext(
-	ctx: OmniContext,
-	settings: Pick<UnreachableHopOptions, "onUnreachable" | "fallbackModel" | "omniProviderName">,
+	ctx: FlockContext,
+	settings: Pick<UnreachableHopOptions, "onUnreachable" | "fallbackModel" | "flockProviderName">,
 	setModel?: UnreachableHopOptions["setModel"],
 ): UnreachableHopOptions {
 	return {

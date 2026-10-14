@@ -13,7 +13,7 @@ const OUT =
   process.env.E2E_OUT ||
   resolve(
     process.env.HOME || "/home/toxic",
-    "sovereign",
+    "estate",
     ".state",
     "e2e-http.jsonl",
   );

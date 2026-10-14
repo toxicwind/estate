@@ -1,7 +1,7 @@
 # Kimi Code Fork Feasibility Research
 
 **Date**: 2026-07-28
-**Question**: Is the Kimi Code CLI we run (`kimi-code` v0.29.2, binary `/home/toxic/.kimi-code/bin/kimi`) open source, and can we maintain a `kimi-code-sovereign` fork?
+**Question**: Is the Kimi Code CLI we run (`kimi-code` v0.29.2, binary `/home/toxic/.kimi-code/bin/kimi`) open source, and can we maintain a `kimi-code-estate` fork?
 **Verdict**: **(a) — Yes. Official open-source repo exists under MIT. A fork is fully feasible.** (Evidence below.)
 
 ---
@@ -31,7 +31,7 @@ Note: the bare `kimi-code` npm package (v1.0.11, `whitesmith/kimi-code`) is an *
 
 Because the source is MIT and the full build (including the SEA native binary) is scripted in-repo, **binary forensics / SEA extraction (paths b/c) are unnecessary** — we fork the TypeScript source directly.
 
-## 3. Fork plan: `kimi-code-sovereign` — patch points
+## 3. Fork plan: `kimi-code-estate` — patch points
 
 All locations verified to exist in `main` today:
 
@@ -39,7 +39,7 @@ All locations verified to exist in `main` today:
    `packages/agent-core-v2/src/kosong/model/thinking.ts` is the self-described "single authority on thinking semantics" — it resolves the `[thinking]` config section (`enabled` / `effort` / `keep`) against model metadata, with the "always-on clamp" for `always_thinking` models. Patch the `ThinkingDefaults` resolution (in `model.types.ts` / the persistence wrapper `app/kosongConfig/configSection`) so our fleet defaults to thinking enabled at the effort we want, instead of model-catalog defaults.
 
 2. **MCP config (`mcp.json` schema / loading)**
-   Dual loaders exist: `packages/agent-core/src/mcp/config-loader.ts` and `packages/agent-core-v2/src/agent/mcp/config-loader.ts`; legacy migration in `packages/migration-legacy/src/{paths.ts,steps/mcp.ts}`. Patch here to add sovereign-specific schema extensions (e.g. default federation to our mcpproxy :25109, or auto-injecting the byte-vision-proxy gateway :25120).
+   Dual loaders exist: `packages/agent-core/src/mcp/config-loader.ts` and `packages/agent-core-v2/src/agent/mcp/config-loader.ts`; legacy migration in `packages/migration-legacy/src/{paths.ts,steps/mcp.ts}`. Patch here to add estate-specific schema extensions (e.g. default federation to our mcpproxy :25109, or auto-injecting the byte-vision-proxy gateway :25120).
 
 3. **Quota / telemetry**
    Telemetry is a clean interface in `packages/agent-core/src/telemetry.ts` (`TelemetryClient`, with a `noopTelemetryClient` already exported), wired in `apps/kimi-code/src/cli/telemetry.ts` — gated by `enabled: options.config.telemetry !== false` (i.e. config `telemetry = false` already opts out; no `telemetry.toml` quota counters found — `gh search code 'quota'` returned nothing). Fork patch: flip the default to opt-out (or hard-wire `noopTelemetryClient`) so nothing phones home regardless of config. Cloud appender lives in `packages/agent-core-v2/src/app/telemetry/cloudAppender.ts` + `packages/telemetry/`.
@@ -49,7 +49,7 @@ All locations verified to exist in `main` today:
 
 ### Suggested mechanics
 
-- `git remote add upstream https://github.com/MoonshotAI/kimi-code.git`; fork under our own org as `kimi-code-sovereign`, track `main` (repo is pushed daily — expect frequent rebases; keep patches small and localized to the four points above).
+- `git remote add upstream https://github.com/MoonshotAI/kimi-code.git`; fork under our own org as `kimi-code-estate`, track `main` (repo is pushed daily — expect frequent rebases; keep patches small and localized to the four points above).
 - Build: `pnpm install && pnpm --filter @moonshot-ai/kimi-code run build` for the JS bundle; `pnpm -C apps/kimi-code run build:native:sea` for a drop-in replacement of `/home/toxic/.kimi-code/bin/kimi` (verify with `kimi --version` + a smoke run; `scripts/native/smoke.mjs` exists for exactly this).
 - Publish flow is changesets-based; for a private fork just build locally — no npm publish needed.
 - Rename/branding: MIT permits it with license retention; binary name and `@moonshot-ai` scope would need changing only if we distribute.

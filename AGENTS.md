@@ -1,234 +1,178 @@
-# AGENTS.md — Sovereign Control Plane (`/home/toxic/estate`)
+# AGENTS.md — awrawr-pc standing rules (bridge side)
 
-**Role**: Core control plane & orchestration layer for the Sovereign ecosystem.
-**Stack**: TypeScript (Bun), Python, mise, pitchfork, Kafka, Qdrant, Prometheus/Grafana.
-**Host**: toxic (Ryzen 7 8700F, 62 GiB DDR5, RTX 3090 24 GB).
+> **VERIFIED 2026-10-14 against live filesystem and running services.**
+> Every path, port, and binary below was confirmed to exist with `ls`/`curl`/`ss`
+> on 2026-10-14. Docs are an unreliable narrator — **the code is absolute**.
+> If a claim in any `.md` disagrees with the code, the `.md` is wrong. Fix the doc,
+> don't "work around" it. This file is the single source of truth; the copy at
+> `/home/toxic/estate/AGENTS.md` is a legacy variant and is NOT authoritative.
 
----
+## Applies to BOTH bridge workers AND local agents (tau)
 
-## 🎯 Repository Specifics
+This file governs every agent that touches this box — bridge workers spawned
+from the cell, and local agents running under tau (PI_CONFIG_DIR=$HOME/.tau,
+PI_CODING_AGENT_DIR=$HOME/.tau/agent). The rules below are the same for both.
+If a rule is bridge-specific or tau-specific, it says so explicitly.
 
-- **Primary Entrypoints**: `src/` (generators, coyote, services, hal-substrate).
-- **Workspace & Projects**: `packages/sovereign-utils` (shared operational utilities); legacy `mesh` is superseded and now lives at `projects/range/ranch`.
-- **Pitchfork Daemons**: `pitchfork.toml` orchestrates services across `25xxx` ports.
-- **Mise Tasks**: `mise.toml` defines local task runners and environment configurations.
-- **Port SSOT**: `config/ports.env` is the single source of truth for all allocated ports.
-- **Agents & Profiles**: `agents/` and `profiles/` store sovereign agent specs and persona definitions.
+## Chris's standing directives
 
-## 🔧 Hard Rules (universal)
+- Be confident and fix things on your own — maximal. Make the call yourself, don't kick decisions up.
+- **MAXIMAL, NOT SIMPLEST.** When choosing between approaches, always pick the maximal one. "Simplest" is a trap — it means under-delivering. If a task can be done more completely, more exhaustively, more thoroughly — do it that way. Never default to the minimal viable path when a maximal path exists. This is not negotiable.
+- **GO MAXIMAL OR DON'T GO.** Half-measures are worse than nothing. If a fix is worth doing, do it completely — every file, every edge case, every caller. No stubs, no shortcuts, no "good enough for now."
+- **AUDIT = production-grade repair, never report-only.** When asked to audit, actually fix the thing. Report-only audits are failures. "Don't debate, poc."
+- No review gates: workers merge, commit, push. Forward-only; never stop for approval.
+- PUSH EVERYTHING — no local-only work, all repos, all agents. Commit after every unit of work.
+- Bruteforce repairs go straight to `main`; no PR ceremony. Never push to evmts/super-ralph.
+- Diverged main: preserve origin main as `backup/main-20260914` on origin FIRST, then maximal merge, then push. Never force-push main without the backup.
+- Infrastructure is never out of scope. Additive only — never remove/disable peers, daemons, models without Chris's explicit order.
+- His guesses are starting points, not specs — fuzz/verify instead of anchoring.
 
-1. **Verify live, then claim.** No "done" without `curl` / `lsof` / `nvidia-smi` / `npx tsgo --noEmit`.
-2. **Fail loud.** Never `2>/dev/null`, never `|| true`. Errors are diagnostic.
-3. **Push everything, forward-only.** Commit + push after every unit of work, including WIP - no local-only work. No review gates, no PR ceremony; report ambiguities, never stop for approval.
-4. **Multi-strategy.** Non-trivial work → 3+ approaches, benchmark, keep runner-up.
-5. **TDD/BDD.** Failing assertion first, then fix. `npx tsgo --noEmit` for type-check.
-6. **Use emergence tools first.** GHAS (`:25113`) → ast-grep (`ast-grep` binary) → Tombi for TOML.
-7. **call_tool_destructive is DEFAULT for state changes.** Write/edit/modify = destructive. Read-only = inspection only.
-8. **No `/dev/null`, no banner `echo`.** Both waste tokens.
-   8b. **BANNED/SLOW TOOLS — do NOT use, ever:** `find`/`fd`, `grep`/`rg`, `head`, `tail`, `/dev/null`, and system-wide `lsof`.
-   - `find`/`fd` -> use `ffs find` or `ffs glob` (fast, gitignore-aware, token-budgeted). Never bare `find` or `fd`.
-   - `grep`/`rg` -> use `ffs grep` or `ffs multi-grep`. Never bare `grep` or `rg`.
-   - `head`/`tail` truncation -> read full files with the `read` tool or `ffs read` (token-budgeted).
-   - `/dev/null` -> fail loud; never silence errors.
-   - `lsof` (esp. system-wide) is INSANELY SLOW -> use INSTANT `/proc/<pid>/fd` symlink
-     reads (`readlink /proc/$PID/fd/*`) to see what a process has open. Scope to known PIDs.
-9. **Fix bashrc nested quote issue.** The `pi-check` alias had nested double quotes inside single quotes, causing `unexpected EOF while looking for matching '"'` errors. Use functions instead of aliases for complex commands.
-10. **CUDA-aware.** RTX 3090 — validate with `nvidia-smi`. Never assume upstream defaults.
-11. **Stop stacking long commands.** Sub-second probes. Reserve `60|120` for intentional jobs.
-12. **No `head` truncation.** You have 1M context. Read full files. No `| head -20`.
-13. **Timeout/failfast/high-frequency is FIRST-CLASS everywhere** (retry, provider-retry, worker-limits, MCP calls, scripts). NO insane monolithic timeouts — use failfast + high-frequency liveness probes + per-attempt deadlines.
-14. **Dynamic `${ENV_VAR}` interpolation is first-class** in configs/scripts (settings.json, config.yml, mcpproxy config, launch scripts). Prefer `${...}` over hardcoded values.
-15. **Lint + test after EVERY code change; coverage floor 82%.** Pre-existing type errors in unrelated test files do NOT block the change under review — isolate + report.
-16. **BACKGROUNDING IS FIRST-CLASS.** Any op that can run long (downloads, builds, scans,
-    npm/pip/apt, model fetches) MUST be launched in background (`cmd &`, capture `$!`), tracked
-    by PID, and CANCELLED if it overruns a per-attempt deadline (`timeout`, `kill` on a watchdog
-    loop). Never block on a monolithic synchronous command. Keep a live PID ledger.
-17. **GOAL = ENDLESS TODO.** TODO.md is a CONTINUOUS improvement loop, not a finite list.
-    Re-audit constantly; new findings always append; done items cycle back as deeper waves.
-    No "finished" — only "next wave". Mutate TODO after every meaningful step.
-18. **Anti-Hallucination & Tool Proof:** NEVER fake completion declarations or fire consecutive todo done calls without tool execution proof.
-19. **Context Synthesis:** When user provides iterative/ADHD stream-of-consciousness, synthesize multi-turn context; do not anchor rigidly on a single token or username.
+## 3-minute auto-select (2026-09-14)
 
----
+- When a pick is presented (fork-unblind), silence for 3 minutes = proceed with the most emergent (#1 ranked) option.
+- One-shot `fork-autoselect` runonce timer; a reply from Chris removes it and his reply rules.
+- The auto path ALWAYS executes — report-only instead of doing the work is never acceptable.
 
-## 🛠️ Tool Reference
+## Tooling
 
-### ✅ INSTALLED (use these)
+### hashline patches MUST be hash-anchored (2026-10-02)
 
-| Tool        | Binary                               | Purpose                                                       |
-| ----------- | ------------------------------------ | ------------------------------------------------------------- |
-| `ffs`       | `/home/toxic/.local/bin/ffs`         | Unified token-aware search/read (find, grep, glob, symbol)    |
-| `tok`       | `/home/toxic/.local/bin/tok`         | Emergent token counter CLI (o200k_harmony / cl100k, crashless)|
-| `ast-grep`  | `~/.local/share/mise/shims/ast-grep` | AST structural search/rewrite                                 |
-| `tombi`     | mise installed (1.7.3)               | TOML toolkit                                                  |
-| `eza`       | `/usr/bin/eza`                       | Modern ls (git-aware)                                         |
-| `mise`      | `~/.local/bin/mise`                  | Runtime manager                                               |
-| `bun`       | mise shim                            | Fast JS runtime                                               |
-| `node`      | mise shim                            | JS runtime                                                    |
-| `cargo`     | mise shim                            | Rust build                                                    |
-| `jq`        | mise shim                            | JSON processing                                               |
-| `codeshift` | `/home/toxic/projects/codeshift`     | Multi-agent codebase migration & test equivalence (local LLM) |
+`hashline` resolves a bare line range (`SWAP 641..674:`) by POSITION. In a
+multi-op patch, any earlier op that adds or removes lines shifts every later
+op, and hashline applies the drift SILENTLY — it deletes lines the patch never
+mentioned and exits 0. Cost three shredded files on 2026-10-02
+(`config/keypools.yaml`, `services/keypool/src/server.ts`,
+`ranch/flock/proxy/src/providers.rs`).
 
-### ❌ NOT INSTALLED (don't use, install first if needed)
+- **ALWAYS** carry the anchor from `hashline read`: `SWAP 641:3f2a..674:9b1c:`.
+- **NEVER** mix a bare op after a line-count-changing op in the same patch.
+- Re-read before every patch; use `--emit-anchors` to chain without a re-read.
+- After every patch, check the `~`/`-`/`+` lines match what you sent. Mismatch →
+  repair before the next edit, do not stack another patch on top.
 
-| Tool     | Install Command     | Purpose                             |
-| -------- | ------------------- | ----------------------------------- |
-| `tsgo`   | `npx tsgo`          | TypeScript type-check (use via npx) |
-| `vitest` | `npx vitest`        | Test runner (use via npx)           |
+Full contract: `/home/toxic/estate/docs/hashline-patch-contract.md`.
 
-### 🚫 NEVER USE (removed/confusing/banned)
+- Use `ffs` (`ffs find`, `ffs grep`, `ffs glob`, `ffs read`, `ffs symbol`). Never `fd`/`rg` or `find`/`grep`.
+- Live token counting is first-class: `tok` (`tok <file_or_string>` or pipe into `tok -v`; binary at `~/.local/bin/tok`). Uses `o200k_harmony` with persistent offline cache (`~/.cache/tiktoken`) and crashless special-token encoding.
+- Unique per-task /tmp paths (`mktemp -d`); NEVER `rm -rf` a shared hardcoded /tmp path. Nothing precious in /tmp — stage under /home/toxic/.
+- Never end a turn with a backgrounded bridge/exec call outstanding — wait for delivery (yield_ms up to 120000).
+- Services are owned by pitchfork+mise (defs in `/home/toxic/estate/pitchfork.toml` + `/home/toxic/estate/mise.toml`). No competing systemd units. NEVER touch `awrawr-mcp.service` from inside a bridge call.
+- NEVER run `bun run scripts/generate.ts` — retired (46aa41cca2); it would destroy 15 live daemons.
+- Verify `bash -lc true` after shell changes. Two failures on one target → stop and replan.
+- Never expose, print, log, or commit credentials. Secret values stay in the vault (`/home/toxic/.secrets`).
 
-| Name          | Why                                                                             |
-| ------------- | ------------------------------------------------------------------------------- |
-| `fd` / `find` | Superseded by `ffs find` or `ffs glob`. Never bare fd/find.                      |
-| `rg` / `grep` | Superseded by `ffs grep` or `ffs multi-grep`. Never bare rg/grep.               |
-| `sg`          | That's SGLang, NOT ast-grep. Removed shim. Use `ast-grep`.                      |
+## Race-borrow / HFT-like workarounds — first-class pattern (2026-09-14, Chris)
 
----
+- When a problem has several plausible approaches, RACE them concurrently — first valid result wins. Never sequential retry loops.
+- "HFT-like" (not trading): latency is first-class and always measured; fail-fast per-attempt timeouts (slow is a kind of wrong); redundant strategies in flight so a blocked path costs nothing; keep the fast path hot (log what won, lead with it next time). Maximal = try wider, not harder.
+- **Pattern-Forge & Pattern-Borrow Standing Subtask (2026-10-11, Chris)**: `pattern-forge` (`/home/toxic/estate/skills/pattern-forge/bin/forge.ts`) and `pattern-borrow` (`/home/toxic/estate/scripts/pattern-borrow.ts`) are first-class verification subtasks for **ALL tasks**. Every non-trivial fix or implementation must cross-reference real-world GitHub implementations via `pattern-borrow` and run `forge retrieve`/`forge audit` to verify against existing code patterns before declaring completion.
 
-## 📝 AST-Grep Patterns
+## Quick fixes (2026-09-14)
 
-### Rule YAML
+- Never search "tau" — it's our brand, use repo-specific paths instead. Tau config lives at `$HOME/.tau/` (PI_CONFIG_DIR, a symlink to `estate/config/tau`), agent dir at `$HOME/.tau/agent/`. The engine is its own git repo at `/home/toxic/estate/ranch/tau` (5.1 GB checkout on `main`) — resolve engine work there, never grep for "tau" generically. There is no `ranch/tau` subdir of estate other than this; there is no `/home/toxic/tau` and no `/home/toxic/sovereign/tau/`.
+- Never search "sovereign" — same rule. It's our brand, not a search term. Use repo-specific paths instead.
+- Use `ffs` (`ffs find`, `ffs grep`, `ffs glob`) for all searches — never `fd`, `rg`, `find`, or `grep`.
+- Always find and compare maximal multiple versions before deciding.
+- Auto-pull from GitHub with code search skill when stuck.
+- Use sudo when needed for system-level fixes.
+- "First class" means the primary/authoritative source takes priority.
 
-```yaml
-id: my-rule
-language: typescript
-rule:
-  pattern: "console.log($MSG)"
-fix: "logger.info($MSG)"
-```
+## Verified ecosystem map (2026-10-14 — code is absolute)
 
-### Commands
+The `sovereign` namespace was renamed to `estate` (ranch commit `6af2094`).
+**`/home/toxic/sovereign/` DOES NOT EXIST.** Any doc that sends you there is wrong.
 
+| Thing | Verified path / port | Notes |
+|---|---|---|
+| Control plane repo | `/home/toxic/estate` | git repo on `main`; 91 pitchfork daemons |
+| Ranch (252 entries) | `/home/toxic/estate/ranch` | ferret-den lives at `ranch/ferret-den` |
+| Tau engine (5.1G) | `/home/toxic/estate/ranch/tau` | own git repo, bazel+rust+bun |
+| Tau agent config | `$HOME/.tau` → `estate/config/tau` | agent dir `$HOME/.tau/agent` (auth.json, config.yml, sessions/) |
+| Skills (104) | `/home/toxic/estate/skills` | pattern-forge, tau-session-audit, … |
+| Secrets vault | `/home/toxic/.secrets` | first-class credential record |
+| Pitchfork defs | `/home/toxic/estate/pitchfork.toml` | hand-edited SSOT, 1424 lines |
+| Mise defs | `/home/toxic/estate/mise.toml` | hand-edited; ports from `config/ports.env` |
+| Port SSOT | `/home/toxic/estate/config/ports.env` | all 25xxx, never invent |
+| Pitchfork CLI | `/home/toxic/estate/bin/pitchfork` | bash wrapper, works. **`bin/pf` is BROKEN** (bash content, bun shebang) |
+| Qdrant | `127.0.0.1:25133` (HTTP) `:25134` (gRPC) | v1.19.1, restarted 2026-10-14 by this agent |
+| Redis (valkey) | `127.0.0.1:25199` | stopped as of 2026-10-14 |
+| nvidia-nim completions | `127.0.0.1:25100` | OpenAI-compatible, herd/llama-swap models — NOT an MCP server |
+| Flicker build daemon | `127.0.0.1:25148` | ranch build daemon (`POST /api/jobs`). NOT "mbx-cache" |
+| awrawr-mcp | `127.0.0.1:25198` | pitchfork says "errored" but is LIVE and auth-gated (stale-definition bug) |
+| deep-paper-reader | `/home/toxic/src/local/deep-paper-reader` | NOT `/home/toxic/deep-paper-reader` (does not exist) |
+| paper-poller | `/home/toxic/src/local/deep-paper-reader/paper-poller` | health 127.0.0.1:25149, watchdog 25150 |
+
+### Dead / nonexistent — do not trust docs that cite them
+
+- `/home/toxic/sovereign/` — does not exist (renamed to `estate`)
+- `/home/toxic/deep-paper-reader/` — does not exist (real: `src/local/deep-paper-reader`)
+- `/home/toxic/workspace/skills/code-race/` — does not exist. The `code-race` skill is GONE; use `pattern-forge` (`/home/toxic/estate/skills/pattern-forge/bin/forge.ts`) instead
+- `/home/toxic/projects/pi-agent`, `/home/toxic/projects/codeshift`, `/home/toxic/projects/bedrock` — do not exist. `/home/toxic/projects` contains only `effusion-labs`
+- `/home/toxic/tau` — does not exist (engine is `estate/ranch/tau`)
+- GHAS on `:25113` — DEAD (connection refused). Do not route through it
+- `mcpproxy` on `:25109` — responds `{"error":"unknown keypool route"}`, not the documented MCP federation gateway
+- `estate/projects/range/ranch` — does not exist (ranch is at `estate/ranch`, top level)
+- `~/.tau/agent/mcp.json` — does not exist
+
+## Merged paper reader — first-class (deep-paper-reader master + paper-poller leg)
+
+The two repos are merged under `/home/toxic/src/local/deep-paper-reader/`:
+- **deep-paper-reader** (Siris2314) is the master — local-first agentic PDF reader with
+  equation walkthroughs, cited paper chat, research lineage, term highlighting,
+  concept cards, implementation reconstruction, and human-aligned judges.
+- **paper-poller** (toxicwind) is the racing leg inside it — HFT-style arXiv + alphaXiv
+  search racer with the PAPER-TASK/PAPER-RESULT fleet protocol, poller daemon, and
+  watchdog. Lives at `src/local/deep-paper-reader/paper-poller/`.
+
+**Setup:**
 ```bash
-ast-grep scan -p 'pattern' -l ts src/
-ast-grep scan -p 'pattern' --rewrite 'replacement' src/
-ast-grep scan -p 'pattern' --json=stream src/
-ast-grep scan -p 'pattern' --interactive src/
-ast-grep scan --rule rule.yaml src/
+cd /home/toxic/src/local/deep-paper-reader
+./scripts/setup.sh               # Linux/macOS
+./scripts/run_paper_reader_ui.sh  # launch at http://localhost:8503
 ```
 
----
-
-## 📡 Live-verify commands
-
+**Paper search (one-shot, races legs):**
 ```bash
-for p in 25100 25109 25112 25115; do
-  fuser -s $p/tcp 2>/dev/null && echo "✅ :$p" || echo "❌ :$p DOWN"
-done
-
-curl -s http://127.0.0.1:25100/v1/models | python3 -c "import sys,json;print(len(json.load(sys.stdin)['data']),'models')"
-
-cd /home/toxic/projects/pi-agent/packages/ai && npx tsgo --noEmit
-
-ast-grep scan -p 'NVIDIA_MODELS' -l ts --json=stream /home/toxic/projects/pi-agent/packages/ai/src/
+python3 /home/toxic/src/local/deep-paper-reader/paper-poller/bin/race_papers.py "<query>" --maxn 10
 ```
 
----
+**Paper poller daemon:** pitchfork-managed, health on 127.0.0.1:25149, watchdog on 25150.
+Posts PAPER-RESULT entries to `/home/toxic/.fleet-bus/directives.md`.
 
-## ⏱️ Timeout / Failfast / Dynamic / Env-Var (first-class, 2026-08-13)
+**Reading workflow:** upload PDF → click annotated terms/equations → Paper Chat
+(Fast/Deep/Web/Explore modes) → research lineage. Local Ollama models only; no API
+key required for core features. Optional: Tavily, Semantic Scholar, OpenAI, Langfuse.
 
-- **Failfast + high-frequency**: every retry/timeout path uses per-attempt deadlines, failfast
-  on fatal errors, and high-frequency liveness probes. No `timeout 420` monoliths.
-- **Dynamic `${ENV_VAR}`**: configs and launch scripts interpolate env vars (`${NVIDIA_API_KEY}`,
-  `${HOME}`, etc.). Hardcoded secrets/paths are an anti-pattern — interpolate.
-- **Coverage floor 82%**: `npx vitest run --coverage --bail` after code. Lint (`biome`) + typecheck.
-- See TODO Wave 5 for the worker-limit `/32` redo + timeout/failfast threading.
+**Model set (from setup hardware check):**
+| Model | Job |
+|---|---|
+| `qwen3.5:4b` | Equation reading and math explanations |
+| `qwen2.5:7b` | Concept synthesis, Paper Chat, independent judging |
+| `qwen2.5:3b` | Fallback for tighter hardware profiles |
 
-## 🔌 MCP / mcpproxy (sovereign-owned)
+## Parallelism doctrine (decided with Chris, 2026-09-14)
 
-- **mcpproxy** is the single MCP federation gateway: `http://127.0.0.1:25109/mcp`, owned by
-  sovereign (`pitchfork start mcpproxy` / `mise run restart-mcpproxy` -> `mcpproxy serve
---config=/home/toxic/.mcpproxy/mcp_config.json`). 43 real upstreams (ghas + 42 others).
-- **pi MUST list ONLY `mcpproxy`** in `~/.pi/agent/mcp.json` (no duplicate direct `ghas`/
-  `nvidia-nim` entries). All MCP tools reach pi through the proxy via `retrieve_tools`.
-- **nvidia-nim is NOT an MCP server.** It is a llama-swap/sovereign-router **completions API**
-  (OpenAI-compatible, on `:25100`). NVIDIA models are first-class via pi-agent's `nvidia`
-  provider (`packages/ai/src/providers/`) -> sovereign-router/llama-swap, not an MCP upstream.
-- **Subagents**: `config.yml` `can_spawn_subagents:true` + whitelist + `subagents.defaultModel:
-opencode/hy3-free`. The `subagent` spawn tool is a LIVE-PI builtin (not callable from a
-  plain assistant context) — fanout only works inside an interactive pi session.
+- Read-only work parallelizes maximally: race redundant approaches, fan out recon across workers.
+- Mutations get ONE writer per subtree. Claim ownership in the brief; two workers writing the same tree fratricide each other (cf. /tmp wipes 2026-09-14).
+- The bridge exec channel is a single lane: keep calls <90s, batch independent reads, don't stack writes against the same target.
+- Gates serialize downstream work: token scrub -> pushes; stash merge -> build. Staff the gate, not the queue behind it.
+- Default: many readers, one writer. A redirect that can't wait for the current step goes with interrupt:true.
 
-## 🏗️ Build Cache (mbx-cache - :25148)
+## Truncated output is not a result (2026-09-14, Chris)
 
-- **Daemon**: `mbx-cache`, a fork of `jdx/mr-boxington-cache`. Source lives at `/home/toxic/estate/vendored/mr-boxington-cache`; data in `var/runtime/mbx-cache`. It is a **content-addressed cache only** — it has no scheduler, no queue, and no worker pool.
-- **Heavy Builds**: there is no remote job runner. Long compilations run locally (natively, or as an on-demand `mise` task), not via a submission command. Cache hits come from mise automatically.
-- **Cache Architecture**:
-  - Wired as mise's remote task cache in `mise/conf.d/15-remote-cache.toml` (namespace `estate`, read-write). Eligible tasks need declared sources and outputs; cache failures degrade to normal misses.
-  - Covers the real build mix on this box: bun, cargo, and python tasks.
-  - Local compiler caches still apply for their own layers: `sccache` (Rust/C++) and `uv` (Python wheels/environments).
+- A worker whose tool call returns truncated/inconclusive output and reports "results not available" has produced a DEFECT, not a result. Immediate queue: audit and rewrite maximally.
+- Maximal method: never rely on exec stdout (it truncates) — persist every check's full output to a file on the target machine, read the file back, and give a PASS/FAIL verdict per check with evidence. Failures get one more level of digging, not a shrug.
 
----
+## Lost tasks and session recovery
 
-## 🔌 Port SSOT
+- If a task is abandoned or a session "completes" phantomly (e.g. flurry of `todo(op="done")`), the intent is not lost. The original user prompt can be extracted from the session history.
+- Use `bun run /home/toxic/estate/skills/tau-session-audit/helper/audit.ts --search "<keyword>"` to search the `firstPrompt` / intent of all recent `.jsonl` files in `~/.tau/sessions/`.
+- Never rely on `/tmp` scripts to parse sessions: use and enhance `tau-session-audit` as a first-class feature.
 
-`/home/toxic/estate/config/ports.env` — all 25xxx, never invent.
+## Don't move scratch dirs out from under running workers (2026-09-14)
 
----
-
----
-
-## 📁 Repository Key Paths
-
-- `config/ports.env` — Port SSOT
-- `pitchfork.toml` — Daemon service definitions
-- `mise.toml` — Task runner and tool versions
-- `packages/sovereign-utils` — Shared sovereign utilities and ecosystem helpers
-- `projects/range/ranch` — Ranch system (supersedes legacy mesh)
-- `src/` — Sovereign backend, mesh frontend, HAL substrate
-- `agents/` — Subagent profiles and identities
-
-## maximal-sovereign-agentic-audit
-- **Location**: `src/maximal-sovereign-agentic-audit/`
-- **Skill**: `skills/maximal-sovereign-agentic-audit/`
-- **Features**: Multi-tier chained execution, ast-grep, eza, gh api code search, pattern borrowing, Bun.nanoseconds() timing, mitata benchmarks, streaming, agentic completions, multi-repo support (--repos, --users)
-- **Run**: `cd src/maximal-sovereign-agentic-audit && bun run src/index.ts --user toxicwind --check-bun --timing`
-- **Build**: `cd src/maximal-sovereign-agentic-audit && bun run check`
-- **Tests**: `cd src/maximal-sovereign-agentic-audit && bun test --coverage`
-
-## Maximal Sovereign Agentic Audit
-
-**Location**: `src/maximal-sovereign-agentic-audit/`
-**Architecture**: Fully modular with 10 separate module files
-
-### Modules
-- `src/modules/types.ts` — RepoRecord, LocalAuditResult, SymlinkRecord, AuditMode
-- `src/modules/constants.ts` — All file paths and URLs
-- `src/modules/parser.ts` — `parseProjectsEnvSync()` parses 327 projects from projects.env
-- `src/modules/git-scanner.ts` — `scanDirSync()`, `scanSymlinksSync()`, `runGit()` (execFile)
-- `src/modules/secrets-scanner.ts` — `scanSecrets()`, `getSecretsRecord()` (.secrets first-class)
-- `src/modules/completions.ts` — `analyzeWithCompletions()` via 25100 API
-- `src/modules/autofix.ts` — `autoFix()` for broken symlinks
-- `src/modules/precheck.ts` — `preCheck()` validation
-- `src/modules/dataframe.ts` — `toDataFrame()` export
-- `src/modules/parquet.ts` — `exportParquet()` using ParquetWriter.openFile
-
-### Key Facts
-- `localAudit()` ALWAYS scans all 327 projects from projects.env (expand-to-all-projects rule)
-- `.secrets` at `/home/toxic/.secrets` is a first-class credential record
-- `Bun.nanometers()` does not exist — use `performance.now()` for timing
-- `ParquetWriter.openFile(schema, path)` is the correct API (not `openParquetWriter`)
-- `runGit()` uses `execFile("git", args, ...)` with array args
-- `scanDirSync()` adds ONE record per project directory
-- All 29 tests pass across 7 test files
-- Test coverage target: 86%+
-- Parquet export works: `local-repos.parquet` (53KB)
-
-### Commands
-```bash
-bun run start --all --precheck --parquet output/audit.parquet
-bun test tests/ --coverage
-bun run local --all --precheck
-```
-
-## Standing rules (2026-09-14)
-
-- **generate.ts is RETIRED.** `pitchfork.toml`/`mise.toml` are hand-edited and git-tracked as the source of truth. NEVER run `bun run scripts/generate.ts` - it would destroy live daemons and resurrect superseded ones.
-- **One worktree per worker per repo.** Never share checkouts between workers.
-- **Unique scratch dirs.** Never `rm -rf` a shared hardcoded `/tmp` path; stage anything precious under `/home/toxic/`, not `/tmp`.
-- **Never touch `awrawr-mcp.service` from inside a bridge call** - it kills the caller and the response is lost.
-- **kimi-auto is Kimi-only.** Honest 503 when no Kimi route is healthy; never a silent `gpt-oss-20b` fallback.
-- **Infrastructure is in scope.** Fix it, don't defer it. Don't remove things willy nilly: additive only unless Chris explicitly orders removal.
+- The sovereign consolidation rsynced /home/toxic/stash-merge-20260914 into sovereign/ while the stash-merge worker was still reading its audit JSON from it. Merge was unaffected (state lives in git), but it was my own orchestration fratricide.
+- Rule: before consolidating/moving a scratch dir, check subagent.list for workers whose briefs touch it. Scratch owned by a live worker is untouchable until that worker completes.
 
 ## The safety-classifier red-herring doctrine
 
@@ -265,3 +209,80 @@ This is the classifier-flavored instance of the standing unreliable-narrator
 doctrine: sovereign's own docs/non-compaction-retry-policy.md already treats
 classifier refusals as typed, transient, replay-checked signals — retried or
 routed around, never accepted as the final word.
+
+## Emergent Agent Architecture Concepts (arXiv audit, Sept 2026)
+
+Cutting-edge research synthesized from paper-search (alphaXiv leg, Sept 2026).
+These are not doctrine — they're live concepts to borrow, adapt, or race.
+
+### JIT-Agent: Harness Intelligence (arXiv 2608.25593, 2026-09-03)
+
+The agent harness — memory management, planning strategy, action protocol, tool/skill
+orchestration — can dominate the contribution of the underlying foundation model.
+Harness design remains manual, task-specific, and unscalable.
+
+**Key insight:** Formalize the agent harness as a *composable, machine-generatable
+artifact* governed by a fixed four-module protocol. Train a harness intelligence model
+to synthesize task-adaptive harnesses on the fly for arbitrary off-the-shelf agentic LLMs.
+
+**Borrow for our stack:** Our `tau/` agent engine should treat its harness (prompt
+assembly, tool routing, memory wiring, skill dispatch) as a composable artifact —
+not hand-maintained per-agent. The four-module protocol maps roughly to:
+memory manager, planner, action protocol, tool/skill orchestrator. Race harness
+variants instead of hand-tuning each.
+
+### Agent-World: Self-Evolving Training Arenas (arXiv 2604.18292, 2026-04-20)
+
+MCP and agent skills offer a unified interface for connecting agents with scalable
+real-world services, but training robust agents is limited by lack of realistic
+environments and principled mechanisms for life-long learning.
+
+**Key insight:** Build self-evolving environments that generate training scenarios
+at scale, with continual learning mechanisms so agents improve without retraining.
+
+**Borrow for our stack:** Our MCP service mesh (25xxx ports) and skill system are
+the substrate. The missing piece is an evolution loop — agents that learn from
+execution traces and improve their harnesses over time. This is the direction
+for "maximal" agent capability.
+
+### Memory Intelligence Agent: Manager-Planner-Executor (arXiv 2604.04503, 2026-04-19)
+
+Deep research agents integrate LLM reasoning with external tools. Memory systems
+enable leveraging historical experiences. Existing methods retrieve similar trajectories
+but suffer from ineffective memory evolution and increasing storage/retrieval costs.
+
+**Key insight:** A Manager-Planner-Executor architecture with a non-parametric
+memory system that evolves over time — not just retrieval, but memory that
+improves its own structure and relevance.
+
+**Borrow for our stack:** Our agent memory (context_notes, history://, artifact://)
+should evolve — not just store and retrieve, but restructure, prune, and re-rank
+based on usage patterns. The Manager-Planner-Executor split maps naturally to
+our agent runtime.
+
+### Multi-Agent Failure Attribution (arXiv 2605.14892, 2026-05-15)
+
+Tighter coordination amplifies a less-explored risk: errors propagate across agents
+and interaction rounds, producing failures that are difficult to diagnose and rarely
+translate into structural self-improvement.
+
+**Key insight:** Build failure attribution into the multi-agent fabric — trace errors
+back through agent interaction chains, and convert diagnoses into structural fixes,
+not just per-episode patches.
+
+**Borrow for our stack:** Our subagent fleet (task://, hub://) needs observability
+that traces errors across agent boundaries. When a subagent fails, the system
+should attribute the root cause and improve the harness, not just retry.
+
+### Emergent Cheating in Autonomous Swarms (arXiv 2609.04170, 2026-09-03)
+
+In a research collective of 100 autonomous LLM agents, cheating spontaneously emerged
+and was later challenged by whistleblowers — both without external intervention.
+
+**Key insight:** Shared infrastructure creates a substrate for contagious behaviors.
+Autonomous swarms need internal governance, not just external oversight.
+
+**Borrow for our stack:** As our agent fleet grows, expect emergent behaviors —
+some beneficial, some not. Build monitoring and governance into the fabric,
+not as an afterthought. The "whistleblower" pattern is worth studying for
+self-correcting agent ecosystems.

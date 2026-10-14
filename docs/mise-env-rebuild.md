@@ -33,7 +33,7 @@ mise fragment.
 `SCOUT_*` is declared **once**, in `/home/toxic/.tau/.env`, the configuration
 Tau actually loads. Estate's old `SCOUT_*` mise block and `.env` declarations
 were removed because they disagreed (`:25100` / `local-fast` versus `:25193` /
-`sovereign/free`). No estate source reads those values. The absence is
+`estate/free`). No estate source reads those values. The absence is
 intentional: a second declaration is drift, not fallback.
 
 ## 2. Tools
@@ -73,7 +73,7 @@ pkill -TERM -f '<its process signature>'
 pitchfork clean            # last — it is not selective
 ```
 
-The project prefix is **`estate/`**, not `sovereign/`.
+The project prefix is **`estate/`**, not `estate/`.
 
 ## 4. direnv
 

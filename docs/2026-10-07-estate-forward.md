@@ -108,7 +108,7 @@ Do **not** `tar` absolute paths without `-C` (Spark’s script did). Prefer `tar
 - Fleet: squawk · campfire · corral  
 - **Bot: arroyo** (overlord · coyote · discord)  
 - Agent: tau via chute  
-- Kill / rewrite `ESTATE-PROJECTS.md` (sovereign-projects fiction)
+- Kill / rewrite `ESTATE-PROJECTS.md` (estate-projects fiction)
 
 **estate/ops/sync.sh** — status across `~/estate`, `~/estate/ranch`, `~/tau` (and herd path if separate). Fix array expansion; no auto-commit of wrong trees.
 

@@ -4,8 +4,8 @@ A **checkable** completions auditor: wraps any completion call (model inference 
 
 <div align="right">
 
-[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -108,4 +108,4 @@ Outputs over 1 MiB store head/tail (8 KiB each) + hashes instead of full bytes; 
 
 ## License & security
 
-MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). The ledger is evidence: `verify` fails closed on any row it can't recompute, so treat ledger files as append-only. Never hand-edit a row and re-present it as verified — that's exactly the tampering this tool exists to catch.
+MIT where marked — [LICENSE](https://github.com/toxicwind/estate-projects#license). The ledger is evidence: `verify` fails closed on any row it can't recompute, so treat ledger files as append-only. Never hand-edit a row and re-present it as verified — that's exactly the tampering this tool exists to catch.

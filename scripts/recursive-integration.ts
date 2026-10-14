@@ -1,14 +1,14 @@
 #!/usr/bin/env bun
 /**
- * Recursive Integration — sovereign, sovereign-projects, projects
+ * Recursive Integration — estate, estate-projects, projects
  * Cuts across all three folders with concrete actions
  */
 
 import { $ } from "bun";
 
 const ROOT = "/home/toxic";
-const SOVEREIGN = `${ROOT}/sovereign`;
-const SOV_PROJECTS = `${ROOT}/projects/sovereign-projects`;
+const SOVEREIGN = `${ROOT}/estate`;
+const SOV_PROJECTS = `${ROOT}/projects/estate-projects`;
 const PROJECTS = `${ROOT}/projects`;
 
 async function run() {
@@ -41,7 +41,7 @@ async function run() {
   console.log("4. Creating cross-folder integration markers...");
   const marker = {
     timestamp: new Date().toISOString(),
-    sovereign: {
+    estate: {
       path: SOVEREIGN,
       helpers: [
         "git-mutator",
@@ -53,7 +53,7 @@ async function run() {
         "clean-orphans",
       ],
     },
-    sovereignProjects: {
+    estateProjects: {
       path: SOV_PROJECTS,
       subdirs: spContents.trim().split("\n").filter(Boolean),
     },
@@ -73,7 +73,7 @@ async function run() {
 
   // 5. Git commit the integration
   console.log("5. Committing recursive integration...");
-  await $`cd ${ROOT} && git add .recursive-integration.json && git commit -m "recursive integration: sovereign + sovereign-projects + projects cross-wired with concrete markers" 2>&1`;
+  await $`cd ${ROOT} && git add .recursive-integration.json && git commit -m "recursive integration: estate + estate-projects + projects cross-wired with concrete markers" 2>&1`;
 
   console.log("=== RECURSIVE INTEGRATION COMPLETE ===");
 }

@@ -3,9 +3,9 @@
 ## Monorepo Map
 
 ### Parent: /home/toxic/estate
-- Git remote: `toxicwind/sovereign-projects` (origin)
+- Git remote: `toxicwind/estate-projects` (origin)
 - npm workspaces: `herd`, `herd/ui-svelte`, `packages/*`
-- **Submodules**: `shell/ii` (sovereign-end4), `tau/vendors` (kimi-cli)
+- **Submodules**: `shell/ii` (estate-end4), `tau/vendors` (kimi-cli)
 - **Symlinks** (top level):
   - `config/llama-swap.yaml` → `herd.yaml`
   - `helpers` → `/home/toxic/estate/skills`
@@ -15,10 +15,10 @@
 ### Attached monorepos (how they attach)
 | Path | Type | Attachment |
 |------|------|------------|
-| `tau/` | dir in sovereign | same git repo, no nested .git |
-| `mesh/` | dir in sovereign | same git repo, no nested .git |
+| `tau/` | dir in estate | same git repo, no nested .git |
+| `mesh/` | dir in estate | same git repo, no nested .git |
 | `projects/tau/` | real dir (own .gitmodules) | separate checkout, DUPLICATES tau/ content |
-| `tau/engine/` | dir in sovereign | canonical tau engine |
+| `tau/engine/` | dir in estate | canonical tau engine |
 | `tau/vendor/oh-my-pi/` | vendored upstream | read-only mirror |
 | `/home/toxic/kimi-code/` | pnpm workspace | separate repo |
 | `/home/toxic/squawk/` | git repo | separate repo |

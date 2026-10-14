@@ -1,6 +1,6 @@
 # docs/
 
-![sovereign](https://img.shields.io/badge/sovereign--projects-2E86DE?style=for-the-badge)
+![estate](https://img.shields.io/badge/estate--projects-2E86DE?style=for-the-badge)
 ![docs](https://img.shields.io/badge/docs-architecture-0D1117?style=for-the-badge)
 
 **The design record of the Sovereign stack** — architecture, inference routing, hardware tuning, research, audits, and plans. When a doc here disagrees with the live box, the box wins: `pitchfork.toml`, `mise.toml`, and `config/ports.env` are the live sources of truth.

@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
  * inkling_nim_fuzz_test.ts — Systematic parameter fuzz test for NVIDIA NIM Inkling
- * Uses llama-swap :25100 (local router) via sovereign infrastructure
+ * Uses llama-swap :25100 (local router) via estate infrastructure
  * 
  * Tests ALL standard OpenAI parameters + NIM-specific extensions
  * Discovers what's actually supported vs rejected

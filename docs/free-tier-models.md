@@ -59,7 +59,7 @@ OpenRouter's current 19 `:free` IDs: `cohere/north-mini-code:free`, `dots-studio
   (finish_reason "stop", zero content deltas, ~850-900 ms). The free Novita route is
   severely intermittent — empty completions, no error signal.
 - **Routing verdict: NOT wired into the live free pool.** The live
-  `sovereign-router-ts` `free` strategy races `freeCandidates()` from `router_config.ts`,
+  `estate-router-ts` `free` strategy races `freeCandidates()` from `router_config.ts`,
   which has no Ling entry; mesh `config.yml` line 65 declares
   `default: openrouter/inclusionai/ling-3.0-flash-fin:free:high` but NOTHING parses
   `:free:high` — declared intent only, not active routing policy. Deliberately not added:
@@ -78,7 +78,7 @@ OpenRouter's current 19 `:free` IDs: `cohere/north-mini-code:free`, `dots-studio
   Evidence: `tools/ling_bench_20260917.json`.
 - Acceptance gate met (free + 5/5 non-empty correct + warm TTFT < 2 s), so Ling was
   wired into the live pool: `inclusionai/ling-3.0-flash-fin:free` added to the
-  `openrouter` array in `projects/range/ranch/stockyard/router-legacy/sovereign-router-ts/router_config.ts`
+  `openrouter` array in `projects/range/ranch/stockyard/router-legacy/estate-router-ts/router_config.ts`
   (it is enumerated by `freeCandidates()` in `router_strategy.ts`, which picks up
   every configured ID containing `:free`).
 - Router restarted via pitchfork 04:25 MDT; `/health` 200. `freeCandidates()` verified

@@ -12,8 +12,8 @@ verification, atomic server-side install, `.part` resume, per-path
 concurrency lock, 64 KiB default frame (race winner).
 
 - Client: `toxicwind/gear` → `awrawr-mcp/bin/xfer.py` (+ shared `wsframe.py`)
-- Server: `toxicwind/sovereign-projects` → `shingle-workspace/awrawr_ws_exec.py`
-  (live: `/home/toxic/awrawr_ws_exec.py`, pitchfork `sovereign/awrawr-ws-exec`)
+- Server: `toxicwind/estate-projects` → `shingle-workspace/awrawr_ws_exec.py`
+  (live: `/home/toxic/awrawr_ws_exec.py`, pitchfork `estate/awrawr-ws-exec`)
 - `exec.py`: `--argv` (shell-free arg transport), `--timeout N` (server cap
   1800 s), socket/daemon wait ceilings derived from the requested timeout,
   explicit refusal (no silent HTTPS fallback) when `--argv`/`--timeout` are
@@ -41,17 +41,17 @@ concurrency lock, 64 KiB default frame (race winner).
 - `toxicwind/gear` main: `fabe51b` (xfer v1) → `9625c9a` (busy-retry) →
   `711ad0c` (300 s busy window) → `2e8b37a` (64 KiB default, throttle removed,
   timeout propagation, no silent fallback)
-- `toxicwind/sovereign-projects` main: `a0fdcbe357` (server v1) →
+- `toxicwind/estate-projects` main: `a0fdcbe357` (server v1) →
   `5d7fc591f3` (per-path put lock) → `c9bb36064f` (realpath hardening) →
   `561ed315fa` (pitchfork runs tracked source)
-- NOTE: `3650fcd977` on sovereign-projects duplicates `gear/awrawr-mcp/`
+- NOTE: `3650fcd977` on estate-projects duplicates `gear/awrawr-mcp/`
   content — committed there by accident when `gear/.git/HEAD` went missing
   and git walked up to the parent repo. Left in place (no revert, ever);
   the canonical home is `toxicwind/gear`. The matching content is correctly
   committed there as `2e8b37a`.
 
 ## Deployment state
-- pitchfork.toml now points `sovereign/awrawr-ws-exec` at the tracked source
+- pitchfork.toml now points `estate/awrawr-ws-exec` at the tracked source
   `shingle-workspace/awrawr_ws_exec.py`; old live copy kept as synced fallback.
 - Daemon respawned by supervisor after kill (retry=true); listener verified.
 - Caveat: pitchfork CLI 2.25.0 vs supervisor 2.16.0 mismatch — `pitchfork
@@ -70,7 +70,7 @@ concurrency lock, 64 KiB default frame (race winner).
    skill dirs (another worker's doing). I committed only my own files.
 3. `/tmp/bridgesave` on the cell vanished mid-session (fratricide or cell
    wipe) — nothing durable lost, everything was already pushed.
-4. `pitchfork list` shows `sovereign/awrawr-ws-exec` as "errored exit code 1"
+4. `pitchfork list` shows `estate/awrawr-ws-exec` as "errored exit code 1"
    while the daemon runs fine — known stale-status lie, do not trust it.
 
 ## Bottom line

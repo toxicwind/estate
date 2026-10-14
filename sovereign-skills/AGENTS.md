@@ -1,4 +1,4 @@
-# AGENTS.md — Sovereign Skills (`/home/toxic/projects/sovereign-skills`)
+# AGENTS.md — Sovereign Skills (`/home/toxic/projects/estate-skills`)
 
 **Role**: Skill definitions, agent recipes, and behavioral orchestrations for the Sovereign ecosystem.
 **Stack**: Markdown, YAML, JSON, shell scripts.
@@ -123,22 +123,22 @@ ast-grep scan -p 'NVIDIA_MODELS' -l ts --json=stream /home/toxic/projects/pi-age
 - **Coverage floor 82%**: `npx vitest run --coverage --bail` after code. Lint (`biome`) + typecheck.
 - See TODO Wave 5 for the worker-limit `/32` redo + timeout/failfast threading.
 
-## 🔌 MCP / mcpproxy (sovereign-owned)
+## 🔌 MCP / mcpproxy (estate-owned)
 
 - **mcpproxy** is the single MCP federation gateway: `http://127.0.0.1:25109/mcp`, owned by
-sovereign (`pitchfork start mcpproxy` / `mise run restart-mcpproxy` -> `mcpproxy serve
+estate (`pitchfork start mcpproxy` / `mise run restart-mcpproxy` -> `mcpproxy serve
 --config=/home/toxic/.mcpproxy/mcp_config.json`). 43 real upstreams (ghas + 42 others).
 - **pi MUST list ONLY `mcpproxy`** in `~/.pi/agent/mcp.json` (no duplicate direct `ghas`/
   `nvidia-nim` entries). All MCP tools reach pi through the proxy via `retrieve_tools`.
-- **nvidia-nim is NOT an MCP server.** It is a llama-swap/sovereign-router **completions API**
+- **nvidia-nim is NOT an MCP server.** It is a llama-swap/estate-router **completions API**
   (OpenAI-compatible, on `:25100`). NVIDIA models are first-class via pi-agent's `nvidia`
-  provider (`packages/ai/src/providers/`) -> sovereign-router/llama-swap, not an MCP upstream.
+  provider (`packages/ai/src/providers/`) -> estate-router/llama-swap, not an MCP upstream.
 - **Subagents**: `config.yaml` `can_spawn_subagents:true` + whitelist + `subagents.defaultModel:
   opencode/hy3-free`. The `subagent` spawn tool is a LIVE-PI builtin (not callable from a
   plain assistant context) — fanout only works inside an interactive pi session.
 
 ## 🔌 Port SSOT
 
-`/home/toxic/sovereign/config/ports.env` — all 25xxx, never invent.
+`/home/toxic/estate/config/ports.env` — all 25xxx, never invent.
 
 ---

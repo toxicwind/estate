@@ -10,21 +10,23 @@ import {
 	saveConfig,
 	saveSettings,
 	settingsPath,
-	type OmniConfig,
-	type OmniSettings,
+	type FlockConfig,
+	type FlockSettings,
 } from "./config.ts";
+// Effusion patch: dynamic model resolution for Vercel AI Gateway
 import { ConfigDialog, summarizeModels, type ModelSummary } from "./config-dialog.ts";
-import type { AgentHomeOptions, OmniContext, OmniPI, ProviderModelConfig } from "./contracts.ts";
-import { AUTO_MODELS, checkModelsEndpoint, discoverModels, isSyncStale, probeHealth, registerOmniProvider, reloadOmniProvider, setInferenceApi, testChat, transformProviderPayload } from "./provider.ts";
+import type { AgentHomeOptions, FlockContext, FlockPI, ProviderModelConfig } from "./contracts.ts";
+import { AUTO_MODELS, checkModelsEndpoint, discoverModels, isSyncStale, probeHealth, registerFlockProvider, reloadFlockProvider, resolveVercelAiGatewayModel, setInferenceApi, testChat, transformProviderPayload } from "./provider.ts";
 import { registerGatewayTelemetry } from "./gateway-telemetry.ts";
 import {
 	createUnreachableController,
 	hopOnUnreachable,
 	hopOptionsFromContext,
-	isOmniActiveModel,
+	isFlockActiveModel,
 	isUnreachableHttpStatus,
 	isUnreachableRequestFailure,
 } from "./unreachable.ts";
+import routerExtension from "./router/index.ts";
 
 function sortKey(id: string): string {
 	const autoIndex = AUTO_MODELS.indexOf(id);
@@ -61,7 +63,7 @@ function modelLines(models: ProviderModelConfig[], query = "", limit = 80): stri
 	return lines;
 }
 
-async function showStatus(ctx: OmniContext, agentHome: string, config: OmniConfig): Promise<void> {
+async function showStatus(ctx: FlockContext, agentHome: string, config: FlockConfig): Promise<void> {
 	const probeConfig = loadProbeConfig(agentHome);
 	const hop = loadHopSettings(agentHome);
 	const result = await probeHealth(probeConfig, ctx.signal);
@@ -96,8 +98,8 @@ function helpText(): string {
 }
 
 async function showConfigDialog(
-	ctx: OmniContext,
-	pi: OmniPI,
+	ctx: FlockContext,
+	pi: FlockPI,
 	agentHome: string,
 	options: AgentHomeOptions,
 ): Promise<void> {
@@ -138,11 +140,11 @@ async function showConfigDialog(
 	await refreshSummary();
 
 	const storedSettings = loadSettings(agentHome);
-	const settings: OmniSettings = { ...storedSettings, ...loadHopSettings(agentHome) };
-	const saved = await ctx.ui.custom<OmniSettings | undefined>((tui, theme, _keybindings, done) => {
+	const settings: FlockSettings = { ...storedSettings, ...loadHopSettings(agentHome) };
+	const saved = await ctx.ui.custom<FlockSettings | undefined>((tui, theme, _keybindings, done) => {
 		const sync = async () => {
 			try {
-				const models = await registerOmniProvider(pi, agentHome, loadConfig(agentHome), loadSettings(agentHome), ctx.signal);
+				const models = await registerFlockProvider(pi, agentHome, loadConfig(agentHome), loadSettings(agentHome), ctx.signal);
 				return { summary: summarizeModels(models) };
 			} catch (error) {
 				return { error: (error as Error).message };
@@ -165,20 +167,20 @@ async function showConfigDialog(
 	});
 	if (!saved) return;
 
-	const persisted: OmniSettings = { ...saved };
+	const persisted: FlockSettings = { ...saved };
 	const envAction = process.env.OMNIROUTE_ON_UNREACHABLE;
 	if (envAction === "none" || envAction === "host-fallback") persisted.onUnreachable = storedSettings.onUnreachable;
 	if (process.env.OMNIROUTE_FALLBACK_MODEL !== undefined) persisted.fallbackModel = storedSettings.fallbackModel;
 	saveConfig(agentHome, persisted, storedSettings);
 	try {
-		const models = await registerOmniProvider(pi, agentHome, loadConfig(agentHome), persisted, ctx.signal);
+		const models = await registerFlockProvider(pi, agentHome, loadConfig(agentHome), persisted, ctx.signal);
 		ctx.ui.notify(`Settings saved; OmniRoute synced ${models.length} model(s).`, "info");
 	} catch (error) {
 		ctx.ui.notify(`Settings saved, but sync failed: ${(error as Error).message}`, "error");
 	}
 }
 
-async function runSetup(ctx: OmniContext, pi: OmniPI, agentHome: string): Promise<OmniConfig | undefined> {
+async function runSetup(ctx: FlockContext, pi: FlockPI, agentHome: string): Promise<FlockConfig | undefined> {
 	const storedSettings = loadSettings(agentHome);
 	const current = loadConfig(agentHome);
 	const serverUrl = await ctx.ui.input("OmniRoute server URL", current.serverUrl);
@@ -197,19 +199,19 @@ async function runSetup(ctx: OmniContext, pi: OmniPI, agentHome: string): Promis
 	}
 
 	saveConfig(agentHome, next, storedSettings);
-	const models = await registerOmniProvider(pi, agentHome, runtimeConfig, loadSettings(agentHome), ctx.signal);
+	const models = await registerFlockProvider(pi, agentHome, runtimeConfig, loadSettings(agentHome), ctx.signal);
 	ctx.ui.notify(`Saved. Synced ${models.length} model(s).`, "info");
 	return next;
 }
 
-export async function createOmniExtension(pi: OmniPI, options: AgentHomeOptions): Promise<void> {
+export async function createFlockExtension(pi: FlockPI, options: AgentHomeOptions): Promise<void> {
 	setInferenceApi(options.inferenceApi);
 	const agentHome = resolveAgentHome(options);
 	let config = loadConfig(agentHome);
 	let healthTimer: ReturnType<typeof setInterval> | undefined;
 	let healthProbeAbortController: AbortController | undefined;
 	let autoSyncTimer: ReturnType<typeof setInterval> | undefined;
-	let sessionCtx: OmniContext | undefined;
+	let sessionCtx: FlockContext | undefined;
 	let syncInFlight: Promise<number> | null = null;
 	let lastSyncCount = 0;
 	const unreachable = createUnreachableController();
@@ -218,17 +220,17 @@ export async function createOmniExtension(pi: OmniPI, options: AgentHomeOptions)
 	// Defer response-triggered hops until host retries have settled; the preflight probe still hops before the request.
 	let pendingRequestFailure = false;
 
-	async function maybeHop(ctx: OmniContext): Promise<void> {
+	async function maybeHop(ctx: FlockContext): Promise<void> {
 		const hop = loadHopSettings(agentHome);
 		const probeConfig = loadProbeConfig(agentHome);
 		if (hop.onUnreachable !== "host-fallback") return;
-		if (!isOmniActiveModel(ctx.model, probeConfig.providerName)) return;
+		if (!isFlockActiveModel(ctx.model, probeConfig.providerName)) return;
 		if (hopping) return;
 		hopping = true;
 		try {
 			await hopOnUnreachable(
 				{ serverUrl: probeConfig.serverUrl },
-				hopOptionsFromContext(ctx, { ...hop, omniProviderName: probeConfig.providerName }, pi.setModel?.bind(pi)),
+				hopOptionsFromContext(ctx, { ...hop, flockProviderName: probeConfig.providerName }, pi.setModel?.bind(pi)),
 			);
 		} finally {
 			hopping = false;
@@ -237,26 +239,26 @@ export async function createOmniExtension(pi: OmniPI, options: AgentHomeOptions)
 
 	function healthStatus(result: { ok: boolean; unreachable: boolean }): string | undefined {
 		if (result.ok) return undefined;
-		return result.unreachable ? "OmniRoute unreachable" : "OmniRoute health check failed";
+		return result.unreachable ? "VansRouter unreachable" : "VansRouter health check failed";
 	}
 
-	async function probeBeforeTurn(ctx: OmniContext): Promise<void> {
+	async function probeBeforeTurn(ctx: FlockContext): Promise<void> {
 		const hop = loadHopSettings(agentHome);
 		if (hop.onUnreachable !== "host-fallback") return;
 		const probeConfig = loadProbeConfig(agentHome);
-		if (!isOmniActiveModel(ctx.model, probeConfig.providerName)) return;
+		if (!isFlockActiveModel(ctx.model, probeConfig.providerName)) return;
 		const result = await unreachable.probe(probeConfig, ctx.signal, true);
 		if (result.ok || !result.unreachable) return;
-		if (ctx.hasUI) ctx.ui.setStatus("omni", "OmniRoute unreachable");
+		if (ctx.hasUI) ctx.ui.setStatus("omni", "VansRouter unreachable");
 		await maybeHop(ctx);
 	}
 
-	async function sync(ctx?: OmniContext, options?: { quiet?: boolean }): Promise<number> {
+	async function sync(ctx?: FlockContext, options?: { quiet?: boolean }): Promise<number> {
 		if (syncInFlight) return syncInFlight;
 		const quiet = options?.quiet === true;
 		syncInFlight = (async () => {
 			config = loadConfig(agentHome);
-			const models = await registerOmniProvider(pi, agentHome, config, loadSettings(agentHome), ctx?.signal);
+			const models = await registerFlockProvider(pi, agentHome, config, loadSettings(agentHome), ctx?.signal);
 			const previous = lastSyncCount;
 			lastSyncCount = models.length;
 			const notifyCtx = ctx ?? sessionCtx;
@@ -276,7 +278,7 @@ export async function createOmniExtension(pi: OmniPI, options: AgentHomeOptions)
 		autoSyncTimer = undefined;
 	}
 
-	function startAutoSync(ctx: OmniContext): void {
+	function startAutoSync(ctx: FlockContext): void {
 		stopAutoSync();
 		sessionCtx = ctx;
 		const intervalSeconds = loadSettings(agentHome).autoSyncIntervalSeconds;
@@ -288,12 +290,15 @@ export async function createOmniExtension(pi: OmniPI, options: AgentHomeOptions)
 		}, intervalSeconds * 1000);
 	}
 
-	reloadOmniProvider(pi, agentHome, config);
+	reloadFlockProvider(pi, agentHome, config);
 	registerGatewayTelemetry(pi, {
 		providerName: () => config.providerName,
 		serverUrl: () => config.serverUrl,
 		showTokensPerSecond: () => loadSettings(agentHome).showGatewayTokensPerSecond,
 	});
+
+	// Initialize the integrated model router engine (absorbed from omp-model-router by @cakriwut)
+	routerExtension(pi as any);
 
 	pi.on("session_start", async (_event, ctx) => {
 		sessionCtx = ctx;
@@ -301,7 +306,7 @@ export async function createOmniExtension(pi: OmniPI, options: AgentHomeOptions)
 		const settings = loadSettings(agentHome);
 		if (settings.syncOnStartup && isConfigured(agentHome) && isSyncStale(settings)) {
 			try {
-				lastSyncCount = (await registerOmniProvider(pi, agentHome, config, settings, ctx.signal)).length;
+				lastSyncCount = (await registerFlockProvider(pi, agentHome, config, settings, ctx.signal)).length;
 			} catch (error) {
 				if (ctx.hasUI) ctx.ui.notify(`OmniRoute startup sync failed; using previous models: ${(error as Error).message}`, "warning");
 			}
@@ -322,8 +327,8 @@ export async function createOmniExtension(pi: OmniPI, options: AgentHomeOptions)
 		ctx.ui.setStatus("omni", healthStatus(result));
 		if (!result.ok) {
 			const message = result.unreachable
-				? `OmniRoute unreachable at ${probeConfig.serverUrl}. Run /omni sync after reconnecting.`
-				: `OmniRoute health check failed at ${probeConfig.serverUrl}.`;
+				? `VansRouter unreachable at ${probeConfig.serverUrl}. Run /omni sync after reconnecting.`
+				: `VansRouter health check failed at ${probeConfig.serverUrl}.`;
 			ctx.ui.notify(message, "warning");
 		}
 		if (healthTimer) clearInterval(healthTimer);
@@ -333,9 +338,13 @@ export async function createOmniExtension(pi: OmniPI, options: AgentHomeOptions)
 		}, 60_000);
 	});
 
-	pi.on("before_provider_request", (event, ctx) =>
-		transformProviderPayload(event.payload, ctx.model, config.providerName),
-	);
+	pi.on("before_provider_request", (event, ctx) => {
+		const resolved = resolveVercelAiGatewayModel(ctx.model?.id ?? "");
+		if (resolved && resolved !== ctx.model?.id) {
+			(event as { payload?: { model?: string } }).payload = { ...(event.payload as object), model: resolved };
+		}
+		transformProviderPayload(event.payload, ctx.model, config.providerName);
+	});
 
 	pi.on("session_shutdown", () => {
 		if (healthTimer) clearInterval(healthTimer);
@@ -367,7 +376,7 @@ export async function createOmniExtension(pi: OmniPI, options: AgentHomeOptions)
 		if (isUnreachableHttpStatus(event.status)) {
 			pendingRequestFailure = true;
 			unreachable.reset();
-			if (ctx.hasUI) ctx.ui.setStatus("omni", "OmniRoute unreachable");
+			if (ctx.hasUI) ctx.ui.setStatus("omni", "VansRouter unreachable");
 			return;
 		}
 		pendingRequestFailure = false;
@@ -394,7 +403,7 @@ export async function createOmniExtension(pi: OmniPI, options: AgentHomeOptions)
 		pendingRequestFailure = false;
 		const probeConfig = loadProbeConfig(agentHome);
 		if (ctx.model?.provider !== probeConfig.providerName) return;
-		if (ctx.hasUI) ctx.ui.setStatus("omni", "OmniRoute unreachable");
+		if (ctx.hasUI) ctx.ui.setStatus("omni", "VansRouter unreachable");
 		unreachable.reset();
 		await maybeHop(ctx);
 	});
@@ -404,9 +413,9 @@ export async function createOmniExtension(pi: OmniPI, options: AgentHomeOptions)
 	});
 
 	pi.registerTool({
-		name: "omniroute_status",
-		label: "OmniRoute Status",
-		description: "Return OmniRoute health and provider registration status.",
+		name: "flocksync_status",
+		label: "flocksync Status",
+		description: "Return flock gateway health and provider registration status.",
 		parameters: { type: "object", properties: {} },
 		async execute(_id, _params, signal) {
 			const current = loadProbeConfig(agentHome);
@@ -417,7 +426,7 @@ export async function createOmniExtension(pi: OmniPI, options: AgentHomeOptions)
 				content: [
 					{
 						type: "text",
-						text: `OmniRoute ${result.ok ? "reachable" : result.unreachable ? "unreachable" : "health check failed"}; configured: ${configured}; provider: ${current.providerName}.`,
+						text: `flock ${result.ok ? "reachable" : result.unreachable ? "unreachable" : "health check failed"}; configured: ${configured}; provider: ${current.providerName}.`,
 					},
 				],
 				details: {
@@ -432,48 +441,18 @@ export async function createOmniExtension(pi: OmniPI, options: AgentHomeOptions)
 			};
 		},
 	});
-	pi.registerTool({
-		name: "flocksync_status",
-		label: "flocksync Status",
-		description: "Return flocksync / OmniRoute health and provider registration status.",
-		parameters: { type: "object", properties: {} },
-		async execute(_id, _params, signal) {
-			const current = loadProbeConfig(agentHome);
-			const hop = loadHopSettings(agentHome);
-			const result = await unreachable.probe(current, signal);
-			const configured = isConfigured(agentHome);
-			return {
-				content: [{ type: "text", text: `flocksync ${result.ok ? "reachable" : result.unreachable ? "unreachable" : "health check failed"}; configured: ${configured}; provider: ${current.providerName}.` }],
-				details: { ok: result.ok, unreachable: result.unreachable, configured, serverUrl: current.serverUrl, providerName: current.providerName, onUnreachable: hop.onUnreachable, fallbackModel: hop.fallbackModel },
-			};
-		},
-	});
 
 
-	pi.registerTool({
-		name: "omniroute_sync",
-		label: "OmniRoute Sync",
-		description: "Fetch /v1/models from OmniRoute and register them as a provider.",
-		parameters: { type: "object", properties: {} },
-		async execute(_id, _params, signal) {
-			const current = loadConfig(agentHome);
-			const models = await registerOmniProvider(pi, agentHome, current, loadSettings(agentHome), signal);
-			return {
-				content: [{ type: "text", text: `OmniRoute synced ${models.length} model(s).` }],
-				details: { count: models.length, provider: current.providerName },
-			};
-		},
-	});
 	pi.registerTool({
 		name: "flocksync_sync",
 		label: "flocksync Sync",
-		description: "Fetch /v1/models from flocksync / OmniRoute and register them as a provider.",
+		description: "Fetch /v1/models from the flock gateway and register them as a provider.",
 		parameters: { type: "object", properties: {} },
 		async execute(_id, _params, signal) {
 			const current = loadConfig(agentHome);
-			const models = await registerOmniProvider(pi, agentHome, current, loadSettings(agentHome), signal);
+			const models = await registerFlockProvider(pi, agentHome, current, loadSettings(agentHome), signal);
 			return {
-				content: [{ type: "text", text: `flocksync synced ${models.length} model(s).` }],
+				content: [{ type: "text", text: `flock synced ${models.length} model(s).` }],
 				details: { count: models.length, provider: current.providerName },
 			};
 		},
@@ -523,6 +502,11 @@ export async function createOmniExtension(pi: OmniPI, options: AgentHomeOptions)
 				if (sub === "dashboard" || sub === "dash") {
 					return ctx.ui.notify(`OmniRoute dashboard: ${config.serverUrl}`, "info");
 				}
+				if (sub === "router") {
+					const routerCmd = pi.commands.get("router");
+					if (routerCmd) return routerCmd.handler(rest.join(" "), ctx);
+					return ctx.ui.notify("Model router command not available", "warning");
+				}
 				if (sub === "config") {
 					await showConfigDialog(ctx, pi, agentHome, options);
 					startAutoSync(ctx);
@@ -557,14 +541,14 @@ export async function createOmniExtension(pi: OmniPI, options: AgentHomeOptions)
 		},
 	});
 	pi.registerCommand("flocksync", {
-		description: "flocksync: /flocksync [setup|sync|models|test|dashboard|config|autosync|help]",
+		description: "flocksync: /flocksync [setup|sync|models|test|dashboard|config|autosync|router|help]",
 		getArgumentCompletions(prefix) {
-			return ["setup", "sync", "models", "test", "dashboard", "config", "autosync", "help"]
+			return ["setup", "sync", "models", "test", "dashboard", "config", "autosync", "router", "help"]
 				.filter((value) => value.startsWith(prefix))
 				.map((value) => ({ value, label: value }));
 		},
 		async handler(args, ctx) {
-			const omniCmd = pi.commands?.get("omni");
+			const omniCmd = pi.commands.get("omni");
 			if (omniCmd) return omniCmd.handler(args, ctx);
 		},
 	});

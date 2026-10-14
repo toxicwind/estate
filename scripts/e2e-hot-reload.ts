@@ -16,7 +16,7 @@ import { loadSovereignPorts, requirePort } from "../src/lib/ports.ts";
 loadSovereignPorts();
 
 const HOME = process.env.HOME || "/home/toxic";
-const ROOT = resolve(HOME, "sovereign");
+const ROOT = resolve(HOME, "estate");
 const OUT =
   process.env.HOTRELOAD_OUT || resolve(ROOT, ".state", "hot-reload.jsonl");
 mkdirSync(resolve(OUT, ".."), { recursive: true });

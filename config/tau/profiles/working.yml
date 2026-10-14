@@ -1,11 +1,11 @@
 schema_version: 2
 # force working model everywhere — no fallback thrashing
-model: herd/fast
-smol_model: herd/fast
-slow_model: herd/fast
-plan_model: herd/fast
+model: flock/openai/gpt-oss-20b
+smol_model: flock/openai/gpt-oss-20b
+slow_model: flock/openai/gpt-oss-20b
+plan_model: flock/openai/gpt-oss-20b
 # limit Ctrl+P cycling to 3 LIVE models only, not 176 catalog
-models: ["herd/fast", "herd/beellama/exaone-4-0-1-2b-iq4xs", "gemini/gemini-3.5-flash"]
+models: ["flock/openai/gpt-oss-20b", "flock/openai/gpt-oss-20b", "gemini/gemini-3.5-flash"]
 # disable discoverable catalog that causes extreme dump
 discover:
   custom_models: true
@@ -13,6 +13,6 @@ discover:
   cached_standard_models: false
 provider:
   herd:
-    base_url: http://127.0.0.1:25100/v1
+    base_url: http://127.0.0.1:25193/v1
     api_key: llama-swap-local-key
     timeout_ms: 8000

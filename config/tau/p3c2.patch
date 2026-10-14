@@ -1,0 +1,2 @@
+SWAP 2520:14:
++			if (!hasContent && !assistantMsg.tool_calls && !hasReasoningField && !hasReasoningDetails) {

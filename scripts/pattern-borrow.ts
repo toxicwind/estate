@@ -1,5 +1,5 @@
 /**
- * pattern-borrow.ts — GitHub-wide pattern ranker / borrower (Bun mainline, sovereign).
+ * pattern-borrow.ts — GitHub-wide pattern ranker / borrower (Bun mainline, estate).
  *
  * General-purpose: pass any shallow code keywords as positional args to find and
  * rank the strongest implementation patterns across the WHOLE of GitHub, then

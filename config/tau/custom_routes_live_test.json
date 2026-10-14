@@ -1,0 +1,40 @@
+{
+  "uid": "uid=1000(toxic) gid=1000(toxic) groups=1000(toxic),3(sys),90(network),150(wireshark),936(adbusers),956(i2c),957(docker),959(nopasswdlogin),967(seat),979(rfkill),982(users),983(video),985(storage),987(render),989(lp),992(input),995(audio),996(utmp),998(wheel)",
+  "custom/openfang-resolve": {
+    "spec": "dots-studio/dots-3-note-preview:free",
+    "provider": "openrouter",
+    "model": "dots-studio/dots-3-note-preview:free",
+    "route": "custom/openfang-resolve",
+    "provider_base_url": "https://openrouter.ai/api/v1",
+    "router_chat_url": "http://127.0.0.1:25200/v1/chat/completions",
+    "router_status_url": "http://127.0.0.1:25200/status",
+    "normalized_from": "dots-studio/dots-3-note-preview:free"
+  },
+  "custom/bodybuilder": {
+    "route": "custom/bodybuilder",
+    "requests": [
+      {
+        "model": "herd/beellama/exaone-4-0-1-2b-iq4xs",
+        "messages": [
+          {
+            "role": "user",
+            "content": "verify custom routes"
+          }
+        ],
+        "temperature": 0.7,
+        "max_tokens": 2000
+      },
+      {
+        "model": "herd/beellama/exaone-4-0-1-2b-q4km",
+        "messages": [
+          {
+            "role": "user",
+            "content": "verify custom routes"
+          }
+        ],
+        "temperature": 0.7,
+        "max_tokens": 2000
+      }
+    ]
+  }
+}

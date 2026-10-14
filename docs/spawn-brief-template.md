@@ -3,12 +3,12 @@
 **This file is the guard.** Every spawn brief in the fleet is generated from
 this template. The autonomy doctrine in the HEADER is copied verbatim into
 every brief — never paraphrased away, never dropped. If a future edit removes
-or softens it, that is a visible diff in `toxicwind/sovereign-projects` history:
+or softens it, that is a visible diff in `toxicwind/estate-projects` history:
 the regression cannot happen silently again.
 
-Canonical source: `docs/spawn-brief-template.md` in `toxicwind/sovereign-projects`
+Canonical source: `docs/spawn-brief-template.md` in `toxicwind/estate-projects`
 (branch `main`).
-Also on GitHub: https://github.com/toxicwind/sovereign-projects/blob/main/docs/spawn-brief-template.md
+Also on GitHub: https://github.com/toxicwind/estate-projects/blob/main/docs/spawn-brief-template.md
 Required reading alongside: `docs/fleet-knowledgebase.md` (standing rules,
 estate map, Active Crews).
 

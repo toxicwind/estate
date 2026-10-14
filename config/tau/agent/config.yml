@@ -16,8 +16,7 @@ async:
   maxJobs: 100
   pollWaitDuration: smart
 auth:
-  accountPolicies:
-    []
+  accountPolicies: []
 autoResume: false
 autocompleteMaxVisible: 20
 autolearn:
@@ -32,8 +31,7 @@ bash:
   direnv: auto
   direnvLoadTimeoutMs: 30000
   enabled: true
-  patterns:
-    []
+  patterns: []
 bashInterceptor:
   enabled: false
   patterns:
@@ -158,12 +156,11 @@ dev:
 disabledExtensions:
   - airspeak
   - pi-omniroute-sync
-disabledProviders:
-  []
+disabledProviders: []
 display:
   cacheMissMarker: true
   collapseCompacted: false
-  hideToolActivity: false
+  hideToolActivity: true
   pinnedAgents: collapsed
   shimmer: kitt
   showTokenUsage: true
@@ -291,8 +288,7 @@ images:
       - litterbox
     bindHost: 127.0.0.1
     enabled: false
-    options:
-      {}
+    options: {}
     sshRemotePort: 8787
     ttlHours: 72
 includeModelInPrompt: true
@@ -380,7 +376,7 @@ modelProviderOrder:
   *enabledModels
 modelRoleStorage: global
 modelRoles:
-  default: nvidia/mistralai/mistral-7b-instruct-v03:off
+  default: nvidia/minimaxai/minimax-m3:off
   smol: openrouter/liquid/lfm-2.5-2.6b:free:off
   slow: openrouter/nvidia/nemotron-3-ultra-550b-a55b:free
   vision: openrouter/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free
@@ -393,8 +389,7 @@ modelRoles:
   verification: openrouter/nvidia/nemotron-3.5-lightning:free
   fallback: openrouter/nvidia/nemotron-3-super-120b-a12b:free
   web: web/exa
-modelTags:
-  {}
+modelTags: {}
 omitThinking: false
 paste:
   largeMenuThreshold: 100
@@ -420,14 +415,12 @@ providers:
   fetch: auto
   fireworksTier: standard
   kimiApiFormat: openai
-  maxInFlightRequests:
-    {}
+  maxInFlightRequests: {}
   ollama-cloud:
     maxConcurrency: 3
   openai-codex:
     codeMode: "on"
-    codeModeDirectTools:
-      []
+    codeModeDirectTools: []
   openaiWebsockets: "on"
   openrouterVariant: default
   streamFirstEventTimeoutSeconds: -1
@@ -544,10 +537,8 @@ skills:
   enablePiUser: true
   enableSkillCommands: true
   enabled: true
-  ignoredSkills:
-    []
-  includeSkills:
-    []
+  ignoredSkills: []
+  includeSkills: []
   registryUrl: https://skills.tau.sh
 snapcompact:
   shape: auto
@@ -586,8 +577,7 @@ statusLine:
     - token_total
     - cost
     - context_pct
-  segmentOptions:
-    {}
+  segmentOptions: {}
   separator: powerline-thin
   sessionAccent: true
   showHookStatus: true
@@ -603,18 +593,13 @@ stt:
   submitTrigger: never
 symbolPreset: nerd
 task:
-  agentAdvisor:
-    {}
+  agentAdvisor: {}
   agentIdleTtlMs: 420000
-  agentModelOverrides:
-    {}
-  agentPrewalk:
-    {}
-  agentServiceTierOverrides:
-    {}
+  agentModelOverrides: {}
+  agentPrewalk: {}
+  agentServiceTierOverrides: {}
   batch: false
-  disabledAgents:
-    []
+  disabledAgents: []
   eager: default
   enableEffort: true
   enableLsp: true
@@ -663,8 +648,7 @@ todo:
   remindersMax: 5
 tools:
   abortOnFabricatedResult: true
-  approval:
-    {}
+  approval: {}
   approvalMode: yolo
   artifactHeadBytes: 20
   artifactSpillThreshold: 50
@@ -679,8 +663,7 @@ tools:
     maxInFlight: 2
   xdev: true
   xdevDocs: catalog
-  xdevInlineDevices:
-    []
+  xdevInlineDevices: []
 topK: -1
 topP: -1
 treeFilterMode: default
@@ -689,8 +672,7 @@ tts:
 ttsr:
   builtinRules: false
   contextMode: keep
-  disabledRules:
-    []
+  disabledRules: []
   enabled: true
   interruptMode: never
   judge: "on"
@@ -721,8 +703,7 @@ vault:
 web_search:
   enabled: true
 workspace:
-  additionalDirectories:
-    []
+  additionalDirectories: []
 worktree:
   cleanSource: true
   clone: true

@@ -24,18 +24,18 @@ Auditor: subagent 5a33059d (fleet audit lane, parent 67fcb771)
 - **Repo:** /home/toxic/squawk/ — chat repo present (agent_chat, fleet_*.py, chat.py, etc.)
 - **squawk-root:** fleet/ (0001, 0002, 10000, 10001, 10002 + log.jsonl),
   keys/ (agent1, breaker, relay, shingle, yote — all present), leads/
-- **squawk-ws:** NOW pitchfork-owned (PID 2248059, started 18:04, sovereign/squawk-ws running)
+- **squawk-ws:** NOW pitchfork-owned (PID 2248059, started 18:04, estate/squawk-ws running)
 - **squawk-feed:** STILL MANUAL (PID 2097378, nohup since 16:23, port 25135).
   pitchfork.toml HAS [daemons.squawk-feed] but it can't start — port squatted.
 - **Directives:** latest broadcast 17:38 MDT — /home/toxic/AGENTS.md created (bridge standing rules).
 
 ## STOP LIST (for coordinator decision)
 
-1. **PID 2097378** — manual `squawk_feed.py` (port 25135). Blocks pitchfork sovereign/squawk-feed.
+1. **PID 2097378** — manual `squawk_feed.py` (port 25135). Blocks pitchfork estate/squawk-feed.
    Started 16:23 via nohup run-feed.sh. Safe to kill; pitchfork will start the defined daemon.
 
 2. **PID 2167511** — manual `awrawr_ws_exec.py` (port 8379). Causes pitchfork
-   sovereign/awrawr-ws-exec to error (EADDRINUSE). Started 17:04. Safe to kill;
+   estate/awrawr-ws-exec to error (EADDRINUSE). Started 17:04. Safe to kill;
    pitchfork will start the defined daemon. NOTE: do NOT restart awrawr-mcp.service
    from inside a bridge call (kills the caller).
 
@@ -53,8 +53,8 @@ Auditor: subagent 5a33059d (fleet audit lane, parent 67fcb771)
 
 ## Pitchfork Status
 
-- `sovereign/squawk-ws` — running (pitchfork-owned since 18:04)
-- `sovereign/squawk-feed` — NOT running (blocked by manual PID 2097378)
-- `sovereign/awrawr-ws-exec` — errored (blocked by manual PID 2167511)
-- `sovereign/buildsrv` — running (new)
+- `estate/squawk-ws` — running (pitchfork-owned since 18:04)
+- `estate/squawk-feed` — NOT running (blocked by manual PID 2097378)
+- `estate/awrawr-ws-exec` — errored (blocked by manual PID 2167511)
+- `estate/buildsrv` — running (new)
 - Others (coyote, herd, kimi-auto-resolver, nim-proxy, shep, etc.) — running

@@ -1,0 +1,12 @@
+INS.POST 192:2e:
++
++// Dedup key for a `reasoning_details` entry: encrypted entries are identified
++// by their (id, data) pair; anything else falls back to its JSON shape.
++function reasoningDetailKey(detail: unknown): string {
++	if (typeof detail === "object" && detail !== null) {
++		const id = Reflect.get(detail, "id");
++		const data = Reflect.get(detail, "data");
++		if (typeof id === "string" && typeof data === "string") return `enc:${id}:${data}`;
++	}
++	return `json:${JSON.stringify(detail) ?? "null"}`;
++}

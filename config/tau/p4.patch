@@ -1,0 +1,19 @@
+INS.POST 1065:9c:
++	/**
++	 * Declares that one top-level array argument may be split into sequential
++	 * chunked calls when it exceeds the item ceiling, instead of a single
++	 * giant call. Reasoning models collapse oversized argument payloads to
++	 * `{}` (Dots 3 recon, 2026-10-13: ~200 items / ~2.9k tokens -> finish=error),
++	 * so tools whose calls legitimately carry large arrays opt in here and the
++	 * agent loop chunks uniformly for any tool that declares it: one
++	 * `execute()` per chunk, in order, results merged by concatenating content
++	 * (array `details` concatenate too; otherwise the final chunk's `details`
++	 * win). A chunk error stops the sequence and surfaces as the call's error.
++	 * Tools that do not declare this are never chunked.
++	 */
++	chunking?: {
++		/** Top-level argument field holding the array to chunk. */
++		field: string;
++		/** Max items per chunked call. Defaults to 80. */
++		maxItems?: number;
++	};

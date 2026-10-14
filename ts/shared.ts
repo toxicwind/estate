@@ -1,4 +1,4 @@
-// Shared types and interfaces for the sovereign TypeScript codebase
+// Shared types and interfaces for the estate TypeScript codebase
 // This file provides common definitions used across the codebase
 
 export interface AuthContext {

@@ -1,6 +1,6 @@
 # Sovereign Documentation Knowledge Graph (11ty-Style Collections Index)
 
-> **Automated Relational Knowledge Graph** generated on `2026-09-27T09:22:52.066Z` across **244 modular documents** in `sovereign/docs/`.
+> **Automated Relational Knowledge Graph** generated on `2026-09-27T09:22:52.066Z` across **244 modular documents** in `estate/docs/`.
 
 ## Tagged Collections Index
 
@@ -57,7 +57,7 @@
 
 ### 📁 `audits/`
 
-- **[AUDIT.md — sovereign-projects (`~/projects/sovereign-projects`)](audits/2026-09-14/AUDIT.md)** `(audits/2026-09-14/AUDIT.md)`
+- **[AUDIT.md — estate-projects (`~/projects/estate-projects`)](audits/2026-09-14/AUDIT.md)** `(audits/2026-09-14/AUDIT.md)`
 - **[Sovereign Ecosystem — Deep Fork & Repository Audit](audits/2026-09-14/FORKS_AUDIT.md)** `(audits/2026-09-14/FORKS_AUDIT.md)`
 - **[MCP Infrastructure Audit Report](audits/2026-09-20/MCP_AUDIT.md)** `(audits/2026-09-20/MCP_AUDIT.md)`
 - **[Estate Polling Audit — 2026-09-21](audits/2026-09-21/polling-audit-2026-09-21.md)** `(audits/2026-09-21/polling-audit-2026-09-21.md)`
@@ -149,7 +149,7 @@
 - **[Collab: Live Session Sharing](collab.md)** `(collab.md)` ── *(1 outgoing links)*
 - **[Compaction and Branch Summaries](compaction.md)** `(compaction.md)`
 - **[Scriptable computer use](computer-use.md)** `(computer-use.md)` ── *(2 outgoing links)*
-- **[Config naming conventions (sovereign)](config-naming-conventions.md)** `(config-naming-conventions.md)`
+- **[Config naming conventions (estate)](config-naming-conventions.md)** `(config-naming-conventions.md)`
 - **[Configuration Discovery and Resolution](config-usage.md)** `(config-usage.md)` ── *(1 outgoing links)*
 - **[Context files](context-files.md)** `(context-files.md)` ── *(6 outgoing links)*
 - **[Cross-box router (ember)](cross-box-router.md)** `(cross-box-router.md)` ── *(3 outgoing links)*

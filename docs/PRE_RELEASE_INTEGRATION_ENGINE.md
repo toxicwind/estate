@@ -47,7 +47,7 @@ import type { ServiceDef } from "../src/types/index.ts";
 
 export const TARGET = "services.tau";
 export const VERSION = "1.1.0";
-export const AUTHOR = "sovereign";
+export const AUTHOR = "estate";
 export const REASON = "Permanent .tau path resolution without monkey patching";
 export const ENABLED = true;
 

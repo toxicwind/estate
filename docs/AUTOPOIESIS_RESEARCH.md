@@ -102,7 +102,7 @@ The **load-bearing boundary** concept emerges across all 8 papers/domains as a s
 
 The autopoietic framework provides a theoretical basis for organizational revision principles:
 
-1. **Organizational closure**: The sovereign project's revision constitution should define an organizational closure where all components (services, configurations, processes) are produced by and regenerate the same network of relations.
+1. **Organizational closure**: The estate project's revision constitution should define an organizational closure where all components (services, configurations, processes) are produced by and regenerate the same network of relations.
 
 2. **Load-bearing boundaries**: Project boundaries (service definitions, interfaces, contracts) should be produced by the organization itself, not externally imposed, and should be constitutive of the project's identity.
 

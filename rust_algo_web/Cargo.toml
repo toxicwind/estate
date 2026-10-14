@@ -1,5 +1,5 @@
 [package]
-name = "sovereign_web"
+name = "estate_web"
 version = "0.1.0"
 edition = "2021"
 

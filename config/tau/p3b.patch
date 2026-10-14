@@ -1,0 +1,17 @@
+INS.POST 2502:d3:
++			// Preserve message-level reasoning details captured when no tool call
++			// owned them (reasoning-only turns). Providers that validate reasoning
++			// history (OpenRouter/Dots) kill the continuation when these are
++			// dropped: finish=length with zero content (Dots 3 recon).
++			const messageReasoningDetails = msg.messageReasoningDetails;
++			if (messageReasoningDetails && messageReasoningDetails.length > 0) {
++				const mergedDetails = [...(assistantMsg.reasoning_details ?? [])];
++				const seenDetailKeys = new Set(mergedDetails.map(d => reasoningDetailKey(d)));
++				for (const detail of messageReasoningDetails) {
++					const key = reasoningDetailKey(detail);
++					if (seenDetailKeys.has(key)) continue;
++					seenDetailKeys.add(key);
++					mergedDetails.push(detail);
++				}
++				assistantMsg.reasoning_details = mergedDetails;
++			}

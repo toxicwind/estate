@@ -14,11 +14,11 @@ import {
 loadSovereignPorts();
 
 const HOME = process.env.HOME ?? "/home/toxic";
-const ROOT = resolve(HOME, "sovereign");
+const ROOT = resolve(HOME, "estate");
 const KEY =
   process.env.SOVEREIGN_ROUTER_API_KEY ||
   process.env.LLM_API_KEY ||
-  "sovereign-local-matrix";
+  "estate-local-matrix";
 
 const SWAP = requirePort("LLAMA_SWAP_PORT");
 const MATRIX = requirePort("SOVEREIGN_ROUTER_PORT");
@@ -176,7 +176,7 @@ function add(step: string, ok: boolean, detail: string) {
 
 // D9
 {
-  const script = resolve(HOME, "sovereign/src/mcp/llama_swap.ts");
+  const script = resolve(HOME, "estate/src/mcp/llama_swap.ts");
   const exists = await Bun.file(script).exists();
   const m = await curlJson(localUrl("LLAMA_SWAP_PORT", "/v1/models"));
   add("D9 llama-swap mcp path", exists && m.status === 200, `exists=${exists}`);

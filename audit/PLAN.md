@@ -71,7 +71,7 @@
 ## Files Generated
 
 ```
-sovereign/
+estate/
 ├── audit/
 │   ├── scripts/           # Bun TS audit scripts
 │   ├── package.json       # Bun project

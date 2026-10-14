@@ -84,7 +84,7 @@ landed RESURRECTED blocks in `config/herd.yaml` (lines ~881-906, in main).
    404 boundaries move when entitlements change.
 
 **Retired.** `resurrect-probe.py.b64` (transfer artifact). `/tmp/sov-eval` and
-`/tmp/sovereign-resurrect` clones (5.9G + 1.4G) — all commits verified merged
+`/tmp/estate-resurrect` clones (5.9G + 1.4G) — all commits verified merged
 into canonical main, deleted.
 
 ---
@@ -182,7 +182,7 @@ in canonical main). No work items for super-ralph from this lane.
 ## 7. Paper-search
 
 **Status.** No paper-search outputs were found in /tmp. The paper-search
-promotion was pushed to `toxicwind/sovereign-projects/main` (remote main
+promotion was pushed to `toxicwind/estate-projects/main` (remote main
 `9a8ba6c5b7`, 2026-09-20). No work items for super-ralph from this lane.
 
 ## 8. Skill-inventory / AST-mine sweep

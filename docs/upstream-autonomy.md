@@ -1,6 +1,6 @@
 # Upstream Autonomy & Fork Synchronization Architecture
 
-To maintain a clean fork basis while retaining sovereign autonomy and seamless upstream syncing against `can1357/oh-my-pi`, we employ a decoupled **Vendor-Overlay / Overlay-Patch** workflow.
+To maintain a clean fork basis while retaining estate autonomy and seamless upstream syncing against `can1357/oh-my-pi`, we employ a decoupled **Vendor-Overlay / Overlay-Patch** workflow.
 
 ---
 
@@ -23,10 +23,10 @@ To maintain a clean fork basis while retaining sovereign autonomy and seamless u
 
 ## 2. Isolating Custom Fork Features
 
-To prevent merge conflicts during upstream pulls, sovereign-specific enhancements are organized into:
+To prevent merge conflicts during upstream pulls, estate-specific enhancements are organized into:
 - **Dedicated Plugins / Extensions** (`projects/ranch/herd`, `flock`, `shep`, `router`).
-- **Custom Helper Scripts** (`sovereign/helpers/`).
-- **Config Overrides** (`~/.tau/config.yml`, `~/.tau/sovereign-env.sh`).
+- **Custom Helper Scripts** (`estate/helpers/`).
+- **Config Overrides** (`~/.tau/config.yml`, `~/.tau/estate-env.sh`).
 - **Isolated Documentation** (`projects/tau/docs/upstream/` vs custom fork docs).
 
 ---

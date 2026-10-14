@@ -19,7 +19,7 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 
 // ── Real BEST_MODELS_PATH (const inside best_models.ts, evaluated at import) ─
-const SOV = join(homedir(), "sovereign");
+const SOV = join(homedir(), "estate");
 const REAL_PATH = join(SOV, ".state/best-models.json");
 
 // ── Backup / restore real file across tests ──────────────────────────────────

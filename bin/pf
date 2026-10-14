@@ -1,5 +1,4 @@
 #!/usr/bin/env bun
-#!/usr/bin/env bun
 /**
  * pf — pitchfork config modularization tool (design B: one manifest per daemon).
  *

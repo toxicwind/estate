@@ -8,7 +8,7 @@ This reference documents every known environment variable supported by the Tau c
 
 | Variable | Default | Description |
 | :--- | :--- | :--- |
-| `PI_CONFIG_DIR` | `$HOME/.omp` | Base configuration directory (overridden to `$HOME/.tau` in sovereign profiles). |
+| `PI_CONFIG_DIR` | `$HOME/.omp` | Base configuration directory (overridden to `$HOME/.tau` in estate profiles). |
 | `PI_CODING_AGENT_DIR` | `$PI_CONFIG_DIR/agent` | Storage directory for agent sessions, databases, and history. |
 | `PI_PROFILE` | `default` | Active configuration profile name. |
 | `PI_TIMING` | unset | Enables high-resolution performance and module load time tracing. |

@@ -5,21 +5,21 @@ Four workers fanned out: (A) 42 Sept-2026-active repos — secrets/CI/branches/m
 (B) 154 unique stale public forks (pre-2025) — upstream compare; (C) 27 repos >100MB —
 >50MB blob hunt + private-repo visibility sanity; (D) 56 public non-forks — README/license/description/topics.
 
-Skipped (handled by other workers today): sovereign-scripts, sovereign-skills, sovereign-swap,
-sovereign-zed, omp-extensions, tau-extensions, nvidia-swarm-lens.
+Skipped (handled by other workers today): estate-scripts, estate-skills, estate-swap,
+estate-zed, omp-extensions, tau-extensions, nvidia-swarm-lens.
 
 ## Top-10 action list
 
-1. **BLOCKER — committed secrets in PUBLIC repos.** `effusion-labs`: `mcp-stack/profiles/dev.env` + `prod.env` (+ duplicates under `services/mcp-stack/`). `sovereign`: `config/ports.env`, `skills/repo-audit/projects.env`. Rotate any credentials in these files; purge from history (they're public).
-2. **BLOCKER — systemic CI rot.** Workflow 'Tectonic Drift Detection' failing 5/5 in 9 repos (sovereign, caddy-sovereign-auth, qed, sovereign-router, zedra-sovereign, herd, sovereign-pi-archive, additional-lens-profiles). Fix once at the shared-workflow source, back-propagate.
-3. **Verify `kimi_tokens.json` / `kimi_tokens_full.json`** committed in PUBLIC `sovereign-projects` (6 copies under `ultimate_extract/`) and private `sovereign-router` — if these are live API tokens, rotate immediately.
+1. **BLOCKER — committed secrets in PUBLIC repos.** `effusion-labs`: `mcp-stack/profiles/dev.env` + `prod.env` (+ duplicates under `services/mcp-stack/`). `estate`: `config/ports.env`, `skills/repo-audit/projects.env`. Rotate any credentials in these files; purge from history (they're public).
+2. **BLOCKER — systemic CI rot.** Workflow 'Tectonic Drift Detection' failing 5/5 in 9 repos (estate, caddy-estate-auth, qed, estate-router, zedra-estate, herd, estate-pi-archive, additional-lens-profiles). Fix once at the shared-workflow source, back-propagate.
+3. **Verify `kimi_tokens.json` / `kimi_tokens_full.json`** committed in PUBLIC `estate-projects` (6 copies under `ultimate_extract/`) and private `estate-router` — if these are live API tokens, rotate immediately.
 4. **Bulk fork cleanup: 93 stale public forks** with zero unique commits ahead of upstream, untouched for 2–13 years (full list below). Delete candidates — frees namespace clutter, zero data loss.
 5. **moonbox-live (private, 705MB):** 4 blobs >50MB incl. an 88.7MB pasted-clipboard backup txt, an 86MB `.git_repos` packfile, an 83.5MB pcap. Split/LFS/prune before GitHub hard limits bite.
-6. **Branch hoarding:** 100 branches each in mcpproxy-go, effusion-labs, kimi-code-sovereign; 56 in zedra; 31 in local-work-archive; 29 in sovereign-pi-archive. Prune merged/stale branches.
+6. **Branch hoarding:** 100 branches each in mcpproxy-go, effusion-labs, kimi-code-estate; 56 in zedra; 31 in local-work-archive; 29 in estate-pi-archive. Prune merged/stale branches.
 7. **`moonbox-.secrets-20260822` (private)** — a repo literally named '.secrets'. Verify contents stay private; consider renaming. Also review `triangle-access-secrets`, `token-recovery-20260824` before any publish.
 8. **Missing licenses everywhere:** 20 of 30 needs-work public repos lack a license (16 miss license alone); 18/36 in the recent-active set. Add SPDX license files, esp. on public non-forks.
 9. **`entropy-gpu` is an empty public repo** (0 branches, 0KB) — delete or populate. `zedra` (public) commits `android/debug.keystore`; `toxic-vault-mind` (public) commits `config-keys.json` — verify not sensitive.
-10. **`gayxxx-sovereign` (private)** commits 20 decompiled `java_keys.txt` + `DecryptKeys.java`; also brand-risk name. Review before any visibility change.
+10. **`gayxxx-estate` (private)** commits 20 decompiled `java_keys.txt` + `DecryptKeys.java`; also brand-risk name. Review before any visibility change.
 
 ---
 
@@ -29,11 +29,11 @@ Full per-repo section: /tmp/audit_A.md (raw JSON: /tmp/audit_results.json). Seve
 
 ### Blockers
 - effusion-labs (pub): real .env files committed — `mcp-stack/profiles/dev.env`, `prod.env` (+ `services/mcp-stack/` dupes).
-- sovereign (pub): .env committed — `config/ports.env`, `skills/repo-audit/projects.env`.
-- Tectonic Drift Detection 5/5 failing: sovereign, caddy-sovereign-auth, qed, sovereign-router, zedra-sovereign, herd, sovereign-pi-archive, additional-lens-profiles. (herd also: Build Containers + Close-inactive-issues failing; local-work-archive: 3/3 Nix+CI failing.)
+- estate (pub): .env committed — `config/ports.env`, `skills/repo-audit/projects.env`.
+- Tectonic Drift Detection 5/5 failing: estate, caddy-estate-auth, qed, estate-router, zedra-estate, herd, estate-pi-archive, additional-lens-profiles. (herd also: Build Containers + Close-inactive-issues failing; local-work-archive: 3/3 Nix+CI failing.)
 ### Should-fix
-- kimi_tokens.json/kimi_tokens_full.json committed: PUBLIC sovereign-projects (6x under ultimate_extract/) + private sovereign-router — verify not live tokens.
-- Branch counts: 100 each mcpproxy-go, effusion-labs, kimi-code-sovereign; 56 zedra; 31 local-work-archive; 29 sovereign-pi-archive; 20 gayxxx-sovereign (decompiled java_keys.txt + DecryptKeys.java).
+- kimi_tokens.json/kimi_tokens_full.json committed: PUBLIC estate-projects (6x under ultimate_extract/) + private estate-router — verify not live tokens.
+- Branch counts: 100 each mcpproxy-go, effusion-labs, kimi-code-estate; 56 zedra; 31 local-work-archive; 29 estate-pi-archive; 20 gayxxx-estate (decompiled java_keys.txt + DecryptKeys.java).
 - toxic-vault-mind (pub): config-keys.json + src/config-keys.ts + scripts/generate-config-keys-json.mjs — verify not live secrets.
 - zedra (pub): android/debug.keystore committed (debug signing key, low severity).
 - ast-grep (pub): 4/5 recent runs failing (coverage, PyPi Release, Build NAPI, PyO3). Boundless (pub): 1 recent Boundless CI failure (CodeQL healthy).
@@ -213,18 +213,18 @@ Compare errors: MagiskOnWSA, comfyui-reactor-node — both return 403 "repositor
 
 ### Blobs >50MB in the 8 largest repos (git trees API)
 - **moonbox-live** (PVT, 705MB, tree truncated at 49,757 entries): 88.7MB `BACKUP-1787105555/original/user_pasted_clipboard_long_content_as_file_{ log { ve.txt`, 86.3MB `.git_repos/toxicwind-repos.git/objects/pack/pack-07bdd44e1cbf5b1f74c947d0227b3a6035826c3a.pack` (nested git repo checked in!), 83.5MB `504_audit.pcap`, 52.0MB clipboard txt duplicate.
-- ComfyUI-ArtGallery (pub, 1.7GB), effusion-labs (pub, 551MB), sovereign-pi-archive (PVT, 537MB), sovereign (pub, 404MB), sovereign-zed (pub, 369MB), mcpproxy-go (pub, 211MB), zedra-sovereign (pub, 103MB): **no blobs >50MB in default-branch trees** — bulk is many small files / history depth, not single-file violations.
+- ComfyUI-ArtGallery (pub, 1.7GB), effusion-labs (pub, 551MB), estate-pi-archive (PVT, 537MB), estate (pub, 404MB), estate-zed (pub, 369MB), mcpproxy-go (pub, 211MB), zedra-estate (pub, 103MB): **no blobs >50MB in default-branch trees** — bulk is many small files / history depth, not single-file violations.
 
 ### Private-repo visibility sanity (173 PVT)
-- 3 largest private: moonbox-live (705MB), sovereign-pi-archive (537MB), _git (354MB) — LFS/archive candidates.
+- 3 largest private: moonbox-live (705MB), estate-pi-archive (537MB), _git (354MB) — LFS/archive candidates.
 - 107 small (<5MB) private repos pushed in the last 90 days — publish-or-delete review backlog. Heaviest concentration: ~20 `moonbox-*` snapshot repos from 2026-08-22/23 (many 0–4KB, likely automation debris: moonbox-files-v2, moonbox-packages-20260823, moonbox-output-20260822, moonbox-loops--20260822, etc.), plus test-1787449974, forge-test-1786623471, unwatermarked, arc-agi-ops, kataware-doki (all 0KB).
-- Credential-suggestive private names (verify before any publish): moonbox-.secrets-20260822, triangle-access-secrets, token-recovery-20260824, codex-backup, awesome-token-audit, walk-in-archive, skinwalker-research-archive, sovereign-router-backup, local-work-archive, star-loom-archive, sovereign-pi-archive.
+- Credential-suggestive private names (verify before any publish): moonbox-.secrets-20260822, triangle-access-secrets, token-recovery-20260824, codex-backup, awesome-token-audit, walk-in-archive, skinwalker-research-archive, estate-router-backup, local-work-archive, star-loom-archive, estate-pi-archive.
 
 ## 4. Public non-fork metadata (42 audited of 56)
 
 11 COMPLETE (README+description+license): ast-grep, additional-lens-profiles, youtube-403-bypass, codex-desktop-linux, playwright-mcp, python-sdk-auditor, nim-inkling-api-research, free-ai-models, web3-sec-workspace, py-compat-scan, nitrado_api_lib.
 1 STUB: entropy-gpu (empty, 0KB — no README, no description, no license).
-30 NEEDS-WORK — dominant gap is missing LICENSE (20 repos; 16 miss license alone): sovereign-scripts, sovereign-skills, huh, musepool, infra-recon, neo-osint, k3-capacity-hack, awesome-api-shape-explorer, awesome-agent-gateway-2026, ontological-atlas, skillforge, universal-search-fuzzer, agentic-moment-2026, py-agent-gateway, wllama-forge, strudel-sampler-server-vite (+ Boundless/description, mintlify-docs/description, paintball-field/description, python-script-collection/description, hls-proxy-aggregator/description, ComfyUI-TTools/description, optimized-cr3-repo/desc+license, codex-patcher-updater/desc+license, strudel-dev-vite/desc+license, RSSLive/desc+license).
+30 NEEDS-WORK — dominant gap is missing LICENSE (20 repos; 16 miss license alone): estate-scripts, estate-skills, huh, musepool, infra-recon, neo-osint, k3-capacity-hack, awesome-api-shape-explorer, awesome-agent-gateway-2026, ontological-atlas, skillforge, universal-search-fuzzer, agentic-moment-2026, py-agent-gateway, wllama-forge, strudel-sampler-server-vite (+ Boundless/description, mintlify-docs/description, paintball-field/description, python-script-collection/description, hls-proxy-aggregator/description, ComfyUI-TTools/description, optimized-cr3-repo/desc+license, codex-patcher-updater/desc+license, strudel-dev-vite/desc+license, RSSLive/desc+license).
 4 repos lack a README: yt-dlp-universal-wrapper, bashrc-quote-fix, wii-stream-pack, wii-meta-client, universal-search-fuzzer.
 
 ## Raw data

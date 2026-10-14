@@ -14,7 +14,7 @@ includeAliasesInList: true
 sendLoadingState: true
 
 store:
-  path: /home/toxic/.local/share/llama-swap/store.db
+  path: /home/toxic/estate/config/llama-swap/store.db
 
 performance:
   enable: true

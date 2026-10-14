@@ -1,0 +1,4 @@
+SWAP 2506:16:
++			const hasReasoningDetails =
++				assistantMsg.reasoning_details !== undefined && assistantMsg.reasoning_details.length > 0;
++			if (assistantMsg.content === null && (hasReasoningField || hasReasoningDetails || assistantMsg.tool_calls)) {

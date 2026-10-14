@@ -76,7 +76,7 @@ Top up at https://ai.studio/projects and this lane unblocks immediately.
 ## Integration design (for when billing is fixed)
 
 1. Run `tools/probe_gemini_eap.py` (exit 0 = EAP_OK on the interactions endpoint).
-2. In sovereign-router-ts, add a NATIVE Gemini path: POST /v1beta/interactions on
+2. In estate-router-ts, add a NATIVE Gemini path: POST /v1beta/interactions on
    `gemini-flash-tool-retrieval` — NOT the OpenAI-compat `/v1beta/openai` path the router
    uses for the google provider, which has no EAP semantics.
 3. Server-side mode first: pass shep's 30-server union as `mcp_server` entries with
