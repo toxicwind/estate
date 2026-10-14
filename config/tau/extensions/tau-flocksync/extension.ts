@@ -59,7 +59,7 @@ function modelLines(models: ProviderModelConfig[], query = "", limit = 80): stri
 		if (lines.length >= limit) break;
 	}
 	if (!filtered.length) lines.push("No models matched.");
-	else if (filtered.length > limit) lines.push(`... ${filtered.length} total; refine with /omni models <search>`);
+	else if (filtered.length > limit) lines.push(`... ${filtered.length} total; refine with /flocksync models <search>`);
 	return lines;
 }
 
@@ -69,12 +69,12 @@ async function showStatus(ctx: FlockContext, agentHome: string, config: FlockCon
 	const result = await probeHealth(probeConfig, ctx.signal);
 	ctx.ui.notify(
 		[
-			"OmniRoute Status",
+			"flock Status",
 			"",
 			`Server:     ${probeConfig.serverUrl}`,
 			`Provider:   ${config.providerName}`,
 			`Health:     ${result.ok ? "reachable" : result.unreachable ? "unreachable" : "health check failed"}`,
-			`Configured: ${isConfigured(agentHome) ? "yes" : "no — run /omni setup"}`,
+			`Configured: ${isConfigured(agentHome) ? "yes" : "no — run /flocksync setup"}`,
 			`On unreachable: ${hop.onUnreachable}${hop.fallbackModel ? ` → ${hop.fallbackModel}` : ""}`,
 		].join("\n"),
 		result.ok ? "info" : "warning",
@@ -83,17 +83,17 @@ async function showStatus(ctx: FlockContext, agentHome: string, config: FlockCon
 
 function helpText(): string {
 	return [
-		"OmniRoute commands",
+		"flock commands",
 		"",
-		"/omni                  Status",
-		"/omni setup            Configure server URL and API key",
-		"/omni sync             Sync models to Ctrl+P / /model picker",
-		"/omni models [search]  Browse models",
-		"/omni test <model>     Smoke-test the configured OmniRoute inference API",
-		"/omni dashboard        Show OmniRoute dashboard URL",
-		"/omni config           Show config paths and current settings",
-		"/omni autosync [status|on|off|<seconds>]  Background catalog refresh while running",
-		"/omni help             Show this help",
+		"/flocksync             Status",
+		"/flocksync setup       Configure server URL and API key",
+		"/flocksync sync        Sync models to Ctrl+P / /model picker",
+		"/flocksync models [search]  Browse models",
+		"/flocksync test <model>     Smoke-test the configured flock inference API",
+		"/flocksync dashboard   Show flock dashboard URL",
+		"/flocksync config      Show config paths and current settings",
+		"/flocksync autosync [status|on|off|<seconds>]  Background catalog refresh while running",
+		"/flocksync help        Show this help",
 	].join("\n");
 }
 
@@ -168,13 +168,13 @@ async function showConfigDialog(
 	if (!saved) return;
 
 	const persisted: FlockSettings = { ...saved };
-	const envAction = process.env.OMNIROUTE_ON_UNREACHABLE;
+	const envAction = process.env.FLOCKSYNC_ON_UNREACHABLE ?? process.env.OMNIROUTE_ON_UNREACHABLE;
 	if (envAction === "none" || envAction === "host-fallback") persisted.onUnreachable = storedSettings.onUnreachable;
-	if (process.env.OMNIROUTE_FALLBACK_MODEL !== undefined) persisted.fallbackModel = storedSettings.fallbackModel;
+	if ((process.env.FLOCKSYNC_FALLBACK_MODEL ?? process.env.OMNIROUTE_FALLBACK_MODEL) !== undefined) persisted.fallbackModel = storedSettings.fallbackModel;
 	saveConfig(agentHome, persisted, storedSettings);
 	try {
 		const models = await registerFlockProvider(pi, agentHome, loadConfig(agentHome), persisted, ctx.signal);
-		ctx.ui.notify(`Settings saved; OmniRoute synced ${models.length} model(s).`, "info");
+		ctx.ui.notify(`Settings saved; flock synced ${models.length} model(s).`, "info");
 	} catch (error) {
 		ctx.ui.notify(`Settings saved, but sync failed: ${(error as Error).message}`, "error");
 	}
@@ -183,16 +183,18 @@ async function showConfigDialog(
 async function runSetup(ctx: FlockContext, pi: FlockPI, agentHome: string): Promise<FlockConfig | undefined> {
 	const storedSettings = loadSettings(agentHome);
 	const current = loadConfig(agentHome);
-	const serverUrl = await ctx.ui.input("OmniRoute server URL", current.serverUrl);
+	const serverUrl = await ctx.ui.input("flock server URL", current.serverUrl);
 	if (serverUrl === undefined) return undefined;
 	const apiKey = await ctx.ui.input(
-		"OmniRoute API key",
+		"flock API key",
 		current.apiKey ? "(press enter to keep current)" : "(optional — press enter to skip)",
 	);
 	if (apiKey === undefined) return undefined;
 
 	const next = sanitizeConfig({ ...current, serverUrl, apiKey: apiKey || storedSettings.apiKey });
-	const runtimeConfig = { ...next, apiKey: process.env.OMNIROUTE_API_KEY ?? next.apiKey };
+	// Only FLOCKSYNC_API_KEY can override the stored key; OMNIROUTE_API_KEY is
+	// a different product's token and must never be trusted here.
+	const runtimeConfig = { ...next, apiKey: process.env.FLOCKSYNC_API_KEY ?? next.apiKey };
 	if (!(await checkModelsEndpoint(runtimeConfig, ctx.signal))) {
 		ctx.ui.notify(`Cannot reach ${next.serverUrl}/v1/models.`, "error");
 		return undefined;
@@ -249,7 +251,7 @@ export async function createFlockExtension(pi: FlockPI, options: AgentHomeOption
 		if (!isFlockActiveModel(ctx.model, probeConfig.providerName)) return;
 		const result = await unreachable.probe(probeConfig, ctx.signal, true);
 		if (result.ok || !result.unreachable) return;
-		if (ctx.hasUI) ctx.ui.setStatus("omni", "VansRouter unreachable");
+		if (ctx.hasUI) ctx.ui.setStatus("flocksync", "flock unreachable");
 		await maybeHop(ctx);
 	}
 
@@ -262,9 +264,9 @@ export async function createFlockExtension(pi: FlockPI, options: AgentHomeOption
 			const previous = lastSyncCount;
 			lastSyncCount = models.length;
 			const notifyCtx = ctx ?? sessionCtx;
-			if (!quiet) notifyCtx?.ui.notify(`OmniRoute synced ${models.length} model(s).`, "info");
+			if (!quiet) notifyCtx?.ui.notify(`flock synced ${models.length} model(s).`, "info");
 			else if (previous > 0 && previous !== models.length) {
-				notifyCtx?.ui.notify(`OmniRoute auto-sync: catalog ${previous} → ${models.length} model(s).`, "info");
+				notifyCtx?.ui.notify(`flock auto-sync: catalog ${previous} → ${models.length} model(s).`, "info");
 			}
 			return models.length;
 		})().finally(() => {
@@ -285,7 +287,7 @@ export async function createFlockExtension(pi: FlockPI, options: AgentHomeOption
 		if (intervalSeconds === 0) return;
 		autoSyncTimer = setInterval(() => {
 			void sync(undefined, { quiet: true }).catch((error) => {
-				sessionCtx?.ui.notify(`OmniRoute auto-sync failed: ${(error as Error).message}`, "warning");
+				sessionCtx?.ui.notify(`flock auto-sync failed: ${(error as Error).message}`, "warning");
 			});
 		}, intervalSeconds * 1000);
 	}
@@ -308,13 +310,13 @@ export async function createFlockExtension(pi: FlockPI, options: AgentHomeOption
 			try {
 				lastSyncCount = (await registerFlockProvider(pi, agentHome, config, settings, ctx.signal)).length;
 			} catch (error) {
-				if (ctx.hasUI) ctx.ui.notify(`OmniRoute startup sync failed; using previous models: ${(error as Error).message}`, "warning");
+				if (ctx.hasUI) ctx.ui.notify(`flock startup sync failed; using previous models: ${(error as Error).message}`, "warning");
 			}
 		}
-		if (!isConfigured(agentHome) && !process.env.OMNIROUTE_URL) {
+		if (!isConfigured(agentHome) && !process.env.FLOCKSYNC_URL && !process.env.OMNIROUTE_URL) {
 			if (ctx.hasUI) {
-				ctx.ui.setStatus("omni", "OmniRoute unconfigured");
-				ctx.ui.notify("OmniRoute loaded. Run /omni setup to connect.", "warning");
+				ctx.ui.setStatus("flocksync", "flock unconfigured");
+				ctx.ui.notify("flock loaded. Run /flocksync setup to connect.", "warning");
 			}
 			return;
 		}
@@ -324,17 +326,17 @@ export async function createFlockExtension(pi: FlockPI, options: AgentHomeOption
 		healthProbeAbortController?.abort();
 		healthProbeAbortController = new AbortController();
 		const result = await unreachable.probe(probeConfig, ctx.signal ?? healthProbeAbortController.signal);
-		ctx.ui.setStatus("omni", healthStatus(result));
+		ctx.ui.setStatus("flocksync", healthStatus(result));
 		if (!result.ok) {
 			const message = result.unreachable
-				? `VansRouter unreachable at ${probeConfig.serverUrl}. Run /omni sync after reconnecting.`
-				: `VansRouter health check failed at ${probeConfig.serverUrl}.`;
+			? `flock unreachable at ${probeConfig.serverUrl}. Run /flocksync sync after reconnecting.`
+			: `flock health check failed at ${probeConfig.serverUrl}.`;
 			ctx.ui.notify(message, "warning");
 		}
 		if (healthTimer) clearInterval(healthTimer);
 		healthTimer = setInterval(async () => {
 			const next = await unreachable.probe(loadProbeConfig(agentHome), healthProbeAbortController?.signal).catch(() => undefined);
-			if (next) ctx.ui.setStatus("omni", healthStatus(next));
+			if (next) ctx.ui.setStatus("flocksync", healthStatus(next));
 		}, 60_000);
 	});
 
@@ -376,7 +378,7 @@ export async function createFlockExtension(pi: FlockPI, options: AgentHomeOption
 		if (isUnreachableHttpStatus(event.status)) {
 			pendingRequestFailure = true;
 			unreachable.reset();
-			if (ctx.hasUI) ctx.ui.setStatus("omni", "VansRouter unreachable");
+			if (ctx.hasUI) ctx.ui.setStatus("flocksync", "flock unreachable");
 			return;
 		}
 		pendingRequestFailure = false;
@@ -403,13 +405,13 @@ export async function createFlockExtension(pi: FlockPI, options: AgentHomeOption
 		pendingRequestFailure = false;
 		const probeConfig = loadProbeConfig(agentHome);
 		if (ctx.model?.provider !== probeConfig.providerName) return;
-		if (ctx.hasUI) ctx.ui.setStatus("omni", "VansRouter unreachable");
+		if (ctx.hasUI) ctx.ui.setStatus("flocksync", "flock unreachable");
 		unreachable.reset();
 		await maybeHop(ctx);
 	});
 
 	pi.on("model_select", (event, ctx) => {
-		if (ctx.hasUI && event.model?.id) ctx.ui.setStatus("omni", `→ ${event.model.id}`);
+		if (ctx.hasUI && event.model?.id) ctx.ui.setStatus("flocksync", `→ ${event.model.id}`);
 	});
 
 	pi.registerTool({
@@ -459,8 +461,8 @@ export async function createFlockExtension(pi: FlockPI, options: AgentHomeOption
 	});
 
 
-	pi.registerCommand("omni", {
-		description: "OmniRoute: /omni [setup|sync|models|test|dashboard|config|autosync|help]",
+	pi.registerCommand("flocksync", {
+		description: "flock: /flocksync [setup|sync|models|test|dashboard|config|autosync|router|help]",
 		getArgumentCompletions(prefix) {
 			return ["setup", "sync", "models", "test", "dashboard", "config", "autosync", "help"]
 				.filter((value) => value.startsWith(prefix))
@@ -490,17 +492,17 @@ export async function createFlockExtension(pi: FlockPI, options: AgentHomeOption
 						return [];
 					});
 					return ctx.ui.notify(
-						[`OmniRoute models (${models.length})`, "", ...modelLines(models, rest.join(" "))].join("\n"),
+						[`flock models (${models.length})`, "", ...modelLines(models, rest.join(" "))].join("\n"),
 						"info",
 					);
 				}
 				if (sub === "test") {
 					const model = rest.join(" ");
-					if (!model) return ctx.ui.notify("Usage: /omni test <model>", "warning");
+					if (!model) return ctx.ui.notify("Usage: /flocksync test <model>", "warning");
 					return ctx.ui.notify(`Test ${model}: ${await testChat(config, model, ctx.signal)}`, "info");
 				}
 				if (sub === "dashboard" || sub === "dash") {
-					return ctx.ui.notify(`OmniRoute dashboard: ${config.serverUrl}`, "info");
+					return ctx.ui.notify(`flock dashboard: ${config.serverUrl}`, "info");
 				}
 				if (sub === "router") {
 					const routerCmd = pi.commands.get("router");
@@ -529,27 +531,25 @@ export async function createFlockExtension(pi: FlockPI, options: AgentHomeOption
 						const value = Number(arg);
 						if (Number.isSafeInteger(value)) seconds = value;
 					}
-					if (seconds === undefined) return ctx.ui.notify("Usage: /omni autosync [status|on|off|<seconds>]", "warning");
+					if (seconds === undefined) return ctx.ui.notify("Usage: /flocksync autosync [status|on|off|<seconds>]", "warning");
 					saveSettings(agentHome, { ...settings, autoSyncIntervalSeconds: Math.floor(seconds) });
 					startAutoSync(ctx);
-					return ctx.ui.notify(`OmniRoute auto-sync ${seconds === 0 ? "disabled" : `set to every ${seconds}s`}.`, "info");
+					return ctx.ui.notify(`flock auto-sync ${seconds === 0 ? "disabled" : `set to every ${seconds}s`}.`, "info");
 				}
-				ctx.ui.notify(`Unknown /omni command '${sub}'.\n\n${helpText()}`, "warning");
+				ctx.ui.notify(`Unknown /flocksync command '${sub}'.\n\n${helpText()}`, "warning");
 			} catch (error) {
-				ctx.ui.notify(`OmniRoute error: ${(error as Error).message}`, "error");
+				ctx.ui.notify(`flock error: ${(error as Error).message}`, "error");
 			}
 		},
 	});
-	pi.registerCommand("flocksync", {
-		description: "flocksync: /flocksync [setup|sync|models|test|dashboard|config|autosync|router|help]",
-		getArgumentCompletions(prefix) {
-			return ["setup", "sync", "models", "test", "dashboard", "config", "autosync", "router", "help"]
-				.filter((value) => value.startsWith(prefix))
-				.map((value) => ({ value, label: value }));
-		},
+
+	// Legacy alias: OmniRoute was the old product name. Kept so existing muscle
+	// memory and any scripted /omni invocations keep working.
+	pi.registerCommand("omni", {
+		description: "Alias for /flocksync (legacy OmniRoute name)",
 		async handler(args, ctx) {
-			const omniCmd = pi.commands.get("omni");
-			if (omniCmd) return omniCmd.handler(args, ctx);
+			const flocksyncCmd = pi.commands.get("flocksync");
+			if (flocksyncCmd) return flocksyncCmd.handler(args, ctx);
 		},
 	});
 }
