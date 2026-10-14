@@ -15,7 +15,8 @@ async function main() {
   }
 
   const [command, ...cmdArgs] = args;
-  const mutator = new GitMutator({ repoPath: process.cwd() });
+  const dryRun = args.includes("--dry-run");
+  const mutator = new GitMutator({ repoPath: process.cwd(), dryRun });
 
   try {
     switch (command) {
@@ -52,6 +53,28 @@ async function main() {
         await mutator.ensureGitignore();
 
         console.log(JSON.stringify(await mutator.commitAndPush(msg), null, 2));
+        break;
+      }
+
+      case "commit": {
+        // Scoped, push-less commit: audit -> optional path staging -> commit.
+        const msg = cmdArgs[0];
+        if (!msg) throw new Error("commit message required");
+        const paths = cmdArgs.slice(1).filter((p) => p !== "--dry-run");
+
+        const audit = await mutator.auditAgenticCompletions();
+        if (audit.hasLeaks) {
+          console.error("BLOCKED: agentic completion / secret leaks detected:");
+          for (const v of audit.violations.filter(
+            (v: AgenticViolation) => v.isSecret,
+          )) {
+            console.error(`  ${v.file}:${v.line} ${v.snippet}`);
+          }
+          process.exit(2);
+        }
+
+        if (paths.length) await mutator.add(paths);
+        console.log(JSON.stringify(await mutator.commit(msg), null, 2));
         break;
       }
 
