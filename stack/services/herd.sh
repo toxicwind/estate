@@ -2,7 +2,7 @@
 # herd (llama-swap) loopback launcher — binds Go binary to 127.0.0.1:HERD_PORT (25100).
 # Renamed from llama-swap.sh — project-wide herd naming, llama-swap binary kept for compatibility.
 # No proxy/middleware hop. mesh-hub (25115) serves 20 GHAS /mesh/* features.
-# Config: --config <main> plus --config-dir /home/toxic/kimi-auto/herd.d
+# Config: --config <main> plus --config-dir /home/toxic/estate/config/herd.d
 # (additive, watch-config hot-reload) for the kimi-auto virtual model.
 # Lifecycle is owned by pitchfork (supervisor); this script does NOT kill or
 # steal the port — if the bind fails, pitchfork sees the failure and retries.
@@ -20,6 +20,12 @@ if [[ -f /home/toxic/.secrets ]]; then
   set +a
 fi
 PORT="$HERD_PORT"
+
+# The dashboard is served separately from herd now (see
+# ranch/range/ui/CONSOLIDATION.md): ranch-ui on :25218 fronts the built SPA
+# and proxies the herd API same-origin. herd's root redirect points there so
+# / no longer 302s into the removed embedded /ui.
+export HERD_DASHBOARD_URL="${HERD_DASHBOARD_URL:-http://127.0.0.1:25218/}"
 
 # The binary lives beside its source in ranch/mesh/router/herd, not under var/ (var/ is
 # runtime state, and a launcher that points there means the path rots the next
@@ -42,4 +48,4 @@ CONF="$SOV/config/herd.yaml"
 # exec replaces this shell so the supervisor tracks the ACTUAL server PID,
 # not a bash wrapper (2026-09-18: fixes stale-ownership where wrapper PID
 # != server PID). pitchfork ready_http gates on /health; no background+wait.
-exec "$BIN" --config "$CONF" --config-dir /home/toxic/kimi-auto/herd.d --watch-config --listen "127.0.0.1:${PORT}"
+exec "$BIN" --config "$CONF" --config-dir /home/toxic/estate/config/herd.d --watch-config --listen "127.0.0.1:${PORT}"

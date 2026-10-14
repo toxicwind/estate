@@ -1,13 +1,13 @@
-# Tailscale — the sovereign edge
+# Tailscale — the estate edge
 
 <div align="right">
 
-[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
-Tailscale is how sovereign services leave the box safely. Every daemon binds
+Tailscale is how estate services leave the box safely. Every daemon binds
 localhost/tailnet, and remote lanes reach them over MagicDNS — no open ports,
 no reverse-proxy path soup, no Caddy.
 
@@ -16,27 +16,35 @@ no reverse-proxy path soup, no Caddy.
 - **Direct over the tailnet** beats a multi-service gateway: one DNS name per
   service, zero path rewriting, and the LAN firewall posture stays closed.
 - **Funnel is opt-in, single-backend**: `funnel.sh` exposes *only* the
-  rust-web ops dashboard (default port 25101) to the public internet. For LLM
+  ranch dashboard (default port 25218) to the public internet. For LLM
   access remotely, use Tailscale + direct `:25100` — never funnel.
 
 ## Surfaces (use directly)
 
-| Service                  | Port                   | Local URL                                | Over Tailscale            |
-| ------------------------ | ---------------------- | ---------------------------------------- | ------------------------- |
-| herd (LLM + chat UI)     | `25100` (`HERD_PORT`)  | `http://127.0.0.1:25100/ui/` · `/v1`    | `http://<magicdns>:25100` |
-| rust-web (ops dashboard) | `25101` (`RUST_WEB_PORT`) | `http://127.0.0.1:25101/`             | `http://<magicdns>:25101` |
-| yote                     | `25102` (`YOTE_PORT`)  | `http://127.0.0.1:25102/`               | `http://<magicdns>:25102` |
-| openfang                 | `25103` (`OPENFANG_PORT`) | `http://127.0.0.1:25103/`             | `http://<magicdns>:25103` |
-| everything else           | see `config/ports.env` | 25xxx SSOT                              | same pattern              |
+| Service                  | Port                      | Local URL                                | Over Tailscale            |
+| ------------------------ | ------------------------- | ---------------------------------------- | ------------------------- |
+| ranch dashboard          | `25218` (`RANCH_UI_PORT`) | `http://127.0.0.1:25218/`                | `https://<magicdns>:8444` |
+| herd (LLM API)           | `25100` (`HERD_PORT`)     | `http://127.0.0.1:25100/v1`              | `http://<magicdns>:25100` |
+| model-guard (herd proxy) | `25101` (`MODEL_GUARD_PORT`) | `http://127.0.0.1:25101/v1`           | `http://<magicdns>:25101` |
+| yote                     | `25102` (`YOTE_PORT`)     | `http://127.0.0.1:25102/`                | `http://<magicdns>:25102` |
+| openfang                 | `25103` (`OPENFANG_PORT`) | `http://127.0.0.1:25103/`                | `http://<magicdns>:25103` |
+| everything else          | see `config/ports.env`    | 25xxx SSOT                               | same pattern              |
+
+The ranch dashboard is the consolidated UI (ranch/range/ui), served by the
+`ranch-ui` daemon: it fronts the built SPA and proxies the herd API
+same-origin, so the dashboard reaches herd exactly as it did when it was
+embedded. herd's `/` redirects there (`HERD_DASHBOARD_URL`). See
+`ranch/range/ui/CONSOLIDATION.md`.
 
 ```mermaid
 flowchart LR
     you[laptop / phone] -->|tailscale| dns[<magicdns>]
     dns -->|:25100| herd[herd · LLM]
-    dns -->|:25101| rust[rust-web · ops]
+    dns -->|:25101| guard[model-guard · herd proxy]
     dns -->|:25102| yote[yote]
     dns -->|:25103| fang[openfang]
-    funnel[Tailscale Funnel] -.->|optional, rust-web only| rust
+    dns -->|:8444| dash[ranch dashboard]
+    funnel[Tailscale Funnel] -.->|optional| dash
     note[public internet] -.->|funnel only| funnel
 ```
 
@@ -49,7 +57,7 @@ bash /home/toxic/estate/tailscale/funnel.sh up
 bash /home/toxic/estate/tailscale/funnel.sh down
 ```
 
-`funnel.sh up` sources `config/ports.env` for `RUST_WEB_PORT` (default 25101),
+`funnel.sh up` sources `config/ports.env` for `RANCH_UI_PORT` (default 25218),
 runs `tailscale funnel --bg`, and then parks (funnel dies with the process).
 It is **not** a multi-service gateway: funnel exposes exactly one backend.
 
@@ -61,14 +69,16 @@ It is **not** a multi-service gateway: funnel exposes exactly one backend.
   `/home/toxic/estate/.state/logs`.
 - **`tailray.service`** — systemd user unit for the Tailray tray applet
   (`/home/toxic/.cargo/bin/tailray`, `Restart=always`, needs `DISPLAY=:0`).
-  Independent of Caddy and of funnel; purely a local tray UI.
+  Independent of Caddy and of funnel; purely a local tray UI. NOTE: the
+  tailray binary is not currently built/installed (2026-10-14); the unit is
+  inert until `cargo install tailray` is run.
 
 ## Config
 
 | Knob | Source | Default |
 | ---- | ------ | ------- |
-| `RUST_WEB_PORT` | `config/ports.env` | `25101` |
-| Funnel target | `funnel.sh up` | `$RUST_WEB_PORT` |
+| `RANCH_UI_PORT` | `config/ports.env` | `25218` |
+| Funnel target | `funnel.sh up` | `$RANCH_UI_PORT` |
 
 ## Dev / contributing
 
@@ -78,7 +88,7 @@ was deliberately removed.
 
 ## License & security
 
-MIT — see [LICENSE](https://github.com/toxicwind/sovereign-projects#license).
+MIT — see [LICENSE](https://github.com/toxicwind/estate-projects#license).
 
 - Tailscale's WireGuard identity is the auth boundary; no secrets live in
   this directory.
