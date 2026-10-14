@@ -155,13 +155,49 @@ async function cmdBench(args: Args): Promise<number> {
   const runs = num(args.flags, "runs", 50);
   const racer = new CodeRacer(warmup, runs);
 
-  const candidates = [
-    { name: "array-index-of", impl: (): number => [1, 2, 3, 4, 5].indexOf(4) },
-    { name: "includes", impl: (): boolean => [1, 2, 3, 4, 5].includes(4) },
-    { name: "find", impl: (): number | undefined => [1, 2, 3, 4, 5].find((n) => n === 4) },
-    { name: "sort", impl: (): number[] => [5, 4, 3, 2, 1].sort((a, b) => a - b) },
-    { name: "tokenize-100", impl: (): number => "aBcDeFgHiJ".toLowerCase().split(/[_]|(?<=[a-z0-9])(?=[A-Z])/).length },
-  ];
+  let candidates: Array<{ name: string; impl: () => unknown }>;
+  const candFile = args.flags.get("candidates");
+  if (typeof candFile === "string" && candFile) {
+    let parsed: unknown;
+    try {
+      parsed = await Bun.file(candFile).json();
+    } catch (e) {
+      process.stderr.write(`bench: cannot read --candidates file '${candFile}': ${(e as Error).message}\n`);
+      return 2;
+    }
+    const rows = (parsed as { candidates?: Array<{ name?: unknown; code?: unknown }> })?.candidates;
+    if (!Array.isArray(rows) || rows.length === 0) {
+      process.stderr.write(`bench: --candidates file must be {"candidates":[{"name","code"},...]}\n`);
+      return 2;
+    }
+    candidates = [];
+    for (const row of rows) {
+      if (typeof row.name !== "string" || typeof row.code !== "string" || !row.name || !row.code) {
+        process.stderr.write(`bench: skipping malformed candidate ${JSON.stringify(row).slice(0, 80)}\n`);
+        continue;
+      }
+      let impl: () => unknown;
+      try {
+        impl = new Function(`"use strict"; return (${row.code});`) as () => unknown;
+      } catch (e) {
+        process.stderr.write(`bench: skipping candidate '${row.name}': code does not compile: ${(e as Error).message}\n`);
+        continue;
+      }
+      candidates.push({ name: row.name, impl });
+    }
+    if (!candidates.length) {
+      process.stderr.write("bench: no usable candidates after validation\n");
+      return 2;
+    }
+  } else {
+    candidates = [
+      { name: "array-index-of", impl: (): number => [1, 2, 3, 4, 5].indexOf(4) },
+      { name: "includes", impl: (): boolean => [1, 2, 3, 4, 5].includes(4) },
+      { name: "find", impl: (): number | undefined => [1, 2, 3, 4, 5].find((n) => n === 4) },
+      { name: "sort", impl: (): number[] => [5, 4, 3, 2, 1].sort((a, b) => a - b) },
+      { name: "tokenize-100", impl: (): number => "aBcDeFgHiJ".toLowerCase().split(/[_]|(?<=[a-z0-9])(?=[A-Z])/).length },
+    ];
+  }
   const result = racer.race(candidates);
   const rendered = racer.printLeaderboard(result);
   writeOut(args.flags, result, rendered);
@@ -206,20 +242,57 @@ async function cmdSubgraph(args: Args): Promise<number> {
 }
 
 async function cmdMcts(args: Args): Promise<number> {
-  const names = list(args.flags, "candidates");
-  if (!names.length) {
-    process.stderr.write("mcts needs --candidates a,b,c\n");
+  // Candidates are verification commands. Inline: --candidates "a,b,c"
+  // (whitespace-split). File: --candidates-file c.json as
+  // {"candidates":[{"name":"t","cmd":["bun","test","t.ts"]},...]}.
+  type Cand = { name: string; cmd: string[] };
+  let cands: Cand[] = [];
+  const candFile = args.flags.get("candidates-file");
+  if (typeof candFile === "string" && candFile) {
+    let parsed: unknown;
+    try {
+      parsed = await Bun.file(candFile).json();
+    } catch (e) {
+      process.stderr.write(`mcts: cannot read --candidates-file '${candFile}': ${(e as Error).message}\n`);
+      return 2;
+    }
+    const rows = (parsed as { candidates?: Array<{ name?: unknown; cmd?: unknown }> })?.candidates;
+    if (!Array.isArray(rows)) {
+      process.stderr.write(`mcts: --candidates-file must be {"candidates":[{"name","cmd":[...]},...]}\n`);
+      return 2;
+    }
+    for (const row of rows) {
+      if (typeof row.name === "string" && Array.isArray(row.cmd) && row.cmd.every((c) => typeof c === "string")) {
+        cands.push({ name: row.name, cmd: row.cmd });
+      } else {
+        process.stderr.write(`mcts: skipping malformed candidate ${JSON.stringify(row).slice(0, 80)}\n`);
+      }
+    }
+  } else {
+    const names = list(args.flags, "candidates");
+    cands = names.map((n) => ({ name: n, cmd: n.split(/\s+/).filter(Boolean) }));
+  }
+  cands = cands.filter((c) => c.cmd.length > 0);
+  if (!cands.length) {
+    process.stderr.write("mcts needs --candidates a,b,c or --candidates-file c.json\n");
     return 2;
   }
-  const actions: PatchAction[] = names.map((actionId) => ({ actionId, patch: actionId }));
+  const actions: PatchAction[] = cands.map((c) => ({ actionId: c.name, patch: JSON.stringify(c.cmd) }));
   const real = args.flags.get("real") === true;
+  const timeoutS = num(args.flags, "timeout", 60);
   const engine = new SWEMcts(num(args.flags, "depth", 4), num(args.flags, "timeout", 60));
   const result = await engine.search(
     async () => actions,
     async (node) => {
       if (!real) return node.stateId === "root" ? 0 : 1;
       if (!node.action) return 0;
-      return await runRealTest(node.action.actionId);
+      let cmd: string[];
+      try {
+        cmd = JSON.parse(node.action.patch) as string[];
+      } catch {
+        cmd = node.action.actionId.split(/\s+/).filter(Boolean);
+      }
+      return await runRealTest(cmd, timeoutS);
     },
   );
   const lines = [
@@ -246,14 +319,22 @@ async function cmdAudit(args: Args): Promise<number> {
   return result.verdict === "VERIFIED" ? 0 : result.verdict === "NOT-FOUND" ? 1 : 2;
 }
 
-/** Reward from a real verification command; -1 when the command fails. */
-async function runRealTest(actionId: string): Promise<number> {
-  const cmd = actionId.split(/\s+/).filter(Boolean);
-  const [bin, ...args2] = cmd;
-  if (!bin) return 0;
-  const proc = Bun.spawn([bin, ...args2], { stdout: "pipe", stderr: "pipe" });
-  const ok = await proc.exited;
-  return ok === 0 ? 1 : -1;
+/** Reward from a real verification command; +1 pass, -1 fail, -1 timeout. */
+async function runRealTest(cmd: readonly string[], timeoutS: number): Promise<number> {
+  const [bin, ...argv] = cmd;
+  if (!bin) return -1;
+  try {
+    const proc = Bun.spawn([bin, ...argv], {
+      stdout: "ignore",
+      stderr: "ignore",
+      stdin: "ignore",
+      timeout: timeoutS * 1000,
+      killSignal: "SIGKILL",
+    });
+    return (await proc.exited) === 0 ? 1 : -1;
+  } catch {
+    return -1;
+  }
 }
 
 function cmdPaths(_args: Args): number {
@@ -340,9 +421,9 @@ const HELP = `forge — pattern-forge: retrieve, race, borrow, search. Pure Bun.
   forge retrieve --root <dir> --query <q> [--top N] [--max-files N]
   forge race --strategies <file.json> [--tag t] [--timeout S] [--race-timeout S]
               [--hedge-ms MS] [--lead] [--stdout]
-  forge bench [--warmup N] [--runs N]
+  forge bench [--candidates <file.json>] [--warmup N] [--runs N]
   forge borrow <query> [--per-source N] [--skip a,b] [--top N] [--exa-key K] [--skip a,b]
-  forge mcts --candidates a,b,c [--depth N] [--timeout S] [--real]
+  forge mcts (--candidates a,b,c | --candidates-file <c.json>) [--depth N] [--timeout S] [--real]
   forge subgraph --root <dir> --trace <file> [--depth N]
   forge audit --root <dir> --claim "<claim>" [--globs a,b] [--top N]
   forge audit --root <dir> --pattern '<ast-grep pattern>' [--lang ts] [--globs a,b]
@@ -353,12 +434,24 @@ const HELP = `forge — pattern-forge: retrieve, race, borrow, search. Pure Bun.
 Strategies JSON:
   {"strategies":[{"name":"fast","cmd":["bun","run","fast.ts"],"match":"^OK"}]}
 
-Global: --out <file> writes the JSON payload, --quiet suppresses stdout.`;
+Global: --out <file> writes the JSON payload, --quiet suppresses stdout,
+        --verbose restores JSONL telemetry on stderr (default: quiet).
+
+Bench candidates JSON:
+  {"candidates":[{"name":"includes","code":"\"abc\".includes(\"b\")"}]}
+MCTS candidates JSON:
+  {"candidates":[{"name":"t","cmd":["bun","test","t.ts"]}]}`
 
 async function main(argv: readonly string[]): Promise<number> {
   const parsed = parseArgs(argv);
   const command = parsed._[0] ?? "help";
-  if (parsed.flags.get("json") !== true) setEmitter((line) => process.stderr.write(`${line}\n`));
+  // Telemetry is opt-in: --json (machine JSONL) or --verbose/FORGE_VERBOSE=1.
+  // Default runs stay quiet — leg events drowned real output at MCTS scale.
+  const loud =
+    parsed.flags.get("json") === true ||
+    parsed.flags.get("verbose") === true ||
+    process.env.FORGE_VERBOSE === "1";
+  setEmitter(loud ? (line) => process.stderr.write(`${line}\n`) : () => {});
   // Positionals are relative to the subcommand. Leaving the subcommand in
   // place made `forge borrow "<query>"` search for the literal word "borrow".
   const args: Args = { _: parsed._.slice(1), flags: parsed.flags };
