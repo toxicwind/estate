@@ -1395,3 +1395,6 @@ hf-downloader/
 
 # Large report tarballs - not tracked (GitHub 100MB limit)
 config/tau/reports/*.tar.gz
+
+# Credential backups - never tracked
+config/tau/agent/auth.json.bak*
