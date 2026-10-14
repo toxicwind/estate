@@ -99,6 +99,7 @@ Commands:
   status                    Show git status (staged/unstaged/untracked)
   agentic-audit [files...]  Audit agentic completions + secret leaks
   audit-completions         Alias for agentic-audit
+  commit "<msg>" [paths...] Scoped audit -> stage paths -> commit (no push)
   commit-push "<msg>"       Audit -> commit -> push (blocks on leaks)
   ensure-gitignore          Add security patterns to .gitignore
   scan-secrets [files]      Scan for credential patterns
