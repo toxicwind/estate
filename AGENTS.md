@@ -93,9 +93,9 @@ The `sovereign` namespace was renamed to `estate` (ranch commit `6af2094`).
 | Pitchfork defs | `/home/toxic/estate/pitchfork.toml` | hand-edited SSOT, 1424 lines |
 | Mise defs | `/home/toxic/estate/mise.toml` | hand-edited; ports from `config/ports.env` |
 | Port SSOT | `/home/toxic/estate/config/ports.env` | all 25xxx, never invent |
-| Pitchfork CLI | `/home/toxic/estate/bin/pitchfork` | bash wrapper, works. **`bin/pf` is BROKEN** (bash content, bun shebang) |
+| Pitchfork CLI | `/home/toxic/estate/bin/pitchfork` | bash wrapper, works. `bin/pf` is bun-script content with a bun shebang (fixed 2026-10-14); `pf check` runs and reports real drift |
 | Qdrant | `127.0.0.1:25133` (HTTP) `:25134` (gRPC) | v1.19.1, restarted 2026-10-14 by this agent |
-| Redis (valkey) | `127.0.0.1:25199` | stopped as of 2026-10-14 |
+| Redis (valkey) | `127.0.0.1:25203` | running (migrated 2026-10-14 off :25199, squatted by hatch/shim_mcp.py) |
 | nvidia-nim completions | `127.0.0.1:25100` | OpenAI-compatible, herd/llama-swap models — NOT an MCP server |
 | Flicker build daemon | `127.0.0.1:25148` | ranch build daemon (`POST /api/jobs`). NOT "mbx-cache" |
 | awrawr-mcp | `127.0.0.1:25198` | pitchfork says "errored" but is LIVE and auth-gated (stale-definition bug) |
