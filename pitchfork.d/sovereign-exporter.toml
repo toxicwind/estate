@@ -1,10 +1,10 @@
-# estate — project-owned daemon manifest. Source of truth for 'estate-exporter'.
+# estate — project-owned daemon manifest. Source of truth for 'sovereign-exporter'.
 # Owned by the estate project; the parent only composes it.
 
 
-[daemons.estate-exporter]
+[daemons.sovereign-exporter]
 port = 25213
-run = "exec python3 ./stack/services/estate-exporter.py"
+run = "exec python3 ./stack/services/sovereign-exporter.py"
 dir = "."
 retry = true
 ready_http = "http://127.0.0.1:25213/metrics"
