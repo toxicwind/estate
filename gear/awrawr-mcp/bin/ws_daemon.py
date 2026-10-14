@@ -33,8 +33,16 @@ import time
 import urllib.parse
 
 SKILL_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, os.path.join(SKILL_DIR, "..", "skill-creator", "bin"))
-sys.path.insert(0, "/opt/hatch/skills/skill-creator/bin")
+# Prefer the vendored copy (gear/awrawr-mcp/bin/vendor/) — the
+# /opt/hatch/skills/skill-creator path was removed by the 2026-10-14
+# platform re-render. Old platform paths stay as fallbacks.
+for _dc_path in (
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), "vendor"),
+    os.path.join(SKILL_DIR, "..", "skill-creator", "bin"),
+    "/opt/hatch/skills/skill-creator/bin",
+):
+    if os.path.isdir(_dc_path) and _dc_path not in sys.path:
+        sys.path.insert(0, _dc_path)
 from dynamic_credentials import dynamic_credential_entry  # noqa: E402
 
 CRED = "custom.awrawr-mcp"

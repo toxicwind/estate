@@ -56,7 +56,16 @@ import urllib.error
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 
-sys.path.insert(0, "/opt/hatch/skills/skill-creator/bin")
+# dynamic_credentials lived in /opt/hatch/skills/skill-creator/bin until the
+# platform re-rendered /opt/hatch on 2026-10-14 and removed skill-creator.
+# Prefer the vendored copy (gear/awrawr-mcp/bin/vendor/) so the bridge
+# survives platform re-renders; keep the platform path as a fallback.
+for _dc_path in (
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), "vendor"),
+    "/opt/hatch/skills/skill-creator/bin",
+):
+    if os.path.isdir(_dc_path) and _dc_path not in sys.path:
+        sys.path.insert(0, _dc_path)
 from dynamic_credentials import (
     add_surrogate_to_request,
     ensure_allowed_url,
