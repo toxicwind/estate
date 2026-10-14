@@ -78,3 +78,6 @@ no_output_timeout_secs = 30
 shell_env_passthrough = []
 
 [persona]
+name = "Rig-Toolcall-Verify"
+role = "toolcall verification — checks the tool path behaves, reports"
+sigil = "🧪"

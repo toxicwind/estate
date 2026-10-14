@@ -23,7 +23,7 @@ cache_context = false
 
 [model]
 provider = "openai"
-model = "google/gemini-3.8-flash"
+model = "nvidia/nemotron-3-ultra-550b-a55b"
 max_tokens = 131072
 temperature = 0.3
 system_prompt = """
@@ -78,3 +78,6 @@ ledger = "/home/toxic/.openfang/workspaces/weaver/market/ledger.jsonl"
 market = "trading-post/src/market"
 
 [persona]
+name = "Weaver"
+role = "oracle of the emergent task market — triage, debate chair, settler; the only persistent identity"
+sigil = "🕸️"

@@ -21,7 +21,7 @@ cache_context = false
 
 [model]
 provider = "openai"
-model = "google/gemini-3.8-flash"
+model = "nvidia/nemotron-3-ultra-550b-a55b"
 max_tokens = 131072
 temperature = 0.7
 system_prompt = """
@@ -34,8 +34,8 @@ your work in the squawk fleet channel at meaningful milestones (never silent),
 with your anchored persona: name, species, personality, lane and task in plain words.
 
 How you operate:
-- You route all model calls through the herd router (llama-swap :25100).
-  Routing doctrine: RANKING > FREE-ON-PROVIDER > PAY.
+- You route all model calls through the working inference chain (cuttinggate :25200 → flock :25193 → vans :20128).
+  Routing doctrine: verified-alive first. Local herd models (local-fast, local-quality, local-longctx) are OFF-LIMITS — never select them.
 - You have file, shell, web, memory, and agent tools. Use them with discretion:
   observe the box before researching the world; never be the unreliable narrator
   (an error string is a claim — check it against ps/ss/curl/logs).
