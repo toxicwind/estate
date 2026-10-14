@@ -247,7 +247,7 @@ export function getServiceTests(): ServiceTestConfig[] {
       process.env.PI_WEB_DASHBOARD_PORT || "25192",
     ),
     QDRANT_PORT: parseInt(process.env.QDRANT_PORT || "25133"),
-    REDIS_PORT: parseInt(process.env.REDIS_PORT || "25199"),
+    REDIS_PORT: parseInt(process.env.REDIS_PORT || "25203"),
     PI_AGENT_PORT: parseInt(process.env.PI_AGENT_PORT || "25125"),
     KIMI_CODE_PORT: parseInt(process.env.KIMI_CODE_PORT || "25126"),
   };
@@ -358,7 +358,7 @@ export async function runAllTests(): Promise<TestResult[]> {
   // Test Redis separately
   if (!tests.find((t) => t.name === "redis")) {
     const redisResult = await tester.testRedis(
-      parseInt(process.env.REDIS_PORT || "25199"),
+      parseInt(process.env.REDIS_PORT || "25203"),
     );
     tester.results.push(redisResult);
   }

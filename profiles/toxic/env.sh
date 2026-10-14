@@ -43,7 +43,7 @@ export BROWSERLESS_PORT="25130"
 export ZEDRA_HOST_PORT="25214"
 export SOV_GHAS_PORT="25131"
 export QDRANT_PORT="25133"
-export REDIS_PORT="25199"
+export REDIS_PORT="25203"
 
 # 3. Build & Compiler Concurrency Throttling (Prevents L3 cache thrashing)
 export CARGO_BUILD_JOBS="12"

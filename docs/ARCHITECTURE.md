@@ -277,7 +277,7 @@ Each catch block has its own nested try/catch — **no single point of failure**
 | **byte-vision**      | 25121       | Go binary           | Vision MCP (OCR / screenshot analysis)               |
 | **byte-vision-p**    | 25120       | Bun                 | **Sovereign MCP Gateway**                            |
 | **tailscale-funnel** | —           | Bash                | Tailscale Funnel → rust-web only                     |
-| **redis**            | 25199       | Redis               | Session cache, telemetry                             |
+| **redis**            | 25203       | Redis               | Session cache, telemetry (moved 2026-10-14 off :25199) |
 | **qdrant**           | 25133       | Qdrant              | Vector DB (0.0.0.0)                                  |
 
 **No Caddy, no landing** — path routing fought real services (`/api/*` → openfang vs rust-web). Every service owns its 25xxx port. Artifacts archived under `/home/toxic/archive/caddy-removed-*`.

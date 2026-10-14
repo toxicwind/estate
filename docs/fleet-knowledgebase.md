@@ -100,7 +100,7 @@ A swarm of boxes. Run heavy work on yote / dedicated iron; keep hatch light.
 | 25194 | ralph-dashboard backend (uvicorn) |
 | 25195 | codebase-memory |
 | 25197 | boundless (uvicorn) |
-| 25199 | valkey (redis) |
+| 25203 | valkey (redis) (moved 2026-10-14 off :25199) |
 | 25205 | prometheus |
 | 25208 | nginx |
 | 25210 | grafana (binary; :25110 is the mesh-front proxy) |

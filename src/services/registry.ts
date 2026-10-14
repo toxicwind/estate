@@ -33,7 +33,7 @@ export const ALL_SERVICES: ServiceDef[] = [
     id: "redis",
     name: "redis",
     portKey: "REDIS_PORT",
-    run: "exec valkey-server --port 25199 --bind 0.0.0.0 --protected-mode no --save '' --appendonly no",
+    run: "exec valkey-server --port 25203 --bind 0.0.0.0 --protected-mode no --save '' --appendonly no",
     dir: ".",
     mise: false,
     retry: true,

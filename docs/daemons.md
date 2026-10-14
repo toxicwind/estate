@@ -71,7 +71,7 @@ depends on it.
 
 | daemon | port | why it exists |
 |---|---|---|
-| `redis` | 25199 | valkey, the cache/queue. |
+| `redis` | 25203 | valkey, the cache/queue. (moved 2026-10-14 off :25199) |
 | `qdrant` | 25133/25134 | Vector store (http + grpc). |
 | `kafka` | 25144 | Event log. |
 | `nats`, `nats-tail` | — | NATS bus and its tail. |

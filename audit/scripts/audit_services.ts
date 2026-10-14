@@ -81,7 +81,7 @@ const SERVICES: ServiceDef[] = [
     url: "http://127.0.0.1:25133/",
     group: "core",
   },
-  { name: "redis", port: 25199, url: "http://127.0.0.1:25199/", group: "core" },
+  { name: "redis", port: 25203, url: "http://127.0.0.1:25203/", group: "core" },
 ];
 
 async function checkService(

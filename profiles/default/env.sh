@@ -24,7 +24,7 @@ export HINDSIGHT_CP_PORT="${HINDSIGHT_CP_PORT:-25118}"
 # never this gateway. See config/ports.env.
 export MCP_GATEWAY_PORT="${MCP_GATEWAY_PORT:-25127}"
 export QDRANT_PORT="${QDRANT_PORT:-25133}"
-export REDIS_PORT="${REDIS_PORT:-25199}"
+export REDIS_PORT="${REDIS_PORT:-25203}"
 
 # Inference Defaults (Configurable via environment)
 # PI_SUBAGENT_MODEL was here and is gone: 0 source files in the tau monorepo

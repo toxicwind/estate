@@ -159,8 +159,7 @@ Generated 2026-10-03T07:22:51.621Z on `awrawr-pc`. Estate root `/home/toxic/esta
 | 25197 | BOUNDLESS_PORT | boundless | 🟢 | python |
 | 25198 | AWR_MCP_PORT | awrawr-mcp | 🟢 | python |
 | 25198 | AWR_MCP_PORT | awrawr-mcp | 🟢 | python |
-| 25199 | REDIS_PORT | redis | ⚪️ | — |
-| 25199 | REDIS_PORT | redis | ⚪️ | — |
+| 25203 | REDIS_PORT | redis | ⚪️ | — (moved 2026-10-14 off :25199) |
 | 25200 | CUTTINGGATE_PORT | — | 🟢 | bun |
 | 25200 | CUTTINGGATE_PORT | — | 🟢 | bun |
 | 25201 | RUST_WEB_BACKEND_PORT | fleet-feed | ⚪️ | — |
