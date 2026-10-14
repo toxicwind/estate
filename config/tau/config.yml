@@ -37,8 +37,8 @@ providers:
   ollama-cloud:
     maxConcurrency: 3
   openai-compatible:
-    baseUrl: http://127.0.0.1:25100/v1
-    apiKey: llama-swap
+    baseUrl: http://127.0.0.1:25193/v1
+    apiKey: eyJhbGciOiAibm9uZSIsICJ0eXAiOiAiSldUIn0.eyJzdWIiOiAiZmxvY2stY2xpZW50IiwgIm5hbWUiOiAiY29ycmFsLWp3dGZtdCIsICJpYXQiOiAxNzkxOTAwMDAwfQ.d0391d5d684102b1ef80140f9920381b08aa43b417976ed1528618c7b76b60df
   webSearchTimeoutSeconds: 60
   antigravityEndpoint: auto
   fireworksTier: standard
@@ -55,11 +55,13 @@ providers:
   openrouterVariant: default
   fetch: auto
 modelRoles:
-  # Verified live against openrouter.ai/api/v1 on 2026-09-27.
-  # The previous default, google-antigravity/gemini-3.8-flash:high, answers
-  # 402 "Insufficient credits", so every untargeted turn and every subagent
-  # dispatch failed before reaching a model at all.
-  default: openrouter/nvidia/nemotron-3.5-lightning:free
+  # Sovereign custom routes (2026-10-13): custom/dots (Dots-3-Note coercion
+  # layer neutralizing ghost outputs, content=null replay crashes, strict tools),
+  # custom/bodybuilder (POST /v1/custom/bodybuilder parallel job decomposer),
+  # custom/zen, custom/copilot, custom/openfang-resolve.
+  default: openrouter/dots-studio/dots-3-note-preview:free
+  dots: custom/dots
+  bodybuilder: custom/bodybuilder
   # smol was never defined here, but two things reference it: cycleOrder is
   # [smol, default, slow], and the skill-description compressor resolves the
   # "smol" role (skill-descriptions.ts:30). With it undefined, resolution fell
