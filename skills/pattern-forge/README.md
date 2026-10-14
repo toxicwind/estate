@@ -52,8 +52,8 @@ forge retrieve --root /home/toxic/estate/ranch --query "stream broker subscribe 
 # Race implementations, first valid wins
 forge race --strategies '{"strategies":[{"name":"primary","cmd":["bun","run","a.ts"],"match":"^OK"},{"name":"backup","cmd":["bun","run","b.ts"],"match":"^OK"}]} --hedge-ms 300 --lead
 
-# Bench candidates
-forge bench --candidates '{"candidates":[{"name":"includes"},{"name":"array-index-of"}]}'
+# Bench candidates (file: {"candidates":[{"name","code"}]})
+forge bench --candidates cands.json
 ```
 
 ### Architecture
@@ -65,9 +65,10 @@ Seven legs sharing one doctrine: many readers, one writer; the first valid answe
 - `--root <dir>` — root directory to search (required for `retrieve`)
 - `--strategies <json>` — strategy configuration for `race` (JSON with name, cmd, match fields)
 - `--hedge-ms <ms>` — milliseconds before backup strategies launch in `race`
-- `--candidates <json>` — candidate configuration for `bench` (name, cmd fields)
+- `--candidates <file.json>` — bench candidates: `{"candidates":[{"name":"x","code":"expr"}]}`; `mcts` takes `--candidates a,b,c` or `--candidates-file` with `{"candidates":[{"name","cmd":["..."]}]}` (argv array, no shell splitting)
 - `--top <n>` — number of results to return (default varies by leg)
-- `--timeout <s>` — timeout for `mcts` rolls (default 120s)
+- `--timeout <s>` — timeout for `mcts` verification commands (default 60s; enforced by `Bun.spawn` SIGKILL)
+- Telemetry (JSONL events on stderr) is quiet by default; `--verbose` or `FORGE_VERBOSE=1` restores it, `--json` implies it
 
 ### Dev / contributing
 

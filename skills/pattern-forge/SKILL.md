@@ -22,7 +22,7 @@ forge borrow "<query>" [--per-source N] [--skip source1,source2]
 forge race --strategies <file.json> [--hedge-ms MS] [--race-timeout S]
 
 # 4. BENCH: Nanosecond microbenchmarks across candidate patches
-forge bench [--warmup N] [--runs N]
+forge bench [--candidates cands.json] [--warmup N] [--runs N]
 
 # 5. AUDIT: Structural AST pattern verification via ast-grep
 forge audit --root <dir> --claim "<claim>" | --pattern '<pattern>' --lang <lang>
@@ -31,7 +31,7 @@ forge audit --root <dir> --claim "<claim>" | --pattern '<pattern>' --lang <lang>
 forge subgraph --root <dir> --trace <error.log> [--depth N]
 
 # 7. MCTS: Monte Carlo Tree Search candidate selection
-forge mcts --candidates "optA,optB,optC" [--depth N] [--timeout S]
+forge mcts (--candidates "a,b,c" | --candidates-file c.json) [--depth N] [--timeout S] [--real]
 ```
 
 Everything here is pure Bun. No npm dependencies — TypeScript and JavaScript
@@ -51,6 +51,9 @@ forge mcts --candidates a,b,c --real        # pick a patch by running it
 forge subgraph --root <dir> --trace tb.txt  # traceback -> the files that matter
 forge doctor                                # self-check every leg
 ```
+
+Telemetry (JSONL leg events on stderr) is quiet by default; pass `--verbose`
+(or `FORGE_VERBOSE=1`) to restore it. `--json` implies verbose telemetry.
 
 ## Why this is one tool
 
