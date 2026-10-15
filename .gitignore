@@ -1323,6 +1323,19 @@ config/tau/agent/extensions/*/settings.json
 # output at any depth; re-include skill reports so audits stay reproducible.
 !skills/**/reports/**
 
+# ── Estate workspace packages (2026-10-15) ──────────────────────────────
+# Root package.json declares workspaces: packages/*, but the VisualStudio
+# template layer ships **/[Pp]ackages/* which swallowed the whole tree —
+# 14 files in packages/sovereign-utils were silently unstaged. Re-include,
+# then re-ignore the build artifacts the negation would otherwise
+# resurrect (these negations come after the template layers).
+!packages/**
+packages/**/node_modules/
+packages/**/dist/
+packages/**/build/
+packages/**/.cache/
+packages/**/*.tsbuildinfo
+
 # ── Config ownership ────────────────────────────────────────────────────
 # estate/.env IS the runtime config SSOT (ports, model names, stream tuning)
 # and is tracked on purpose. Secrets never are.
