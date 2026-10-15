@@ -1,0 +1,26 @@
+{
+  "name": "@toxic/forge-musescope-pipeline",
+  "version": "1.0.0",
+  "description": "Modular Bun framework: musescope JSON → parquet → ferret-den analysis. Tampermonkey-style config.",
+  "type": "module",
+  "main": "src/index.ts",
+  "bin": {
+    "forge-musescope": "bin/forge-musescope.ts"
+  },
+  "scripts": {
+    "dev": "bun src/index.ts",
+    "build": "bun build src/index.ts --outdir build --target bun",
+    "test": "bun test"
+  },
+  "engines": {
+    "bun": ">=1.4.0"
+  },
+  "dependencies": {
+    "duckdb": "^1.1.0",
+    "pyarrow": "^15.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0"
+  },
+  "license": "WTFPL"
+}

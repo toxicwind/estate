@@ -44,12 +44,3 @@
 [submodule "plugins/agentpluginzoo"]
 	path = plugins/agentpluginzoo
 	url = /home/toxic/estate/plugins/agentpluginzoo
-[submodule "config/tau/plugins/cloudstream-extensions"]
-	path = config/tau/plugins/cloudstream-extensions
-	url = https://github.com/recloudstream/extensions.git
-[submodule "config/tau/plugins/cloudstream-repos"]
-	path = config/tau/plugins/cloudstream-repos
-	url = https://github.com/recloudstream/cs-repos.git
-[submodule "config/tau/plugins/cloudstream-plugin-template"]
-	path = config/tau/plugins/cloudstream-plugin-template
-	url = https://github.com/cloudstream3/plugin-template.git
