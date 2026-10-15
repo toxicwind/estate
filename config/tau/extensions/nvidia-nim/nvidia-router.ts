@@ -25,7 +25,7 @@ import {
 } from "./lib/router-state.mjs";
 import { getRetryWrappedStream } from "./lib/stream-chain.mjs";
 import { EXHAUSTION_MARKER } from "./lib/retry-helpers.mjs";
-import { applyRouterVirtualLimits, getActiveModelMap } from "../models/registry.ts";
+import { applyRouterVirtualLimits, getActiveModelMap } from "./models/registry.ts";
 
 type AssistantMessageEvent =
 	| { type: "start"; partial: any }

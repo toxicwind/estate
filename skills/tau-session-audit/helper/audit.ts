@@ -8,7 +8,13 @@ import { runAllPatterns } from "../patterns/index";
 import type { PatternMatch, SessionEvent } from "../patterns/types";
 import { generateMarkdownReport, type AuditedSession } from "./report";
 
-const SESSIONS_DIR = join(process.env.HOME || "/home/toxic", ".tau", "sessions");
+// sessions live under the agent dir (~/.tau/agent/sessions); ~/.tau/sessions is legacy.
+// PI_CODING_AGENT_DIR overrides, matching the engine's own resolution.
+const SESSIONS_DIR = process.env.PI_CODING_AGENT_DIR
+  ? join(process.env.PI_CODING_AGENT_DIR, "sessions")
+  : (existsSync(join(process.env.HOME || "/home/toxic", ".tau", "agent", "sessions"))
+      ? join(process.env.HOME || "/home/toxic", ".tau", "agent", "sessions")
+      : join(process.env.HOME || "/home/toxic", ".tau", "sessions"));
 
 export interface Session extends AuditedSession {}
 
