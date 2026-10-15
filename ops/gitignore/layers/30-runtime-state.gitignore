@@ -87,7 +87,9 @@ config/tau/agent/extensions/*/settings.json
 # Skills may keep versioned reports. The template layers' unanchored
 # `*.log` (Node/bun/Django/VS — 4 occurrences) silently swallows raw audit
 # output at any depth; re-include skill reports so audits stay reproducible.
-!skills/**/reports/**
+# anchored: root-level dirs only — an unanchored `packages/**` would also
+# re-include any nested `x/packages/` tree vendored under other subrepos.
+!/skills/**/reports/**
 
 # ── Estate workspace packages (2026-10-15) ──────────────────────────────
 # Root package.json declares workspaces: packages/*, but the VisualStudio
@@ -95,9 +97,9 @@ config/tau/agent/extensions/*/settings.json
 # 14 files in packages/sovereign-utils were silently unstaged. Re-include,
 # then re-ignore the build artifacts the negation would otherwise
 # resurrect (these negations come after the template layers).
-!packages/**
-packages/**/node_modules/
-packages/**/dist/
-packages/**/build/
-packages/**/.cache/
-packages/**/*.tsbuildinfo
+!/packages/**
+/packages/**/node_modules/
+/packages/**/dist/
+/packages/**/build/
+/packages/**/.cache/
+/packages/**/*.tsbuildinfo
