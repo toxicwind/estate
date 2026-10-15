@@ -167,3 +167,28 @@ Repairs landed this session are marked [FIXED]; open items marked [OPEN].
   sovereign-projects 1.8TB, estate 1.5TB, OmniRoute 1.4TB), backup/tmp repo
   kills, 60 dual-truth name reconciliations — slim before mirroring.
 - Pilot: secretsmith → Forgejo first, then fleet-wide multi-remote sweep.
+
+## 12. RustDesk
+
+(2026-10-15) Self-hosted RustDesk relay stack added to the estate service layer.
+
+- **Installed:** rustdesk-server 1.1.16, official GitHub release binaries at
+  `ranch/rustdesk-server/amd64/` (hbbs, hbbr, rustdesk-utils). Not in Arch repos;
+  AUR would have compiled from source — release binary chosen instead.
+- **Ports** (SSOT in `config/ports.env`, RUSTDESK_* keys; verified free with `ss -ltnu`):
+  hbbs `-p 25221` → 25220 (nat-type test tcp), 25221 (tcp + udp hole punch),
+  25223 (websocket); hbbr `-p 25222` → 25222 (relay tcp), 25224 (websocket relay).
+  Block 25220-25224 chosen after 25151/25152 (oracle-core/toolcall) and the
+  nativelink/forensics/windmill clusters were ruled out.
+- **Pitchfork:** `daemons.rustdesk-hbbs` and `daemons.rustdesk-hbbr` in
+  `pitchfork.toml`, `auto = ["start"]`, `retry = true`. No HTTP health endpoint
+  exists in rustdesk-server — supervised via `ready_cmd` TCP `ss` checks only.
+  hbbs advertises the relay with `-r 100.72.199.93:25222` (tailscale IP).
+- **Keys:** id_ed25519 keypair generated in `ranch/rustdesk-server/` on first run;
+  private + public key gitignored, never committed.
+- **Mise tasks:** `mise run rustdesk-logs` (tail both daemons' pitchfork logs),
+  `mise run rustdesk-clients` (print the client connection block).
+- **Client config** (RustDesk → Settings → Network → ID/Relay Server):
+  ID server `100.72.199.93:25221`, Relay `100.72.199.93:25222`,
+  Key `VLtWm5nG+d9TYWxB1C1uLELf2cFYMtbT75fASh9DT2M=`.
+  UDP 25221 must stay open on the tailnet for hole punching.
