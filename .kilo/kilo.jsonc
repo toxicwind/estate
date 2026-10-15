@@ -1,0 +1,27 @@
+{
+  "$schema": "https://app.kilo.ai/config.json",
+  "plugin": [
+    "file://./.kilo/plugin/estate-gatehouse.ts",
+    "file://./.kilo/plugin/estate-herd-models.ts",
+    "file://./.kilo/plugin/estate-flock-strategy.ts",
+    "file://./.kilo/plugin/estate-autofixer.ts"
+  ],
+  "skills": {
+    "paths": [
+      "./skills",
+      "~/shared-skills"
+    ],
+    "urls": [
+      "https://raw.githubusercontent.com/primax79/agentic-coding-kit/main/plugins/common-tools/skills/",
+      "https://raw.githubusercontent.com/primax79/kilo-mcp/main/plugins/executor-side/skills/"
+    ]
+  },
+  "model": "openrouter/free",
+  "default_agent": "code",
+  "compaction": {
+    "auto": true,
+    "prune": true
+  },
+  "snapshot": true,
+  "autoupdate": true
+}
