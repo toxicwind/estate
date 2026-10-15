@@ -336,7 +336,7 @@ for (const term of PATTERNS) {
     bugRel,
     repos: repoList,
   });
-  console.log(`  scanned '${term}': ${nRepos} repos, ${totalStars} stars`);
+  console.error(`  scanned '${term}': ${nRepos} repos, ${totalStars} stars`); // stderr: JSON stays clean on stdout
   await Bun.sleep(1200);
 }
 
