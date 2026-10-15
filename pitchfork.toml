@@ -883,7 +883,10 @@ auto = ["start"]
 # onto either without re-homing the holder first.
 
 [daemons.cuttinggate]
-run = "exec bun run src/server.ts"
+# 2026-10-15: run via serve wrapper — client keys come from the vault
+# (CUTTINGGATE_CLIENT_KEY); the bare def had zero client keys configured, so
+# every Bearer token was rejected with auth_missing.
+run = "exec /home/toxic/estate/ranch/mesh/proxy/cuttinggate/cuttinggate-serve.sh"
 dir = "/home/toxic/estate/ranch/mesh/proxy/cuttinggate"
 retry = true
 ready_http = "http://127.0.0.1:25200/health"
