@@ -27,7 +27,7 @@
 
 ```mermaid
 flowchart TB
-    subgraph kite["🪁 kite — control cell (formerly hatch) · 2 vCPU container"]
+    subgraph kite["🪁 kite — control cell · 2 vCPU container"]
         EMBER["🐲 Ember — coordinator\nreads the fleet, briefs the pack,\ncommits everything"]
     end
     subgraph yote["🖥️ yote — heavy host · 16 cores / 62 GB / RTX 3090"]
@@ -106,7 +106,7 @@ The estate runs across an interconnected swarm of compute nodes, edge workers, a
 | Node / Tier | Hardware / Profile | Role & Services |
 |---|---|---|
 | 🖥️ **yote** (`awrawr-pc`) | 16 cores (Ryzen 7 8700F) / 62 GiB DDR5 / RTX 3090 24 GB | **Heavy Core**: Local LLM herd (llama.cpp on :25100 — 52 models served), gatehouse MCP (:25127), keypool (:25109), flicker build daemon (:25148), and persistent state. |
-| 🪁 **kite** (formerly hatch) | 2-vCPU cell container on 126-core EPYC host | **Control Cell**: High-velocity agent coordination, Ember dispatch, and fleet briefs over the `yote-conn` bridge. Live checkout `/home/toxic/kite/kite`; CLI at [toxicwind/kite-cli](https://github.com/toxicwind/kite-cli). |
+| 🪁 **kite** (dodge name: hatch) | 2-vCPU cell container on 126-core EPYC host | **Control Cell**: High-velocity agent coordination, Ember dispatch, and fleet briefs over the `yote-conn` bridge. Live checkout `/home/toxic/kite/kite`; CLI at [toxicwind/kite-cli](https://github.com/toxicwind/kite-cli). |
 | 🌐 **Dedicated Servers (dedis)** | Heterogeneous remote Linux iron | High-throughput distributed task execution, automated CI/CD runners, and background scraper workloads. |
 | 📱 **Edge & Fleet Nodes** | Pixel 9 Pro XL (ADB/Termux), Android fleet | Sensor endpoints, mobile testing harness, and localized satellite runners. |
 
@@ -122,7 +122,7 @@ The estate's work is split across three GitHub repos. All three `main` SHAs belo
 | [toxicwind/ranch](https://github.com/toxicwind/ranch) | PUBLIC | `57d56a3ee` | The workshop — nested in the checkout at `ranch/` (gitignored here, own repo, own history). |
 | [toxicwind/hatch](https://github.com/toxicwind/hatch) | PRIVATE | `69bb4b0b6` | The control-cell repo — split out of this repo's former `hatch/` tree with full history (see below). Checked out live at `/home/toxic/hatch` on yote; tracked/referenced by the estate but no longer inside it. |
 
-**The hatch split.** The `hatch/` control-cell tree was split out into `toxicwind/hatch` with full history ([final split `d050f680`](https://github.com/toxicwind/hatch/commit/d050f680c51f8da9949f73161a11c6ed626883c7) — 171 commits, 593 files: agents, bin, cell-files, crons, docs, pollers, task-launch, the sidechat shim, …). The hatch repo is PRIVATE: control-cell internals stay behind the fence. On 2026-10-02 (User's direct order) `hatch/` removal was ordered; completed 2026-10-15 (the last 258 stale in-tree files removed, backup branch `backup/hatch-tree-20261015`) — the live checkout is `/home/toxic/hatch` on yote, and the estate references it (reshim cron, pollers, docs) without containing it.
+**The kite/hatch split.** The control cell's real identity is **kite**; `hatch` is the dodge name the outside sees. The control-cell tree — real identity **kite**, dodge name **hatch** — was split out into `toxicwind/hatch` with full history ([final split `d050f680`](https://github.com/toxicwind/hatch/commit/d050f680c51f8da9949f73161a11c6ed626883c7) — 171 commits, 593 files: agents, bin, cell-files, crons, docs, pollers, task-launch, the sidechat shim, …). The hatch repo is PRIVATE: control-cell internals stay behind the fence. On 2026-10-02 (User's direct order) `hatch/` removal was ordered; completed 2026-10-15 (the last 258 stale in-tree files removed, backup branch `backup/hatch-tree-20261015`; live checkout `/home/toxic/kite/kite`) — the live checkout is `/home/toxic/hatch` on yote, and the estate references it (reshim cron, pollers, docs) without containing it.
 
 **Q1 resolved — `hatch/` removed.** On 2026-10-02 User ordered the move completed: `hatch/` was removed from the estate tree in commit [`4bd380beab`](https://github.com/toxicwind/estate/commit/4bd380beab01db1c0cda054a3f2ac75fa18acd9d) ("Remove hatch/ — moved to toxicwind/hatch (PRIVATE)"). No submodule, no in-tree copy — the estate references `toxicwind/hatch` (live at `/home/toxic/hatch` on yote) and does not contain it.
 
@@ -220,7 +220,7 @@ curl -s http://127.0.0.1:25155/status
 - [ ] **Squawk-ws revival or removal**: :25147 has no listener — either revive the websocket lane or drop it from the surface
 - [ ] **Oracle proof**: real dated yes/no verdict before autonomy leans on it
 - [ ] **Per-lane pollers**: one cheap heartbeat poller per agent lane
-- [x] **hatch Q1 resolved** — `hatch/` removed from the estate tree (estate `4bd380beab`, 2026-10-02, User's direct order); repo lives at [toxicwind/hatch](https://github.com/toxicwind/hatch), live checkout `/home/toxic/kite/kite` on yote (the project has rebranded hatch → **kite**)
+- [x] **hatch Q1 resolved** — `hatch/` removed from the estate tree (estate `4bd380beab`, 2026-10-02, User's direct order); repo lives at [toxicwind/hatch](https://github.com/toxicwind/hatch), live checkout `/home/toxic/kite/kite` on yote — the dodge name `hatch` is what the outside sees; the real cell is kite
 
 ## 🤝 Contributing
 
