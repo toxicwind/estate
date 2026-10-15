@@ -41,3 +41,6 @@
 [submodule "work/tau-extensions"]
 	path = work/tau-extensions
 	url = https://github.com/toxicwind/tau-extensions.git
+[submodule "plugins/agentpluginzoo"]
+	path = plugins/agentpluginzoo
+	url = /home/toxic/estate/plugins/agentpluginzoo
