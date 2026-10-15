@@ -220,8 +220,18 @@ Audited 2026-10-15 (full evidence: `findings/prior-audits/network-audit-20261015
 - Subnet route 10.0.0.0/24 (once approved) reaches LAN incl. 10.0.0.218 services.
 - Tailscale SSH enabled; RustDesk via 100.72.199.93:25220-25224 (tailnet only).
 
-### Bind-fix backlog (documented, not forced — pitchfork-owned)
-For each 0.0.0.0-bound service, prefer `--bind 127.0.0.1` (or interface-specific) in its pitchfork run line, like the valkey fix. Ports still bound wide: 25102/25103/25105/25110/25201/25219 (bun), 25117 (hindsight-api), 25118 (next-server), 25148/25240 (flicker-server), 25212 (systemd user mgr), 43000 (effusion-web docker publish — change to `127.0.0.1:43000->80`), kafka 9093/37725/25144, syncthing 22000, dnsmasq 53 (LAN DNS — intentional), tailscaled 55911 (tailscale-owned).
+### Bind-fix backlog (2026-10-15 takeover — reseed, no owner)
+For each non-loopback-bound service, prefer `--bind 127.0.0.1` (or interface-specific) in its run line, like the valkey fix.
+
+**RESOLVED 2026-10-15** (loopback-confirmed via ss after pitchfork restart): 25110 (grafana-mesh), 25105 (prometheus-hot), 25103 (openfang-front). Fixes: `stack/services/{grafana-mesh,prometheus-hot}.sh` `--listen 0.0.0.0`→`127.0.0.1`; `src/services/openfang.ts` hardcoded listen→`127.0.0.1`.
+
+**TODO — still bound wide, deferred as higher-risk or intra-cluster (from commit d7834bde):**
+- [ ] 25117 hindsight-api (docker `--network host`) — needs container networking review, not a blind re-bind
+- [ ] 25118 next-server INDEX/estate-chat-UI — per-app harness review
+- [ ] 25102 yote harness — verify it isn't meant to be tailnet-reachable
+- [ ] 25148/25240 flicker→forge build daemon — deliberate `*` binds, confirm public-needed
+- [ ] 25201/25219, 25212 (systemd user mgr), 43000 (effusion-web docker publish → `127.0.0.1:43000->80`), syncthing 22000
+- [ ] kafka 9093/37725/25144, dnsmasq 53 (LAN DNS — **intentional**, leave), tailscaled 55911 (tailscale-owned, leave)
 
 ## 14. freeinference concurrency recon (2026-10-15, ferret-methodology)
 
