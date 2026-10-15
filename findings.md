@@ -272,3 +272,16 @@ nuclei passive + API shape matrix. Artifacts in /tmp/kilo/ferret-freeinf/.
   staging + internaldoc + r2 exist but are CF-auth-gated from anon probes.
 - **Concurrency limit:1 confirmed again** under load (§14): serialization is
   arrival-order; no x-ratelimit/retry-after headers exposed (CF swallows them).
+
+## 16. httpx shadowing fixed (2026-10-15)
+
+- `~/.local/bin/httpx` was the Python-httpx CLI shim (pip console-script via
+  mise python), shadowing ProjectDiscovery httpx via PATH precedence. Nothing
+  referenced the shim name (verified: bashrc, pitchfork, docs).
+- Fix: shim renamed to `~/.local/bin/pyhttpx` (python CLI preserved); PD
+  httpx at `~/.pdtm/go/bin/httpx` now wins `httpx`.
+- Re-ran the recon lane that had failed: 10/14 freeinference subdomains live
+  with tech stacks (hosts in /tmp/kilo/ferret-freeinf/hosts-live.txt). New:
+  staging.freeinference.org is the real API (Next.js/React/Node/Webpack),
+  www is dead (CF 521), data+opendata = "dataset hub for LLM serving research",
+  status = model status page, docs = Sphinx (Furo).
