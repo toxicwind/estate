@@ -1,18 +1,18 @@
 #!/usr/bin/env bun
 /**
- * Sovereign-Projects Integration with Sovereign Workspace
- * Concrete links from sovereign-projects subdirs to sovereign helpers
+ * Estate-Projects Integration with Estate Workspace
+ * Concrete links from estate-projects subdirs to estate helpers
  */
 
 import { $ } from "bun";
 
-const SOV_PROJECTS = "/home/toxic/projects/sovereign-projects";
-const SOVEREIGN = "/home/toxic/estate";
+const SOV_PROJECTS = "/home/toxic/projects/estate-projects";
+const ESTATE = "/home/toxic/estate";
 
 async function integrate() {
-  console.log("=== SOVEREIGN-PROJECTS -> SOVEREIGN INTEGRATION ===");
+  console.log("=== ESTATE-PROJECTS -> ESTATE INTEGRATION ===");
   
-  // 1. Link herd engines to sovereign health-audit ports
+  // 1. Link herd engines to estate health-audit ports
   const herdPorts = {
     "herd": 25100,
     "llama-swap": 25100,
@@ -23,32 +23,32 @@ async function integrate() {
   // 2. Create shared config reference
   const config = {
     timestamp: new Date().toISOString(),
-    sovereignProjectsPath: SOV_PROJECTS,
+    estateProjectsPath: SOV_PROJECTS,
     symlinkFrom: "/home/toxic/estate-projects",
-    linkedToSovereign: {
-      healthAudit: `${SOVEREIGN}/helpers/health-audit.ts`,
-      gitMutator: `${SOVEREIGN}/helpers/git-mutator/cli.ts`,
-      portsEnv: `${SOVEREIGN}/config/ports.env`
+    linkedToEstate: {
+      healthAudit: `${ESTATE}/helpers/health-audit.ts`,
+      gitMutator: `${ESTATE}/helpers/git-mutator/cli.ts`,
+      portsEnv: `${ESTATE}/config/ports.env`
     },
     subdirIntegrations: {
-      "herd": { path: `${SOV_PROJECTS}/herd`, sovereignPort: "herd=25100", engines: true },
-      "zedra": { path: `${SOV_PROJECTS}/zedra`, sovereignLink: "zed integration via sovereign-zed" },
-      "boundless": { path: `${SOV_PROJECTS}/boundless`, sovereignLink: "openfang/yote services" },
-      "extensions": { path: `${SOV_PROJECTS}/extensions`, sovereignLink: "semantouch/engram" },
-      "tau": { path: `${SOV_PROJECTS}/tau`, sovereignLink: "tau packages/coding-agent" },
-      "sovereign-internal": { path: `${SOV_PROJECTS}/sovereign-internal`, sovereignLink: "AGENTS.md mirror" }
+      "herd": { path: `${SOV_PROJECTS}/herd`, estatePort: "herd=25100", engines: true },
+      "zedra": { path: `${SOV_PROJECTS}/zedra`, estateLink: "zed integration via estate-zed" },
+      "boundless": { path: `${SOV_PROJECTS}/boundless`, estateLink: "openfang/yote services" },
+      "extensions": { path: `${SOV_PROJECTS}/extensions`, estateLink: "semantouch/engram" },
+      "tau": { path: `${SOV_PROJECTS}/tau`, estateLink: "tau packages/coding-agent" },
+      "estate-internal": { path: `${SOV_PROJECTS}/estate-internal`, estateLink: "AGENTS.md mirror" }
     }
   };
   
   await Bun.write(`${SOV_PROJECTS}/.sovereign-integration.json`, JSON.stringify(config, null, 2));
   console.log(`Written: ${SOV_PROJECTS}/.sovereign-integration.json`);
   
-  // 3. Symlink sovereign helpers into sovereign-projects for direct access
-  await $`ln -sf ${SOVEREIGN}/helpers ${SOV_PROJECTS}/.sovereign-helpers 2>/dev/null || true`;
-  console.log("Symlinked sovereign helpers into sovereign-projects/.sovereign-helpers");
+  // 3. Symlink estate helpers into estate-projects for direct access
+  await $`ln -sf ${ESTATE}/helpers ${SOV_PROJECTS}/.estate-helpers 2>/dev/null || true`;
+  console.log("Symlinked estate helpers into estate-projects/.estate-helpers");
   
   // 4. Git commit
-  await $`cd /home/toxic && git add projects/sovereign-projects/.sovereign-integration.json projects/sovereign-projects/.sovereign-helpers 2>/dev/null && git commit -m "sovereign-projects integration: linked herd/zedra/boundless/extensions/tau to sovereign workspace helpers (health-audit, git-mutator, ports.env)" 2>&1`;
+  await $`cd /home/toxic && git add projects/estate-projects/.estate-integration.json projects/estate-projects/.estate-helpers 2>/dev/null && git commit -m "estate-projects integration: linked herd/zedra/boundless/extensions/tau to estate workspace helpers (health-audit, git-mutator, ports.env)" 2>&1`;
 }
 
 integrate().catch(console.error);

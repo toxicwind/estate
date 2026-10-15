@@ -13,7 +13,7 @@ plan — which subscribed agents get it, in which relay chats. No polling, no ti
 ## Concept
 
 Squawk fleet messages land as files in `~/.fleet-bus/` on
-Yote — the live home (symlink to `sovereign/hatch/agents/ember`). `/home/toxic/.shingle` is GONE (removed 2026-09-30). `fleet-watch` runs an `inotifywait`
+Yote — the live home (symlink to `estate/hatch/agents/ember`). `/home/toxic/.shingle` is GONE (removed 2026-09-30). `fleet-watch` runs an `inotifywait`
 long-poll over the bridge and prints new message files; `fleet-classify` tags each
 event as `broadcast`, `lane:<name>`, or `info`; `fleet-dispatch` matches it against
 the subscription registry and emits the dispatch plan. The coordinator executes the

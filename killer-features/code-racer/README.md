@@ -4,8 +4,8 @@ Race candidate code strategies against each other. First solution **passing the 
 
 <div align="right">
 
-[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -90,4 +90,4 @@ Per-strategy `timeout_s` in the registry overrides the task solve cap.
 
 ## License & security
 
-MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). Strategies are arbitrary code run as subprocesses — the harness trusts the registry, so only register solvers you (or the fleet) wrote. Testbeds are isolated per run; don't run untrusted solvers on a box you can't rebuild.
+MIT where marked — [LICENSE](https://github.com/toxicwind/estate-projects#license). Strategies are arbitrary code run as subprocesses — the harness trusts the registry, so only register solvers you (or the fleet) wrote. Testbeds are isolated per run; don't run untrusted solvers on a box you can't rebuild.

@@ -1,7 +1,7 @@
 {
   "name": "audit-runner",
   "version": "0.1.0",
-  "description": "Extreme complex audit tooling for sovereign ecosystem",
+  "description": "Extreme complex audit tooling for estate ecosystem",
   "type": "module",
   "scripts": {
     "inventory": "bun run scripts/inventory_agents_md.ts",

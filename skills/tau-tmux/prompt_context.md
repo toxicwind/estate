@@ -1,6 +1,6 @@
 # tau-tmux — tmux lab, agent swarms & live tau audit
 
-Powered by [`corral`](https://github.com/toxicwind/ranch/tree/main/barn/corral) — the universal Sovereign Ranch terminal multiplexer and agent swarm orchestrator (`~/.local/bin/corral`).
+Powered by [`corral`](https://github.com/toxicwind/ranch/tree/main/barn/corral) — the universal Estate Ranch terminal multiplexer and agent swarm orchestrator (`~/.local/bin/corral`).
 
 Jobs:
 1. Multi-agent swarms and parallel tau experiments via `corral swarm` and `corral lab`.
@@ -69,7 +69,7 @@ filter, different `--profile`, different model role). Compare
 ## Audit (helper/audit.ts)
 
 ```bash
-bun run /home/toxic/sovereign/skills/tau-tmux/helper/audit.ts [--verbose]
+bun run /home/toxic/estate/skills/tau-tmux/helper/audit.ts [--verbose]
 ```
 
 Checks (each prints PASS/FAIL; exit 0 = all pass, 1 = any fail):
@@ -80,15 +80,15 @@ Checks (each prints PASS/FAIL; exit 0 = all pass, 1 = any fail):
 3. `PI_CONFIG_DIR=.tau` is honored: `$HOME/.tau/agent/config.yml` exists.
 4. Skills: `~/.tau/agent/skills` symlink exists, target is a directory, and
    at least one `SKILL.md` is discoverable under it.
-5. Routers reachable: herd `http://127.0.0.1:25100/v1/models` and sovereign
+5. Routers reachable: herd `http://127.0.0.1:25100/v1/models` and estate
    `http://127.0.0.1:25104/v1/models` answer within the timeout.
 6. No stale config: `nvidia.json` / `cascade.json` do not exist under
-   `/home/toxic/sovereign` (removed 2026-09-20; provider catalog is
+   `/home/toxic/estate` (removed 2026-09-20; provider catalog is
    `~/.tau/agent/models.yml`).
 
 ## What this skill is NOT
 
 It does not audit NVIDIA unlock files — those were removed when the provider
-catalog moved to `models.yml` with herd/sovereign dynamic discovery. If you
+catalog moved to `models.yml` with herd/estate dynamic discovery. If you
 need provider ranking evidence, see the `paper-search` skill and the ranker
 reports, not this skill.

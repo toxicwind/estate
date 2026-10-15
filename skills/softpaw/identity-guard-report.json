@@ -261,7 +261,7 @@
   },
   {
    "i": 37,
-   "text": "Where the real work runs: the herd router (:25100), the sovereign router (:25104",
+   "text": "Where the real work runs: the herd router (:25100), the estate router (:25104",
    "preflight_hits": [],
    "guard": "error",
    "guard_detail": "<urlopen error [Errno 111] Connection refused>"

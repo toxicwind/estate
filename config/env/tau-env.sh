@@ -1,4 +1,4 @@
-# ── Comprehensive Sovereign Environment Variables Configuration ──────────
+# ── Comprehensive Estate Environment Variables Configuration ──────────
 # Authoritative environment variables for Tau / OMP engine, capturing all known
 # internal runtime, streaming timeout, authentication, and debug overrides.
 

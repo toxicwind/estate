@@ -1,6 +1,6 @@
 import io
 
-d = '/home/toxic/sovereign/docs/Meta/Muse AI/'
+d = '/home/toxic/estate/docs/Meta/Muse AI/'
 
 # --- README.md: hatch first-class ---
 p = d + 'README.md'

@@ -20,8 +20,8 @@ model names in the provider -> what models they have thing."
 
 ## The cure
 
-One Bun/TypeScript package — `packages/providers` (`@sovereign/providers`)
-in sovereign-projects — as the single source of truth. Consumers:
+One Bun/TypeScript package — `packages/providers` (`@estate/providers`)
+in estate-projects — as the single source of truth. Consumers:
 
 - **sovereign-router-ts** and **TAU omp-model-router**: import the TS package
   directly (same repo / bun workspace).
@@ -97,7 +97,7 @@ The next odd shape gets an adapter, not a special case.
 
 `src/data.ts` is the source of truth. `bun run build` emits:
 
-- `generated/providers.json` — `$schema: sovereign-providers/v1`, providers,
+- `generated/providers.json` — `$schema: estate-providers/v1`, providers,
   seeds (+ contract text), aliases, deadIds (+ contract text), provenance.
 - `generated/providers.go` — `package astmatrix`, `ProviderDef` struct,
   `ProviderCatalogDefs`, `ProviderCatalogSeeds`, `ProviderCatalogStaticModels`,
@@ -123,7 +123,7 @@ the herd audit to be a drop-in data replacement.
   commit); merge loop untouched, reads generated tables.
 - `research/add_groq.py`, `check_providers.py`: read `generated/providers.json`
   instead of hardcoded lists (ranch commit).
-- TAU `omp-model-router`: import `@sovereign/providers` for defs/aliases
+- TAU `omp-model-router`: import `@estate/providers` for defs/aliases
   (per Pip's trace of `currentModelRegistry`'s origin).
 
 ## Open items

@@ -2,8 +2,8 @@
 
 <div align="right">
 
-[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -56,7 +56,7 @@ run` invocation before wiring into `mise run e2e-agent-stack`.
 
 ## License & security
 
-MIT — see [LICENSE](https://github.com/toxicwind/sovereign-projects#license).
+MIT — see [LICENSE](https://github.com/toxicwind/estate-projects#license).
 
 Static analysis only: ast-grep reads source files and produces matches.
 No execution, no network, no secrets involved.

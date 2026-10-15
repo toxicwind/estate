@@ -1,11 +1,11 @@
 # sovereign-scripts
 
-Python automation toolkit for Sovereign infrastructure — GitHub API ops, repo audits, archiving, sandboxing, and health checks. One directory of sharp tools, each doing one job.
+Python automation toolkit for Estate infrastructure — GitHub API ops, repo audits, archiving, sandboxing, and health checks. One directory of sharp tools, each doing one job.
 
 <div align="right">
 
-[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -17,8 +17,8 @@ Ops work is a long tail of small jobs — check a port, push a file, extract com
 
 | Script | What it does |
 |---|---|
-| `sovereign_helper.py` | Master hook for GitHub API ops — async, parallel, rate-limited |
-| `health_check.py` | Port/socket health checks for the Sovereign environment |
+| `estate_helper.py` | Master hook for GitHub API ops — async, parallel, rate-limited |
+| `health_check.py` | Port/socket health checks for the Estate environment |
 | `git-push-one.py` | Push one file to a GitHub repo with per-repo identity |
 | `commit_extractor.py` | Bulk GitHub commit extraction with resumable state |
 | `archivefs_v3.py` | Mount-like binary archive with 90MB chunking |
@@ -33,7 +33,7 @@ Ops work is a long tail of small jobs — check a port, push a file, extract com
 ```mermaid
 flowchart TB
     subgraph gh[GitHub ops]
-        SH[sovereign_helper.py<br/>async · parallel · rate-limited]
+        SH[estate_helper.py<br/>async · parallel · rate-limited]
         GP[git-push-one.py<br/>per-repo identity]
         CE[commit_extractor.py<br/>resumable]
     end
@@ -62,4 +62,4 @@ See `AGENTS.md` in this directory for repo conventions (per the original: repo r
 
 ## License & security
 
-MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). Several scripts here are dual-use by nature (`cache_timing.py`, `mitm-proxy/`, `unshare-root.py`) — they're audit and research tooling for the estate's own boxes. Run them against your own infrastructure only. `git-push-one.py` uses per-repo identity — check which identity you're pushing as before you push.
+MIT where marked — [LICENSE](https://github.com/toxicwind/estate-projects#license). Several scripts here are dual-use by nature (`cache_timing.py`, `mitm-proxy/`, `unshare-root.py`) — they're audit and research tooling for the estate's own boxes. Run them against your own infrastructure only. `git-push-one.py` uses per-repo identity — check which identity you're pushing as before you push.

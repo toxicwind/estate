@@ -14,7 +14,7 @@ This skill ensures the Tau fork binary remains immutable and consistently points
 ## What It Does
 
 This skill performs three key actions:
-1. **Synchronizes and builds** the Tau fork from the sovereign projects directory
+1. **Synchronizes and builds** the Tau fork from the estate projects directory
 2. **Installs immutable launcher scripts** (`~/.local/bin/tau` and `~/.local/bin/omp`) using the `omp-pin` wrapper
 3. **Locks the launchers** with `chattr +i` to prevent accidental modification or deletion
 
@@ -22,13 +22,13 @@ This skill performs three key actions:
 
 ```bash
 # 1. Sync and build the Tau fork
-cd ~/sovereign/projects/tau
+cd ~/estate/projects/tau
 bun install
 bun run build
 
 # 2. Install and pin the launcher scripts
-install -m 0555 ~/sovereign/scripts/omp-pin ~/.local/bin/omp
-install -m 0555 ~/sovereign/scripts/omp-pin ~/.local/bin/tau
+install -m 0555 ~/estate/scripts/omp-pin ~/.local/bin/omp
+install -m 0555 ~/estate/scripts/omp-pin ~/.local/bin/tau
 chattr +i ~/.local/bin/omp ~/.local/bin/tau
 
 # 3. Verify the pinned binaries
@@ -38,8 +38,8 @@ tau --version
 
 ## Configuration
 
-- **Source Directory**: `~/sovereign/projects/tau` – the Tau fork repository
-- **Build Output**: The `omp-pin` wrapper script (located at `~/sovereign/scripts/omp-pin`) remains unchanged; it dynamically resolves the binary path
+- **Source Directory**: `~/estate/projects/tau` – the Tau fork repository
+- **Build Output**: The `omp-pin` wrapper script (located at `~/estate/scripts/omp-pin`) remains unchanged; it dynamically resolves the binary path
 - **Launcher Scripts**: 
   - `~/.local/bin/tau` – pinned to the `omp-pin` wrapper
   - `~/.local/bin/omp` – pinned to the `omp-pin` wrapper
@@ -47,8 +47,8 @@ tau --version
 
 ## How It Works
 
-The `omp-pin` wrapper script (`~/sovereign/scripts/omp-pin`) contains logic to:
-1. Locate the Tau fork binary at `$HOME/sovereign/projects/range/ranch/stockyard/tau/packages/coding-agent/scripts/omp` (for `omp`) or the equivalent tau script
+The `omp-pin` wrapper script (`~/estate/scripts/omp-pin`) contains logic to:
+1. Locate the Tau fork binary at `$HOME/estate/projects/range/ranch/stockyard/tau/packages/coding-agent/scripts/omp` (for `omp`) or the equivalent tau script
 2. Validate that the binary resides within the fork root (security check)
 3. Execute the resolved binary with all forwarded arguments (`exec "$RESOLVED" "$@"`)
 
@@ -70,13 +70,13 @@ After completing the procedure:
 - **Immutability** – The `chattr +i` flag prevents accidental or malicious modification of the launcher scripts
 - **Path Validation** – The `omp-pin` wrapper ensures the resolved binary stays within the fork root, preventing path escape attacks
 - **Consistent Execution** – All invocations of `tau` and `omp` go through the same vetted wrapper
-- **Fork Integrity** – By building from the sovereign projects directory, we ensure we're using the intended upstream fork
+- **Fork Integrity** – By building from the estate projects directory, we ensure we're using the intended upstream fork
 
 ## Troubleshooting
 
 | Symptom | Solution |
 |---------|----------|
-| `tau: command not found` | Verify `~/.local/bin/tau` exists and the `omp-pin` script is present at `~/sovereign/scripts/omp-pin` |
+| `tau: command not found` | Verify `~/.local/bin/tau` exists and the `omp-pin` script is present at `~/estate/scripts/omp-pin` |
 | `Permission denied` | Ensure both the launcher and the target binary are executable (`chmod +x`) |
-| "fork binary missing" | Re-run the build steps: `cd ~/sovereign/projects/tau && bun install && bun run build` |
+| "fork binary missing" | Re-run the build steps: `cd ~/estate/projects/tau && bun install && bun run build` |
 | Immutable flag prevents updates | Remove immutability temporarily: `chattr -i ~/.local/bin/tau ~/.local/bin/omp`, then reapply after updates |

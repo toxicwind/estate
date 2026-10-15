@@ -23,7 +23,7 @@ is weaver's operational body.
 
 ## Run
 
-Pitchfork: `sovereign/market-loop`
+Pitchfork: `estate/market-loop`
 (`exec /home/toxic/.bun/bin/bun .../agents/weaver/bin/market-loop.ts`).
 
 Env knobs: `MARKET_WS` (default weaver's workspace), `MARKET_HOUSE_BIDDERS`

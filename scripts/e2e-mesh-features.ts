@@ -5,9 +5,9 @@
 import { appendFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { FEATURE_IDS, serviceCatalog } from "../src/lib/ghas-mesh-features.ts";
-import { loadSovereignPorts, requirePort } from "../src/lib/ports.ts";
+import { loadEstatePorts, requirePort } from "../src/lib/ports.ts";
 
-loadSovereignPorts();
+loadEstatePorts();
 
 const OUT =
   process.env.MESH_E2E_OUT ||

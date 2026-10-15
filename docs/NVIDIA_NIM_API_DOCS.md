@@ -331,7 +331,7 @@ curl https://integrate.api.nvidia.com/v1/chat/completions \
 
 ---
 
-## Sovereign Infrastructure Integration
+## Estate Infrastructure Integration
 
 **Local Upstreams (via llama-swap :25100):**
 - `llama-swap` :25100 — LLM router + AST Matrix Go port

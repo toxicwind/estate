@@ -12,8 +12,8 @@ Bulk backup and storage triage for Chris's Pixel 9 Pro XL via ADB on yote. Bench
 |---|---|
 | ADB binary | `/usr/bin/adb` on yote |
 | Phone endpoint | `10.0.0.77:<port>` — **port rotates**; keepalive daemon rediscovers it |
-| Keepalive | `sovereign/ranch/android-fleet/bin/pixel-adb-keepalive.sh` (pitchfork) |
-| Canonical project | `sovereign/ranch/android-fleet/phone-backup/` |
+| Keepalive | `estate/ranch/android-fleet/bin/pixel-adb-keepalive.sh` (pitchfork) |
+| Canonical project | `estate/ranch/android-fleet/phone-backup/` |
 | Fast pull script | `.../phone-backup/bin/fast-pull.sh` |
 | Speed shootout | `.../phone-backup/bin/speed-race.sh` (8 methods, keeps the winner) |
 | Archive root | `/mnt/8TB/phone-archive/` (7.3T drive, was 13% used 2026-09-30) |
@@ -78,7 +78,7 @@ Each run writes a timestamped manifest (`pull-manifest-*.txt`) with per-dir OK/F
 | `Movies/` | 13.8G | personal media — ask Chris before touching |
 | `Pictures/` | 13G | **photos — ignore** |
 | `Documents/` | 259M | pull → archive |
-| `ik_llama.cpp-main/` | 115M | repo → archive, then decide: sovereign or standalone |
+| `ik_llama.cpp-main/` | 115M | repo → archive, then decide: estate or standalone |
 | `Export/`, `1openfang/`, `Tasker/`, `House/` | ~150M | pull → archive |
 
 **Download/ heavies**: `base/` 2.1G, `Unchained/` 1.4G, `YTDLnis/` 905M, `Telegram/` 316M, `Nekogram/` 270M, assorted zips/apks.
@@ -87,7 +87,7 @@ Each run writes a timestamped manifest (`pull-manifest-*.txt`) with per-dir OK/F
 
 `/mnt/8TB/phone-archive/` receives the raw pull. Then triage:
 
-- `repos/` — git checkouts (e.g. `ik_llama.cpp-main`) → decide sovereign (`sovereign/projects/…`) vs standalone project folder.
+- `repos/` — git checkouts (e.g. `ik_llama.cpp-main`) → decide estate (`estate/projects/…`) vs standalone project folder.
 - `archives/` — zips/tar.gz/apks, including misnamed ones (`*.tar.gz.pdf`, `*.zip.pdf` — detect by magic bytes, not suffix; see phone-sweeps).
 - `code/` — loose scripts, configs, Tasker exports.
 - `docs/` — dossiers, reports, saved pages (Chris's research corpus).

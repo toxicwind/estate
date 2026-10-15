@@ -230,7 +230,7 @@ describe("persistence", () => {
       const livePath = join(dir, "catalog.live.json");
       const { readFile } = await import("node:fs/promises");
       const live = JSON.parse(await readFile(livePath, "utf8"));
-      expect(live.contract).toBe("sovereign-providers/live-catalog/v1");
+      expect(live.contract).toBe("estate-providers/live-catalog/v1");
       expect(live.providers["groq"].serving).toEqual(["live-b"]);
       expect(live.providers["groq"].quarantined).toEqual(["live-a"]);
       expect(live.providers["groq"].discovered).toBe(true);

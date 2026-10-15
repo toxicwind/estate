@@ -28,7 +28,7 @@ group("Repo Fetch Latency", () => {
 
 // --- Benchmark Group: Classification ---
 group("Repo Classification", () => {
-  const ecosystem = ["sovereign", "tau", "mesh", "pi", "llama", "mitm", "pitchfork"];
+  const ecosystem = ["estate", "tau", "mesh", "pi", "llama", "mitm", "pitchfork"];
   const internal = ["secret", "token", "credential", "private"];
 
   bench("classifyRepo ecosystem check", () => {

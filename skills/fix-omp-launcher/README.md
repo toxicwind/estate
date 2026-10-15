@@ -4,7 +4,7 @@
 
 ## What It Does
 
-This skill repairs the `omp` launcher script located at `~/.local/bin/omp` so that it correctly points to the tau fork binary and maintains proper symlinks for the `tau` launcher. It also updates configuration directory symlinks to the sovereign config.
+This skill repairs the `omp` launcher script located at `~/.local/bin/omp` so that it correctly points to the tau fork binary and maintains proper symlinks for the `tau` launcher. It also updates configuration directory symlinks to the estate config.
 
 ## Why It Matters
 
@@ -12,9 +12,9 @@ The original `omp` launcher was misconfigured, causing it to either fail to find
 
 ## Features
 
-- **Correct fork binary path**: Updates `omp` to use the proper tau fork from the sovereign projects directory.
+- **Correct fork binary path**: Updates `omp` to use the proper tau fork from the estate projects directory.
 - **Symlink maintenance**: Ensures `tau` and `tau` config symlinks point to the correct locations.
-- **Configuration hygiene**: Removes old config symlinks and creates fresh ones pointing to the sovereign config.
+- **Configuration hygiene**: Removes old config symlinks and creates fresh ones pointing to the estate config.
 - **Verification steps**: Provides clear commands to verify the fix is working correctly.
 
 ## Quick Start
@@ -24,7 +24,7 @@ The original `omp` launcher was misconfigured, causing it to either fail to find
 cat > ~/.local/bin/omp << 'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
-FORK_ROOT="$HOME/sovereign/projects/range/ranch/stockyard/tau"
+FORK_ROOT="$HOME/estate/projects/range/ranch/stockyard/tau"
 REAL="$FORK_ROOT/packages/coding-agent/scripts/omp"
 
 if [ ! -x "$REAL" ]; then
@@ -59,7 +59,7 @@ tau config path
 ## Configuration
 
 - **`~/.local/bin/omp`**: The fixed launcher script that now points to the correct tau fork binary.
-- **`~/.local/bin/tau`**: Symlinked to the tau script in the sovereign projects.
+- **`~/.local/bin/tau`**: Symlinked to the tau script in the estate projects.
 - **`~/.tau` and `~/.omp`**: Configuration symlinks pointing to `/home/toxic/estate/config/tau`.
 
 ## Verification

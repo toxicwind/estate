@@ -2,8 +2,8 @@
 
 <div align="right">
 
-[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -110,7 +110,7 @@ throttle+page needs a new debate verdict, not a config edit.
 
 ## License & security
 
-MIT — see [LICENSE](https://github.com/toxicwind/sovereign-projects#license).
+MIT — see [LICENSE](https://github.com/toxicwind/estate-projects#license).
 
 - A supervisor that can throttle processes is privileged by nature: it
   runs on the cell, touches only the cell, and its self-protection list is

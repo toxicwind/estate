@@ -1,4 +1,4 @@
-# Engine Audit — Sovereign Fork vs Upstream
+# Engine Audit — Estate Fork vs Upstream
 
 Generated: 2026-09-15T01:19:18.220Z
 Total differences: 72
@@ -7,11 +7,11 @@ Total differences: 72
 
 | Type | Count |
 |------|-------|
-| Only in engine (sovereign) | 33 |
+| Only in engine (estate) | 33 |
 | Only in vendor (upstream) | 2 |
 | Modified | 37 |
 
-## Sovereign Additions (only in engine)
+## Estate Additions (only in engine)
 
 - `packages/agent/tsconfig.tsbuildinfo`
 - `packages/ai/src/auth/oauth-refresh-support.ts`

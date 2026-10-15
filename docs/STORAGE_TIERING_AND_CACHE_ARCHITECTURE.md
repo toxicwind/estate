@@ -1,4 +1,4 @@
-# Sovereign Storage Tiering & Cache Architecture
+# Estate Storage Tiering & Cache Architecture
 
 > **Hardware Drives & Topology**:
 > - **Primary NVMe (`nvme1n1`)**: Crucial CT1000E100SSD8 1 TB (`/@` and `/@home` Btrfs subvolumes, `zstd:1` compressed).

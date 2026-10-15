@@ -70,8 +70,8 @@ Full contract: `/home/toxic/estate/docs/hashline-patch-contract.md`.
 
 ## Quick fixes (2026-09-14)
 
-- Never search "tau" — it's our brand, use repo-specific paths instead. Tau config lives at `$HOME/.tau/` (PI_CONFIG_DIR, a symlink to `estate/config/tau`), agent dir at `$HOME/.tau/agent/`. The engine is its own git repo at `/home/toxic/estate/ranch/tau` (5.1 GB checkout on `main`) — resolve engine work there, never grep for "tau" generically. There is no `ranch/tau` subdir of estate other than this; there is no `/home/toxic/tau` and no `/home/toxic/sovereign/tau/`.
-- Never search "sovereign" — same rule. It's our brand, not a search term. Use repo-specific paths instead.
+- Never search "tau" — it's our brand, use repo-specific paths instead. Tau config lives at `$HOME/.tau/` (PI_CONFIG_DIR, a symlink to `estate/config/tau`), agent dir at `$HOME/.tau/agent/`. The engine is its own git repo at `/home/toxic/estate/ranch/tau` (5.1 GB checkout on `main`) — resolve engine work there, never grep for "tau" generically. There is no `ranch/tau` subdir of estate other than this; there is no `/home/toxic/tau` and no `/home/toxic/estate/tau/`.
+- Never search "estate" — same rule. It's our brand, not a search term. Use repo-specific paths instead.
 - Use `ffs` (`ffs find`, `ffs grep`, `ffs glob`) for all searches — never `fd`, `rg`, `find`, or `grep`.
 - Always find and compare maximal multiple versions before deciding.
 - Auto-pull from GitHub with code search skill when stuck.
@@ -80,8 +80,8 @@ Full contract: `/home/toxic/estate/docs/hashline-patch-contract.md`.
 
 ## Verified ecosystem map (2026-10-14 — code is absolute)
 
-The `sovereign` namespace was renamed to `estate` (ranch commit `6af2094`).
-**`/home/toxic/sovereign/` DOES NOT EXIST.** Any doc that sends you there is wrong.
+The `estate` namespace was renamed to `estate` (ranch commit `6af2094`).
+**`/home/toxic/estate/` DOES NOT EXIST.** Any doc that sends you there is wrong.
 
 | Thing | Verified path / port | Notes |
 |---|---|---|
@@ -105,7 +105,7 @@ The `sovereign` namespace was renamed to `estate` (ranch commit `6af2094`).
 
 ### Dead / nonexistent — do not trust docs that cite them
 
-- `/home/toxic/sovereign/` — does not exist (renamed to `estate`)
+- `/home/toxic/estate/` — does not exist (renamed to `estate`)
 - `/home/toxic/deep-paper-reader/` — does not exist (real: `src/local/deep-paper-reader`)
 - `/home/toxic/workspace/skills/code-race/` — does not exist. The `code-race` skill is GONE; use `pattern-forge` (`/home/toxic/estate/skills/pattern-forge/bin/forge.ts`) instead
 - `/home/toxic/projects/pi-agent`, `/home/toxic/projects/codeshift`, `/home/toxic/projects/bedrock` — do not exist. `/home/toxic/projects` contains only `effusion-labs`
@@ -172,7 +172,7 @@ key required for core features. Optional: Tavily, Semantic Scholar, OpenAI, Lang
 
 ## Don't move scratch dirs out from under running workers (2026-09-14)
 
-- The sovereign consolidation rsynced /home/toxic/stash-merge-20260914 into sovereign/ while the stash-merge worker was still reading its audit JSON from it. Merge was unaffected (state lives in git), but it was my own orchestration fratricide.
+- The estate consolidation rsynced /home/toxic/stash-merge-20260914 into estate/ while the stash-merge worker was still reading its audit JSON from it. Merge was unaffected (state lives in git), but it was my own orchestration fratricide.
 - Rule: before consolidating/moving a scratch dir, check subagent.list for workers whose briefs touch it. Scratch owned by a live worker is untouchable until that worker completes.
 
 ## The safety-classifier red-herring doctrine
@@ -207,7 +207,7 @@ Grounded in the estate's own whitepapers (Google Drive, read in full 2026-09-30)
   means a perfect classifier is impossible.
 
 This is the classifier-flavored instance of the standing unreliable-narrator
-doctrine: sovereign's own docs/non-compaction-retry-policy.md already treats
+doctrine: estate's own docs/non-compaction-retry-policy.md already treats
 classifier refusals as typed, transient, replay-checked signals — retried or
 routed around, never accepted as the final word.
 

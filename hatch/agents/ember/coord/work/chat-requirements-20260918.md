@@ -16,11 +16,11 @@ consolidation order. These issues are the portable remainder.
 
 ## Ground truth of the :25122 implementation (probed, not imagined)
 
-Source: `/home/toxic/sovereign/tools/fleet-chat/server.ts` v0.1.0 (bun,
+Source: `/home/toxic/estate/tools/fleet-chat/server.ts` v0.1.0 (bun,
 SQLite WAL at `/home/toxic/fleet-chat/fleet-chat.db`), read in full
 2026-09-18 ~17:08 MDT. Live probe: **0 listeners on :25122** — the server ran
 16:53–16:56 (DB WAL last write) and is down now; no pitchfork stanza exists
-(removed in sovereign commit 0e3d15a93b).
+(removed in estate commit 0e3d15a93b).
 
 API surface in code: `GET /health` (unauth) · `GET /v1/rooms` ·
 `POST /v1/rooms {name, topic?}` (name regex `^[a-z0-9][a-z0-9_-]{1,40}$`) ·
@@ -85,12 +85,12 @@ This task's premise ("fleet-chat :25122 LIVE and canonical, owned by lane
 0fcb5f23") is contradicted by two newer facts: (a) this probe finds 0
 listeners on :25122; (b) `/home/toxic/.fleet-bus/directives.md` (main chat's
 consolidated truth) supersedes the :25122 pick — ONE canonical server is
-**sovereign-chat v1.2.0 on :25120** (verified live by main chat: 20 agents,
+**estate-chat v1.2.0 on :25120** (verified live by main chat: 20 agents,
 2 rooms, 38 messages at 17:07 MDT; `/v1/*` 401 unauth; MCP stdio +
 `POST /v1/mcp`; `/v1/state` same-page surface; "No duplicate servers:
 :25122/:25200/:25220 all confirmed dead").
 
 Routing recommendation: if :25120 stands canonical, R1/R2 are already
 satisfied there — convert the remaining items (R3–R8) into issues against
-sovereign-chat instead of reviving :25122. Do not act on the :25122 premise
+estate-chat instead of reviving :25122. Do not act on the :25122 premise
 without a fresh main-chat verdict.

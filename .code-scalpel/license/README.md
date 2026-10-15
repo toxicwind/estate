@@ -4,8 +4,8 @@ Where the Pro/Enterprise license key lives — and its validation cache. Nothing
 
 <div align="right">
 
-[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -32,7 +32,7 @@ code-scalpel license verify   # or: the next code-scalpel run validates automati
 
 ## License & security
 
-MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license).
+MIT where marked — [LICENSE](https://github.com/toxicwind/estate-projects#license).
 
 - **`license.jwt` is a secret.** Do not commit it. It is gitignored — keep it that way.
 - `license_state.json` is a cache, not a credential — it holds validation *results*, safe to regenerate by deleting.

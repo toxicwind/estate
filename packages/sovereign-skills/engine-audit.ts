@@ -6,11 +6,11 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { execSync } from "node:child_process";
 import { join, dirname } from "node:path";
 
-const TAU_DIR = "/home/toxic/projects/sovereign-projects/tau";
+const TAU_DIR = "/home/toxic/projects/estate-projects/tau";
 const ENGINE_DIR = join(TAU_DIR, "engine");
 const VENDOR_OH_MY_PI = join(ENGINE_DIR, "vendor/oh-my-pi/packages");
 const ENGINE_PACKAGES = join(ENGINE_DIR, "packages");
-const SESSION_DIR = join(TAU_DIR, ".tau/agent/sessions/-projects-sovereign-projects-tau/2026-09-08T06-07-13-107Z_01a07fa0-b2d3-76df-9cd1-b3c185165228");
+const SESSION_DIR = join(TAU_DIR, ".tau/agent/sessions/-projects-estate-projects-tau/2026-09-08T06-07-13-107Z_01a07fa0-b2d3-76df-9cd1-b3c185165228");
 
 interface DiffRow {
   type: "only_in_engine" | "only_in_vendor" | "modified";
@@ -61,7 +61,7 @@ function generateMarkdown(df: DiffRow[]): string {
   const modified = df.filter((r) => r.type === "modified");
 
   const lines: string[] = [];
-  lines.push("# Engine Audit — Sovereign Fork vs Upstream");
+  lines.push("# Engine Audit — Estate Fork vs Upstream");
   lines.push("");
   lines.push(`Generated: ${new Date().toISOString()}`);
   lines.push(`Total differences: ${df.length}`);
@@ -70,12 +70,12 @@ function generateMarkdown(df: DiffRow[]): string {
   lines.push("");
   lines.push(`| Type | Count |`);
   lines.push(`|------|-------|`);
-  lines.push(`| Only in engine (sovereign) | ${engineOnly.length} |`);
+  lines.push(`| Only in engine (estate) | ${engineOnly.length} |`);
   lines.push(`| Only in vendor (upstream) | ${vendorOnly.length} |`);
   lines.push(`| Modified | ${modified.length} |`);
   lines.push("");
 
-  lines.push("## Sovereign Additions (only in engine)");
+  lines.push("## Estate Additions (only in engine)");
   lines.push("");
   for (const r of engineOnly) {
     lines.push(`- \`${r.location}/${r.file}\``);

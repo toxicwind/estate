@@ -1,4 +1,4 @@
-# Merge Decisions — ~/sovereign
+# Merge Decisions — ~/estate
 
 Repo: `/home/toxic/estate`
 Merge A (-X ours re-do): `3a90ad5288`

@@ -7,7 +7,7 @@
 3. Pre-flight validation: sample 10 conflict files for weave efficacy
 4. Execute git merge with drivers active (--no-commit --no-ff)
 5. Run residue loop via conflict-tools batch resolver on unmerged files
-6. Perform Bun reconciliation in sovereign/engine with workspace linking
+6. Perform Bun reconciliation in estate/engine with workspace linking
 7. Patch truncateTail bug in streaming-output.ts for oversized tail lines
 8. Verify merge success: tau version, bun packages, symlink check
 

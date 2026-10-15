@@ -91,8 +91,8 @@ def _pitchfork_restart():
     return ok
 
 
-DAEMON_PY = "/home/toxic/sovereign/tools/buildsrv/buildsrvd.py"
-DAEMON_LOG = "/home/toxic/sovereign/logs/buildsrv-watchdog-restarts.log"
+DAEMON_PY = "/home/toxic/estate/tools/buildsrv/buildsrvd.py"
+DAEMON_LOG = "/home/toxic/estate/logs/buildsrv-watchdog-restarts.log"
 
 
 def _port_holders(port):

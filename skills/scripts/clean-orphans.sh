@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Sovereign Orphan Cleaner Helper
+# Estate Orphan Cleaner Helper
 # Scans for and cleans orphan compiler loops (cargo-watch), headless CLI workers,
 # and zombie build tasks that cause CPU load spikes and terminal lag.
 # NEVER kills WezTerm, WezTerm-gui, Pitchfork supervisor, or active editors.

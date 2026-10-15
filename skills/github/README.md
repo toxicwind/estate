@@ -68,7 +68,7 @@ Modify the Python CLI wrappers in `/home/toxic/estate/skills/github/bin/`:
 All Python CLIs must properly import and use the dynamic credentials helpers for authenticated requests to api.github.com.
 
 ## License
-Internal tool - refer to sovereign estate licensing
+Internal tool - refer to estate estate licensing
 
 ## Security
 - **Credential Protection** - Never exposes raw PAT; uses surrogate authentication flow

@@ -7,7 +7,7 @@ and get JSON back in under a second — do NOT burn an agentic browser task
 (one model round-trip per click, ~15s/step).
 
 ```bash
-bun ~/sovereign/skills/fast-browser/browsnap.ts --steps '[
+bun ~/estate/skills/fast-browser/browsnap.ts --steps '[
   {"goto": "https://github.com/toxicwind/rig"},
   {"text": "[itemprop=about]", "as": "about"},
   {"texts": ".topic-tag", "as": "topics"}

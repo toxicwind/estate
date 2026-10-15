@@ -1,4 +1,4 @@
-# Sovereign Swap Architecture — zram / zswap / NVMe Tiering
+# Estate Swap Architecture — zram / zswap / NVMe Tiering
 
 > **Hardware**: AMD Ryzen 7 8700F (Zen 4, 8C/16T, AVX-512), 62 GiB DDR5-6000, RTX 3090 24 GB VRAM, WD_BLACK SN850X 1 TB (OS + 138 GB swap), Crucial E100 1 TB (DRAM-less, /home), Samsung 870 QVO 1 TB + Seagate 7.3 TB HDD (cold storage)
 

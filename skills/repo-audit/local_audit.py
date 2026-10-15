@@ -56,7 +56,7 @@ def scan_git_repos(path: str) -> List[Dict]:
         # Determine area
         abs_path = str(d.resolve())
         if abs_path.startswith("/home/toxic/estate/"):
-            area = "sovereign"
+            area = "estate"
         elif abs_path.startswith("/home/toxic/projects/"):
             area = "projects"
         else:
@@ -187,7 +187,7 @@ def print_summary(df: pd.DataFrame):
 def main():
     parser = argparse.ArgumentParser(prog="local-audit", description="Local-First Repository Auditor")
     parser.add_argument("--path", default="/home/toxic/projects", help="Path to scan")
-    parser.add_argument("--all", action="store_true", help="Scan both projects and sovereign")
+    parser.add_argument("--all", action="store_true", help="Scan both projects and estate")
     parser.add_argument("--format", choices=["table", "csv", "json", "parquet"], default="table")
     parser.add_argument("--parquet", default="local-repos.parquet", help="Parquet output path")
     parser.add_argument("--csv", default="local-repos.csv", help="CSV output path")

@@ -4,7 +4,7 @@
  *
  * Architecture Invariants:
  * 1. Zero Keystroke Injection: Never inject C-c or terminal text into running panes.
- * 2. Respect Sovereign Router (:25104): Preserves 114-model ranking pool without socket overriding.
+ * 2. Respect Estate Router (:25104): Preserves 114-model ranking pool without socket overriding.
  * 3. Database Grounding: Queries .super-ralph/workflow.db for real transaction state, ticket progress, and quiescence.
  * 4. Non-Invasive Observation: Ingests telemetry purely for rate tracking, memory profiling, and observability.
  */

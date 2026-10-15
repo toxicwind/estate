@@ -27,7 +27,7 @@
     "id": "C2-2026-08-09T10:00:00",
     "type": "c2-fix",
     "classification": "pi-longcat-as-c2-fix-while-not-sure",
-    "description": "Fixing pi-agent, sovereign, and related infrastructure while uncertain about some approaches"
+    "description": "Fixing pi-agent, estate, and related infrastructure while uncertain about some approaches"
   },
   "tools": {
     "native": [

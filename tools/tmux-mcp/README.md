@@ -2,8 +2,8 @@
 
 <div align="right">
 
-[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -42,7 +42,7 @@ flowchart LR
 ## Quick start
 
 ```bash
-/home/toxic/.bun/bin/bun /home/toxic/sovereign/tools/tmux-mcp/server.ts
+/home/toxic/.bun/bin/bun /home/toxic/estate/tools/tmux-mcp/server.ts
 ```
 
 Registered in the shep gateway (`projects/range/ranch/barn/shep/mcp_config.json`) as `tmux`
@@ -73,7 +73,7 @@ schema requirement and stderr audit line as `tmux_send`.
 
 ## License & security
 
-MIT — see [LICENSE](https://github.com/toxicwind/sovereign-projects#license).
+MIT — see [LICENSE](https://github.com/toxicwind/estate-projects#license).
 
 - Never send to interactive shells without the user's informed intent —
   `tmux_send` is destructive-gated for exactly this reason.

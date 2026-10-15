@@ -13,9 +13,9 @@
 - Watch loop was already alert-only (2e270e971d); breaker message corrected.
 
 ## Done criteria
-- Commit on toxicwind/sovereign-projects main, remote ref verified.
+- Commit on toxicwind/estate-projects main, remote ref verified.
 - estate-reconcile-watch daemon restarted on the new build; `--apply` refuses live.
 
 ## Result
-- Commits `020f479aa` (restore-kill) + `d48d5a5db` (manifest sha bump) on toxicwind/sovereign-projects main, remote refs verified.
+- Commits `020f479aa` (restore-kill) + `d48d5a5db` (manifest sha bump) on toxicwind/estate-projects main, remote refs verified.
 - Live: `--apply` refuses (exit 2, APPLY-REFUSED logged); watch daemon restarted on new build; 15/15 tests green.

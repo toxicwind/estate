@@ -2,8 +2,8 @@
 
 <div align="right">
 
-[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -11,9 +11,9 @@ Keeps the two Squawk fleet transports alive on awrawr-pc — because the
 fleet's nervous system is useless if the wires are down:
 
 - `squawk-ws` — WebSocket push feed, `127.0.0.1:25147` (pitchfork
-  `sovereign/squawk-ws`)
+  `estate/squawk-ws`)
 - `squawk-feed` — fat long-poll relay-out, `127.0.0.1:25135` (pitchfork
-  `sovereign/squawk-feed`)
+  `estate/squawk-feed`)
 
 ```mermaid
 flowchart LR
@@ -85,7 +85,7 @@ the thing it watches.
 
 ## License & security
 
-MIT — see [LICENSE](https://github.com/toxicwind/sovereign-projects#license).
+MIT — see [LICENSE](https://github.com/toxicwind/estate-projects#license).
 
 The watchdog can start daemons — that's its job — but it never stops or
 restarts anything healthy. Scope creep here is a fleet-wide outage vector.

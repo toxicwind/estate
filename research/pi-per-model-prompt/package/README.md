@@ -1,7 +1,7 @@
 <div align="right">
 
-[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-1f6feb?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-1f6feb?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -36,7 +36,7 @@ pi install /path/to/pi-per-model-prompt  # from a local checkout
 
 ## License & security
 
-- **License:** [MIT](https://github.com/toxicwind/sovereign-projects#license)
+- **License:** [MIT](https://github.com/toxicwind/estate-projects#license)
 - **Security:** Prompt layers only — no credentials, no network. The `before_provider_request` hook can set Responses API params (e.g. `text.verbosity`) for exact model matches.
 
 ---

@@ -1,5 +1,5 @@
-// @sovereign/template — service skeleton.
-// Copy to services/<name>/, set package.json sovereign.port/portEnv/daemon,
+// @estate/template — service skeleton.
+// Copy to services/<name>/, set package.json estate.port/portEnv/daemon,
 // add <NAME>_PORT to config/ports.env, wire pitchfork.toml, then implement.
 //
 // Conventions (non-negotiable):

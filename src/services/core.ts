@@ -1,5 +1,5 @@
 // ============================================================================
-// SOVEREIGN — Core Infrastructure Services
+// ESTATE — Core Infrastructure Services
 // ============================================================================
 import type { ServiceDef } from "../types/index.ts";
 export const CORE_SERVICES: ServiceDef[] = [

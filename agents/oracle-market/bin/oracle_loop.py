@@ -62,7 +62,7 @@ AGENT_DIR = BIN.parent
 # be set to the yote squawk-root paths on deploy (see RESUME.md). Deploying
 # with the defaults on yote watches a nonexistent dir and crashes on startup.
 CHANNEL = Path(os.environ.get("ORACLE_CHANNEL",
-    "/home/toxic/sovereign/hatch/agents/ember/squawk-root/bid-market"))
+    "/home/toxic/estate/hatch/agents/ember/squawk-root/bid-market"))
 FLEET = Path(os.environ.get("ORACLE_FLEET",
     "/home/toxic/.fleet-bus/squawk-root/fleet"))
 WORK = Path(os.environ.get("ORACLE_WORK", str(AGENT_DIR / "work")))

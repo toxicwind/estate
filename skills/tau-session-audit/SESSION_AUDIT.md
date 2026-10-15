@@ -57,8 +57,8 @@ Which models were most prone to phantom completions and syntax leaks:
 | `cerebras/zai-glm-4.6` | 2 | **3** | 0 | 🟡 Moderate Risk |
 | `google-antigravity/gemini-3.7-flash` | 2 | **2** | 1 | 🟡 Moderate Risk |
 | `anthropic/claude-opus-4-8` | 4 | **1** | 1 | 🟡 Moderate Risk |
-| `sovereign/inclusionai/ling-3.0-flash-fin:free` | 9 | **1** | 0 | 🟡 Moderate Risk |
-| `sovereign/free` | 53 | **0** | 0 | 🟢 Reliable |
+| `estate/inclusionai/ling-3.0-flash-fin:free` | 9 | **1** | 0 | 🟡 Moderate Risk |
+| `estate/free` | 53 | **0** | 0 | 🟢 Reliable |
 | `openrouter/thinkingmachines/inkling-small:free` | 8 | **0** | 0 | 🟢 Reliable |
 | `herd/qwen-36-27b-mtp-ud` | 4 | **0** | 0 | 🟢 Reliable |
 | `herd/beellama/qwen-flash-128k` | 3 | **0** | 0 | 🟢 Reliable |

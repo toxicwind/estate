@@ -22,7 +22,7 @@ The script creates `~/save-maximal-<timestamp>/` with:
 ## Post-merge recovery
 After running this, if the -X ours merge needs fixing:
 ```bash
-cd ~/sovereign
+cd ~/estate
 git merge refs/recovery/orphaned-merge --no-commit --no-ff
 # resolve any conflicts (usually just DESIGN.md)
 git commit -m "emergent merge: restore orphaned changes"

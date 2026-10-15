@@ -375,7 +375,7 @@ export class ModelCatalog {
    * they must not recompute membership themselves. The TS package remains
    * the only place the catalog logic exists.
    *
-   * Contract: sovereign-providers/live-catalog/v1
+   * Contract: estate-providers/live-catalog/v1
    */
   liveCatalogJson(): LiveCatalogJson {
     const providers: LiveCatalogJson["providers"] = {};
@@ -388,9 +388,9 @@ export class ModelCatalog {
       };
     }
     return {
-      contract: "sovereign-providers/live-catalog/v1",
+      contract: "estate-providers/live-catalog/v1",
       generatedAt: nowIso(),
-      generator: "@sovereign/providers ModelCatalog — DO NOT EDIT BY HAND",
+      generator: "@estate/providers ModelCatalog — DO NOT EDIT BY HAND",
       deadIds: [...this.deadIds].sort(),
       providers,
     };

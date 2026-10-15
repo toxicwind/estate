@@ -75,7 +75,7 @@ def _resolve(env_var: str, *fallbacks: Path) -> Path:
 
 
 SKILLS = find_skills_root()
-ESTATE = _resolve("ESTATE_HOME", SKILLS.parent / "estate", HOME / "estate", HOME / "sovereign")
+ESTATE = _resolve("ESTATE_HOME", SKILLS.parent / "estate", HOME / "estate", HOME / "estate")
 RANCH = _resolve("RANCH_HOME", ESTATE / "ranch", HOME / "ranch", HOME / "projects")
 VENDORED = _resolve("VENDORED_HOME", ESTATE / "vendored")
 VAR = ESTATE / "var"

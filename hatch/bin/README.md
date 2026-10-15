@@ -4,8 +4,8 @@ Emergency intervention + crash-prevention interlock for the agent swarm running 
 
 <div align="right">
 
-[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -75,4 +75,4 @@ interlock. Goal workspace on the cell:
 
 ## License & security
 
-MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). These tools wield SIGSTOP/SIGKILL against live processes — they're the fleet's circuit breakers, not toys. The interlock protects the boxes; disabling it to make a workload fit is a standing-rule violation (Chris). `swarm-eject` has a protected-process list (bridge, squawk, tailscaled, sshd, systemd, herd, pitchfork) — never shrink it without a fleet-visible decision.
+MIT where marked — [LICENSE](https://github.com/toxicwind/estate-projects#license). These tools wield SIGSTOP/SIGKILL against live processes — they're the fleet's circuit breakers, not toys. The interlock protects the boxes; disabling it to make a workload fit is a standing-rule violation (Chris). `swarm-eject` has a protected-process list (bridge, squawk, tailscaled, sshd, systemd, herd, pitchfork) — never shrink it without a fleet-visible decision.

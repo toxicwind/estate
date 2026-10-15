@@ -44,7 +44,7 @@ bun /home/toxic/estate/helpers/git-mutator/cli.ts scan-secrets
 - Commit messages must follow conventional commit format (`feat:`, `fix:`, `chore:`, etc.)
 - `.bak.` files are added to `.gitignore` automatically
 - `commit-push` audits first and blocks on any secret leak
-- The SOVEREIGN_PORT_SSOT (`/home/toxic/estate/config/ports.env`) is excluded from secret scanning
+- The ESTATE_PORT_SSOT (`/home/toxic/estate/config/ports.env`) is excluded from secret scanning
 
 ## Files
 

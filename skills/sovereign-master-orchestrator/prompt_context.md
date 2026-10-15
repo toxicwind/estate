@@ -1,10 +1,10 @@
-# Sovereign Master Orchestrator
+# Estate Master Orchestrator
 
 A universal master orchestration and lossless compilation framework for coordinating multiple specialized skills, enforcing standardized output bounds, persisting deliverables directly to Dropbox, and unifying dual-channel search (Exa + Google).
 
 ## Summary
 
-The Sovereign Master Orchestrator acts as the root coordinator across all domain-specific sub-skills. It enforces a strict output contract where every participating sub-skill produces exactly 2 to 4 sections. When coordinating multiple skills (e.g. 3 skills with 3 sections each), it executes a zero-edit raw compilation into corresponding primary sections and subsections without editorial rewriting, truncation, or smoothing. It establishes Dropbox as the durable filesystem layer, couples Exa neural retrieval with Google real-time search, embeds native DNS/socket probes and dynamic environment loaders, and strictly enforces zero-halt context ingestion on existing chats by anchoring target topics directly to the last message and high-perplexity tokens of the thread.
+The Estate Master Orchestrator acts as the root coordinator across all domain-specific sub-skills. It enforces a strict output contract where every participating sub-skill produces exactly 2 to 4 sections. When coordinating multiple skills (e.g. 3 skills with 3 sections each), it executes a zero-edit raw compilation into corresponding primary sections and subsections without editorial rewriting, truncation, or smoothing. It establishes Dropbox as the durable filesystem layer, couples Exa neural retrieval with Google real-time search, embeds native DNS/socket probes and dynamic environment loaders, and strictly enforces zero-halt context ingestion on existing chats by anchoring target topics directly to the last message and high-perplexity tokens of the thread.
 
 ## When to Use
 
@@ -50,7 +50,7 @@ Example Structure for 3 skills with 3 sections each:
 
 All durable artifacts, compiled reports, manifests, and data tables must be stored directly in Dropbox:
 
-- Use `dropbox:create_folder` to provision project directories under `/Sovereign_Master_Orchestrator/<task_name>/`.
+- Use `dropbox:create_folder` to provision project directories under `/Estate_Master_Orchestrator/<task_name>/`.
 - Use `dropbox:create_file` to write finalized markdown reports, JSON matrices, and code artifacts.
 - Use `dropbox:create_shared_link` to generate viewer access URLs for the user.
 - Local sandbox storage (`/tmp` or workspace) is treated strictly as an ephemeral staging scratchpad.
@@ -67,7 +67,7 @@ Deploy both search platforms in parallel or sequence based on epistemic requirem
 Every deployment conforms to the major portable construct:
 
 ```
-sovereign-master-orchestrator/
+estate-master-orchestrator/
 ├── SKILL.md                          # Master specification & instruction manifest
 ├── bin/
 │   ├── orchestrate                   # CLI execution entrypoint
@@ -86,7 +86,7 @@ sovereign-master-orchestrator/
 
 ### 6. Context-Aware Zero-Halt Topic Resolution (Anti-Failure Protocol for Existing Chats)
 
-When invoked within an active conversation thread or when the user requests "master", "run master", "orchestrate this", or calls `sovereign-master-orchestrator` on an existing chat without a newly typed standalone topic parameter:
+When invoked within an active conversation thread or when the user requests "master", "run master", "orchestrate this", or calls `estate-master-orchestrator` on an existing chat without a newly typed standalone topic parameter:
 
 - **Automatic topic resolution**: when invoked on an existing thread, the topic is derived automatically from the last message and the high-perplexity tokens of the chat history — ingest both and proceed. Do not pause the pipeline or ask the user to specify the topic when a thread is already in progress; emitting a clarification prompt here instead of resolving the topic automatically is a system failure.
 - **The Deterministic Target Topic Mandate**: When invoked on an existing chat, the target topic is **DETERMINISTICALLY DEFINED AS THE LAST MESSAGE AND THE HIGH-PERPLEXITY TERMS OF THE CHAT HISTORY SPECIFICALLY**.

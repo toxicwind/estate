@@ -1,4 +1,4 @@
-# Sovereign fleet inventory + completion reconciliation — 2026-09-14 ~18:20 MDT
+# Estate fleet inventory + completion reconciliation — 2026-09-14 ~18:20 MDT
 
 Author: LANE-5 worker (inventory/recon), via bridge to awrawr-pc.
 Every claim below was verified live on awrawr-pc through

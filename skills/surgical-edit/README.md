@@ -66,7 +66,7 @@ Modify the binaries in `/home/toxic/estate/skills/surgical-edit/bin/`:
 - `herd-probe` - Exact-token verification through herd router
 
 ## License
-Internal tool - refer to sovereign estate licensing
+Internal tool - refer to estate estate licensing
 
 ## Security
 - **Zero Bytes on Mismatch** - Abort writes completely if pre-checks fail

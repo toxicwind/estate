@@ -4,8 +4,8 @@ Validates Dockerfiles against security best practices — before the image gets 
 
 <div align="right">
 
-[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -52,4 +52,4 @@ Start at `WARN` — Dockerfile rules are the most likely to fire on legacy files
 
 ## License & security
 
-MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). This policy is a first gate, not the whole story — pair it with image scanning at build time. Policy decisions land in the Code Scalpel audit trail (`../../audit.log`).
+MIT where marked — [LICENSE](https://github.com/toxicwind/estate-projects#license). This policy is a first gate, not the whole story — pair it with image scanning at build time. Policy decisions land in the Code Scalpel audit trail (`../../audit.log`).

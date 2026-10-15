@@ -32,8 +32,8 @@ const SCRIPT_DIR = import.meta.dir;
 // This script lives in `<repo>/skills/scripts/`, so the repo root is two levels
 // up. It used to sit at the repo root, and the old one-level-up default
 // resolved to `skills/docs`, which does not exist, so every run died on the
-// first readdir. Override with SOVEREIGN_DOCS_ROOT to point somewhere else.
-const DOCS_ROOT = process.env.SOVEREIGN_DOCS_ROOT || resolve(SCRIPT_DIR, "..", "..", "docs");
+// first readdir. Override with ESTATE_DOCS_ROOT to point somewhere else.
+const DOCS_ROOT = process.env.ESTATE_DOCS_ROOT || resolve(SCRIPT_DIR, "..", "..", "docs");
 
 export function buildDocumentationGraph(): DocGraph {
   const nodes: Record<string, DocNode> = {};
@@ -112,9 +112,9 @@ export function buildDocumentationGraph(): DocGraph {
 // Generate markdown graph index
 export function renderMarkdownIndex(graph: DocGraph): string {
   const lines: string[] = [
-    "# Sovereign Documentation Knowledge Graph (11ty-Style Collections Index)",
+    "# Estate Documentation Knowledge Graph (11ty-Style Collections Index)",
     "",
-    `> **Automated Relational Knowledge Graph** generated on \`${graph.generatedAt}\` across **${graph.totalFiles} modular documents** in \`sovereign/docs/\`.`,
+    `> **Automated Relational Knowledge Graph** generated on \`${graph.generatedAt}\` across **${graph.totalFiles} modular documents** in \`estate/docs/\`.`,
     "",
     "## Tagged Collections Index",
     "",
@@ -146,7 +146,7 @@ export function renderMarkdownIndex(graph: DocGraph): string {
 }
 
 if (import.meta.main) {
-  console.log("== Building Sovereign Documentation Knowledge Graph ==");
+  console.log("== Building Estate Documentation Knowledge Graph ==");
   const graph = buildDocumentationGraph();
   const graphPath = join(DOCS_ROOT, "DOCS_GRAPH.json");
   writeFileSync(graphPath, JSON.stringify(graph, null, 2), "utf8");

@@ -1,8 +1,8 @@
 # code-racer-swe {badges}
 
 <!-- badges: start -->
-<a href="https://github.com/toxicwind/sovereign-projects">
-  <img src="https://img.shields.io/badge/github-toxicwind/sovereign--projects-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub repo">
+<a href="https://github.com/toxicwind/estate-projects">
+  <img src="https://img.shields.io/badge/github-toxicwind/estate--projects-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub repo">
 </a>
 <a href="https://bun.sh">
   <img src="https://img.shields.io/badge/bun-js_runtime-7f5af0?style=for-the-badge&logo=bun&logoColor=white" alt="Bun">

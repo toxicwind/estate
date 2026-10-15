@@ -5,15 +5,15 @@
 import { existsSync, mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { spawn, spawnSync } from "bun";
-import { loadSovereignPorts, requirePort } from "../lib/ports.ts";
+import { loadEstatePorts, requirePort } from "../lib/ports.ts";
 
-loadSovereignPorts();
+loadEstatePorts();
 const PUBLIC = requirePort("HF_DOWNLOADER_PORT");
 const BACKEND = Number(process.env.HF_DOWNLOADER_BACKEND_PORT || "25206");
 const HOME = process.env.HOME || "/home/toxic";
 const BIN_DIR = join(HOME, ".local", "bin");
 const BIN_PATH = join(BIN_DIR, "hfdownloader");
-const SOV = process.env.SOVEREIGN_ROOT || join(HOME, "sovereign");
+const SOV = process.env.ESTATE_ROOT || join(HOME, "estate");
 const LOCAL_DIR = process.env.HF_DOWNLOADER_LOCAL_DIR || join(SOV, "models");
 const CACHE_DIR = process.env.HF_HOME || join(HOME, ".cache", "huggingface");
 

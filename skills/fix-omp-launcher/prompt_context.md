@@ -9,7 +9,7 @@ This skill fixes the `omp` launcher script at `~/.local/bin/omp` to point to the
    cat > ~/.local/bin/omp << 'EOF'
    #!/usr/bin/env bash
    set -euo pipefail
-   FORK_ROOT="$HOME/sovereign/projects/range/ranch/stockyard/tau"
+   FORK_ROOT="$HOME/estate/projects/range/ranch/stockyard/tau"
    REAL="$FORK_ROOT/packages/coding-agent/scripts/omp"
 
    if [ ! -x "$REAL" ]; then
@@ -38,7 +38,7 @@ This skill fixes the `omp` launcher script at `~/.local/bin/omp` to point to the
    ln -sf /home/toxic/estate/projects/range/ranch/stockyard/tau/packages/coding-agent/scripts/tau ~/.local/bin/tau
    ```
 
-4. Ensure configuration directory symlinks point to the sovereign config:
+4. Ensure configuration directory symlinks point to the estate config:
    ```bash
    rm -f ~/.tau ~/.omp
    ln -s /home/toxic/estate/config/tau ~/.tau

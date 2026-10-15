@@ -115,7 +115,7 @@ export async function callOne(
   }
   if (provider === "openrouter") {
     headers["HTTP-Referer"] = "https://zed.dev";
-    headers["X-Title"] = "Sovereign-Router";
+    headers["X-Title"] = "Estate-Router";
   }
   // Model-pressure governor (flock governor.rs AIMD, per provider/model):
   // refused fast with 429 when the model is at its worker cap or draining.
@@ -326,7 +326,7 @@ export function firstUsableModelFor(p: string): string | undefined {
 // the race score: +5 is tie-break scale against elo (hundreds-thousands),
 // the latency penalty (elo − latencyEMA/50), and the existing rand*10
 // jitter — it nudges ties, never overrides the breaker or elo.
-// Reversible: SOVEREIGN_MODEL_BONUS=0. Cites: health DB rows
+// Reversible: ESTATE_MODEL_BONUS=0. Cites: health DB rows
 // strategy='longctx-probe' (session 1m-probe-20260921-1745), commit
 // 7f4f79a48c, tools/sovereign-router/probes/RESULTS-2026-09-21.md.
 const PROBE_VERIFIED_MODELS: Record<string, Set<string>> = {
@@ -339,7 +339,7 @@ const PROBE_VERIFIED_MODELS: Record<string, Set<string>> = {
 };
 const PROBE_VERIFIED_BONUS = 5;
 export function modelProbeBonus(p: string, mid: string): number {
-  if (process.env.SOVEREIGN_MODEL_BONUS === "0") return 0;
+  if (process.env.ESTATE_MODEL_BONUS === "0") return 0;
   return PROBE_VERIFIED_MODELS[p]?.has(mid) ? PROBE_VERIFIED_BONUS : 0;
 }
 
@@ -736,7 +736,7 @@ export async function routeCascade(
 // On pinned failure: the attempt is logged and the caller does a single
 // fallback to the normal race. The pin never sets session stickiness — it
 // is size-deterministic, not session-affine; the next request re-races.
-// Operational kill switch: SOVEREIGN_LONGCTX_PIN=0 disables the pin.
+// Operational kill switch: ESTATE_LONGCTX_PIN=0 disables the pin.
 // ---------------------------------------------------------------------------
 export const LONGCTX_PIN_PROVIDER = "nvidia";
 // KEYED lane ONLY — never the :free id (provider cap 262144 tokens).
@@ -746,7 +746,7 @@ export const LONGCTX_PIN_DAILY_CAP = 10;
 const LONGCTX_PIN_STRATEGY = "longctx-pinned";
 
 export function longctxPinEnabled(): boolean {
-  return process.env.SOVEREIGN_LONGCTX_PIN !== "0";
+  return process.env.ESTATE_LONGCTX_PIN !== "0";
 }
 
 /**

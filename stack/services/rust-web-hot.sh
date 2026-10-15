@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Hot-reload rust dashboard on backend port + mesh-front on public RUST_WEB_PORT
 set -euo pipefail
-SOV="${SOVEREIGN_ROOT:-$(cd "$(dirname "$0")/../.." && pwd)}"
+SOV="${ESTATE_ROOT:-$(cd "$(dirname "$0")/../.." && pwd)}"
 export PATH="${HOME}/.cargo/bin:/usr/bin:/bin:${PATH}"
 source "$SOV/stack/lib-ports.sh"
 require_port RUST_WEB_PORT
@@ -11,7 +11,7 @@ PUBLIC="${RUST_WEB_PORT}"
 BACKEND="${RUST_WEB_BACKEND_PORT:-25201}"
 require_port BACKEND
 export RUST_WEB_PORT="${BACKEND}"
-export WATCHDOG_PORT SOVEREIGN_ROOT="$SOV"
+export WATCHDOG_PORT ESTATE_ROOT="$SOV"
 export LLM_PROXY_URL="${LLM_PROXY_URL:-http://127.0.0.1:${LLAMA_SWAP_PORT}}"
 
 cd "$SOV/rust_algo_web"

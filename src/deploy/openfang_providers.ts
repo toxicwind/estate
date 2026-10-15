@@ -14,14 +14,14 @@ import {
 } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { loadSovereignPorts, requireEnv } from "../lib/ports.ts";
+import { loadEstatePorts, requireEnv } from "../lib/ports.ts";
 
-loadSovereignPorts();
+loadEstatePorts();
 const HOME = homedir();
 const OF = join(HOME, ".openfang");
 const BACKUP = join(
   HOME,
-  "sovereign/backup/reorg_2026-07-11_bun/openfang_pre_llama_provider",
+  "estate/backup/reorg_2026-07-11_bun/openfang_pre_llama_provider",
 );
 const SWAP = `http://127.0.0.1:${requireEnv("LLAMA_SWAP_PORT")}/v1`;
 

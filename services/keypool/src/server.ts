@@ -1,4 +1,4 @@
-// @sovereign/keypool — server: Bun.serve HTTP handler.
+// @estate/keypool — server: Bun.serve HTTP handler.
 // Port of herd-keypool.py Handler. Routes /<pool>/... to upstream,
 // strips caller auth, injects selected key, streams responses.
 

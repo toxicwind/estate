@@ -4,7 +4,7 @@
 # Host port is OMNIROUTE_PORT (20130). Container port stays 20128, which is
 # also VansRouter's default — they must not share the host port.
 set -euo pipefail
-SOV="${SOVEREIGN_ROOT:-/home/toxic/estate}"
+SOV="${ESTATE_ROOT:-/home/toxic/estate}"
 source "$SOV/stack/lib-ports.sh"
 require_port OMNIROUTE_PORT
 

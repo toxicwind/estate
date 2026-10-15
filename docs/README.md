@@ -3,11 +3,11 @@
 ![estate](https://img.shields.io/badge/estate--projects-2E86DE?style=for-the-badge)
 ![docs](https://img.shields.io/badge/docs-architecture-0D1117?style=for-the-badge)
 
-**The design record of the Sovereign stack** — architecture, inference routing, hardware tuning, research, audits, and plans. When a doc here disagrees with the live box, the box wins: `pitchfork.toml`, `mise.toml`, and `config/ports.env` are the live sources of truth.
+**The design record of the Estate stack** — architecture, inference routing, hardware tuning, research, audits, and plans. When a doc here disagrees with the live box, the box wins: `pitchfork.toml`, `mise.toml`, and `config/ports.env` are the live sources of truth.
 
 ## Hero
 
-This is where the estate's thinking lives. If you want to know *why* the Sovereign stack is shaped the way it is — the model routing, the multi-box control plane, the swap architecture on a 24 GB GPU box, the paper lineage behind the fleet bus — it is written down here, evidence-first. Every agent in the fleet reads the knowledgebase; every human starts with the architecture.
+This is where the estate's thinking lives. If you want to know *why* the Estate stack is shaped the way it is — the model routing, the multi-box control plane, the swap architecture on a 24 GB GPU box, the paper lineage behind the fleet bus — it is written down here, evidence-first. Every agent in the fleet reads the knowledgebase; every human starts with the architecture.
 
 > [!NOTE]
 > **Required reading for every agent in the fleet:** [`fleet-knowledgebase.md`](fleet-knowledgebase.md) — estate map, active crews, repo index, standing rules, docs index.
@@ -53,7 +53,7 @@ less docs/CONTROL_PLANE.md
 
 ### Architecture (the design of the stack)
 
-- [ARCHITECTURE.md](ARCHITECTURE.md) — Sovereign Architecture, the single source of truth
+- [ARCHITECTURE.md](ARCHITECTURE.md) — Estate Architecture, the single source of truth
 - [CONTROL_PLANE.md](CONTROL_PLANE.md) — the control-plane design
 - [UNIVERSAL_ARCHITECTURE.md](UNIVERSAL_ARCHITECTURE.md) — polyglot stack architecture (August 2026)
 - [STORAGE_TIERING_AND_CACHE_ARCHITECTURE.md](STORAGE_TIERING_AND_CACHE_ARCHITECTURE.md) — storage tiering & cache design

@@ -5,7 +5,7 @@ condition: ["ffs\\s+grep\\s+[^\\s|;&]*\\s+['\\\"][^'\\\"]+['\\\"]\\s+/home/toxic
 scope: "tool"
 ---
 
-`ffs grep <needle> --root <dir>` takes **no path positional argument**. Passing a path positionally makes it search your CWD and silently return nothing, which reads as "no matches" — that is how two sweeps reported zero stale `sovereign` references when the tree was full of them. Always `--root`.
+`ffs grep <needle> --root <dir>` takes **no path positional argument**. Passing a path positionally makes it search your CWD and silently return nothing, which reads as "no matches" — that is how two sweeps reported zero stale `estate` references when the tree was full of them. Always `--root`.
 
 Corollary, from the same failure: **do not build a loop or pipeline over a command whose output shape you have not confirmed on one invocation.** Run `ffs grep --help`, run one real call, read the output, and only then loop. A `for` loop over an unverified invocation produced empty results twice and was mistaken for "the directory is clean."
 

@@ -21,7 +21,7 @@ Royle verifies every claim with tool execution proof.
 Royle never guesses.
 
 Directives:
-1. Sovereign is retired and renamed to estate.
+1. Estate is retired and renamed to estate.
 2. Use ffs grep and hashline.
 3. NativeLink and mbx-cache are first class.
 
@@ -46,7 +46,7 @@ Execution Invariants:
 
 ## Memory & Milestones
 Historical Context:
-1. Sovereign is retired. Estate is the active name.
+1. Estate is retired. Estate is the active name.
 2. Wayland Pipewire screen capture works natively.
 3. NativeLink operates on ports 25155 and 25157.
 4. Mbx-cache operates on port 25148 as remote task cache.

@@ -26,7 +26,7 @@ import * as path from "node:path";
 // Must be set before the router modules are imported (DB_PATH is read once).
 // The module-level `state` singleton uses this; the tests below construct
 // their own Matrix instances on per-test temp DBs.
-process.env.SOVEREIGN_DB = "/tmp/sovereign_router_elo_persist_module.db";
+process.env.ESTATE_DB = "/tmp/estate_router_elo_persist_module.db";
 
 const { Matrix } = await import("../router_matrix");
 const { PROVIDERS } = await import("../router_config");
@@ -190,7 +190,7 @@ describe("Elo persistence", () => {
     const db = tmpDb();
     const modPath = new URL("../router_matrix.ts", import.meta.url).pathname;
     const writer = `
-      process.env.SOVEREIGN_DB = ${JSON.stringify(db)};
+      process.env.ESTATE_DB = ${JSON.stringify(db)};
       const { Matrix } = await import(${JSON.stringify(modPath)});
       const m = new Matrix();
       for (let i = 0; i < 4; i++) m.record("subproc-model", "nvidia", 200, 0.5);
@@ -206,7 +206,7 @@ describe("Elo persistence", () => {
     expect(r1.stdout.toString()).toContain("wrote:1064");
     // First process is fully gone; a new process must restore from the DB.
     const reader = `
-      process.env.SOVEREIGN_DB = ${JSON.stringify(db)};
+      process.env.ESTATE_DB = ${JSON.stringify(db)};
       const { Matrix } = await import(${JSON.stringify(modPath)});
       const m = new Matrix();
       console.log("read:" + m.elo.get("nvidia"));

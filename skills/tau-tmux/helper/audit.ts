@@ -8,7 +8,7 @@ import { execFileSync } from "child_process";
 
 const HOME = process.env.HOME || "/home/toxic";
 const TAU_HOME = join(HOME, ".tau");
-const SOVEREIGN = join(HOME, "sovereign");
+const ESTATE = join(HOME, "estate");
 const verbose = process.argv.includes("--verbose") || process.argv.includes("-v");
 
 interface Result { name: string; pass: boolean; detail: string }
@@ -75,7 +75,7 @@ try {
 }
 
 // 5. Routers reachable
-for (const [name, url] of [["herd :25100", "http://127.0.0.1:25100/v1/models"], ["sovereign :25104", "http://127.0.0.1:25104/v1/models"]]) {
+for (const [name, url] of [["herd :25100", "http://127.0.0.1:25100/v1/models"], ["estate :25104", "http://127.0.0.1:25104/v1/models"]]) {
   try {
     const out = sh("curl", ["-s", "-m", "8", "-o", "/dev/null", "-w", "%{http_code}", url]);
     check(`${name} reachable`, out === "200", `HTTP ${out}`);
@@ -84,7 +84,7 @@ for (const [name, url] of [["herd :25100", "http://127.0.0.1:25100/v1/models"], 
 
 // 6. No stale config files
 {
-  const stale = ["nvidia.json", "cascade.json"].filter(f => existsSync(join(SOVEREIGN, f)));
+  const stale = ["nvidia.json", "cascade.json"].filter(f => existsSync(join(ESTATE, f)));
   check("no stale nvidia/cascade json", stale.length === 0, stale.length ? `found: ${stale.join(", ")}` : "absent (provider catalog is models.yml)");
 }
 

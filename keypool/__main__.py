@@ -13,12 +13,12 @@ from .pool import Pool
 LISTEN = (os.environ.get("KEYPOOL_HOST", "127.0.0.1"),
           int(os.environ.get("KEYPOOL_PORT", "25109")))
 POOLS_PATH = os.environ.get("KEYPOOLS_CONFIG",
-                            os.path.expanduser("~/sovereign/config/keypools.yaml"))
+                            os.path.expanduser("~/estate/config/keypools.yaml"))
 SECRETS_PATH = os.environ.get("KEYPOOL_SECRETS", os.path.expanduser("~/.secrets"))
 AUDIT_PATH = os.environ.get("KEYPOOL_AUDIT",
-                            os.path.expanduser("~/sovereign/data/keypool-audit.jsonl"))
+                            os.path.expanduser("~/estate/data/keypool-audit.jsonl"))
 HEALTH_PATH = os.environ.get("KEYPOOL_HEALTH",
-                             os.path.expanduser("~/sovereign/data/keypool-health.json"))
+                             os.path.expanduser("~/estate/data/keypool-health.json"))
 
 
 def log(m):

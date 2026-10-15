@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # MESH_SEPT_2026_FIX — permanent nightly build for tau + pi-natives + coding-agent
-# Run: sudo -u toxic bash ~/sovereign/scripts/mesh-nightly-fix.sh
+# Run: sudo -u toxic bash ~/estate/scripts/mesh-nightly-fix.sh
 set -euo pipefail
 export RUSTUP_TOOLCHAIN=nightly
 export HUSKY=0
 export RUST_BACKTRACE=1
 
-TAU=~/projects/sovereign-projects/tau
+TAU=~/projects/estate-projects/tau
 cd "$TAU"
 echo "=== [0/8] SNAPSHOT ==="
 pwd

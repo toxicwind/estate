@@ -1,8 +1,8 @@
 {
-  "$schema": "sovereign-providers/v1",
+  "$schema": "estate-providers/v1",
   "generatedAt": "2026-10-03T05:04:51.449Z",
-  "generator": "@sovereign/providers codegen — DO NOT EDIT BY HAND",
-  "provenance": "@sovereign/providers src/data.ts",
+  "generator": "@estate/providers codegen — DO NOT EDIT BY HAND",
+  "provenance": "@estate/providers src/data.ts",
   "adapters": [
     "openai",
     "google-v1beta",

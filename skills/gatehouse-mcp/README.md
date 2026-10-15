@@ -43,7 +43,7 @@ find /home/toxic -type d -name "*rsync*" -o -name "*sync*" -o -name "*file*" | h
 #    - Commit + push to toxicwind/<name> main
 
 # 5. Restart Gatehouse
-cd /home/toxic/estate && ./bin/pitchfork-restart sovereign/gatehouse
+cd /home/toxic/estate && ./bin/pitchfork-restart estate/gatehouse
 
 # 6. Verify
 #    - Check server logs for health status
@@ -63,7 +63,7 @@ cd /home/toxic/estate && ./bin/pitchfork-restart sovereign/gatehouse
 2. **Adopt/Fork** – Adopt directly if the implementation meets quality bar; otherwise fork under `toxicwind/*` with full upstream ancestry.
 3. **Build & Test** – Compile with `bun build src/server.ts --outfile /dev/null`; run protocol smoke tests in both framed and lines modes; commit and push.
 4. **Register** – Write entries to both live config and .dist template; validate JSON; commit + push.
-5. **Restart** – Use `pitchfork-restart sovereign/gatehouse` to bring the new server online.
+5. **Restart** – Use `pitchfork-restart estate/gatehouse` to bring the new server online.
 6. **Verify** – Check logs, tool discovery, end-to-end calls, and ensure secret hygiene.
 
 ## Prevention

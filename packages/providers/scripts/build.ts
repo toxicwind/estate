@@ -18,7 +18,7 @@ const { jsonPath, goPath } = await emitAll(outDir, {
   defs: PROVIDER_DEFS,
   aliases: MODEL_ALIASES,
   deadIds: DEAD_MODEL_IDS,
-  provenance: "@sovereign/providers src/data.ts",
+  provenance: "@estate/providers src/data.ts",
 });
 
 console.log(`wrote ${jsonPath}`);

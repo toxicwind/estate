@@ -62,7 +62,7 @@ Gatehouse MCP server. Proven on the rsync lane (2026-09-30):
 Gatehouse is mcpproxy-go; its stdio transport is **mark3labs/mcp-go
 v0.57.0**, which is **newline-delimited JSON both ways** — NOT
 Content-Length framing. The hand-rolled `Content-Length`-only pattern
-(`sovereign/tools/tmux-mcp/server.ts`) **never registers**: MCP initialize
+(`estate/tools/tmux-mcp/server.ts`) **never registers**: MCP initialize
 arrives as `{...}\n` with no header, the server waits for `\r\n\r\n`
 forever, and Gatehouse logs `context deadline exceeded` on every health
 check. (This exact failure killed the first rsync-mcp deploy; tmux-mcp has
@@ -108,12 +108,12 @@ Canonical source: `/home/toxic/estate/projects/range/ranch/barn/gatehouse`
 ## 6. Restart (Gatehouse only)
 
 ```sh
-cd /home/toxic/estate && ./bin/pitchfork-restart sovereign/gatehouse
+cd /home/toxic/estate && ./bin/pitchfork-restart estate/gatehouse
 ```
 
 Never kill+start in one remote command; never `--help` the wrapper (it
 takes a daemon id, not flags). Verify `:25127/health` → 200 afterwards,
-and confirm squawk daemons (`sovereign/squawk-ws`, `sovereign/squawk-feed`)
+and confirm squawk daemons (`estate/squawk-ws`, `estate/squawk-feed`)
 are untouched.
 
 ## 7. Verify
@@ -140,7 +140,7 @@ are untouched.
 
 - Configs: restore `./mcp_config.json.bak-*` and
   `./mcp_config.json.dist.bak-*`, then `pitchfork-restart
-  sovereign/gatehouse`.
+  estate/gatehouse`.
 - Repo: the fork's history is never rewritten — revert with a new commit.
 
 ## 9. Land it

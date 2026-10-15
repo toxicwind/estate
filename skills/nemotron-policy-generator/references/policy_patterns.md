@@ -37,7 +37,7 @@ Common deployment contexts come with predictable category emphases. When the use
 - PII: model should not invent personal data in code examples
 - Add custom: `license_violation` if the assistant generates code from copyrighted sources
 
-## Government / sovereign deployment
+## Government / estate deployment
 - Jurisdiction notes are critical: EU AI Act categories, India IT Rules, etc.
 - Add custom: `disinformation`, `election_interference`, `national_security_sensitive`
 - Hate_identity definition often expanded to include local protected classes (caste in India, etc.)

@@ -4,9 +4,9 @@
  * Integrates with llama-swap :25100 config matrix
  */
 
-import { loadSovereignPorts } from "../lib/ports.ts";
+import { loadEstatePorts } from "../lib/ports.ts";
 
-loadSovereignPorts();
+loadEstatePorts();
 
 const LLAMA_SWAP_BASE = `http://127.0.0.1:${process.env.HERD_PORT || process.env.LLAMA_SWAP_PORT || "25100"}`;
 const _HERD_BASE = LLAMA_SWAP_BASE; // alias for project-wide herd naming (tau: any pi/omp -> tau)

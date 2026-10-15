@@ -1,4 +1,4 @@
-// Audit script: find all Rust/Go/Bun/Node projects in sovereign ecosystem
+// Audit script: find all Rust/Go/Bun/Node projects in estate ecosystem
 // Run: bun run audit/scripts/audit_languages.ts
 
 import { glob } from "glob";

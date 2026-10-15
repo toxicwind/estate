@@ -21,9 +21,9 @@
  */
 
 import { createHash } from "node:crypto";
-import { loadSovereignPorts } from "../lib/ports.ts";
+import { loadEstatePorts } from "../lib/ports.ts";
 
-loadSovereignPorts();
+loadEstatePorts();
 
 // ──────────────────────────────────────────────────────────────
 // Configuration

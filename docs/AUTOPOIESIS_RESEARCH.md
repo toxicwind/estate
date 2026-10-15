@@ -98,7 +98,7 @@ The **load-bearing boundary** concept emerges across all 8 papers/domains as a s
 
 ---
 
-## Application to Sovereign Project Revision
+## Application to Estate Project Revision
 
 The autopoietic framework provides a theoretical basis for organizational revision principles:
 

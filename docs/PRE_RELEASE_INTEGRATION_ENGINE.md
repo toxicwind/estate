@@ -1,4 +1,4 @@
-# Sovereign Pre-Release Integration Engine
+# Estate Pre-Release Integration Engine
 
 > **Architectural Law**: *"Production logic is integrated DIRECTLY in code. Pre-release staging overrides resolve via clean indirection."*
 > **Engine**: `/home/toxic/estate/src/lib/pre_release_integration.ts`
@@ -13,7 +13,7 @@
 module.someService = myCustomService; // Untracked, unversioned, lost on restart
 ```
 
-### The Sovereign Pattern (Resolution Indirection)
+### The Estate Pattern (Resolution Indirection)
 The core codebase is designed to resolve its implementation from a persistent registry:
 
 ```text

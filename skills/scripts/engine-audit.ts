@@ -1,4 +1,4 @@
-// Engine Audit Skill — sovereign/skills/engine-audit.ts
+// Engine Audit Skill — estate/skills/engine-audit.ts
 // Audits the tau engine fork vs upstream oh-my-pi, produces structured diff dataframes.
 // Usage: bun run /home/toxic/estate/skills/engine-audit.ts
 
@@ -63,7 +63,7 @@ function generateMarkdown(df: DiffRow[]): string {
   const modified = df.filter((r) => r.type === "modified");
 
   const lines: string[] = [];
-  lines.push("# Engine Audit — Sovereign Fork vs Upstream");
+  lines.push("# Engine Audit — Estate Fork vs Upstream");
   lines.push("");
   lines.push(`Generated: ${new Date().toISOString()}`);
   lines.push(`Total differences: ${df.length}`);
@@ -72,12 +72,12 @@ function generateMarkdown(df: DiffRow[]): string {
   lines.push("");
   lines.push("| Type | Count |");
   lines.push("|------|-------|");
-  lines.push(`| Only in engine (sovereign) | ${engineOnly.length} |`);
+  lines.push(`| Only in engine (estate) | ${engineOnly.length} |`);
   lines.push(`| Only in vendor (upstream) | ${vendorOnly.length} |`);
   lines.push(`| Modified | ${modified.length} |`);
   lines.push("");
 
-  lines.push("## Sovereign Additions (only in engine)");
+  lines.push("## Estate Additions (only in engine)");
   lines.push("");
   for (const r of engineOnly) {
     lines.push(`- \`${r.location}/${r.file}\``);

@@ -1,8 +1,8 @@
 {
-  "name": "@sovereign/corral",
+  "name": "@estate/corral",
   "version": "1.0.0",
   "private": true,
-  "description": "Sovereign Corral \u2014 Multi-agent ticket-driven development & speculative merge queue orchestrator (clean refactor of super-ralph)",
+  "description": "Estate Corral \u2014 Multi-agent ticket-driven development & speculative merge queue orchestrator (clean refactor of super-ralph)",
   "license": "MIT",
   "type": "module",
   "bin": {
@@ -51,7 +51,7 @@
     "CHANGELOG.md"
   ],
   "keywords": [
-    "sovereign",
+    "estate",
     "corral",
     "ralph",
     "multi-agent",
@@ -62,7 +62,7 @@
     "smthrs",
     "ai-orchestration"
   ],
-  "author": "Sovereign Fleet (orig. William Cory)",
+  "author": "Estate Fleet (orig. William Cory)",
   "repository": {
     "type": "git",
     "url": "https://github.com/roninjin10/super-ralph.git"

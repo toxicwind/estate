@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Sovereign Profile: default (Modular / GitHub CI / Contributor Template)
+# Estate Profile: default (Modular / GitHub CI / Contributor Template)
 # ==============================================================================
-export SOVEREIGN_PROFILE="default"
+export ESTATE_PROFILE="default"
 
 # Core Ports
 export LLAMA_SWAP_PORT="${LLAMA_SWAP_PORT:-25100}"
@@ -20,7 +20,7 @@ export MESH_HUB_PORT="${MESH_HUB_PORT:-25115}"
 export HINDSIGHT_API_PORT="${HINDSIGHT_API_PORT:-25117}"
 export HINDSIGHT_CP_PORT="${HINDSIGHT_CP_PORT:-25118}"
 # MCP_GATEWAY_PORT is a compatibility alias for gatehouse :25127, the same
-# daemon MCPPROXY_GO_PORT names. :25120 belongs to SOVEREIGN_CHAT_PORT; it was
+# daemon MCPPROXY_GO_PORT names. :25120 belongs to ESTATE_CHAT_PORT; it was
 # never this gateway. See config/ports.env.
 export MCP_GATEWAY_PORT="${MCP_GATEWAY_PORT:-25127}"
 export QDRANT_PORT="${QDRANT_PORT:-25133}"
@@ -38,5 +38,5 @@ export SCOUT_API_KEY="${SCOUT_API_KEY:-llama-swap}"
 # Build Concurrency Defaults
 export CARGO_BUILD_JOBS="${CARGO_BUILD_JOBS:-$(nproc 2>/dev/null || echo 4)}"
 
-export SOVEREIGN_ROOT="${SOVEREIGN_ROOT:-$HOME/sovereign}"
-export SOVEREIGN_VERSION="mesh-1.0.0"
+export ESTATE_ROOT="${ESTATE_ROOT:-$HOME/estate}"
+export ESTATE_VERSION="mesh-1.0.0"

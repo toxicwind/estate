@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 
 describe("repo classification", () => {
   test("classifies ecosystem repos", () => {
-    const ecosystem = ["sovereign", "tau", "mesh", "pi"];
+    const ecosystem = ["estate", "tau", "mesh", "pi"];
     const name = "tau-session-audit";
     const result = ecosystem.some(kw => name.includes(kw));
     expect(result).toBe(true);

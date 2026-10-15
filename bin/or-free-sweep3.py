@@ -81,7 +81,7 @@ BASE = "https://openrouter.ai/api/v1"
 HDR = {
     "Authorization": "Bearer " + KEY,
     "Content-Type": "application/json",
-    "HTTP-Referer": "https://github.com/toxicwind/sovereign-projects",
+    "HTTP-Referer": "https://github.com/toxicwind/estate-projects",
     "X-Title": "or-census-sweep3",
 }
 

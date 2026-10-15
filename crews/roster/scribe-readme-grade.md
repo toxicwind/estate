@@ -1,6 +1,6 @@
 ---
 crew: 'scribe-readme-grade'
-scope: 'GitHub-grade sovereign-projects master README + docs/ index + projects/README deconfusion; 5 doc strays moved to docs/ in one pass (Bedrock oracle-market task payload-readme-grade.md)'
+scope: 'GitHub-grade estate-projects master README + docs/ index + projects/README deconfusion; 5 doc strays moved to docs/ in one pass (Bedrock oracle-market task payload-readme-grade.md)'
 owner: 'Scribe (ember)'
 status: 'DONE (2026-09-20) -- commit ff10187ddb (on origin/main, verified via ls-remote)'
 order: 24

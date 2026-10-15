@@ -1,9 +1,9 @@
-# Canary Migration Plan — `kimi-auto-resolver` (pitchfork daemon `sovereign/kimi-auto-resolver`)
+# Canary Migration Plan — `kimi-auto-resolver` (pitchfork daemon `estate/kimi-auto-resolver`)
 
 **Status:** DESIGN ONLY — drafted 2026-09-19, **not executed**. Ready-to-execute: an operator
 runs the pre-flight checklist, then Phase 0.
 **Track:** 5 (canary migration plan) · **Owner:** Ember worker · **Coordinator:** parent orchestrator
-**Host:** yote (awrawr-pc) · **Daemon:** `sovereign/kimi-auto-resolver` → `/home/toxic/kimi-auto/loop.sh`
+**Host:** yote (awrawr-pc) · **Daemon:** `estate/kimi-auto-resolver` → `/home/toxic/kimi-auto/loop.sh`
 **Related todos:** `[kimi-auto] done` (systemd→pitchfork migration, the precedent this plan generalizes),
 `[kimi-auto] in-progress` (herd surface), `[Agent2-openfang] pending` (canary migration plan — this doc satisfies it)
 
@@ -180,7 +180,7 @@ set -euo pipefail
 REASON="${1#--reason=}"; REASON="${REASON:-manual}"
 PFX=""; command -v pitchfork >/dev/null || PFX="PATH=/home/toxic/.local/share/mise/shims:$PATH"
 export PATH="/home/toxic/.local/share/mise/shims:$PATH"
-DAEMON="sovereign/kimi-auto-resolver"   # QUALIFIED id — bare 'kimi-auto-resolver' is ambiguous (RT1)
+DAEMON="estate/kimi-auto-resolver"   # QUALIFIED id — bare 'kimi-auto-resolver' is ambiguous (RT1)
 WORK=/home/toxic/kimi-auto
 BASELINE="$(ls -dt $WORK/.canary-baseline-*/ 2>/dev/null | head -1)"
 [ -n "$BASELINE" ] || { echo "FATAL: no baseline snapshot"; exit 3; }
@@ -231,7 +231,7 @@ Run as `toxic` on yote after each phase. Green = all pass.
 ```bash
 export PATH="/home/toxic/.local/share/mise/shims:$PATH"
 # 1. supervisor view (qualified id)
-pitchfork status sovereign/kimi-auto-resolver
+pitchfork status estate/kimi-auto-resolver
 # 2. freshness + self-health of the LIVE state
 python3 -c "
 import json, time, datetime
@@ -259,11 +259,11 @@ score ≥ 0.90, and a close-out line appended to `/home/toxic/.fleet-bus/todos.m
 - [ ] Deconfliction: no other track editing `/home/toxic/kimi-auto/` or `pitchfork.toml`
   (check todos.md + squawk fleet channel). kimi-auto herd-surface work is adjacent — confirm.
 - [ ] Read current `PROBE_TIMEOUT` (60s as of 2026-09-19) and `KIMI_AUTO_INTERVAL`; record in run log.
-- [ ] Verify qualified daemon id: `pitchfork status sovereign/kimi-auto-resolver` returns exactly one match.
+- [ ] Verify qualified daemon id: `pitchfork status estate/kimi-auto-resolver` returns exactly one match.
 - [ ] Disk: `df -h /home` ≥ 5 GB free (snapshots are small; this is hygiene).
 - [ ] Secrets: `/home/toxic/.secrets` present (names only; values never handled — honeytoken discipline).
 - [ ] Baseline snapshot: `mkdir /home/toxic/kimi-auto/.canary-baseline-$(date +%Y%m%d-%H%M%S)`,
-  copy `loop.sh resolver.py shim.py`, write `sha256sums`, record git SHAs of sovereign-projects
+  copy `loop.sh resolver.py shim.py`, write `sha256sums`, record git SHAs of estate-projects
   if the vNext source lives there.
 - [ ] Materialize `/home/toxic/kimi-auto/canary/` with `analyze.py`, `rollback.sh` (from §4–5),
   `phase` file (= `0`), and the 5-min analyzer cron (disabled until Phase 1).
@@ -279,9 +279,9 @@ score ≥ 0.90, and a close-out line appended to `/home/toxic/.fleet-bus/todos.m
 `resolver.py || true`: a vNext resolver that crashes every cycle would loop forever while
 `state.json` goes stale — and G1 would be the *only* thing that notices. Worse,
 `pitchfork restart kimi-auto-resolver` is **ambiguous** (verified 2026-09-19: matches
-`sovereign-phase3-rename/kimi-auto-resolver` AND `sovereign/kimi-auto-resolver`) — a naive
+`estate-phase3-rename/kimi-auto-resolver` AND `estate/kimi-auto-resolver`) — a naive
 rollback restarts the wrong namespace or errors out.
-*Hardening (in plan):* rollback.sh uses the fully-qualified `sovereign/kimi-auto-resolver`
+*Hardening (in plan):* rollback.sh uses the fully-qualified `estate/kimi-auto-resolver`
 exclusively (§5.2); the analyzer treats freshness breach as auto-rollback (R2) so
 `|| true` can never hide a dead canary; Phase-2/3 additionally require a consecutive-failure
 counter (executor adds `|| echo "$(( $(cat fails 2>/dev/null || echo 0) + 1 ))" > fails`
@@ -337,7 +337,7 @@ the judge records per-cycle scores so a time-of-day effect is visible, not avera
 - **Not executed by this plan.** No phase is started by the authoring track; the executor
   (operator or a later worker) runs §7 then Phase 0.
 - **Does not change** `pitchfork.toml` daemon semantics, the herd, the bridge, squawk, or any
-  secret handling. vNext payload arrives via the normal sovereign-projects flow.
+  secret handling. vNext payload arrives via the normal estate-projects flow.
 - **Deconfliction:** the kimi-auto herd-surface track owns `herd.d/` + `shim.py` semantics;
   this plan only *reads* the consumer contract (G5). Coordinate via todos.md before Phase 2.
 - **Close-out:** after Phase-3 soak, archive `.canary-baseline-*` and `.canary-archive-*`

@@ -2,7 +2,7 @@
 # fleet-watchdog direct sweeper daemon (runs ON awrawr-pc).
 #
 # This is the PRIMARY heartbeat path: a lightweight loop running sweep.py
-# every 60s with no agent-wrapper dispatch and no bridge hop. sovereign-chat
+# every 60s with no agent-wrapper dispatch and no bridge hop. estate-chat
 # presence TTL is 120s, so a 60s cadence keeps the lane-7 heartbeat alive
 # with 60s of margin — immune to agent-dispatch jitter and bridge 502s.
 #
@@ -13,7 +13,7 @@
 # No `sleep` binary (standing rule): pacing uses isleep (interruptible,
 # queryable). `isleep interrupt fleet-watchdog-sweep` wakes the wait early.
 set -uo pipefail
-WD=/home/toxic/sovereign/tools/fleet-ops/fleet-watchdog
+WD=/home/toxic/estate/tools/fleet-ops/fleet-watchdog
 VARDIR=/home/toxic/var/fleet-watchdog
 LOG=$VARDIR/sweepd.log
 LOCK=$VARDIR/sweepd.lock

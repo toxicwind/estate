@@ -7,19 +7,19 @@
 import { $ } from "bun";
 
 const ROOT = "/home/toxic";
-const SOVEREIGN = `${ROOT}/estate`;
+const ESTATE = `${ROOT}/estate`;
 const SOV_PROJECTS = `${ROOT}/projects/estate-projects`;
 const PROJECTS = `${ROOT}/projects`;
 
 async function run() {
   console.log("=== RECURSIVE INTEGRATION START ===");
 
-  // 1. Sovereign: ensure helpers are executable
-  console.log("1. Sovereign helpers executable...");
-  await $`chmod +x ${SOVEREIGN}/helpers/*.ts ${SOVEREIGN}/helpers/*.sh 2>/dev/null || true`;
+  // 1. Estate: ensure helpers are executable
+  console.log("1. Estate helpers executable...");
+  await $`chmod +x ${ESTATE}/helpers/*.ts ${ESTATE}/helpers/*.sh 2>/dev/null || true`;
 
-  // 2. Sovereign-projects: audit contents
-  console.log("2. Sovereign-projects audit...");
+  // 2. Estate-projects: audit contents
+  console.log("2. Estate-projects audit...");
   const spContents = await $`ls -1 ${SOV_PROJECTS}`.text();
   console.log(`   Contents: ${spContents.trim().replace(/\n/g, ", ")}`);
 
@@ -42,7 +42,7 @@ async function run() {
   const marker = {
     timestamp: new Date().toISOString(),
     estate: {
-      path: SOVEREIGN,
+      path: ESTATE,
       helpers: [
         "git-mutator",
         "ast-migrate",

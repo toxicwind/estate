@@ -77,7 +77,7 @@ The difference between the #1 ranked entry (`CachyOS BORE - znver4 LLM`) and the
 - **`vmlinuz-linux-cachyos-bore` (BORE Scheduler)**:
   - Burst-Oriented Response Enhancer.
   - Dynamically detects CPU-burst behavior: tasks that yield or sleep (like local agents, TUI editors, API servers waiting on network) are prioritized over pure number-crunchers.
-  - **Verdict for Sovereign**: Prevents terminal/IDE lag when an LLM inference job maxes out CPU cores during prompt evaluation.
+  - **Verdict for Estate**: Prevents terminal/IDE lag when an LLM inference job maxes out CPU cores during prompt evaluation.
 - **`vmlinuz-linux-cachyos-server` (Server EEVDF)**:
   - Tuned for maximum multi-threaded batch throughput across server sockets.
   - Excellent sustained compute, but higher scheduling latency variance for interactive CLI/TUI tools.

@@ -21,6 +21,6 @@ Context: estate estate-router-ts at /home/toxic/estate/tools/estate-router/estat
 3. Auto-switching: per-request graceful degradation — a chosen free model that 429s/5xx/timeouts switches mid-flight to the next candidate WITHOUT failing the request. Measure and log switch latency.
 4. Integrate roundup benchmark data as routing-weight input (coordinate schema with the roundup lane in fleet).
 5. Solidify bodybuilder: 2M-context-aware decomposition, model-alias resolution against the sigma catalog.
-6. Solidify auto: session stickiness opt-in (X-Sovereign-Sticky), cost-tier awareness, finer task-type classification.
+6. Solidify auto: session stickiness opt-in (X-Estate-Sticky), cost-tier awareness, finer task-type classification.
 7. Tests: bun test for auto-switch on failure, auto-load discovery, bodybuilder 2M handling, stickiness. All green.
 8. Commit, push to canonical main, verify remote ref. Live verification receipts via curl against :25104.

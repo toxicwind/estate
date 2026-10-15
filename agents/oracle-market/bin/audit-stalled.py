@@ -3,7 +3,7 @@
 import json, time, sys
 from collections import defaultdict
 
-LEDGER = '/home/toxic/sovereign/agents/oracle-market/ledger/ledger.jsonl'
+LEDGER = '/home/toxic/estate/agents/oracle-market/ledger/ledger.jsonl'
 NOW = time.time()
 STALL_SECS = 30 * 60  # 30 min without progress = stalled
 

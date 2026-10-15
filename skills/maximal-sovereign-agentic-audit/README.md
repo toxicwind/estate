@@ -1,8 +1,8 @@
-![GitHub Repo Stars](https://img.shields.io/github/stars/toxicwind/maximal-sovereign-agentic-audit?style=for-the-badge)
-![GitHub License](https://img.shields.io/github/license/toxicwind/maximal-sovereign-agentic-audit?style=for-the-badge)
-![GitHub Last Commit](https://img.shields.io/github/last-commit/toxicwind/maximal-sovereign-agentic-audit?style=for-the-badge)
+![GitHub Repo Stars](https://img.shields.io/github/stars/toxicwind/maximal-estate-agentic-audit?style=for-the-badge)
+![GitHub License](https://img.shields.io/github/license/toxicwind/maximal-estate-agentic-audit?style=for-the-badge)
+![GitHub Last Commit](https://img.shields.io/github/last-commit/toxicwind/maximal-estate-agentic-audit?style=for-the-badge)
 
-# maximal-sovereign-agentic-audit
+# maximal-estate-agentic-audit
 Maximal agentic repo visibility audit tool
 
 ## What it does
@@ -18,7 +18,7 @@ Platform engineers, DevOps leads, and security analysts who need to audit large 
 - **Multi-Tier Execution** - High > Medium > Low priority chains for intelligent processing order
 - **Chained Pipeline** - Sequential stages: classify → pattern-borrow → ast-search → exa-search → gh-search
 - **AST-Aware Search** - `ast-grep` for structural code patterns (TypeScript/JavaScript/etc.)
-- **Pattern Borrowing** - Global sovereign pattern ranker with weighted terms (secret=10, sovereign=9, etc.)
+- **Pattern Borrowing** - Global estate pattern ranker with weighted terms (secret=10, estate=9, etc.)
 - **Dual Code Search** - `exa` (local file tree) + `gh` (GitHub API code search)
 - **Precision Timing** - `Bun.nanoseconds()` for microsecond-precision performance measurement
 - **Inline Benchmarks** - `mitata` benchmarks for structured performance testing
@@ -85,7 +85,7 @@ bun run src/index.ts --help
   - `--ast-search`, `--ast`: Enable AST-aware code search via ast-grep (default: `false`)
   - `--exa-search`, `--exa`: Enable exa file-tree code search (default: `false`)
   - `--gh-search`, `--gh`: Enable gh API code search (default: `false`)
-  - `--pattern-borrow`, `--borrow`: Borrow patterns from global sovereign patterns (default: `false`)
+  - `--pattern-borrow`, `--borrow`: Borrow patterns from global estate patterns (default: `false`)
   - `--chain`: Enable chained pipeline execution (default: `false`)
   - `--bench`: Run mitata benchmarks inline (default: `false`)
   - `--help`, `-h`: Show help
@@ -96,7 +96,7 @@ Modify the TypeScript source in `src/` directory:
 - Supporting modules for classification, pattern borrowing, ast-search, exa-search, gh-search, bun detection, parquet output, anomaly reporting, and agentic completions
 
 ## License
-Internal tool - refer to sovereign estate licensing
+Internal tool - refer to estate estate licensing
 
 ## Security
 - **Read-Only Analysis** - Performs audit operations without modifying target repositories

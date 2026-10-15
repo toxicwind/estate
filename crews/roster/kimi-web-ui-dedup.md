@@ -2,7 +2,7 @@
 crew: 'kimi-web-ui-dedup'
 scope: 'Kimi web UI dedup'
 owner: 'Ember'
-status: 'DONE -- sovereign-projects `06f0a5c08204bff901af0377c4da5b58e8d2b098` (ancestor of origin/main, verified 2026-09-21)'
+status: 'DONE -- estate-projects `06f0a5c08204bff901af0377c4da5b58e8d2b098` (ancestor of origin/main, verified 2026-09-21)'
 order: 51
 registered: '2026-09-21'
 updated: '2026-09-29'

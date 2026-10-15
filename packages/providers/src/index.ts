@@ -1,5 +1,5 @@
 /**
- * @sovereign/providers — master provider catalog for the sovereign estate.
+ * @estate/providers — master provider catalog for the estate estate.
  *
  * Single source of truth for: provider definitions (base URL, key env,
  * endpoint adapter per /models shape), live discovery, alias map, curated

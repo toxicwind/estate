@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes the Socket Stream transport layer and the Cognitive EKG monitoring system for the Sovereign operating environment. Both are components of the Inference and Router Fleet Audit phase, ensuring reliable long-running reasoning streams and system health observability.
+This document describes the Socket Stream transport layer and the Cognitive EKG monitoring system for the Estate operating environment. Both are components of the Inference and Router Fleet Audit phase, ensuring reliable long-running reasoning streams and system health observability.
 
 ## Socket Stream Transport
 
@@ -47,7 +47,7 @@ A two-tier transport architecture:
 
 ### Problem
 
-The Sovereign fleet requires continuous health monitoring of all inference daemons to detect degraded performance, connection resets, and upstream failures before they cascade into user-facing 503 errors.
+The Estate fleet requires continuous health monitoring of all inference daemons to detect degraded performance, connection resets, and upstream failures before they cascade into user-facing 503 errors.
 
 ### Solution
 

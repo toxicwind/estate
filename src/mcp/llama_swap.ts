@@ -6,9 +6,9 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
-import { loadSovereignPorts, requireEnv } from "../lib/ports.ts";
+import { loadEstatePorts, requireEnv } from "../lib/ports.ts";
 
-loadSovereignPorts();
+loadEstatePorts();
 
 // ENV ONLY - no homedir reads
 const DEFAULT_BASE = (

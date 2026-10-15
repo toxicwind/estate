@@ -21,13 +21,13 @@
  */
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { loadSovereignPorts, requirePort } from "../lib/ports.ts";
+import { loadEstatePorts, requirePort } from "../lib/ports.ts";
 
-loadSovereignPorts();
+loadEstatePorts();
 const HOME = process.env.HOME || "/home/toxic";
 const PUBLIC = requirePort("OPENFANG_PORT");
 const KERNEL = requirePort("OPENFANG_KERNEL_PORT");
-const SOV = process.env.SOVEREIGN_ROOT || resolve(HOME, "estate");
+const SOV = process.env.ESTATE_ROOT || resolve(HOME, "estate");
 
 function loadSecretsFile(path: string) {
   if (!existsSync(path)) return;

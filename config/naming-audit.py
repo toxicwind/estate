@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Config naming-convention audit for sovereign-projects (repeatable).
+"""Config naming-convention audit for estate-projects (repeatable).
 
-Usage: python3 naming-audit.py /path/to/sovereign [--json]
+Usage: python3 naming-audit.py /path/to/estate [--json]
 
 Dimensions:
   env-case        ${env.name} must be UPPER_SNAKE (plain ${var} shell-style OK)
@@ -30,7 +30,7 @@ import sys
 ROOT = sys.argv[1] if len(sys.argv) > 1 else "."
 AS_JSON = "--json" in sys.argv
 
-# The yote sovereign config surface. Shell-script locals elsewhere are NOT
+# The yote estate config surface. Shell-script locals elsewhere are NOT
 # config naming -- excluded by design.
 SCOPE_DIRS = ("config", "profiles", "stack", "hatch")
 SCOPE_FILES = ("pitchfork.toml",)
@@ -172,7 +172,7 @@ for f in scoped_files((".yaml", ".yml", ".toml", ".sh", ".py")):
             port_refs.setdefault(v, []).append("%s:%d" % (rel(f), i))
 
 # consumers: os.environ.get("X_PORT") / os.getenv / ENV["X_PORT"] in .py.
-# Scanned across the sovereign runtime dirs only -- projects/*/ scratch/
+# Scanned across the estate runtime dirs only -- projects/*/ scratch/
 # are separate codebases with their own port config, not the SSOT.
 CONSUMER_DIRS = ("config", "profiles", "stack", "hatch", "bridge", "tools")
 rx_pyenv = re.compile(

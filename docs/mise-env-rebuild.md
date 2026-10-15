@@ -77,7 +77,7 @@ The project prefix is **`estate/`**, not `estate/`.
 
 ## 4. direnv
 
-`estate/.envrc` was dead: it exported `SOVEREIGN_HOME=/home/toxic/estate`
+`estate/.envrc` was dead: it exported `ESTATE_HOME=/home/toxic/estate`
 (a pre-rename path), sourced `.env.local` but never `.env`, and direnv is
 **never authorized** — there are zero `.direnv/allow` directories on the box.
 It has been replaced with a thin bridge that only authorizes mise, or it does

@@ -16,7 +16,7 @@ fuser -k 25118/tcp 2>/dev/null || true
 echo "[fix-hindsight] Ensuring flock (25193) is running..."
 if ! curl -sf -m 2 http://127.0.0.1:25193/health >/dev/null 2>&1; then
     echo "[fix-hindsight] Starting herd..."
-    SOVEREIGN_ROOT=/home/toxic/estate bash /home/toxic/estate/stack/services/herd.sh &
+    ESTATE_ROOT=/home/toxic/estate bash /home/toxic/estate/stack/services/herd.sh &
     sleep 2
 fi
 

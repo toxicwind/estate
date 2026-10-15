@@ -52,9 +52,9 @@ async function syncOnce(): Promise<{
   settings["oaicopilot.logLevel"] = settings["oaicopilot.logLevel"] || "info";
   settings["chat.utilitySmallModel"] = `oaicopilot/${defaultModel}`;
   // Discovery metadata for tools that can poll / subscribe
-  settings["sovereign.llamaSwap.baseUrl"] = base.replace(/\/v1$/, "");
-  settings["sovereign.llamaSwap.modelsUrl"] = `${base}/models`;
-  settings["sovereign.llamaSwap.modelsSse"] = base.replace(
+  settings["estate.llamaSwap.baseUrl"] = base.replace(/\/v1$/, "");
+  settings["estate.llamaSwap.modelsUrl"] = `${base}/models`;
+  settings["estate.llamaSwap.modelsSse"] = base.replace(
     /\/v1$/,
     "/models/sse",
   );

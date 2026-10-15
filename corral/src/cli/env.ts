@@ -13,8 +13,8 @@ export const CHECK_ENV_KEYS = [
   "ANTHROPIC_API_KEY",
   "ANTHROPIC_BASE_URL",
   "ANTHROPIC_DEFAULT_OPUS_MODEL",
-  "SOVEREIGN_ROUTER_URL",
-  "SOVEREIGN_ROUTER_PORT",
+  "ESTATE_ROUTER_URL",
+  "ESTATE_ROUTER_PORT",
   "NIM_PROXY_BASE_URL",
   "NIM_PROXY_API_KEY",
   "FLOCK_API_KEY",
@@ -64,8 +64,8 @@ export function dumpCheckEnv(): never {
     const val = process.env[key];
     env[key] = key.includes("KEY") ? redact(val) : (val ?? "(unset)");
   }
-  const routerUrl = process.env.CUTTINGGATE_URL ?? process.env.SOVEREIGN_ROUTER_URL ?? "http://127.0.0.1";
-  const routerPort = process.env.CUTTINGGATE_PORT ?? process.env.SOVEREIGN_ROUTER_PORT ?? "25200";
+  const routerUrl = process.env.CUTTINGGATE_URL ?? process.env.ESTATE_ROUTER_URL ?? "http://127.0.0.1";
+  const routerPort = process.env.CUTTINGGATE_PORT ?? process.env.ESTATE_ROUTER_PORT ?? "25200";
   
   console.log(JSON.stringify({
     env,

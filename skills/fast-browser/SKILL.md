@@ -22,7 +22,7 @@ under a second.
 
 ```bash
 # One-shot: extract data from a page
-bun ~/sovereign/skills/fast-browser/browsnap.ts --steps '[
+bun ~/estate/skills/fast-browser/browsnap.ts --steps '[
   {"goto": "https://github.com/toxicwind/rig"},
   {"text": "[itemprop=about]", "as": "about"},
   {"texts": ".topic-tag", "as": "topics"},
@@ -30,17 +30,17 @@ bun ~/sovereign/skills/fast-browser/browsnap.ts --steps '[
 ]'
 
 # From a file, with output saved
-bun ~/sovereign/skills/fast-browser/browsnap.ts \
+bun ~/estate/skills/fast-browser/browsnap.ts \
   --steps-file flow.json --out /tmp/result.json
 
 # Screenshot a page
-bun ~/sovereign/skills/fast-browser/browsnap.ts --steps '[
+bun ~/estate/skills/fast-browser/browsnap.ts --steps '[
   {"goto": "https://example.com"},
   {"screenshot": "/tmp/shot.png", "fullPage": true}
 ]'
 
 # Multi-step: search flow
-bun ~/sovereign/skills/fast-browser/browsnap.ts --steps '[
+bun ~/estate/skills/fast-browser/browsnap.ts --steps '[
   {"goto": "https://news.ycombinator.com"},
   {"texts": ".titleline > a", "as": "headlines"}
 ]'

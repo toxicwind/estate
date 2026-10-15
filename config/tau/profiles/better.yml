@@ -12,5 +12,5 @@ provider:
     timeout_ms: 15000
   flock:
     base_url: http://127.0.0.1:25193/v1
-    api_key: sovereign-free
+    api_key: estate-free
     timeout_ms: 30000

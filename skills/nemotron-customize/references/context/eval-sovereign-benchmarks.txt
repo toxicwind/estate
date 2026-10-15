@@ -1,7 +1,7 @@
 # Evaluation Context: Container-Backed Benchmarks
 
 Use this pack when configuring `eval/model_eval` for NeMo Evaluator Launcher
-tasks that are owned by an evaluator container, including sovereign,
+tasks that are owned by an evaluator container, including estate,
 multilingual, custom-language, standard English, tool, or agent benchmarks.
 
 ## Launcher Contract
@@ -26,7 +26,7 @@ run. Use `deployment.type=none` for hosted endpoints.
 ## Benchmark Selection
 
 Pick tasks by target language and endpoint capability, not by model origin. A
-sovereign or region-specific model can still run standard English benchmarks
+estate or region-specific model can still run standard English benchmarks
 when the user wants English capability measurement.
 
 Standard English smoke task ids:
@@ -35,11 +35,11 @@ Standard English smoke task ids:
 - `hellaswag` with a completions endpoint that supports logprobs, plus the evaluated model tokenizer.
 - `mmlu_instruct` with a chat endpoint.
 
-Sovereign/Indic examples:
+Estate/Indic examples:
 
-- `sovereign.gsm8k_indic_hi`
-- `sovereign.mmlu_indic_hi`
-- `sovereign.indicgenbench_flores_in_hi`
+- `estate.gsm8k_indic_hi`
+- `estate.mmlu_indic_hi`
+- `estate.indicgenbench_flores_in_hi`
 
 Indic language codes include `hi`, `bn`, `gu`, `kn`, `mr`, `ml`, `or`, `pa`,
 `ta`, and `te`. Use `_completions` variants for completions-only endpoints and

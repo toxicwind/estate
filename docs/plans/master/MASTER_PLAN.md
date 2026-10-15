@@ -1,4 +1,4 @@
-# Sovereign Pi Fork — Master Execution Plan
+# Estate Pi Fork — Master Execution Plan
 
 > **Generated**: 2026-07-28 | **Updated**: 2026-08-06 | **Context**: Full session replay across pi fork, llama-swap, GHAS MCP, mcpproxy, dashboards
 

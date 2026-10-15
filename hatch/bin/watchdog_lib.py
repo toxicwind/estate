@@ -21,7 +21,7 @@ bug gets fixed ONCE here instead of per-watchdog:
     tick — no separate @reboot hook needed, so it survives restarts
     and scheduler changes.
 
-Canonical: hatch/bin/watchdog_lib.py in toxicwind/sovereign-projects.
+Canonical: hatch/bin/watchdog_lib.py in toxicwind/estate-projects.
 Deployed: ~/workspace/bin/watchdog_lib.py (copy of canonical; keep in sync).
 """
 

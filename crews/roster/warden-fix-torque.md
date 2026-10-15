@@ -29,7 +29,7 @@ intent keeps e1d70dd0 (see FALLBACK.md). The durable code fixes:
   repeats coalesce inside DEDUPE_WINDOW_S (600s).
 - deploy/manifest.yaml: merge-conflict markers resolved (openfang-kernel note).
 
-Commits (sovereign-projects origin/main, all ls-remote verified):
+Commits (estate-projects origin/main, all ls-remote verified):
 - ccba093871: script fix + herd bless (bless later superseded, see below)
 - de600f0437: revert stale herd bless back to e1d70dd0 (FALLBACK-blessed)
 

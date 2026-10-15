@@ -3,7 +3,7 @@
 ![GitHub Last Commit](https://img.shields.io/github/last-commit/toxicwind/ast-bm25-racer?style=for-the-badge)
 
 # ast-bm25-racer
-Sovereign AST-BM25 Racer, local-heavy edition: hybrid code retrieval plus nanosecond candidate racing
+Estate AST-BM25 Racer, local-heavy edition: hybrid code retrieval plus nanosecond candidate racing
 
 ## What it does
 Hybrid code retrieval system that combines AST symbol indexing with BM25 ranking and nanosecond-precision candidate racing for ultra-fast, accurate code search.
@@ -34,7 +34,7 @@ python3 ast_bm25_racer.py --root /home/toxic/estate --top-k 5
 ```
 
 ## Configuration
-The tool operates with hardcoded parameters optimized for the sovereign estate:
+The tool operates with hardcoded parameters optimized for the estate estate:
 - BM25: k1=1.2, b=0.75
 - Hybrid scoring: sym_match, async_intent, and centrality weights
 - Race configuration: 5 warmups, 50 measured runs, GC-isolated timing
@@ -43,7 +43,7 @@ The tool operates with hardcoded parameters optimized for the sovereign estate:
 This is a local-heavy edition skill with no external dependencies beyond Python stdlib. Contributions should maintain the local-first, Dropbox-free philosophy.
 
 ## License
-Internal tool - refer to sovereign estate licensing
+Internal tool - refer to estate estate licensing
 
 ## Security
 No network calls, no cloud mounts, all processing stays local to the executing machine.

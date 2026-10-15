@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Master Verification Suite for Sovereign Hatch Toolkit.
+Master Verification Suite for Estate Hatch Toolkit.
 
 Tests ONLY subsystems that exist in this tree:
   hatch_core/noise_protocol.py      (Noise_XX handshake, notary, framing)
@@ -190,7 +190,7 @@ def test_mcp_compliance():
 
 
 def main():
-    print("Running Sovereign Hatch Verification Suite...")
+    print("Running Estate Hatch Verification Suite...")
     test_notary()
     test_crypto_handshake()
     test_fsbus()

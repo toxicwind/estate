@@ -1,10 +1,10 @@
 // ============================================================================
-// SOVEREIGN — Yote ↔ Overlord ↔ OpenFang Integration Tests
+// ESTATE — Yote ↔ Overlord ↔ OpenFang Integration Tests
 // Verifies the full Telegram chat → Overlord → OpenFang → Herd chain
 // ============================================================================
 
-import { loadSovereignPorts } from "../../src/lib/ports.ts";
-loadSovereignPorts();
+import { loadEstatePorts } from "../../src/lib/ports.ts";
+loadEstatePorts();
 
 const OF_URL = process.env.OPENFANG_URL ?? "http://127.0.0.1:25103";
 const YOTE_URL = process.env.YOTE_URL ?? "http://127.0.0.1:25102";

@@ -1,5 +1,5 @@
 {
-  "name": "sovereign-bugbounty-openers",
+  "name": "estate-bugbounty-openers",
   "private": true,
   "type": "module",
   "description": "Headed Playwright openers for X/xAI, GitHub, Google bounty portals",

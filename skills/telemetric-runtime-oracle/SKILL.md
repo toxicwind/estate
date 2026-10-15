@@ -1,17 +1,17 @@
 ---
 name: telemetric-runtime-oracle
-description: Non-invasive runtime cognitive EKG supervisor and database-grounded observability engine for Super Ralph and Sovereign autonomous agents. Observes terminal HUD telemetry vectors and SQLite workflow transaction state without keystroke injection or socket overrides.
+description: Non-invasive runtime cognitive EKG supervisor and database-grounded observability engine for Super Ralph and Estate autonomous agents. Observes terminal HUD telemetry vectors and SQLite workflow transaction state without keystroke injection or socket overrides.
 ---
 
 # Telemetric Runtime Oracle & Database-Grounded EKG Supervisor
 
 ## 1. Overview & Architectural Commitments
 
-The **Telemetric Runtime Oracle** operates as an out-of-band observability supervisor for **Super Ralph** (`projects/mesh/super-ralph`) and the Sovereign autonomous fleet.
+The **Telemetric Runtime Oracle** operates as an out-of-band observability supervisor for **Super Ralph** (`projects/mesh/super-ralph`) and the Estate autonomous fleet.
 
 ### The 4 Non-Invasive Supervisory Commitments:
 1. **Zero Keystroke Injection**: Never inject `tmux send-keys`, `C-c`, or synthetic prompts into active agent panes. Foreign text pollutes the in-band prompt context and derails task focus.
-2. **Respect the 114-Model Sovereign Router (`:25104`)**: Never programmatically reroute or downgrade socket endpoints (`:25104` remains canonical). Model selection and ELO rankings are owned by Super-Ralph's internal pipeline.
+2. **Respect the 114-Model Estate Router (`:25104`)**: Never programmatically reroute or downgrade socket endpoints (`:25104` remains canonical). Model selection and ELO rankings are owned by Super-Ralph's internal pipeline.
 3. **Database-Level Grounding**: Inspect `.super-ralph/workflow.db` directly to observe real ticket progress, active concurrency slots, iteration index vs. the 25-cap, and `allWorkComplete` quiescence.
 4. **Multi-Ticket Concurrency Awareness**: Natural fluctuations in token velocity or input/output ratios (e.g. 12 tok/s during AST parsing or file inspection) represent barrier synchronization, not deliberation locks.
 

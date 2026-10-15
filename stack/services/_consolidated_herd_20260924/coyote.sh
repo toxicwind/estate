@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Coyote v3.1 — Autonomous Agent Inference Engine
-# First-class sovereign service. OpenFang agent with Yote integration.
+# First-class estate service. OpenFang agent with Yote integration.
 # Routes through AST matrix (llama-swap :25100) with 14 providers.
 set -euo pipefail
-SOV="${SOVEREIGN_ROOT:-/home/toxic/estate}"
+SOV="${ESTATE_ROOT:-/home/toxic/estate}"
 source "$SOV/stack/lib-ports.sh"
 require_env COYOTE_PORT
 PORT="$COYOTE_PORT"
@@ -11,7 +11,7 @@ PORT="$COYOTE_PORT"
 export COYOTE_API_KEY="${COYOTE_API_KEY:-sk-hal-local}"
 export COYOTE_MODEL="${COYOTE_MODEL:-gpt-oss}"
 
-# Find hal-loop.py — sovereign src/ is canonical
+# Find hal-loop.py — estate src/ is canonical
 BIN_CAND=(
   "$SOV/src/coyote/coyote-loop.py"
   "$HOME/projects/project-name/src/coyote-loop.py"
@@ -40,7 +40,7 @@ sleep 0.3
 exec python3 "$BIN" \
   --base-url "http://127.0.0.1:25100" \
   --model "${COYOTE_MODEL}" \
-  --session "sovereign-$(date +%s)" \
+  --session "estate-$(date +%s)" \
   --port "${PORT}" \
   --host "0.0.0.0" \
   --verbose

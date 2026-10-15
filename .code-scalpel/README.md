@@ -4,8 +4,8 @@ The governance home for Code Scalpel: security rules, change budgets, enforcemen
 
 <div align="right">
 
-[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -88,7 +88,7 @@ How it works: `policy.manifest.json` is signed with `SCALPEL_MANIFEST_SECRET`; a
 
 ## License & security
 
-MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license).
+MIT where marked — [LICENSE](https://github.com/toxicwind/estate-projects#license).
 
 - `SCALPEL_MANIFEST_SECRET` / `SCALPEL_TOTP_SECRET` are real secrets: they live in `.env` (gitignored), never in `policy.yaml`, never in chat logs.
 - `audit.log` and `autonomy_audit/` are append-only evidence — hand-editing them voids the tamper story.

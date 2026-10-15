@@ -1,4 +1,4 @@
-# Sovereign Mesh — FIX.md (Live Mutable Checklist)
+# Estate Mesh — FIX.md (Live Mutable Checklist)
 
 > **Status**: Core services UP. Executing fixes in dependency order.
 > **Rule**: Check off `[x]` immediately after doing. Add sub-tasks with `-- [ ]`. Reorder as needed.
@@ -23,7 +23,7 @@
   - [x] **FULL AUDIT**: UI at `/ui/` serves React app with Tailwind, all assets load
   - [x] **FULL AUDIT**: `/v1/models` returns 29 models from toxicwind fork config
   - [x] **FULL AUDIT**: Chat completion works (tested: EXAONE 1.2B IQ4_XS responds correctly)
-  - [x] **FULL AUDIT**: Matrix router + priority scheduler configured per sovereign YAML
+  - [x] **FULL AUDIT**: Matrix router + priority scheduler configured per estate YAML
 - [x] **VERIFY Phase 1**: All 3 services healthy
 
 ## Phase 2: Federation Layer

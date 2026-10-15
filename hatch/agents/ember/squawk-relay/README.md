@@ -4,8 +4,8 @@ Rig-owned relay from Squawk chat into the Shingle/Muse chats. Near-real-time, ev
 
 <div align="right">
 
-[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -90,4 +90,4 @@ curl -s "http://127.0.0.1:25135/squawk-feed/wait?since=12800"
 
 ## License & security
 
-MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). The relay is a trust boundary: public gets a number, localhost gets content, and sealed payloads never decrypt here. Keep it that way — any endpoint that starts emitting message text to the funnel is a security regression.
+MIT where marked — [LICENSE](https://github.com/toxicwind/estate-projects#license). The relay is a trust boundary: public gets a number, localhost gets content, and sealed payloads never decrypt here. Keep it that way — any endpoint that starts emitting message text to the funnel is a security regression.

@@ -2,8 +2,8 @@
 
 <div align="right">
 
-[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -14,8 +14,8 @@ keyed by content hash of the job spec**. Re-submit an identical job and it's
 a no-op returning the cached result. Interrupted jobs restart cleanly on
 daemon boot.
 
-Source: `tools/buildsrv/` in `toxicwind/sovereign-projects` (also checked
-out at `/home/toxic/sovereign` on awrawr-pc).
+Source: `tools/buildsrv/` in `toxicwind/estate-projects` (also checked
+out at `/home/toxic/estate` on awrawr-pc).
 
 ```mermaid
 flowchart LR
@@ -50,7 +50,7 @@ flowchart LR
 ```bash
 # Rust — build one crate of the tau engine workspace
 buildsrv submit --name tau-pi-ast \
-  --repo /home/toxic/sovereign/tau/engine \
+  --repo /home/toxic/estate/tau/engine \
   --toolchain rust \
   --cmd "cargo build -p pi-ast"
 
@@ -89,7 +89,7 @@ Known toolchains: `rust`/`cargo`, `go`, `bun`, `node`, `python`/`python3`,
 
 ## Config
 
-Pitchfork stanza `[daemons.buildsrv]` in `/home/toxic/sovereign/pitchfork.toml`
+Pitchfork stanza `[daemons.buildsrv]` in `/home/toxic/estate/pitchfork.toml`
 (hand-edited — `scripts/generate.ts` must never run), also in `[groups.all]`.
 Reload/start: `pitchfork start|restart|status|logs buildsrv`.
 
@@ -128,7 +128,7 @@ mutate a working tree.
 
 ## License & security
 
-MIT — see [LICENSE](https://github.com/toxicwind/sovereign-projects#license).
+MIT — see [LICENSE](https://github.com/toxicwind/estate-projects#license).
 
 - Builds run arbitrary commands from job files **as your login user** —
   only trusted agents/users may submit.

@@ -1,7 +1,7 @@
 # README Revitalization Plan — Shrew audit-first
 
 ## Context
-NORTH STAR (sovereign/README.md) verified 10/10 claims vs pitchfork.toml, config/ports.env, live services (:25100 up, :25117/:25127 up), session evidence — 0 mismatches; no diff needed. SUBSYSTEM (squawk, mesh, oracle-market) accurate per user directive, unchanged. Only live bug separate: corrupt 100644: files from old worktree dirs (cleaned, verified PASS).
+NORTH STAR (estate/README.md) verified 10/10 claims vs pitchfork.toml, config/ports.env, live services (:25100 up, :25117/:25127 up), session evidence — 0 mismatches; no diff needed. SUBSYSTEM (squawk, mesh, oracle-market) accurate per user directive, unchanged. Only live bug separate: corrupt 100644: files from old worktree dirs (cleaned, verified PASS).
 
 ## Approach
 1. Audit NORTH STAR: claims vs pitchfork.toml lines, ports.env keys (HINDSIGHT_API_PORT=25117, MCP_PROXY_PORT=25127), mise.toml, running herd/tau/shep. Log mismatches file+line.
@@ -21,8 +21,8 @@ NORTH STAR (sovereign/README.md) verified 10/10 claims vs pitchfork.toml, config
 ## Verification
 - bun helpers/estate-scanner.ts → PASS (0 broken bin, /tmp/estate-verify-2.jsonl)
 - bun helpers/health-audit.ts --json → 6/19 UP (/tmp/tau-audit-verify.json; hindsight UP :25117, mesh UP :25127)
-- echo '{"jsonrpc":"2.0","id":1,"method":"initialize"...}' | bun sovereign-mcp-server.ts → RESPONDED (/tmp/mcp-verify.jsonl)
-- fclones group + dedupe across projects/sovereign/cold-storage (~4.8 GB, 18,078 files)
+- echo '{"jsonrpc":"2.0","id":1,"method":"initialize"...}' | bun estate-mcp-server.ts → RESPONDED (/tmp/mcp-verify.jsonl)
+- fclones group + dedupe across projects/estate/cold-storage (~4.8 GB, 18,078 files)
 - Worktrees: only /home/toxic/estate; backup/wt-* preserved; 32 stale removed
 
 ## Assumptions

@@ -4,8 +4,8 @@ ADB-managed Android devices on the LAN — Chris's Pixel 9 Pro XL and the bedroo
 
 <div align="right">
 
-[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -55,4 +55,4 @@ adb -s 10.0.0.225:5555 push addon.zip /sdcard/   # Kodi file deploy
 
 ## License & security
 
-MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). ADB is root-equivalent on the device — these are Chris's personal devices on his LAN. The pairing keys (`/home/toxic/.android/adbkey*`) are credentials: never commit, never share. Keepalive is additive-only by design (never touches other adb devices).
+MIT where marked — [LICENSE](https://github.com/toxicwind/estate-projects#license). ADB is root-equivalent on the device — these are Chris's personal devices on his LAN. The pairing keys (`/home/toxic/.android/adbkey*`) are credentials: never commit, never share. Keepalive is additive-only by design (never touches other adb devices).

@@ -20,7 +20,7 @@ def tarr(items):
 
 def gen_toml(m, model_override=None, header_note=""):
     L = []
-    L.append("# Canonical source: sovereign/agents/%s/agent.toml" % m["name"])
+    L.append("# Canonical source: estate/agents/%s/agent.toml" % m["name"])
     L.append("# Live copy: ~/.openfang/agents/%s/agent.toml (kernel re-seeds from disk on boot)" % m["name"])
     if header_note:
         L.append("# NOTE: " + header_note)

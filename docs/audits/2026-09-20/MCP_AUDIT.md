@@ -1,13 +1,13 @@
 # MCP Infrastructure Audit Report
 
 **Date:** 2026-07-20
-**Audited by:** Sovereign Agent (Zed)
+**Audited by:** Estate Agent (Zed)
 
 ---
 
 ## Executive Summary
 
-The Sovereign MCP stack has **two layers**: **mcpproxy** (`:25109`) handles all upstream MCP server connections for the Zed agent, and **sovereign-mcp-gateway** (`:25120`) sits as a trust boundary in front of upstream servers (currently only byte-vision). The infrastructure exposes **256+ tools** across **26 healthy MCP servers**. However, several backend services are down or misconfigured, and there are pending tool approvals blocking some capabilities.
+The Estate MCP stack has **two layers**: **mcpproxy** (`:25109`) handles all upstream MCP server connections for the Zed agent, and **estate-mcp-gateway** (`:25120`) sits as a trust boundary in front of upstream servers (currently only byte-vision). The infrastructure exposes **256+ tools** across **26 healthy MCP servers**. However, several backend services are down or misconfigured, and there are pending tool approvals blocking some capabilities.
 
 ---
 
@@ -64,10 +64,10 @@ Zed Agent
 | 25108 | pitchfork | **DOWN** | Not listening (manages other services externally) |
 | 25109 | mcpproxy | **LISTEN** | Zed agent MCP proxy |
 | 25110 | grafana | **DOWN** | Not listening |
-| 25111 | watchdog/sovereign_web | **LISTEN** | |
+| 25111 | watchdog/estate_web | **LISTEN** | |
 | 25112 | GHAS API | **LISTEN** | |
 | 25115 | mesh-hub | **LISTEN** | |
-| 25120 | sovereign-mcp-gateway | **LISTEN** | Trust boundary |
+| 25120 | estate-mcp-gateway | **LISTEN** | Trust boundary |
 | 25121 | byte-vision-mcp | **LISTEN** | HTTP server up, but MCP stdio bridge broken |
 | 25133 | qdrant | **DOWN** | qdrant-mcp configured but not listening |
 | 6379 | redis | **LISTEN** | `redis-cli ping` → PONG |
@@ -79,11 +79,11 @@ Zed Agent
 
 | File | Purpose |
 |------|---------|
-| `~/.config/zed/settings.json` | Zed agent MCP config (`mcpproxy-sovereign` → `:25109`, `wcgw`) |
+| `~/.config/zed/settings.json` | Zed agent MCP config (`mcpproxy-estate` → `:25109`, `wcgw`) |
 | `~/.local/state/mcpproxy/mcp_config.json` | mcpproxy server registry (29 servers) |
 | `~/.config/agent-mcp-gateway/.mcp.json` | agent-mcp-gateway config (context7, filesystem) |
-| `~/sovereign/config/.mcp.json` | Project-level MCP config (computer-use-linux) |
-| `~/sovereign/config/ports.env` | Port SSOT |
+| `~/estate/config/.mcp.json` | Project-level MCP config (computer-use-linux) |
+| `~/estate/config/ports.env` | Port SSOT |
 | `~/sovereign/tools/sovereign-router/sovereign-mcp-gateway/` | Gateway source (gateway.ts, gateway-core.ts, tests) |
 
 ---
@@ -184,7 +184,7 @@ The byte-vision-mcp HTTP server IS listening on `:25121` but the MCP stdio bridg
 
 7. **Duplicate context7** — Configured both in mcpproxy (via upstream_servers) and in `~/.config/agent-mcp-gateway/.mcp.json`.
 
-8. **Sovereign-mcp-gateway underutilized** — Only proxies 1 upstream (byte-vision) for 1 tool. The gateway's circuit breaker + sticky affinity architecture is designed for multiple upstreams but only has one, and that one is broken.
+8. **Estate-mcp-gateway underutilized** — Only proxies 1 upstream (byte-vision) for 1 tool. The gateway's circuit breaker + sticky affinity architecture is designed for multiple upstreams but only has one, and that one is broken.
 
 ### Low
 
@@ -211,7 +211,7 @@ The byte-vision-mcp HTTP server IS listening on `:25121` but the MCP stdio bridg
 
 ### Architecture Improvements
 
-5. **Expand sovereign-mcp-gateway upstreams** — Instead of only proxying byte-vision, consider routing more sensitive MCP servers through the gateway for circuit breaking + audit. Currently mcpproxy handles all the real connections.
+5. **Expand estate-mcp-gateway upstreams** — Instead of only proxying byte-vision, consider routing more sensitive MCP servers through the gateway for circuit breaking + audit. Currently mcpproxy handles all the real connections.
 
 6. **Remove duplicate servers** — Consolidate the duplicate context7 and filesystem configs. The agent-mcp-gateway `.mcp.json` seems to be a separate config layer that may conflict with mcpproxy.
 
@@ -244,7 +244,7 @@ The byte-vision-mcp HTTP server IS listening on `:25121` but the MCP stdio bridg
 | Unhealthy | 1 (byte-vision) |
 | Total tools discovered | ~256 |
 | Pending tool approvals | 10+ |
-| Sovereign ports listening | 11 of 16 defined |
+| Estate ports listening | 11 of 16 defined |
 | Services down | prometheus, grafana, qdrant, pitchfork (UI) |
 | Quarantined servers | 0 |
 | Quarantined tools | 0 |

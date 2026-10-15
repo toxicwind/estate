@@ -28,16 +28,16 @@ Universal link content extraction with cascading strategies for JS-heavy share p
 
 ```bash
 # Basic extraction (outputs markdown)
-bun run ~/sovereign/skills/url-extract/extract.ts https://meta.ai/share/a/46d497f6-...
+bun run ~/estate/skills/url-extract/extract.ts https://meta.ai/share/a/46d497f6-...
 
 # JSON output
-bun run ~/sovereign/skills/url-extract/extract.ts https://chatgpt.com/share/... --format json
+bun run ~/estate/skills/url-extract/extract.ts https://chatgpt.com/share/... --format json
 
 # Save to file
-bun run ~/sovereign/skills/url-extract/extract.ts https://claude.ai/share/... --out /tmp/extracted.md
+bun run ~/estate/skills/url-extract/extract.ts https://claude.ai/share/... --out /tmp/extracted.md
 
 # Custom timeout for slow pages
-bun run ~/sovereign/skills/url-extract/extract.ts https://example.com --timeout 60000
+bun run ~/estate/skills/url-extract/extract.ts https://example.com --timeout 60000
 ```
 
 ## Prerequisites

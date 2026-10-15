@@ -10,9 +10,9 @@ import {
   writeFileSync,
 } from "node:fs";
 import { resolve } from "node:path";
-import { loadSovereignPorts, requirePort } from "../src/lib/ports.ts";
+import { loadEstatePorts, requirePort } from "../src/lib/ports.ts";
 
-loadSovereignPorts();
+loadEstatePorts();
 
 const SCRATCH =
   process.env.SCRATCH || "/tmp/grok-goal-c30f990945a1/implementer/zed-agent";

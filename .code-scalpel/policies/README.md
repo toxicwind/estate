@@ -4,8 +4,8 @@ Drop-in governance templates for architecture, DevOps, and DevSecOps — written
 
 <div align="right">
 
-[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -77,4 +77,4 @@ Templates are meant to be forked: copy the `.rego` file, rename it, tune the rul
 
 ## License & security
 
-MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). Policies are code review for machines: `DENY` rules block real operations, so every policy change deserves the same review rigor as a production code change. The audit trail (`../audit.log`) records every policy decision — evidence, not vibes.
+MIT where marked — [LICENSE](https://github.com/toxicwind/estate-projects#license). Policies are code review for machines: `DENY` rules block real operations, so every policy change deserves the same review rigor as a production code change. The audit trail (`../audit.log`) records every policy decision — evidence, not vibes.

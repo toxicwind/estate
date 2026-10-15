@@ -1,10 +1,10 @@
 ---
-name: sovereign-hatch-toolkit
+name: estate-hatch-toolkit
 description: >
   Noise XX handshake and atomic POSIX message bus. noise_protocol.py implements the full Noise_XX state machine with Ed25519 notary endorsements; fsbus_engine.py is a crash-safe tmp+fsync+rename bus with leases, retries and dead-letter escalation. Triggers on: "noise xx", "handshake", "fsbus", "message bus", "notary".
 ---
 
-# Sovereign Hatch Toolkit
+# Estate Hatch Toolkit
 
 Seven subsystems, all tested (57/57 green):
 

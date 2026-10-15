@@ -51,8 +51,8 @@ description = "Configure evaluator deployment targets and model formats — NIM,
 id = "eval-model-eval-container"
 step = "eval/model_eval"
 intent = "container"
-file = "eval-sovereign-benchmarks.txt"
-description = "Configure NeMo Evaluator Launcher container-backed tasks — sovereign, multilingual, custom-language, standard English, tool, or agent benchmark containers."
+file = "eval-estate-benchmarks.txt"
+description = "Configure NeMo Evaluator Launcher container-backed tasks — estate, multilingual, custom-language, standard English, tool, or agent benchmark containers."
 
 [[packs]]
 id = "convert-hf-to-megatron-generate"

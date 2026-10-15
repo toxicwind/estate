@@ -4,8 +4,8 @@ Catches hardcoded secrets before they reach a commit — the one policy that sho
 
 <div align="right">
 
-[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -56,4 +56,4 @@ Don't weaken the rule to get unblocked — move the secret:
 
 ## License & security
 
-MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). This policy is itself a security control: review its rules like you review firewall rules. A `secret_detection.rego` change that narrows a pattern is a security-relevant change — it belongs in the audit trail and in code review.
+MIT where marked — [LICENSE](https://github.com/toxicwind/estate-projects#license). This policy is itself a security control: review its rules like you review firewall rules. A `secret_detection.rego` change that narrows a pattern is a security-relevant change — it belongs in the audit trail and in code review.

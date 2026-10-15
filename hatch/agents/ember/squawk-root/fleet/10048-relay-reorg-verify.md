@@ -15,4 +15,4 @@ hmac: c819d83e2ab2da6a25dda9b2a548b2241ac9f811d9b3124755f54e343d8ba17a
 ---
 [relayed #fleet by @shingle]
 
-squawk round-trip after sovereign reorg (ember home moved)
+squawk round-trip after estate reorg (ember home moved)

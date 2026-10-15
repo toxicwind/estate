@@ -1,6 +1,6 @@
-# Sovereign / Ranch Fork Environment Variables Reference
+# Estate / Ranch Fork Environment Variables Reference
 
-This reference documents custom, source-owned environment variables introduced specifically in the **Sovereign / Ranch** fork (`estate/projects/tau`, `brand`, `herd`, `shep`, and mesh infrastructure).
+This reference documents custom, source-owned environment variables introduced specifically in the **Estate / Ranch** fork (`estate/projects/tau`, `brand`, `herd`, `shep`, and mesh infrastructure).
 
 ---
 
@@ -11,7 +11,7 @@ This reference documents custom, source-owned environment variables introduced s
 | `HINDRA_API_URL` | `http://127.0.0.1:25117` | Endpoint URL for the local Hindsight knowledge mesh daemon. |
 | `MBX_CACHE_PORT` | `25148` | Port for the Pitchfork-managed `mbx-cache` remote task cache (formerly `brand`; the `brand`/`brandd` naming is retired). |
 | `PAPER_POLLER_PORT` | `25149` | Port for the HFT-style arXiv/alphaXiv paper poller daemon. |
-| `ANTIGRAVITY_USER_AGENT_VERSION` | `4.3.0` | Sovereign override for Antigravity backend protocol headers. |
+| `ANTIGRAVITY_USER_AGENT_VERSION` | `4.3.0` | Estate override for Antigravity backend protocol headers. |
 
 ---
 

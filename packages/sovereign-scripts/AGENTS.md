@@ -1,6 +1,6 @@
-# AGENTS.md — Sovereign Scripts (`/home/toxic/projects/sovereign-scripts`)
+# AGENTS.md — Estate Scripts (`/home/toxic/projects/estate-scripts`)
 
-**Role**: Reusable automation scripts, batch tooling, and maintenance routines for sovereign infrastructure.
+**Role**: Reusable automation scripts, batch tooling, and maintenance routines for estate infrastructure.
 **Stack**: Python (asyncio/aiohttp), Bash, Node/Bun.
 
 ---
@@ -123,10 +123,10 @@ ast-grep scan -p 'NVIDIA_MODELS' -l ts --json=stream /home/toxic/projects/pi-age
 - **Coverage floor 82%**: `npx vitest run --coverage --bail` after code. Lint (`biome`) + typecheck.
 - See TODO Wave 5 for the worker-limit `/32` redo + timeout/failfast threading.
 
-## 🔌 MCP / mcpproxy (sovereign-owned)
+## 🔌 MCP / mcpproxy (estate-owned)
 
 - **mcpproxy** is the single MCP federation gateway: `http://127.0.0.1:25109/mcp`, owned by
-sovereign (`pitchfork start mcpproxy` / `mise run restart-mcpproxy` -> `mcpproxy serve
+estate (`pitchfork start mcpproxy` / `mise run restart-mcpproxy` -> `mcpproxy serve
 --config=/home/toxic/.mcpproxy/mcp_config.json`). 43 real upstreams (ghas + 42 others).
 - **pi MUST list ONLY `mcpproxy`** in `~/.pi/agent/mcp.json` (no duplicate direct `ghas`/
   `nvidia-nim` entries). All MCP tools reach pi through the proxy via `retrieve_tools`.

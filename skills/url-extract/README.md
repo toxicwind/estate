@@ -30,16 +30,16 @@ Extracts main content from any URL using a cascading strategy: Playwright (headl
 
 ```bash
 # Basic extraction (outputs markdown)
-bun run ~/sovereign/skills/url-extract/extract.ts https://meta.ai/share/a/46d497f6-...
+bun run ~/estate/skills/url-extract/extract.ts https://meta.ai/share/a/46d497f6-...
 
 # JSON output
-bun run ~/sovereign/skills/url-extract/extract.ts https://chatgpt.com/share/... --format json
+bun run ~/estate/skills/url-extract/extract.ts https://chatgpt.com/share/... --format json
 
 # Save to file
-bun run ~/sovereign/skills/url-extract/extract.ts https://claude.ai/share/... --out ${TMPDIR:-$HOME/.cache}/extracted.md
+bun run ~/estate/skills/url-extract/extract.ts https://claude.ai/share/... --out ${TMPDIR:-$HOME/.cache}/extracted.md
 
 # Custom timeout for slow pages
-bun run ~/sovereign/skills/url-extract/extract.ts https://example.com --timeout 60000
+bun run ~/estate/skills/url-extract/extract.ts https://example.com --timeout 60000
 
 # Add new site handler
 # Edit SITE_HANDLERS array in extract.ts — each handler defines match(), waitSelector, contentSelectors, removeSelectors, settleMs

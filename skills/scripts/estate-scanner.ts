@@ -1,9 +1,9 @@
 #!/usr/bin/env bun
 /**
- * estate-scanner.ts — High-throughput sovereign estate path & binary audit engine.
+ * estate-scanner.ts — High-throughput estate estate path & binary audit engine.
  *
  * Fast filesystem traversal, broken symlink detection, bizarre path / git-mode
- * corruption audit, and bin directory sanity check across the sovereign estate.
+ * corruption audit, and bin directory sanity check across the estate estate.
  */
 
 import { readdirSync, statSync, lstatSync, readlinkSync, existsSync } from "node:fs";
@@ -26,18 +26,18 @@ export interface FileRecord {
 }
 
 const home = homedir();
-const sovereignRoot = join(home, "sovereign");
+const estateRoot = join(home, "estate");
 
 const scanRoots = [
   join(home, ".local/bin"),
   join(home, "bin"),
-  join(sovereignRoot, "bin"),
-  join(sovereignRoot, "helpers"),
+  join(estateRoot, "bin"),
+  join(estateRoot, "helpers"),
   join(home, ".cargo/bin"),
   join(home, ".bun/bin"),
-  join(sovereignRoot, "projects/tau/launcher"),
-  join(sovereignRoot, "projects/range/bin"),
-  sovereignRoot,
+  join(estateRoot, "projects/tau/launcher"),
+  join(estateRoot, "projects/range/bin"),
+  estateRoot,
   home,
 ];
 
@@ -140,7 +140,7 @@ export function scanEstate(): { records: FileRecord[]; durationMs: number } {
 }
 
 if (import.meta.main) {
-  console.log("== Sovereign Estate Path & Binary Audit ==");
+  console.log("== Estate Estate Path & Binary Audit ==");
   const { records, durationMs } = scanEstate();
   console.log(`Scanned ${records.length} paths in ${durationMs.toFixed(2)}ms`);
 

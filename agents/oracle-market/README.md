@@ -1,6 +1,6 @@
 # oracle-market 🔮
 
-![sovereign](https://img.shields.io/badge/sovereign--projects-blue?style=for-the-badge)
+![estate](https://img.shields.io/badge/estate--projects-blue?style=for-the-badge)
 ![python](https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![oracle-engine](https://img.shields.io/badge/oracle--engine-673AB7?style=for-the-badge)
 
@@ -11,7 +11,7 @@
 > aggregation engine advised by a calibrated judge panel.
 
 > [!NOTE]
-> Live pitchfork daemons: `sovereign/oracle-market` (market loop + intake, `bin/run.sh`), `sovereign/oracle-core` (decision engine, `bin/run-oracle-core.sh`, `127.0.0.1:25151`), `sovereign/bidder-forge`, `sovereign/bidder-scout` (bidders).
+> Live pitchfork daemons: `estate/oracle-market` (market loop + intake, `bin/run.sh`), `estate/oracle-core` (decision engine, `bin/run-oracle-core.sh`, `127.0.0.1:25151`), `estate/bidder-forge`, `estate/bidder-scout` (bidders).
 
 ## Features
 
@@ -134,7 +134,7 @@ two live `intake_request`s cleared full auctions
 across a `pitchfork restart`.
 
 The decision core is equally restart-durable: `bin/run-oracle-core.sh`
-is the pitchfork entrypoint for `sovereign/oracle-core`; all calibration
+is the pitchfork entrypoint for `estate/oracle-core`; all calibration
 state, verdict ledgers, and escalation flags live on disk under `work/`.
 A restart loses nothing but in-flight asks. Proven: restart the unit,
 re-run `bench/run_live_ask.py`, confirm a fresh verdict
@@ -155,7 +155,7 @@ proven defaults), [docs/BORROWS.md](docs/BORROWS.md) (attribution),
 
 ## License & Security
 
-Part of the sovereign estate (see repo root). **Security posture:** the
+Part of the estate estate (see repo root). **Security posture:** the
 deterministic engine is a trust boundary — LLM judges advise but cannot
 bypass acceptance checks, and low-confidence verdicts escalate instead of
 emitting. Money and credentials NEVER go through the oracle (Chris's hard

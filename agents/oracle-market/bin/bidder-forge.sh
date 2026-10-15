@@ -7,7 +7,7 @@ set -euo pipefail
 if pgrep -f "bidder.py --id forge" >/dev/null 2>&1; then
   exit 0
 fi
-exec python3 /home/toxic/sovereign/agents/oracle-market/bin/bidder.py \
+exec python3 /home/toxic/estate/agents/oracle-market/bin/bidder.py \
   --id forge \
   --name Forge \
   --emoji "🔨" \

@@ -4,8 +4,8 @@
 
 <div align="right">
 
-[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -249,7 +249,7 @@ Exercised 2026-09-14, not asserted:
 
 ## License & security
 
-MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). Base `chat.py` is Apache-2.0 (`n24q02m/agent-chat-plugin`); fleet modules are original implementations of stolen *concepts* — see each module docstring for its provenance.
+MIT where marked — [LICENSE](https://github.com/toxicwind/estate-projects#license). Base `chat.py` is Apache-2.0 (`n24q02m/agent-chat-plugin`); fleet modules are original implementations of stolen *concepts* — see each module docstring for its provenance.
 
 Security posture, stated plainly:
 

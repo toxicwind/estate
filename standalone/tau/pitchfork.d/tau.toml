@@ -28,5 +28,5 @@ depends = ["gatehouse"]
 # modelRoles/retry/extensions file. See ~/.bashrc for the full reasoning.
 # 2026-10-02 tau-logpath: PI_CONFIG_DIR is a NAME relative to $HOME (tau dirs.ts joins it under os.homedir());
 # the old absolute value doubled the config root to $HOME/$HOME/.tau.
-env = { PI_CONFIG_DIR = ".tau", PI_CODING_AGENT_DIR = "/home/toxic/.tau/agent", PI_CODING_AGENT = "true", PI_OPENAI_STREAM_IDLE_TIMEOUT_MS = "120000", VANSROUTER_API_KEY = "local-sovereign", PI_DISABLE_UUTILS_BUILTINS = "1" }
+env = { PI_CONFIG_DIR = ".tau", PI_CODING_AGENT_DIR = "/home/toxic/.tau/agent", PI_CODING_AGENT = "true", PI_OPENAI_STREAM_IDLE_TIMEOUT_MS = "120000", VANSROUTER_API_KEY = "local-estate", PI_DISABLE_UUTILS_BUILTINS = "1" }
 auto = ["start"]

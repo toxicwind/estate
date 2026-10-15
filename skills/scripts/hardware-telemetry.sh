@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Sovereign Hardware & Performance Telemetry Helper
+# Estate Hardware & Performance Telemetry Helper
 # Inspects CPU cores, frequency governor, L3 cache, swappiness, and GPU memory.
 # ==============================================================================
 set -euo pipefail

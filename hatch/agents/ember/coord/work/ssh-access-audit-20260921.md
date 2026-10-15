@@ -7,7 +7,7 @@ Scope: read-only posture check of remote access paths. No credentials touched, n
 | Port | Bind | Process | Notes |
 |------|------|---------|-------|
 | 22 | 0.0.0.0 / [::] | sshd | Reachable via tailnet; Tailscale-SSH auth-walled (known) |
-| 25120 | 100.72.199.93 + 127.0.0.1 | bun (pid 1878344, sovereign-chat) | Accepts TCP, drops HTTP with zero bytes — proprietary protocol, unchanged |
+| 25120 | 100.72.199.93 + 127.0.0.1 | bun (pid 1878344, estate-chat) | Accepts TCP, drops HTTP with zero bytes — proprietary protocol, unchanged |
 | 25104 | 127.0.0.1 | bun (pid 2213822, router) | Loopback-only; bake-off target, healthy |
 | 25204 | 127.0.0.1 | python (pid 1799513, awrawr-ws-exec) | Loopback-only — the documented access blocker |
 | 25198 | 127.0.0.1 | python (pid 2226793, awrawr-mcp) | Loopback-only — same blocker |

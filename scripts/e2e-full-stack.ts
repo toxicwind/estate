@@ -5,9 +5,9 @@
  */
 import { appendFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { loadSovereignPorts, requirePort } from "../src/lib/ports.ts";
+import { loadEstatePorts, requirePort } from "../src/lib/ports.ts";
 
-loadSovereignPorts();
+loadEstatePorts();
 
 const OUT =
   process.env.E2E_OUT ||
@@ -209,7 +209,7 @@ const SWAP = requirePort("LLAMA_SWAP_PORT");
 const RUST = requirePort("RUST_WEB_PORT");
 const YOTE = requirePort("YOTE_PORT");
 const OF = requirePort("OPENFANG_PORT");
-const AM = requirePort("SOVEREIGN_ROUTER_PORT");
+const AM = requirePort("ESTATE_ROUTER_PORT");
 const HF = requirePort("HF_DOWNLOADER_PORT");
 const NG = requirePort("NULL_G_PROXY_PORT");
 const GHAS = requirePort("GHAS_API_PORT");

@@ -1,4 +1,4 @@
-# Sovereign Integration Plan
+# Estate Integration Plan
 
 ## Active Architecture
 

@@ -35,7 +35,7 @@ test("persistence > concurrent saveToFile calls serialize without temp collision
   const livePath = ModelCatalog.liveExportPathFor(path);
   const liveRaw = await readFile(livePath, "utf8");
   const live = JSON.parse(liveRaw);
-  expect(live.contract).toBe("sovereign-providers/live-catalog/v1");
+  expect(live.contract).toBe("estate-providers/live-catalog/v1");
   const liveEntries = await readdir(dir);
   expect(liveEntries.filter((e) => e.includes(".tmp."))).toEqual([]);
 });
@@ -49,7 +49,7 @@ test("persistence > concurrent writeLiveCatalog calls do not collide", async () 
 
   const raw = await readFile(path, "utf8");
   const doc = JSON.parse(raw);
-  expect(doc.contract).toBe("sovereign-providers/live-catalog/v1");
+  expect(doc.contract).toBe("estate-providers/live-catalog/v1");
 
   const entries = await readdir(dir);
   expect(entries.filter((e) => e.includes(".tmp."))).toEqual([]);

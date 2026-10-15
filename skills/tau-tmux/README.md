@@ -1,7 +1,7 @@
 <div align="right">
 
-[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-1f6feb?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-1f6feb?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -13,7 +13,7 @@
 
 - **Detached 3-pane lab — fire probes with `send-keys`, read results with `capture-pane`**
 - **Real audit — collapse chain resolves, engine version, `PI_CONFIG_DIR` honored, skills symlink live**
-- **Router checks — herd (`:25100`) and sovereign (`:25104`) reachable**
+- **Router checks — herd (`:25100`) and estate (`:25104`) reachable**
 - **Verified flag table — every flag checked against `tau --help` (18.2.6)**
 - **Honest history — the stub-helper era is documented, not hidden**
 
@@ -31,12 +31,12 @@ flowchart LR
 ```bash
 tmux new-session -d -s tau-lab -n lab
 tmux send-keys -t tau-lab:0.0 "tau -p 'reply with exactly: PANE0_OK'" C-m
-bun run /home/toxic/sovereign/skills/tau-tmux/helper/audit.ts
+bun run /home/toxic/estate/skills/tau-tmux/helper/audit.ts
 ```
 
 ## License & security
 
-- **License:** [MIT](https://github.com/toxicwind/sovereign-projects#license)
+- **License:** [MIT](https://github.com/toxicwind/estate-projects#license)
 - **Security:** The audit is read-only and observes the live box. The earlier stub-helper version (checks that always returned true) was replaced 2026-09-20 — docs now match the box.
 
 ---
@@ -65,12 +65,12 @@ tmux kill-session -t tau-lab
 ## Audit
 
 ```bash
-bun run /home/toxic/sovereign/skills/tau-tmux/helper/audit.ts [--verbose]
+bun run /home/toxic/estate/skills/tau-tmux/helper/audit.ts [--verbose]
 ```
 
 Exit 0 = all checks pass. Checks: tau launcher collapse chain resolves,
 engine version 18.2.6+, `PI_CONFIG_DIR=.tau` honored, skills symlink live
-with discoverable `SKILL.md` files, herd (:25100) and sovereign (:25104)
+with discoverable `SKILL.md` files, herd (:25100) and estate (:25104)
 routers reachable, no stale `nvidia.json`/`cascade.json`.
 
 ## Flags that exist (verified against `tau --help`, 18.2.6)
@@ -88,5 +88,5 @@ routers reachable, no stale `nvidia.json`/`cascade.json`.
 An earlier version of this skill audited `nvidia.json` / `cascade.json` /
 `nvidia.ts` and shipped a helper whose checks always returned true. Those
 files were removed on 2026-09-20 when the provider catalog moved to
-`~/.tau/agent/models.yml` (herd + sovereign dynamic discovery), and the
+`~/.tau/agent/models.yml` (herd + estate dynamic discovery), and the
 stub helper was replaced with the real one above. Docs now match the box.

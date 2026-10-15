@@ -40,9 +40,9 @@ function splitBlocks(src: string): { preamble: string; blocks: Block[] } {
 // Relative dirs resolve against /home/toxic/estate.
 function projectKey(dir: string, daemon: string): string {
   let d = dir;
-  if (!d) return "sovereign";
+  if (!d) return "estate";
   if (!d.startsWith("/")) d = SOV + "/" + d;
-  if (d === SOV) return "sovereign";
+  if (d === SOV) return "estate";
   const ranch = SOV + "/projects/range/ranch/";
   if (d.startsWith(ranch)) {
     const rest = d.slice(ranch.length).split("/").filter(Boolean);
@@ -53,7 +53,7 @@ function projectKey(dir: string, daemon: string): string {
   if (d.startsWith(SOV + "/projects/range/")) return `range/${d.slice((SOV + "/projects/range/").length).split("/").filter(Boolean)[0]}`;
   if (d.startsWith(SOV + "/projects/")) return `projects/${d.slice((SOV + "/projects/").length).split("/").filter(Boolean)[0]}`;
   if (d.startsWith(SOV + "/tools/")) return `tools/${d.slice((SOV + "/tools/").length).split("/").filter(Boolean)[0]}`;
-  if (d.startsWith(SOV + "/")) return "sovereign"; // config/, engines/, ops/, agents/, *-search: parent's own estate
+  if (d.startsWith(SOV + "/")) return "estate"; // config/, engines/, ops/, agents/, *-search: parent's own estate
   if (d === "/home/toxic") {
     // runs from $HOME: attribute by daemon name (tau, awrawr-*, codebase-memory)
     if (daemon === "tau") return "standalone/tau";
@@ -83,7 +83,7 @@ for (const d of daemons) {
   byProject.get(k)!.push(d);
 }
 const order = [...byProject.keys()].sort((a, b) => {
-  const rank = (k: string) => k === "sovereign" ? 0 : k.startsWith("ranch/") ? 1 : k.startsWith("range") ? 2 : k.startsWith("tools/") ? 3 : k.startsWith("projects/") ? 4 : 5;
+  const rank = (k: string) => k === "estate" ? 0 : k.startsWith("ranch/") ? 1 : k.startsWith("range") ? 2 : k.startsWith("tools/") ? 3 : k.startsWith("projects/") ? 4 : 5;
   return rank(a) - rank(b) || (a < b ? -1 : 1);
 });
 for (const k of order) console.log(`  ${k}: ${byProject.get(k)!.length} daemons`);

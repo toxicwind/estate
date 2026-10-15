@@ -7,7 +7,7 @@
 #
 # direnv lane (allowed): plain `export`s, dotenv loading, project-local PATH
 # additions that do not overlap mise shims.
-# mise lane: tool versions, shims, tasks, [daemons], [vars], sovereign [env].
+# mise lane: tool versions, shims, tasks, [daemons], [vars], estate [env].
 #
 # FINAL per ENV_OWNERSHIP.md (2026-09-14): boundary rules are authoritative.
 # Wire into mise doctor project named checks at cutover; until then run directly.

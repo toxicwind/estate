@@ -4,8 +4,8 @@ End-to-end testing for the squawk bid-marketplace. **E2E-REAL: no mocks.** Real 
 
 <div align="right">
 
-[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -79,4 +79,4 @@ Oracle (from the market's own model: max capability_match, tie → min cost): sh
 
 ## License & security
 
-MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). The harness spawns real OS processes that execute real payloads — run it on yote, never on a box you can't afford to dirty. `false-completion rate` is the metric that matters most: a market that claims success without the checker agreeing is worse than no market at all.
+MIT where marked — [LICENSE](https://github.com/toxicwind/estate-projects#license). The harness spawns real OS processes that execute real payloads — run it on yote, never on a box you can't afford to dirty. `false-completion rate` is the metric that matters most: a market that claims success without the checker agreeing is worse than no market at all.

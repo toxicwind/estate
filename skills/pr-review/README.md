@@ -53,7 +53,7 @@ Review logic implemented in SKILL.md with estate-specific adaptations:
 - Chris-voice PR body requirements
 
 ## License
-Internal tool - refer to sovereign estate licensing
+Internal tool - refer to estate estate licensing
 
 ## Security
 - **API Truth**: Uses `origin/` refs only, never trusts local stale branches

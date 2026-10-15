@@ -29,24 +29,24 @@ loadEnvFile(`${homedir()}/.secrets`);
 
 loadEnvFile("/home/toxic/.secrets");
 
-loadEnvFile("/home/toxic/sovereign/config/ports.env");
+loadEnvFile("/home/toxic/estate/config/ports.env");
 
-loadEnvFile("/home/toxic/sovereign/.env.local");
+loadEnvFile("/home/toxic/estate/.env.local");
 
-// Port SSOT: process-compose injects SOVEREIGN_PORT=${SOVEREIGN_ROUTER_PORT}
+// Port SSOT: process-compose injects ESTATE_PORT=${ESTATE_ROUTER_PORT}
 export const _portRaw =
-  process.env.SOVEREIGN_PORT || process.env.SOVEREIGN_ROUTER_PORT || "";
+  process.env.ESTATE_PORT || process.env.ESTATE_ROUTER_PORT || "";
 
 if (!_portRaw) {
   throw new Error(
-    "SOVEREIGN_ROUTER_PORT or SOVEREIGN_PORT required (config/ports.env)",
+    "ESTATE_ROUTER_PORT or ESTATE_PORT required (config/ports.env)",
   );
 }
 
 export const PORT = parseInt(_portRaw, 10);
 
 export const DB_PATH =
-  process.env.SOVEREIGN_DB || "/home/toxic/sovereign/data/sovereign_router.db";
+  process.env.ESTATE_DB || "/home/toxic/estate/data/estate_router.db";
 
 export const MAX_PARALLEL = 4;
 
@@ -54,9 +54,9 @@ export const STICKY_TTL = 1800;
 
 export const FIFO_MAX = 64;
 
-export const STRATEGY = process.env.SOVEREIGN_STRATEGY || "hybrid";
+export const STRATEGY = process.env.ESTATE_STRATEGY || "hybrid";
 
-export const UA = "Mozilla/5.0 (compatible; SovereignASTMatrix/3.1)";
+export const UA = "Mozilla/5.0 (compatible; EstateASTMatrix/3.1)";
 
 // ---------------------------------------------------------------------------
 // LLAMA_SWAP_V1 (must come before PROVIDERS that uses it)
@@ -77,7 +77,7 @@ export function loadLocalRoleModels(): {
     longctx: "beellama/qwen-flash-256k",
   };
   try {
-    const p = "/home/toxic/sovereign/.state/best-models.json";
+    const p = "/home/toxic/estate/.state/best-models.json";
     if (!existsSync(p)) return defaults;
     const j = JSON.parse(readFileSync(p, "utf8"));
     return {
@@ -105,7 +105,7 @@ export const PROVIDERS: Record<
   string,
   { base: string; key_env: string; key_env_alt?: string; no_auth?: boolean }
 > = {
-  // Local SSOT — always first-class for sovereign GPU path
+  // Local SSOT — always first-class for estate GPU path
   "llama-swap": {
     base: LLAMA_SWAP_V1,
     key_env: "LLAMA_SWAP_API_KEY",
@@ -285,7 +285,7 @@ export function isLocalSwapModelId(model: string): boolean {
   ) {
     return true;
   }
-  // sovereign naming prefixes / known local ids
+  // estate naming prefixes / known local ids
   return /^(beellama|mradermacher|jackrong|turboquant|ik_llama|ik_turboquant|holo|qwen\/|gemma-4|exaone)/i.test(
     model,
   );

@@ -16,7 +16,7 @@ import type {
 import {
   DEFAULT_SECRET_PATTERNS,
   DEFAULT_GITIGNORE_PATTERNS,
-  SOVEREIGN_PORT_SSOT,
+  ESTATE_PORT_SSOT,
   AGENTIC_ARTIFACT_GLOBS,
   AGENTIC_ID_PATTERNS,
 } from "./types.js";
@@ -81,7 +81,7 @@ export class GitMutator {
 
   /**
    * Audit agentic completions and secret leaks in staged/unstaged/untracked files.
-   * Excludes SOVEREIGN_PORT_SSOT from secret scanning. Blocks .bak files.
+   * Excludes ESTATE_PORT_SSOT from secret scanning. Blocks .bak files.
    */
   async auditAgenticCompletions(files?: string[]): Promise<AgenticAuditResult> {
     return this.core.auditAgenticCompletions(files);

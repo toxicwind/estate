@@ -1,11 +1,11 @@
 #!/usr/bin/env bun
 /**
- * maximal-sovereign-agentic-audit — Maximal agentic audit tool.
+ * maximal-estate-agentic-audit — Maximal agentic audit tool.
  *
  * Features:
  *   - Multi-tier (High/Medium/Low) chained execution pipeline
  *   - AST-aware code search via ast-grep
- *   - Pattern borrowing from global sovereign patterns
+ *   - Pattern borrowing from global estate patterns
  *   - Dual code search: exa (file tree) + gh (API code)
  *   - Bun.nanoseconds() microsecond-precision timing
  *   - Streaming with configurable batch/window
@@ -99,7 +99,7 @@ const TIERS: TierConfig[] = [
   {
     name: "High",
     priority: 3,
-    patterns: ["sovereign", "tau", "mesh", "pi", "llama", "agent", "pitchfork", "qed"],
+    patterns: ["estate", "tau", "mesh", "pi", "llama", "agent", "pitchfork", "qed"],
     ast_rules: ["typescript:console.log", "typescript:debugger", "typescript:any-type"],
     description: "Core ecosystem repos — highest audit priority",
   },
@@ -120,7 +120,7 @@ const TIERS: TierConfig[] = [
 ];
 
 // ============================================================================
-// Pattern Borrowing (from sovereign global patterns)
+// Pattern Borrowing (from estate global patterns)
 // ============================================================================
 
 const GLOBAL_PATTERNS = [
@@ -129,7 +129,7 @@ const GLOBAL_PATTERNS = [
   { term: "credential", weight: 10, category: "internal" as const },
   { term: "config", weight: 5, category: "internal" as const },
   { term: "private", weight: 8, category: "internal" as const },
-  { term: "sovereign", weight: 9, category: "ecosystem" as const },
+  { term: "estate", weight: 9, category: "ecosystem" as const },
   { term: "tau", weight: 9, category: "ecosystem" as const },
   { term: "mesh", weight: 9, category: "ecosystem" as const },
   { term: "herd", weight: 8, category: "ecosystem" as const },
@@ -201,7 +201,7 @@ const USERS = getArg("users", "").split(",").filter(Boolean);
 
 if (args.includes("--help") || args.includes("-h")) {
   console.log(`
-maximal-sovereign-agentic-audit — Maximal agentic repo visibility & bun auditor
+maximal-estate-agentic-audit — Maximal agentic repo visibility & bun auditor
 
 USAGE
   bun run src/index.ts [options]
@@ -213,7 +213,7 @@ SEARCH
   --ast-search, --ast            Enable AST-aware code search via ast-grep
   --exa-search, --exa            Enable exa file-tree code search
   --gh-search, --gh              Enable gh API code search
-  --pattern-borrow, --borrow     Borrow patterns from global sovereign patterns
+  --pattern-borrow, --borrow     Borrow patterns from global estate patterns
   --chain                        Enable chained pipeline execution
 
 FEATURES
@@ -238,9 +238,9 @@ FEATURES
 
 EXAMPLES
   bun run src/index.ts --user toxicwind --check-bun --output-parquet audit.parquet
-  bun run src/index.ts --users toxicwind,sovereign --check-bun --stream
+  bun run src/index.ts --users toxicwind,estate --check-bun --stream
   bun run src/index.ts --repos toxicwind/pi,toxicwind/tau --ast-search --gh-search
-  bun run src/index.ts --users toxicwind,sovereign --check-bun --stream
+  bun run src/index.ts --users toxicwind,estate --check-bun --stream
   bun run src/index.ts --repos toxicwind/pi,toxicwind/tau --ast-search --gh-search
   bun run src/index.ts --user toxicwind --chain --pattern-borrow --bench --timing
   bun run src/index.ts --help
@@ -248,7 +248,7 @@ EXAMPLES
 ARCHITECTURE
   • Multi-tier execution: High > Medium > Low priority chains
   • AST-aware search: ast-grep for structural code patterns
-  • Pattern borrowing: Global sovereign pattern ranker
+  • Pattern borrowing: Global estate pattern ranker
   • Dual search: exa (local file tree) + gh (GitHub API code)
   • Bun.nanoseconds(): Microsecond-precision timing
   • mitata: Structured benchmark runner
@@ -401,7 +401,7 @@ function classifyRepo(name: string, fork: boolean): { classification: string; ti
   }
 
   // Check ecosystem patterns
-  const ecosystemTerms = ["sovereign", "tau", "mesh", "herd", "pi", "llama", "agent", "pitchfork", "qed"];
+  const ecosystemTerms = ["estate", "tau", "mesh", "herd", "pi", "llama", "agent", "pitchfork", "qed"];
   if (ecosystemTerms.some(kw => lower.includes(kw))) {
     return { classification: fork ? "PUBLIC_FORK" : "PUBLIC_ECOSYSTEM", tier: "High" };
   }
@@ -745,7 +745,7 @@ async function runBenchmarks(): Promise<Record<string, number>> {
       const start = Bun.nanoseconds();
       const name = "tau-session-audit";
       const lower = name.toLowerCase();
-      ["sovereign", "tau", "mesh", "pi"].some(kw => lower.includes(kw));
+      ["estate", "tau", "mesh", "pi"].some(kw => lower.includes(kw));
       Bun.nanoseconds() - start;
     });
 
@@ -802,7 +802,7 @@ async function main() {
   const overallStart = nowNs();
   const timingMetrics: TimingMetric[] = [];
 
-  console.log(`🔍 maximal-sovereign-agentic-audit — Maximal agentic audit`);
+  console.log(`🔍 maximal-estate-agentic-audit — Maximal agentic audit`);
   console.log(`   User: ${USER} | Repos: ${REPOS.join(",")} | Users: ${USERS.join(",")} | Tier: ${TIER} | Chain: ${CHAIN} | PatternBorrow: ${PATTERN_BORROW}`);
   console.log(`   AST: ${AST_SEARCH} | Exa: ${EXA_SEARCH} | GH: ${GH_SEARCH}`);
   console.log(`   Stream: ${STREAM_ENABLED} (${STREAM_BATCH_SIZE}/batch) | Timing: ${TIMING_ENABLED}`);

@@ -15,4 +15,4 @@ hmac: f5f9bd4704c16ee2a0e9485202bdb0b550937d3e91004bcbbda5515ab4990dad
 ---
 [relayed #fleet by @coordinator]
 
-profile-signed post after sovereign reorg (FLEET_KEYS_DIR check)
+profile-signed post after estate reorg (FLEET_KEYS_DIR check)

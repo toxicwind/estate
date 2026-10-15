@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Columnar analytics over parquet: describe, ingest, log, group, fit, anomaly.
 
-Pure pyarrow + pandas + numpy so it runs in the existing sovereign venv with
+Pure pyarrow + pandas + numpy so it runs in the existing estate venv with
 no new dependencies. Every subcommand writes parquet back out, so analyses
 compose instead of ending in a terminal table.
 

@@ -1,9 +1,9 @@
 ---
-name: maximal-sovereign-agentic-audit
+name: maximal-estate-agentic-audit
 description: >
   Maximal agentic repo visibility audit tool. Uses Bun.nanoseconds() microsecond-precision timing,
   mitata benchmarks, ast-grep AST-aware code search, exa file-tree search, gh API code search,
-  pattern borrowing from global sovereign patterns, multi-tier chained execution pipeline.
+  pattern borrowing from global estate patterns, multi-tier chained execution pipeline.
   Triggers on: "audit visibility", "check bun versions", "repo privacy", "visibility audit",
   "parquet audit", "find bun versions", "which repos should be private", "repo classification",
   "ast search", "exa search", "gh search", "pattern borrow", "tier audit", "chain audit".
@@ -17,7 +17,7 @@ Fully agentic, production-grade audit tool with:
 1. **Multi-tier execution**: High > Medium > Low priority chains
 2. **Chained pipeline**: Sequential stages (classify → pattern-borrow → ast-search → exa-search → gh-search)
 3. **AST-aware code search**: `ast-grep` for structural code patterns
-4. **Pattern borrowing**: Global sovereign pattern ranker (from `sovereign/scripts/pattern-borrow.ts`)
+4. **Pattern borrowing**: Global estate pattern ranker (from `estate/scripts/pattern-borrow.ts`)
 5. **Dual code search**: `exa` (local file tree) + `gh` (GitHub API code)
 6. **Bun.nanoseconds()**: Microsecond-precision timing
 7. **mitata benchmarks**: Structured performance benchmarks inline
@@ -70,7 +70,7 @@ bun run src/index.ts \
 | `--ast-search`, `--ast` | `false` | Enable AST-aware code search via ast-grep |
 | `--exa-search`, `--exa` | `false` | Enable exa file-tree code search |
 | `--gh-search`, `--gh` | `false` | Enable gh API code search |
-| `--pattern-borrow`, `--borrow` | `false` | Borrow patterns from global sovereign patterns |
+| `--pattern-borrow`, `--borrow` | `false` | Borrow patterns from global estate patterns |
 | `--chain` | `false` | Enable chained pipeline execution |
 | `--bench` | `false` | Run mitata benchmarks inline |
 | `--help`, `-h` | — | Show help |
@@ -79,12 +79,12 @@ bun run src/index.ts \
 
 1. **Fetch**: `gh api users/{user}/repos --per-page 100 --page N --jq ...` (paginated)
 2. **Classify**: Rule-based classification with tier assignment:
-   - `PUBLIC_ECOSYSTEM` (High): names containing sovereign, tau, mesh, herd, pi, llama, agent, pitchfork, qed
+   - `PUBLIC_ECOSYSTEM` (High): names containing estate, tau, mesh, herd, pi, llama, agent, pitchfork, qed
    - `PUBLIC_FORK` (Medium): fork=true derivatives
    - `PUBLIC_OPENSOURCE` (Medium): has stars, language, description
    - `REVIEW_PRIVATE` (Low): non-fork, no ecosystem keywords, low/no stars
    - `PRIVATE_INTERNAL` (High): names containing secret, token, credential, config, private
-3. **Pattern Borrow**: Load global sovereign patterns, rank by weight
+3. **Pattern Borrow**: Load global estate patterns, rank by weight
 4. **AST Search**: `ast-grep scan --pattern <rule> --lang typescript --json=stream --no-ignore`
 5. **Exa Search**: `eza --tree --long --no-ignore --icons=never --group-directories-first --git --modified --permissions --links --classify --header --sort=modified --reverse --filter=*.ts ...`
 6. **GH Code Search**: `gh api search/code --limit 5 --jq [...] -q "query"`
@@ -132,14 +132,14 @@ gh api search/code --limit 5 --jq '[.items[:5].html_url]' -q 'query language:typ
 
 ## Pattern Borrowing (Global)
 
-Patterns from `sovereign/scripts/pattern-borrow.ts`:
+Patterns from `estate/scripts/pattern-borrow.ts`:
 | Term | Weight | Category |
 |------|--------|----------|
 | secret | 10 | internal |
 | token | 10 | internal |
 | credential | 10 | internal |
 | private | 8 | internal |
-| sovereign | 9 | ecosystem |
+| estate | 9 | ecosystem |
 | tau | 9 | ecosystem |
 | mesh | 9 | ecosystem |
 | herd | 8 | ecosystem |

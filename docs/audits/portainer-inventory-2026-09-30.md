@@ -21,7 +21,7 @@ management with agent-driven infrastructure.
 | Ports :9000 / :9443 / :9001 on yote | nothing listening (`:8000` is dockerd's userland proxy, not Portainer) |
 | Ports :9000 / :9443 / :8000 on tailnet almalinux-server (100.86.83.77) | connection refused / timeout |
 | `http://mildlyawesome.com:9000` (URL baked into dedi-ops tooling) | domain resolves to Cloudflare IPv6 only — :9000 unroutable through CF; unreachable |
-| Portainer references in sovereign (152k files, md/toml/yml/yaml/json) | zero matches |
+| Portainer references in estate (152k files, md/toml/yml/yaml/json) | zero matches |
 | `which portainer`, /opt/portainer*, /var/lib/docker/volumes/*portainer* | none |
 
 ## Remaining references (all dead or manual-only)

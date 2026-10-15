@@ -1,27 +1,27 @@
 #!/usr/bin/env bun
 /**
- * E2E agent stack — all ports from config/ports.env (via loadSovereignPorts).
+ * E2E agent stack — all ports from config/ports.env (via loadEstatePorts).
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import {
-  loadSovereignPorts,
+  loadEstatePorts,
   localUrl,
   requireEnv,
   requirePort,
 } from "../src/lib/ports.ts";
 
-loadSovereignPorts();
+loadEstatePorts();
 
 const HOME = process.env.HOME ?? "/home/toxic";
 const ROOT = resolve(HOME, "estate");
 const KEY =
-  process.env.SOVEREIGN_ROUTER_API_KEY ||
+  process.env.ESTATE_ROUTER_API_KEY ||
   process.env.LLM_API_KEY ||
   "estate-local-matrix";
 
 const SWAP = requirePort("LLAMA_SWAP_PORT");
-const MATRIX = requirePort("SOVEREIGN_ROUTER_PORT");
+const MATRIX = requirePort("ESTATE_ROUTER_PORT");
 const GHAS = requirePort("GHAS_API_PORT");
 
 type Row = { step: string; ok: boolean; detail: string };
@@ -59,8 +59,8 @@ function add(step: string, ok: boolean, detail: string) {
 
 // D2
 {
-  const h = await curlJson(localUrl("SOVEREIGN_ROUTER_PORT", "/health"));
-  const m = await curlJson(localUrl("SOVEREIGN_ROUTER_PORT", "/v1/models"));
+  const h = await curlJson(localUrl("ESTATE_ROUTER_PORT", "/health"));
+  const m = await curlJson(localUrl("ESTATE_ROUTER_PORT", "/v1/models"));
   add(
     "D2 llama-swap",
     h.status === 200 && m.status === 200,
@@ -71,7 +71,7 @@ function add(step: string, ok: boolean, detail: string) {
 // D3
 {
   const r = await curlJson(
-    localUrl("SOVEREIGN_ROUTER_PORT", "/v1/chat/completions"),
+    localUrl("ESTATE_ROUTER_PORT", "/v1/chat/completions"),
     {
       method: "POST",
       headers: {
@@ -206,7 +206,7 @@ print("llama", "llama-swap-test" in cs)
     await py.exited;
     const lines = out.trim().split("\n");
     const api = lines[0] || "";
-    const matrixHint = requireEnv("SOVEREIGN_ROUTER_PORT");
+    const matrixHint = requireEnv("ESTATE_ROUTER_PORT");
     add(
       "D10 zed settings",
       api.includes(matrixHint) &&

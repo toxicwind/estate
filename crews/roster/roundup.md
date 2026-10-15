@@ -1,8 +1,8 @@
 ---
 crew: 'roundup'
-scope: 'wave4 roundup lane: guidellm fork maximalization — rename fallout audit, one-command estate benchmark sweep (herd/flock/sovereign router), router-consumable weights (schema_version 2), fork encoding fix'
+scope: 'wave4 roundup lane: guidellm fork maximalization — rename fallout audit, one-command estate benchmark sweep (herd/flock/estate router), router-consumable weights (schema_version 2), fork encoding fix'
 owner: 'roundup-worker (Ember crew)'
-status: 'DONE (2026-10-02) -- ranch c62e65d (estate sweep + router weights + fork encoding fix); sovereign-projects d09f8b5 (roundup-weights.json landed)'
+status: 'DONE (2026-10-02) -- ranch c62e65d (estate sweep + router weights + fork encoding fix); estate-projects d09f8b5 (roundup-weights.json landed)'
 order: 90
 registered: '2026-10-02'
 updated: '2026-10-02'

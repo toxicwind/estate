@@ -45,7 +45,7 @@ import { knowledgeRoutes } from "./routes/knowledge.ts";
 import { terminalRoutes } from "./routes/terminal.ts";
 import { codeRoutes } from "./routes/code.ts";
 
-// Sovereign port SSOT: NULL_G_PROXY_PORT (25107). Legacy PORT/8787 only as last fallback.
+// Estate port SSOT: NULL_G_PROXY_PORT (25107). Legacy PORT/8787 only as last fallback.
 const PORT = parseInt(
   process.env["NULL_G_PROXY_PORT"] ??
     process.env["NULL_G_PORT"] ??
@@ -175,7 +175,7 @@ app.all("/mesh", async (c) => {
     status: r.status,
     headers: {
       "content-type": "application/json",
-      "x-sovereign-mesh": "ghas-20",
+      "x-estate-mesh": "ghas-20",
     },
   });
 });
@@ -189,7 +189,7 @@ app.all("/mesh/*", async (c) => {
     status: r.status,
     headers: {
       "content-type": "application/json",
-      "x-sovereign-mesh": "ghas-20",
+      "x-estate-mesh": "ghas-20",
     },
   });
 });
@@ -319,7 +319,7 @@ app.post("/v1/chat/completions", async (c) => {
     `[proxy] chat/completions model="${modelDef.openaiName}" stream=${body.stream ?? false} agentic=${agenticMode} cascade_id=${body.cascade_id ?? "new"}\n`,
   );
 
-  // Local llama-swap fallback when Antigravity is down OR model looks like a sovereign GGUF id
+  // Local llama-swap fallback when Antigravity is down OR model looks like a estate GGUF id
   const LLAMA_SWAP_V1 =
     process.env.LLM_BASE_URL ||
     process.env.LLAMA_SWAP_V1 ||

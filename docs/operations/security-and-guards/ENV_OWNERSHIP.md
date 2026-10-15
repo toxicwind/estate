@@ -89,7 +89,7 @@ direnv.** Rationale:
   nodejs_20, …) — mise manages neither toolchain in those scopes (global mise
   config manages only pitchfork), and neither file uses `layout`/`use mise`/
   venv activation.
-- Sovereign `[env]` (`_.file = config/ports.env`, `SCOUT_*`) has no overlap
+- Estate `[env]` (`_.file = config/ports.env`, `SCOUT_*`) has no overlap
   with either `.envrc`.
 - Fresh login shell: PATH zero dupes (idempotent `.bashrc.env`), mise shims
   resolve exactly once, `mise doctor` clean apart from known pre-existing
@@ -99,13 +99,13 @@ direnv.** Rationale:
 
 `~/.bashrc.env` PATH construction was made idempotent (prepend-if-missing +
 dedupe) on 2026-09-14 and verified. The file is git-ignored (`*.env`) and
-there is no local sovereign-end4 checkout — the fix is live but uncommitted;
+there is no local estate-end4 checkout — the fix is live but uncommitted;
 canonical repo home still to be decided.
 
 ## Implementation status (2026-09-17)
 
 ### What shipped
-- `dots/.bashrc.env` (sovereign-end4) auto-loads `~/.secrets` at shell startup: 89 vars, nounset-safe, exported, never overwrites existing vars.
+- `dots/.bashrc.env` (estate-end4) auto-loads `~/.secrets` at shell startup: 89 vars, nounset-safe, exported, never overwrites existing vars.
 - `~/.config/environment.d/10-shell.conf` fixed to absolute paths so systemd user services receive `BASH_ENV` (literal `%h` was broken).
 - Verified: clean noninteractive shell 4 -> 151 env vars; clean interactive shell 151 vars.
 

@@ -59,7 +59,7 @@ Modify the TypeScript source in `/home/toxic/estate/helpers/git-mutator/`:
 - `index.ts` - Entry point
 
 ## License
-Internal tool - refer to sovereign estate licensing
+Internal tool - refer to estate estate licensing
 
 ## Security
 - **Secret Scanning**: Detects tokens, keys, credentials, passwords, SSH/GPG materials, config files, and auth materials

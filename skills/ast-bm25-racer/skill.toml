@@ -1,5 +1,5 @@
 prompt_context = """
-# Sovereign AST-BM25 Racer — LOCAL-HEAVY edition (Consolidated into pattern-forge)
+# Estate AST-BM25 Racer — LOCAL-HEAVY edition (Consolidated into pattern-forge)
 
 > **CONSOLIDATION NOTICE**: Consolidated into **`pattern-forge`** (`forge retrieve`). Use `forge retrieve` for AST-BM25 hybrid in-tree retrieval.
 
@@ -50,7 +50,7 @@ python3 ast_bm25_racer.py --root /home/toxic/estate/projects/yote --query "funne
 [skill]
 name = "ast-bm25-racer"
 version = "0.1.0"
-description = "Sovereign AST-BM25 Racer, local-heavy edition: hybrid code retrieval plus nanosecond candidate racing. Triggers on: code retrieval, candidate racing, AST search."
+description = "Estate AST-BM25 Racer, local-heavy edition: hybrid code retrieval plus nanosecond candidate racing. Triggers on: code retrieval, candidate racing, AST search."
 author = ""
 license = ""
 tags = [

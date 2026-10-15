@@ -19,7 +19,7 @@ An audit-first methodology for README revitalization: open the code/config the R
 
 ## Key Anchors in This Workspace
 
-- `sovereign/README.md` verified against `pitchfork.toml`, `config/ports.env` (25117 hindsight, 25127 mesh)
+- `estate/README.md` verified against `pitchfork.toml`, `config/ports.env` (25117 hindsight, 25127 mesh)
 - Live curl/bun checks against running services
 - Corrupt 100644 files cleaned as live bugs (not doc updates)
 - Incident tables preserved verbatim across audits
@@ -46,7 +46,7 @@ An audit-first methodology for README revitalization: open the code/config the R
 ## Config
 
 - No configuration flags; the methodology is the tool
-- Key anchors: `sovereign/README.md` vs `pitchfork.toml`, `config/ports.env`
+- Key anchors: `estate/README.md` vs `pitchfork.toml`, `config/ports.env`
 - Verification: live curl/bun checks against running services
 
 ## Contributing

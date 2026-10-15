@@ -7,9 +7,9 @@
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { loadSovereignPorts, requirePort } from "../src/lib/ports.ts";
+import { loadEstatePorts, requirePort } from "../src/lib/ports.ts";
 
-loadSovereignPorts();
+loadEstatePorts();
 
 const SCRATCH =
   process.env.ZED_AGENT_OUT ||

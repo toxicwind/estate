@@ -92,7 +92,7 @@ Modify the Google Drive search script at `/home/toxic/estate/skills/deep-researc
 - Integration with Drive's API for different file types
 
 ## License
-Internal tool - refer to sovereign estate licensing
+Internal tool - refer to estate estate licensing
 
 ## Security
 - **Google Drive** - Uses native Drive index; no document downloading required for search

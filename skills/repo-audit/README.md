@@ -26,27 +26,27 @@ DevOps engineers, security analysts, and developers who need to audit repository
 ## Quick Start
 ```bash
 # Local-first audit (recommended for performance & privacy)
-python3 sovereign/skills/repo-audit/local_audit.py \
+python3 estate/skills/repo-audit/local_audit.py \
   --scan /home/toxic/projects \
   --output local-projects \
   --format both \
   --tree
 
 # Remote GitHub privacy audit
-python3 sovereign/skills/repo-audit/repo_audit.py \
+python3 estate/skills/repo-audit/repo_audit.py \
   --user toxicwind \
   --output repo-audit-analysis \
   --format both
 
 # Local audit with tree view and depth limit
-python3 sovereign/skills/repo-audit/local_audit.py \
+python3 estate/skills/repo-audit/local_audit.py \
   --scan /home/toxic \
   --tree \
   --depth 2 \
   --output overview
 
 # Cross-reference local and remote
-python3 sovereign/skills/repo-audit/repo_audit.py \
+python3 estate/skills/repo-audit/repo_audit.py \
   --user toxicwind \
   --load-env-map \
   --format json
@@ -86,7 +86,7 @@ Modify the Python scripts in `/home/toxic/estate/skills/repo-audit/`:
 - Supporting files: `audit.py`, `local_audit.py`, `projects.env`
 
 ## License
-Internal tool - refer to sovereign estate licensing
+Internal tool - refer to estate estate licensing
 
 ## Security
 - **Privacy-First**: Local analysis preferred to avoid exposing repo structure to external APIs

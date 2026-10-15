@@ -1,0 +1,41 @@
+---
+name: doorbell-estate
+description: Connect to the estate "doorbell" MCP bridge (OAuth client_credentials on the local bridge, JSON-RPC tools). Use to check bridge health, list its tools, call a tool, or verify the public funnel URL is not exposing open OAuth registration.
+---
+
+# doorbell-estate
+
+Client for the estate MCP bridge. Bridge listens on `http://127.0.0.1:25202` (override with `DOORBELL_BASE`);
+upstream is the mcpproxy unix socket. Public URL (Tailscale funnel): `https://estate.tailc9ac71.ts.net`.
+
+## Commands (always use the absolute path)
+
+    D=~/estate/skills/doorbell-estate/scripts/doorbell.py
+    python3 $D status                 # discovery, token, MCP handshake, tool count
+    python3 $D tools                  # tool names, first description line, required args
+    python3 $D call <tool> '<json>'   # call one tool; destructive-looking names need --yes
+    python3 $D exposure               # is the PUBLIC url leaking open OAuth/MCP access?
+
+## Rules
+
+1. Run `status` then `tools` first. Never assume tool names; the catalog changes.
+2. Never print, paste or log tokens/secrets. The script redacts; do not work around it.
+3. Prefer read-only tools. For anything that writes, executes or deletes, state what it will do and get the user's yes before using `--yes`.
+4. Do NOT add funnel routes for `/api/oauth/*` until `exposure` shows the bridge gates `/authorize` behind a human approval. Open dynamic registration + auto-issued codes + client_credentials = anyone on the internet gets tool access.
+5. Registration (DCR) is only done against loopback and cached in `~/.config/doorbell/client.json` (0600). Tokens cache in `~/.cache/doorbell/token.json` (0600).
+
+## Endpoints (from the bridge's discovery document)
+
+| purpose | path |
+|---|---|
+| discovery | `/.well-known/oauth-authorization-server` |
+| register | `/api/oauth/register` |
+| authorize | `/authorize` |
+| token | `/api/oauth/token` (legacy `/token` also tried) |
+| MCP | `/doorbell-mcp` (fallback `/mcp`) |
+
+## Troubleshooting
+
+- `token: could not obtain` → bridge down (`ss -ltnp | rg 25202`) or token path changed; read the discovery JSON.
+- `401` from MCP → `python3 $D status` refreshes; if it persists the client was revoked: delete `~/.config/doorbell/client.json`.
+- connector says "couldn't register" → the funnel does not proxy `/api/oauth/*` (404 on the public URL). That is the safe default; see rule 4 before changing it.

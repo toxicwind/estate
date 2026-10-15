@@ -1,4 +1,4 @@
-# Sovereign AST-BM25 Racer — LOCAL-HEAVY edition (Consolidated into pattern-forge)
+# Estate AST-BM25 Racer — LOCAL-HEAVY edition (Consolidated into pattern-forge)
 
 > **CONSOLIDATION NOTICE**: Consolidated into **`pattern-forge`** (`forge retrieve`). Use `forge retrieve` for AST-BM25 hybrid in-tree retrieval.
 

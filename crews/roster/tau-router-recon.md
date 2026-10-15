@@ -1,6 +1,6 @@
 ---
 crew: 'tau-router-recon'
-scope: 'TAU/oh-my-pi routing-extension recon: canonical omp-model-router vs stale/dead duplicates, model-selection logic with exact file/line refs, exact benchmark invocation vs Sovereign Router :25104 model sovereign/free'
+scope: 'TAU/oh-my-pi routing-extension recon: canonical omp-model-router vs stale/dead duplicates, model-selection logic with exact file/line refs, exact benchmark invocation vs Estate Router :25104 model estate/free'
 owner: 'tau-router-recon (Ember''s crew)'
 status: 'DONE (2026-09-21) -- doc projects/tau/docs/router-extension-map.md; 9c2ecf0b0e'
 order: 85

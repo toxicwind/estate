@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
- * Sovereign Health Audit Helper (September 2026)
- * Native Bun / TypeScript live probe across all Sovereign ecosystem endpoints.
+ * Estate Health Audit Helper (September 2026)
+ * Native Bun / TypeScript live probe across all Estate ecosystem endpoints.
  * Concurrent parallel execution via Promise.all (< 50ms total run time).
  * Preserves full, untruncated JSON diagnostics without arbitrary string slicing.
  */
@@ -75,7 +75,7 @@ async function checkHttp(endpoint: ServiceEndpoint): Promise<ProbeResult> {
   const t0 = performance.now();
   try {
     const resp = await fetch(endpoint.url, {
-      headers: { "User-Agent": "sovereign-health-audit/bun" },
+      headers: { "User-Agent": "estate-health-audit/bun" },
       signal: AbortSignal.timeout(2000),
     });
     const elapsed_ms = Number((performance.now() - t0).toFixed(1));
@@ -181,7 +181,7 @@ async function main() {
   }
 
   console.log(
-    `\nSovereign Stack Status: ${upCount}/${total} services healthy (${totalMs}ms parallel scan)`,
+    `\nEstate Stack Status: ${upCount}/${total} services healthy (${totalMs}ms parallel scan)`,
   );
 }
 

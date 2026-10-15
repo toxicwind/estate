@@ -26,7 +26,7 @@ import {
 } from "../lib/llama_swap_ssot.ts";
 
 const HOME = homedir();
-const SOV = process.env.SOVEREIGN_ROOT || join(HOME, "sovereign");
+const SOV = process.env.ESTATE_ROOT || join(HOME, "estate");
 const outDir = join(SOV, ".state");
 mkdirSync(outDir, { recursive: true });
 
@@ -97,8 +97,8 @@ raw = p.read_text()
 data = json5.loads(raw)
 lm = data.setdefault("language_models", {})
 changed = False
-if "sovereign-llama-swap" in lm:
-    del lm["sovereign-llama-swap"]
+if "estate-llama-swap" in lm:
+    del lm["estate-llama-swap"]
     changed = True
 want_url = ${JSON.stringify(swapBaseUrl())}
 cur = lm.get("llama.cpp") or {}

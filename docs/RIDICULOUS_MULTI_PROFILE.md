@@ -1,4 +1,4 @@
-# RIDICULOUS MULTI-PROFILE SETUP — Sovereign Model Router
+# RIDICULOUS MULTI-PROFILE SETUP — Estate Model Router
 
 ## Absurd Profile Mappings
 

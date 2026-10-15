@@ -19,7 +19,7 @@ After changing this file, run `bun ranch/ops/bin/kb-rollup.ts`.
 Audited estate docs for stale /home/toxic/estate paths, dead links, outdated claims.
 Committed (local-only; GitHub creds dead 2026-10-02, pushes blocked pending Chris):
 
-- sovereign-projects c037d68dd3: 12 docs fixed; estate-map regenerated; dupe KB deleted
+- estate-projects c037d68dd3: 12 docs fixed; estate-map regenerated; dupe KB deleted
 - ranch e1b1551: estate-map.ts, range/README, barn/chute, mesh/bin
 - trailboss 5faaf45, mcpproxy-go a2936363, rsync-mcp 5b79242, secretsmith b5b4632, tau 76447a0, chat-coord 2b3f4de
 

@@ -1,5 +1,5 @@
 // ============================================================================
-// SOVEREIGN — Bun Runtime Service (First-Class)
+// ESTATE — Bun Runtime Service (First-Class)
 // ============================================================================
 
 import type { ServiceDef } from "../types/index.ts";

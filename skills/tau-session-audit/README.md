@@ -1,7 +1,7 @@
 <div align="right">
 
 [![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate#license)
-[![sovereign-projects](https://img.shields.io/badge/part_of-sovereign--projects-blue?style=for-the-badge)](https://github.com/toxicwind/estate)
+[![estate-projects](https://img.shields.io/badge/part_of-estate--projects-blue?style=for-the-badge)](https://github.com/toxicwind/estate)
 
 </div>
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * Sovereign Mesh Probe Helper
+ * Estate Mesh Probe Helper
  * High-performance, clean JSON-RPC 2.0 probe for mcpproxy-go on port 25127.
  * Validates endpoint liveness, protocol handshake, and tool catalog retrieval.
  */
@@ -36,7 +36,7 @@ async function probe() {
       params: {
         protocolVersion: "2024-11-05",
         capabilities: { tools: { listChanged: true } },
-        clientInfo: { name: "sovereign-mesh-probe", version: "1.0.0" },
+        clientInfo: { name: "estate-mesh-probe", version: "1.0.0" },
       },
     };
 

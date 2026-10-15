@@ -2,7 +2,7 @@
 
 ## Usage
 
-Query the sovereign mesh endpoints and return a formatted status report.
+Query the estate mesh endpoints and return a formatted status report.
 
 ## Tool calls
 

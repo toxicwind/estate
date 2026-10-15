@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-sovereign-helper: Master hook for GitHub API ops, async parallel, rate limiting,
-and env-aware fallbacks. Designed for sovereign-pi / toxicwind workflows.
+estate-helper: Master hook for GitHub API ops, async parallel, rate limiting,
+and env-aware fallbacks. Designed for estate-pi / toxicwind workflows.
 Python 3.12+ primary, 3.11/3.8 AST fallback where needed.
 """
 from __future__ import annotations
@@ -172,7 +172,7 @@ def file_hash(path: Path | str, algo: str = "sha256") -> str:
 # --- CLI ---
 if __name__ == "__main__":
     import argparse
-    parser = argparse.ArgumentParser(description="Sovereign Helper")
+    parser = argparse.ArgumentParser(description="Estate Helper")
     parser.add_argument("--ensure", nargs="+", help="Ensure packages are installed")
     parser.add_argument("--pip-fallback", nargs="+", help="Install with CDN fallback")
     args = parser.parse_args()

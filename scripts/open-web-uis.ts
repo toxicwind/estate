@@ -1,8 +1,8 @@
 #!/usr/bin/env bun
 
 // ============================================================================
-// SOVEREIGN — Standard Web UI & Dashboard Browser Launcher
-// Opens Sovereign Web UIs into tabs in the running Firefox Nightly instance.
+// ESTATE — Standard Web UI & Dashboard Browser Launcher
+// Opens Estate Web UIs into tabs in the running Firefox Nightly instance.
 // ============================================================================
 
 import { spawn } from "node:child_process";
@@ -24,7 +24,7 @@ export interface WebUISpec {
 const ROOT = resolve(import.meta.dir, "..");
 const ports = parsePortsEnv(ROOT);
 
-export const SOVEREIGN_WEB_UIS: WebUISpec[] = [
+export const ESTATE_WEB_UIS: WebUISpec[] = [
   {
     id: "herd",
     name: "Herd / Llama-Swap",
@@ -70,7 +70,7 @@ export const SOVEREIGN_WEB_UIS: WebUISpec[] = [
     portKey: "GRAFANA_PORT",
     defaultPort: 25110,
     path: "/",
-    description: "Full observability & Sovereign system metrics dashboard",
+    description: "Full observability & Estate system metrics dashboard",
     authRequired: false,
     notes: "Anonymous admin enabled; admin credentials: admin / toxic",
   },
@@ -175,7 +175,7 @@ export async function probeUI(
   try {
     const res = await fetch(primaryUrl, {
       signal: AbortSignal.timeout(timeoutMs),
-      headers: { "User-Agent": "Sovereign-WebUI-Probe/1.0" },
+      headers: { "User-Agent": "Estate-WebUI-Probe/1.0" },
     });
     return {
       spec,
@@ -251,7 +251,7 @@ async function main() {
 
   if (args.includes("--help") || args.includes("-h")) {
     console.log(`
-Sovereign Web UI Launcher
+Estate Web UI Launcher
 
 Usage:
   bun run scripts/open-web-uis.ts [options]
@@ -267,18 +267,18 @@ Options:
   --help, -h      Show this help message
 
 Registered UIs:
-  ${SOVEREIGN_WEB_UIS.map((u) => `${u.id.padEnd(14)} : ${u.name} (Port: ${ports.get(u.portKey) ?? u.defaultPort})`).join("\n  ")}
+  ${ESTATE_WEB_UIS.map((u) => `${u.id.padEnd(14)} : ${u.name} (Port: ${ports.get(u.portKey) ?? u.defaultPort})`).join("\n  ")}
 `);
     process.exit(0);
   }
 
-  console.log("🔍 Probing Sovereign Web UIs...");
+  console.log("🔍 Probing Estate Web UIs...");
   const probed = await Promise.all(
-    SOVEREIGN_WEB_UIS.map((spec) => probeUI(spec)),
+    ESTATE_WEB_UIS.map((spec) => probeUI(spec)),
   );
 
   if (isList) {
-    console.log("\n📊 Sovereign Web UI Status:");
+    console.log("\n📊 Estate Web UI Status:");
     console.log("─".repeat(88));
     console.log(
       `${"ID".padEnd(14)} ${"NAME".padEnd(26)} ${"PORT".padEnd(8)} ${"STATUS".padEnd(16)} ${"URL"}`,
@@ -312,7 +312,7 @@ Registered UIs:
       console.error(
         `❌ Unknown service: "${targetService}". Available services:`,
       );
-      console.error(SOVEREIGN_WEB_UIS.map((s) => `  - ${s.id}`).join("\n"));
+      console.error(ESTATE_WEB_UIS.map((s) => `  - ${s.id}`).join("\n"));
       process.exit(1);
     }
     targets = [match];

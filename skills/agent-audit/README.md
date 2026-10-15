@@ -2,7 +2,7 @@
 
 <!-- badges: start -->
 <a href="https://github.com/toxicwind/estate">
-  <img src="https://img.shields.io/badge/github-toxicwind/sovereign--projects-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub repo">
+  <img src="https://img.shields.io/badge/github-toxicwind/estate--projects-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub repo">
 </a>
 <a href="https://muse.db">
   <img src="https://img.shields.io/badge/postgresql-muse.db-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL">

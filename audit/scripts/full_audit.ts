@@ -36,7 +36,7 @@ async function runScript(
 }
 
 async function main() {
-  console.log("=== SOVEREIGN FULL AUDIT ===\n");
+  console.log("=== ESTATE FULL AUDIT ===\n");
   let failed = 0;
 
   for (const step of STEPS) {

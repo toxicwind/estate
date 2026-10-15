@@ -1,4 +1,4 @@
-# Sovereign Control Plane
+# Estate Control Plane
 
 Aesthetic map of live dashboards, APIs, and MCP surfaces (25xxx SSOT).
 

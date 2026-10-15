@@ -157,7 +157,7 @@ def t3_panel_size(question_rows, concurrency):
                   "oracle-judge-local"]}
     out = {}
     for name, models in cfgs.items():
-        work = ("/home/toxic/sovereign/agents/oracle-market/"
+        work = ("/home/toxic/estate/agents/oracle-market/"
                 "work-tune-panel%s-%d" % (name, int(time.time())))
         os.makedirs(work, exist_ok=True)
         os.environ["ORACLE_WORK"] = work
@@ -353,7 +353,7 @@ def main(argv):
     ap.add_argument("--concurrency", type=int, default=4)
     a = ap.parse_args(argv)
     ts = int(time.time())
-    work = "/home/toxic/sovereign/agents/oracle-market/work-tune-%d" % ts
+    work = "/home/toxic/estate/agents/oracle-market/work-tune-%d" % ts
     os.makedirs(work, exist_ok=True)
     os.environ["ORACLE_WORK"] = work
     sys.path.insert(0, BIN)

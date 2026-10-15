@@ -32,7 +32,7 @@
 #   PUSH_GUARD_SKIP=1 ...                         # emergency bypass (loud, never silent)
 #
 # Adopted 2026-09-18, debate d867e8f6. Ignore-memory + placeholder auto-clear 2026-09-21 (Chris: approval is durable).
-# Canonical source: toxicwind/sovereign-projects:bin/push-guard.sh (mirrored at tools/push-guard.sh).
+# Canonical source: toxicwind/estate-projects:bin/push-guard.sh (mirrored at tools/push-guard.sh).
 # Live fleet copy: /home/toxic/bin/push-guard.sh -- refresh with: install -Dm755 <repo-copy> /home/toxic/bin/push-guard.sh
 # Pre-push install one-liner:
 #   install -Dm755 /home/toxic/bin/pre-push "$(git rev-parse --git-dir)/hooks/pre-push"

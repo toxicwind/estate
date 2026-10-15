@@ -113,7 +113,7 @@ Examples:
   bun helpers/git-mutator/cli.ts commit-push "feat: add thing"
   bun helpers/git-mutator/cli.ts scan-secrets
 
-The SOVEREIGN_PORT_SSOT (/home/toxic/estate/config/ports.env)
+The ESTATE_PORT_SSOT (/home/toxic/estate/config/ports.env)
 is respected — environment files are excluded from secret scanning.
 
 Artifacts scanned include: .bak. files, .claude/, .codex/, completions/*.jsonl

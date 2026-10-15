@@ -1,4 +1,4 @@
-# OMP & Tau Sovereign Environment Variables Reference
+# OMP & Tau Estate Environment Variables Reference
 
 This reference documents every known environment variable supported by the Tau coding agent engine (`omp`), categorized by functional subsystem. 
 

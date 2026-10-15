@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * Sovereign Kimi-Claw Bridge — repaired 2026-09-20 (kimiclaw-deployer);
+ * Estate Kimi-Claw Bridge — repaired 2026-09-20 (kimiclaw-deployer);
  *   model-agnostic rewire 2026-09-21 (relay): ZERO hardcoded model IDs.
  *   Model selection lives ONLY in router config: KIMICLAW_HERD_MODEL env,
  *   instance routing.herdModel, or herd's own aliases (e.g. "fast") — the
@@ -12,8 +12,8 @@
  * - OpenFang default route is now http://127.0.0.1:25196 (2026-09-21; :4200 dead, :25103 long dead).
  * - The dead direct Coyote route on 127.0.0.1:25143 is REMOVED. Coyote
  *   dispatches go through the OpenFang agent "coyote" on :4200 instead.
- * - Per-instance endpoints: kimiclaw-a (sovereign-yote-kimiclaw-a, im_rpc,
- *   OpenFang agent kimiclaw-1) and kimiclaw-b (sovereign-yote-kimiclaw-b,
+ * - Per-instance endpoints: kimiclaw-a (estate-yote-kimiclaw-a, im_rpc,
+ *   OpenFang agent kimiclaw-1) and kimiclaw-b (estate-yote-kimiclaw-b,
  *   bridge_ws — normalized to im_rpc at runtime per the port source's own
  *   readDeprecatedOutboundTransport + validation warning, OpenFang agent
  *   kimiclaw-2).
@@ -66,8 +66,8 @@ interface InstanceDef {
 const INSTANCES: Record<string, InstanceDef> = {
   a: {
     key: "a",
-    instanceId: "sovereign-yote-kimiclaw-a",
-    deviceId: "sovereign-yote-kimiclaw-a",
+    instanceId: "estate-yote-kimiclaw-a",
+    deviceId: "estate-yote-kimiclaw-a",
     openfangAgent: "kimiclaw-1",
     outboundTransport: "im_rpc",
     squawkFrom: "kimiclaw-a",
@@ -75,8 +75,8 @@ const INSTANCES: Record<string, InstanceDef> = {
   },
   b: {
     key: "b",
-    instanceId: "sovereign-yote-kimiclaw-b",
-    deviceId: "sovereign-yote-kimiclaw-b",
+    instanceId: "estate-yote-kimiclaw-b",
+    deviceId: "estate-yote-kimiclaw-b",
     openfangAgent: "kimiclaw-2",
     outboundTransport: "bridge_ws",
     squawkFrom: "kimiclaw-b",
@@ -545,7 +545,7 @@ async function handleFleetFile(
         system:
           `You are the ${cfg.instance.openfangAgent} KimiClaw instance ` +
           `(bridge ${cfg.instance.instanceId}) relaying a message from the ` +
-          `Sovereign squawk fleet channel. Reply concisely and helpfully.`,
+          `Estate squawk fleet channel. Reply concisely and helpfully.`,
       },
     );
     publishSquawkReply(cfg, message, reply);

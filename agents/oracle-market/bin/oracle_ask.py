@@ -46,7 +46,7 @@ import evidence as evmod
 import escalation
 
 HERD_URL = os.environ.get("HERD_URL", "http://127.0.0.1:25100")
-WORK = os.environ.get("ORACLE_WORK", "/home/toxic/sovereign/agents/oracle-market/work")
+WORK = os.environ.get("ORACLE_WORK", "/home/toxic/estate/agents/oracle-market/work")
 
 # Judge panel: ROUTER ROLE ALIASES. Concrete targets are owned by
 # config/herd.yaml ("Oracle judge panel"); this list is routing surface
@@ -107,7 +107,7 @@ def _check_alias_models(models):
 # ---------------------------------------------------------------------------
 
 HERD_YAML = os.environ.get("HERD_YAML",
-                           "/home/toxic/sovereign/config/herd.yaml")
+                           "/home/toxic/estate/config/herd.yaml")
 _provider_targets_cache = None
 
 

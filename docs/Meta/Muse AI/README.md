@@ -4,8 +4,8 @@ Evidence-based notes on the Muse platform (platform codename **hatch**), reverse
 
 <div align="right">
 
-[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -52,9 +52,9 @@ less docs/Meta/"Muse AI"/runtime-cell.md
 ## Estate docs
 
 - **Fleet knowledgebase** — the canonical estate map, active crews, repo index, standing rules (source of truth; this README does not duplicate it):
-  <https://github.com/toxicwind/sovereign-projects/blob/main/docs/fleet-knowledgebase.md>
+  <https://github.com/toxicwind/estate-projects/blob/main/docs/fleet-knowledgebase.md>
 - **Master README** — the doc-graph root:
-  <https://github.com/toxicwind/sovereign-projects/blob/main/README.md>
+  <https://github.com/toxicwind/estate-projects/blob/main/README.md>
 
 ## Contributing
 
@@ -62,4 +62,4 @@ New field notes go here as dated `.md` files with the evidence chain attached: c
 
 ## License & security
 
-MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). These are observations about a platform you don't control: treat platform-internal details (socket paths, codenames, env-var inventories) as operational notes, never as credentials or access paths. Nothing here authorizes crossing a platform boundary.
+MIT where marked — [LICENSE](https://github.com/toxicwind/estate-projects#license). These are observations about a platform you don't control: treat platform-internal details (socket paths, codenames, env-var inventories) as operational notes, never as credentials or access paths. Nothing here authorizes crossing a platform boundary.

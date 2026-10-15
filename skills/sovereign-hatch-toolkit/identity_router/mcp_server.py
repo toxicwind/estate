@@ -14,7 +14,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from identity_router.identity_parser import parse_identity_file
 from identity_router.router import LessonRouter, OWNERSHIP_TABLE
 
-SERVER_NAME = "sovereign-identity-router"
+SERVER_NAME = "estate-identity-router"
 SERVER_VERSION = "1.0.0"
 PROTOCOL_VERSION = "2024-11-05"
 

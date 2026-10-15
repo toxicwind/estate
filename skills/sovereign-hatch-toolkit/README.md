@@ -1,10 +1,10 @@
-# sovereign-hatch-toolkit
+# estate-hatch-toolkit
 
 A Python toolkit with three production-grade subsystems for building and managing autonomous software engineering workflows.
 
 ## Hero
 
-Orchestrate, monitor, and secure your autonomous agent fleet with the sovereign-hatch toolkit — a battle-tested foundation for modern AI systems.
+Orchestrate, monitor, and secure your autonomous agent fleet with the estate-hatch toolkit — a battle-tested foundation for modern AI systems.
 
 ## Features
 
@@ -16,22 +16,22 @@ Orchestrate, monitor, and secure your autonomous agent fleet with the sovereign-
 ## Quick Start
 
 ```bash
-# Install sovereign-hatch-toolkit
-pip install sovereign-hatch-toolkit
+# Install estate-hatch-toolkit
+pip install estate-hatch-toolkit
 
 # Initialize the toolkit
-python sovereign_hatch_toolkit/init.py --config config/hatch.yaml
+python estate_hatch_toolkit/init.py --config config/hatch.yaml
 
 # Start the identity router
-python sovereign_hatch_toolkit/identity_router.py --config config/identity.yaml
+python estate_hatch_toolkit/identity_router.py --config config/identity.yaml
 
 # Launch the filesystem bus
-python sovereign_hatch_toolkit/fsbus_engine.py --config config/fsbus.yaml
+python estate_hatch_toolkit/fsbus_engine.py --config config/fsbus.yaml
 ```
 
 ## Architecture
 
-Sovereign-Hatch is organized around three core pillars:
+Estate-Hatch is organized around three core pillars:
 
 1. **Hatch Core** — Handles secure communication, key management, and identity verification
 2. **Filesystem Bus** — Provides a durable, atomic message bus for inter-service communication

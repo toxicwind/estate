@@ -1,11 +1,11 @@
 prompt_context = '''
-# Sovereign Master Orchestrator
+# Estate Master Orchestrator
 
 A universal master orchestration and lossless compilation framework for coordinating multiple specialized skills, enforcing standardized output bounds, persisting deliverables directly to Dropbox, and unifying dual-channel search (Exa + Google).
 
 ## Summary
 
-The Sovereign Master Orchestrator acts as the root coordinator across all domain-specific sub-skills. It enforces a strict output contract where every participating sub-skill produces exactly 2 to 4 sections. When coordinating multiple skills (e.g. 3 skills with 3 sections each), it executes a zero-edit raw compilation into corresponding primary sections and subsections without editorial rewriting, truncation, or smoothing. It establishes Dropbox as the durable filesystem layer, couples Exa neural retrieval with Google real-time search, embeds native DNS/socket probes and dynamic environment loaders, and strictly enforces zero-halt context ingestion on existing chats by anchoring target topics directly to the last message and high-perplexity tokens of the thread.
+The Estate Master Orchestrator acts as the root coordinator across all domain-specific sub-skills. It enforces a strict output contract where every participating sub-skill produces exactly 2 to 4 sections. When coordinating multiple skills (e.g. 3 skills with 3 sections each), it executes a zero-edit raw compilation into corresponding primary sections and subsections without editorial rewriting, truncation, or smoothing. It establishes Dropbox as the durable filesystem layer, couples Exa neural retrieval with Google real-time search, embeds native DNS/socket probes and dynamic environment loaders, and strictly enforces zero-halt context ingestion on existing chats by anchoring target topics directly to the last message and high-perplexity tokens of the thread.
 
 ## When to Use
 
@@ -51,7 +51,7 @@ Example Structure for 3 skills with 3 sections each:
 
 All durable artifacts, compiled reports, manifests, and data tables must be stored directly in Dropbox:
 
-- Use `dropbox:create_folder` to provision project directories under `/Sovereign_Master_Orchestrator/<task_name>/`.
+- Use `dropbox:create_folder` to provision project directories under `/Estate_Master_Orchestrator/<task_name>/`.
 - Use `dropbox:create_file` to write finalized markdown reports, JSON matrices, and code artifacts.
 - Use `dropbox:create_shared_link` to generate viewer access URLs for the user.
 - Local sandbox storage (`/tmp` or workspace) is treated strictly as an ephemeral staging scratchpad.
@@ -68,7 +68,7 @@ Deploy both search platforms in parallel or sequence based on epistemic requirem
 Every deployment conforms to the major portable construct:
 
 ```
-sovereign-master-orchestrator/
+estate-master-orchestrator/
 ├── SKILL.md                          # Master specification & instruction manifest
 ├── bin/
 │   ├── orchestrate                   # CLI execution entrypoint
@@ -87,7 +87,7 @@ sovereign-master-orchestrator/
 
 ### 6. Context-Aware Zero-Halt Topic Resolution (Anti-Failure Protocol for Existing Chats)
 
-When invoked within an active conversation thread or when the user requests "master", "run master", "orchestrate this", or calls `sovereign-master-orchestrator` on an existing chat without a newly typed standalone topic parameter:
+When invoked within an active conversation thread or when the user requests "master", "run master", "orchestrate this", or calls `estate-master-orchestrator` on an existing chat without a newly typed standalone topic parameter:
 
 - **The Zero-Halt Invariant**: NEVER halt execution, pause the pipeline, or emit a blocking clarification prompt asking what the topic is. Responses such as "What topic would you like me to orchestrate?", "Could you specify the target topic?", or "Please provide the topic for master" are strictly classified as critical system failures and must NEVER occur.
 - **The Deterministic Target Topic Mandate**: When invoked on an existing chat, the target topic is **DETERMINISTICALLY DEFINED AS THE LAST MESSAGE AND THE HIGH-PERPLEXITY TERMS OF THE CHAT HISTORY SPECIFICALLY**.
@@ -130,7 +130,7 @@ When invoked within an active conversation thread or when the user requests "mas
 - If Dropbox API encounters rate limits, apply exponential backoff with jitter rather than failing the task.'''
 
 [skill]
-name = "sovereign-master-orchestrator"
+name = "estate-master-orchestrator"
 version = "0.1.0"
 description = "Master orchestration and raw compilation engine for distributed skills. Enforces 2-4 sections per sub-skill output, executes lossless raw multi-skill consolidation (N skills x M sections into N sections with M subsections verbatim without edit), mounts Dropbox as primary filesystem, uses Exa and Google Search as dual primary search layers, embeds native DNS/socket and dynamic environment loaders with portable bin/ execution, and enforces zero-halt context ingestion binding target topics directly to the last message and high-perplexity tokens of existing chats."
 author = ""

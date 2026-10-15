@@ -25,7 +25,7 @@ Code, archives, repos, docs — **photos explicitly out of scope** (standing dir
 
 Raw pulls land in `/mnt/8TB/phone-archive/` (26G on 2026-09-30, 7/7 dirs OK).
 Triage into `repos/` `archives/` `code/` `docs/` per the skill, then route
-reusable work to sovereign or a standalone project folder.
+reusable work to estate or a standalone project folder.
 
 ## Future
 

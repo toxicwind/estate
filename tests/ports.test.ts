@@ -1,5 +1,5 @@
 /**
- * ports.ts unit tests — covers loadSovereignPorts, requireEnv, requirePort,
+ * ports.ts unit tests — covers loadEstatePorts, requireEnv, requirePort,
  * localUrl edge cases.
  */
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
@@ -11,7 +11,7 @@ const origEnv: Record<string, string | undefined> = {};
 
 beforeEach(() => {
   // Save relevant env vars
-  for (const k of ["SOVEREIGN_ROOT", "LLAMA_SWAP_PORT", "SOME_PORT"]) {
+  for (const k of ["ESTATE_ROOT", "LLAMA_SWAP_PORT", "SOME_PORT"]) {
     origEnv[k] = process.env[k];
   }
 });
@@ -24,21 +24,21 @@ afterEach(() => {
   }
 });
 
-// Import fresh each time — the module caches loadSovereignPorts internally,
-// but we set SOVEREIGN_ROOT so the paths resolve predictably.
-process.env.SOVEREIGN_ROOT = join(homedir(), "estate");
+// Import fresh each time — the module caches loadEstatePorts internally,
+// but we set ESTATE_ROOT so the paths resolve predictably.
+process.env.ESTATE_ROOT = join(homedir(), "estate");
 
 import {
-  loadSovereignPorts,
+  loadEstatePorts,
   localUrl,
   requireEnv,
   requirePort,
 } from "../src/lib/ports.ts";
 
 describe("ports.ts", () => {
-  test("loadSovereignPorts is idempotent (line 31-35)", () => {
-    loadSovereignPorts();
-    loadSovereignPorts(); // no throw
+  test("loadEstatePorts is idempotent (line 31-35)", () => {
+    loadEstatePorts();
+    loadEstatePorts(); // no throw
   });
 
   test("requireEnv throws for missing key", () => {

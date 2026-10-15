@@ -46,6 +46,6 @@ needed — the shim rides the proven connector (2026-10-02).
 `https://github-mcp-host.tailc9ac71.ts.net/mcp` (Streamable HTTP),
 header `X-MCP-Token: <vaulted custom.awrawr-mcp credential>`.
 Local: `http://127.0.0.1:25198/mcp`. Pitchfork: `awrawr-mcp`
-(note: project id is `estate/awrawr-mcp`; stale `sovereign/awrawr-mcp`
+(note: project id is `estate/awrawr-mcp`; stale `estate/awrawr-mcp`
 state entry lingers — use the estate id).
 Rollback: `/home/toxic/awrawr_mcp.py.bak-20261002-shim`.

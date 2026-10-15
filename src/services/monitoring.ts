@@ -1,5 +1,5 @@
 // ============================================================================
-// SOVEREIGN — Monitoring Services
+// ESTATE — Monitoring Services
 // ============================================================================
 
 import type { ServiceDef } from "../types/index.ts";

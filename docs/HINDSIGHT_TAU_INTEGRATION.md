@@ -1,4 +1,4 @@
-# Sovereign Hindsight & Tau Long-Term Memory Architecture
+# Estate Hindsight & Tau Long-Term Memory Architecture
 
 > **Harness**: Tau Coding Agent (`/home/toxic/estate/agent`)
 > **Memory Backend**: Vectorize Hindsight (`ghcr.io/vectorize-io/hindsight:latest`)
@@ -11,7 +11,7 @@
 
 ```text
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                           SOVEREIGN LOCAL STACK                         │
+│                           ESTATE LOCAL STACK                         │
 ├─────────────────────────────────────────────────────────────────────────┤
 │                                                                         │
 │   ┌─────────────────────────────────────────────────────────────────┐   │

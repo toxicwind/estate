@@ -17,7 +17,7 @@
 #   rm -rf "$G/dist" && cp -a "$G/dist.fork-<stamp>" "$G/dist" && tools/bili-deploy.sh --no-build
 set -euo pipefail
 
-FORK="${BILI_FORK_DIR:-/home/toxic/sovereign/projects/sigma}"
+FORK="${BILI_FORK_DIR:-/home/toxic/estate/projects/sigma}"
 GLOBAL="${BILI_GLOBAL_DIR:-/home/toxic/.bun/install/global/node_modules/billion-context}"
 DIST="$GLOBAL/dist"
 PORT="${BILI_PORT:-32847}"

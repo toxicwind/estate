@@ -38,7 +38,7 @@ the binary via `AST_GREP_BIN` env, then `ast-grep` on PATH.
 ```bash
 # Natural-language claim -> structural verification
 forge audit --root /home/toxic/estate/tools/sovereign-router \
-  --claim "sovereign router listens on port 25104"
+  --claim "estate router listens on port 25104"
 
 # Direct structural pattern (you write the AST shape)
 forge audit --root /home/toxic/estate/ranch --pattern 'app.listen($PORT, $$$)' --lang ts
@@ -53,7 +53,7 @@ forge audit --root <dir> --claim "herd serves port 25100" --json
 Example output:
 
 ```
-=== audit: "sovereign router listens on port 25104" -> VERIFIED (2 hits) ===
+=== audit: "estate router listens on port 25104" -> VERIFIED (2 hits) ===
   router.ts:87:2-87:31  Bun.serve({ port: 25104, ... })
     $PORT = "25104"
   config.ts:12:0-12:22  export const PORT = 25104

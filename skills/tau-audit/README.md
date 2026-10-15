@@ -27,7 +27,7 @@ Runs `~/.local/bin/tau-audit.sh`, which validates:
 
 ### 2. `tau-tmux audit.ts` – 7 Checks
 
-Runs `bun run ~/sovereign/skills/tau-tmux/helper/audit.ts`, covering:
+Runs `bun run ~/estate/skills/tau-tmux/helper/audit.ts`, covering:
 - Launcher correctness
 - Version verification
 - Router routing integrity
@@ -36,7 +36,7 @@ Runs `bun run ~/sovereign/skills/tau-tmux/helper/audit.ts`, covering:
 
 ### 3. `frontmatter-audit.sh` – 68 Checks
 
-Runs `bash ~/sovereign/skills/scripts/frontmatter-audit.sh`, validating that every SKILL.md carries proper frontmatter:
+Runs `bash ~/estate/skills/scripts/frontmatter-audit.sh`, validating that every SKILL.md carries proper frontmatter:
 - `name: slug-name` (no quotes/underscores)
 - `description: >` (multi‑line when needed)
 - `Triggers on:` keywords present
@@ -48,8 +48,8 @@ Runs `bash ~/sovereign/skills/scripts/frontmatter-audit.sh`, validating that eve
 ```bash
 # Run the full audit suite
 bash ~/.local/bin/tau-audit.sh
-bun run ~/sovereign/skills/tau-tmux/helper/audit.ts
-bash ~/sovereign/skills/scripts/frontmatter-audit.sh
+bun run ~/estate/skills/tau-tmux/helper/audit.ts
+bash ~/estate/skills/scripts/frontmatter-audit.sh
 ```
 
 ### Interpreting Results
@@ -62,11 +62,11 @@ bash ~/sovereign/skills/scripts/frontmatter-audit.sh
 | Issue | Fix |
 |-------|-----|
 | **TAU_HOME path issues** | Ensure `TAU_HOME` defaults to `$HOME/.tau` not `$HOME`. |
-| **tau command broken** | Reinstall from repo script: `install -m 0555 ~/sovereign/scripts/omp-pin ~/.local/bin/tau ~/.local/bin/omp`. |
+| **tau command broken** | Reinstall from repo script: `install -m 0555 ~/estate/scripts/omp-pin ~/.local/bin/tau ~/.local/bin/omp`. |
 | **Launcher detection** | `tau` is a bash pin script (not ELF); it execs the bun‑global `@oh-my-pi/pi-coding-agent` install. |
 | **Frontmatter** | All SKILL.md must carry `name: slug-name` and `description:` frontmatter. |
 | **Bridge not running** | Start: `pitchfork start awrawr-ws-exec`. |
-| **Skills symlink missing** | `ln -sf ~/sovereign/skills ~/.tau/skills`. |
+| **Skills symlink missing** | `ln -sf ~/estate/skills ~/.tau/skills`. |
 | **Live config clobbered (drift check)** | Diff against committed blob: `git show HEAD:config/tau/agent/config.yml`. Restore with `git checkout -- config/tau/agent/config.yml` after confirming session intent. |
 
 ## Key Paths
@@ -74,17 +74,17 @@ bash ~/sovereign/skills/scripts/frontmatter-audit.sh
 | Path | Purpose |
 |------|---------|
 | `~/.tau/config.yml` | Live default model config |
-| `~/.tau/skills` → `~/sovereign/skills` | Skills symlink |
-| `~/sovereign/scripts/omp-pin` | Launcher source (installed as `~/.local/bin/tau`, `~/.local/bin/omp`) |
-| `~/sovereign/projects/tau/engine/packages/coding-agent/dist/tau` | Binary |
-| `~/sovereign/projects/tau/launcher/tau` | Launcher symlink |
+| `~/.tau/skills` → `~/estate/skills` | Skills symlink |
+| `~/estate/scripts/omp-pin` | Launcher source (installed as `~/.local/bin/tau`, `~/.local/bin/omp`) |
+| `~/estate/projects/tau/engine/packages/coding-agent/dist/tau` | Binary |
+| `~/estate/projects/tau/launcher/tau` | Launcher symlink |
 | Bridge port `25204` | pitchfork‑managed WS endpoint |
 | Audit scripts | `~/s/.local/bin/tau-audit.sh`, `skills/tau-tmux/helper/audit.ts`, `scripts/frontmatter-audit.sh` |
 
 ## Configuration
 
 - **Default model** – Set in `~/.tau/config.yml` (`modelRoles.default`) and `~/.tau/agent/config.yml`.
-- **Skill symlink** – Must point to `~/sovereign/skills`; missing link causes many audit failures.
+- **Skill symlink** – Must point to `~/estate/skills`; missing link causes many audit failures.
 - **Bridge** – Ensure pitchfork is running with `pitchfork start awrawr-ws-exec`.
 
 ## Development & Contributing

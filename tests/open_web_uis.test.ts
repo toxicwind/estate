@@ -1,18 +1,18 @@
 // ============================================================================
-// SOVEREIGN — Web UI Launcher Unit & Integration Tests
+// ESTATE — Web UI Launcher Unit & Integration Tests
 // ============================================================================
 
 import { describe, expect, test } from "bun:test";
 import { resolve } from "node:path";
-import { probeUI, SOVEREIGN_WEB_UIS } from "../scripts/open-web-uis.ts";
+import { probeUI, ESTATE_WEB_UIS } from "../scripts/open-web-uis.ts";
 import { parsePortsEnv } from "../src/utils/ports.ts";
 
 const ROOT = resolve(import.meta.dir, "..");
 const ports = parsePortsEnv(ROOT);
 
-describe("Sovereign Web UI Registry", () => {
-  test("SOVEREIGN_WEB_UIS contains essential core dashboards", () => {
-    const ids = SOVEREIGN_WEB_UIS.map((u) => u.id);
+describe("Estate Web UI Registry", () => {
+  test("ESTATE_WEB_UIS contains essential core dashboards", () => {
+    const ids = ESTATE_WEB_UIS.map((u) => u.id);
     expect(ids).toContain("herd");
     expect(ids).toContain("mesh");
     expect(ids).toContain("prometheus");
@@ -24,7 +24,7 @@ describe("Sovereign Web UI Registry", () => {
   });
 
   test("all WebUI portKeys map to valid ports in ports.env", () => {
-    for (const ui of SOVEREIGN_WEB_UIS) {
+    for (const ui of ESTATE_WEB_UIS) {
       const port = ports.get(ui.portKey);
       expect(port).toBeDefined();
       expect(typeof port).toBe("number");
@@ -52,7 +52,7 @@ describe("Sovereign Web UI Registry", () => {
   });
 
   test("probeUI detects live herd / llama-swap endpoint", async () => {
-    const herdSpec = SOVEREIGN_WEB_UIS.find((u) => u.id === "herd");
+    const herdSpec = ESTATE_WEB_UIS.find((u) => u.id === "herd");
     expect(herdSpec).toBeDefined();
     if (herdSpec) {
       const result = await probeUI(herdSpec, 500);

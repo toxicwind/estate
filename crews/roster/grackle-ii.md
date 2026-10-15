@@ -1,6 +1,6 @@
 ---
 crew: grackle-ii
-scope: Overnight yote-ops watch: probe estate health (bridge exec, squawk ws/feed, pitchfork daemons, herd, sovereign router, browserless/CDP, noVNC), log anomalies for the 09:11 MDT morning brief
+scope: Overnight yote-ops watch: probe estate health (bridge exec, squawk ws/feed, pitchfork daemons, herd, estate router, browserless/CDP, noVNC), log anomalies for the 09:11 MDT morning brief
 owner: Grackle-II (Ember crew)
 status: RUNNING (2026-09-30)
 order: 900

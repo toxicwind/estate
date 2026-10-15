@@ -4,7 +4,7 @@ Research worker: **Wren** (Ember's crew), 2026-09-30.
 Target: /home/toxic/estate/pitchfork.toml on yote — 995 lines, 82 `[daemons.*]` sections, pitchfork 2.25.0.
 Key local fact (from the file's own header comment, verified read-only): **pitchfork does NOT
 hot-reload this file.** Editing a `[daemons.*]` section changes nothing until
-`bin/pitchfork-restart sovereign/<name>` re-registers the daemon. Any modularization must
+`bin/pitchfork-restart estate/<name>` re-registers the daemon. Any modularization must
 design its own reload semantics — the supervisor won't provide them for free.
 
 ## Findings
@@ -70,7 +70,7 @@ you need explicit precedence (back to [1]).
 *IEEE TSE* 28(5):449–462, 2002. DOI `10.1109/TSE.2002.1000449`.
 Canonical survey of two-way / three-way / structural / semantic merge. Core result:
 three-way merge beats two-way *when a common ancestor exists*; without one, conflicts are
-undecidable. Relevance: keep the parent config in git (it is: sovereign-projects) and a
+undecidable. Relevance: keep the parent config in git (it is: estate-projects) and a
 module system can three-way merge fragment edits. Without ancestor tracking (e.g.
 hand-edits to generated output), prefer designs where conflicts are *structurally
 impossible* (additive fragments, [6]) over designs that need conflict resolution.

@@ -361,7 +361,7 @@
     },
     {
       "port": 25104,
-      "ssot": "SOVEREIGN_ROUTER_PORT",
+      "ssot": "ESTATE_ROUTER_PORT",
       "daemons": [
         "sovereign-router"
       ],
@@ -372,7 +372,7 @@
     },
     {
       "port": 25104,
-      "ssot": "SOVEREIGN_ROUTER_PORT",
+      "ssot": "ESTATE_ROUTER_PORT",
       "daemons": [
         "sovereign-router"
       ],
@@ -639,9 +639,9 @@
     },
     {
       "port": 25120,
-      "ssot": "SOVEREIGN_CHAT_PORT",
+      "ssot": "ESTATE_CHAT_PORT",
       "daemons": [
-        "sovereign-chat"
+        "estate-chat"
       ],
       "live": false,
       "addr": null,
@@ -650,9 +650,9 @@
     },
     {
       "port": 25120,
-      "ssot": "SOVEREIGN_CHAT_PORT",
+      "ssot": "ESTATE_CHAT_PORT",
       "daemons": [
-        "sovereign-chat"
+        "estate-chat"
       ],
       "live": false,
       "addr": null,
@@ -1649,7 +1649,7 @@
     },
     {
       "port": 25213,
-      "ssot": "SOVEREIGN_EXPORTER_PORT",
+      "ssot": "ESTATE_EXPORTER_PORT",
       "daemons": [
         "sovereign-exporter"
       ],
@@ -1660,7 +1660,7 @@
     },
     {
       "port": 25213,
-      "ssot": "SOVEREIGN_EXPORTER_PORT",
+      "ssot": "ESTATE_EXPORTER_PORT",
       "daemons": [
         "sovereign-exporter"
       ],

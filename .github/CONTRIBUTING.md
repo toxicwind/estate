@@ -1,6 +1,6 @@
-# Contributing to Sovereign
+# Contributing to Estate
 
-> **The Sovereign Framework is a self-hosted operating environment where a working agent fleet lives** — inference routing, HMAC-signed agent chat, and pitchfork-supervised service daemons.
+> **The Estate Framework is a self-hosted operating environment where a working agent fleet lives** — inference routing, HMAC-signed agent chat, and pitchfork-supervised service daemons.
 
 ---
 

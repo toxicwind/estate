@@ -1,5 +1,5 @@
 // ============================================================================
-// SOVEREIGN — Unified Service Registry
+// ESTATE — Unified Service Registry
 // ============================================================================
 
 import type { ServiceDef } from "../types/index.ts";
@@ -85,7 +85,7 @@ export const ALL_SERVICES: ServiceDef[] = [
     name: "search-api",
     portKey: "GHAS_API_PORT",
     run: "exec bun --hot run apps/api/src/server.ts",
-    dir: "/home/toxic/projects/sovereign-projects/sovereign-github-search",
+    dir: "/home/toxic/projects/estate-projects/estate-github-search",
     readyHttp: "/health",
     group: "core",
     autoStart: true,
@@ -98,7 +98,7 @@ export const ALL_SERVICES: ServiceDef[] = [
     name: "search-ui",
     portKey: "GHAS_FRONTEND_PORT",
     run: "exec ./node_modules/.bin/next dev -p 25114",
-    dir: "/home/toxic/projects/sovereign-projects/sovereign-github-search/apps/frontend",
+    dir: "/home/toxic/projects/estate-projects/estate-github-search/apps/frontend",
     readyHttp: "/",
     group: "core",
     autoStart: true,
@@ -250,7 +250,7 @@ export const ALL_SERVICES: ServiceDef[] = [
     name: "tau",
     portKey: "PI_AGENT_PORT",
     // The engine moved to /home/toxic/tau (4.7 GB checkout on main). The old
-    // projects/sovereign-projects/tau path no longer exists, so this daemon
+    // projects/estate-projects/tau path no longer exists, so this daemon
     // could never start and the generator skipped it on the missing portKey.
     run: "exec bun /home/toxic/tau/packages/coding-agent/src/cli.ts",
     dir: "/home/toxic",
@@ -269,7 +269,7 @@ export const ALL_SERVICES: ServiceDef[] = [
   },
   {
     id: "kimi-code",
-    name: "kimi-code-sovereign",
+    name: "kimi-code-estate",
     portKey: "KIMI_CODE_PORT",
     run: "exec /home/toxic/tau/vendors/kimi-code/apps/kimi-code/dist/main.mjs web --no-open --port 25126 --no-port-walk",
     dir: "/home/toxic/tau",

@@ -43,7 +43,7 @@
     "protocol": "MANIFEST.json \u2192 agent/identity.json \u2192 full state"
   },
   "git": {
-    "sovereign": "https://github.com/toxicwind/sovereign.git",
-    "brain_commits": "brain/ changes tracked in sovereign main"
+    "estate": "https://github.com/toxicwind/estate.git",
+    "brain_commits": "brain/ changes tracked in estate main"
   }
 }

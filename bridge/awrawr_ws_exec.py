@@ -41,8 +41,8 @@ File transfer ops (binary-safe, resumable, no shell, no 90s ceiling):
   Transfers are processed inline per connection (one op per connection);
   idle 120s without a frame aborts, total cap 3600s.
 
-Managed by pitchfork as daemon `awrawr-ws-exec` (see sovereign/pitchfork.toml).
-Tracked copy: sovereign/bridge/awrawr_ws_exec.py (sovereign-projects).
+Managed by pitchfork as daemon `awrawr-ws-exec` (see estate/pitchfork.toml).
+Tracked copy: estate/bridge/awrawr_ws_exec.py (estate-projects).
 """
 import asyncio
 import base64

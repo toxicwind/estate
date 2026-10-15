@@ -7,7 +7,7 @@
 import { describe, test, expect, afterAll } from "bun:test";
 
 // Must be set before the router modules are imported (DB_PATH is read once).
-process.env.SOVEREIGN_DB = "/tmp/sovereign_router_hedge_test.db";
+process.env.ESTATE_DB = "/tmp/estate_router_hedge_test.db";
 
 const { state } = await import("../router_matrix");
 const { hedgedChain, substantive } = await import("../router_strategy");

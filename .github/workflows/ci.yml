@@ -1,4 +1,4 @@
-name: Sovereign Projects Monorepo CI
+name: Estate Projects Monorepo CI
 
 on:
   push:
@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   validate-workspace:
-    name: Validate Sovereign Monorepo Workspace & Syntax
+    name: Validate Estate Monorepo Workspace & Syntax
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository

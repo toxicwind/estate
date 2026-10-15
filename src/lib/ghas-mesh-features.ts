@@ -5,9 +5,9 @@
  *
  * Mount via handleMeshRequest() on /mesh/* of any service, or run mesh-hub.
  */
-import { loadSovereignPorts, requirePort } from "./ports.ts";
+import { loadEstatePorts, requirePort } from "./ports.ts";
 
-loadSovereignPorts();
+loadEstatePorts();
 
 export type MeshServiceId =
   | "herd"
@@ -82,7 +82,7 @@ export type ServiceMeta = {
   ghas_borrow: string;
 };
 
-/** Catalog of sovereign services participating in the mesh */
+/** Catalog of estate services participating in the mesh */
 export function serviceCatalog(): ServiceMeta[] {
   return [
     {
@@ -115,7 +115,7 @@ export function serviceCatalog(): ServiceMeta[] {
     },
     {
       id: "sovereign-router",
-      portEnv: "SOVEREIGN_ROUTER_PORT",
+      portEnv: "ESTATE_ROUTER_PORT",
       healthPath: "/health",
       role: "model-router",
       ghas_borrow: "circuit-breaker health DB + sticky sessions",
@@ -289,7 +289,7 @@ export async function runFeature(
         body: {
           feature,
           service: ctx.service,
-          version: ctx.version || process.env.SOVEREIGN_VERSION || "mesh-1.0.0",
+          version: ctx.version || process.env.ESTATE_VERSION || "mesh-1.0.0",
           node: process.version,
           bun: typeof Bun !== "undefined" ? Bun.version : null,
         },
@@ -488,7 +488,7 @@ export async function runFeature(
     }
     case "ghas-proxy": {
       // Thin link to GHAS HTTP API (feature #18) — real GHAS, not reimplemented
-      const q = url?.searchParams.get("q") || "sovereign mesh";
+      const q = url?.searchParams.get("q") || "estate mesh";
       const ghasPort = process.env.GHAS_API_PORT || "25112";
       const ghasUrl = `http://127.0.0.1:${ghasPort}/health`;
       const health = await probe(ghasUrl);
@@ -607,7 +607,7 @@ export function json(status: number, body: unknown): Response {
     headers: {
       "content-type": "application/json",
       "access-control-allow-origin": "*",
-      "x-sovereign-mesh": "ghas-20",
+      "x-estate-mesh": "ghas-20",
     },
   });
 }

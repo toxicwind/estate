@@ -7,9 +7,9 @@ import {
   handleMeshRequest,
   type MeshServiceId,
 } from "../lib/ghas-mesh-features.ts";
-import { loadSovereignPorts } from "../lib/ports.ts";
+import { loadEstatePorts } from "../lib/ports.ts";
 
-loadSovereignPorts();
+loadEstatePorts();
 
 function arg(name: string, fallback = ""): string {
   const i = process.argv.indexOf(name);

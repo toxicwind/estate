@@ -1,4 +1,4 @@
-# ![Corral](https://img.shields.io/badge/🐴_Sovereign_Corral-Multi--Agent_Orchestration-black?style=for-the-badge)
+# ![Corral](https://img.shields.io/badge/🐴_Estate_Corral-Multi--Agent_Orchestration-black?style=for-the-badge)
 
 > **Ticket-driven development & speculative merge queue — evolved from super-ralph lineage**
 
@@ -185,8 +185,8 @@ All secrets loading is now portable (no `/home/toxic/.secrets` hardcoded):
 |---|---|---|
 | `CORRAL_SECRETS_PATH` | Explicit secrets file | `~/.secrets` → `~/.config/corral/secrets` → `.env` |
 | `ANTHROPIC_API_KEY` | Anthropic key | — |
-| `SOVEREIGN_ROUTER_URL` / `CUTTINGGATE_URL` | Router URL | `http://127.0.0.1` |
-| `SOVEREIGN_ROUTER_PORT` / `CUTTINGGATE_PORT` | Router port | `25200` |
+| `ESTATE_ROUTER_URL` / `CUTTINGGATE_URL` | Router URL | `http://127.0.0.1` |
+| `ESTATE_ROUTER_PORT` / `CUTTINGGATE_PORT` | Router port | `25200` |
 | `FLOCK_API_KEY` | Flock proxy (comma-separated for rotation) | falls back to `NIM_PROXY_API_KEY` |
 | `GATEHOUSE_BIN` | Gatehouse binary | `gatehouse` |
 | `GATEHOUSE_CONFIG` | Gatehouse MCP config | `~/.config/corral/gatehouse/mcp_config.json` |
@@ -304,7 +304,7 @@ Tests moved from `src/` to `tests/`:
 
 MIT — see [LICENSE](./LICENSE)
 
-Original super-ralph lineage: William Cory → Ronin Jin → Sovereign Fleet
+Original super-ralph lineage: William Cory → Ronin Jin → Estate Fleet
 
 ---
 
@@ -336,6 +336,6 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md)
 ---
 
 <p align="center">
-  <b>🐴 Sovereign Corral — Run 8 agents in parallel, land without conflicts</b><br/>
+  <b>🐴 Estate Corral — Run 8 agents in parallel, land without conflicts</b><br/>
   <code>rm -rf corral && tar -xzf corral-clean.tar.gz && bun install && corral "ship it"</code>
 </p>

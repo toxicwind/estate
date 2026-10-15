@@ -32,7 +32,7 @@ export interface HealthStatus {
 const TO = 2000;
 const RT = 2;
 const RD = 500;
-// Sovereign 25xxx map: llama-swap :25100, openfang :25103
+// Estate 25xxx map: llama-swap :25100, openfang :25103
 const LP = Number(
   process.env.LLAMA_SWAP_PORT ?? process.env.LLAMA_PORT ?? "25100",
 );

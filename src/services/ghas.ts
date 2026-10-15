@@ -1,5 +1,5 @@
 // ============================================================================
-// SOVEREIGN — GHAS Stack Services
+// ESTATE — GHAS Stack Services
 // ============================================================================
 
 import type { ServiceDef } from "../types/index.ts";

@@ -26,7 +26,7 @@ done
 SKILLS_HOME="${SKILLS_HOME:-${_estate_guess:-$HOME/.tau/skills}}"
 SKILLS_HOME="$(readlink -f "$SKILLS_HOME")"
 
-ESTATE_HOME="${ESTATE_HOME:-$(_estate_first_existing "$SKILLS_HOME/../estate" "$HOME/estate" "$HOME/sovereign")}"
+ESTATE_HOME="${ESTATE_HOME:-$(_estate_first_existing "$SKILLS_HOME/../estate" "$HOME/estate" "$HOME/estate")}"
 RANCH_HOME="${RANCH_HOME:-$(_estate_first_existing "$ESTATE_HOME/ranch" "$HOME/ranch" "$HOME/projects")}"
 VENDORED_HOME="${VENDORED_HOME:-$(_estate_first_existing "$ESTATE_HOME/vendored")}"
 MANOR_HOME="${MANOR_HOME:-$(_estate_first_existing "$ESTATE_HOME/manor")}"

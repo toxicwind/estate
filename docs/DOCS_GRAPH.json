@@ -82,7 +82,7 @@
     "plans/master/MASTER_PLAN.md": {
       "path": "plans/master/MASTER_PLAN.md",
       "filename": "MASTER_PLAN.md",
-      "title": "Sovereign Pi Fork — Master Execution Plan",
+      "title": "Estate Pi Fork — Master Execution Plan",
       "category": "plans",
       "tags": [
         "plans",
@@ -99,7 +99,7 @@
     "plans/master/REORG-PLAN.md": {
       "path": "plans/master/REORG-PLAN.md",
       "filename": "REORG-PLAN.md",
-      "title": "SOVEREIGN REORG PLAN — shingle → hatch/agents/ember, shingle-workspace collision resolved",
+      "title": "ESTATE REORG PLAN — shingle → hatch/agents/ember, shingle-workspace collision resolved",
       "category": "plans",
       "tags": [
         "plans",
@@ -116,7 +116,7 @@
     "plans/master/TASKS.md": {
       "path": "plans/master/TASKS.md",
       "filename": "TASKS.md",
-      "title": "Sovereign Fix Tasks - Live Tracker",
+      "title": "Estate Fix Tasks - Live Tracker",
       "category": "plans",
       "tags": [
         "plans",
@@ -214,7 +214,7 @@
     "audits/2026-09-14/AUDIT.md": {
       "path": "audits/2026-09-14/AUDIT.md",
       "filename": "AUDIT.md",
-      "title": "AUDIT.md — sovereign-projects (`~/projects/sovereign-projects`)",
+      "title": "AUDIT.md — estate-projects (`~/projects/estate-projects`)",
       "category": "audits",
       "tags": [
         "audits",
@@ -230,7 +230,7 @@
     "audits/2026-09-14/FORKS_AUDIT.md": {
       "path": "audits/2026-09-14/FORKS_AUDIT.md",
       "filename": "FORKS_AUDIT.md",
-      "title": "Sovereign Ecosystem — Deep Fork & Repository Audit",
+      "title": "Estate Ecosystem — Deep Fork & Repository Audit",
       "category": "audits",
       "tags": [
         "audits",
@@ -820,7 +820,7 @@
     "ARCHITECTURE.md": {
       "path": "ARCHITECTURE.md",
       "filename": "ARCHITECTURE.md",
-      "title": "Sovereign Architecture — Single Source of Truth",
+      "title": "Estate Architecture — Single Source of Truth",
       "category": "general",
       "tags": [
         "general",
@@ -836,7 +836,7 @@
     "ARXIV_EMERGENCE_SURVEY.md": {
       "path": "ARXIV_EMERGENCE_SURVEY.md",
       "filename": "ARXIV_EMERGENCE_SURVEY.md",
-      "title": "ArXiv Emergence Survey — Synthesis (Sovereign Registry)",
+      "title": "ArXiv Emergence Survey — Synthesis (Estate Registry)",
       "category": "general",
       "tags": [
         "general",
@@ -850,7 +850,7 @@
     "CONTROL_PLANE.md": {
       "path": "CONTROL_PLANE.md",
       "filename": "CONTROL_PLANE.md",
-      "title": "Sovereign Control Plane",
+      "title": "Estate Control Plane",
       "category": "general",
       "tags": [
         "general",
@@ -954,7 +954,7 @@
     "PRE_RELEASE_INTEGRATION_ENGINE.md": {
       "path": "PRE_RELEASE_INTEGRATION_ENGINE.md",
       "filename": "PRE_RELEASE_INTEGRATION_ENGINE.md",
-      "title": "Sovereign Pre-Release Integration Engine",
+      "title": "Estate Pre-Release Integration Engine",
       "category": "general",
       "tags": [
         "general",
@@ -993,7 +993,7 @@
     "RIDICULOUS_MULTI_PROFILE.md": {
       "path": "RIDICULOUS_MULTI_PROFILE.md",
       "filename": "RIDICULOUS_MULTI_PROFILE.md",
-      "title": "RIDICULOUS MULTI-PROFILE SETUP — Sovereign Model Router",
+      "title": "RIDICULOUS MULTI-PROFILE SETUP — Estate Model Router",
       "category": "general",
       "tags": [
         "general",
@@ -1005,7 +1005,7 @@
     "STORAGE_TIERING_AND_CACHE_ARCHITECTURE.md": {
       "path": "STORAGE_TIERING_AND_CACHE_ARCHITECTURE.md",
       "filename": "STORAGE_TIERING_AND_CACHE_ARCHITECTURE.md",
-      "title": "Sovereign Storage Tiering & Cache Architecture",
+      "title": "Estate Storage Tiering & Cache Architecture",
       "category": "general",
       "tags": [
         "general",
@@ -1019,7 +1019,7 @@
     "SWAP_OPTIMIZATION.md": {
       "path": "SWAP_OPTIMIZATION.md",
       "filename": "SWAP_OPTIMIZATION.md",
-      "title": "Sovereign Swap Architecture — zram / zswap / NVMe Tiering",
+      "title": "Estate Swap Architecture — zram / zswap / NVMe Tiering",
       "category": "general",
       "tags": [
         "general",
@@ -1044,7 +1044,7 @@
     "UNIVERSAL_ARCHITECTURE.md": {
       "path": "UNIVERSAL_ARCHITECTURE.md",
       "filename": "UNIVERSAL_ARCHITECTURE.md",
-      "title": "Universal Architecture — Polyglot Sovereign Stack (August 2026)",
+      "title": "Universal Architecture — Polyglot Estate Stack (August 2026)",
       "category": "general",
       "tags": [
         "general",
@@ -1060,7 +1060,7 @@
     "config-naming-conventions.md": {
       "path": "config-naming-conventions.md",
       "filename": "config-naming-conventions.md",
-      "title": "Config naming conventions (sovereign)",
+      "title": "Config naming conventions (estate)",
       "category": "general",
       "tags": [
         "general",
@@ -1121,7 +1121,7 @@
     "fleet-inventory-20260914.md": {
       "path": "fleet-inventory-20260914.md",
       "filename": "fleet-inventory-20260914.md",
-      "title": "Sovereign fleet inventory + completion reconciliation — 2026-09-14 ~18:20 MDT",
+      "title": "Estate fleet inventory + completion reconciliation — 2026-09-14 ~18:20 MDT",
       "category": "general",
       "tags": [
         "general",
@@ -1179,7 +1179,7 @@
     "naming-grammar.md": {
       "path": "naming-grammar.md",
       "filename": "naming-grammar.md",
-      "title": "Sovereign Model Naming Grammar (canonical, 2026-09-20)",
+      "title": "Estate Model Naming Grammar (canonical, 2026-09-20)",
       "category": "general",
       "tags": [
         "general",
@@ -1354,7 +1354,7 @@
     "operations/security-and-guards/FIX.md": {
       "path": "operations/security-and-guards/FIX.md",
       "filename": "FIX.md",
-      "title": "Sovereign Mesh — FIX.md (Live Mutable Checklist)",
+      "title": "Estate Mesh — FIX.md (Live Mutable Checklist)",
       "category": "operations",
       "tags": [
         "operations",
@@ -1384,7 +1384,7 @@
     "HINDSIGHT_TAU_INTEGRATION.md": {
       "path": "HINDSIGHT_TAU_INTEGRATION.md",
       "filename": "HINDSIGHT_TAU_INTEGRATION.md",
-      "title": "Sovereign Hindsight & Tau Long-Term Memory Architecture",
+      "title": "Estate Hindsight & Tau Long-Term Memory Architecture",
       "category": "general",
       "tags": [
         "general",
@@ -3354,7 +3354,7 @@
     "env-reference-fork.md": {
       "path": "env-reference-fork.md",
       "filename": "env-reference-fork.md",
-      "title": "Sovereign / Ranch Fork Environment Variables Reference",
+      "title": "Estate / Ranch Fork Environment Variables Reference",
       "category": "general",
       "tags": [
         "general",
@@ -3367,7 +3367,7 @@
     "env-reference-upstream.md": {
       "path": "env-reference-upstream.md",
       "filename": "env-reference-upstream.md",
-      "title": "OMP & Tau Sovereign Environment Variables Reference",
+      "title": "OMP & Tau Estate Environment Variables Reference",
       "category": "general",
       "tags": [
         "general",
@@ -3419,7 +3419,7 @@
     "agents/CONVENTION.md": {
       "path": "agents/CONVENTION.md",
       "filename": "CONVENTION.md",
-      "title": "Sovereign Guidance Triad — Universal AGENTS.md Convention v1",
+      "title": "Estate Guidance Triad — Universal AGENTS.md Convention v1",
       "category": "agents",
       "tags": [
         "agents",

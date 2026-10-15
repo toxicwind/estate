@@ -60,4 +60,4 @@ EOF
   echo "built ghas-mcp + wrapper"
 fi
 
-echo "done. Restart shep (pitchfork restart sovereign/shep) to re-probe upstreams."
+echo "done. Restart shep (pitchfork restart estate/shep) to re-probe upstreams."

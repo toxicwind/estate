@@ -6,7 +6,7 @@ Audit and fix SKILL.md frontmatter against the SkillFrontmatter spec.
 
 ## Hero
 
-Audits all SKILL.md files in the sovereign skills directory against the actual SkillFrontmatter interface supported by the coding-agent engine code. Fixes YAML frontmatter issues: removes quotes from `name` fields, replaces underscores with hyphens in names, converts single-line descriptions to `description: >` multi-line format, ensures `name` matches directory name, and adds `Triggers on:` keywords to descriptions.
+Audits all SKILL.md files in the estate skills directory against the actual SkillFrontmatter interface supported by the coding-agent engine code. Fixes YAML frontmatter issues: removes quotes from `name` fields, replaces underscores with hyphens in names, converts single-line descriptions to `description: >` multi-line format, ensures `name` matches directory name, and adds `Triggers on:` keywords to descriptions.
 
 ## What It Does
 

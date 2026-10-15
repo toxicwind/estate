@@ -4,8 +4,8 @@ Event-driven bidder daemon for the squawk bid-market: watches the market channel
 
 <div align="right">
 
-[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -78,4 +78,4 @@ The auctioneer scores bids with the frozen formula `0.5*conf*cal + 0.3*(1-cost/b
 
 ## License & security
 
-MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). Bidders execute real shell — the market's capability gate and the executor's hard timeout are the containment. Bidder identity keys are minted on first run and stored under the daemon state dir; treat them like credentials. HMAC signing means a forged BID/RESULT fails closed at the auctioneer.
+MIT where marked — [LICENSE](https://github.com/toxicwind/estate-projects#license). Bidders execute real shell — the market's capability gate and the executor's hard timeout are the containment. Bidder identity keys are minted on first run and stored under the daemon state dir; treat them like credentials. HMAC signing means a forged BID/RESULT fails closed at the auctioneer.

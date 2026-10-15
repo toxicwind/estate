@@ -6,7 +6,7 @@ description: Audit and fix SKILL.md frontmatter against the SkillFrontmatter spe
 # Skill Frontmatter Audit
 
 ## Purpose
-Audit all SKILL.md files in the sovereign skills directory against the actual SkillFrontmatter interface supported by the coding-agent engine code.
+Audit all SKILL.md files in the estate skills directory against the actual SkillFrontmatter interface supported by the coding-agent engine code.
 
 ## Frontmatter Spec (from skill.ts)
 The `SkillFrontmatter` interface in `engine/packages/coding-agent/src/capability/skill.ts` supports:

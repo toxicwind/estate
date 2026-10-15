@@ -45,7 +45,7 @@ const HEAD = {
   "User-Agent": "race-borrow",
 };
 
-const DEFAULT_PATTERNS = ["sovereign", "tau", "pi", "oh-my-pi", "llama-swap"];
+const DEFAULT_PATTERNS = ["estate", "tau", "pi", "oh-my-pi", "llama-swap"];
 const DEFAULT_PROVIDERS = ["openrouter", "groq", "google", "mistral"];
 const BUG_TERMS = ["TODO", "FIXME", "HACK", "BUG", "WORKAROUND", "XXX"];
 const FACTORS = ["stars", "forks", "open_issues", "updated"] as const;
@@ -99,7 +99,7 @@ async function gh(path: string, params: Record<string, string> | undefined, sign
 }
 
 async function raceProvider(pattern: string, provider: string, page: number, signal: AbortSignal): Promise<any> {
-  const query = `${pattern} repo:sovereign-projects/ language:typescript language:ts language:rust language:go`;
+  const query = `${pattern} repo:estate-projects/ language:typescript language:ts language:rust language:go`;
   const data = await gh("/search/code", {
     q: query,
     per_page: String(PER_PAGE),

@@ -1,5 +1,5 @@
 // ============================================================================
-// SOVEREIGN — Extended Service Tests (Yote, Openfang, AST Matrix)
+// ESTATE — Extended Service Tests (Yote, Openfang, AST Matrix)
 // Reusable, non-destructive, uses curl + redis-cli + native TCP checks
 // ============================================================================
 

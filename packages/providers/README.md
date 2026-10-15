@@ -1,6 +1,6 @@
-# @sovereign/providers
+# @estate/providers
 
-Master provider catalog for the sovereign estate. Single source of truth for:
+Master provider catalog for the estate estate. Single source of truth for:
 
 - **Provider definitions** — base URL, key env var, and the endpoint-shape
   adapter that reads each provider's `/models` listing.
@@ -26,7 +26,7 @@ demotes curation to cold-start seeds.
 | Consumer | How it consumes |
 |---|---|
 | `tools/sovereign-router/sovereign-router-ts` | imports `@sovereign/providers` directly (same repo, bun workspace) |
-| `projects/tau-extensions/omp-model-router` | imports `@sovereign/providers` directly |
+| `projects/tau-extensions/omp-model-router` | imports `@estate/providers` directly |
 | herd (Go, `stockyard/herd`) | `generated/providers.go` — generated, checked in, never hand-edited |
 | Python research scripts | `generated/providers.json` — canonical data artifact |
 

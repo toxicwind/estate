@@ -56,7 +56,7 @@ automatically).
 - [ ] Launcher/config under a durable repo path (e.g. `ops/<name>/`), executable bit set
 - [ ] `[daemons.<name>]` in `pitchfork.toml` with `auto = ["start"]` and a `ready_cmd`/`ready_http` gate
 - [ ] `env = { ... }` in the toml for its env (no inline secrets)
-- [ ] Started via `bin/pitchfork-restart sovereign/<name>`; verified serving
+- [ ] Started via `bin/pitchfork-restart estate/<name>`; verified serving
 - [ ] Committed + pushed to `toxicwind/estate` main; remote ref verified
 - [ ] If it holds kernel-memory-only registrations: launcher re-registers them idempotently (openfang-run.sh pattern)
 

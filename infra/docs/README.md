@@ -1,7 +1,7 @@
 <div align="right">
 
-[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-tau-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-tau-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -72,7 +72,7 @@ If that passes (KVM present, `kubectl` and `helm` on the host), start with [01-h
 
 ## License & Security
 
-**License:** MIT — see [LICENSE](https://github.com/toxicwind/sovereign-projects#license).
+**License:** MIT — see [LICENSE](https://github.com/toxicwind/estate-projects#license).
 
 **Security:** this design exists for security — untrusted PR code runs only on GitHub-hosted runners, never in the self-hosted microVMs. Secret *values* never appear in these docs (placeholders only, see below). Runner egress is locked down by NetworkPolicy and NATs through the host.
 

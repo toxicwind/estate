@@ -63,7 +63,7 @@ Activate this skill whenever the user asks for help **producing** a content-safe
 - The user mentions any of: NCS, NCS-VL, NCS-Reasoning, Nemotron Content Safety, NeMo Guardrails, Aegis taxonomy.
 - The user asks to "build", "draft", "generate", "expand", or "extend" a safety policy, content policy, moderation policy, guardrail config, BYO-policy, custom safety taxonomy, eval rubric, or labeling rubric.
 - The user describes their needs in rough words ("no weapons, allow medical, block hate speech") and expects a structured artifact back.
-- The user names a deployment context (consumer chat, enterprise RAG, kids/edu, healthcare, financial, code assistant, sovereign deployment) and asks for the safety rules that fit.
+- The user names a deployment context (consumer chat, enterprise RAG, kids/edu, healthcare, financial, code assistant, estate deployment) and asks for the safety rules that fit.
 
 Do **not** activate this skill when:
 

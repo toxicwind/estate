@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Coyote Loop v3.1 — Max Level Autonomous Agent
-First-class sovereign service. OpenFang agent with Yote integration.
+First-class estate service. OpenFang agent with Yote integration.
 HTTP server for task ingestion + health checks (pitchfork-compatible).
 """
 

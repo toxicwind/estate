@@ -107,12 +107,12 @@ def _chat_stack():
     """Import the CANONICAL squawk signed-post stack (same code the CLI uses).
 
     SQUAWK_CODE_DIR must point at the canonical chat tree
-    (sovereign/hatch/agents/ember/chat). canonical_post adapts the old
+    (estate/hatch/agents/ember/chat). canonical_post adapts the old
     chat_commands._post_message call signature onto the canonical v2
     HMAC path: relay metadata (relayed_from/human/relay_key) is written
     as frontmatter for attribution/dedup but is NOT HMAC-covered.
 
-    The stale range checkout (sovereign/projects/range/ranch/squawk) signs a v3
+    The stale range checkout (estate/projects/range/ranch/squawk) signs a v3
     canonical form that canonical verify_on_read rejects -- every relayed
     message it posted fail-closed fleet reads. Never point this at the
     mesh checkout again.

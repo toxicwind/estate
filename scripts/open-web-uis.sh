@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# SOVEREIGN — Launch active Web UIs into running Firefox Nightly
+# ESTATE — Launch active Web UIs into running Firefox Nightly
 # Usage: ./scripts/open-web-uis.sh [--active | --all | --list | --service <id>]
 # =============================================================================
 set -euo pipefail

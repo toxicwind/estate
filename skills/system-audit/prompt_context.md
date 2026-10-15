@@ -28,7 +28,7 @@ bin/sys_audit.sh [--pid <pid>] [--target <ip>]... [--path <path>]...
 ## hardware-baseline
 
 `hardware-baseline.json` is this box's known-good profile, seeded from
-`sovereign/docs/HARDWARE_AUDIT_20260914.md` and the nightly
+`estate/docs/HARDWARE_AUDIT_20260914.md` and the nightly
 `/var/lib/hw-audit/` audits (hw-audit.timer 03:17 MDT, root).
 `sys_audit.sh` diffs live readings against it and prints PASS/FAIL per item.
 

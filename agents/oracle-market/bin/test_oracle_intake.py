@@ -5,7 +5,7 @@ import os
 import sys
 import tempfile
 
-sys.path.insert(0, "/home/toxic/sovereign/agents/oracle-market/bin")
+sys.path.insert(0, "/home/toxic/estate/agents/oracle-market/bin")
 from oracle_intake import triage, _tags_for, ROUTES, TAG_HINTS
 
 led = tempfile.mktemp()

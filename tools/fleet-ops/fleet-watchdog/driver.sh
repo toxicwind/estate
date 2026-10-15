@@ -1,6 +1,6 @@
 #!/bin/bash
 # fleet-watchdog cell-side driver.
-# Durable copy: /home/toxic/sovereign/tools/fleet-ops/fleet-watchdog/driver.sh
+# Durable copy: /home/toxic/estate/tools/fleet-ops/fleet-watchdog/driver.sh
 # The platform scheduler runs THIS (bash ~/workspace/fleet-watchdog/driver.sh).
 #
 # The hot sweep path is DIRECT on awrawr-pc: sweepd.sh loops sweep.py every
@@ -20,7 +20,7 @@
 # copy the last two stdout lines verbatim as the run's final message.
 set -uo pipefail
 AWR="$HOME/workspace/skills/awrawr-mcp/bin"
-WD=/home/toxic/sovereign/tools/fleet-ops/fleet-watchdog
+WD=/home/toxic/estate/tools/fleet-ops/fleet-watchdog
 START_S=$(date +%s)
 if ! "$AWR/xfer.py" put /home/hatch/fleet-rollover.md "$WD/fleet-rollover.md" 2>&1 | tail -1; then
   echo "driver: rollover mirror sync FAILED (continuing on last mirror)" >&2

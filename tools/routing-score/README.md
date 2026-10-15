@@ -2,12 +2,12 @@
 
 <div align="right">
 
-[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
-Repo: [toxicwind/sovereign-projects](https://github.com/toxicwind/sovereign-projects)
+Repo: [toxicwind/estate-projects](https://github.com/toxicwind/estate-projects)
 (`tools/routing-score/`); index in the [master README](../../README.md#docs).
 
 An advisory signal for routing decisions, computed from exact-output probe
@@ -91,7 +91,7 @@ composite, but the tool must never gain write access to router config.
 
 ## License & security
 
-MIT — see [LICENSE](https://github.com/toxicwind/sovereign-projects#license).
+MIT — see [LICENSE](https://github.com/toxicwind/estate-projects#license).
 
 Pure computation over probe JSONL — no network, no credentials, no side
 effects beyond the output artifact.

@@ -280,7 +280,7 @@ describe("clientEnvExports", () => {
     expect(output).toContain("export OPENAI_BASE_URL=");
     expect(output).toContain("export LLAMA_SWAP_URL=");
     expect(output).toContain("export LLAMA_CHAT_URL=");
-    expect(output).toContain("export SOVEREIGN_LLM=");
+    expect(output).toContain("export ESTATE_LLM=");
     expect(output).toContain("export LLAMA_MODELS_SSE_URL=");
   });
 

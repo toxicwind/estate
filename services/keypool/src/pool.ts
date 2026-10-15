@@ -1,4 +1,4 @@
-// @sovereign/keypool — Pool: key health, selection, failover, racing.
+// @estate/keypool — Pool: key health, selection, failover, racing.
 // Port of herd-keypool.py Pool/KeyState/race_first_valid. Parity contract:
 // - states: unknown -> healthy -> down -> (cooldown) -> unknown
 // - pick(): healthy first, then unknown, then down-if-cooldown-expired

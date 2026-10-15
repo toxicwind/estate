@@ -1,7 +1,7 @@
 id: no-model-selected
 language: ts
 severity: warning
-message: "Unresolved 'No model selected' emitter — step 2 of sovereign TODO not finalized."
+message: "Unresolved 'No model selected' emitter — step 2 of estate TODO not finalized."
 rule:
   any:
     - pattern: ctx.ui.notify("No model selected", $KIND)

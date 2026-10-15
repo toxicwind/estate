@@ -23,7 +23,7 @@ Stale copies of the TS tree exist at `projects/range/ranch/stockyard/router-lega
 `projects/herd/mesh/router/`, and a nested duplicate
 `sovereign-router-ts/sovereign-router-ts/` — the live daemon runs from
 `tools/sovereign-router/sovereign-router-ts/` only. The old TS User-Agent
-and `[matrix]` log prefix were renamed to `Sovereign-Router/3.1` /
+and `[matrix]` log prefix were renamed to `Estate-Router/3.1` /
 `[router]`; nothing of the old branding carries into the consolidated
 router.
 
@@ -74,7 +74,7 @@ Everything else is reference, snapshot, or frozen archive.
   by the router; other consumers unaudited so far.
 - **Flap tracker**: 3 empty completions in 10 min benches a model from the
   free pool; strikes decay and re-probe. Visible at `/metrics`
-  (`sovereign_router_model_empty_strikes`). Already striking flapping Ling
+  (`estate_router_model_empty_strikes`). Already striking flapping Ling
   variants on openrouter and llama-swap paths.
 - **Substance guard on every path**: HTTP 200 with empty content (and no
   tool_calls) is a failure at every routing layer — never served, never
@@ -82,15 +82,15 @@ Everything else is reference, snapshot, or frozen archive.
   blank 200s.
 - **`/v1/models` metadata**: provider, source (curated/live), free flag, ELO,
   circuit state, empty-strike count, plus raw provider objects where live.
-- **Operational**: Prometheus `/metrics`, optional `SOVEREIGN_CLIENT_KEYS`
-  auth, neutral naming (UA `Sovereign-Router/3.1`, `[router]` logs).
+- **Operational**: Prometheus `/metrics`, optional `ESTATE_CLIENT_KEYS`
+  auth, neutral naming (UA `Estate-Router/3.1`, `[router]` logs).
 - **Local path preserved**: llama-swap provider routes through the herd main
   port `:25100`; the router has not bypassed it.
 
 - **Strategy names flock-aligned** (2026-09-17): `ast_race` -> `flock_race`,
   `fifo_matrix` keeps working with new alias `fifo_flock`. Additive only:
   legacy names still accepted (switch cases match both, ROUTERS map holds
-  both keys). Proven live: `X-Sovereign-Strategy: flock_race` returned a
+  both keys). Proven live: `X-Estate-Strategy: flock_race` returned a
   non-empty completion through the restarted `:25104` daemon. Go module
   default strategy is now `flock_race`; yaml accepts `flockStrategy` with
   legacy `astStrategy` still honored via custom UnmarshalYAML.
@@ -102,7 +102,7 @@ Everything else is reference, snapshot, or frozen archive.
   suffix convention only when a provider exposes no pricing metadata at all.
   Filters: circuit state, flap strikes (substance-guard failures feed the
   strike counter), local llama-swap roles always join. `/v1/models`
-  `x-sovereign.free` is the same function, so the catalog and the router
+  `x-estate.free` is the same function, so the catalog and the router
   agree. 4 live-free models the static list missed (`stealth/union-alpha`,
   `google/lyria-3-pro-preview`, `google/lyria-3-clip-preview`,
   `openrouter/free`) now race in the free pool.

@@ -3,21 +3,21 @@
 ![GitHub Last Commit](https://img.shields.io/github/last-commit/toxicwind/telemetric-runtime-oracle?style=for-the-badge)
 
 # telemetric-runtime-oracle
-Non-invasive runtime cognitive EKG supervisor and database-grounded observability engine for Super Ralph and Sovereign autonomous agents
+Non-invasive runtime cognitive EKG supervisor and database-grounded observability engine for Super Ralph and Estate autonomous agents
 
 ## What it does
-Observes terminal HUD telemetry vectors and SQLite workflow transaction state without keystroke injection or socket overrides, providing a 7-dimensional cognitive state vector and direct database inspection for Super Ralph (`projects/mesh/super-ralph`) and the Sovereign autonomous fleet.
+Observes terminal HUD telemetry vectors and SQLite workflow transaction state without keystroke injection or socket overrides, providing a 7-dimensional cognitive state vector and direct database inspection for Super Ralph (`projects/mesh/super-ralph`) and the Estate autonomous fleet.
 
 ## Why it matters
 Enables observability of agent cognitive state and workflow progress without interfering with agent execution, preventing measurement from distorting the very behavior being observed.
 
 ## Who it's for
-Platform engineers, SREs, and developers working with the Super Ralph agent system or Sovereign autonomous fleet who need to monitor agent performance, detect stalls, and understand system behavior without introducing observer effects.
+Platform engineers, SREs, and developers working with the Super Ralph agent system or Estate autonomous fleet who need to monitor agent performance, detect stalls, and understand system behavior without introducing observer effects.
 
 ## Features
 - **Non-Invasive Supervisory Commitments**:
   1. **Zero Keystroke Injection**: Never injects `tmux send-keys`, `C-c`, or synthetic prompts into active agent panes
-  2. **Respects 114-Model Sovereign Router (`:25104`)**: Never programmatically reroutes or downgrades socket endpoints
+  2. **Respects 114-Model Estate Router (`:25104`)**: Never programmatically reroutes or downgrades socket endpoints
   3. **Database-Level Grounding**: Direct inspection of `.super-ralph/workflow.db` for real ticket progress and concurrency
   4. **Multi-Ticket Concurrency Awareness**: Distinguishes barrier synchronization from deliberation locks via token velocity analysis
 - **7-Dimensional Cognitive State Vector** $\mathbf{\tau}(t)$:
@@ -57,7 +57,7 @@ Modify the Bun helper script at `/home/toxic/estate/helpers/telemetric-oracle.ts
 - Integration with tmux capture-pane for HUD telemetry ingestion
 
 ## License
-Internal tool - refer to sovereign estate licensing
+Internal tool - refer to estate estate licensing
 
 ## Security
 - **Zero Keystroke Injection** - Never injects foreign text into agent panes (preserves prompt context integrity)

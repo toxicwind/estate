@@ -2,7 +2,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-const SOV_ROOT = process.env.SOVEREIGN_ROOT || "/home/toxic/estate";
+const SOV_ROOT = process.env.ESTATE_ROOT || "/home/toxic/estate";
 const PORTS_FILE = join(SOV_ROOT, "stack", "ports.env");
 
 // Parse ports.env for dynamic discovery
@@ -47,7 +47,7 @@ async function probe(_name: string, port: number, paths: string[]) {
   return [false, "unresponsive"] as const;
 }
 
-console.log(`🚀 Sovereign Stack Health — ${new Date().toLocaleTimeString()}`);
+console.log(`🚀 Estate Stack Health — ${new Date().toLocaleTimeString()}`);
 console.log("-".repeat(55));
 
 let healthyCount = 0;

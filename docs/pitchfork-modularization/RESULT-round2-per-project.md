@@ -61,7 +61,7 @@ where things run; 30 projects, 82 daemons):
 
 | Project | Daemons | Notes |
 |---|---|---|
-| `sovereign` (the parent itself) | 37 | estate infra: herd, mesh-hub, keypool, model-guard, … |
+| `estate` (the parent itself) | 37 | estate infra: herd, mesh-hub, keypool, model-guard, … |
 | `ranch/oracle` | 6 | oracle-market/core/chat, market-watchdog + 2 stale |
 | `ranch/squawk` | 4 | squawk-feed, fleet-ui, nats, nats-tail |
 | `ranch/squawk-ws` | 2 | squawk-ws, squawk-ws-client |
@@ -87,7 +87,7 @@ provisional until its answer lands — fold it in then.)
 
 Parent owns only: `parent.toml` (preamble + groups + env — composition-level),
 `projects.toml` (the registry: project → manifest path), and its own 37
-sovereign daemons. Composer fails closed on duplicate daemon names across
+estate daemons. Composer fails closed on duplicate daemon names across
 projects (`OWNERSHIP CONFLICT`, exit 3).
 
 ### Phase 1 — merge race (7 timed runs, median)
@@ -212,29 +212,29 @@ Why not A alone: 0/82 ownership clarity; every project change is a parent-repo
 edit — exactly the "60 daemons in one file is insanity" Chris rejected.
 
 The parent at `/home/toxic/estate` keeps: `parent.toml` (preamble/groups/env),
-`projects.toml` (registry), its own 37 sovereign daemons — and the composer.
+`projects.toml` (registry), its own 37 estate daemons — and the composer.
 Everything else lives with its project, including inside nested repos
-(ranch/* manifests would commit to `toxicwind/ranch`, not sovereign).
+(ranch/* manifests would commit to `toxicwind/ranch`, not estate).
 
 ## Migration plan (82 daemons, 30 projects)
 
 1. **This lane**: prototypes + this RESULT.md committed (done below).
-2. Harden `design-d/compose-d.ts` → `sovereign/bin/pitchfork-compose`
-   (registry-driven, fail-closed); harden B's schema → `sovereign/bin/pitchfork-check`
+2. Harden `design-d/compose-d.ts` → `estate/bin/pitchfork-compose`
+   (registry-driven, fail-closed); harden B's schema → `estate/bin/pitchfork-check`
    (validates merged output).
 3. **Mechanical split** (one commit per project or a few, sandbox-verified first):
    for each of the 30 projects, move its daemon sections to
    `<project>/pitchfork.d/<daemon>.toml` (original text preserved); parent keeps
    `parent.toml` + `projects.toml`. Verify by composing and asserting
    parse-equality with today's file (the race harness does exactly this).
-   Sequencing: `sovereign` (37) first, then ranch/* (17), then tools/*, then standalone.
+   Sequencing: `estate` (37) first, then ranch/* (17), then tools/*, then standalone.
 4. **Nested repos**: ranch/* manifests move with their projects into
    `toxicwind/ranch` (the ranch checkout at `projects/range/ranch`) — the
    registry references them by path; daemon changes then flow through the
    project's own repo workflow.
 5. **Sink**: feed the composed output to pitchfork 2.25.0 via native
    `pitchfork config add` — parent stays the entrypoint at `/home/toxic/estate`.
-6. **Reload**: compose → diff → `bin/pitchfork-restart sovereign/<name>` for
+6. **Reload**: compose → diff → `bin/pitchfork-restart estate/<name>` for
    changed daemons only (L1 proven: 1 daemon in, 1 daemon out).
 7. **Retire the 5 stale**: delete from their owning projects' `pitchfork.d/`
    (`ranch/oracle` ×2, `tools/buildsrv` ×1, `ranch/flicker` ×2) → 82 → 77

@@ -13,8 +13,8 @@ the agent runtime, which have nothing in common.
 ## Naming
 
 The `estate` prefix is dead. The control plane is `estate/`; the namespace
-survives in env var names (`SOVEREIGN_ROOT`, `SOVEREIGN_PROFILE`,
-`SOVEREIGN_TRUSTED_PARENT`), in the `estate_session` cookie, and in four
+survives in env var names (`ESTATE_ROOT`, `ESTATE_PROFILE`,
+`ESTATE_TRUSTED_PARENT`), in the `estate_session` cookie, and in four
 daemon names that are kept because renaming them breaks live state:
 
 | daemon | reality |

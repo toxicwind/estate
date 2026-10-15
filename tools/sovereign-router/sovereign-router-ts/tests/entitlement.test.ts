@@ -13,7 +13,7 @@
 import { describe, test, expect } from "bun:test";
 
 // Must be set before the router modules are imported (DB_PATH is read once).
-process.env.SOVEREIGN_DB = "/tmp/sovereign_router_entitlement_test.db";
+process.env.ESTATE_DB = "/tmp/estate_router_entitlement_test.db";
 
 const { state } = await import("../router_matrix");
 const {

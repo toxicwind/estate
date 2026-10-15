@@ -1,6 +1,6 @@
 # hft-latency
 
-Repo: [toxicwind/sovereign-projects](https://github.com/toxicwind/sovereign-projects)
+Repo: [toxicwind/estate-projects](https://github.com/toxicwind/estate-projects)
 (`skills/hft-latency/`); catalog entry in [`skills/README.md`](../README.md).
 
 > **THIS SKILL IS MUTABLE BY AGENTS.** Any agent may edit, extend, or correct

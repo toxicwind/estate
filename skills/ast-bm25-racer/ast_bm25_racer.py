@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Sovereign AST-BM25 Racer — LOCAL-HEAVY edition (Forge, 2026-09-29).
+Estate AST-BM25 Racer — LOCAL-HEAVY edition (Forge, 2026-09-29).
 
 Adapted from the skill doc per Chris's direction: Dropbox sync REMOVED.
 All artifacts stay local: ~/workspace/.tmpdir run dir + ~/workspace deliverables.

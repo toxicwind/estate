@@ -1,7 +1,7 @@
 <div align="right">
 
-[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/part_of-sovereign--projects-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/part_of-estate--projects-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -277,6 +277,6 @@ web/                 vite + solid dashboard, built into src/static/
 
 ## License
 
-MIT where marked — [license](https://github.com/toxicwind/sovereign-projects#license).
+MIT where marked — [license](https://github.com/toxicwind/estate-projects#license).
 
 MIT.

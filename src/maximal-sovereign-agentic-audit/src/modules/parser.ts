@@ -1,5 +1,5 @@
 import { readFileSync } from "fs";
-import { PROJECTS_ENV, PROJECTS_DIR, SOVEREIGN_DIR } from "./constants.js";
+import { PROJECTS_ENV, PROJECTS_DIR, ESTATE_DIR } from "./constants.js";
 
 export function parseProjectsEnvSync(): string[] {
   try {
@@ -15,6 +15,6 @@ export function parseProjectsEnvSync(): string[] {
     return paths;
   } catch (error) {
     console.warn(`Failed to parse ${PROJECTS_ENV}: ${error.message}`);
-    return [PROJECTS_DIR, SOVEREIGN_DIR];
+    return [PROJECTS_DIR, ESTATE_DIR];
   }
 }

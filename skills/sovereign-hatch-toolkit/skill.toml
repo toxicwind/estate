@@ -1,5 +1,5 @@
 prompt_context = """
-# Sovereign Hatch Toolkit
+# Estate Hatch Toolkit
 
 Two subsystems, both tested (41/41 green):
 
@@ -17,7 +17,7 @@ Two subsystems, both tested (41/41 green):
 Run `python3 -m unittest discover -s tests -p "test_*.py" -v` (or `make test`)."""
 
 [skill]
-name = "sovereign-hatch-toolkit"
+name = "estate-hatch-toolkit"
 version = "0.1.0"
 description = "Noise_XX_25519_AESGCM_SHA256 handshake toolkit and atomic POSIX filesystem message bus (FSBus) for Python agent infrastructure."
 author = ""

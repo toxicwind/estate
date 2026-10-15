@@ -56,7 +56,7 @@ function projectOf(lines: string[]): string {
   const candidates: string[] = [];
   if (dirM) candidates.push(dirM[1]);
   if (runM) {
-    // scan every token: prefer one rooted at the sovereign tree
+    // scan every token: prefer one rooted at the estate tree
     for (const tok of runM[1].replace(/^exec\s+/, "").split(/\s+/)) {
       if (tok.includes("/home/toxic/estate/")) candidates.push(tok);
     }
@@ -66,7 +66,7 @@ function projectOf(lines: string[]): string {
     }
   }
   for (const c of candidates) {
-    let p = c.replace(/^\/home\/toxic\/sovereign\//, "").replace(/^\.\//, "");
+    let p = c.replace(/^\/home\/toxic\/estate\//, "").replace(/^\.\//, "");
     if (!p || p === ".") continue;
     const parts = p.split("/").filter(Boolean);
     // drop a trailing file component (has a dot) so proj ~= owning dir

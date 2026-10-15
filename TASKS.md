@@ -1,4 +1,4 @@
-# Sovereign Fix Tasks - Live Tracker
+# Estate Fix Tasks - Live Tracker
 
 ## Task 0: Nuvio LG TV Deployment (HIGHEST PRIORITY)
 
@@ -20,7 +20,7 @@
 
 - [ ] Verify app runs on TV
 - [ ] Test remote control integration
-- [ ] Test network connectivity to sovereign services
+- [ ] Test network connectivity to estate services
 
 ---
 
@@ -99,7 +99,7 @@
 
 ### 4.1 Find Benchmark Data
 
-- [ ] Search sovereign/ for benchmark results
+- [ ] Search estate/ for benchmark results
 - [ ] Search pi-agent/ for model benchmarks
 - [ ] Compile RPM/latency data
 
@@ -167,7 +167,7 @@
 - [x] Restore MIME associations to `firefox-nightly.desktop` for html/http/https/pdf
 - [x] Set `export BROWSER=firefox-nightly` in `~/.bashrc`
 
-### 7.3 Sovereign Web UI Launcher CLI
+### 7.3 Estate Web UI Launcher CLI
 
 - [x] Create `scripts/open-web-uis.ts` with failfast probe, SSOT port lookup, and Firefox Nightly IPC
 - [x] Create `scripts/open-web-uis.sh` wrapper

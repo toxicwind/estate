@@ -10,7 +10,7 @@ describe("local-audit", () => {
     expect(result.repos.length).toBe(result.total);
   });
 
-  test("localAudit returns repos from sovereign directory", async () => {
+  test("localAudit returns repos from estate directory", async () => {
     const result = await localAudit(["/home/toxic/estate"]);
     expect(result.total).toBeGreaterThanOrEqual(0);
   });

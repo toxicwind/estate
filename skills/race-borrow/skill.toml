@@ -24,8 +24,8 @@ Options:
 ## Examples
 
 ```bash
-# Basic: race sovereign, tau, pi patterns across default providers
-bun run race-borrow.ts sovereign tau pi
+# Basic: race estate, tau, pi patterns across default providers
+bun run race-borrow.ts estate tau pi
 
 # Custom: race with specific weights and providers
 bun run race-borrow.ts coding-agent --weights stars=5,forks=2,updated=3 --providers openrouter,groq

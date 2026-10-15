@@ -170,7 +170,7 @@ Rationale, in order of weight:
    `pf build` aborts with the exact fix ("move it into pitchfork.d/<name>.toml")
    instead of clobbering it. This is the "stop bypassing" mechanism.
 6. **Reload granularity ([D2], [4]).** `pf diff` attributes git hunks to daemons
-   and prints the exact `bin/pitchfork-restart sovereign/<name>…` list. Editing a
+   and prints the exact `bin/pitchfork-restart estate/<name>…` list. Editing a
    running daemon's stanza never re-registers it (pitchfork 2.25.0 behavior,
    confirmed in the config's own header) — the tool tells you what to restart.
 
@@ -208,7 +208,7 @@ Prototypes + harness that produced the measurements: `harness/compose.ts`,
 
 The parent stays `/home/toxic/estate/pitchfork.toml`. Nothing moves.
 
-1. **Land the tool** (this change): `bin/pf` + `RESULT.md` → `toxicwind/sovereign-projects`
+1. **Land the tool** (this change): `bin/pf` + `RESULT.md` → `toxicwind/estate-projects`
    `main`. Zero effect on the running fleet: no fragments exist yet, `pf` is inert.
 2. **Split (one-time, safe):** on yote, in `/home/toxic/estate`:
    `bin/pf migrate` → creates `pitchfork.d/` (82 manifests + `.hashes`).

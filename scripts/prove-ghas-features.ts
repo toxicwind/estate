@@ -5,9 +5,9 @@
  */
 import { appendFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { loadSovereignPorts } from "../src/lib/ports.ts";
+import { loadEstatePorts } from "../src/lib/ports.ts";
 
-loadSovereignPorts();
+loadEstatePorts();
 
 const SCRATCH =
   process.env.SCRATCH || "/tmp/grok-goal-c30f990945a1/implementer";

@@ -45,7 +45,7 @@ export type BestModelsDoc = {
   };
 };
 
-const SOV = process.env.SOVEREIGN_ROOT || join(homedir(), "sovereign");
+const SOV = process.env.ESTATE_ROOT || join(homedir(), "estate");
 export const BEST_MODELS_PATH =
   process.env.BEST_MODELS_PATH || join(SOV, ".state/best-models.json");
 

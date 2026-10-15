@@ -1,4 +1,4 @@
-name: Sovereign CI
+name: Estate CI
 
 on:
   push:
@@ -11,8 +11,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  sovereign-test:
-    name: Sovereign stack tests
+  estate-test:
+    name: Estate stack tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

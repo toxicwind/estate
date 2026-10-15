@@ -1,7 +1,7 @@
 <div align="right">
 
-[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/part_of-sovereign--projects-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/part_of-estate--projects-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -59,4 +59,4 @@ After loading, type `/hello` or `/hello Ada` in the omp prompt. The command send
 
 ## License & Security
 
-MIT where marked — [license](https://github.com/toxicwind/sovereign-projects#license). These are minimal example extensions: safe to copy and adapt. Never drop a real secret into an example config; treat any key-shaped string in docs as untrusted until verified.
+MIT where marked — [license](https://github.com/toxicwind/estate-projects#license). These are minimal example extensions: safe to copy and adapt. Never drop a real secret into an example config; treat any key-shaped string in docs as untrusted until verified.

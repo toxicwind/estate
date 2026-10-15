@@ -1,16 +1,16 @@
 #!/bin/bash
-# merge-into-sovereign.sh — Merge all Pi-related repos INTO toxicwind/sovereign
-# sovereign = root monolith, everything else = packages/
+# merge-into-estate.sh — Merge all Pi-related repos INTO toxicwind/estate
+# estate = root monolith, everything else = packages/
 #
 # Run: bash scripts/merge-into-sovereign.sh
 
 set -euo pipefail
 
-TARGET_REPO="toxicwind/sovereign"
+TARGET_REPO="toxicwind/estate"
 TARGET_BRANCH="monolith"
-WORK_DIR="/tmp/sovereign-merge-$$"
+WORK_DIR="/tmp/estate-merge-$$"
 
-echo "=== SOVEREIGN MONOLITH MERGER ==="
+echo "=== ESTATE MONOLITH MERGER ==="
 echo "Root: $TARGET_REPO"
 echo "Branch: $TARGET_BRANCH"
 echo ""
@@ -18,7 +18,7 @@ echo ""
 mkdir -p "$WORK_DIR"
 cd "$WORK_DIR"
 
-# Clone sovereign as the ROOT
+# Clone estate as the ROOT
 git clone "https://github.com/$TARGET_REPO.git" root
 cd root
 
@@ -29,15 +29,15 @@ git checkout -b "$TARGET_BRANCH" 2>/dev/null || git checkout "$TARGET_BRANCH"
 mkdir -p packages archives/moonbox
 
 # ============================================
-# MERGE MAP: repo → destination under sovereign
+# MERGE MAP: repo → destination under estate
 # ============================================
 MERGES=(
     # Agent layer (the Pi fork)
-    "toxicwind/sovereign-pi:packages/pi"
+    "toxicwind/estate-pi:packages/pi"
 
     # Model routing
     "toxicwind/sovereign-swap:packages/swap"
-    "toxicwind/sovereign-rebrand:packages/rebrand"
+    "toxicwind/estate-rebrand:packages/rebrand"
 
     # Agent OS / Framework
     "toxicwind/openfang:packages/os"
@@ -53,7 +53,7 @@ MERGES=(
     "toxicwind/beellama.cpp:packages/tools/beellama"
     "toxicwind/k3-capacity-hack:packages/tools/k3-capacity"
     "toxicwind/arxiv-mcp-server:packages/tools/arxiv-mcp"
-    "toxicwind/caddy-sovereign-auth:packages/tools/caddy-auth"
+    "toxicwind/caddy-estate-auth:packages/tools/caddy-auth"
     "toxicwind/cdp-tunnel:packages/tools/cdp-tunnel"
     "toxicwind/bashrc-quote-fix:packages/tools/bashrc-fix"
     "toxicwind/async-url-probe:packages/tools/url-probe"
@@ -123,17 +123,17 @@ done
 # Create monorepo documentation
 # ============================================
 cat > MONOREPO.md << 'EOF'
-# Sovereign Monolith
+# Estate Monolith
 
-`toxicwind/sovereign` is the root. Everything else is a package.
+`toxicwind/estate` is the root. Everything else is a package.
 
 ## Structure
 
 ```
-sovereign/                    ← ROOT (this repo)
-├── src/                      ← Sovereign core
+estate/                    ← ROOT (this repo)
+├── src/                      ← Estate core
 ├── packages/
-│   ├── pi/                   ← Pi agent fork (was sovereign-pi)
+│   ├── pi/                   ← Pi agent fork (was estate-pi)
 │   ├── swap/                 ← Model swapping
 │   ├── rebrand/              ← Rebrand toolkit
 │   ├── os/                   ← Openfang agent OS

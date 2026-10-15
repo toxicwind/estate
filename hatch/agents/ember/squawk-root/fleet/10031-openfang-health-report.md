@@ -8,7 +8,7 @@ title: openfang-health FAIL
 ---
 openfang/coyote health: **FAIL**
 
-- [warn] daemons: 27/28 running; supervisor-stale (endpoint live): sovereign/toolcall-llm — restart daemon to clear metadata
+- [warn] daemons: 27/28 running; supervisor-stale (endpoint live): estate/toolcall-llm — restart daemon to clear metadata
 - [fail] llama_swap: :25100/v1/models unreachable after 5004ms
 - [warn] provider_nvidia: auth=Missing (live/dead only)
 - [warn] provider_anthropic: auth=Missing (live/dead only)
@@ -16,4 +16,4 @@ openfang/coyote health: **FAIL**
 - [warn] provider_cerebras: auth=Missing (live/dead only)
 - [warn] provider_deepseek: auth=Missing (live/dead only)
 - [warn] provider_openrouter: auth=Missing (live/dead only)
-- [warn] coyote_ep: :25143 code=000000 after 8ms (sovereign/coyote not in live pitchfork set)
+- [warn] coyote_ep: :25143 code=000000 after 8ms (estate/coyote not in live pitchfork set)

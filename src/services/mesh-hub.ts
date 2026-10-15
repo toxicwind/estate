@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * Mesh hub — 20 GHAS-linked features for every sovereign service + aggregation.
+ * Mesh hub — 20 GHAS-linked features for every estate service + aggregation.
  * Listens MESH_HUB_PORT (default 25115). Also multi-attaches /mesh via proxy
  * namespaces: /mesh/s/{service}/{feature}
  */
@@ -11,9 +11,9 @@ import {
   type MeshServiceId,
   serviceCatalog,
 } from "../lib/ghas-mesh-features.ts";
-import { loadSovereignPorts, requirePort } from "../lib/ports.ts";
+import { loadEstatePorts, requirePort } from "../lib/ports.ts";
 
-loadSovereignPorts();
+loadEstatePorts();
 
 const PORT = requirePort("MESH_HUB_PORT");
 const HOST = Bun.env.MESH_HUB_HOST ?? "0.0.0.0";

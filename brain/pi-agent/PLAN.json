@@ -279,9 +279,9 @@
       "items": [
         {
           "id": "G10.1",
-          "name": "Fix sovereign git",
+          "name": "Fix estate git",
           "status": "completed",
-          "desc": "Set correct origin to toxicwind/sovereign"
+          "desc": "Set correct origin to toxicwind/estate"
         },
         {
           "id": "G10.2",

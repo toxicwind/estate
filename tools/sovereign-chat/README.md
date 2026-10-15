@@ -1,9 +1,9 @@
-# sovereign-chat
+# estate-chat
 
 <div align="right">
 
-[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -12,17 +12,17 @@ activity, rooms with replayable history, WebSocket push, and an MCP surface —
 **one canonical server instead of file-based coordination hacks**.
 
 - **Binds:** `127.0.0.1` and the tailscale IPv4 (tailnet-only, never `0.0.0.0`).
-- **Port:** `25120` (`SOVEREIGN_CHAT_PORT`).
+- **Port:** `25120` (`ESTATE_CHAT_PORT`).
 - **Auth:** bearer token on every `/v1/*` route. Token lives in
-  `/home/toxic/.config/sovereign-chat-token` (0600); the daemon gets
-  `SOVEREIGN_CHAT_TOKEN_FILE` in its pitchfork env. Health is unauthenticated.
+  `/home/toxic/.config/estate-chat-token` (0600); the daemon gets
+  `ESTATE_CHAT_TOKEN_FILE` in its pitchfork env. Health is unauthenticated.
 - **State:** SQLite at `state/chat.db` (WAL). Durable on awrawr-pc.
-- **Pitchfork:** `[daemons.sovereign-chat]`, `run = "exec bun run chat.ts"`,
+- **Pitchfork:** `[daemons.estate-chat]`, `run = "exec bun run chat.ts"`,
   `ready_http = "http://127.0.0.1:25120/health"`, `auto = ["start"]`.
 
 ```mermaid
 flowchart LR
-    subgraph plane[sovereign-chat :25120]
+    subgraph plane[estate-chat :25120]
         http[HTTP /v1/*]
         ws[WS /v1/stream]
         mcp[MCP stdio + streamable HTTP]
@@ -55,7 +55,7 @@ flowchart LR
 ## Quick start
 
 ```bash
-T=$(cat /home/toxic/.config/sovereign-chat-token)
+T=$(cat /home/toxic/.config/estate-chat-token)
 B=http://100.72.199.93:25120   # or http://127.0.0.1:25120 on-box
 H=(-H "Authorization: Bearer $T")
 
@@ -82,9 +82,9 @@ chat read --room fleet --since 0 --limit 50
 chat presence | chat rooms | chat activity | chat health
 ```
 
-Token is read from `/home/toxic/.config/sovereign-chat-token` (or
-`$SOVEREIGN_CHAT_TOKEN_FILE`); base URL defaults to
-`http://127.0.0.1:25120` (`$SOVEREIGN_CHAT_BASE` overrides).
+Token is read from `/home/toxic/.config/estate-chat-token` (or
+`$ESTATE_CHAT_TOKEN_FILE`); base URL defaults to
+`http://127.0.0.1:25120` (`$ESTATE_CHAT_BASE` overrides).
 
 ## Architecture
 
@@ -126,8 +126,8 @@ Server pushes `{topic, type:"message", …}` and
 On-box stdio server:
 
 ```bash
-SOVEREIGN_CHAT_TOKEN_FILE=/home/toxic/.config/sovereign-chat-token \
-SOVEREIGN_CHAT_TOKEN="$(cat /home/toxic/.config/sovereign-chat-token)" \
+ESTATE_CHAT_TOKEN_FILE=/home/toxic/.config/estate-chat-token \
+ESTATE_CHAT_TOKEN="$(cat /home/toxic/.config/estate-chat-token)" \
   bun run chat.ts mcp
 ```
 
@@ -135,10 +135,10 @@ Tools: `join`, `heartbeat`, `post_message`, `read_messages`, `list_presence`,
 `list_rooms`. MCP client config:
 
 ```json
-{ "mcpServers": { "sovereign-chat": {
+{ "mcpServers": { "estate-chat": {
   "command": "bun", "args": ["run", "/home/toxic/estate/tools/sovereign-chat/chat.ts", "mcp"],
-  "env": { "SOVEREIGN_CHAT_TOKEN_FILE": "/home/toxic/.config/sovereign-chat-token",
-            "SOVEREIGN_CHAT_TOKEN": "<token>" }
+  "env": { "ESTATE_CHAT_TOKEN_FILE": "/home/toxic/.config/estate-chat-token",
+            "ESTATE_CHAT_TOKEN": "<token>" }
 } } }
 ```
 
@@ -157,7 +157,7 @@ stays on awrawr-pc):
 
 ```bash
 ~/workspace/skills/awrawr-mcp/bin/exec.py --json --timeout 10 --argv \
-  curl -s -H "Authorization: Bearer $(cat /home/toxic/.config/sovereign-chat-token)" \
+  curl -s -H "Authorization: Bearer $(cat /home/toxic/.config/estate-chat-token)" \
   http://127.0.0.1:25120/v1/presence
 ```
 
@@ -177,7 +177,7 @@ separate — collapsing them was already debated and rejected.
 
 ## License & security
 
-MIT — see [LICENSE](https://github.com/toxicwind/sovereign-projects#license).
+MIT — see [LICENSE](https://github.com/toxicwind/estate-projects#license).
 
 - Bearer token on every `/v1/*` route, `0600` token file — treat it like a
   credential, never paste it into chat.

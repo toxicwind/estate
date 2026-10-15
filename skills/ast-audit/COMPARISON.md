@@ -83,7 +83,7 @@ an external binary (already on both boxes), so no dependency was added.
 New `forge audit` leg (`pattern-forge/src/audit.ts`, pure Bun):
 
 ```
-forge audit --root <dir> --claim "sovereign router listens on port 25104"
+forge audit --root <dir> --claim "estate router listens on port 25104"
 forge audit --root <dir> --claim "deploy calls push"
 forge audit --root <dir> --claim "router imports router_config"
 forge audit --root <dir> --pattern 'app.listen($PORT, $$$)' --lang ts
@@ -110,12 +110,12 @@ ast-grep exits 1 with valid `[]`; unquoted `$SPEC` binds the import clause).
   VERIFIED (`push()` inside `deploy()`); NOT-FOUND paths return honest notes.
 - Real estate code (yote, `/home/toxic/estate/ranch/mesh/router/sovereign-router`):
   "router imports router_config" → VERIFIED, `$SPEC="./router_config.ts"`,
-  router_ui.ts:1. "sovereign router listens on port 25104" → bind sites
+  router_ui.ts:1. "estate router listens on port 25104" → bind sites
   found as `Bun.serve({ port: PORT })` (router.ts:183), port symbolic —
   the audit correctly refused to claim the literal and pointed at config/env;
   follow-up pattern `export const PORT = $EXPR` → VERIFIED,
   `parseInt(_portRaw, 10)` (router_config.ts:59), `_portRaw` from
-  `SOVEREIGN_ROUTER_PORT` env. This is the whole point: curl would have said
+  `ESTATE_ROUTER_PORT` env. This is the whole point: curl would have said
   "port open" and stopped; the AST gave the full bind chain.
 - `forge doctor`: `PASS audit (ast-grep)`; all 23 existing pattern-forge
   tests pass (`bun test tests/`).

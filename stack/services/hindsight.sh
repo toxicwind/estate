@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Hindsight — vectorize-io/hindsight agent memory (sovereign)
+# Hindsight — vectorize-io/hindsight agent memory (estate)
 # Maps: 8888 -> HINDSIGHT_API_PORT (25117), 9999 -> HINDSIGHT_CP_PORT (25118)
 # Docs: https://hindsight.vectorize.io/developer/installation
 # Image: ghcr.io/vectorize-io/hindsight:latest  (~9GB, named volume for embedded pg)
 set -euo pipefail
-SOV="${SOVEREIGN_ROOT:-/home/toxic/estate}"
+SOV="${ESTATE_ROOT:-/home/toxic/estate}"
 source "$SOV/stack/lib-ports.sh"
 require_env HINDSIGHT_API_PORT
 require_env HINDSIGHT_CP_PORT

@@ -2,7 +2,7 @@
 crew: 'oracle-repair'
 scope: 'oracle E2E defect repair'
 owner: 'oracle-repair'
-status: 'DONE (2026-09-21): lifecycle repair live-verified E2E (intake->signed task->bids->vickrey assign->real super-ralph->signed result->settlement verified->next_work). Commits ad2ade8077 + e25b2e6b25 on nim-probe-20260920, pushed to toxicwind/sovereign-projects.'
+status: 'DONE (2026-09-21): lifecycle repair live-verified E2E (intake->signed task->bids->vickrey assign->real super-ralph->signed result->settlement verified->next_work). Commits ad2ade8077 + e25b2e6b25 on nim-probe-20260920, pushed to toxicwind/estate-projects.'
 order: 64
 registered: '2026-09-21'
 updated: '2026-09-29'

@@ -28,17 +28,17 @@
    "note": "MODEL-MAX winner: 9B Qwen, 128k ctx, local, no auth"
   },
   "quality": {
-   "selector": "sovereign/free",
+   "selector": "estate/free",
    "profile": "quality",
    "tier": "high",
    "thinking": "high",
    "auth": "none",
-   "verified": "2026-09-20T00:45MDT live POST /v1/chat/completions on 127.0.0.1:25104 (sovereign router free race), 0% errors, winner nvidia/nemotron-3-super-120b-a55b",
+   "verified": "2026-09-20T00:45MDT live POST /v1/chat/completions on 127.0.0.1:25104 (estate router free race), 0% errors, winner nvidia/nemotron-3-super-120b-a55b",
    "note": "Retired 2026-10-02: sovereign-router merged into flock :25193. Nothing listens on :25104.",
    "disabled": true
   },
   "reasoning": {
-   "selector": "sovereign/free",
+   "selector": "estate/free",
    "profile": "reasoning",
    "tier": "high",
    "thinking": "high",
@@ -66,6 +66,6 @@
   "groq/openai/gpt-oss-20b resolves per parseModelString (provider=groq, id=openai/gpt-oss-20b) but groq needs an API key, none configured; alternate only",
   "nvidia/openai/gpt-oss-20b is catalog-valid; tau nvidia provider targets https://integrate.api.nvidia.com/v1 (API key required); local nim-proxy 127.0.0.1:8000 returns 401 without Bearer key",
   "original bench file preserved at model-router.json.bak-20260914-bench",
-  "2026-09-20 tau-config: quality/reasoning repointed herd/moonshotai/kimi-* (100% 401, model ids absent from :25100) -> sovereign/free (live, 0% errors). Added backup=herd/pollinations-free/openai (keyless, herd-side). fast/cheap/balanced selectors verified present in :25100 /v1/models same day."
+  "2026-09-20 tau-config: quality/reasoning repointed herd/moonshotai/kimi-* (100% 401, model ids absent from :25100) -> estate/free (live, 0% errors). Added backup=herd/pollinations-free/openai (keyless, herd-side). fast/cheap/balanced selectors verified present in :25100 /v1/models same day."
  ]
 }

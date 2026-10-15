@@ -2,8 +2,8 @@
 
 <div align="right">
 
-[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -34,7 +34,7 @@ flowchart LR
 ## Quick start
 
 ```bash
-python3 /home/toxic/sovereign/tools/websearch-mcp/server.py
+python3 /home/toxic/estate/tools/websearch-mcp/server.py
 ```
 
 Requires the `websearch` CLI on PATH (`uvx websearch-skill` provides it).
@@ -65,7 +65,7 @@ tool entry here with the same `--json` pass-through shape.
 
 ## License & security
 
-MIT — see [LICENSE](https://github.com/toxicwind/sovereign-projects#license).
+MIT — see [LICENSE](https://github.com/toxicwind/estate-projects#license).
 
 - The wrapper fetches arbitrary URLs on the agent's behalf — `web_fetch`
   of untrusted pages is the same trust call as the agent browsing itself.

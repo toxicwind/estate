@@ -122,7 +122,7 @@ runtime config SSOT (identity, stream tuning, model names). Secrets live in
 > setting is worse than one, so the estate defers to the agent config that reads
 > them. `.env` §8 and `config/tau/.env` §8 no longer declare ports: each carried
 > six keys under names that disagreed with the SSOT, and `MCPPROXY_PORT` pointed
-> at `:25109`, which is `KEYPOOL_PORT`. `SOVEREIGN_HOME` in `.envrc` is now
+> at `:25109`, which is `KEYPOOL_PORT`. `ESTATE_HOME` in `.envrc` is now
 > `ESTATE_HOME` — it had no consumer outside `.envrc` itself, and that is the
 > fixed override name from Rule 2.2 which `skills/lib/estate.sh` already
 > resolves, so the two now compose instead of disagreeing.

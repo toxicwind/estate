@@ -5,7 +5,7 @@ description: Unified pattern engine consolidating race-borrow, ast-bm25-racer, a
 
 # pattern-forge
 
-Unified sovereign pattern engine consolidating **`race-borrow`**, **`ast-bm25-racer`**, and **`code-racer-swe`** into a single cohesive runtime.
+Unified estate pattern engine consolidating **`race-borrow`**, **`ast-bm25-racer`**, and **`code-racer-swe`** into a single cohesive runtime.
 
 Doctrine: **Many readers, one writer; first valid answer wins; local tree and external art race concurrently; slow path stays hot via persistent winner ledgers.**
 
@@ -195,7 +195,7 @@ Claims about code get verified against the AST — not curl, not ls. Merged
 
 ```bash
 forge audit --root /home/toxic/estate/tools/sovereign-router \
-  --claim "sovereign router listens on port 25104"
+  --claim "estate router listens on port 25104"
 # === audit: "..." [port-bind (port 25104)] -> VERIFIED (confidence: high) ===
 #   router.ts:87:2-87:31  Bun.serve({ port: 25104, ... })
 #     captures: $PORT="25104"

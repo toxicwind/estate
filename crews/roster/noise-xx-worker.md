@@ -30,7 +30,7 @@ TypeError'd on its final step — `NoiseHandshakeState(mode="standard")` but the
 class has no `mode` parameter (the implementation is the muse.ai custom variant:
 msg3 carries a second ephemeral e2, so there is no standard-mode switch). Step 6
 rewritten as the honest fresh-session interop sanity above; fix commit
-7f06816 on toxicwind/sovereign-hatch-toolkit main, remote ref verified.
+7f06816 on toxicwind/estate-hatch-toolkit main, remote ref verified.
 
 Finding (design call, not fixed): `NotaryEndorsement` is parse-only — no Ed25519
 signature verification exists; needs a provisioned notary public key + trust

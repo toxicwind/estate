@@ -7,7 +7,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { resolve } from "node:path";
 
-const SOV = process.env.SOVEREIGN_ROOT || resolve(homedir(), "sovereign");
+const SOV = process.env.ESTATE_ROOT || resolve(homedir(), "estate");
 
 type EnvLayer = { resolve: () => string; precedence: number };
 
@@ -62,7 +62,7 @@ function parseEnvFile(file: string): Record<string, string> {
  *
  * The vault MUST come last, and it MUST be able to overwrite a key that is
  * already in process.env. Bun auto-loads a dotfile from the cwd before any
- * user code runs, so a service launched from $HOME/sovereign starts with
+ * user code runs, so a service launched from $HOME/estate starts with
  * 14-character placeholder values already in process.env (FLOCK_API_KEY,
  * SCOUT_API_KEY, SCOUT_MODEL, the *_BASE_URLs). A "already set, skip it"
  * loader then never applies ~/.secrets and every consumer authenticates with
@@ -84,7 +84,7 @@ function isPlaceholder(v: string | undefined): boolean {
   return v === undefined || v === "" || v === "<redacted>";
 }
 
-export function loadSovereignPorts(): void {
+export function loadEstatePorts(): void {
   const layers = [...ENV_LAYERS].sort((a, b) => a.precedence - b.precedence);
   const fromLayers = new Set<string>();
   for (const layer of layers) {
@@ -110,7 +110,7 @@ const PORT_ENV_ALIASES: Record<string, string[]> = {
 };
 
 export function requireEnv(name: string): string {
-  loadSovereignPorts();
+  loadEstatePorts();
   const v = process.env[name];
   if (v !== undefined && v !== "") return v;
   for (const alt of PORT_ENV_ALIASES[name] ?? []) {

@@ -19,7 +19,7 @@
  */
 
 const OPENFANG_API = "http://127.0.0.1:25196";
-const SOVEREIGN = "/home/toxic/estate";
+const ESTATE = "/home/toxic/estate";
 const LIVE_AGENTS = "/home/toxic/.openfang/agents";
 const DEFAULT_MODEL = "openrouter-free/inclusionai/ling-3.0-flash-sante:free"; // herd free-tier default (Ling-first, verified live 2026-09-30)
 const HERD_BASE_URL = "http://127.0.0.1:25100/v1";
@@ -332,7 +332,7 @@ async function main(): Promise<void> {
   const toml = renderAgentToml(id);
   const md = renderSystemMd(id);
 
-  const canonicalDir = `${SOVEREIGN}/agents/${id.name}`;
+  const canonicalDir = `${ESTATE}/agents/${id.name}`;
   const liveDir = `${LIVE_AGENTS}/${id.name}`;
 
   if (args["dry-run"]) {
@@ -369,10 +369,10 @@ async function main(): Promise<void> {
 
   if (!args["no-commit"]) {
     const msg = `agents: fleet-join ${id.name} (${id.lane}/${id.task})`;
-    await Bun.$`git -C ${SOVEREIGN} add agents/${id.name}`.quiet();
-    const proc = await Bun.$`git -C ${SOVEREIGN} commit -m ${msg}`.quiet().nothrow();
+    await Bun.$`git -C ${ESTATE} add agents/${id.name}`.quiet();
+    const proc = await Bun.$`git -C ${ESTATE} commit -m ${msg}`.quiet().nothrow();
     if (proc.exitCode === 0) {
-      const sha = (await Bun.$`git -C ${SOVEREIGN} rev-parse --short HEAD`.quiet().text()).trim();
+      const sha = (await Bun.$`git -C ${ESTATE} rev-parse --short HEAD`.quiet().text()).trim();
       console.log(`[fleet-join] committed ${sha}: ${msg}`);
     } else {
       console.error(`[fleet-join] git commit failed (nothing to commit or repo dirty for other reasons)`);

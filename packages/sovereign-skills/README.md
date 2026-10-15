@@ -1,11 +1,11 @@
 # sovereign-skills
 
-Skill definitions, agent recipes, and behavioral conventions for the Sovereign ecosystem — consumed by Pi, Tau, and subagents. Keep definitions atomic, self-contained, and deterministic.
+Skill definitions, agent recipes, and behavioral conventions for the Estate ecosystem — consumed by Pi, Tau, and subagents. Keep definitions atomic, self-contained, and deterministic.
 
 <div align="right">
 
-[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -48,4 +48,4 @@ See `AGENTS.md` for the repo rules: verify live before claiming, fail loud (neve
 
 ## License & security
 
-MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). Skills shape agent behavior estate-wide — a skill edit is a behavior change for every consumer. Review them like code, and keep them deterministic: a skill that behaves differently on each read isn't a contract.
+MIT where marked — [LICENSE](https://github.com/toxicwind/estate-projects#license). Skills shape agent behavior estate-wide — a skill edit is a behavior change for every consumer. Review them like code, and keep them deterministic: a skill that behaves differently on each read isn't a contract.

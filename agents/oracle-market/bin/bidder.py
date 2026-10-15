@@ -199,10 +199,10 @@ def _resolve_ralph_model(base_url, timeout=15):
 # overlapping work. The oracle rejects unattested bids
 # (bid_rejected{reason:no-attestation}, SPEC §10) — so a bidder
 # that cannot attest must skip the bid loudly, never bid blind.
-KB_COMMITS_API = ("https://api.github.com/repos/toxicwind/sovereign-projects"
+KB_COMMITS_API = ("https://api.github.com/repos/toxicwind/estate-projects"
                   "/commits?path=docs/fleet-knowledgebase.md&per_page=1")
 KB_RAW_URL = ("https://raw.githubusercontent.com/toxicwind/"
-              "sovereign-projects/main/docs/fleet-knowledgebase.md")
+              "estate-projects/main/docs/fleet-knowledgebase.md")
 KB_CACHE = BIN.parent / "work" / "kb-attestation-cache.json"  # runtime cache: regenerable, untracked
 KB_HTTP_TIMEOUT = 10
 

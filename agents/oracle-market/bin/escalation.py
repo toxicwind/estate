@@ -23,7 +23,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 WORK = os.environ.get("ORACLE_WORK",
-                      "/home/toxic/sovereign/agents/oracle-market/work")
+                      "/home/toxic/estate/agents/oracle-market/work")
 ESCALATION_DIR = os.path.join(WORK, "escalations")
 
 AUTO_BAR = 0.85

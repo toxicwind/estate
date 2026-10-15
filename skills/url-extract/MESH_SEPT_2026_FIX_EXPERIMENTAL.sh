@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -exuo pipefail
 # MESH_SEPT_2026_FIX_EXPERIMENTAL - maximal unblinded - pulled from raw.githubusercontent.com sources
-cd ~/projects/sovereign-projects/tau
+cd ~/projects/estate-projects/tau
 pwd
 git status --porcelain | head -n 100
 git diff --stat | head -n 100

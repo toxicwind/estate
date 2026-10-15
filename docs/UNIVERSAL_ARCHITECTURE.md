@@ -1,4 +1,4 @@
-# Universal Architecture — Polyglot Sovereign Stack (August 2026)
+# Universal Architecture — Polyglot Estate Stack (August 2026)
 
 **Status**: Living document. Applies to all code under `/home/toxic/estate/`, `/home/toxic/projects/pi-agent/`, `/home/toxic/.pi/agent/`.
 
@@ -187,7 +187,7 @@ Every service (Go/Rust/TS) exposes:
 
 | Language | Pattern |
 |----------|---------|
-| **TypeScript** | `throw new SovereignError(code, message, cause)` — never catch silently |
+| **TypeScript** | `throw new EstateError(code, message, cause)` — never catch silently |
 | **Go** | `return fmt.Errorf("context: %w", err)` — wrap, don't discard |
 | **Rust** | `anyhow::Result<T>` with `context()` — propagate with context |
 

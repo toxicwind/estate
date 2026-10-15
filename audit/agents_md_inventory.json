@@ -16,7 +16,7 @@
       "hash": "373bec485f9fe1c9e94806822d27a4a7",
       "count": 2,
       "paths": [
-        "/home/toxic/projects/sovereign-github-search/AGENTS.md",
+        "/home/toxic/projects/estate-github-search/AGENTS.md",
         "/home/toxic/projects/github-advanced-search-mcp/AGENTS.md"
       ]
     },
@@ -35,7 +35,7 @@
         "/home/toxic/projects/llama-swap-main/AGENTS.md",
         "/home/toxic/Downloads/explor-20260718-182237/pdf_llama-swap-main/llama-swap-main/AGENTS.md",
         "/home/toxic/Downloads/explor-20260718-182237/pdf_llama-swap-fork/llama-swap-main/AGENTS.md",
-        "/home/toxic/Downloads/explor-20260718-182237/pdf_sovereign-2026/sovereign/tools/llama-swap/AGENTS.md"
+        "/home/toxic/Downloads/explor-20260718-182237/pdf_estate-2026/estate/tools/llama-swap/AGENTS.md"
       ]
     },
     {
@@ -111,7 +111,7 @@
       "count": 2,
       "paths": [
         "/home/toxic/projects/pi-conversation-aware-audit/packages/pi-tui/AGENTS.md",
-        "/home/toxic/projects/kimi-code-sovereign/packages/pi-tui/AGENTS.md"
+        "/home/toxic/projects/kimi-code-estate/packages/pi-tui/AGENTS.md"
       ]
     },
     {
@@ -185,7 +185,7 @@
       "isThirdParty": false
     },
     {
-      "path": "/home/toxic/Downloads/explor-20260718-182237/pdf_sovereign-2026/sovereign/tools/llama-swap/AGENTS.md",
+      "path": "/home/toxic/Downloads/explor-20260718-182237/pdf_estate-2026/estate/tools/llama-swap/AGENTS.md",
       "size": 1948,
       "mtime": 1783700405,
       "md5": "ab0f75d6c5a08403dca2ddb1e553f0f0",
@@ -665,7 +665,7 @@
       "isThirdParty": false
     },
     {
-      "path": "/home/toxic/projects/kimi-code-sovereign/AGENTS.md",
+      "path": "/home/toxic/projects/kimi-code-estate/AGENTS.md",
       "size": 22075,
       "mtime": 1785224451,
       "md5": "82d87e5f78cb86e551ca49feed9a5680",
@@ -673,7 +673,7 @@
       "isThirdParty": false
     },
     {
-      "path": "/home/toxic/projects/kimi-code-sovereign/apps/kimi-code/AGENTS.md",
+      "path": "/home/toxic/projects/kimi-code-estate/apps/kimi-code/AGENTS.md",
       "size": 7128,
       "mtime": 1785224451,
       "md5": "e1389c380dd09a1314173235fdaaaf6b",
@@ -681,7 +681,7 @@
       "isThirdParty": false
     },
     {
-      "path": "/home/toxic/projects/kimi-code-sovereign/apps/kimi-web/AGENTS.md",
+      "path": "/home/toxic/projects/kimi-code-estate/apps/kimi-web/AGENTS.md",
       "size": 7835,
       "mtime": 1785224451,
       "md5": "6d159863ace5a8f148f1dc533ee13eb0",
@@ -689,7 +689,7 @@
       "isThirdParty": false
     },
     {
-      "path": "/home/toxic/projects/kimi-code-sovereign/docs/AGENTS.md",
+      "path": "/home/toxic/projects/kimi-code-estate/docs/AGENTS.md",
       "size": 18062,
       "mtime": 1785224451,
       "md5": "11f05c2bd2da894ad684dfd1d6438978",
@@ -697,7 +697,7 @@
       "isThirdParty": false
     },
     {
-      "path": "/home/toxic/projects/kimi-code-sovereign/packages/agent-core-v2/AGENTS.md",
+      "path": "/home/toxic/projects/kimi-code-estate/packages/agent-core-v2/AGENTS.md",
       "size": 9041,
       "mtime": 1785224451,
       "md5": "2fafce57b88070729b755d9218ba2643",
@@ -705,7 +705,7 @@
       "isThirdParty": false
     },
     {
-      "path": "/home/toxic/projects/kimi-code-sovereign/packages/agent-core/src/services/AGENTS.md",
+      "path": "/home/toxic/projects/kimi-code-estate/packages/agent-core/src/services/AGENTS.md",
       "size": 10043,
       "mtime": 1785224451,
       "md5": "c62e2ae6b71202d93e9d9c1ecb8df7be",
@@ -713,7 +713,7 @@
       "isThirdParty": false
     },
     {
-      "path": "/home/toxic/projects/kimi-code-sovereign/packages/klient/AGENTS.md",
+      "path": "/home/toxic/projects/kimi-code-estate/packages/klient/AGENTS.md",
       "size": 4282,
       "mtime": 1785224451,
       "md5": "b4f973df59cac934423a472545fc814e",
@@ -721,7 +721,7 @@
       "isThirdParty": false
     },
     {
-      "path": "/home/toxic/projects/kimi-code-sovereign/packages/pi-tui/AGENTS.md",
+      "path": "/home/toxic/projects/kimi-code-estate/packages/pi-tui/AGENTS.md",
       "size": 4681,
       "mtime": 1785224451,
       "md5": "78f75844b7b19e855dbf5854a3e96ea9",
@@ -1017,7 +1017,7 @@
       "isThirdParty": false
     },
     {
-      "path": "/home/toxic/projects/sovereign-github-search/AGENTS.md",
+      "path": "/home/toxic/projects/estate-github-search/AGENTS.md",
       "size": 5936,
       "mtime": 1784343694,
       "md5": "373bec485f9fe1c9e94806822d27a4a7",

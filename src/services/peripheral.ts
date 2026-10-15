@@ -1,5 +1,5 @@
 // ============================================================================
-// SOVEREIGN — Peripheral Services (Optional)
+// ESTATE — Peripheral Services (Optional)
 // ============================================================================
 
 import type { ServiceDef } from "../types/index.ts";
@@ -51,7 +51,7 @@ export const PERIPHERAL_SERVICES: ServiceDef[] = [
     name: "pi-web-dashboard",
     portKey: "PI_WEB_DASHBOARD_PORT",
     // The engine moved to /home/toxic/tau; the old
-    // projects/sovereign-projects/tau/engine/... path no longer exists.
+    // projects/estate-projects/tau/engine/... path no longer exists.
     run: "exec /home/toxic/.bun/bin/bun run /home/toxic/tau/engine/packages/server/dist/web-server.js",
     dir: ".",
     readyHttp: "/api/health",

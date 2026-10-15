@@ -29,24 +29,24 @@ loadEnvFile(`${homedir()}/.secrets`);
 
 loadEnvFile("/home/toxic/.secrets");
 
-loadEnvFile("/home/toxic/sovereign/config/ports.env");
+loadEnvFile("/home/toxic/estate/config/ports.env");
 
-loadEnvFile("/home/toxic/sovereign/.env.local");
+loadEnvFile("/home/toxic/estate/.env.local");
 
-// Port SSOT: process-compose injects SOVEREIGN_PORT=${SOVEREIGN_ROUTER_PORT}
+// Port SSOT: process-compose injects ESTATE_PORT=${ESTATE_ROUTER_PORT}
 export const _portRaw =
-  process.env.SOVEREIGN_PORT || process.env.SOVEREIGN_ROUTER_PORT || "";
+  process.env.ESTATE_PORT || process.env.ESTATE_ROUTER_PORT || "";
 
 if (!_portRaw) {
   throw new Error(
-    "SOVEREIGN_ROUTER_PORT or SOVEREIGN_PORT required (config/ports.env)",
+    "ESTATE_ROUTER_PORT or ESTATE_PORT required (config/ports.env)",
   );
 }
 
 export const PORT = parseInt(_portRaw, 10);
 
 export const DB_PATH =
-  process.env.SOVEREIGN_DB || "/home/toxic/sovereign/data/sovereign_router.db";
+  process.env.ESTATE_DB || "/home/toxic/estate/data/estate_router.db";
 
 export const MAX_PARALLEL = 4;
 
@@ -54,31 +54,31 @@ export const MAX_PARALLEL = 4;
 // CONNECT_MS: headers must arrive (dead backend detected fast).
 // TTFT_MS: first body byte must arrive for streaming (time-to-first-token).
 // ATTEMPT_MS / ATTEMPT_STREAM_MS: total per-attempt caps.
-export const CONNECT_MS = parseInt(process.env.SOVEREIGN_CONNECT_MS || "8000", 10);
-export const TTFT_MS = parseInt(process.env.SOVEREIGN_TTFT_MS || "45000", 10);
-export const ATTEMPT_MS = parseInt(process.env.SOVEREIGN_ATTEMPT_MS || "120000", 10);
+export const CONNECT_MS = parseInt(process.env.ESTATE_CONNECT_MS || "8000", 10);
+export const TTFT_MS = parseInt(process.env.ESTATE_TTFT_MS || "45000", 10);
+export const ATTEMPT_MS = parseInt(process.env.ESTATE_ATTEMPT_MS || "120000", 10);
 export const ATTEMPT_STREAM_MS = parseInt(
-  process.env.SOVEREIGN_ATTEMPT_STREAM_MS || "180000",
+  process.env.ESTATE_ATTEMPT_STREAM_MS || "180000",
   10,
 );
 // QUARANTINE: dead providers are quarantined with exponential backoff
 // re-probing: BASE * 2^(level-1) capped at MAX.
 export const QUARANTINE_BASE_S = parseInt(
-  process.env.SOVEREIGN_QUARANTINE_BASE_S || "60",
+  process.env.ESTATE_QUARANTINE_BASE_S || "60",
   10,
 );
 export const QUARANTINE_MAX_S = parseInt(
-  process.env.SOVEREIGN_QUARANTINE_MAX_S || "1800",
+  process.env.ESTATE_QUARANTINE_MAX_S || "1800",
   10,
 );
 // HEDGE_MS: speculative hedging (HFT redundant-feeds pattern). When a chain
 // lane hasn't produced a winner within HEDGE_MS, the next lane fires in
 // parallel; first substantive wins, losers are aborted. 0 disables.
-export const HEDGE_MS = parseInt(process.env.SOVEREIGN_HEDGE_MS || "1500", 10);
+export const HEDGE_MS = parseInt(process.env.ESTATE_HEDGE_MS || "1500", 10);
 
 // Active quarantine re-probe cadence.
 export const QUARANTINE_PROBE_MS = parseInt(
-  process.env.SOVEREIGN_QUARANTINE_PROBE_MS || "15000",
+  process.env.ESTATE_QUARANTINE_PROBE_MS || "15000",
   10,
 );
 
@@ -86,9 +86,9 @@ export const STICKY_TTL = 1800;
 
 export const FIFO_MAX = 64;
 
-export const STRATEGY = process.env.SOVEREIGN_STRATEGY || "hybrid";
+export const STRATEGY = process.env.ESTATE_STRATEGY || "hybrid";
 
-export const UA = "Mozilla/5.0 (compatible; Sovereign-Flock/3.1)";
+export const UA = "Mozilla/5.0 (compatible; Estate-Flock/3.1)";
 
 // ---------------------------------------------------------------------------
 // LLAMA_SWAP_V1 (must come before PROVIDERS that uses it)
@@ -109,7 +109,7 @@ export function loadLocalRoleModels(): {
     longctx: "beellama/qwen-flash-256k",
   };
   try {
-    const p = "/home/toxic/sovereign/.state/best-models.json";
+    const p = "/home/toxic/estate/.state/best-models.json";
     if (!existsSync(p)) return defaults;
     const j = JSON.parse(readFileSync(p, "utf8"));
     return {
@@ -137,7 +137,7 @@ export const PROVIDERS: Record<
   string,
   { base: string; key_env: string; key_env_alt?: string; no_auth?: boolean }
 > = {
-  // Local SSOT — always first-class for sovereign GPU path
+  // Local SSOT — always first-class for estate GPU path
   "llama-swap": {
     base: LLAMA_SWAP_V1,
     key_env: "LLAMA_SWAP_API_KEY",
@@ -442,7 +442,7 @@ export function isLocalSwapModelId(model: string): boolean {
   ) {
     return true;
   }
-  // sovereign naming prefixes / known local ids
+  // estate naming prefixes / known local ids
   return /^(beellama|mradermacher|jackrong|turboquant|ik_llama|ik_turboquant|holo|qwen\/|gemma-4|exaone)/i.test(
     model,
   );

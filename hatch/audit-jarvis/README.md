@@ -4,8 +4,8 @@ Deep, evidence-graded audit of the Hatch/Jarvis daemon (`/opt/hatch/bin/hatch`, 
 
 <div align="right">
 
-[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -72,4 +72,4 @@ flowchart TB
 
 ## License & security
 
-MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). This audit deliberately stayed on the observation side of the kernel wall: passive reads, never active probing of the live daemon. Keep it that way — ptrace/strace against PID 67 is a verified dead end *and* a live-daemon risk. All credentials are redacted from every artifact by policy.
+MIT where marked — [LICENSE](https://github.com/toxicwind/estate-projects#license). This audit deliberately stayed on the observation side of the kernel wall: passive reads, never active probing of the live daemon. Keep it that way — ptrace/strace against PID 67 is a verified dead end *and* a live-daemon risk. All credentials are redacted from every artifact by policy.

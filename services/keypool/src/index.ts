@@ -1,4 +1,4 @@
-// @sovereign/keypool — main entrypoint.
+// @estate/keypool — main entrypoint.
 // Port of herd-keypool.py main(). Bun.serve replaces ThreadingHTTPServer.
 
 import { Pool } from "./pool.js";
@@ -22,12 +22,12 @@ function requiredPort(): number {
 }
 
 const POOLS_PATH =
-  process.env["KEYPOOL_CONFIG"] ?? "/home/toxic/sovereign/config/keypools.yaml";
+  process.env["KEYPOOL_CONFIG"] ?? "/home/toxic/estate/config/keypools.yaml";
 const SECRETS_PATH =
   process.env["KEYPOOL_SECRETS"] ?? "/home/toxic/.secrets";
 const AUDIT_PATH =
   process.env["KEYPOOL_AUDIT"] ??
-  "/home/toxic/sovereign/data/keypool-audit.jsonl";
+  "/home/toxic/estate/data/keypool-audit.jsonl";
 const AUDIT_MAX = Number(process.env["KEYPOOL_AUDIT_MAX_BYTES"] ?? 50 * 1024 * 1024);
 const RACE_KEYS = Number(process.env["KEYPOOL_RACE_KEYS"] ?? 1);
 

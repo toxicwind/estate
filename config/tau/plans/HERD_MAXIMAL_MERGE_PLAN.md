@@ -12,7 +12,7 @@ Integrate upstream `sovereign-swap` and latest `llama-swap` features into `proje
    - Fix any missing fields, package reference mismatches, or syntax errors.
 3. **Service Integration**:
    - Update `/home/toxic/projects/llama-swap` symlink if needed to point to the unified `projects/herd` directory.
-   - Restart the `sovereign/herd` daemon via Pitchfork and verify successful health check and chat completion proxying.
+   - Restart the `estate/herd` daemon via Pitchfork and verify successful health check and chat completion proxying.
 
 ## Verification
 - **Build Verification**: `go build -o llama-swap .` completes with zero errors/warnings.

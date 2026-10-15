@@ -1,11 +1,11 @@
 // ============================================================================
-// SOVEREIGN — Service Test Framework
+// ESTATE — Service Test Framework
 // Reusable, non-destructive tests for all services
 // Uses curl for HTTP (handles compression) and Bun.connect for TCP
 // ============================================================================
 
-import { loadSovereignPorts } from "../../src/lib/ports.ts";
-loadSovereignPorts();
+import { loadEstatePorts } from "../../src/lib/ports.ts";
+loadEstatePorts();
 
 export interface ServiceTestConfig {
   name: string;
@@ -229,7 +229,7 @@ export class ServiceTester {
 export function getServiceTests(): ServiceTestConfig[] {
   const ports = {
     LLAMA_SWAP_PORT: parseInt(process.env.LLAMA_SWAP_PORT || "25100"),
-    // loadSovereignPorts() above already read config/ports.env, so MCPPROXY_GO_PORT
+    // loadEstatePorts() above already read config/ports.env, so MCPPROXY_GO_PORT
     // is populated. The old MCPPROXY_PORT fallback was 25109 -- KEYPOOL_PORT -- so
     // this tested keypool while claiming to test mcpproxy.
     MCPPROXY_GO_PORT: parseInt(process.env.MCPPROXY_GO_PORT || "25127"),

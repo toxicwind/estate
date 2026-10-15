@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Health check for sovereign environment."""
+"""Health check for estate environment."""
 import os, json, sys, socket, subprocess
 from pathlib import Path
 

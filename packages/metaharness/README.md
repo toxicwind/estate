@@ -1,7 +1,7 @@
 <div align="right">
 
-[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-tau-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-tau-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -47,7 +47,7 @@ bun scripts/trace-report.ts <run> <trace>
 
 ## License & Security
 
-**License:** MIT — see [LICENSE](https://github.com/toxicwind/sovereign-projects#license).
+**License:** MIT — see [LICENSE](https://github.com/toxicwind/estate-projects#license).
 
 **Security:** provider credentials never enter task containers — a generated `models.yml` routes at the host pm2 auth-gateway, which resolves credentials host-side. In source-install mode the repo is bind-mounted read-only into task containers; fine for curated benchmarks, never point it at untrusted tasks. The reverse-tunneled gateway keeps keys out of task VMs on the Terminal-Bench runner too.
 

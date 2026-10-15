@@ -56,7 +56,7 @@ curl -s http://127.0.0.1:25100/v1/models | head -c 300
 # 2. Check the strategy router's health (52 live models at time of writing)
 curl -s http://127.0.0.1:25104/health
 
-# 3. See the agent fleet's live squawk chat feed (supersedes legacy sovereign-chat)
+# 3. See the agent fleet's live squawk chat feed (supersedes legacy estate-chat)
 curl -s http://127.0.0.1:25135/health
 
 # 4. Check the oracle decision corral (prediction-market consensus loop)

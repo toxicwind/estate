@@ -1,7 +1,7 @@
 <div align="right">
 
-[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-tau-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-tau-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -41,7 +41,7 @@ A minimal client (`python/examples/minimal.py`) shows the whole flow: connect, c
 
 ## License & Security
 
-**License:** MIT — see [LICENSE](https://github.com/toxicwind/sovereign-projects#license).
+**License:** MIT — see [LICENSE](https://github.com/toxicwind/estate-projects#license).
 
 **Security:** the server drives your agent with your credentials — bind it to loopback and keep the port off shared networks. WebSocket clients should present only the prompts they intend the agent to act on; anyone who can reach the endpoint can prompt the agent.
 

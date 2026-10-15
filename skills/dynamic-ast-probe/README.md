@@ -41,7 +41,7 @@ cat .dynamic_symbols.json
 Prompt-only skill - functionality is implemented in the provided Python scripts. Modify scripts/ast_indexer.py and scripts/circuit_breaker.py to adjust scanning behavior or timeout policies.
 
 ## License
-Internal tool - refer to sovereign estate licensing
+Internal tool - refer to estate estate licensing
 
 ## Security
 Operates entirely in-sandbox with no network access. Reads local Python files and writes symbol indices to the local workspace.

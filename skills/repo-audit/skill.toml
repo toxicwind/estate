@@ -10,7 +10,7 @@ This skill provides comprehensive repository auditing capabilities:
 ## Dynamic argv (local_audit.py)
 
 ```bash
-python3 sovereign/skills/repo-audit/local_audit.py \
+python3 estate/skills/repo-audit/local_audit.py \
   --scan /home/toxic/projects \
   --output local-projects \
   --format both \
@@ -32,7 +32,7 @@ python3 sovereign/skills/repo-audit/local_audit.py \
 ## Dynamic argv (repo_audit.py)
 
 ```bash
-python3 sovereign/skills/repo-audit/repo_audit.py \
+python3 estate/skills/repo-audit/repo_audit.py \
   --user toxicwind \
   --output repo-audit-analysis \
   --format both \
@@ -102,7 +102,7 @@ If any pattern is found, the repo is flagged as "should be private".
 When `--tree` is enabled, the output includes a `tree_path` column showing the hierarchical location:
 ```
 /home/toxic/projects/
-├── sovereign-projects/
+├── estate-projects/
 │   ├── tau/
 │   ├── llama-swap/
 │   └── qed/
@@ -110,7 +110,7 @@ When `--tree` is enabled, the output includes a `tree_path` column showing the h
 │   └── ComfyUI-*/ (archived)
 ├── websites/
 │   └── effusion-labs/
-└── sovereign/
+└── estate/
     ├── helpers/
     └── src/
 ```
@@ -119,16 +119,16 @@ When `--tree` is enabled, the output includes a `tree_path` column showing the h
 
 ```bash
 # Local-first audit (recommended)
-python3 sovereign/skills/repo-audit/local_audit.py --scan /home/toxic/projects --format both --tree
+python3 estate/skills/repo-audit/local_audit.py --scan /home/toxic/projects --format both --tree
 
 # Remote GitHub privacy audit
-python3 sovereign/skills/repo-audit/repo_audit.py --user toxicwind --format both
+python3 estate/skills/repo-audit/repo_audit.py --user toxicwind --format both
 
 # Local audit with tree view and depth limit
-python3 sovereign/skills/repo-audit/local_audit.py --scan /home/toxic --tree --depth 2 --output overview
+python3 estate/skills/repo-audit/local_audit.py --scan /home/toxic --tree --depth 2 --output overview
 
 # Cross-reference local and remote
-python3 sovereign/skills/repo-audit/repo_audit.py --user toxicwind --load-env-map --format json
+python3 estate/skills/repo-audit/repo_audit.py --user toxicwind --load-env-map --format json
 ```
 
 ## Dependencies

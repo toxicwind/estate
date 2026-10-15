@@ -53,7 +53,7 @@ export interface ProviderDef {
   /** Default true. Disabled providers are never fetched and never served. */
   enabled?: boolean;
   /**
-   * True for providers that are concepts of the sovereign TS router only
+   * True for providers that are concepts of the estate TS router only
    * (local proxies / shims like nim-local and kimi-auto). Other consumers
    * (herd, TAU, Python) skip these definitions.
    */
@@ -109,11 +109,11 @@ export interface PersistedCatalog {
 /**
  * Live catalog export — the ANSWER for non-TS consumers (Go herd, Python).
  * Pure data: derived serving sets, quarantine lists, discovery flags.
- * Contract: sovereign-providers/live-catalog/v1. Consumers read the serving
+ * Contract: estate-providers/live-catalog/v1. Consumers read the serving
  * arrays verbatim; membership logic lives only in the TS package.
  */
 export interface LiveCatalogJson {
-  contract: "sovereign-providers/live-catalog/v1";
+  contract: "estate-providers/live-catalog/v1";
   generatedAt: string;
   generator: string;
   deadIds: string[];

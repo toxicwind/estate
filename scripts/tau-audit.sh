@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # tau-audit.sh — 16 real checks over the tau environment: config, skills, engine, bridge, drift.
-# Usage: bash ~/sovereign/scripts/tau-audit.sh   (installed: bash ~/.local/bin/tau-audit.sh)
+# Usage: bash ~/estate/scripts/tau-audit.sh   (installed: bash ~/.local/bin/tau-audit.sh)
 # Exit: 0 = all PASS, 1 = any FAIL. Every check observes the box; none are stubbed.
 set -u
 PASS=0; FAIL=0
@@ -42,7 +42,7 @@ fi
 [ "$NSKILL" -ge 60 ] 2>/dev/null \
   && ok "skill catalog populated (>=60)" \
   || bad "skill catalog populated" "only ${NSKILL:-0} SKILL.md found"
-[ -f "$HOME/sovereign/skills/scripts/frontmatter-audit.sh" ] \
+[ -f "$HOME/estate/skills/scripts/frontmatter-audit.sh" ] \
   && ok "frontmatter-audit.sh present" \
   || bad "frontmatter-audit.sh present" "missing"
 
@@ -77,12 +77,14 @@ case "$RESOLVED" in
 esac
 
 # --- bridge (3) ---
-for spec in "herd:25100" "sovereign:25104" "vansrouter:20128"; do
-  name="${spec%%:*}"; port="${spec##*:}"
-  code=$(curl -s -m 8 -o /dev/null -w "%{http_code}" "http://127.0.0.1:${port}/v1/models" 2>/dev/null || echo "000")
-  [ "$code" = "200" ] \
-    && ok "$name :$port /v1/models reachable" \
-    || bad "$name :$port reachable" "HTTP $code"
+# flock :25193 is the live fleet router (auth-gated /v1/models, open /health).
+# sovereign-router :25104 retired — no daemon defined, nothing listens (verified 2026-10-15).
+for spec in "herd:25100:/v1/models:200" "flock:25193:/health:200" "vansrouter:20128:/v1/models:200"; do
+  IFS=: read -r name port path want <<<"$spec"
+  code=$(curl -s -m 8 -o /dev/null -w "%{http_code}" "http://127.0.0.1:${port}${path}" 2>/dev/null || echo "000")
+  [ "$code" = "$want" ] \
+    && ok "$name :$port $path reachable" \
+    || bad "$name :$port reachable" "HTTP $code (want $want)"
 done
 
 echo ""

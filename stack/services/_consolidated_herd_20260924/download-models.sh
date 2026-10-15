@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-# SOVEREIGN FINAL DOWNLOADER v12.0 - PYTHON API EDITION
+# ESTATE FINAL DOWNLOADER v12.0 - PYTHON API EDITION
 # Downloads 14 unique GGUFs reused for 25 ctx variants, fits 170GB -> ~122GB
 # Hash-verified, XET, hardlink dedupe, avail guard
 # TUI: Braille spinner, progress bar, color status, real-time stats
@@ -96,7 +96,7 @@ _draw_header() {
     printf "\n${C_BOLD}${C_CYAN}╔"
     for ((i=0;i<tw-2;i++)); do printf "═"; done
     printf "╗${C_RESET}\n"
-    printf "${C_BOLD}${C_CYAN}║${C_RESET}  ${C_WHITE}SOVEREIGN MODEL DOWNLOADER${C_RESET}  ${C_DIM}v12.0${C_RESET}"
+    printf "${C_BOLD}${C_CYAN}║${C_RESET}  ${C_WHITE}ESTATE MODEL DOWNLOADER${C_RESET}  ${C_DIM}v12.0${C_RESET}"
     printf "%*s${C_BOLD}${C_CYAN}║${C_RESET}\n" $((tw - 34))
     printf "${C_BOLD}${C_CYAN}╚"
     for ((i=0;i<tw-2;i++)); do printf "═"; done
@@ -357,4 +357,4 @@ printf "  ${C_BOLD}Total files:${C_RESET} %d    ${C_BOLD}Used:${C_RESET} ${C_CYA
 log "DONE avail $(avail_gb)GB - $count files, ~$used used"
 log "Next: cp /home/toxic/estate/config/llama-swap/config.yaml /home/toxic/estate/tools/llama-swap/config.yaml && pkill -f llama-swap; /home/toxic/estate/stack/services/llama-herder.sh"
 
-printf "\n${C_BOLD}${C_GREEN}✓ Sovereign model fleet ready.${C_RESET}\n\n"
+printf "\n${C_BOLD}${C_GREEN}✓ Estate model fleet ready.${C_RESET}\n\n"

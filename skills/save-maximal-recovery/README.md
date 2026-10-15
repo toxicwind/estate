@@ -36,7 +36,7 @@ bash /home/toxic/save-maximal.sh
 # - bashrc.diff, claude-env.diff — config diffs vs .bak archives
 
 # Post-merge recovery (if -X ours merge needs fixing)
-cd ~/sovereign
+cd ~/estate
 git merge refs/recovery/orphaned-merge --no-commit --no-ff
 # resolve any conflicts (usually just DESIGN.md)
 git commit -m "emergent merge: restore orphaned changes"
@@ -58,7 +58,7 @@ Modify the bash script at `/home/toxic/save-maximal.sh` to adjust recovery behav
 - Config file diff tracking against .bak backups
 
 ## License
-Internal tool - refer to sovereign estate licensing
+Internal tool - refer to estate estate licensing
 
 ## Security
 - **Non-Destructive** - Recovers state without modifying HEAD or working tree

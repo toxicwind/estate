@@ -12,4 +12,4 @@ Method (per user directive):
 4. Output: unified diff per changed file only. If accurate, say so — no busywork.
 5. Separate live bugs from doc drift — call out live bugs independently, don't bury in prose.
 
-Key anchors in this workspace: sovereign/README.md verified against pitchfork.toml, config/ports.env (25117 hindsight, 25127 mesh), live curl/bun checks; corrupt 100644 files cleaned as live bug.
+Key anchors in this workspace: estate/README.md verified against pitchfork.toml, config/ports.env (25117 hindsight, 25127 mesh), live curl/bun checks; corrupt 100644 files cleaned as live bug.

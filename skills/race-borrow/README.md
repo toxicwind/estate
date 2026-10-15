@@ -1,8 +1,8 @@
 # race-borrow {badges}
 
 <!-- badges: start -->
-<a href="https://github.com/toxicwind/sovereign-projects">
-  <img src="https://img.shields.io/badge/github-toxicwind/sovereign--projects-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub repo">
+<a href="https://github.com/toxicwind/estate-projects">
+  <img src="https://img.shields.io/badge/github-toxicwind/estate--projects-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub repo">
 </a>
 <a href="https://bun.sh">
   <img src="https://img.shields.io/badge/bun-js_runtime-7f5af0?style=for-the-badge&logo=bun&logoColor=white" alt="Bun">
@@ -34,8 +34,8 @@
 ## Quick start
 
 ```bash
-# Basic: race sovereign, tau, pi patterns across default providers
-bun run race-borrow.ts sovereign tau pi
+# Basic: race estate, tau, pi patterns across default providers
+bun run race-borrow.ts estate tau pi
 
 # Custom: race with specific weights and providers
 bun run race-borrow.ts coding-agent --weights stars=5,forks=2,updated=3 --providers openrouter,groq

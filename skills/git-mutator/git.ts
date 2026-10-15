@@ -19,7 +19,7 @@ import {
   DEFAULT_GITIGNORE_PATTERNS,
   AGENTIC_ARTIFACT_GLOBS,
   AGENTIC_ID_PATTERNS,
-  SOVEREIGN_PORT_SSOT,
+  ESTATE_PORT_SSOT,
 } from "./types.js";
 import {
   GitMutatorError,
@@ -364,7 +364,7 @@ export class GitCore {
 
   /**
    * Audit agentic completions and secret leaks in staged/unstaged/untracked files.
-   * Excludes SOVEREIGN_PORT_SSOT from secret scanning. Blocks .bak files.
+   * Excludes ESTATE_PORT_SSOT from secret scanning. Blocks .bak files.
    */
   async auditAgenticCompletions(files?: string[]): Promise<AgenticAuditResult> {
     const s = await this.status();

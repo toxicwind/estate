@@ -1,10 +1,10 @@
 ---
 name: ast-bm25-racer
 description: >
-  Sovereign AST-BM25 Racer, local-heavy edition: hybrid code retrieval plus nanosecond candidate racing. Triggers on: code retrieval, candidate racing, AST search.
+  Estate AST-BM25 Racer, local-heavy edition: hybrid code retrieval plus nanosecond candidate racing. Triggers on: code retrieval, candidate racing, AST search.
 ---
 
-# Sovereign AST-BM25 Racer — LOCAL-HEAVY edition (Consolidated into pattern-forge)
+# Estate AST-BM25 Racer — LOCAL-HEAVY edition (Consolidated into pattern-forge)
 
 > **CONSOLIDATION NOTICE**: Consolidated into **`pattern-forge`** (`forge retrieve`). Use `forge retrieve` for AST-BM25 hybrid in-tree retrieval.
 

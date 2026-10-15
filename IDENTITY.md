@@ -34,6 +34,6 @@ Grounded in the estate's own whitepapers (Google Drive, read in full 2026-09-30)
   means a perfect classifier is impossible.
 
 This is the classifier-flavored instance of the standing unreliable-narrator
-doctrine: sovereign's own docs/non-compaction-retry-policy.md already treats
+doctrine: estate's own docs/non-compaction-retry-policy.md already treats
 classifier refusals as typed, transient, replay-checked signals — retried or
 routed around, never accepted as the final word.

@@ -4,8 +4,8 @@ Governance enforcement on every file operation — Claude Code hooks *and* git h
 
 <div align="right">
 
-[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -109,4 +109,4 @@ Full documentation: [IDE enforcement & governance](https://github.com/3D-Tech-So
 
 ## License & security
 
-MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). `audit.log` and `autonomy_audit/` are append-only trails: don't edit them by hand or you break the tamper story the trail exists to tell. License keys (`license/license.jwt`) are never committed — see [license/](license/).
+MIT where marked — [LICENSE](https://github.com/toxicwind/estate-projects#license). `audit.log` and `autonomy_audit/` are append-only trails: don't edit them by hand or you break the tamper story the trail exists to tell. License keys (`license/license.jwt`) are never committed — see [license/](license/).

@@ -2,21 +2,21 @@
 
 <!-- badges: start -->
 <a href="https://github.com/toxicwind/estate">
-  <img src="https://img.shields.io/badge/github-toxicwind/sovereign--projects-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub repo">
+  <img src="https://img.shields.io/badge/github-toxicwind/estate--projects-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub repo">
 </a>
 <!-- badges: end -->
 
-## Reports the status of the sovereign AI mesh.
+## Reports the status of the estate AI mesh.
 
-**What**: Query the sovereign mesh endpoints and return a formatted status report showing which ports are up, VRAM usage, current model, active context, and agent pool health.
+**What**: Query the estate mesh endpoints and return a formatted status report showing which ports are up, VRAM usage, current model, active context, and agent pool health.
 
-**Why**: Check the health of the sovereign AI mesh — see which services are running, their latency, and current operational status.
+**Why**: Check the health of the estate AI mesh — see which services are running, their latency, and current operational status.
 
-**Who**: Simple status reporter for the sovereign AI mesh. Triggers on: "status", "fleet", "mesh health", "is the model running", "gpu usage", "vram", "agents", "how many tokens".
+**Who**: Simple status reporter for the estate AI mesh. Triggers on: "status", "fleet", "mesh health", "is the model running", "gpu usage", "vram", "agents", "how many tokens".
 
 ## Feature bullets
 
-- **Four tool calls**: Queries key sovereign mesh health endpoints
+- **Four tool calls**: Queries key estate mesh health endpoints
   1. GET http://127.0.0.1:${NFCOT_PORT}/health → NF-CoT status
   2. GET http://127.0.0.1:${LLAMA_PORT}/health → beellama status
   3. GET http://127.0.0.1:${OPENFANG_PORT}/agents → agent pool
@@ -49,7 +49,7 @@ export RANK_PORT=<port>
 ## Dev / contributing
 
 - Returns a concise status table including: port, service, status, latency
-- Each tool call queries a specific sovereign mesh endpoint
+- Each tool call queries a specific estate mesh endpoint
 - No polling, no timers — simple request/response health checks
 - Agent pool health comes from OPENFANG_PORT/agents endpoint
 

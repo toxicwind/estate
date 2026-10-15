@@ -1,4 +1,4 @@
-// @sovereign/keypool — strict types for the keypool daemon.
+// @estate/keypool — strict types for the keypool daemon.
 // Port of herd-keypool.py (1275 lines). Behavioral parity is the contract.
 
 export type KeyStateName = "unknown" | "healthy" | "down";

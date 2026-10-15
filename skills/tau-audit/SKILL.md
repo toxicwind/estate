@@ -12,8 +12,8 @@ Run all three audit suites to verify the tau environment is clean.
 ```bash
 # Full audit suite
 bash ~/.local/bin/tau-audit.sh                          # 16 checks: config, skills, engine, bridge, drift
-bun run ~/sovereign/skills/tau-tmux/helper/audit.ts     # 7 checks: launcher, version, routers
-bash ~/sovereign/skills/scripts/frontmatter-audit.sh    # 69 SKILL.md frontmatter checks
+bun run ~/estate/skills/tau-tmux/helper/audit.ts     # 7 checks: launcher, version, routers
+bash ~/estate/skills/scripts/frontmatter-audit.sh    # 69 SKILL.md frontmatter checks
 ```
 
 ## Expected Results
@@ -25,14 +25,14 @@ bash ~/sovereign/skills/scripts/frontmatter-audit.sh    # 69 SKILL.md frontmatte
 If audits fail:
 1. **TAU_HOME path issues**: Ensure TAU_HOME defaults to `$HOME/.tau` not `$HOME`
 2. **tau command broken**: `tau`/`omp`/`pi` are aliases to `~/.local/bin/tau`, which is the
-   `~/sovereign/scripts/omp-pin` launcher. Reinstall from the repo script if missing:
-   `install -m 0555 ~/sovereign/scripts/omp-pin ~/.local/bin/tau ~/.local/bin/omp`
+   `~/estate/scripts/omp-pin` launcher. Reinstall from the repo script if missing:
+   `install -m 0555 ~/estate/scripts/omp-pin ~/.local/bin/tau ~/.local/bin/omp`
 3. **Launcher detection**: tau is a bash pin script (not ELF); it execs the bun-global
    `@oh-my-pi/pi-coding-agent` install. Never fall through to a random omp on PATH.
 4. **Frontmatter**: All SKILL.md must carry `name: slug-name` and `description:` frontmatter
    (see `skills/scripts/frontmatter-audit.sh`).
 5. **Bridge not running**: `pitchfork start awrawr-ws-exec`
-6. **Skills symlink missing**: `ln -sf ~/sovereign/skills ~/.tau/skills`
+6. **Skills symlink missing**: `ln -sf ~/estate/skills ~/.tau/skills`
 7. **Live config clobbered (drift check)**: a running session persisted a model switch into
    `~/.tau/agent/config.yml`. Diff against the committed blob
    (`git show HEAD:config/tau/agent/config.yml`); the working-tree copy is bind-mounted
@@ -42,9 +42,9 @@ If audits fail:
 
 ## Key Paths
 - Config: `~/.tau/config.yml` (live default model: `modelRoles.default` in `~/.tau/agent/config.yml`)
-- Skills: `~/.tau/skills` -> `~/sovereign/skills`
-- Launcher source: `~/sovereign/scripts/omp-pin` (installed: `~/.local/bin/tau`, `~/.local/bin/omp`)
+- Skills: `~/.tau/skills` -> `~/estate/skills`
+- Launcher source: `~/estate/scripts/omp-pin` (installed: `~/.local/bin/tau`, `~/.local/bin/omp`)
 - Engine: bun-global `@oh-my-pi/pi-coding-agent` (`~/.bun/install/global/node_modules/...`)
 - Extensions: `~/.tau/extensions/` (vansrouter.ts, strict-bash-guard.ts)
 - Bridge port: 25204 (pitchfork-managed)
-- Audit scripts: `~/sovereign/scripts/tau-audit.sh`, `skills/tau-tmux/helper/audit.ts`, `skills/scripts/frontmatter-audit.sh`
+- Audit scripts: `~/estate/scripts/tau-audit.sh`, `skills/tau-tmux/helper/audit.ts`, `skills/scripts/frontmatter-audit.sh`

@@ -44,7 +44,7 @@ bin/sys_audit.sh --pid 5678 --target 10.0.0.1 --path /tmp/build.log
 
 ## Configuration
 - **Hardware Baseline**: `hardware-baseline.json` - Seeded from:
-  - `sovereign/docs/HARDWARE_AUDIT_20260914.md`
+  - `estate/docs/HARDWARE_AUDIT_20260914.md`
   - Nightly `/var/lib/hw-audit/` audits (hw-audit.timer 03:17 MDT, root)
 - **Known Hardware (awrawr-pc)**:
   - MSI PRO B650-VC WIFI (MS-7D78), BIOS AMI 1.L5 10/22/2025
@@ -67,7 +67,7 @@ Modify the bash script at `/home/toxic/estate/skills/system-audit/bin/sys_audit.
 - Follows pattern-forge latency doctrine: measure everything, fail-fast, keep the fast path hot
 
 ## License
-Internal tool - refer to sovereign estate licensing
+Internal tool - refer to estate estate licensing
 
 ## Security
 - **Passive Observation** - Reads procfs/sysfs only; never attaches, injects, or instruments targets

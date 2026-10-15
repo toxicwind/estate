@@ -13,7 +13,7 @@ Our renamed forks are the herd. Their upstreams are the open range — always mo
 | Fork | Upstream | Language | What We Added |
 |------|----------|----------|---------------|
 | `toxicwind/herd` | `mostlygeek/llama-swap` | Go | tailcat, kubeswap, freeproxy, pollinations, astmatrix, +more |
-| `toxicwind/tau` | `can1357/oh-my-pi` | TypeScript | sovereign delta (see MIRROR-DIFF) |
+| `toxicwind/tau` | `can1357/oh-my-pi` | TypeScript | estate delta (see MIRROR-DIFF) |
 | `toxicwind/roundup` | `vllm-project/guidellm` | Python | renamed, ranch integration |
 | `toxicwind/trailboss` | `redscaresu/goldfinger` | Go | direct-to-main, web UI (yourself) |
 

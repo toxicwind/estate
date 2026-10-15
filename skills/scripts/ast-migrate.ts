@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * Sovereign Universal AST Migration Helper (September 2026)
+ * Estate Universal AST Migration Helper (September 2026)
  * Leverages ast-grep for structural, language-agnostic code transformation.
  * Translates and modernizes legacy syntax across Python, TypeScript, and Rust.
  */

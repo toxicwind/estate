@@ -25,7 +25,7 @@ import {
   log,
 } from "./router_config.ts";
 
-const STATE_PATH = "/home/toxic/sovereign/.state/live-models.json";
+const STATE_PATH = "/home/toxic/estate/.state/live-models.json";
 const REFRESH_MS = 30 * 60 * 1000;
 
 export const LIVE_STATUS: Record<
@@ -96,7 +96,7 @@ async function fetchProviderModels(
   const conf = PROVIDERS[p];
   const headers: Record<string, string> = {
     Accept: "application/json",
-    "User-Agent": "SovereignRouter/3.1 live-discovery",
+    "User-Agent": "EstateRouter/3.1 live-discovery",
   };
   if (!conf.no_auth) {
     const k = getKey(p);

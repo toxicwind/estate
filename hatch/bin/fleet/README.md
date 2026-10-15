@@ -4,8 +4,8 @@ Extends the squawk fleet bus with the four primitives a reliable multi-agent bus
 
 <div align="right">
 
-[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -46,7 +46,7 @@ flowchart LR
 | `hatch/bin/squawk-fleet` | cell-side CLI: wraps fleet.py over yote-conn, mirrors `squawk` style. Deployed copy: `~/workspace/bin/squawk-fleet`. |
 
 Yote deploy path: `/home/toxic/squawk-fleet/fleet.py` (plain dir, outside any
-git tree — yote's `/home/toxic/sovereign` checkout sits on probe branches
+git tree — yote's `/home/toxic/estate` checkout sits on probe branches
 with WIP, so the engine is NOT installed there; the repo stays canonical).
 Seeded by base64 drop + sha256 verify. `SQUAWK_FLEET_PY` env overrides it.
 
@@ -135,4 +135,4 @@ new-scope first publish, CLI subprocess roundtrip. Evidence:
 
 ## License & security
 
-MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). The dedup index and ack cursors are trust-relevant state: a forged `.fleet/ids/<msg_id>` entry could suppress a legitimate publish as "duplicate." The yote deploy path (`/home/toxic/squawk-fleet/`) is outside the git tree by design — seeded by sha256-verified drop, never hand-edited in place.
+MIT where marked — [LICENSE](https://github.com/toxicwind/estate-projects#license). The dedup index and ack cursors are trust-relevant state: a forged `.fleet/ids/<msg_id>` entry could suppress a legitimate publish as "duplicate." The yote deploy path (`/home/toxic/squawk-fleet/`) is outside the git tree by design — seeded by sha256-verified drop, never hand-edited in place.

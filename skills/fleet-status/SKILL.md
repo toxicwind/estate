@@ -1,7 +1,7 @@
 ---
 name: fleet-status
 description: >
-  Reports the status of the sovereign AI mesh. Shows which ports are up,
+  Reports the status of the estate AI mesh. Shows which ports are up,
   VRAM usage, current model, active context, and agent pool health.
   Triggers on: "status", "fleet", "mesh health", "is the model running",
   "gpu usage", "vram", "agents", "how many tokens".
@@ -11,7 +11,7 @@ description: >
 
 ## Usage
 
-Query the sovereign mesh endpoints and return a formatted status report.
+Query the estate mesh endpoints and return a formatted status report.
 
 ## Tool calls
 

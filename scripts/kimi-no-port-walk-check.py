@@ -17,7 +17,7 @@ import subprocess
 import sys
 
 BIN = sys.argv[1] if len(sys.argv) > 1 else (
-    "/home/toxic/projects/sovereign-projects/tau/vendors/kimi-code"
+    "/home/toxic/projects/estate-projects/tau/vendors/kimi-code"
     "/apps/kimi-code/dist/main.mjs"
 )
 PORT = int(sys.argv[2]) if len(sys.argv) > 2 else 25299

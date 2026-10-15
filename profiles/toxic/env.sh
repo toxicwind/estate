@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Sovereign Profile: toxic (Workstation SSOT)
+# Estate Profile: toxic (Workstation SSOT)
 # AMD Ryzen 7 8700F (8C/16T, Zen 4) + NVIDIA RTX 3090 (24GB VRAM)
-export SOVEREIGN_PROFILE="toxic"
+export ESTATE_PROFILE="toxic"
 # ==============================================================================
 
 # 1. Inference & Subagent Models
@@ -32,7 +32,7 @@ export MESH_HUB_PORT="25115"
 export HINDSIGHT_API_PORT="25117"
 export HINDSIGHT_CP_PORT="25118"
 # MCP_GATEWAY_PORT is a compatibility alias for gatehouse :25127, the same
-# daemon MCPPROXY_GO_PORT names. :25120 belongs to SOVEREIGN_CHAT_PORT; it was
+# daemon MCPPROXY_GO_PORT names. :25120 belongs to ESTATE_CHAT_PORT; it was
 # never this gateway. See config/ports.env.
 export MCP_GATEWAY_PORT="25127"
 export BYTE_VISION_PORT="25121"
@@ -50,6 +50,6 @@ export CARGO_BUILD_JOBS="12"
 export RUSTFLAGS="-C target-cpu=znver4 -C codegen-units=16"
 
 # 4. Engine & Developer Paths
-export SOVEREIGN_ROOT="${SOVEREIGN_ROOT:-$HOME/sovereign}"
-export SOVEREIGN_VERSION="mesh-1.0.0"
-export PATH="${HOME}/.local/bin:${SOVEREIGN_ROOT}/bin:${PATH}"
+export ESTATE_ROOT="${ESTATE_ROOT:-$HOME/estate}"
+export ESTATE_VERSION="mesh-1.0.0"
+export PATH="${HOME}/.local/bin:${ESTATE_ROOT}/bin:${PATH}"

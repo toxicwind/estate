@@ -77,7 +77,7 @@ Modify the exec wrapper and underlying client logic:
 - Error handling: Proper error reporting without exposing internal state
 
 ## License
-Internal tool - refer to sovereign estate licensing
+Internal tool - refer to estate estate licensing
 
 ## Security
 - **Credential Protection** - Never handles raw OAuth tokens; uses surrogate authentication

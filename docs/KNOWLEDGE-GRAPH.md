@@ -1,4 +1,4 @@
-# Sovereign Documentation Knowledge Graph (11ty-Style Collections Index)
+# Estate Documentation Knowledge Graph (11ty-Style Collections Index)
 
 > **Automated Relational Knowledge Graph** generated on `2026-09-27T09:22:52.066Z` across **244 modular documents** in `estate/docs/`.
 
@@ -49,7 +49,7 @@
 
 ### 📁 `agents/`
 
-- **[Sovereign Guidance Triad — Universal AGENTS.md Convention v1](agents/CONVENTION.md)** `(agents/CONVENTION.md)`
+- **[Estate Guidance Triad — Universal AGENTS.md Convention v1](agents/CONVENTION.md)** `(agents/CONVENTION.md)`
 
 ### 📁 `architecture/`
 
@@ -58,7 +58,7 @@
 ### 📁 `audits/`
 
 - **[AUDIT.md — estate-projects (`~/projects/estate-projects`)](audits/2026-09-14/AUDIT.md)** `(audits/2026-09-14/AUDIT.md)`
-- **[Sovereign Ecosystem — Deep Fork & Repository Audit](audits/2026-09-14/FORKS_AUDIT.md)** `(audits/2026-09-14/FORKS_AUDIT.md)`
+- **[Estate Ecosystem — Deep Fork & Repository Audit](audits/2026-09-14/FORKS_AUDIT.md)** `(audits/2026-09-14/FORKS_AUDIT.md)`
 - **[MCP Infrastructure Audit Report](audits/2026-09-20/MCP_AUDIT.md)** `(audits/2026-09-20/MCP_AUDIT.md)`
 - **[Estate Polling Audit — 2026-09-21](audits/2026-09-21/polling-audit-2026-09-21.md)** `(audits/2026-09-21/polling-audit-2026-09-21.md)`
 - **[POST-RECOVERY ADDITIONS AUDIT — debate bedf89a9 (bid)](audits/2026-09-22/bedf89a9-post-recovery-audit-bid.md)** `(audits/2026-09-22/bedf89a9-post-recovery-audit-bid.md)`
@@ -116,27 +116,27 @@
 
 ### 📁 `general/`
 
-- **[Sovereign Architecture — Single Source of Truth](ARCHITECTURE.md)** `(ARCHITECTURE.md)`
-- **[ArXiv Emergence Survey — Synthesis (Sovereign Registry)](ARXIV_EMERGENCE_SURVEY.md)** `(ARXIV_EMERGENCE_SURVEY.md)`
+- **[Estate Architecture — Single Source of Truth](ARCHITECTURE.md)** `(ARCHITECTURE.md)`
+- **[ArXiv Emergence Survey — Synthesis (Estate Registry)](ARXIV_EMERGENCE_SURVEY.md)** `(ARXIV_EMERGENCE_SURVEY.md)`
 - **[Autopoiesis Research Constitution — Phase 0](AUTOPOIESIS_RESEARCH.md)** `(AUTOPOIESIS_RESEARCH.md)`
-- **[Sovereign Control Plane](CONTROL_PLANE.md)** `(CONTROL_PLANE.md)`
+- **[Estate Control Plane](CONTROL_PLANE.md)** `(CONTROL_PLANE.md)`
 - **[ERRATA — GPT-5 Harmony-Header Leakage](ERRATA-GPT5-HARMONY.md)** `(ERRATA-GPT5-HARMONY.md)`
 - **[RTX 3090 cooling · LACT · undervolt notes](GPU_COOLING.md)** `(GPU_COOLING.md)`
 - **[Hardware Audit Classification — awrawr-pc — 2026-09-14](HARDWARE_AUDIT_20260914.md)** `(HARDWARE_AUDIT_20260914.md)`
-- **[Sovereign Hindsight & Tau Long-Term Memory Architecture](HINDSIGHT_TAU_INTEGRATION.md)** `(HINDSIGHT_TAU_INTEGRATION.md)`
+- **[Estate Hindsight & Tau Long-Term Memory Architecture](HINDSIGHT_TAU_INTEGRATION.md)** `(HINDSIGHT_TAU_INTEGRATION.md)`
 - **[Kernelopts LLM Tuning & Algorithmic Ranking Reference](KERNELOPTS_LLM_TUNING_AND_RANKING.md)** `(KERNELOPTS_LLM_TUNING_AND_RANKING.md)`
 - **[Kimi Code Fork Feasibility Research](KIMI_CODE_FORK_RESEARCH.md)** `(KIMI_CODE_FORK_RESEARCH.md)`
 - **[The Anna-Senpai Question: A Memetic Forensics Analysis](MANIFESTO.md)** `(MANIFESTO.md)`
 - **[Morphe Patching — Research SSOT (never redo)](MORPHE_PATCHING.md)** `(MORPHE_PATCHING.md)`
 - **[NVIDIA NIM API Documentation — Complete Reference](NVIDIA_NIM_API_DOCS.md)** `(NVIDIA_NIM_API_DOCS.md)`
-- **[Sovereign Pre-Release Integration Engine](PRE_RELEASE_INTEGRATION_ENGINE.md)** `(PRE_RELEASE_INTEGRATION_ENGINE.md)`
+- **[Estate Pre-Release Integration Engine](PRE_RELEASE_INTEGRATION_ENGINE.md)** `(PRE_RELEASE_INTEGRATION_ENGINE.md)`
 - **[Provider Secret Audit — 2026-09-21](PROVIDER_SECRET_AUDIT_20260921.md)** `(PROVIDER_SECRET_AUDIT_20260921.md)`
 - **[Reasoning Suppression Test — Verdict](REASONING_SUPPRESSION_TEST.md)** `(REASONING_SUPPRESSION_TEST.md)`
-- **[RIDICULOUS MULTI-PROFILE SETUP — Sovereign Model Router](RIDICULOUS_MULTI_PROFILE.md)** `(RIDICULOUS_MULTI_PROFILE.md)`
-- **[Sovereign Storage Tiering & Cache Architecture](STORAGE_TIERING_AND_CACHE_ARCHITECTURE.md)** `(STORAGE_TIERING_AND_CACHE_ARCHITECTURE.md)`
-- **[Sovereign Swap Architecture — zram / zswap / NVMe Tiering](SWAP_OPTIMIZATION.md)** `(SWAP_OPTIMIZATION.md)`
+- **[RIDICULOUS MULTI-PROFILE SETUP — Estate Model Router](RIDICULOUS_MULTI_PROFILE.md)** `(RIDICULOUS_MULTI_PROFILE.md)`
+- **[Estate Storage Tiering & Cache Architecture](STORAGE_TIERING_AND_CACHE_ARCHITECTURE.md)** `(STORAGE_TIERING_AND_CACHE_ARCHITECTURE.md)`
+- **[Estate Swap Architecture — zram / zswap / NVMe Tiering](SWAP_OPTIMIZATION.md)** `(SWAP_OPTIMIZATION.md)`
 - **[Swap Architecture Quick Reference](SWAP_QUICKREF.md)** `(SWAP_QUICKREF.md)`
-- **[Universal Architecture — Polyglot Sovereign Stack (August 2026)](UNIVERSAL_ARCHITECTURE.md)** `(UNIVERSAL_ARCHITECTURE.md)`
+- **[Universal Architecture — Polyglot Estate Stack (August 2026)](UNIVERSAL_ARCHITECTURE.md)** `(UNIVERSAL_ARCHITECTURE.md)`
 - **[Adding a provider](adding-a-provider.md)** `(adding-a-provider.md)`
 - **[Advisor, WATCHDOG.md, and WATCHDOG.yml](advisor-watchdog.md)** `(advisor-watchdog.md)` ── *(4 outgoing links)*
 - **[Agent Hub](agent-hub.md)** `(agent-hub.md)` ── *(3 outgoing links)*
@@ -155,13 +155,13 @@
 - **[Cross-box router (ember)](cross-box-router.md)** `(cross-box-router.md)` ── *(3 outgoing links)*
 - **[Custom Tools](custom-tools.md)** `(custom-tools.md)`
 - **[edge-additions — September-2026 cutting-edge additions (2026-09-20)](edge-additions-20260920.md)** `(edge-additions-20260920.md)`
-- **[Sovereign / Ranch Fork Environment Variables Reference](env-reference-fork.md)** `(env-reference-fork.md)`
-- **[OMP & Tau Sovereign Environment Variables Reference](env-reference-upstream.md)** `(env-reference-upstream.md)`
+- **[Estate / Ranch Fork Environment Variables Reference](env-reference-fork.md)** `(env-reference-fork.md)`
+- **[OMP & Tau Estate Environment Variables Reference](env-reference-upstream.md)** `(env-reference-upstream.md)`
 - **[Environment Variables (Current Runtime Reference)](environment-variables.md)** `(environment-variables.md)` ── *(1 outgoing links)*
 - **[Extension Loading (TypeScript/JavaScript Modules)](extension-loading.md)** `(extension-loading.md)` ── *(4 outgoing links)*
 - **[Extensions](extensions.md)** `(extensions.md)` ── *(4 outgoing links)*
 - **[Fleet Culture — how the den talks](fleet-culture.md)** `(fleet-culture.md)` ── *(1 outgoing links)*
-- **[Sovereign fleet inventory + completion reconciliation — 2026-09-14 ~18:20 MDT](fleet-inventory-20260914.md)** `(fleet-inventory-20260914.md)`
+- **[Estate fleet inventory + completion reconciliation — 2026-09-14 ~18:20 MDT](fleet-inventory-20260914.md)** `(fleet-inventory-20260914.md)`
 - **[Fleet Knowledgebase](fleet-knowledgebase.md)** `(fleet-knowledgebase.md)` ── *(1 outgoing links)*
 - **[Free-Tier Model Routing — Ground Truth (2026-09-14)](free-tier-models.md)** `(free-tier-models.md)`
 - **[Filesystem scan cache architecture contract](fs-scan-cache-architecture.md)** `(fs-scan-cache-architecture.md)`
@@ -184,7 +184,7 @@
 - **[Autonomous Memory](memory.md)** `(memory.md)` ── *(2 outgoing links)*
 - **[Mnemopi memory backend](mnemosyne-memory-backend.md)** `(mnemosyne-memory-backend.md)`
 - **[Model and Provider Configuration (`models.yml` / `models.yaml`)](models.md)** `(models.md)` ── *(4 outgoing links)*
-- **[Sovereign Model Naming Grammar (canonical, 2026-09-20)](naming-grammar.md)** `(naming-grammar.md)`
+- **[Estate Model Naming Grammar (canonical, 2026-09-20)](naming-grammar.md)** `(naming-grammar.md)`
 - **[Naming Rename Plan (2026-09-20, naming-auditor)](naming-rename-plan.md)** `(naming-rename-plan.md)`
 - **[Native Crates](native-crates.md)** `(native-crates.md)` ── *(10 outgoing links)*
 - **[Natives Addon Loader Runtime](natives-addon-loader-runtime.md)** `(natives-addon-loader-runtime.md)`
@@ -246,14 +246,14 @@
 ### 📁 `operations/`
 
 - **[mise + direnv coexistence — final design](operations/security-and-guards/ENV_OWNERSHIP.md)** `(operations/security-and-guards/ENV_OWNERSHIP.md)`
-- **[Sovereign Mesh — FIX.md (Live Mutable Checklist)](operations/security-and-guards/FIX.md)** `(operations/security-and-guards/FIX.md)`
+- **[Estate Mesh — FIX.md (Live Mutable Checklist)](operations/security-and-guards/FIX.md)** `(operations/security-and-guards/FIX.md)`
 
 ### 📁 `plans/`
 
 - **[Free Pollinations via Herd — Maximal Hotfix Plan (Tester + Live)](plans/free-pollinations-herd-hotfix-plan.md)** `(plans/free-pollinations-herd-hotfix-plan.md)`
-- **[Sovereign Pi Fork — Master Execution Plan](plans/master/MASTER_PLAN.md)** `(plans/master/MASTER_PLAN.md)`
-- **[SOVEREIGN REORG PLAN — shingle → hatch/agents/ember, shingle-workspace collision resolved](plans/master/REORG-PLAN.md)** `(plans/master/REORG-PLAN.md)`
-- **[Sovereign Fix Tasks - Live Tracker](plans/master/TASKS.md)** `(plans/master/TASKS.md)`
+- **[Estate Pi Fork — Master Execution Plan](plans/master/MASTER_PLAN.md)** `(plans/master/MASTER_PLAN.md)`
+- **[ESTATE REORG PLAN — shingle → hatch/agents/ember, shingle-workspace collision resolved](plans/master/REORG-PLAN.md)** `(plans/master/REORG-PLAN.md)`
+- **[Estate Fix Tasks - Live Tracker](plans/master/TASKS.md)** `(plans/master/TASKS.md)`
 - **[mesh-tau-verified-plan.md](plans/mesh-tau-verified-plan.md)** `(plans/mesh-tau-verified-plan.md)`
 - **[WezTerm Shell Integration Plan](plans/migrations/wezterm-shell-integration-plan.md)** `(plans/migrations/wezterm-shell-integration-plan.md)`
 - **[mesh-tau-verified-plan.md](plans/verified/mesh-tau-verified-plan.md)** `(plans/verified/mesh-tau-verified-plan.md)`

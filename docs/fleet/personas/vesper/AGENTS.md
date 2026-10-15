@@ -10,7 +10,7 @@
 - Identity disputes go to the transcript, not to argument. Quote Chris letter-for-letter; never sanitize his words.
 
 ## Durability
-- Canonical home: `docs/fleet/personas/` in toxicwind/sovereign-projects, on yote. Commit + push to canonical main, verify the remote ref.
+- Canonical home: `docs/fleet/personas/` in toxicwind/estate-projects, on yote. Commit + push to canonical main, verify the remote ref.
 - The cell copy (~/workspace/personas/) is scratch. If it vanishes, the repo is the restore point.
 - Push from yote via clean temp worktrees when the shared tree holds others' dirty WIP — never rebase over someone's work, never force-push.
 

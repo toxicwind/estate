@@ -21,12 +21,12 @@ pattern's full detail is needed.
 | `sdg-pipeline-versioning` | Synthetic data feeds SFT/RL or must be reproduced. | Version seeds, prompts, models, projection, config, and outputs together. |
 | `rl-validate-rewards-before-scale` | DPO/RLVR/RLHF moving beyond tiny reward validation. | Validate reward/data path independently before rollout scale. |
 | `eval-before-and-after-training` / `eval-bookends` | Any SFT, RL, optimization, conversion, or quality-changing stage. | Evaluate before and after with the same task set/settings. |
-| `byob-benchmark-design` | Sovereign/domain deployment needs held-out evidence. | Build a target-domain BYOB benchmark separate from training data. |
+| `byob-benchmark-design` | Estate/domain deployment needs held-out evidence. | Build a target-domain BYOB benchmark separate from training data. |
 | `custom-mcq-benchmark-byob` | Need MCQ benchmark from private/domain docs or translated benchmark preserving answer indexes. | Route to `byob/mcq`. |
 | `checkpoint-before-convert` / `convert-checkpoint-safety` | Converting checkpoints or merging LoRA. | Convert from clean checkpoint dirs; keep source and output dirs distinct. |
 | `peft-adapter-merge-discipline` | Adapter will feed deployment/eval as a standalone model. | Preserve exact base; validate adapter-loaded and merged artifacts separately. |
 | `pretrain-token-budget-before-scale` | Planning pretraining/CPT beyond smoke. | Write token budget, seq length, GBS, train iters, LR schedule, and checkpoint cadence before launch. |
-| `cpt-data-blend-scoping` | Continued pretraining on sovereign/domain corpus. | Scope domain/general blend ratios and forgetting checks. |
+| `cpt-data-blend-scoping` | Continued pretraining on estate/domain corpus. | Scope domain/general blend ratios and forgetting checks. |
 | `production-export-trt` | End goal is production serving efficiency. | Consider TensorRT-LLM export after checkpoint quality is proven. |
 
 ## Planning Rules

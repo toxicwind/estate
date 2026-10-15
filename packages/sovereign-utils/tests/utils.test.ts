@@ -4,7 +4,7 @@ import { evaluatePolicy } from "../src/policy/index";
 import type { CapabilityManifest } from "../src/capabilities/manifest";
 import type { Policy } from "../src/policy/types";
 
-describe("@sovereign/utils", () => {
+describe("@estate/utils", () => {
   describe("capabilities", () => {
     const testManifest: CapabilityManifest = {
       schemaVersion: "1.0",

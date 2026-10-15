@@ -2,8 +2,8 @@
 
 <div align="right">
 
-[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -14,7 +14,7 @@ transitions** — steady state is silence.
 ```mermaid
 flowchart LR
     sweepd[sweepd.sh · 60s loop] --> sweep[sweep.py]
-    sweep --> chat[sovereign-chat :25120]
+    sweep --> chat[estate-chat :25120]
     sweep -->|transitions only| fleet[fleet room]
     sup[supervise.sh · 2m cron] -.->|restarts if dead/wedged| sweepd
     driver[driver.sh · cell] -.->|syncs mirror| sup
@@ -24,7 +24,7 @@ flowchart LR
 
 - **Direct 60s sweep path (v3)** — `sweepd.sh` runs on awrawr-pc executing
   `sweep.py` every 60s, immune to agent-dispatch jitter and bridge 502s.
-  sovereign-chat presence TTL is 120s: the 60s cadence keeps the lane-7
+  estate-chat presence TTL is 120s: the 60s cadence keeps the lane-7
   heartbeat alive with 60s of margin.
 - **Supervisor/backstop, not the sweeper** — the platform cron
   (`fleet-presence-rollover-watchdog`, every 2m) runs `driver.sh`, which
@@ -48,7 +48,7 @@ flowchart LR
 
 ```bash
 # manual sweep (on awrawr-pc)
-bash /home/toxic/sovereign/tools/fleet-ops/fleet-watchdog/supervise.sh
+bash /home/toxic/estate/tools/fleet-ops/fleet-watchdog/supervise.sh
 
 # sweeper status
 pgrep -af '[s]weepd.sh'; tail /home/toxic/var/fleet-watchdog/sweepd.log
@@ -57,7 +57,7 @@ pgrep -af '[s]weepd.sh'; tail /home/toxic/var/fleet-watchdog/sweepd.log
 python3 test_decide.py   # exit 0
 ```
 
-## Architecture (awrawr-pc: `/home/toxic/sovereign/tools/fleet-ops/fleet-watchdog/`)
+## Architecture (awrawr-pc: `/home/toxic/estate/tools/fleet-ops/fleet-watchdog/`)
 
 | file | role |
 | --- | --- |
@@ -91,7 +91,7 @@ the mirror diff is only as good as the manifest.
 
 ## License & security
 
-MIT — see [LICENSE](https://github.com/toxicwind/sovereign-projects#license).
+MIT — see [LICENSE](https://github.com/toxicwind/estate-projects#license).
 
 Read-only observer: it pages, it never restarts lanes or mutates chat
 state. No credentials in this tree.

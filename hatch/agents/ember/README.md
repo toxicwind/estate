@@ -4,8 +4,8 @@ Ember's working home on the yote box: the live todo list, standing directives, t
 
 <div align="right">
 
-[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -57,4 +57,4 @@ less todos.md directives.md
 
 ## License & security
 
-MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). This tree holds operational state (directives, relay outbox, message store) — treat it as live config, not scratch. Squawk message signing keys live outside this tree (`~/.shingle/keys/`); never copy them into the repo.
+MIT where marked — [LICENSE](https://github.com/toxicwind/estate-projects#license). This tree holds operational state (directives, relay outbox, message store) — treat it as live config, not scratch. Squawk message signing keys live outside this tree (`~/.shingle/keys/`); never copy them into the repo.

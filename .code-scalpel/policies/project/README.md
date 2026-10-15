@@ -4,8 +4,8 @@ Enforces the Code Scalpel project's own conventions: where code lives, how it's 
 
 <div align="right">
 
-[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -52,4 +52,4 @@ code-scalpel policy test --category project
 
 ## License & security
 
-MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). Structure policy edits reshape the whole tree — keep `project-structure.yaml` under the same review bar as `policy.yaml` itself. Decisions land in the Code Scalpel audit trail (`../../audit.log`).
+MIT where marked — [LICENSE](https://github.com/toxicwind/estate-projects#license). Structure policy edits reshape the whole tree — keep `project-structure.yaml` under the same review bar as `policy.yaml` itself. Decisions land in the Code Scalpel audit trail (`../../audit.log`).

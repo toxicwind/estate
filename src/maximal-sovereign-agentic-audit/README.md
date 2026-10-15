@@ -1,13 +1,13 @@
 <div align="right">
 
-[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-1f6feb?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-1f6feb?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
-# Maximal Sovereign Agentic Audit
+# Maximal Estate Agentic Audit
 
-> Production-grade, fully agentic repository audit system for the Sovereign ecosystem.
+> Production-grade, fully agentic repository audit system for the Estate ecosystem.
 
 > **Why care? 327 projects, one command: local-first auditing with a multi-tier modular architecture — git scanning, secrets scanning, broken-symlink detection, pre-check validation, Parquet export, and AI-powered insights via the `:25100` API.**
 
@@ -37,12 +37,12 @@ bun run local --all --precheck
 
 ## License & security
 
-- **License:** [MIT](https://github.com/toxicwind/sovereign-projects#license)
+- **License:** [MIT](https://github.com/toxicwind/estate-projects#license)
 - **Security:** The `.secrets` file is a first-class credential record — scanned but never committed, excluded via `.gitignore`. Requirements: Bun 1.4+, parquetjs-lite, git repos in `/home/toxic/projects/` and `/home/toxic/estate/`.
 
 ---
 
-A production-grade, fully agentic repository audit system for the Sovereign ecosystem.
+A production-grade, fully agentic repository audit system for the Estate ecosystem.
 
 ## What It Does
 

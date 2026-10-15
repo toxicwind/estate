@@ -60,7 +60,7 @@ async function searchGitHub(query: string, perPage: number): Promise<any[]> {
   const res = await fetch(url, {
     headers: {
       Accept: "application/vnd.github.v3+json",
-      "User-Agent": "sovereign-audit",
+      "User-Agent": "estate-audit",
     },
   });
   if (!res.ok) return [];
@@ -75,7 +75,7 @@ async function checkRulesRepo(
   const res = await fetch(contentsUrl, {
     headers: {
       Accept: "application/vnd.github.v3+json",
-      "User-Agent": "sovereign-audit",
+      "User-Agent": "estate-audit",
     },
   });
   if (!res.ok) return { hasRules: false, ruleCount: 0 };

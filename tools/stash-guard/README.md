@@ -2,13 +2,13 @@
 
 <div align="right">
 
-[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
 Autonomous WIP flight-recorder + drop-proof stash vault for the
-sovereign/tau monorepo (and, in `--deep` mode, every git repo on the box).
+estate/tau monorepo (and, in `--deep` mode, every git repo on the box).
 `git stash drop` and `git stash clear` can no longer lose work — every live
 stash entry is pinned at a guard ref that survives.
 
@@ -45,9 +45,9 @@ Retention: last `--keep` (default 24) snapshots per worktree; older refs pruned.
 python3 tools/stash-guard/stash-guard.py --once
 
 # daemon (as run by pitchfork)
-python3 tools/stash-guard/stash-guard.py --repo /home/toxic/sovereign \
+python3 tools/stash-guard/stash-guard.py --repo /home/toxic/estate \
     --deep --interval 90 \
-    --extra-repos /home/toxic/sovereign/projects/tau-extensions,/home/toxic/sovereign/projects/tau-occupied-20260916
+    --extra-repos /home/toxic/estate/projects/tau-extensions,/home/toxic/estate/projects/tau-occupied-20260916
 
 # inspect
 python3 tools/stash-guard/stash-guard.py list
@@ -85,7 +85,7 @@ protects is a liability. Extend excludes via `.stashguardignore` per repo.
 
 ## License & security
 
-MIT — see [LICENSE](https://github.com/toxicwind/sovereign-projects#license).
+MIT — see [LICENSE](https://github.com/toxicwind/estate-projects#license).
 
 - Guard refs hold copies of your uncommitted work — including anything
   sensitive in the tree. The `archive` remote must be as trusted as the

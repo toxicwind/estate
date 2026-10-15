@@ -29,7 +29,7 @@ if not key or not path.exists():
     raise SystemExit(0)
 cfg = json.loads(path.read_text())
 users = {u.get("username") for u in cfg.get("users", []) if isinstance(u, dict)}
-owner = "sovereign" if "sovereign" in users else (next(iter(users)) if users else "sovereign")
+owner = "estate" if "estate" in users else (next(iter(users)) if users else "estate")
 sha = hashlib.sha256(key.encode()).hexdigest()
 keys = cfg.setdefault("client_auth", {}).setdefault("keys", [])
 found = False

@@ -1,9 +1,9 @@
-// surfaces: the inventory of every browser-reachable service in the sovereign
+// surfaces: the inventory of every browser-reachable service in the estate
 // stack, so the master dashboard can present the whole stack as one set of
 // tabs instead of N half-wired dashboards that each know about one daemon.
 //
 // Provenance: ports and health paths are transcribed from the `[daemons.*]`
-// blocks in `sovereign/pitchfork.toml`, which is the authoritative service
+// blocks in `estate/pitchfork.toml`, which is the authoritative service
 // list. Daemon names are carried through verbatim so a tab can name the thing
 // that has to be running for it to answer.
 //
@@ -258,12 +258,12 @@ export const SURFACES: readonly Surface[] = [
 		description: "Yote fleet bus.",
 	},
 	{
-		id: "sovereign-chat",
-		label: "Sovereign Chat",
+		id: "estate-chat",
+		label: "Estate Chat",
 		group: "Mesh",
 		origin: loopback(25120),
 		kind: "ui",
-		daemon: "sovereign-chat",
+		daemon: "estate-chat",
 		healthPath: "/health",
 		description: "First-class fleet chat plane.",
 	},
@@ -419,7 +419,7 @@ export const SURFACES: readonly Surface[] = [
 	},
 	{
 		id: "sovereign-exporter",
-		label: "Sovereign Exporter",
+		label: "Estate Exporter",
 		group: "Ops",
 		origin: loopback(25213),
 		kind: "api",
