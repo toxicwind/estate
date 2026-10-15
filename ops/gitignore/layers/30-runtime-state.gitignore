@@ -82,3 +82,9 @@ config/tau/agent/models.json
 doorbell.*.crt
 doorbell.*.key
 config/tau/agent/extensions/*/settings.json
+
+# ── Standing audit artifacts (2026-10-15) ───────────────────────────────
+# Skills may keep versioned reports. The template layers' unanchored
+# `*.log` (Node/bun/Django/VS — 4 occurrences) silently swallows raw audit
+# output at any depth; re-include skill reports so audits stay reproducible.
+!skills/**/reports/**
