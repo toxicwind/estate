@@ -1,0 +1,16 @@
+[daemons.forge-agent]
+run = "exec /home/toxic/estate/var/reconciliation/flicker/bin/flicker-agent"
+dir = "/home/toxic/estate/var/reconciliation/flicker"
+mise = false
+retry = true
+boot_start = true
+env = { WOODPECKER_SERVER = "127.0.0.1:25240", WOODPECKER_AGENT_SECRET = "c6eee4c1bce957ae19638a330efe5fc3c561f18ea58e3468fe224a60416faf4f" }
+auto = ["start"]
+
+# SUPERSEDED 2026-09-30 (peregrine): brand-watchdog retired with brand.
+# Flicker has its own health_http checks; no external watchdog needed.
+
+# ranch/flicker — project-owned daemon manifest. Source of truth for 'flicker'.
+# Owned by the ranch/flicker project; the parent only composes it.
+
+# forge — the ranch build daemon on :25148 (flicker-server binary; renamed from estate/flicker 2026-10-13 — mbx-cache duplicate entry merged away, forge is the master name).

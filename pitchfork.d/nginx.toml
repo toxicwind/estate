@@ -1,7 +1,3 @@
-# estate — project-owned daemon manifest. Source of truth for 'nginx'.
-# Owned by the estate project; the parent only composes it.
-
-
 [daemons.nginx]
 port = 25208
 run = "exec /usr/bin/nginx -c /home/toxic/estate/ops/nginx/nginx.conf -g 'daemon off; pid /tmp/nginx-pitchfork.pid;'"
@@ -11,3 +7,6 @@ retry = true
 ready_cmd = "ss -ltn 'sport = :25208' | grep -q LISTEN"
 depends = ["gatehouse"]
 auto = ["start"]
+
+# estate — project-owned daemon manifest. Source of truth for 'nim-kimi-sidecar'.
+# Owned by the estate project; the parent only composes it.

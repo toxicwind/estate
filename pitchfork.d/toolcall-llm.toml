@@ -1,6 +1,3 @@
-# estate — project-owned daemon manifest. Source of truth for 'toolcall-llm'.
-# Owned by the estate project; the parent only composes it.
-
 [daemons.toolcall-llm]
 port = 25152
 run = "exec /home/toxic/estate/engines/llama.cpp-b11059/llama-b11059/llama-server -m /home/toxic/models/qwen3.5-9b-dflash-Q5_K_M.gguf --host 127.0.0.1 --port 25152 -ngl 99 -c 32768 --alias qwen3.5-9b-tool"
@@ -19,3 +16,6 @@ auto = ["start"]
 # Bench (RTX 3090, 1650-word prompt): pp 15.6k tok/s, gen 311-335 tok/s.
 # Runner-up config: -b 4096 -ub 1024 (pp 10.2k, gen 312.7). threads=16 and
 # flash-attn off both slower. Port from config/ports.env SSOT (BEELLAMA_PORT).
+
+# estate — project-owned daemon manifest. Source of truth for 'vansrouter'.
+# Owned by the estate project; the parent only composes it.

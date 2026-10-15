@@ -1,0 +1,7 @@
+[daemons.rustdesk-hbbs]
+run = "exec ./amd64/hbbs -p 25221 -r 100.72.199.93:25222"
+dir = "/home/toxic/estate/ranch/rustdesk-server"
+mise = false
+retry = true
+ready_cmd = "ss -ltn 'sport = :25221' | grep -q LISTEN"
+auto = ["start"]

@@ -1,6 +1,3 @@
-# estate — project-owned daemon manifest. Source of truth for 'beellama-fast'.
-# Owned by the estate project; the parent only composes it.
-
 [daemons.beellama-fast]
 port = 25122
 run = "exec /home/toxic/estate/stack/services/_consolidated_herd_20260924/beellama-fast.sh"
@@ -15,3 +12,6 @@ auto = ["start"]
 
 # openfang-health — 5-min OpenFang/coyote health loop -> JSON/HTML + squawk on transitions.
 # Added 2026-09-20 (openfang recon track).
+
+# estate — project-owned daemon manifest. Source of truth for 'browser-keeper'.
+# Owned by the estate project; the parent only composes it.

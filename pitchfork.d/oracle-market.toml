@@ -1,0 +1,14 @@
+[daemons.oracle-market]
+run = "exec /home/toxic/estate/ranch/squawk/oracle/bin/run.sh"
+dir = "/home/toxic/estate/ranch/squawk/oracle"
+mise = false
+retry = true
+env = { ORACLE_INTAKE = "1" }
+auto = ["start"]
+
+# ---- project: ranch/mesh/proxy/cuttinggate (1 daemon) ----
+# ranch/mesh/proxy/cuttinggate — project-owned daemon manifest. Source of truth for 'cuttinggate'.
+# The canonical estate router. Binds :25200 via CUTTINGGATE_PORT.
+# NOTE: the baked-in config default 25194 is held by the Ralph dashboard
+# (uvicorn); 25195 is held by codebase-memory. Do not move this daemon
+# onto either without re-homing the holder first.

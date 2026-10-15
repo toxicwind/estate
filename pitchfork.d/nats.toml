@@ -1,0 +1,10 @@
+[daemons.nats]
+run = "exec /home/toxic/estate/ranch/squawk/nats/run-nats.sh"
+dir = "/home/toxic/estate/ranch/squawk/nats"
+mise = false
+retry = true
+boot_start = true
+ready_cmd = "ss -ltn 'sport = :4222' | grep -q LISTEN"
+auto = ["start"]
+
+# ---- project: ranch/squawk/oracle (7 daemons) ----

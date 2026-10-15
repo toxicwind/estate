@@ -1,7 +1,3 @@
-# estate — project-owned daemon manifest. Source of truth for 'kafka'.
-# Owned by the estate project; the parent only composes it.
-
-
 [daemons.kafka]
 run = "exec ./stack/services/kafka.sh"
 dir = "."
@@ -9,3 +5,6 @@ mise = true
 retry = true
 ready_port = 25144
 auto = ["start"]
+
+# estate — project-owned daemon manifest. Source of truth for 'keypool'.
+# Owned by the estate project; the parent only composes it.

@@ -1,7 +1,3 @@
-# estate — project-owned daemon manifest. Source of truth for 'kimi-auto-shim'.
-# Owned by the estate project; the parent only composes it.
-
-
 [daemons.kimi-auto-shim]
 health_http = { url = "http://127.0.0.1:25153/health", interval = "30s", timeout = "5s", retries = 3 }
 port = 25153
@@ -21,3 +17,6 @@ boot_start = true
 ready_http = "http://127.0.0.1:25153/health" # 2026-09-20: literal, was ${KIMI_AUTO_SHIM_PORT}=25105
 env = { KIMI_AUTO_SHIM_PORT = "25153", SHIM_CONNECT_TIMEOUT = "240" }
 auto = ["start"]
+
+# estate — project-owned daemon manifest. Source of truth for 'market-loop'.
+# Owned by the estate project; the parent only composes it.

@@ -1,0 +1,18 @@
+[daemons.paper-poller]
+port = 25149
+run = "exec /usr/bin/python3 /home/toxic/paper-poller/bin/poller.py"
+dir = "/home/toxic/paper-poller"
+mise = false
+retry = true
+boot_start = true
+ready_http = "http://127.0.0.1:25149/ready"
+env = { PAPER_POLLER_PORT = "25149", PAPER_POLLER_INTERVAL = "30" }
+auto = ["start"]
+
+# paper-poller-watchdog — external watchdog for paper-poller (2026-09-14, lane 7):
+# polls paper-poller /health; SIGKILLs a wedged poller and escalates to a plain
+# pitchfork start (never --force). Additive; never touches the supervisor.
+
+# ---- project: standalone/ralph-dashboard (1 daemon) ----
+# standalone/ralph-dashboard — project-owned daemon manifest. Source of truth for 'ralph-dashboard'.
+# Owned by the standalone/ralph-dashboard project; the parent only composes it.

@@ -1,0 +1,9 @@
+[daemons.bidder-vesper]
+run = "exec /home/toxic/estate/ranch/squawk/oracle/bin/bidder-vesper.sh"
+dir = "/home/toxic/estate/ranch/squawk/oracle"
+mise = false
+retry = true
+auto = ["start"]
+
+# ranch/squawk/oracle — project-owned daemon manifest. Source of truth for 'market-watchdog'.
+# Owned by the ranch/squawk/oracle project; the parent only composes it.

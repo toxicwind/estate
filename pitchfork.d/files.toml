@@ -1,7 +1,3 @@
-# estate — project-owned daemon manifest. Source of truth for 'files'.
-# Owned by the estate project; the parent only composes it.
-
-
 [daemons.files]
 # /files backend (tailnet-only): tailscale serve maps /files -> 127.0.0.1:34567.
 # Static file share rooted at /home/toxic/files. Built 2026-09-20 (files-medic):
@@ -15,3 +11,9 @@ env = { FILES_PORT = "34567", FILES_ROOT = "/home/toxic/files" }
 ready_http = "http://127.0.0.1:34567/health"
 health_http = { url = "http://127.0.0.1:34567/health", interval = "30s", timeout = "5s", retries = 3 }
 auto = ["start"]
+
+# ranch-ui — the consolidated ranch dashboard (ranch/range/ui). Serves the
+# built SPA from dist and proxies /api/herd + /api/flock same-origin, so the
+# dashboard's apiBase shim resolves to this host. Built 2026-10-14 by merging
+# the 368bdf6 master back into range/ui (see range/ui/CONSOLIDATION.md).
+# Tailnet-only: tailscale serve fronts it; nothing binds 0.0.0.0.

@@ -1,7 +1,3 @@
-# estate — project-owned daemon manifest. Source of truth for 'node-exporter'.
-# Owned by the estate project; the parent only composes it.
-
-
 [daemons.node-exporter]
 port = 25211
 run = "exec /usr/local/bin/node_exporter --web.listen-address=127.0.0.1:25211"
@@ -12,3 +8,6 @@ health_http = { url = "http://127.0.0.1:25211/health", interval = "30s", timeout
 auto = ["start"]
 
 # ── port-dynamic 2026-09-20: orphans adopted + out-of-range ports moved ──
+
+# estate — project-owned daemon manifest. Source of truth for 'openfang-front'.
+# Owned by the estate project; the parent only composes it.

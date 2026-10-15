@@ -1,0 +1,17 @@
+[daemons.fleet-feed]
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/ranch/squawk/fleet-feed.ts"
+dir = "/home/toxic/estate/ranch/squawk"
+mise = false
+retry = true
+boot_start = true
+ready_cmd = "ss -ltn 'sport = :25201' | grep -q LISTEN"
+auto = ["start"]
+
+# ranch/squawk — project-owned daemon manifest. Source of truth for 'fleet-ui'.
+# Owned by the ranch/squawk project; the parent only composes it.
+# Restored 2026-10-02: fleet-ui.ts was an untracked live file that got deleted;
+# recovered from the reconciliation copy. Now a first-class supervised daemon.
+#
+# 2026-10-07: run squawk-ui.ts (channel-aware /wait+/send, signed relay-in send,
+# Svelte bundle hot-reload). fleet-ui.ts remains as the thin proxy ancestor;
+# do not point pitchfork back at it — /send would 404 through the feed.

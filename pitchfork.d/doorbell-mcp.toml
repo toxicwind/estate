@@ -5,3 +5,6 @@ dir = "/home/toxic/estate/ranch/doorbell"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25202/health"
+
+# estate — project-owned daemon manifest. Source of truth for 'estate-reconcile-watch'.
+# Owned by the estate project; the parent only composes it.

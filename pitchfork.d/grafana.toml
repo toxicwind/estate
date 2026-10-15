@@ -1,7 +1,3 @@
-# estate — project-owned daemon manifest. Source of truth for 'grafana'.
-# Owned by the estate project; the parent only composes it.
-
-
 [daemons.grafana]
 port = 25110
 run = "exec ./stack/services/grafana-mesh.sh"
@@ -11,3 +7,6 @@ retry = true
 ready_http = "http://127.0.0.1:25110/api/health"
 health_http = { url = "http://127.0.0.1:25110/health", interval = "30s", timeout = "5s", retries = 3 }
 auto = ["start"]
+
+# estate — project-owned daemon manifest. Source of truth for 'herd'.
+# Owned by the estate project; the parent only composes it.

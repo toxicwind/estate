@@ -1,14 +1,9 @@
-# NativeLink — Bazel-compatible remote cache + remote execution backend.
-# Serves the RE API that Bazel (and any RE-speaking client) dials. Coexists
-# with mbx-cache on :25148, which remains the mise task cache for bun/cargo.
-# Config: config/nativelink/nativelink.json5 (json5, json comments allowed).
-
-# ops/nativelink/run.sh creates the CAS/AC content+temp dirs first: NativeLink
-# does not create temp_path, and a missing one makes every RE route 404 while
-# still logging "Ready".
 [daemons.nativelink]
 run = "exec ./ops/nativelink/run.sh"
 dir = "/home/toxic/estate"
 port = 25155
 auto = ["start"]
 restart_delay = 5
+
+# estate — project-owned daemon manifest. Source of truth for 'nginx'.
+# Owned by the estate project; the parent only composes it.

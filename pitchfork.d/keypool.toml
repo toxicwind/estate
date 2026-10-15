@@ -1,6 +1,3 @@
-# estate — project-owned daemon manifest. Source of truth for 'keypool'.
-# Owned by the estate project; the parent only composes it.
-
 [daemons.keypool]
 health_http = { url = "http://127.0.0.1:25109/health", interval = "30s", timeout = "5s", retries = 3 }
 port = 25109
@@ -17,3 +14,6 @@ auto = ["start"]
 # --- herd-deployer 2026-09-20: card-derived model request-contract enforcement.
 # Proxies 127.0.0.1:25101 -> herd :25100; rewrites chat/completions bodies per
 # config/model_constraints.yaml (K3: top_p=0.95, reasoning_effort clamp, thinking on).
+
+# estate — project-owned daemon manifest. Source of truth for 'kimi-auto-shim'.
+# Owned by the estate project; the parent only composes it.

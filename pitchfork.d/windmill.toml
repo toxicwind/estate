@@ -1,0 +1,21 @@
+[daemons.windmill]
+health_http = { url = "http://127.0.0.1:25219/api/status", interval = "10s", timeout = "5s", retries = 2 }
+port = 25219
+run = "exec bun --hot run /home/toxic/estate/ranch/windmill/server.ts"
+dir = "/home/toxic/estate/ranch/windmill"
+mise = false
+retry = true
+boot_start = true
+ready_http = "http://127.0.0.1:25219/api/status"
+auto = ["start"]
+
+
+# paper-poller — PAPER-TASK/PAPER-RESULT poller daemon (2026-09-14, lane 7):
+# watches the fleet channel for PAPER-TASK entries, claims them with an atomic
+# mkdir lock, races arXiv + alphaXiv legs (fail-fast, HFT rules), posts
+# PAPER-RESULT back. Source: toxicwind/paper-poller (runs from /home/toxic/paper-poller).
+# Watchdog (paper-poller-watchdog below) covers silent wedges.
+
+# ---- project: ranch/task-launch (1 daemon) ----
+# ranch/task-launch — project-owned daemon manifest. Source of truth for 'task-launch'.
+# Owned by the ranch/task-launch project; the parent only composes it.

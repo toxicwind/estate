@@ -1,15 +1,14 @@
-# estate — project-owned daemon manifest. Source of truth for 'openfang-front'.
-# Owned by the estate project; the parent only composes it.
-
-
 [daemons.openfang-front]
-env = { SOVEREIGN_ROOT = "/home/toxic/estate" }
+env = { ESTATE_ROOT = "/home/toxic/estate" }
 port = 25103
-run = "exec ./stack/services/_consolidated_herd_20260924/openfang.sh"
-dir = "."
+run = "exec /home/toxic/estate/stack/services/_consolidated_herd_20260924/openfang.sh"
+dir = "/home/toxic/estate"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25103/api/health"
 depends = ["gatehouse"]
 health_http = { url = "http://127.0.0.1:25103/api/health", interval = "30s", timeout = "5s", retries = 3 }
 auto = ["start"]
+
+# estate — project-owned daemon manifest. Source of truth for 'openfang-health'.
+# Owned by the estate project; the parent only composes it.

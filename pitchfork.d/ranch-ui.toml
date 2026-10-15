@@ -1,0 +1,14 @@
+[daemons.ranch-ui]
+port = 25218
+run = "exec /home/toxic/.bun/bin/bun run /home/toxic/estate/stack/services/ranch-ui.ts"
+dir = "/home/toxic/estate"
+mise = false
+retry = true
+env = { RANCH_UI_PORT = "25218", RANCH_UI_DIST = "/home/toxic/estate/ranch/range/ui/dist", HERD_ORIGIN = "http://127.0.0.1:25100", FLOCK_ORIGIN = "http://127.0.0.1:25193" }
+ready_http = "http://127.0.0.1:25218/health"
+health_http = { url = "http://127.0.0.1:25218/health", interval = "30s", timeout = "5s", retries = 3 }
+auto = ["start"]
+
+# estate/ranch/flock -- project-owned daemon manifest. Source of truth for the flock daemon.
+# Owned by the flock project; the parent only composes it.
+# Route values are non-secret. Client key is synced by bin/flock-run.sh from estate SSOT.

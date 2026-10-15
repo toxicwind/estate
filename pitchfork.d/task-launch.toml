@@ -1,0 +1,11 @@
+[daemons.task-launch]
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/ranch/task-launch/src/daemon.ts"
+dir = "/home/toxic/estate/ranch/task-launch"
+mise = false
+retry = true
+auto = ["start"]
+ready_cmd = "pgrep -f '[t]ask-launch/src/daemon.ts' >/dev/null"
+
+# ---- project: range (1 daemon) ----
+# range — project-owned daemon manifest. Source of truth for 'mesh-landing'.
+# Owned by the range project; the parent only composes it.
