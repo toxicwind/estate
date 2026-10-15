@@ -40,7 +40,10 @@ const { values, positionals } = parseArgs({
     perPage: { type: "string" },
     "per-page": { type: "string" },
     weights: { type: "string" },
-    json: { type: "boolean" },
+    // 2026-10-15: JSON is now the DEFAULT output (agent-canonical, per the
+    // ffs output doctrine: "text is for humans; json is canonical for tools").
+    // Pass --text for the human rendering.
+    text: { type: "boolean" },
     interactive: { type: "boolean" },
     help: { type: "boolean" },
   },
@@ -50,7 +53,7 @@ const { values, positionals } = parseArgs({
 
 if (values.help) {
   console.log(
-    `Usage: bun run pattern-borrow.ts [patterns...] [--top N] [--per-page N] [--weights k=v,...] [--json] [--interactive]`,
+    `Usage: bun run pattern-borrow.ts [patterns...] [--top N] [--per-page N] [--weights k=v,...] [--text] [--interactive] (default output: JSON)`,
   );
   process.exit(0);
 }
@@ -142,7 +145,39 @@ const DEFAULT_W: Weight = {
   bugRel: 0.28,
 };
 
-const PATTERNS = positionals.length ? positionals : DEFAULT_PATTERNS;
+const STOPWORDS = new Set([
+  "a", "an", "the", "and", "or", "for", "with", "via", "using", "how", "best",
+  "in", "of", "to", "on", "at", "by", "from", "into", "code", "implement",
+  "implementation", "pattern", "patterns", "example", "examples", "real",
+  "world", "real-world", "github", "repo", "repos",
+]);
+
+/**
+ * 2026-10-15 fix: multi-word positionals used to be searched on GitHub as ONE
+ * quoted phrase (code search returns near-garbage for long phrases). Now
+ * natural-language queries are split into focused code-search terms with
+ * stopwords stripped, deduped, and capped.
+ */
+function toSearchTerms(positional: string[]): string[] {
+  const out: string[] = [];
+  for (const p of positional) {
+    if (p.includes("-") && p.length <= 40 && !p.includes(" ")) {
+      // looks like a code identifier (kebab/snake) — search as-is
+      out.push(p);
+      continue;
+    }
+    const words = p.split(/\s+/).filter((w) => w.length > 1 && !STOPWORDS.has(w.toLowerCase()));
+    if (words.length <= 2) {
+      out.push(words.join(" ") || p);
+    } else {
+      // focused bigrams keep code-search precision without the phrase trap
+      out.push(words.slice(0, 4).join(" "));
+    }
+  }
+  return [...new Set(out.filter(Boolean))].slice(0, 6);
+}
+
+const PATTERNS = positionals.length ? toSearchTerms(positionals) : DEFAULT_PATTERNS;
 const TOP = Number(values.top ?? (positionals.length ? positionals.length : 5));
 const PER_PAGE = Number(values.perPage ?? values["per-page"] ?? 5);
 const W: Weight = { ...DEFAULT_W };
@@ -255,6 +290,9 @@ for (const term of PATTERNS) {
   if (data?.items) {
     for (const it of data.items) {
       const full = it.repository?.full_name;
+      // self-echo: skip our own public repos — the local-first scan above
+      // already covers in-tree truth; GitHub copies add nothing but noise
+      if (full && full.startsWith("toxicwind/")) continue;
       if (full) {
         if (!matchedFiles[full]) matchedFiles[full] = [];
         if (it.path) matchedFiles[full].push(it.path);
@@ -327,30 +365,37 @@ function rank(weights: Weight) {
 function printRank(weights: Weight) {
   rank(weights);
   const topRepos = collectTopRepos(TOP);
-  if (values.json) {
-    console.log(JSON.stringify({ rankedTerms: rows.slice(0, TOP), topRepos }, null, 2));
+  if (!values.text) {
+    console.log(JSON.stringify({ terms: rows.map((r) => r.term), topRepos }, null, 2));
     return;
   }
-  console.log("\n=== RANKED PATTERNS (GitHub-wide) ===");
-  console.log("score  bug  repos  stars   iss  test  term");
-  for (const r of rows.slice(0, TOP)) {
-    console.log(
-      `${(r.score * 100).toFixed(1).padStart(5)} ${String(r.bugRel).padStart(3)} ${String(r.nRepos).padStart(5)} ` +
-        `${String(r.stars).padStart(7)} ${String(r.issues).padStart(5)} ${r.testFrac.toFixed(2)}  ${r.term}`,
-    );
-  }
-  console.log(`\nTOP ${Math.min(TOP, 3)} TERMS TO MERGE:`);
-  for (const r of rows.slice(0, Math.min(TOP, 3))) console.log(`  - ${r.term}`);
-
-  console.log(`\n=== TOP ${topRepos.length} REPOSITORIES TO BORROW / MERGE ===`);
+  // Output contract (2026-10-15): agent-shaped, not human-shaped.
+  // No ANSI, repos first (the actionable unit), evidence + fetch-ready URLs.
+  const termStr = rows.map((r) => r.term).join(" | ");
+  console.log(`# pattern-borrow — terms: ${termStr}`);
+  console.log(`# scored across ${rows.length} terms; factors: ${FACTORS.join(",")}`);
+  console.log("");
   for (let i = 0; i < topRepos.length; i++) {
     const repo = topRepos[i];
-    console.log(`\n${i + 1}. \x1b[1m${repo.fullName}\x1b[0m  ★ ${repo.stars}  ⑂ ${repo.forks}  [${repo.language || "unknown"}]`);
-    console.log(`   URL:  ${repo.url}`);
-    if (repo.description) console.log(`   Desc: ${repo.description}`);
-    if (repo.matchedFiles.length) {
-      console.log(`   Files: ${repo.matchedFiles.slice(0, 3).join(", ")}${repo.matchedFiles.length > 3 ? ` (+${repo.matchedFiles.length - 3} more)` : ""}`);
+    const isLocal = repo.fullName.startsWith("local:");
+    console.log(`[${i + 1}] ${repo.fullName}  ★${repo.stars}  ${repo.language || "?"}  ${repo.license || "?"}`);
+    if (repo.description) console.log(`    why: ${repo.description.slice(0, 140)}`);
+    if (repo.terms?.length) console.log(`    matched terms: ${repo.terms.join(", ")}`);
+    if (isLocal) {
+      console.log(`    in-tree first-class: ${repo.url.replace("file://", "")}`);
+    } else {
+      console.log(`    repo: ${repo.url}`);
+      const rawFiles = (repo.matchedFiles || []).slice(0, 3);
+      if (rawFiles.length) {
+        console.log(`    matching files:`);
+        for (const f of rawFiles) {
+          console.log(`      - https://raw.githubusercontent.com/${repo.fullName}/HEAD/${f}`);
+        }
+      }
     }
+  }
+  if (!topRepos.length) {
+    console.log("no matches — refine terms (stopwords stripped; use code identifiers)");
   }
 }
 
