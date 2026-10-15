@@ -295,3 +295,7 @@ nuclei passive + API shape matrix. Artifacts in /tmp/kilo/ferret-freeinf/.
   (GOBIN=~/.pdtm/go/bin) — CLI present, uses CHAOS_KEY for the dataset API.
 - Full ferret kit resolves: 0/21 binaries missing. All 22 den:* jobs
   executable; chaos job additionally needs CHAOS_KEY in the vault if used.
+- ferret-den now has a first-class bun auto-installer (scripts/install.ts,
+  pushed b2ae0d9): den-names.ts as SSOT, pdtm + go-install fallback, --check
+  modes for CI/health. Explicit-only per safety directive — the MCP server
+  aborts loudly on missing bins, never auto-runs the installer.
