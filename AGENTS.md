@@ -4,8 +4,9 @@
 > Every path, port, and binary below was confirmed to exist with `ls`/`curl`/`ss`
 > on 2026-10-14. Docs are an unreliable narrator — **the code is absolute**.
 > If a claim in any `.md` disagrees with the code, the `.md` is wrong. Fix the doc,
-> don't "work around" it. This file is the single source of truth; the copy at
-> `/home/toxic/estate/AGENTS.md` is a legacy variant and is NOT authoritative.
+> don't "work around" it. **The authoritative copy is `/home/toxic/AGENTS.md`;
+> this file is a mirror kept in sync with it** (both were byte-identical as of
+> 2026-10-14 — fix drift in the authoritative copy, then re-copy here).
 
 ## Applies to BOTH bridge workers AND local agents (tau)
 

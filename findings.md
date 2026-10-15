@@ -117,3 +117,39 @@ Repairs landed this session are marked [FIXED]; open items marked [OPEN].
   ranch/roundup/results/herd-20261014/ — first full-herd ranking since
   2026-10-02 (last one covered only 4 exaone quantizations; Oct 3 realworld
   sweep silently produced 0-byte results + empty weights).
+
+## 9. Docs-estate audit (2026-10-15, subagent-verified)
+
+- **AGENTS.md mutual-legacy contradiction [FIXED]**: /home/toxic/AGENTS.md and
+  estate/AGENTS.md were byte-identical while each claimed the other was the
+  "legacy variant". Estate copy now correctly declares itself a mirror of the
+  authoritative /home/toxic/AGENTS.md.
+- **Mesh truth**: `ranch/mesh/README.md` is the live-verified routing doc
+  (cuttinggate :25200 canonical, estate-router :25104 LIVE, herd :25100,
+  flock :25193 retired, keypool :25109, gatehouse :25127 fronts MCP).
+  Estate-level docs contradict it: CONTROL_PLANE.md + MASTER_PLAN.md still
+  cite "sovereign-router :25104 stopped"/"mcpproxy :25109 as MCP federation
+  gateway" (wrong service), MASTER_PLAN.md:8 "herd DOWN" vs mesh README's
+  live check. [OPEN — rewrite CONTROL_PLANE.md/MASTER_PLAN.md against mesh
+  README]
+- **Dead-path docs**: plans/master/REORG-PLAN.md (assumes ~/sovereign exists),
+  pitchfork-modularization/sandbox/pitchfork.toml.orig (hardcodes dead
+  projects/range/ranch), CONVENTIONS.md:66-67 (skills-hub as skills home,
+  ~/workspace/skills symlink target missing), mbx.md + daemons.md +
+  estate-map.md + environment-variables.md + port-ssot.md (all cite mbx-cache
+  :25148 — no such daemon, port not listening; forge owns :25148 now).
+  [OPEN — mark archived or fix]
+- **Ranch structure**: 87 tracked git submodules + 6 ignored nested repos
+  (vansrouter, tau, boundless, sigma, omp-semantic-policy, barn/woodpecker)
+  + ~200 plain dirs. Duplications: paper-poller (ranch submodule vs
+  deep-paper-reader leg), pi-skills (estate root checkout), sovereign-skills
+  (submodule) vs estate/skills canonical. [OPEN — see monorepo options]
+
+## 10. Kilo MCP wiring [FIXED]
+
+- `~/.config/kilo/kilo.json` created: `mcp.gatehouse` → remote streamable-HTTP
+  at http://127.0.0.1:25127/mcp (server confirmed: mcpproxy-go v0.1.0,
+  initialize round-trip 200 with Mcp-Session-Id), Authorization via
+  ${MCPPROXY_API_KEY} env interpolation — no secret literal in config.
+- `~/.bashrc.local` now exports MCPPROXY_API_KEY from the vault (64-char key
+  verified present in fresh login shell; `bash -lc true` healthy).
