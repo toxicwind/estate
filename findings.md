@@ -243,3 +243,32 @@ per-model quota. (3) Fleet rule: parallel lanes override off freeinference
 (kilo/Nemotron proven); freeinference jobs serialize or resume after 429.
 (4) Do not trust `model` on `/v1/messages` — verify `model` in the response
 payload (live example returned qwen3.6-35b for a glm request).
+
+## 15. freeinference deep recon (2026-10-15, ferret-den methodology)
+
+Full probes: subfinder (14 subs) + dnsx + TLS SANs + httpx-style surface map +
+nuclei passive + API shape matrix. Artifacts in /tmp/kilo/ferret-freeinf/.
+
+- **Operator identity: Harvard MaDSys Group** ("agentic-system.org"). openinfra
+  subdomain = "open-infra | Harvard MadSys Lab". The provider doc's
+  "non-Harvard applicants require manual approval" is literal — this is
+  university research infrastructure.
+- **The real price of free: agent-traces.freeinference.org = "FreeInference
+  Agentic Dataset"** — a published research dataset ("From Requests to
+  Sessions: A Large-Scale Characterization of Human-Driven Agentic Workloads",
+  Nixon/Tian/Zheng/Gunawi/Yang 2026, paper at data.freeinference.org/pdf/paper/).
+  Session Explorer shows they publish per-session requests, context, timelines,
+  tool stats, prefix-caching stats. **Every tau session routed through
+  freeinference is research data.** [OPEN: policy decision — keep freeinference
+  for throwaway/bench lanes only; never route secrets-bearing work]
+- **Model remap is deterministic, not a race**: 4/4 `/v1/messages` requests for
+  glm-5.3-flash served by qwen3.6-35b. The anthropic-shaped endpoint ignores
+  (or silently substitutes) the model field.
+- **Stack (nuclei passive)**: Next.js front, Cloudflare WAF (DEN edge),
+  jan-detect on /v1/models (Jan AI-style backend), per-subdomain CF Universal
+  SSL certs (agent-traces.*, data.*, openinfra.* all live services).
+- **14 subdomains**: agent-traces, data, doc(+staging), internaldoc,
+  openinfra, privacy, r2, status(+staging), staging, www(+privacy) —
+  staging + internaldoc + r2 exist but are CF-auth-gated from anon probes.
+- **Concurrency limit:1 confirmed again** under load (§14): serialization is
+  arrival-order; no x-ratelimit/retry-after headers exposed (CF swallows them).
