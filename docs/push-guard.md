@@ -2,7 +2,7 @@
 
 `bin/push-guard.sh` (mirrored at `tools/push-guard.sh`) is the pre-push / CI
 guard. Check 0 scans added diff lines for secret-shaped tokens. Two valves keep
-reviewed files from blocking pushes forever (Chris 2026-09-21: approval is
+reviewed files from blocking pushes forever (User 2026-09-21: approval is
 durable, the guard remembers).
 
 ## Ignore memory

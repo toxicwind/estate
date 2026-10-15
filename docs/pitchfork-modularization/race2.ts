@@ -1,4 +1,4 @@
-// race2.ts — round-2 hyper-race: PER-PROJECT OWNERSHIP (Chris's reframe).
+// race2.ts — round-2 hyper-race: PER-PROJECT OWNERSHIP (User's reframe).
 // Contestants:
 //   A  — parent-local pitchfork.d/NN-<daemon>.toml drop-ins (round-1 winner, the baseline)
 //   D1 — per-project <key>/pitchfork/daemons.toml (one manifest per project)

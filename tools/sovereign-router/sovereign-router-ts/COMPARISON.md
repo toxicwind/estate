@@ -95,7 +95,7 @@ Everything else is reference, snapshot, or frozen archive.
   default strategy is now `flock_race`; yaml accepts `flockStrategy` with
   legacy `astStrategy` still honored via custom UnmarshalYAML.
 
-- **Free pool is live-metadata derived** (2026-09-17, Chris): `freeCandidates()`
+- **Free pool is live-metadata derived** (2026-09-17, User): `freeCandidates()`
   no longer enumerates a static `:free`-suffix list. Eligibility is
   `modelFree(p, mid)` — live `/models` pricing wins (OpenRouter prompt +
   completion priced `"0"` = free), with deterministic fallback to the `:free`

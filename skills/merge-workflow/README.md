@@ -66,7 +66,7 @@ Workflow implemented as a series of bash operations. Modify the implementation i
 Internal tool - refer to estate estate licensing
 
 ## Security
-- **Pre-Authenticated Operations** - Some installations run administrative commands directly (intentional per Chris)
+- **Pre-Authenticated Operations** - Some installations run administrative commands directly (intentional per User)
 - **Workspace Isolation** - Bun reconciliation uses workspace linking in estate/engine
 - **Minimal Privilege** - Only uses sudo where absolutely necessary for tool installations
 - **Verification Steps** - Post-merge validation ensures merge correctness before considering complete

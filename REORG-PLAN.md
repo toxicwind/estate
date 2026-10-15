@@ -265,7 +265,7 @@ There is no window where the daemon points at a missing file: at every instant, 
 Every step is a rename(2) or symlink; the script writes `/home/toxic/sovereign/REORG-MANIFEST.txt` listing each
 operation. Rollback (mechanical, reverse order):
 1. If the bridge was already restarted on the new path: revert the toml `run` line, `pitchfork restart` again (from a
-   non-bridge context — i.e. a separate bridge call issued after the previous one returned, or Chris's local shell),
+   non-bridge context — i.e. a separate bridge call issued after the previous one returned, or User's local shell),
    verify 101. (systemd-run is not used; there is no timer to cancel.)
 2. `rm` the compat symlinks; `mv` dirs back (`scratch` → `shingle-workspace`, `hatch/agents/ember` → `/home/toxic/.fleet-bus`);
    `git mv` the docs back; restore `pitchfork.toml.pre-reorg-<ts>`.
@@ -323,10 +323,10 @@ operation. Rollback (mechanical, reverse order):
 ## 10. Execution needs (for the parent/coordinator)
 
 - Run `REORG-EXECUTE.sh` **on yote as `toxic` via the bridge** (`exec.py 'bash /home/toxic/sovereign/REORG-EXECUTE.sh'`),
-  or from Chris's local yote shell. Expected wall time: < 5 min (dominated by git push).
+  or from User's local yote shell. Expected wall time: < 5 min (dominated by git push).
 - After the script exits: run the hatch-side half of §7 — FIRST the operator-driven `pitchfork restart`
   (its own bridge call), then 101 handshake, `echo BRIDGE-LIVE`, squawk round-trip, runner-profile checks, Phase 8 swap.
-- Open question for Chris (non-blocking): `bench-wt-tau/pitchfork.toml` is a stale worktree copy with old paths — left
+- Open question for User (non-blocking): `bench-wt-tau/pitchfork.toml` is a stale worktree copy with old paths — left
   alone; say the word if it should be synced or deleted.
 - The script is idempotent per-step (guards skip completed steps) but is **not** re-run safe across the delayed restart
   boundary — run once; use §8 to roll back, never re-run blindly.

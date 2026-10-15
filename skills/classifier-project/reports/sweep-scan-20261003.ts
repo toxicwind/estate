@@ -2,7 +2,7 @@
 // against the trigger DB. Output is shape IDs + line numbers (no phrase quoting).
 import { compileTriggers } from "../src/triggers.ts";
 
-const MARKER_V2 = "Standing task directive (Chris's autonomous-operation order";
+const MARKER_V2 = "Standing task directive (User's autonomous-operation order";
 const MARKER_V1 = "Task directive (standing";
 
 const cronFiles: [string, string][] = [

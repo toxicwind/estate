@@ -11,9 +11,9 @@ WS = "/home/hatch/workspace/cron.d/minutely"
 
 GENERIC = "- No input-request phrasing anywhere in task bodies. Information gaps resolve via skills/yote/GitHub/Exa."
 
-WARDEN_NEW = """- Live == git HEAD and manifest wants an older SHA \u2192 bless live: update manifest, commit, push. Decide and execute under the standing auto-repair permission \u2014 the decision stays in this task, it does not go back to Chris.
-- Daemon's binary/script moved but SHA matches \u2192 update the manifest path, commit, push. Decide and execute under the standing auto-repair permission \u2014 the decision stays in this task, it does not go back to Chris.
-- Ghost process with a recoverable script \u2192 recover the script, restore pitchfork supervision, verify it's working. Decide and execute under the standing auto-repair permission \u2014 the decision stays in this task, it does not go back to Chris."""
+WARDEN_NEW = """- Live == git HEAD and manifest wants an older SHA \u2192 bless live: update manifest, commit, push. Decide and execute under the standing auto-repair permission \u2014 the decision stays in this task, it does not go back to User.
+- Daemon's binary/script moved but SHA matches \u2192 update the manifest path, commit, push. Decide and execute under the standing auto-repair permission \u2014 the decision stays in this task, it does not go back to User.
+- Ghost process with a recoverable script \u2192 recover the script, restore pitchfork supervision, verify it's working. Decide and execute under the standing auto-repair permission \u2014 the decision stays in this task, it does not go back to User."""
 
 NUDGE_OLD = "- Behavioral rule (cross-chat-wake): Never wake a lane via chat.send_message. Verify lanes via their work artifacts instead."
 NUDGE_NEW = "CRITICAL: this worker NEVER sends chats. Worker runs have no chat tools (proven 2026-10-02) \u2014 do not attempt any chat send and do not improvise a send path. The main agent owns ALL sending via /home/toxic/hatch/sidechat_shim.py (arrival verification, quarantine check, retry \u2014 ack-nudge only after a truthful successful result)."

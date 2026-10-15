@@ -50,7 +50,7 @@ def run_compliance_suite() -> bool:
         # 5. Tools Call - route_lesson
         {
             "desc": "tools/call (route_lesson)",
-            "req": {"jsonrpc": "2.0", "id": "call-2", "method": "tools/call", "params": {"name": "route_lesson", "arguments": {"lesson": "Chris lives in Colorado"}}},
+            "req": {"jsonrpc": "2.0", "id": "call-2", "method": "tools/call", "params": {"name": "route_lesson", "arguments": {"lesson": "User lives in Colorado"}}},
             "validator": lambda res: "USER.md" in res.get("result", {}).get("content", [{}])[0].get("text", "")
         },
         # 6. Tools Call - current_identity

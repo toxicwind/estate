@@ -17,7 +17,7 @@ client uses the custom msg3 variant; nikships/muse-cli docs/PROTOCOL.md
 Noise XX ... standard mode (empty msg3)". The two sources disagree, so the
 mode is selectable instead of asserted. ``gateway_rpc.GatewayClient``
 defaults to ``standard`` per the independently verified doc; a credentialed
-live handshake (Chris's call) settles it.
+live handshake (User's call) settles it.
 
 Plus Ed25519 Notary Endorsement token parser.
 

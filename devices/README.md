@@ -28,7 +28,7 @@ flowchart TD
 
 ## About
 
-Every physical device Chris owns that isn't yote or hatch lives here.
+Every physical device User owns that isn't yote or hatch lives here.
 Two platforms, two shims, zero shared code: each platform folder is
 self-contained — shim + tools + docs together. If you need something from
 another platform folder, the abstraction is leaking.

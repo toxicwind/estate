@@ -9,7 +9,7 @@ boundary, random blob names are the obfuscation.
 
 This is NOT encryption: anyone with read access to the Drive folder (or
 the local zip) can unzip it. Use it for content that is fine living in
-Chris's Drive but must never be served from a public endpoint — e.g. the
+User's Drive but must never be served from a public endpoint — e.g. the
 Squawk fleet-chat feed (replaces the held fat long-poll design).
 
 Layout inside the zip:

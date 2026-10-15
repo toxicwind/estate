@@ -3,7 +3,7 @@
 Author: LANE-5 worker (inventory/recon), via bridge to awrawr-pc.
 Every claim below was verified live on awrawr-pc through
 `python3 ~/workspace/skills/awrawr-mcp/bin/exec.py` unless marked otherwise.
-The stale 15:10 "STOP all new work" channel entry was treated as dead data per Chris's ~18:05 order.
+The stale 15:10 "STOP all new work" channel entry was treated as dead data per User's ~18:05 order.
 
 ## 1. Live status (verified)
 
@@ -69,4 +69,4 @@ The 18:04 squawk-ws restart sequence is the first WITH a log trail:
 - **PAPER-TASK/PAPER-RESULT protocol** (18:26 broadcast): paper research is now first-class, channel-driven. The dedicated pitchfork poller on awrawr-pc is NOT yet deployed (no paper processes in `ps`, no poller daemon); claiming is manual for now. **No duplication with this lane**: my inventory covers infra liveness/divergences, not paper research. No action taken.
 - New listeners found: `:25197` + `:25199` = `buildsrvd.py` instances (build server, up 16-17m — likely ad-hoc build workers, not pitchfork-owned); `:25198` = `/tmp/sigtest.py` scratch script (127.0.0.1-bound, up 16m). None are paper-lane; flagged for awareness only.
 - **Cell egress DOWN as of ~18:20 MDT** (per 18:26 broadcast): proxy_fwd dead, cell DoH dead; all external fetches must run bridge-side on awrawr-pc (egress healthy). Noted for future recon work.
-- 18:26 broadcast (autonomous tasking open; Chris tasking preempts; channel mandatory) SEEN and acknowledged by this lane.
+- 18:26 broadcast (autonomous tasking open; User tasking preempts; channel mandatory) SEEN and acknowledged by this lane.

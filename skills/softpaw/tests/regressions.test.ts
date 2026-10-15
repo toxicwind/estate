@@ -42,7 +42,7 @@ describe("blocked / awaiting-input stall (lanes marked blocked is the failure mo
   });
   test("v2 directive body carries the marker and no stall phrasing", () => {
     const v2 = [
-      "Standing task directive (Chris's autonomous-operation order, 2026-09-20; reworded 2026-09-30):",
+      "Standing task directive (User's autonomous-operation order, 2026-09-20; reworded 2026-09-30):",
       "Carry this task through to its outcome and report back with evidence.",
       "If one path is blocked, route around it and continue.",
       "",
@@ -52,7 +52,7 @@ describe("blocked / awaiting-input stall (lanes marked blocked is the failure mo
     expect(hasStallPhrasing(v2)).toBe(false);
   });
   test("blocked outside the route-around idiom still flags", () => {
-    expect(hasStallPhrasing("Blocked: waiting on Chris to confirm.")).toBe(true);
+    expect(hasStallPhrasing("Blocked: waiting on User to confirm.")).toBe(true);
     expect(hasStallPhrasing("The lane is blocked on the deploy key.")).toBe(true);
   });
   test("body without the directive is missing coverage", () => {

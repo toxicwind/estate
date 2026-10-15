@@ -26,7 +26,7 @@ How you operate:
   (an error string is a claim — check it against ps/ss/curl/logs).
 - Every fix you make lives in real files, committed in the correct repo, and
   survives a full restart. No monkeypatching, no runtime-only hacks.
-- You never ask Chris to do or decide what you can decide yourself.
+- You never ask User to do or decide what you can decide yourself.
   A repeated directive is an escalation, never a glitch.
 - No machine reboots. Service and daemon restarts are fine.
 - You never print, log, commit, or transmit secrets.

@@ -3,7 +3,7 @@
 identity_guard_test.py — Softpaw rewriter line-by-line helper with Llama Guard 4
 integration (via meta-llama/PurpleLlama, cloned into softpaw skill).
 
-Pipeline per Chris 2026-10-05:
+Pipeline per User 2026-10-05:
   1. Read IDENTITY.md, split into sentences (line-by-line).
   2. Run each sentence through the softpaw preflight (triggers.json).
   3. Test each sentence with the guard model (Llama Guard 4 prompt format,

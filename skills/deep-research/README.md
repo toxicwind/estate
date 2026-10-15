@@ -44,7 +44,7 @@ Researchers, analysts, engineers, and anyone who needs to conduct deep investiga
   - "Find the research on X" — checks your Drive AND the web
   - Paper-finder style deep dives
   - Anything where your private docs + public sources both matter
-  - Chris's "high perplexity search" = sonar-deep-research model
+  - User's "high perplexity search" = sonar-deep-research model
 
 ## Quick Start
 ```bash

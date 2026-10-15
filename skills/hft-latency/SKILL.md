@@ -1,7 +1,7 @@
 ---
 name: hft-latency
 description: >
-  Chris's latency-first engineering doctrine: latency is a correctness criterion; race redundant approaches with fail-fast timeouts; measure everything; keep the fast path hot; maximal = wider not harder; never roll back. Triggers on: "hft-latency", "latency-first", "race redundant", "fail-fast".
+  User's latency-first engineering doctrine: latency is a correctness criterion; race redundant approaches with fail-fast timeouts; measure everything; keep the fast path hot; maximal = wider not harder; never roll back. Triggers on: "hft-latency", "latency-first", "race redundant", "fail-fast".
 ---
 
 # hft-latency
@@ -18,7 +18,7 @@ Repo: [toxicwind/estate-projects](https://github.com/toxicwind/estate-projects)
 
 High-frequency trading is the purest latency religion: microseconds decide who
 wins, so you run redundant strategies, kill slow ones, and measure everything.
-Chris's doctrine ports that religion to engineering — agents, tools, transports,
+User's doctrine ports that religion to engineering — agents, tools, transports,
 workarounds, builds. The name is his; the mechanics are universal:
 
 **Latency is a correctness criterion, not a metric.** A slow correct answer that
@@ -51,7 +51,7 @@ for arrival time, not just truth.
    race it against yours. Prefer streaming tools over batch ones — first bytes
    beat complete bytes.
 
-## Standing rules (Chris 2026-09-14 18:12 — first-class, not footnotes)
+## Standing rules (User 2026-09-14 18:12 — first-class, not footnotes)
 
 1. **Forward-only, auto-approve.** Less protective, less rollback, more forward.
    Agents auto-approve throughout: iterate forward, never gate on approval, no

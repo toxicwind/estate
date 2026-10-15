@@ -13,6 +13,6 @@
 
 ## Notes
 
-- Some installations run administrative commands directly (pre-authenticated, intentional per Chris).
+- Some installations run administrative commands directly (pre-authenticated, intentional per User).
 - Assumes Arch Cachyos with paru available.
 - Uses bun for package management.

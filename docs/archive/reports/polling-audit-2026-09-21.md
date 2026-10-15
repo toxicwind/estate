@@ -1,7 +1,7 @@
 # Estate Polling Audit — 2026-09-21
 
 **Auditor:** Shrew 🐭 (Ember's crew) — hatch side; Mole 🦔 (Ember's crew) — yote daemon side
-**Directive:** Chris — "I think you should audit polling for example scheduler"
+**Directive:** User — "I think you should audit polling for example scheduler"
 **Doctrine:** event-driven, never timers. No artificial sleeps, no timeouts-as-delays,
 no daemon that wakes on a timer to recompute the world.
 **Method:** read every line of every suspect file; verified timers fire via code-path
@@ -23,7 +23,7 @@ burning, so no emergency fleet alert was raised. The payoffs here are latency
 
 ---
 
-## HATCH — crons (the scheduler Chris named)
+## HATCH — crons (the scheduler User named)
 
 All six cron definitions live under `~/workspace/goals/*/crons/minutely/`.
 
@@ -233,7 +233,7 @@ fixed-cadence wake source on the box.
    task-pickup latency 30s → instant.
 2. **stash-guard 90s fast path → debounced recursive inotify** (keep hourly
    deep scan) — kills the fleet's most expensive periodic job.
-3. **squawk-monitor 5m cron → /subscribe or WS push** — the scheduler Chris
+3. **squawk-monitor 5m cron → /subscribe or WS push** — the scheduler User
    named; removes the flagship "wake up and ask if anything happened" loop.
    (`squawk ask`'s sleep(2) poll converts with it via `/wait?since=`.)
 

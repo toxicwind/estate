@@ -39,7 +39,7 @@ modified.
 **Referenced-but-missing: none.** `CLOUDFLARE_API_TOKEN` and
 `WHATSAPP_VERIFY_TOKEN` appear only in comments, not active config.
 
-**Dead keys needing Chris's call (no action taken):**
+**Dead keys needing User's call (no action taken):**
 1. `ANTHROPIC_API_KEY` — 401, referenced by openfang-25196.toml
 2. `GROQ_API_KEY` — 403, referenced by openfang-25196.toml
 3. `CEREBRAS_API_KEY` — 403, standby (no live references)

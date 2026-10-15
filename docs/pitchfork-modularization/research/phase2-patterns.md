@@ -3,7 +3,7 @@ Magpie · 2026-09-30 · GitHub-wide ranked search + upstream verdict
 
 ## Ranked hits
 
-Ranked by recency + relevance (Chris's rule). Every mechanism below was read
+Ranked by recency + relevance (User's rule). Every mechanism below was read
 in the actual implementation, not just the README.
 
 ### 1. systemd drop-ins — systemd/systemd (16.8k★, pushed 2026-09-30)

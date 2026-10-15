@@ -9,7 +9,7 @@ right now.
 ## When to use
 
 - Before any streaming/latency/slowness investigation on awrawr-pc.
-- When Chris says something "makes no sense" / "slows down for NO reason" —
+- When User says something "makes no sense" / "slows down for NO reason" —
   the cause is often build contention, a saturated box, or hardware drift,
   not the code being audited.
 - As a pre-flight for pcap/tcpdump captures: run it at capture start and end
@@ -70,7 +70,7 @@ Intentional quirks — do NOT flag these as problems:
 
 ## Precedent
 
-2026-09-15: Chris's live tau "slowed for NO reason" at 03:13:33 UTC.
+2026-09-15: User's live tau "slowed for NO reason" at 03:13:33 UTC.
 System-context sweep showed a `bun scripts/build-binary.ts` (184 MB dist/omp)
 started 03:13:27 UTC — 6 seconds before his complaint — saturating the 16-core
 box. The tau engine was innocent; the build was the slowdown. A pcap alone

@@ -22,7 +22,7 @@ run = "bun run scripts/open-web-uis.ts --all"
 [tasks."list-uis"]
 run = "bun run scripts/open-web-uis.ts --list"
 
-# Nuvio Platform (webOS app). Lives with the rest of Chris's screens under
+# Nuvio Platform (webOS app). Lives with the rest of User's screens under
 # ranch/android-fleet/. See ranch/android-fleet/nuvio/README.md.
 [tasks."nv-build"]
 run = "npm run build:webos"

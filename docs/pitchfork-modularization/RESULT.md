@@ -156,7 +156,7 @@ in-place into `/home/toxic/estate/pitchfork.toml` by `bin/pf`.**
 Rationale, in order of weight:
 
 1. **Rollback isolation (M4).** The only design where reverting one daemon's bad
-   change is 2 commands with zero collateral. Chris: "a fallback is not a
+   change is 2 commands with zero collateral. User: "a fallback is not a
    rollback" — B is the only design with a true per-daemon rollback.
 2. **Add-add convergence (M3b + [6]).** New daemon = new file = no merge conflict
    by construction (the runsvdir property). The fleet adds daemons constantly.
@@ -175,7 +175,7 @@ Rationale, in order of weight:
    confirmed in the config's own header) — the tool tells you what to restart.
 
 Design A is a fine second choice (simpler file count) but retains co-location
-collisions. Design C matches how Chris framed it ("per-project fragments composed
+collisions. Design C matches how User framed it ("per-project fragments composed
 upward") and is the right *ownership* story, but the papers warn against layered
 override debuggability ([D5]), and it needs a new-daemon project-assignment rule to
 fix its M3b collision. **Recommendation: ship B now; add an optional

@@ -12,7 +12,7 @@
 #   3. --register: creates your per-crew file (fleet/crews/<crew>.md) and
 #      regenerates the §2 rollup via `bun ranch/ops/bin/kb-rollup.ts`.
 #      --done SHA: marks your per-crew file DONE and regenerates §2.
-#      §2 Active Crews is a GENERATED rollup (Alternative A, Chris 2026-09-29):
+#      §2 Active Crews is a GENERATED rollup (Alternative A, User 2026-09-29):
 #      never hand-edit the table — the per-crew files are the source of truth.
 #   4. Shows you the room: recent fleet voices (who's here, what's on).
 #   5. Prints your hello template. It does NOT write your hello for you —
@@ -143,7 +143,7 @@ else
 fi
 
 # --- 3. registration: per-crew file + generated §2 rollup ------------------
-# §2 Active Crews is a GENERATED rollup (Alternative A, Chris 2026-09-29).
+# §2 Active Crews is a GENERATED rollup (Alternative A, User 2026-09-29).
 # Source of truth: fleet/crews/<crew>.md — one file per crew, frontmatter
 # (crew/scope/owner/status). kb-rollup.ts writes the file and regenerates §2
 # under flock, so concurrent registrations can't clobber each other.

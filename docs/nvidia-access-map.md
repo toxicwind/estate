@@ -2,7 +2,7 @@
 
 Exhaustive read-only enumeration of what our NVIDIA identity (`nvapi-…` build key)
 can actually touch. Probe script: `bin/nvcf-access-probe.py` (re-runnable, key
-never printed, email redacted from reports). Chris's hypothesis — "our NVIDIA
+never printed, email redacted from reports). User's hypothesis — "our NVIDIA
 account has more accessible APIs than the front door and we're missing them" —
 is **disproven** for anything invocable. Details below.
 
@@ -56,7 +56,7 @@ Our identity (two independent sources agree):
 5. **Auth scheme is Bearer-only.** No-auth on NVCF → 401; `nvcf-api-key` header
    variant → 401. (No-auth on integrate `/v1/models` → 200: it's public.)
 
-## What would unlock more (Chris's call)
+## What would unlock more (User's call)
 
 1. **Model entitlement** — the `Not found for account` 404 is per-account. NVIDIA
    (build.nvidia.com) controls which catalog functions our NCA id may invoke;

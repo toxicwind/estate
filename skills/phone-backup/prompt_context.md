@@ -1,6 +1,6 @@
 # phone-backup
 
-Chris's Pixel 9 Pro XL lives at the end of an ADB-over-wireless lane hosted on
+User's Pixel 9 Pro XL lives at the end of an ADB-over-wireless lane hosted on
 yote (awrawr-pc). The phone fills up (99% full at 225G/229G on 2026-09-30);
 this skill is the playbook for pulling the non-photo bulk off it onto the 8TB
 archive drive and keeping it that way.
@@ -103,7 +103,7 @@ Shell gotchas learned the hard way:
 | `DCIM/` | 71.6G | **photos — ignore** (standing direction) |
 | `Download/` | 19.6G | pull → archive (biggest win) |
 | `Android/` | 17G | app data — hands off, except safe cache trims |
-| `Movies/` | 13.8G | personal media — ask Chris before touching |
+| `Movies/` | 13.8G | personal media — ask User before touching |
 | `Pictures/` | 13G | **photos — ignore** |
 | `Documents/` | 259M | pull → archive |
 | `ik_llama.cpp-main/` | 115M | repo → archive, then decide: estate or standalone |
@@ -121,7 +121,7 @@ Shell gotchas learned the hard way:
 - `archives/` — zips/tar.gz/apks, including misnamed ones (`*.tar.gz.pdf`,
   `*.zip.pdf` — detect by magic bytes, not suffix; see phone-sweeps).
 - `code/` — loose scripts, configs, Tasker exports.
-- `docs/` — dossiers, reports, saved pages (Chris's research corpus).
+- `docs/` — dossiers, reports, saved pages (User's research corpus).
 - `manifests/` — pull manifests, forever.
 
 Phone-side sweep tooling (`phone_scan.sh`: filename keywords + gzip/zip magic
@@ -145,7 +145,7 @@ triage classifier (section 4) running on arrival.
 
 - Photos are out of scope, always. Never `adb shell rm` under `DCIM/` or
   `Pictures/` from this skill's flows.
-- The phone is Chris's daily driver: no `pm clear`, no uninstalls, no cache
+- The phone is User's daily driver: no `pm clear`, no uninstalls, no cache
   wipes beyond explicit per-app approval.
 - Every destructive phone-side step needs a verified manifest first.
 - `adb` runs on **yote**, never from the cell (no ADB there).

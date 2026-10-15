@@ -8,7 +8,7 @@ pattern borrows (systemd, supervisord, compose, k3s, runsvd + pitchfork upstream
 verdict: **no include/drop-in mechanism exists through 2.29.0**; we run 2.25.0).
 Prototypes raced against the real 82-daemon `pitchfork.toml` (995 lines, sandbox copy only).
 
-**v2 reframe (Chris, 2026-09-30):** *"60 daemons in one file is insanity… Some
+**v2 reframe (User, 2026-09-30):** *"60 daemons in one file is insanity… Some
 should belong in range and some in ranch, and EACH PROJECT SHOULD HAVE ONE."*
 Round 1 raced file-splitting strategies; round 2 races **per-project ownership**:
 each project (ranch animal, range component, standalone repo) owns its daemon
@@ -48,7 +48,7 @@ per-daemon, restart only changed).
 generator exits 8 while a manifest exists for a retired name. C: hand-edit 2
 shared multi-daemon fragments — the multi-writer hazard, reintroduced.
 
-**Round-1 verdict was A + B's validator.** Chris's reframe demotes that: A keeps
+**Round-1 verdict was A + B's validator.** User's reframe demotes that: A keeps
 all drop-ins in the *parent repo* — 82 files the parent still owns. Round 2 fixes
 the ownership question.
 
@@ -75,7 +75,7 @@ where things run; 30 projects, 82 daemons):
 | `standalone/{12 projects}` | 16 | tau, awrawr×2, paper-poller×2, squawk-relay×2, … |
 
 Range-vs-ranch, measured: **17 daemons belong to ranch/*, 1 to range proper.**
-The split Chris asked about is real and the map makes it visible. (Trailboss's
+The split User asked about is real and the map makes it visible. (Trailboss's
 authoritative fork/repo inventory was requested in fleet; this dir-derived map is
 provisional until its answer lands — fold it in then.)
 
@@ -126,7 +126,7 @@ any D design the path *is* the answer.
 - **L3** (add a project, 3 daemons): parent files touched — **A: 3, D\*: 0**
   (+1 registry line).
 
-This is the structural payoff Chris asked for: **project add/remove is a
+This is the structural payoff User asked for: **project add/remove is a
 project-repo operation, not a parent-repo operation.**
 
 ### Phase 4 — conflict simulation (file-touch domain)
@@ -209,7 +209,7 @@ hazard (C1 CONFLICT) and needs parsing to list a project's daemons.
 Why not D3: couples composition to mise's schema leniency; the mise question is
 better answered by adjacency than embedding.
 Why not A alone: 0/82 ownership clarity; every project change is a parent-repo
-edit — exactly the "60 daemons in one file is insanity" Chris rejected.
+edit — exactly the "60 daemons in one file is insanity" User rejected.
 
 The parent at `/home/toxic/estate` keeps: `parent.toml` (preamble/groups/env),
 `projects.toml` (registry), its own 37 estate daemons — and the composer.

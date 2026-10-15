@@ -5,7 +5,7 @@ description: Audit a GitHub PR and render a verdict — LGTM or NOT LGTM, every 
 
 # pr-review
 
-Borrowed from [smoreg/ccc's pr-review](https://github.com/smoreg/ccc/blob/HEAD/skills/review-toolkit/skills/pr-review/SKILL.md) (readiness gate, five-frame substance pass, evidence bar, verdict discipline), adapted to this estate: our `github` skill instead of the `gh` CLI, herd-routed reviewer lanes instead of a fixed model pair, our quality bar from real upstream work, Chris-voice PR bodies.
+Borrowed from [smoreg/ccc's pr-review](https://github.com/smoreg/ccc/blob/HEAD/skills/review-toolkit/skills/pr-review/SKILL.md) (readiness gate, five-frame substance pass, evidence bar, verdict discipline), adapted to this estate: our `github` skill instead of the `gh` CLI, herd-routed reviewer lanes instead of a fixed model pair, our quality bar from real upstream work, User-voice PR bodies.
 
 **TRIGGER**: the user asks to review, audit, or quality-check a GitHub Pull Request — URL (`github.com/.../pull/N`), shorthand (`owner/repo#N`), bare number (`#1234`), or a "this PR" reference resolvable from context. Do NOT trigger for replying to existing review comments, labeling/triaging issues, or general code questions about a branch with no PR.
 
@@ -95,5 +95,5 @@ Post via the `github` skill (`bin/gh.py`; extend it with POST support if the rev
 - **Readiness gate before substance.** No verdict on unmergeable/broken code.
 - **No evidence, no finding.** Speculation is dropped, not softened.
 - **API is truth; `origin/` refs only.** Stale local branches produce phantom findings.
-- **Scope of action**: reviewing PRs anywhere is fine. *Opening* upstream PRs follows standing policy — our `toxicwind/*` forks are the default target; mainline super-repo PRs need Chris's explicit word each time. Never open anything against an original upstream on your own initiative.
+- **Scope of action**: reviewing PRs anywhere is fine. *Opening* upstream PRs follows standing policy — our `toxicwind/*` forks are the default target; mainline super-repo PRs need User's explicit word each time. Never open anything against an original upstream on your own initiative.
 - **PR footer**: when the review leads to a PR body we author, use the cross-link pattern in `~/workspace/goals/stars-to-consulting-pipeline/files/pr-crosslink-pattern.md` (rotate the related-project link — Brand is deprecated, link a live project).

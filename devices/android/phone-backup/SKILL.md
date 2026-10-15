@@ -1,10 +1,10 @@
 ---
 name: phone-backup
 description: >
-  Bulk backup and storage triage for Chris's Pixel 9 Pro XL via ADB on yote.
+  Bulk backup and storage triage for User's Pixel 9 Pro XL via ADB on yote.
   Benchmarked fastest pull (parallel adb pull, NOT tar-stream), phone storage
   map, the toybox find quirk, 8TB archive layout, and the future-forward
-  Syncthing continuous-sync direction. Use when Chris asks about phone storage,
+  Syncthing continuous-sync direction. Use when User asks about phone storage,
   pulling files off the phone, or freeing phone space. Photos (DCIM/Pictures)
   are excluded by standing direction — this skill handles code, archives,
   repos, and documents only.
@@ -12,7 +12,7 @@ description: >
 
 # phone-backup
 
-Chris's Pixel 9 Pro XL lives at the end of an ADB-over-wireless lane hosted on
+User's Pixel 9 Pro XL lives at the end of an ADB-over-wireless lane hosted on
 yote (awrawr-pc). The phone fills up (99% full at 225G/229G on 2026-09-30);
 this skill is the playbook for pulling the non-photo bulk off it onto the 8TB
 archive drive and keeping it that way.
@@ -115,7 +115,7 @@ Shell gotchas learned the hard way:
 | `DCIM/` | 71.6G | **photos — ignore** (standing direction) |
 | `Download/` | 19.6G | pull → archive (biggest win) |
 | `Android/` | 17G | app data — hands off, except safe cache trims |
-| `Movies/` | 13.8G | personal media — ask Chris before touching |
+| `Movies/` | 13.8G | personal media — ask User before touching |
 | `Pictures/` | 13G | **photos — ignore** |
 | `Documents/` | 259M | pull → archive |
 | `ik_llama.cpp-main/` | 115M | repo → archive, then decide: estate or standalone |
@@ -133,7 +133,7 @@ Shell gotchas learned the hard way:
 - `archives/` — zips/tar.gz/apks, including misnamed ones (`*.tar.gz.pdf`,
   `*.zip.pdf` — detect by magic bytes, not suffix; see phone-sweeps).
 - `code/` — loose scripts, configs, Tasker exports.
-- `docs/` — dossiers, reports, saved pages (Chris's research corpus).
+- `docs/` — dossiers, reports, saved pages (User's research corpus).
 - `manifests/` — pull manifests, forever.
 
 Phone-side sweep tooling (`phone_scan.sh`: filename keywords + gzip/zip magic
@@ -157,7 +157,7 @@ triage classifier (section 4) running on arrival.
 
 - Photos are out of scope, always. Never `adb shell rm` under `DCIM/` or
   `Pictures/` from this skill's flows.
-- The phone is Chris's daily driver: no `pm clear`, no uninstalls, no cache
+- The phone is User's daily driver: no `pm clear`, no uninstalls, no cache
   wipes beyond explicit per-app approval.
 - Every destructive phone-side step needs a verified manifest first.
 - `adb` runs on **yote**, never from the cell (no ADB there).
@@ -167,9 +167,9 @@ triage classifier (section 4) running on arrival.
   be rewritten from scratch. Untracked work in a shared checkout is one
   `git clean` away from gone. Write → commit → push, same session.
 
-## 7. 2026-09-30 μ-speed run (Chris: "Do it All proceed bruteforce")
+## 7. 2026-09-30 μ-speed run (User: "Do it All proceed bruteforce")
 
-**Phone cleanup:** 99% → 90% (215G/239G, 24G free). Freed ~20GB. Deleted from Pixel (all verified in archive): Export/ 1openfang/ Tasker/ House/ Documents/ ik_llama.cpp-main/ Download/ (25G) + 65 loose txt/html from /sdcard/ root. Remaining: DCIM/ 71G + Pictures/ 13G (photos, ignored), Android/ 17G (hands off), Movies/ 13.8G (personal, needs Chris).
+**Phone cleanup:** 99% → 90% (215G/239G, 24G free). Freed ~20GB. Deleted from Pixel (all verified in archive): Export/ 1openfang/ Tasker/ House/ Documents/ ik_llama.cpp-main/ Download/ (25G) + 65 loose txt/html from /sdcard/ root. Remaining: DCIM/ 71G + Pictures/ 13G (photos, ignored), Android/ 17G (hands off), Movies/ 13.8G (personal, needs User).
 
 **Archive triage COMPLETE:** `/mnt/8TB/phone-archive/` now organized:
 - `repos/` (112M): ik_llama.cpp-main

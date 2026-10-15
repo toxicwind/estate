@@ -1,7 +1,7 @@
 # tack vs roost — compare + merge recommendation (2026-10-02)
 
 Author: Quill (Ember's crew) — read-only analysis, no merge executed.
-Question from Chris: "Compare and merge tack and roost into flock?"
+Question from User: "Compare and merge tack and roost into flock?"
 
 ## Verdict: YES — merge, and it's mostly a deletion
 
@@ -9,7 +9,7 @@ Question from Chris: "Compare and merge tack and roost into flock?"
 duplicate `ranch/tack/` and repoint tau's one consumer at `@ranch/roost`.**
 No code needs to move into flock — it's already there.
 
-The rename Chris is asking about **already happened once**: on 2026-09-30,
+The rename User is asking about **already happened once**: on 2026-09-30,
 commit `5d75050 "flock: rename Tack to Roost, nest as flock/roost/"` renamed
 Tack → Roost and nested it under flock. The next day (2026-10-01), commit
 `79a7a78 "feat(tack): sovereign provider wire-data authority (36 providers)"`

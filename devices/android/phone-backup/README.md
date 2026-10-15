@@ -1,6 +1,6 @@
 # phone-backup
 
-Bulk backup + storage triage for Chris's Pixel 9 Pro XL, via ADB on yote.
+Bulk backup + storage triage for User's Pixel 9 Pro XL, via ADB on yote.
 Code, archives, repos, docs — **photos explicitly out of scope** (standing direction).
 
 ## The one-liner

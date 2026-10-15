@@ -110,5 +110,5 @@ Pick one, in increasing order of invasiveness:
    (needs the failing case first).
 
 Recommendation: option 2. It matches the existing `rm`/`mv` pattern,
-is a ~5-line diff, keeps the default behavior unchanged, and gives Chris a
+is a ~5-line diff, keeps the default behavior unchanged, and gives User a
 one-env-var escape hatch.

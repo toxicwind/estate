@@ -28,7 +28,7 @@ Developers and AI agents who need to interact with GitHub's MCP server for exten
   - Threads: Single lock for session handshake; subprocess is single-threaded
 - **Secure Auth Handling** - Auth handled via authd surrogates by bin/dynamic_credentials.py; CLI never sees raw token
 - **Mutation Safety** - 
-  - Auto-posts to Chris only for destructive/irreversible mutations (repo delete, ownership transfer, force-push to main, private→public publish)
+  - Auto-posts to User only for destructive/irreversible mutations (repo delete, ownership transfer, force-push to main, private→public publish)
   - Task-authorized mutations proceed autonomously (create, push, edit issues/PRs/branches/comments/releases)
   - Never re-asks for intent; acts within given task scope and reports done
 - **Skill Complement** - Complements `github` skill (PAT-based REST API); prefer github-mcp for MCP/OAuth, github for raw REST endpoints
@@ -84,5 +84,5 @@ Internal tool - refer to estate estate licensing
 - **Transport Security** - Unique request IDs prevent replay attacks; read timeouts prevent hanging
 - **Resource Exhaustion Prevention** - Memory caps, no busy loops, single-threaded subprocess
 - **Fail-Fast Lanes** - Failed connections marked with TTL cache to prevent repeated attempts
-- **Mutation Restrictions** - Destructive/irreversible mutations require Chris approval; others proceed autonomously within task scope
-- **Audit Trail** - Reports done for all mutations; only escalates irreversible ones to Chris
+- **Mutation Restrictions** - Destructive/irreversible mutations require User approval; others proceed autonomously within task scope
+- **Audit Trail** - Reports done for all mutations; only escalates irreversible ones to User

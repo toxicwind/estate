@@ -101,7 +101,7 @@ The "Phoenix Root Complex" in lspci is **correct**: the 8700F is Phoenix-silicon
 
 ## Intentional configuration (do not "fix")
 
-- `mitigations=off`, zram-over-zswap, `comfyui-offload` on the QVO (Chris's call),
+- `mitigations=off`, zram-over-zswap, `comfyui-offload` on the QVO (User's call),
   200 GiB total swap (zram + disk partition), wlan0 DOWN (wired primary).
 
 ## Anomalies: none actionable
@@ -110,6 +110,6 @@ No failing drives, no reallocations, no PCIe errors, no kernel errors, no unknow
 devices, no unexpected network interfaces, no MSR inconsistencies. The only true defects
 found (empty cpuid_leaf records) are fixed in the audit script.
 
-## Decisions needed from Chris
+## Decisions needed from User
 
 None. Hardware is healthy; the one script bug is fixed and validated.

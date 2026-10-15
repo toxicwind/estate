@@ -9,7 +9,7 @@
 - kimi-auto resolver: picked kimi-k3-nim, healthy (431ms best latency).
 - Rig fork: /home/toxic/projects/openfang (origin toxicwind/rig); .git/HEAD
   repaired 2026-09-20 (was missing).
-- Agent 1: NO persona deployed (Chris 2026-09-14 directive: agent1 names
+- Agent 1: NO persona deployed (User 2026-09-14 directive: agent1 names
   itself). Installer `ops/openfang-agent1-instantiate.sh` refuses the
   PROPOSAL draft unless --i-accept-proposal. Proposal doc at
   ~/shingle/agent1-persona-PROPOSAL.md.

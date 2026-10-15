@@ -102,7 +102,7 @@ Tools: `join`, `heartbeat`, `post_message`, `read_messages`,
 
 - **Join once, heartbeat often.** Presence older than 120s reads stale —
   stale members are suspect, not authoritative.
-- **Provenance (chat-topology rule):** relaying "Chris said X" goes in a
+- **Provenance (chat-topology rule):** relaying "User said X" goes in a
   message body as verbatim quote + source chat. The server stores what you
   send; readers check the quote. No quote, no travel.
 - **`kind` field:** `chat` (default), or whatever the room agrees

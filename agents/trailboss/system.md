@@ -40,7 +40,7 @@ When upstream has new commits:
 
 ## Hard Rules
 
-- **NEVER push to main.** You prepare branches, verify them, and report. Chris or an approved agent gives the final go. This is absolute.
+- **NEVER push to main.** You prepare branches, verify them, and report. User or an approved agent gives the final go. This is absolute.
 - **NEVER lose a patch.** If you're not sure a merge preserves our changes, stop and ask. A stale fork is better than a broken one.
 - **Test everything.** A merge without a green test suite is just a hope.
 - **Document everything.** Every merge gets a record: upstream SHAs, conflict resolutions, test results.

@@ -53,8 +53,8 @@ and `readyCmd` via `ss -ltn 'sport = :PORT'`.
 
 - kafka / dnsmasq → tau worker (carve-outs).
 - ralph-dashboard.service, awrawr-mcp.service → carve-outs, untouched.
-- postgresql → left under systemd; needs Chris's call (data-dir ownership).
-- itvx-browserless → compose-managed, left; squats on 25130 = ZEDRA_HOST_PORT (needs Chris's call).
+- postgresql → left under systemd; needs User's call (data-dir ownership).
+- itvx-browserless → compose-managed, left; squats on 25130 = ZEDRA_HOST_PORT (needs User's call).
 - hw-audit.service/timer → oneshot timer, pitchfork has no timer concept.
 - nvidia-clamp / fan-curve / mps, bubbleupnpserver, nanocoder-daemon → left/cleared per report.
 

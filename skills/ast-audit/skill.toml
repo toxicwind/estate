@@ -88,7 +88,7 @@ never the verdict.
 
 ## Merge provenance
 
-Built 2026-10-02 per Chris's order ("port path command is not enough — use an
+Built 2026-10-02 per User's order ("port path command is not enough — use an
 AST audit skill; find one on global GitHub, compare multiple, merge"). Winner:
 **ast-grep** (ast-grep/ast-grep, 16k stars, MIT). Borrowed: pattern-validation
 and pitfall discipline from `majiayu000/claude-skill-registry` ast-grep skill;

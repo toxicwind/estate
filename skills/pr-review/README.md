@@ -50,7 +50,7 @@ Review logic implemented in SKILL.md with estate-specific adaptations:
 - Uses `github` skill instead of `gh` CLI
 - Herd-routed reviewer lanes instead of fixed model pairs
 - Quality bar derived from real upstream work
-- Chris-voice PR body requirements
+- User-voice PR body requirements
 
 ## License
 Internal tool - refer to estate estate licensing

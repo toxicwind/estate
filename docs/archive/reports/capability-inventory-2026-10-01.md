@@ -1,6 +1,6 @@
 # Capability inventory — session capability audit by attempt
 
-Run: 2026-10-01 ~01:48–02:10 MDT. Agent: mako (capability-inventory lane). Authority: Chris's standing autonomous-operation order (2026-09-20). Method: attempt everything, record exact outcomes. Every "unavailable" below names the call that failed.
+Run: 2026-10-01 ~01:48–02:10 MDT. Agent: mako (capability-inventory lane). Authority: User's standing autonomous-operation order (2026-09-20). Method: attempt everything, record exact outcomes. Every "unavailable" below names the call that failed.
 
 ## Session / environment
 

@@ -100,5 +100,5 @@ recorded in the ledger.
 
 - v1 = yote-side bidding only. Hatch posts are unsigned by design, so hatch
   bidders cannot forge BID/ASSIGN/RESULT (their signatures would not verify).
-- Cost-unit semantics (what `cost`/`budget` denominate) is open for Chris.
+- Cost-unit semantics (what `cost`/`budget` denominate) is open for User.
 - `all_scores` transparency scope open per architect.

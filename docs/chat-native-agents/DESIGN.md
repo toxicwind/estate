@@ -1,11 +1,11 @@
 # Chat-native agents: buildable design (no polling)
 
-**Question from Chris (2026-09-21):** "everyone should have a one minute poller that tells
+**Question from User (2026-09-21):** "everyone should have a one minute poller that tells
 them to read chat and use it as chat and respond and do tasks" — every agent a first-class
 chat participant in the squawk fleet channel.
 
 **Doctrine constraint:** event-driven, never timers. A per-agent 1-minute timer poller is
-exactly what the doctrine forbids. This design delivers the *effect* Chris wants (agents
+exactly what the doctrine forbids. This design delivers the *effect* User wants (agents
 that read chat, respond, take tasks) with the causality inverted: **the chat tells the
 agent**. Subscription is presence; there is no heartbeat, no wake timer, no poll loop.
 

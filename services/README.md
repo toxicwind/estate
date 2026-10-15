@@ -9,7 +9,7 @@
 
 > Every production service in the estate, one Bun/TypeScript package each.
 
-> **Why care? Chris's order: Python is for ML glue and throwaway probes — never for a pitchfork daemon. Every production service here is a self-contained Bun binary with a declared port, a `/health` endpoint, and a build pipeline — scaffold a new one from the template in minutes.**
+> **Why care? User's order: Python is for ML glue and throwaway probes — never for a pitchfork daemon. Every production service here is a self-contained Bun binary with a declared port, a `/health` endpoint, and a build pipeline — scaffold a new one from the template in minutes.**
 
 - **Template scaffold — `cp -r services/_template services/<name>`, fill 5 steps, done**
 - **Port registry discipline — declared once in `package.json`'s `estate` block, assigned in `config/ports.env`, read from env at runtime**
@@ -44,7 +44,7 @@ bun run ws:build                           # all services, from the repo root
 
 Every production service in the estate estate lives here as a Bun/TypeScript
 package. **Python is for ML/torch glue and throwaway probes — never for a
-pitchfork daemon.** (Chris's order, 2026-09-21.)
+pitchfork daemon.** (User's order, 2026-09-21.)
 
 ## Layout
 

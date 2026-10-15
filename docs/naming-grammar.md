@@ -1,6 +1,6 @@
 # Estate Model Naming Grammar (canonical, 2026-09-20)
 
-Chris: "the naming conventions we are using in config is confusing as fuck."
+User: "the naming conventions we are using in config is confusing as fuck."
 This document is the fix. Every model/provider ID in the estate MUST be
 parseable into these layers. If it isn't, it's a bug — run the validator.
 

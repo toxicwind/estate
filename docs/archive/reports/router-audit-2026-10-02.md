@@ -1,10 +1,10 @@
 # Router Audit — 2026-10-02 / 2026-10-03
 
-**Ordered by:** Chris. **Coordinated by:** the mesh-migration crew (Ember's crew).
+**Ordered by:** User. **Coordinated by:** the mesh-migration crew (Ember's crew).
 **Scope:** what each router/proxy actually does (AST-verified), where they overlap, and the
 executed consolidation into `ranch/mesh/`.
 
-> This report covers the audit AND the executed migration. Chris's directive evolved during
+> This report covers the audit AND the executed migration. User's directive evolved during
 > the operation: audit-only → full migration → "audit phase OVER, execute now" → consolidate
 > into the *existing* `ranch/mesh/` (it already existed as the sovereign mesh; creating a new
 > one would have collided) → no lane ownership, no approval gates, merge duplicates by hand
@@ -45,7 +45,7 @@ executed consolidation into `ranch/mesh/`.
 - **Port verdict:** `ranch/cuttinggate/CONTRACT.md` declares cuttinggate the TypeScript port of
   this proxy ("flock TS router — port contract"). Operationally the TS port has won:
   cuttinggate is live on `:25200`, the Rust proxy runs nowhere. The Rust tree is preserved
-  in `ranch/mesh/proxy/flock-proxy/` — per Chris, not junk, not scrapped.
+  in `ranch/mesh/proxy/flock-proxy/` — per User, not junk, not scrapped.
 
 ### 1.3 cuttinggate — TypeScript canonical router — `:25200` LIVE
 
@@ -154,7 +154,7 @@ ast-grep over Go files → 0 matches.
 | Variants (flock-py, flock-router, free_zed_gateway, sovereign-mcp-gateway, ast-router) | Distinct attempts | Each unique; preserved in own homes |
 
 **No true duplication requiring a merge was found** — every component does a distinct job or
-is a distinct generation. Per Chris ("this is NOT a scrap operation"), everything was kept
+is a distinct generation. Per User ("this is NOT a scrap operation"), everything was kept
 and organized by role.
 
 ---

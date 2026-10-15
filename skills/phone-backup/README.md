@@ -4,7 +4,7 @@
 
 ## phone-backup
 
-Bulk backup and storage triage for Chris's Pixel 9 Pro XL via ADB on yote. Benchmarked fastest pull (parallel adb pull, NOT tar-stream), phone storage map, the toybox find quirk, 8TB archive layout, and the future-forward Syncthing continuous-sync direction. Use when Chris asks about phone storage, pulling files off the phone, or freeing phone space. Photos (DCIM/Pictures) are excluded by standing direction — this skill handles code, archives, repos, and documents only.
+Bulk backup and storage triage for User's Pixel 9 Pro XL via ADB on yote. Benchmarked fastest pull (parallel adb pull, NOT tar-stream), phone storage map, the toybox find quirk, 8TB archive layout, and the future-forward Syncthing continuous-sync direction. Use when User asks about phone storage, pulling files off the phone, or freeing phone space. Photos (DCIM/Pictures) are excluded by standing direction — this skill handles code, archives, repos, and documents only.
 
 ### Where things live (do not re-derive)
 
@@ -75,7 +75,7 @@ Each run writes a timestamped manifest (`pull-manifest-*.txt`) with per-dir OK/F
 | `DCIM/` | 71.6G | **photos — ignore** (standing direction) |
 | `Download/` | 19.6G | pull → archive (biggest win) |
 | `Android/` | 17G | app data — hands off, except safe cache trims |
-| `Movies/` | 13.8G | personal media — ask Chris before touching |
+| `Movies/` | 13.8G | personal media — ask User before touching |
 | `Pictures/` | 13G | **photos — ignore** |
 | `Documents/` | 259M | pull → archive |
 | `ik_llama.cpp-main/` | 115M | repo → archive, then decide: estate or standalone |
@@ -90,7 +90,7 @@ Each run writes a timestamped manifest (`pull-manifest-*.txt`) with per-dir OK/F
 - `repos/` — git checkouts (e.g. `ik_llama.cpp-main`) → decide estate (`estate/projects/…`) vs standalone project folder.
 - `archives/` — zips/tar.gz/apks, including misnamed ones (`*.tar.gz.pdf`, `*.zip.pdf` — detect by magic bytes, not suffix; see phone-sweeps).
 - `code/` — loose scripts, configs, Tasker exports.
-- `docs/` — dossiers, reports, saved pages (Chris's research corpus).
+- `docs/` — dossiers, reports, saved pages (User's research corpus).
 - `manifests/` — pull manifests, forever.
 
 ### Future-forward: event-driven sync (the debate verdict)
@@ -102,7 +102,7 @@ Batch pulls are the bootstrap, not the steady state. GitHub relevance (2026-09-3
 ### Safety rules
 
 - Photos are out of scope, always. Never `adb shell rm` under `DCIM/` or `Pictures/` from this skill's flows.
-- The phone is Chris's daily driver: no `pm clear`, no uninstalls, no cache wipes beyond explicit per-app approval.
+- The phone is User's daily driver: no `pm clear`, no uninstalls, no cache wipes beyond explicit per-app approval.
 - Every destructive phone-side step needs a verified manifest first.
 - `adb` runs on **yote**, never from the cell (no ADB there).
 - **Commit the project dir immediately.** 2026-09-30: the untracked `phone-backup/` tree was wiped from the yote checkout by another lane's cleanup between 03:08 and 03:15 — `fast-pull.sh` and `speed-race.sh` had to be rewritten from scratch. Untracked work in a shared checkout is one `git clean` away from gone. Write → commit → push, same session.

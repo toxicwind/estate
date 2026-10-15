@@ -9,7 +9,7 @@ port = 25153
 # kimi-auto entry (--config-dir fragment). --target/--standby/--advance-on
 # MUST match /home/toxic/estate/config/herd.d/kimi-auto.yaml. Selection lives
 # in router config; this shim never selects models.
-# 2026-09-21 (ember-kimi-route): maximal free-Kimi chain per Chris doctrine
+# 2026-09-21 (ember-kimi-route): maximal free-Kimi chain per User doctrine
 # -- Kimi routes are never defaults; they route Kimi FREE models maximally.
 # Chain: openrouter-free kimi :free IDs -> hf-free Kimi-K3; advance on
 # 5xx/conn/429/402/404; 401 never advances. Paid Kimi excluded (free only).

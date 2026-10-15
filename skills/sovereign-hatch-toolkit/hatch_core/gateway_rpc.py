@@ -26,7 +26,7 @@ Handshake variant status (2026-10-02): the two sources disagree on msg3.
 This client defaults to ``standard`` per the independently verified doc and
 keeps ``custom`` as a fallback. The variant is NOT resolved by a live test
 here: a credentialed handshake needs the account auth token, which is
-Chris's to provide -- see ``scripts/gateway_diagnose.py`` for the
+User's to provide -- see ``scripts/gateway_diagnose.py`` for the
 no-credentials transport probe that establishes how far the path goes.
 
 MITM finding (2026-10-02, verified live from the hatch cell): egress TLS

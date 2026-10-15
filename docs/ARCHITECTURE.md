@@ -28,7 +28,7 @@
 | **L2 (warm)** | **NVMe swap** (SN850X p4)       | 138 GiB            | Medium   | Warm spillover, async discard                |
 | **L3 (cold)** | HDD / QVO                       | 8+ TB              | Lowest   | Cold archive, never touches L1/L2            |
 
-**zram is DISABLED** — Chris Down (Meta kernel MM, March 2026) proves zram + disk swap causes **LRU inversion**: cold boot pages calcify in fast zram, hot working set spills to slow disk. zswap integrates with kernel reclaim, auto-evicts LRU pages to NVMe _proactively_.
+**zram is DISABLED** — User Down (Meta kernel MM, March 2026) proves zram + disk swap causes **LRU inversion**: cold boot pages calcify in fast zram, hot working set spills to slow disk. zswap integrates with kernel reclaim, auto-evicts LRU pages to NVMe _proactively_.
 
 ### Kernel Command Line (All Limine Entries)
 

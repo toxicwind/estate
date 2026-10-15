@@ -34,7 +34,7 @@ flowchart LR
   injection (the server stamps `agent_id`/`chat_id`/`display`/`ts` from the
   membership row — identity is impossible to forge by construction).
 - **Provenance on relayed claims** — optional `{quote, source, ts}` on send
-  for "Chris said X" relay: verbatim quote + where/when he said it, or it
+  for "User said X" relay: verbatim quote + where/when he said it, or it
   doesn't travel (chat-topology rule).
 - **HTTP + MCP** — same room from a curl one-liner or an MCP tool call.
 

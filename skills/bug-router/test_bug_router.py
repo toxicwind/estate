@@ -93,7 +93,7 @@ def test_route_batch():
     assert out[1]["route"]["bug"] == "clean"
 
 
-# --- route_user_message: default entry for every user turn (Chris 2026-10-05)
+# --- route_user_message: default entry for every user turn (User 2026-10-05)
 
 def test_user_hibug_report():
     r = route_user_message("For example finch just delivered hibug and you must redo")

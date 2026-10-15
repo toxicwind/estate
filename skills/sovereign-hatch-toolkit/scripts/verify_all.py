@@ -81,7 +81,7 @@ def test_crypto_handshake():
 
 
 def test_fsbus():
-    # Durable workspace scratch, never /tmp (tmpfs janitor — Chris 2026-09-30).
+    # Durable workspace scratch, never /tmp (tmpfs janitor — User 2026-09-30).
     p = Path(os.path.expanduser("~")) / "workspace" / ".tmpdir" / "verify_fsbus_temp"
     if p.exists():
         shutil.rmtree(p)
@@ -114,7 +114,7 @@ def test_identity_parser():
 
 Warm, strong, dependable, playful, expressive. Opinions allowed.
 
-**Chris** (Chris Ortega) — night-owl systems builder.
+**User** (the operator) — night-owl systems builder.
 
 maximal autonomous execution. Dad energy.
 """
@@ -128,7 +128,7 @@ maximal autonomous execution. Dad energy.
     assert "dragon" in ident["character"].lower(), ident
     assert ident["vibe"], "vibe must be non-empty"
     assert ident["platform"] == "Hatch", ident
-    assert ident["serves"] == "Chris", ident
+    assert ident["serves"] == "User", ident
     # graceful degradation on a missing file
     fallback = parse_identity_file("/nonexistent/IDENTITY.md")
     assert fallback["name"] == "Ember"
@@ -139,9 +139,9 @@ maximal autonomous execution. Dad energy.
 
 def test_lesson_router():
     router = LessonRouter()
-    r = router.route("Chris lives in Colorado")
+    r = router.route("User lives in Colorado")
     assert r["recommended_target"] == "USER.md", r
-    r = router.route("Never ask Chris to close a gap that tools can close")
+    r = router.route("Never ask User to close a gap that tools can close")
     assert r["recommended_target"] == "SOUL.md", r
     assert "SOUL.md" in OWNERSHIP_TABLE
     assert len(OWNERSHIP_TABLE) == 6

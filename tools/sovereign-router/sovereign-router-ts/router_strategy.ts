@@ -725,7 +725,7 @@ export async function routeCascade(
 // DECISION 12097 and is NOT used here).
 // BINDING GUARDS (no guard = no merge):
 //  (1) Credit guard: the NVIDIA key is a free-tier BUILD key — finite and
-//      shared across the swarm, NOT one of Chris's paid subs. The pinned
+//      shared across the swarm, NOT one of User's paid subs. The pinned
 //      path is capped at LONGCTX_PIN_DAILY_CAP requests/day (~10 to start;
 //      counts EVERY pinned attempt, ok or not, since every attempt burns
 //      key credits). EVERY pinned attempt is logged under
@@ -862,7 +862,7 @@ export const ROUTERS: Record<
 };
 
 // freeCandidates: the free pool is derived from LIVE catalog metadata, not a
-// divergent static list (Chris 2026-09-17). For every keyed provider with a
+// divergent static list (User 2026-09-17). For every keyed provider with a
 // healthy circuit, every catalog id (curated ∪ live discovery) whose live
 // metadata marks it free (modelFree) joins the pool — including
 // live-discovered free models the static ":free"-suffix convention misses
@@ -901,7 +901,7 @@ export function freeCandidates(): [string, string][] {
     pool.push(["llama-swap", LOCAL_ROLES.quality]);
     pool.push(["llama-swap", LOCAL_ROLES.longctx]);
   }
-  // Ling-first default (Chris 2026-09-17): Ling leads the free pool so the
+  // Ling-first default (User 2026-09-17): Ling leads the free pool so the
   // `free` race prefers it. A flap-banned Ling still sits out above; the
   // substance guard still skips empty completions, falling through to the
   // next healthy candidate.

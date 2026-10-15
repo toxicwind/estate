@@ -118,7 +118,7 @@ pollution. New language = new container, not a host install.
 | **Connectivity** (reachable from cell?) | Cell doesn't need direct access — GitHub Actions is the trigger plane. Cell can poll job status via `gh` API. Runner polls GitHub outbound (no inbound needed). |
 | **Restart failures** | Runner: pitchfork retry handles crashes. Docker: systemd handles it. Dagger: per-job, no state to lose. Cache: Docker volumes survive. Worst case: cold cache rebuild (slower, not broken). |
 
-## What Needs Chris's Approval
+## What Needs User's Approval
 
 1. **GitHub runner registration token** — generate from repo/org Settings → Actions → Runners → "New self-hosted runner". This is the only secret needed. Cannot proceed without it.
 2. **Which repos get Dagger CI first** — recommend starting with `toxicwind/squawk` (our own, low risk), then rolling out.

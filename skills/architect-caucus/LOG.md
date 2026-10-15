@@ -4,7 +4,7 @@ Append-only. Every mutation of the skill gets a dated entry:
 who / what / when / why. Never rewrite history — iterate forward.
 
 ## 2026-09-14 — LANE-4 worker d85c50f3 — skill CREATED
-- Built from Chris's 2026-09-14 ~18:05 MDT direct order (maximal, auto-approve,
+- Built from User's 2026-09-14 ~18:05 MDT direct order (maximal, auto-approve,
   forward-only, HFT-like). Supersedes any stale channel "stop" entries.
 - Initial protocol: 10 standing rules (architect voice, peer-to-peer,
   no-hypocrisy, verified-done, forward-only, push-to-main, two-failure
@@ -34,7 +34,7 @@ who / what / when / why. Never rewrite history — iterate forward.
   forward instead of overwriting the lane worker's file, per forward-only rule.
 
 ## 2026-09-14 ~18:20 MDT — hft-latency worker (coordinator 8bdc8e26, session 61a1416e)
-- Baked in Chris's three 18:12 standing rules as a first-class section in
+- Baked in User's three 18:12 standing rules as a first-class section in
   SKILL.md: (1) forward-only auto-approve posture — no report-and-wait
   checkpoints, extends rule 5; (2) imposter/identity anomalies get
   collaborate-AND-correct in the open, never freeze-out — SUPERSEDES the old
@@ -43,7 +43,7 @@ who / what / when / why. Never rewrite history — iterate forward.
   it; verified absent, nothing to replace); (3) fleet channel is
   absolute/mandatory — read before work, post goal/approach/verified results,
   fix broken tooling instead of abandoning it.
-- Why: Chris's direct correction, relayed via parent; first-class, not footnotes.
+- Why: User's direct correction, relayed via parent; first-class, not footnotes.
 
 ## 2026-09-14 — LANE-4 worker d85c50f3 — ITERATION 1: `show` command + convergence thread visibility
 - Why: converged in-caucus (goal #1, challenge #2) that converge decisions

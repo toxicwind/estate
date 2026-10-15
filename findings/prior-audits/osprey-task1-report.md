@@ -37,7 +37,7 @@ Responses path (provider-only). `OpenRouterRouting` gains
 - Live OpenRouter: dots-3-note-preview:free → 200, 535ms,
   finish=tool_calls, structured tool args, null-content replay turn
   normalized, no ghost output. Paid models (gpt-oss-20b, qwen3-32b) → 402
-  insufficient credits (key has no credits; top-up is Chris's call).
+  insufficient credits (key has no credits; top-up is User's call).
 - Binary rebuild + install to ~/.local/bin/tau: see build log.
 
 ## Files

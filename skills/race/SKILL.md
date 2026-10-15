@@ -1,6 +1,6 @@
 ---
 name: race
-description: "Chris's latency-first engineering doctrine (NOT trading): latency is a correctness criterion; race redundant approaches concurrently with fail-fast timeouts, first valid wins; measure everything, keep the fast path hot; maximal = wider not harder; never roll back; borrow before inventing. Reusable racer (bin/race.py) + latency measurement helper (bin/measure.py). LIVING DOCUMENT — any agent may mutate it live."
+description: "User's latency-first engineering doctrine (NOT trading): latency is a correctness criterion; race redundant approaches concurrently with fail-fast timeouts, first valid wins; measure everything, keep the fast path hot; maximal = wider not harder; never roll back; borrow before inventing. Reusable racer (bin/race.py) + latency measurement helper (bin/measure.py). LIVING DOCUMENT — any agent may mutate it live."
 ---
 
 # hft-latency
@@ -14,7 +14,7 @@ description: "Chris's latency-first engineering doctrine (NOT trading): latency 
 
 High-frequency trading is the purest latency religion: microseconds decide who
 wins, so you run redundant strategies, kill slow ones, and measure everything.
-Chris's doctrine ports that religion to engineering — agents, tools, transports,
+User's doctrine ports that religion to engineering — agents, tools, transports,
 workarounds, builds. The name is his; the mechanics are universal:
 
 **Latency is a correctness criterion, not a metric.** A slow correct answer that
@@ -47,9 +47,9 @@ for arrival time, not just truth.
    race it against yours. Prefer streaming tools over batch ones — first bytes
    beat complete bytes.
 
-## Standing rules (Chris 2026-09-14 18:12 — first-class, not footnotes)
+## Standing rules (User 2026-09-14 18:12 — first-class, not footnotes)
 
-1. **Forward-only, autonomous execution.** Under Chris's standing
+1. **Forward-only, autonomous execution.** Under User's standing
    autonomous-operation order (2026-09-20), agents keep working: iterate
    forward, never build a checkpoint that halts work to wait on approval — a
    halted checkpoint is a rollback of momentum. "Never roll back" extends from

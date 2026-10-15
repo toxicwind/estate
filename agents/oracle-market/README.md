@@ -63,10 +63,10 @@ bias-corrected estimate + CI, structural confidence, per-judge logit
 attribution, canary flags, and a limitations line (`NOT_CHECKED` items
 are explicit, never silent). Low-confidence verdicts escalate — never emit.
 
-**Oracle-as-approval (Chris 2026-09-21):** the oracle stands in for Chris's
+**Oracle-as-approval (User 2026-09-21):** the oracle stands in for User's
 approvals. File approval-shaped decisions as dated yes/no questions with
 evidence dicts (`[{"id","text","relevance}]` — strings 500); a firm YES/NO
-verdict IS his approval, final. `escalate` goes to Chris directly. Money
+verdict IS his approval, final. `escalate` goes to User directly. Money
 and credentials NEVER go through the oracle. Full protocol: [SPEC.md §11](SPEC.md).
 
 Decision modules (`bin/`): `bayes.py` (log-odds core, Raven guards),
@@ -158,7 +158,7 @@ proven defaults), [docs/BORROWS.md](docs/BORROWS.md) (attribution),
 Part of the estate estate (see repo root). **Security posture:** the
 deterministic engine is a trust boundary — LLM judges advise but cannot
 bypass acceptance checks, and low-confidence verdicts escalate instead of
-emitting. Money and credentials NEVER go through the oracle (Chris's hard
+emitting. Money and credentials NEVER go through the oracle (User's hard
 rule). The intake front door is not control-plane (`intake_request` is open
 to anyone), while control-signed `task_post`s gate the auction. Market
 state is an append-only ledger with replay guards, so re-ingested requests

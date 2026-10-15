@@ -5,7 +5,7 @@
 // This wrapper reruns the work instead of parking it: detect with
 // isCannedRefusal, rerun up to maxAttempts, return the first clean result.
 //
-// Part of softpaw per Chris 2026-10-05: the hibug string is handled by the
+// Part of softpaw per User 2026-10-05: the hibug string is handled by the
 // rerun path, not treated as a real refusal.
 import { isCannedRefusal } from "./detectors";
 

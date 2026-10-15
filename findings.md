@@ -154,7 +154,7 @@ Repairs landed this session are marked [FIXED]; open items marked [OPEN].
 - `~/.bashrc.local` now exports MCPPROXY_API_KEY from the vault (64-char key
   verified present in fresh login shell; `bash -lc true` healthy).
 
-## 11. Forge decision (2026-10-15, Chris)
+## 11. Forge decision (2026-10-15, User)
 
 - **GitHub stays primary** — Copilot subscription + provenance/contribution
   history are assets; account is too good to lose.
@@ -212,7 +212,7 @@ Audited 2026-10-15 (full evidence: `findings/prior-audits/network-audit-20261015
 | 11 | ip_forward persistence | PASS (installed) | Was set live but not persisted under an explicit tailscale file. New: `config/sysctl.d/99-tailscale-forward.conf` → symlink `/etc/sysctl.d/99-tailscale-forward.conf` (ip_forward=1 v4+v6) |
 | 12 | DNS consistency | PASS | systemd-resolved stub (127.0.0.53) + tailscale accept-dns; dnsmasq 10.0.0.218:53 serves LAN (allowed from LAN only) |
 
-### Needs Chris (admin console)
+### Needs User (admin console)
 - **Approve subnet route** 10.0.0.0/24 for `estate` (100.72.199.93) at https://login.tailscale.com/admin/networks — advertised, not yet approved.
 
 ### Client-facing facts

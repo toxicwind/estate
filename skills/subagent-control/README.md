@@ -8,7 +8,7 @@
 
 ## Control agent swarms without cancelling running tasks.
 
-**What**: Reversible steering, throttling, and freezing of agent swarms. Cancellation is destructive and never a control mechanism. Kill orders come only from Chris, and those are silent force-kills — a different lane entirely.
+**What**: Reversible steering, throttling, and freezing of agent swarms. Cancellation is destructive and never a control mechanism. Kill orders come only from User, and those are silent force-kills — a different lane entirely.
 
 **Why**: Never cancel a running task to "fix" pressure — a cancelled task loses all in-flight work and usually gets re-spawned, doubling the load. Control means shaping what runs, not deleting runners.
 

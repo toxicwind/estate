@@ -149,7 +149,7 @@ const MCP_TOOLS = [
   },
   {
     name: "fleet_chat_send",
-    description: "Send a message to a room you joined. For relayed 'Chris said X' claims, pass quote+quote_source (chat-topology provenance rule).",
+    description: "Send a message to a room you joined. For relayed 'User said X' claims, pass quote+quote_source (chat-topology provenance rule).",
     inputSchema: {
       type: "object",
       properties: {

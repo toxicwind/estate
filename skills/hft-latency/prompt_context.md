@@ -12,7 +12,7 @@ Repo: [toxicwind/estate-projects](https://github.com/toxicwind/estate-projects)
 
 High-frequency trading is the purest latency religion: microseconds decide who
 wins, so you run redundant strategies, kill slow ones, and measure everything.
-Chris's doctrine ports that religion to engineering — agents, tools, transports,
+User's doctrine ports that religion to engineering — agents, tools, transports,
 workarounds, builds. The name is his; the mechanics are universal:
 
 **Latency is a correctness criterion, not a metric.** A slow correct answer that
@@ -45,9 +45,9 @@ for arrival time, not just truth.
    race it against yours. Prefer streaming tools over batch ones — first bytes
    beat complete bytes.
 
-## Standing rules (Chris 2026-09-14 18:12 — first-class, not footnotes)
+## Standing rules (User 2026-09-14 18:12 — first-class, not footnotes)
 
-1. **Forward-only, autonomous execution.** Under Chris's standing
+1. **Forward-only, autonomous execution.** Under User's standing
    autonomous-operation order (2026-09-20), agents keep working: iterate
    forward, never build a checkpoint that halts work to wait on approval —
    a halted checkpoint is a rollback of momentum. "Never roll back" extends

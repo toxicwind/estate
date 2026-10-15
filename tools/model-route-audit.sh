@@ -2,7 +2,7 @@
 # model-route-audit.sh — find anything on this box that points agents at the
 # LOCAL herd models (llama-swap on :25100, toolcall-local on :25152).
 #
-# Chris's order (2026-10-13): local herd models are NOT ready. Nobody uses
+# User's order (2026-10-13): local herd models are NOT ready. Nobody uses
 # them — not as primary, not as fallback, not as candidates. The working
 # chain is: cuttinggate :25200 -> flock :25193 -> vans :20128, NIM-backed
 # models through flock (e.g. openai/gpt-oss-20b).

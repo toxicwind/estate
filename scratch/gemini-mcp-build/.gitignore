@@ -1,7 +1,0 @@
-__pycache__/
-*.pyc
-*.token
-.secrets
-.gemini-sdk-venv/
-dist/
-*.egg-info/

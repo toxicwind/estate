@@ -59,7 +59,7 @@ tv/audio settings, which stay per-box.
   a real open+seek was deliberately not fired at 04:35 (sleeping house).
   State: `~/.local/share/kodi-fleet/resume.json` (outside the repo).
 
-- **parked/** — retired tooling: `kodi-sync` was parked 2026-09-19 (Chris: "cancel"); its `NOTE.md` records the incident analysis that killed it.
+- **parked/** — retired tooling: `kodi-sync` was parked 2026-09-19 (User: "cancel"); its `NOTE.md` records the incident analysis that killed it.
 
 Deployed copies: `/home/toxic/bin/kodi-handoff` (symlink or copy of `bin/` source).
 Keep the repo source canonical; re-deploy after edits.

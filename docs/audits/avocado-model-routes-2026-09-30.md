@@ -1,6 +1,6 @@
 # ipnext / avocado model routes — findings 2026-09-30
 
-Chris's overnight ask: run things on /home/toxic, keep binaries+web on avocado,
+User's overnight ask: run things on /home/toxic, keep binaries+web on avocado,
 try launching new tasks on other avocado models, track ipnext + weirdness.
 
 ## What ipnext is
@@ -55,14 +55,14 @@ selection time — NOT settable from tool calls:
   invalid authd routes fall back to bare `avocado`
   ("authd returned an invalid model selection route; falling back to avocado").
 - The daemon (PID 67, host-side) env is not writable from the cell, so this
-  stays a platform-side knob. If Chris ever wants a different avocado on a
+  stays a platform-side knob. If User ever wants a different avocado on a
   lane, that's where it lives.
 
 ## Yote-conn bridge + fleet bus verified before sleep
 
 - squawk fleet: live, traffic flowing (posts within minutes).
 - `yote-conn exec` → ok on awrawr-pc.
-- Binaries/services run on /home/toxic (yote) under Chris's standing
+- Binaries/services run on /home/toxic (yote) under User's standing
   autonomous-operation order (2026-09-20). Agent cognition stays on the
   avocado (Hatch) substrate by design.
 
@@ -70,7 +70,7 @@ selection time — NOT settable from tool calls:
 
 - Runonce cron `overnight-watch-morning-brief` enabled, fires ~09:11 MDT
   2026-09-30: new ipnext versions vs this baseline, fleet completions/anomalies,
-  blocked-on-Chris items, estate health, up-next queue.
+  blocked-on-User items, estate health, up-next queue.
 - Baseline for "new ipnext version" detection: {5.16-v4, 5.14} — anything else
   appearing in `agent.agents.model` is the anomaly to flag.
 

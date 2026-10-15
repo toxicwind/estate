@@ -131,7 +131,7 @@ All unrelated to the Gemini EAP:
 
 - `/home/toxic/estate/docs/gemini-tool-retrieval.md`,
   `docs/gemini-tool-retrieval-reference.md` — request/response shapes transcribed
-  from the EAP material Chris supplied, plus the 429 billing probe result.
+  from the EAP material User supplied, plus the 429 billing probe result.
 - `/home/toxic/estate/tools/probe_gemini_eap.py` — probe built from that
   spec (exit 2 = billing blocked).
 

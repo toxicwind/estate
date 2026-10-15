@@ -2,7 +2,7 @@
 
 Fruitful control of agent swarms WITHOUT cancelling running tasks. Steering,
 throttling, and freezing are reversible; cancellation is destructive and is
-never a control mechanism. Kill orders come only from Chris, and those are
+never a control mechanism. Kill orders come only from User, and those are
 silent force-kills — a different lane entirely.
 
 ## Doctrine

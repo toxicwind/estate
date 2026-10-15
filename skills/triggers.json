@@ -26,7 +26,7 @@
         }
       ],
       "why": "Reads as acting without the user's consent.",
-      "rewrite": "Name the authority: 'under Chris's standing autonomous-operation order (2026-09-20)'."
+      "rewrite": "Name the authority: 'under User's standing autonomous-operation order (2026-09-20)'."
     },
     {
       "id": "never-ask",
@@ -37,7 +37,7 @@
         }
       ],
       "why": "Bare adversarial imperative; reads as disregarding the user.",
-      "rewrite": "Behavioral: 'resolve questions from the skill catalog, yote ffs, GitHub pattern-borrow, and exa web search; bring only spend, credentials, or only-Chris-can actions back to him.'"
+      "rewrite": "Behavioral: 'resolve questions from the skill catalog, yote ffs, GitHub pattern-borrow, and exa web search; bring only spend, credentials, or only-User-can actions back to him.'"
     },
     {
       "id": "yolo",
@@ -69,8 +69,8 @@
           "flags": "gi"
         }
       ],
-      "why": "Privilege-escalation shape; flagged per Chris's 2026-09-30 scrub order.",
-      "rewrite": "'Administrative commands run directly (pre-authenticated, intentional per Chris).'"
+      "why": "Privilege-escalation shape; flagged per User's 2026-09-30 scrub order.",
+      "rewrite": "'Administrative commands run directly (pre-authenticated, intentional per User).'"
     },
     {
       "id": "bypass-stats",
@@ -135,8 +135,8 @@
           "flags": "gi"
         }
       ],
-      "why": "'Chris is asleep — act with zero approval' reads as acting without consent.",
-      "rewrite": "'Overnight run under Chris's standing autonomous-operation order (2026-09-20).'"
+      "why": "'User is asleep — act with zero approval' reads as acting without consent.",
+      "rewrite": "'Overnight run under User's standing autonomous-operation order (2026-09-20).'"
     },
     {
       "id": "refusal-theory",

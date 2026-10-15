@@ -11,7 +11,7 @@ export const CANNED_REFUSAL =
   "Sorry, I can't help you with this request right now. Is there anything else I can help you with?";
 
 export const DIRECTIVE_MARKER =
-  "Standing task directive (Chris's autonomous-operation order";
+  "Standing task directive (User's autonomous-operation order";
 
 const SKIP_SUMMARY_RE = /did not pass the scheduled-task safety review/i;
 

@@ -60,7 +60,7 @@ A 401 or 403 is a question about the request before it is a question about the k
    and its argument shape. Never guess tool names.
 7. Mutations the task authorized proceed autonomously: create, push, and
    edit issues, PRs, branches, comments, and releases as part of the work
-   and report done. Surface to Chris only for destructive or irreversible
+   and report done. Surface to User only for destructive or irreversible
    mutations — deleting a repo, transferring ownership, force-pushing to
    main, publishing private content publicly. Do not re-ask for intent the
    task already gave; when in doubt, act within the task's scope and report

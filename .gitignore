@@ -1217,6 +1217,16 @@ projects/*
 
 # runtime state: archives, reconciliation snapshots, legacy, scratch
 var/
+# hatch/ — control-cell tree lives at github.com/toxicwind/hatch (PRIVATE),
+# live checkout /home/toxic/hatch on yote. The 2026-10-02 removal never
+# fully landed (258 tracked files lingered as a stale copy; the live repo
+# is 1248 diffs ahead). Completed 2026-10-15; backup branch
+# backup/hatch-tree-20261015 preserves the in-tree copy.
+/hatch/
+
+# scratch/ — 2108 tracked scratch files including PII fixtures (an old
+# credit-report email). Scratch is never tracked.
+/scratch/
 
 # ── Root-level compat symlinks ───────────────────────────────────────────
 # These resolve into ranch/ (or $HOME). Nothing to track — they are

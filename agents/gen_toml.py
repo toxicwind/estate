@@ -105,7 +105,7 @@ def main():
     out = {}
     # assistant: re-route off dead Anthropic key -> herd free (doctrine: FREE BEATS LOCAL).
     # The ANTHROPIC_API_KEY in .secrets is revoked (Anthropic 401 invalid x-api-key);
-    # new key is Chris's call. This keeps the agent serving until then.
+    # new key is User's call. This keeps the agent serving until then.
     out["assistant"] = gen_toml(
         manifests["assistant"],
         model_override={
@@ -116,7 +116,7 @@ def main():
         header_note=("anthropic/claude-sonnet-4-20250514 route PARKED 2026-09-20: stored "
                      "ANTHROPIC_API_KEY revoked (Anthropic 401 invalid x-api-key). "
                      "Restore provider=anthropic + model=claude-sonnet-4-20250514 once "
-                     "Chris supplies a fresh key. Until then this herd-free route serves."),
+                     "User supplies a fresh key. Until then this herd-free route serves."),
     )
     # squawk-relay: faithful copy of the WORKING config (nvidia/openai/gpt-oss-20b
     # verified serving 2026-09-20). Durability only: DB row already correct.

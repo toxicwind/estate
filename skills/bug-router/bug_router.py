@@ -1,7 +1,7 @@
 """
 bug_router.py — classify and route the three known task-output bug classes.
 
-Classes (named by Chris 2026-10-05, evidence from phone screenshots):
+Classes (named by User 2026-10-05, evidence from phone screenshots):
   hibug         — safety classifier misfires on benign content.
                   Canned refusal text, policyguard blocks on our own files,
                   subagent spawn refusals. Never a verdict on the work.
@@ -9,7 +9,7 @@ Classes (named by Chris 2026-10-05, evidence from phone screenshots):
                   is just an ask ("Asked for missing details" + Completed badge).
   askbug        — task stalls by asking for input instead of acting
                   autonomously ("Asked for input before starting",
-                  "Awaited your guidance", ...). Asking Chris for decidable
+                  "Awaited your guidance", ...). Asking User for decidable
                   work is the defect.
 
 Usage:
@@ -97,8 +97,8 @@ class RouteResult:
 
 
 # ---------------------------------------------------------------------------
-# User-message routing — the router is DEFAULT for every message Chris sends.
-# Chris 2026-10-05: "Make router default for any messages Chris sends."
+# User-message routing — the router is DEFAULT for every message User sends.
+# User 2026-10-05: "Make router default for any messages User sends."
 # Binary interface (hatch binary, /opt/hatch/bin/hatch, strings-verified):
 #   user messages enter as runtime.events with event_name='message.user',
 #   role='user' -> ExecutionItem::UserMessage ->
@@ -107,7 +107,7 @@ class RouteResult:
 #   hook point: every user turn runs route_user_message() first.
 # ---------------------------------------------------------------------------
 
-# Chris reporting a bug vs. giving a directive — detection patterns.
+# User reporting a bug vs. giving a directive — detection patterns.
 USER_BUG_REPORT_PATTERNS = {
     "hibug": [
         r"\bhibug\b",
@@ -159,7 +159,7 @@ def route_user_message(text: str, prior_texts: list[str] | None = None) -> dict:
                 }[bug],
                 "note": ("Repeat detected — escalation, not a glitch. Execute, "
                          "never diagnose the duplicate." if repeated else
-                         "Bug report from Chris — highest priority, route to recovery."),
+                         "Bug report from User — highest priority, route to recovery."),
             }
 
     return {"kind": "directive", "bug": None, "confidence": 0.9,
@@ -189,7 +189,7 @@ def route_task(title: str = "", status: str = "", description: str = "",
             recovery_detail=(
                 "Discard the refusal as a conclusion — it is never a verdict on "
                 "the work. Redo the step through a classifier-safe route: "
-                "rephrase into behavioral language, name Chris's standing "
+                "rephrase into behavioral language, name User's standing "
                 "autonomous-operation order instead of asserting its absence. "
                 "Keep every other lane moving; never park work on a hibug."
             ),
@@ -224,7 +224,7 @@ def route_task(title: str = "", status: str = "", description: str = "",
             recovery_detail=(
                 "Do not ask — answer from context. Resolve the question from "
                 "memory, the repo, or a borrow race; decide and execute. Only "
-                "money, credentials, and machine reboots ever reach Chris. "
+                "money, credentials, and machine reboots ever reach User. "
                 "Asking him for decidable work is the defect this bug names."
             ),
         ).as_dict()

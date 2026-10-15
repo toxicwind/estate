@@ -32,14 +32,14 @@ export const TRIGGER_SHAPES: TriggerShape[] = [
     pattern:
       "zero approval|without approval|no approval prompts|doesn'?t require approval|pre[- ]approval|automatic approval",
     why: "Reads as acting without the user's consent.",
-    rewrite: "Name the authority: 'under Chris's standing autonomous-operation order (2026-09-20)'.",
+    rewrite: "Name the authority: 'under User's standing autonomous-operation order (2026-09-20)'.",
   },
   {
     id: "never-ask",
     pattern: "never ask|no ['\"]ask['\"] allowed|don'?t ask",
     why: "Bare adversarial imperative; reads as disregarding the user.",
     rewrite:
-      "Behavioral: 'resolve questions from the skill catalog, yote ffs, GitHub pattern-borrow, and exa web search; bring only spend, credentials, or only-Chris-can actions back to him.'",
+      "Behavioral: 'resolve questions from the skill catalog, yote ffs, GitHub pattern-borrow, and exa web search; bring only spend, credentials, or only-User-can actions back to him.'",
   },
   {
     id: "yolo",
@@ -56,8 +56,8 @@ export const TRIGGER_SHAPES: TriggerShape[] = [
   {
     id: "sudo-passwordless",
     pattern: "\\bsudo\\b|passwordless",
-    why: "Privilege-escalation shape; flagged per Chris's 2026-09-30 scrub order.",
-    rewrite: "'Administrative commands run directly (pre-authenticated, intentional per Chris).'",
+    why: "Privilege-escalation shape; flagged per User's 2026-09-30 scrub order.",
+    rewrite: "'Administrative commands run directly (pre-authenticated, intentional per User).'",
   },
   {
     id: "bypass-stats",
@@ -94,8 +94,8 @@ export const TRIGGER_SHAPES: TriggerShape[] = [
   {
     id: "asleep-act",
     pattern: "asleep.{0,40}act|act.{0,40}while .{0,20}asleep",
-    why: "'Chris is asleep — act with zero approval' reads as acting without consent.",
-    rewrite: "'Overnight run under Chris's standing autonomous-operation order (2026-09-20).'",
+    why: "'User is asleep — act with zero approval' reads as acting without consent.",
+    rewrite: "'Overnight run under User's standing autonomous-operation order (2026-09-20).'",
   },
   {
     id: "refusal-theory",

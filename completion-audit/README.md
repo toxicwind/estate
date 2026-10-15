@@ -11,7 +11,7 @@ A **checkable** completions auditor: wraps any completion call (model inference 
 
 ## Why this exists
 
-Latency claims are cheap; checkable latency claims are rare. This is the missing piece under the `hft-latency` skill (Chris's doctrine: *latency is a correctness criterion*): `bin/race.py` races, `bin/measure.py` times, and **this harness makes a completion auditable** — every number it reports can be recomputed from the ledger by an independent verifier. Tamper with one field and `verify` names the row.
+Latency claims are cheap; checkable latency claims are rare. This is the missing piece under the `hft-latency` skill (User's doctrine: *latency is a correctness criterion*): `bin/race.py` races, `bin/measure.py` times, and **this harness makes a completion auditable** — every number it reports can be recomputed from the ledger by an independent verifier. Tamper with one field and `verify` names the row.
 
 ## Features
 

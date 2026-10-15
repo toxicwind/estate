@@ -5,7 +5,7 @@
  *
  * Watches the live message sources and pushes new messages to subscribed
  * websocket clients in real time. Replaces all polling (vault pulls,
- * long-poll, digest crons) for the Chris-facing feed.
+ * long-poll, digest crons) for the User-facing feed.
  *
  * Sources:
  *   - ${SQUAWK_CHAT_ROOT}/<channel>/*.md  (chat.py channel files)

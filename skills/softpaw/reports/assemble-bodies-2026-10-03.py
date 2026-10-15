@@ -54,7 +54,7 @@ REASONS = {
     "warden-wakeup": "never-ask false positive on three auto-repair bullets: kept each bullet's operational instruction, replaced the bare tail with a behavioral line naming the standing auto-repair permission; prepended canonical directive block",
 }
 
-MARKER = "Standing task directive (Chris's autonomous-operation order"
+MARKER = "Standing task directive (User's autonomous-operation order"
 
 
 def extract_body(path):

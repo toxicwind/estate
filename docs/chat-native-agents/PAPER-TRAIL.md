@@ -77,7 +77,7 @@ no polling):
 2. **Trigger dispatch had a real kernel bug** (memory 2026-09-20: `spawn_agent`
    increments matching trigger fire counts but *drops dispatch results*). Event-driven
    in name; lossy in practice until fixed.
-3. **The "needless torture" Chris felt is mostly our side, not OpenFang's:**
+3. **The "needless torture" User felt is mostly our side, not OpenFang's:**
    revoked `ANTHROPIC_API_KEY` → assistant 500s; `HOME=/tmp/rig-home` vs `/home/toxic`
    split-brain; Groq embedding 401s (Groq has no embedding endpoint); stale model
    routes. The 2026-09-21 audit fixed the config layer. None of this is inherent to

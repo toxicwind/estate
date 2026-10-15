@@ -50,7 +50,7 @@ Gatehouse MCP server. Proven on the rsync lane (2026-09-30):
 
 - **Adopt directly** if the implementation meets the bar: maintained,
   right transport, safe defaults, license acceptable.
-  (Licenses don't gate anything — Chris 2026-09-30.)
+  (Licenses don't gate anything — User 2026-09-30.)
 - **Otherwise fork**: `gh repo create toxicwind/<name>`, clone on yote,
   `git remote add upstream <url>`, `git fetch upstream`,
   `git checkout -b main upstream/main` (full ancestry preserved),

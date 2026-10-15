@@ -68,7 +68,7 @@ Additive by design — the install touches nothing live. Single script +
 systemd timer; the timer (not a daemon loop) is the 60s cadence, so it
 survives machine restarts via the user manager.
 
-## What it does NOT fix (needs Chris / fleet decision)
+## What it does NOT fix (needs User / fleet decision)
 
 - Workers restarting the supervisor at will (`supervisor stop/start/--force`
   kills ALL 37 daemons fleet-wide). Convention needed: announce in

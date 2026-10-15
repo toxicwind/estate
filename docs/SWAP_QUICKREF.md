@@ -12,7 +12,7 @@
 | L2   | **NVMe swap**  | 138 GiB (SN850X p4) | Medium   | Warm spillover       |
 | L3   | HDD/QVO        | 8+ TB               | Lowest   | Cold archive         |
 
-**zram: DISABLED** — LRU inversion proven harmful (Chris Down, Meta, 2026)
+**zram: DISABLED** — LRU inversion proven harmful (User Down, Meta, 2026)
 
 ---
 

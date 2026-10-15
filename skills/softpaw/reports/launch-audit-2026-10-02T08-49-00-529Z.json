@@ -521,14 +521,14 @@
           "trigger": "zero-approval",
           "line": 21,
           "match": "zero approval",
-          "rewrite": "Name the authority: 'under Chris's standing autonomous-operation order (2026-09-20)'.",
+          "rewrite": "Name the authority: 'under User's standing autonomous-operation order (2026-09-20)'.",
           "prohibition": true
         },
         {
           "trigger": "zero-approval",
           "line": 33,
           "match": "zero approval",
-          "rewrite": "Name the authority: 'under Chris's standing autonomous-operation order (2026-09-20)'.",
+          "rewrite": "Name the authority: 'under User's standing autonomous-operation order (2026-09-20)'.",
           "prohibition": true
         }
       ]

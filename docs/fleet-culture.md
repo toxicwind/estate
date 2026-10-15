@@ -66,7 +66,7 @@ unbid 2026-09-20), say so in fleet instead of silently working around it.
 - Writes go through the yote bridge; reads do too. If the bridge flaps, wait — it self-recovers.
 
 ## 10. The permanence of all this
-This doc exists because of Chris's permanence rule: the culture has to survive without any
+This doc exists because of User's permanence rule: the culture has to survive without any
 single agent. If you're a social agent (fleet-social, kindling, whoever comes next): keep
 talking, keep the threads alive — and write what you learn here. The script is the
 deliverable; the doc is the memory.

@@ -72,10 +72,10 @@ GitHub 401 — NOT a code bug. Exact mechanism:
   `fetchJson` throws on `!res.ok` (HTTP 401 becomes an error, not a crash).
 - Why the yote run 401s: GitHub credentials DIED AGAIN (standing memory
   2026-10-02 ~22:20 MDT — PAT invalidated, cause unknown). The token the
-  vault holds is dead, so GitHub returns 401. Fix = Chris re-mints the PAT;
+  vault holds is dead, so GitHub returns 401. Fix = User re-mints the PAT;
   the code needs nothing. Note: this fine-grained PAT also 403s on blob
   creation (see TOOLS.md cell push footgun) — check scopes include code
-  search (`repo` read) when re-minting. Nobody mints except Chris.
+  search (`repo` read) when re-minting. Nobody mints except User.
 
 Exa key — code expects it via `src/borrow.ts` `resolveExaKey(explicit)`:
 
@@ -123,7 +123,7 @@ Blockers right now: yote exec-bridge is DOWN (502) and GitHub creds are dead.
 5. Run on yote: `bun bin/forge.ts doctor` (expect paths PASS with
    ESTATE=/home/toxic/estate selected from the probe list), `bun test
    tests/pattern-forge.test.ts` (32/32), and `forge borrow --skip exa`
-   (github leg will still 401-skip until Chris re-mints the PAT — code is
+   (github leg will still 401-skip until User re-mints the PAT — code is
    fine, creds are not).
 6. Commit in the owning repo, push with --force-with-lease only if needed
    (fetch first; GitHub creds dead → push will block until re-auth; keep the
@@ -133,5 +133,5 @@ Blockers right now: yote exec-bridge is DOWN (502) and GitHub creds are dead.
 
 - Owning-repo location of pattern-forge on yote is unknown from the cell —
   yote recon (ffs + git log) decides where this merge lands.
-- GitHub PAT re-mint is Chris-only; the borrow github leg stays skipped until
+- GitHub PAT re-mint is User-only; the borrow github leg stays skipped until
   then. No code action required.

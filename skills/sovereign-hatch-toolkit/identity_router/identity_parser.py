@@ -45,9 +45,9 @@ def parse_identity_file(path: str | Path = IDENTITY_PATH) -> Dict[str, Any]:
         vibe = m.group(1).strip().split("\n")[0]
 
     serves = _first(r"^\*\*(.+?)\*\*\s*\(.*?\)\s*[—-]\s*night-owl systems builder", text,
-                    default="Chris")
+                    default="User")
     if not serves or len(serves) > 60:
-        serves = "Chris"
+        serves = "User"
 
     posture_bits = []
     if re.search(r"maximal autonomous execution", text, re.I):

@@ -1,6 +1,6 @@
 # AST audit skill — global GitHub search, comparison, merge
 
-Chris's order (2026-10-02): *"Port path command is not enough, must use some
+User's order (2026-10-02): *"Port path command is not enough, must use some
 sort of ast audit skill, find one on global GitHub using code search and
 compare multiple and merge with skill that does this."*
 
@@ -50,7 +50,7 @@ test-before-search (example file first), rewrite methods, and the hard-won
 MCP for AI assistants: map → find → impact progressive discovery over
 ast-grep, stateless, per-commit symbol caching. Good shape, but: only 4
 languages documented, `what_breaks` impact analysis is **name-based text
-search** (not AST — the exact weakness Chris flagged), and MCP-only
+search** (not AST — the exact weakness User flagged), and MCP-only
 (would need a client where a subprocess suffices). Its progressive-disclosure
 philosophy informed the evidence-cap (`--top`) design. Rejected as the base;
 xray's own architecture doc confirms ast-grep as the right core engine.

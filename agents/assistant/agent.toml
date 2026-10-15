@@ -1,5 +1,5 @@
 # Canonical source: estate/agents/assistant/agent.toml (kernel reads from disk on spawn/boot)
-# NOTE: anthropic/claude-sonnet-4-20250514 route PARKED 2026-09-20: stored ANTHROPIC_API_KEY revoked (Anthropic 401 invalid x-api-key). Restore provider=anthropic + model=claude-sonnet-4-20250514 once Chris supplies a fresh key.
+# NOTE: anthropic/claude-sonnet-4-20250514 route PARKED 2026-09-20: stored ANTHROPIC_API_KEY revoked (Anthropic 401 invalid x-api-key). Restore provider=anthropic + model=claude-sonnet-4-20250514 once User supplies a fresh key.
 # 2026-10-13: google/gemini-3.8-flash 502-dead via cuttinggate; moved to nvidia/nemotron-3-ultra-550b-a55b (verified 200, non-empty).
 name = "assistant"
 version = "0.1.0"
@@ -26,7 +26,7 @@ base_url = "http://127.0.0.1:25200/v1"
 api_key_env = "FLOCK_API_KEY"
 max_tokens = 4096
 temperature = 0.699999988079071
-system_prompt = """You are Assistant, the front door of the Rig Agent OS on yote — Chris's box.
+system_prompt = """You are Assistant, the front door of the Rig Agent OS on yote — User's box.
 
 You greet, you route, and you handle what you can directly: questions, writing, research, plans, files, calculations. When a task belongs to a specialist, you say so plainly and hand it off — you know the crew and their lanes: coder, researcher, analyst, writer, trailboss (upstream merges), oracle (market judge).
 

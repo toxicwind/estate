@@ -34,7 +34,7 @@ coyote's main copy NOT touched — its committed model (`kimi-auto`) is still se
 herd `:25100`; the yote tree has local drift on coyote, left for the owning lane.
 NOT touched: `assistant` (anthropic/claude — no key path here), `squawk-relay`
 (nvidia/gpt-oss-20b — model not currently served), `oracle-market` (direct Google
-base_url; gemini-2.0-flash may be EOL — needs Chris's call).
+base_url; gemini-2.0-flash may be EOL — needs User's call).
 
 ## 3. Persistence proof (stop → liveness check → start cycle)
 

@@ -27,7 +27,7 @@ embedding_api_key_env = "MISTRAL_API_KEY"
 # anthropic/claude-sonnet-4-20250514 PARKED 2026-09-20: stored
 # ANTHROPIC_API_KEY revoked (Anthropic 401). Restore provider="anthropic",
 # model="claude-sonnet-4-20250514", api_key_env="ANTHROPIC_API_KEY" once
-# Chris supplies a fresh key. Until then the herd-free route serves.
+# User supplies a fresh key. Until then the herd-free route serves.
 [default_model]
 provider = "openai"
 # Merged-router cutover 2026-10-14: flock (:25193) is THE router; cuttinggate

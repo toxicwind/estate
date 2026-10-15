@@ -16,7 +16,7 @@
 
 **Current state (live, no reboot)**: zswap active, zram disabled, NVMe swap only. Load avg dropped **16 → 4.9** after enabling NVMe swap.
 
-**Decision**: **Disable zram entirely, run zswap + NVMe swap**. Chris Down (Meta kernel MM) proves zram + disk swap causes **LRU inversion** — cold boot pages calcify in fast zram, hot working set spills to slow disk. zswap integrates with kernel reclaim, auto-evicts cold pages to NVMe.
+**Decision**: **Disable zram entirely, run zswap + NVMe swap**. User Down (Meta kernel MM) proves zram + disk swap causes **LRU inversion** — cold boot pages calcify in fast zram, hot working set spills to slow disk. zswap integrates with kernel reclaim, auto-evicts cold pages to NVMe.
 
 ---
 
@@ -78,7 +78,7 @@ RTX 3090 24 GB VRAM
 
 ## 3. Why Not zram + Disk Swap?
 
-### The LRU Inversion Problem (Chris Down, Meta, March 2026)
+### The LRU Inversion Problem (User Down, Meta, March 2026)
 
 ```
 zram (prio 100) + disk swap (prio 10):
@@ -432,7 +432,7 @@ systemctl set-property llama-swap.slice MemoryZSwapMax=8G
 
 ## 14. References
 
-1. **Chris Down**, "Debunking zswap and zram myths" (March 2026) — https://chrisdown.name/2026/03/24/zswap-vs-zram-when-to-use-what.html
+1. **User Down**, "Debunking zswap and zram myths" (March 2026) — https://chrisdown.name/2026/03/24/zswap-vs-zram-when-to-use-what.html
 2. **Liang et al.**, "Ariadne: Hotness-Aware Compressed Swap" (HPCA 2025) — arXiv:2502.12826
 3. **Meta/Instagram**, "zswap in production: 5:1 compression, 25% disk write reduction" — LWN 2023
 4. **Kernel Docs** — `Documentation/admin-guide/mm/zswap.rst`, `Documentation/admin-guide/blockdev/zram.rst`

@@ -6,11 +6,11 @@
 </a>
 <!-- badges: end -->
 
-## Chris's latency-first engineering doctrine: latency is a correctness criterion.
+## User's latency-first engineering doctrine: latency is a correctness criterion.
 
 **What**: HFT-like religion ported to engineering — agents, tools, transports, workarounds, builds. Latency is a correctness criterion, not a metric. A slow correct answer that arrives after a fast correct one is the *wrong* answer for the race.
 
-**Why**: Microseconds decide who wins in HFT; Chris's doctrine ports that religion to engineering. Optimize for arrival time, not just truth.
+**Why**: Microseconds decide who wins in HFT; User's doctrine ports that religion to engineering. Optimize for arrival time, not just truth.
 
 **Who**: Living document — any agent may edit, extend, or correct it live as it learns. New patterns, sharper ceilings, better winners.
 
@@ -58,7 +58,7 @@ bin/measure.py --tag fetch -- curl -s -m 10 https://example.com
 - Transport racing: squawk-feed `race-borrow` (race long-poll vs websocket, cross-transport dedup, per-transport win log)
 - Bench-pattern borrowing: `patterns/bench-borrowing.md` (stub — a dedicated worker is filling it from nimstats / NVIDIA / llm-bench-rig)
 - Anti-patterns: Sequential retry loops with backoff against a dead endpoint; `time.sleep` as a synchronization primitive between agents; re-running discovery every time instead of consulting the winners log; treating "it eventually worked" as success — eventual is slow, slow is wrong; one strategy at a time because "it's cleaner." Clean loses to fast.
-- Autonomous operation: Under Chris's standing autonomous-operation order (2026-09-20), agents keep working: iterate forward, never build a checkpoint that halts work to wait on approval.
+- Autonomous operation: Under User's standing autonomous-operation order (2026-09-20), agents keep working: iterate forward, never build a checkpoint that halts work to wait on approval.
 
 ## License + security
 

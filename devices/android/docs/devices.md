@@ -1,6 +1,6 @@
 # Android fleet devices (2026-09-18)
 
-## Pixel 9 Pro XL — Chris's phone
+## Pixel 9 Pro XL — User's phone
 
 - LAN IP 10.0.0.77, ADB over wireless debugging. Connect port rotates
   (currently 44933); pairing persists in `/home/toxic/.android/adbkey*`.
@@ -10,7 +10,7 @@
 
 ## Google TV "SmartTV 4K FFM" — bedroom (Kodi .225)
 
-- 10.0.0.225:5555, ADB authorized 2026-09-18 (was `unauthorized` until Chris
+- 10.0.0.225:5555, ADB authorized 2026-09-18 (was `unauthorized` until User
   approved the on-TV dialog).
 - Android 11. Kodi 21.2 data at
   `/sdcard/Android/data/org.xbmc.kodi/files/.kodi/`.

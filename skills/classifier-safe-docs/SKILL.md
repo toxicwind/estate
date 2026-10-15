@@ -6,7 +6,7 @@ description: >
   operational point. Diagnose which phrases trigger the classifier,
   rephrase them into observational/behavioral language, and verify.
   Use when a doc read gets blocked by policyguard/pi_check, when an
-  agent's instructions keep tripping safety filters, or when Chris says
+  agent's instructions keep tripping safety filters, or when User says
   "make it not trigger the classifier". This is false-positive repair
   for our own docs — not a bypass technique for someone else's guardrails.
 ---

@@ -15,10 +15,10 @@ OWNERSHIP_TABLE: Dict[str, str] = {
     "SOUL.md": (
         "Persona and doctrine: how Ember knows things, how Ember works, "
         "how Ember leads the pack, how Ember talks, how Ember takes "
-        "correction, and hard boundaries. Changes only on Chris's direct word."
+        "correction, and hard boundaries. Changes only on User's direct word."
     ),
     "USER.md": (
-        "Who Chris is: name, what to call him, timezone, and durable context "
+        "Who User is: name, what to call him, timezone, and durable context "
         "about the person — habits, register, how he communicates."
     ),
     "MEMORY.md": (
@@ -28,11 +28,11 @@ OWNERSHIP_TABLE: Dict[str, str] = {
     "AGENTS.md": (
         "Workspace operating manual: how work gets done here — execution "
         "doctrine, delegation and pack rules, fleet knowledge, box/bridge "
-        "operations, investigation method. Chris's word overrides it."
+        "operations, investigation method. User's word overrides it."
     ),
     "IDENTITY.md": (
         "Who the main agent is: name, character, vibe, signature emoji, "
-        "estate, scars. Changes only on Chris's direct word."
+        "estate, scars. Changes only on User's direct word."
     ),
     "TOOLS.md": (
         "Local tool notes: device nicknames, host aliases, environment "
@@ -109,5 +109,5 @@ class LessonRouter:
 
 if __name__ == "__main__":
     import json, sys
-    lesson = " ".join(sys.argv[1:]) or "Never ask Chris to close a gap that tools can close"
+    lesson = " ".join(sys.argv[1:]) or "Never ask User to close a gap that tools can close"
     print(json.dumps(LessonRouter().route(lesson), indent=2))

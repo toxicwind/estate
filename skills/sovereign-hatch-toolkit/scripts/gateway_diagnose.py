@@ -31,7 +31,7 @@ def main() -> int:
         print(f"{name:<18}{str(ok):<6}{detail}")
     print()
     print("note: run with HATCH_AUTH_TOKEN set to attempt a real handshake")
-    print("      (token never printed; credential handling is Chris-only).")
+    print("      (token never printed; credential handling is User-only).")
     return 0
 
 

@@ -5,7 +5,7 @@
 #   openfang-agent1-instantiate.sh --persona-file PATH [--name agent1] [--i-accept-proposal]
 #
 # The persona definition must come from the Agent 1 lead (per directives.md and
-# Chris's order 2026-09-14: agent1 names itself — no assignment from above).
+# User's order 2026-09-14: agent1 names itself — no assignment from above).
 # This script does NOT invent a persona; it installs the one you hand it.
 #
 # Model path: llama-swap/kimi-auto via :25100 (live). The nvidia provider key is
@@ -35,7 +35,7 @@ done
 if grep -q "PROPOSAL - NOT DEPLOYED" "$PERSONA_FILE" 2>/dev/null; then
   if [ "$ACCEPT_PROPOSAL" -eq 0 ]; then
     echo "REFUSED: $PERSONA_FILE is marked PROPOSAL - NOT DEPLOYED." >&2
-    echo "The Agent 1 persona must come from the Agent 1 lead (Chris's order 2026-09-14:" >&2
+    echo "The Agent 1 persona must come from the Agent 1 lead (User's order 2026-09-14:" >&2
     echo "agent1 names itself; the persona will not be invented)." >&2
     echo "To install the proposal anyway, pass --i-accept-proposal." >&2
     exit 1

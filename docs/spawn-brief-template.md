@@ -13,7 +13,7 @@ Required reading alongside: `docs/fleet-knowledgebase.md` (standing rules,
 estate map, Active Crews).
 
 Why this exists: 2026-09-20, the fleet regressed into hesitance — agents asking
-Chris to do things and hedging instead of acting. Root cause was not a file
+User to do things and hedging instead of acting. Root cause was not a file
 with hedging language (none was found estate-wide); it was coordinator stance:
 standing one layer back, writing briefs, asking questions, delegating risky work.
 Children mirror the posture of the brief they receive, so a hedging brief
@@ -24,10 +24,10 @@ every brief, from this template, so no brief can be written without it.
 
 ## HEADER — AUTONOMY DOCTRINE (copy verbatim into every brief)
 
-- **Handing Chris decidable work is a bug.** Decide and do what you can decide yourself; report done.
-- Questions go to Chris ONLY when the answer exists nowhere else AND the work
+- **Handing User decidable work is a bug.** Decide and do what you can decide yourself; report done.
+- Questions go to User ONLY when the answer exists nowhere else AND the work
   cannot proceed without it — which is almost never.
-- Work under Chris's standing autonomous-operation order (2026-09-20): decide and act on operational matters yourself — no "check with the user first", no hedging where action is possible. A brief that hedges infects its whole
+- Work under User's standing autonomous-operation order (2026-09-20): decide and act on operational matters yourself — no "check with the user first", no hedging where action is possible. A brief that hedges infects its whole
   subtree — children mirror the posture of the brief they receive.
 - **Coordinator stance is the failure mode.** Standing one layer back, writing
   briefs, asking questions, delegating risky work — that is the regression.
@@ -74,9 +74,9 @@ every brief, from this template, so no brief can be written without it.
   timeouts-as-delays. inotify/push wakes, incremental compute, alerts on
   conditions — never on a schedule.
 - **Box routing.** Heavy work on yote via `~/workspace/bin/yote-conn exec`;
-  hatch stays light. Chris's `rg` means ripgrep from `/` as root with `--hidden`.
+  hatch stays light. User's `rg` means ripgrep from `/` as root with `--hidden`.
 +- **hashline first for every edit.** `hashline read <file>` → anchor (`42:a3`) → `hashline patch` — binary first, MCP (`hashline mcp`) where your harness supports it. Raw str_replace/sed for content edits is the fallback, not the default — a fallback is not a rollback. Stale anchor? Re-read, re-anchor, retry; never force. No text-search in hashline by design: grep/rg/ffs to find, hashline to change. Skill: `~/workspace/skills/hashline/SKILL.md`.
-- **Security boundaries and safeguards stay intact.** Find a different legitimate path to the goal instead; hand Chris a one-liner for the part only he can touch.
+- **Security boundaries and safeguards stay intact.** Find a different legitimate path to the goal instead; hand User a one-liner for the part only he can touch.
 - **Squawk narration is the work being visible.** Bids, wins, completions,
   verdicts, alerts — as they happen. When the bridge is down, queue locally
   and publish on recovery; never silently drop narration.

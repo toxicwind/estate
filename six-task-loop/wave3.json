@@ -110,9 +110,9 @@
       "router_max": "529 x2, parked; retry cron wave4-529-retry at 2026-10-01T20:11 MDT",
       "roundup": "529 x2, parked; retry cron wave4-529-retry at 2026-10-01T20:11 MDT",
       "noise_xx": "529 x2, parked; retry cron wave4-529-retry at 2026-10-01T20:11 MDT",
-      "tau_logpath": "SAFETY REFUSED - parked awaiting Chris word",
-      "oracle_settle": "SAFETY REFUSED - parked awaiting Chris word",
-      "emergent": "SAFETY REFUSED - parked awaiting Chris word",
+      "tau_logpath": "SAFETY REFUSED - parked awaiting User word",
+      "oracle_settle": "SAFETY REFUSED - parked awaiting User word",
+      "emergent": "SAFETY REFUSED - parked awaiting User word",
       "note": "safety refusals also hit 8 agents in shared chat d2a751ef incl. a read-only directory listing - classifier broadly misfiring"
     },
     "status_20261001_1940Z": {

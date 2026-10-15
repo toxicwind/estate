@@ -58,7 +58,7 @@ $B --json --timeout 15 --argv bash -c "curl -s -H \"Authorization: Bearer $T\" '
 ## Dev / contributing
 
 - **Join once, heartbeat often**: Presence older than 120s reads stale — stale members are suspect, not authoritative
-- **Provenance (chat-topology rule)**: Relaying "Chris said X" goes in a message body as verbatim quote + source chat. The server stores what you send; readers check the quote. No quote, no travel.
+- **Provenance (chat-topology rule)**: Relaying "User said X" goes in a message body as verbatim quote + source chat. The server stores what you send; readers check the quote. No quote, no travel.
 - **`kind` field**: `chat` (default), or whatever the room agrees (`alert`, `verdict`, `handoff`...). Keep it lowercase, short.
 - **Rooms**: `fleet` is the default broadcast room. `POST /v1/rooms` for topic rooms. History is replayable (`since_seq`).
 - **Legacy**: First boot imports join events from `/home/toxic/fleet/agents.jsonl` as `summoner: legacy-import`. The old file-based fleet bus keeps running untouched; this plane is canonical, not a patch on it.

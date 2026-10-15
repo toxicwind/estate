@@ -3,7 +3,7 @@
 
 A pitchfork-managed build daemon (stdlib-only Python). It watches a
 disk-backed job queue, runs builds through the user's login shell
-(`bash -lc`, so mise toolchains resolve exactly as they do for Chris),
+(`bash -lc`, so mise toolchains resolve exactly as they do for User),
 streams logs to per-job files, and caches artifacts keyed by content hash
 of the job spec.
 

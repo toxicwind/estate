@@ -20,7 +20,7 @@ class TestIdentityParser(unittest.TestCase):
             "**Ember** \U0001F432 \u2014 a big buff dragon-canine dad.\n\n"
             "## How I carry myself\n\n"
             "Warm, strong, dependable.\n\n"
-            "**Chris** (Chris Ortega) \u2014 night-owl systems builder.\n"
+            "**User** (the operator) \u2014 night-owl systems builder.\n"
         )
         with tempfile.NamedTemporaryFile("w", suffix=".md", delete=False) as f:
             f.write(fixture)
@@ -48,11 +48,11 @@ class TestLessonRouter(unittest.TestCase):
         self.router = LessonRouter()
 
     def test_person_lesson_routes_to_user(self):
-        r = self.router.route("Chris lives in Colorado")
+        r = self.router.route("User lives in Colorado")
         self.assertEqual(r["recommended_target"], "USER.md")
 
     def test_doctrine_lesson_routes_to_soul(self):
-        r = self.router.route("Never ask Chris to close a gap that tools can close")
+        r = self.router.route("Never ask User to close a gap that tools can close")
         self.assertEqual(r["recommended_target"], "SOUL.md")
 
     def test_ops_lesson_routes_to_agents(self):

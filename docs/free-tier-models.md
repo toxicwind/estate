@@ -30,10 +30,10 @@ OpenRouter's current 19 `:free` IDs: `cohere/north-mini-code:free`, `dots-studio
 
 ## Kimi routing status (kimi-auto)
 
-- `kimi-auto` is Kimi-only by design (Chris's order). It returns an honest **503** when no Kimi model is healthy — no silent `gpt-oss-20b` fallback.
+- `kimi-auto` is Kimi-only by design (User's order). It returns an honest **503** when no Kimi model is healthy — no silent `gpt-oss-20b` fallback.
 - 7 Kimi `:free` IDs are wired in the `openrouter-kimi` herd peer (additive, nothing removed). They auto-activate if OpenRouter re-enables Kimi free — zero code changes needed.
 - **To route Kimi today**: top up OpenRouter credits at `openrouter.ai/settings/credits`, or provide `MOONSHOT_API_KEY`/`KIMI_API_KEY`. There is no Kimi/Moonshot key in `.secrets` at all.
-- Related: the dead `pollinations-free` herd peer stays in place (Chris: don't remove things).
+- Related: the dead `pollinations-free` herd peer stays in place (User: don't remove things).
 
 ## Key health flags
 

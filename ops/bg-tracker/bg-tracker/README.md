@@ -1,6 +1,6 @@
 # bg-tracker — background-task registry for the estate
 
-**Problem (Chris, 2026-09-20):** backgrounding/multitasking happens with no registry — detached procs go blind. Nobody knows who spawned what, why it's still alive, or whether it's safe to touch. Stale execution quiet for 12+ hours is extremely bad.
+**Problem (User, 2026-09-20):** backgrounding/multitasking happens with no registry — detached procs go blind. Nobody knows who spawned what, why it's still alive, or whether it's safe to touch. Stale execution quiet for 12+ hours is extremely bad.
 
 **Fix:** every backgrounded task is launched (or retro-registered) through this suite, which records who/what/why/pid in a durable per-box registry and audits live processes against it. Event-driven: nothing here polls on a timer. `bg-audit` runs on demand (or from an inotify/systemd-path trigger); tasks push their own heartbeats.
 

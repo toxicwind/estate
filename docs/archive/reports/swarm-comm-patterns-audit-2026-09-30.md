@@ -147,14 +147,14 @@ HF-native multi-agent (research → write → edit). Thin, but the HF-ecosystem 
 
 ---
 
-## Logging / observability notes (Chris's "awesome logs" question)
+## Logging / observability notes (User's "awesome logs" question)
 
 - **herd** (ours): structured Go logs, per-request tracing. The bar.
 - **YouMi_Agent**: OpenTelemetry tracing + audit logging by default — the only small repo that treats observability as a feature, not an afterthought.
 - **agent-sphere**: persisted reasoning + SSE event cache = full replay. Best "what happened" story.
 - **clawock**: `memory/decisions.jsonl` ledger + public scorecard — decisions are append-only and graded.
 - **three.ws**: signed action log — tamper-evident agent actions.
-- **Our provider agents** (the ones serving through herd): they log at the provider level, not the agent level — they do NOT have herd-grade structured logs. If Chris wants agent-level observability on provider-routed agents, that's a gap: we'd need to wrap provider calls with our own trace/span layer (OpenTelemetry, per YouMi's pattern).
+- **Our provider agents** (the ones serving through herd): they log at the provider level, not the agent level — they do NOT have herd-grade structured logs. If User wants agent-level observability on provider-routed agents, that's a gap: we'd need to wrap provider calls with our own trace/span layer (OpenTelemetry, per YouMi's pattern).
 
 ---
 

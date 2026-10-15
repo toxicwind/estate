@@ -1,7 +1,7 @@
 /**
  * The race engine — first VALID wins, hedged, with a winners ledger.
  *
- * Ported from hft-latency/bin/race.py (429 lines). This is the doctrine Chris
+ * Ported from hft-latency/bin/race.py (429 lines). This is the doctrine User
  * called out by name, so the semantics are preserved exactly rather than
  * tidied:
  *

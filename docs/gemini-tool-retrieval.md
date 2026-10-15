@@ -1,9 +1,9 @@
 # Gemini API Tool Retrieval EAP — integration brief
 
-Status: SPEC + BLOCKER. 2026-09-17. Chris asked for "the geminiapi text" and "the ecp docs".
+Status: SPEC + BLOCKER. 2026-09-17. User asked for "the geminiapi text" and "the ecp docs".
 ECP has no existence anywhere in the stack or in public Gemini docs — the email trail shows
 it is the **EAP** (Early Access Program): Gemini API **Tool Retrieval** (also called Tool Search).
-Source: ai.google.dev/gemini-api/docs/tool-retrieval (EAP-gated; Chris pasted the page 2026-09-17).
+Source: ai.google.dev/gemini-api/docs/tool-retrieval (EAP-gated; User pasted the page 2026-09-17).
 Confidential, under embargo until Google says otherwise.
 
 ## What it is
@@ -64,7 +64,7 @@ POST https://generativelanguage.googleapis.com/v1beta/interactions
 Preview build 2.16.0 (EAP-only): Python `google_genai-2.16.0-py3-none-any.whl`,
 TS `google-genai-2.16.0.tgz` — both at gs://gemini-api-eap-sdks/toolRetrieval/ (or Drive).
 
-## BLOCKER — action needed by Chris
+## BLOCKER — action needed by User
 
 Fully corrected audit 2026-09-17 (~04:30 MDT): right key (GEMINI_API_KEY_2, eap=1),
 right model (gemini-flash-tool-retrieval), right endpoint (v1beta/interactions),

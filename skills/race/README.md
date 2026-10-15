@@ -6,7 +6,7 @@
 </a>
 <!-- badges: end -->
 
-## Chris's latency-first engineering doctrine (NOT trading): latency is a correctness criterion.
+## User's latency-first engineering doctrine (NOT trading): latency is a correctness criterion.
 
 **What**: Race redundant approaches concurrently with fail-fast timeouts, first valid wins. Measure everything, keep the fast path hot; maximal = wider not harder; never roll back; borrow before inventing.
 

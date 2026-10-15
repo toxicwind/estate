@@ -1,6 +1,6 @@
 # paper-search
 
-Paper research is first-class in the fleet chat (Chris 2026-09-14 18:26 MDT).
+Paper research is first-class in the fleet chat (User 2026-09-14 18:26 MDT).
 
 ## The protocol
 

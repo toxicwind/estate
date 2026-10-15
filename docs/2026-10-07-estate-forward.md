@@ -119,7 +119,7 @@ estate main: chore: archive rescue scratch, sanitize gitmodules, README plane ma
 ranch  main: docs: plane map; chore: remove tack (archived)
 ```
 
-Push `main` (force only if history rewrite was part of the op and Chris confirmed that push).
+Push `main` (force only if history rewrite was part of the op and User confirmed that push).
 
 ---
 

@@ -33,7 +33,7 @@ durable presentation chat owner (e.g. Main chat) using `cron.update`.
     replaced with shape-ID references to `src/triggers.ts`.
   - `~/workspace/skills/tau-fork-pinning/SKILL.md` — `sudo chattr +i` →
     `chattr +i` (shape `sudo-passwordless`; administrative commands run
-    directly, pre-authenticated, intentional per Chris).
+    directly, pre-authenticated, intentional per User).
 - Intentionally untouched:
   - `_archive/*` mirrors (dead snapshots, no live schedules).
   - `cron.d/runonce/*` probes (diagnostic probes excluded from repair;

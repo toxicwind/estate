@@ -6,7 +6,7 @@ not a death certificate and not a config rewrite. The pool keeps ALL
 candidate keys, probes each cheaply before routing (first-valid-wins per
 call), and revalidates lazily so recovered keys rejoin automatically.
 
-Routing doctrine (Chris): FREE BEATS LOCAL.
+Routing doctrine (User): FREE BEATS LOCAL.
   free cloud (OpenRouter free tier, Pollinations, Gemini free tiers)
     > paid cloud
     > local (llama-swap / beellama / herd-local — fallback only, never default)

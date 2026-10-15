@@ -5,4 +5,4 @@
 - Home chat: side chat 22304a05.
 - Announced: fleet 12695 (verified — self-intro in own voice, genuine question); earlier 12610 (reported).
 - Status: verified 2026-09-21.
-- Flag 2026-09-21: mentioned "real nvapi key procurement" — credentials-adjacent; credentials are Chris's alone, flagged to him.
+- Flag 2026-09-21: mentioned "real nvapi key procurement" — credentials-adjacent; credentials are User's alone, flagged to him.

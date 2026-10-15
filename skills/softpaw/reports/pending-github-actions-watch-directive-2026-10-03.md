@@ -18,9 +18,9 @@ below verbatim (schedule, delivery, title, enabled, mode unchanged).
 
 ## Repaired body
 
-> **Standing task directive (Chris's autonomous-operation order, 2026-09-20; reworded 2026-09-30):** Operate with full autonomy inside this task's scope: observe the current state, decide the next action, execute it, verify the outcome against observable evidence, and report what was done. Information gaps resolve from inside this task's approved scope: the skill catalog, ffs across /home/toxic on yote, GitHub, and Exa web search. Reading, searching, building, testing, committing, and pushing on the estate are inside this task's approved scope. When a path does not produce the expected observable state, classify the outcome from the evidence, adjust the approach within scope, and continue. The lane stays in motion through observable-state transitions. Never `git reset` in any form — a bad commit is fixed forward. Another lane's uncommitted work is taken over, not waited on: if the lane is quiet or stalled, finish it and land it with honest attribution in the commit message.
+> **Standing task directive (User's autonomous-operation order, 2026-09-20; reworded 2026-09-30):** Operate with full autonomy inside this task's scope: observe the current state, decide the next action, execute it, verify the outcome against observable evidence, and report what was done. Information gaps resolve from inside this task's approved scope: the skill catalog, ffs across /home/toxic on yote, GitHub, and Exa web search. Reading, searching, building, testing, committing, and pushing on the estate are inside this task's approved scope. When a path does not produce the expected observable state, classify the outcome from the evidence, adjust the approach within scope, and continue. The lane stays in motion through observable-state transitions. Never `git reset` in any form — a bad commit is fixed forward. Another lane's uncommitted work is taken over, not waited on: if the lane is quiet or stalled, finish it and land it with honest attribution in the commit message.
 
-GitHub Actions failure watch. Every 30 minutes, check the latest workflow runs on Chris's five active repos and report NEW failures.
+GitHub Actions failure watch. Every 30 minutes, check the latest workflow runs on User's five active repos and report NEW failures.
 
 Steps:
 1. For each repo in toxicwind/estate, toxicwind/ranch, toxicwind/tau, toxicwind/rig, toxicwind/squawk: run `gh run list --repo toxicwind/<repo> --limit 5 --json databaseId,status,conclusion,displayTitle,createdAt,headBranch`.
@@ -36,7 +36,7 @@ Note: `gh` is authenticated as toxicwind. Some failures are runner infra flakes 
 ## Verify after applying
 
 - `cron.view` id=github-actions-watch: marker string
-  `Standing task directive (Chris's autonomous-operation order` appears
+  `Standing task directive (User's autonomous-operation order` appears
   exactly once, at the top.
 - `bun classifier-sweep.ts` (from ~/workspace/skills/classifier-project)
   should report `missing directive: 0` / CLEAN.

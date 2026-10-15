@@ -1,7 +1,7 @@
 # awrawr-pc save-path repair — final report (2026-09-15)
 
 ## Objective
-Chris: "fix awrawr save issues via modifying bdirge or whatever" + "maximal".
+User: "fix awrawr save issues via modifying bdirge or whatever" + "maximal".
 Added constraint: the mechanism must work from /home/toxic's real
 interactive/login bash, not just bridge exec.
 
@@ -60,7 +60,7 @@ concurrency lock, 64 KiB default frame (race winner).
   on its own restart; until then the daemon runs the identical live copy
   (synced via `cp` after every server commit).
 
-## Flags for Chris / other workers (not mine to fix)
+## Flags for User / other workers (not mine to fix)
 1. **Git metadata damage**: `.git/HEAD` vanished from BOTH
    `/home/toxic/estate` and `/home/toxic/estate/gear` in the same
    window (both restored by me from `refs/heads/main`). Something is
@@ -76,5 +76,5 @@ concurrency lock, 64 KiB default frame (race winner).
 ## Bottom line
 The save path no longer goes through the shell at all: no quoting, no
 substitution, no 90 s ceiling, resume on kill, hash-verified both directions,
-symlink escapes blocked, and it works from Chris's actual interactive login
+symlink escapes blocked, and it works from User's actual interactive login
 shell. Done, pushed, verified.

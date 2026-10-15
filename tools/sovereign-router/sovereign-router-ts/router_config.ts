@@ -317,7 +317,7 @@ export const DEAD_MODEL_IDS: Set<string> = new Set([
 ]);
 
 // ---------------------------------------------------------------------------
-// Live-metadata free eligibility (Chris 2026-09-17: routing must consume the
+// Live-metadata free eligibility (User 2026-09-17: routing must consume the
 // live /models metadata, not a divergent static list).
 //
 // modelFree(p, mid) is the single source of truth for "this model costs us

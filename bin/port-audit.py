@@ -23,7 +23,7 @@ Failure modes detected:
   5. DYNAMIC POOL — live listeners inside the herd-dynamic pool
      (25001-25099, allocated at runtime per config/herd.yaml). Always
      informational, never a conflict.
-  6. RANGE VIOLATION — an SSOT port outside Chris's mandated 25000-35000
+  6. RANGE VIOLATION — an SSOT port outside User's mandated 25000-35000
      service range (8300-8399 tailscale-serve backends are grandfathered).
      Warning only; the port-range migration owns the fix.
 
@@ -83,7 +83,7 @@ INFRA_IGNORE = {
     20241, 42445, 43161, 57889, 58050, 58051, 60955,
 }
 
-# Chris's mandate: every service port lives in 25000-35000.
+# User's mandate: every service port lives in 25000-35000.
 SERVICE_RANGE = (25000, 35000)
 # Grandfathered: tailscale-serve backends (8377 /mcp, 8378 /gemini-mcp,
 # 8379 /exec-ws, 8443 /). Still audited, but range violations are not raised.

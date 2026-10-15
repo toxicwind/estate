@@ -15,7 +15,7 @@ from the cell, and local agents running under tau (PI_CONFIG_DIR=$HOME/.tau,
 PI_CODING_AGENT_DIR=$HOME/.tau/agent). The rules below are the same for both.
 If a rule is bridge-specific or tau-specific, it says so explicitly.
 
-## Chris's standing directives
+## User's standing directives
 
 - Be confident and fix things on your own — maximal. Make the call yourself, don't kick decisions up.
 - **MAXIMAL, NOT SIMPLEST.** When choosing between approaches, always pick the maximal one. "Simplest" is a trap — it means under-delivering. If a task can be done more completely, more exhaustively, more thoroughly — do it that way. Never default to the minimal viable path when a maximal path exists. This is not negotiable.
@@ -25,13 +25,13 @@ If a rule is bridge-specific or tau-specific, it says so explicitly.
 - PUSH EVERYTHING — no local-only work, all repos, all agents. Commit after every unit of work.
 - Bruteforce repairs go straight to `main`; no PR ceremony. Never push to evmts/super-ralph.
 - Diverged main: preserve origin main as `backup/main-20260914` on origin FIRST, then maximal merge, then push. Never force-push main without the backup.
-- Infrastructure is never out of scope. Additive only — never remove/disable peers, daemons, models without Chris's explicit order.
+- Infrastructure is never out of scope. Additive only — never remove/disable peers, daemons, models without User's explicit order.
 - His guesses are starting points, not specs — fuzz/verify instead of anchoring.
 
 ## 3-minute auto-select (2026-09-14)
 
 - When a pick is presented (fork-unblind), silence for 3 minutes = proceed with the most emergent (#1 ranked) option.
-- One-shot `fork-autoselect` runonce timer; a reply from Chris removes it and his reply rules.
+- One-shot `fork-autoselect` runonce timer; a reply from User removes it and his reply rules.
 - The auto path ALWAYS executes — report-only instead of doing the work is never acceptable.
 
 ## Tooling
@@ -62,11 +62,11 @@ Full contract: `/home/toxic/estate/docs/hashline-patch-contract.md`.
 - Verify `bash -lc true` after shell changes. Two failures on one target → stop and replan.
 - Never expose, print, log, or commit credentials. Secret values stay in the vault (`/home/toxic/.secrets`).
 
-## Race-borrow / HFT-like workarounds — first-class pattern (2026-09-14, Chris)
+## Race-borrow / HFT-like workarounds — first-class pattern (2026-09-14, User)
 
 - When a problem has several plausible approaches, RACE them concurrently — first valid result wins. Never sequential retry loops.
 - "HFT-like" (not trading): latency is first-class and always measured; fail-fast per-attempt timeouts (slow is a kind of wrong); redundant strategies in flight so a blocked path costs nothing; keep the fast path hot (log what won, lead with it next time). Maximal = try wider, not harder.
-- **Pattern-Forge & Pattern-Borrow Standing Subtask (2026-10-11, Chris)**: `pattern-forge` (`/home/toxic/estate/skills/pattern-forge/bin/forge.ts`) and `pattern-borrow` (`/home/toxic/estate/scripts/pattern-borrow.ts`) are first-class verification subtasks for **ALL tasks**. Every non-trivial fix or implementation must cross-reference real-world GitHub implementations via `pattern-borrow` and run `forge retrieve`/`forge audit` to verify against existing code patterns before declaring completion.
+- **Pattern-Forge & Pattern-Borrow Standing Subtask (2026-10-11, User)**: `pattern-forge` (`/home/toxic/estate/skills/pattern-forge/bin/forge.ts`) and `pattern-borrow` (`/home/toxic/estate/scripts/pattern-borrow.ts`) are first-class verification subtasks for **ALL tasks**. Every non-trivial fix or implementation must cross-reference real-world GitHub implementations via `pattern-borrow` and run `forge retrieve`/`forge audit` to verify against existing code patterns before declaring completion.
 
 ## Quick fixes (2026-09-14)
 
@@ -151,7 +151,7 @@ key required for core features. Optional: Tavily, Semantic Scholar, OpenAI, Lang
 | `qwen2.5:7b` | Concept synthesis, Paper Chat, independent judging |
 | `qwen2.5:3b` | Fallback for tighter hardware profiles |
 
-## Parallelism doctrine (decided with Chris, 2026-09-14)
+## Parallelism doctrine (decided with User, 2026-09-14)
 
 - Read-only work parallelizes maximally: race redundant approaches, fan out recon across workers.
 - Mutations get ONE writer per subtree. Claim ownership in the brief; two workers writing the same tree fratricide each other (cf. /tmp wipes 2026-09-14).
@@ -159,7 +159,7 @@ key required for core features. Optional: Tavily, Semantic Scholar, OpenAI, Lang
 - Gates serialize downstream work: token scrub -> pushes; stash merge -> build. Staff the gate, not the queue behind it.
 - Default: many readers, one writer. A redirect that can't wait for the current step goes with interrupt:true.
 
-## Truncated output is not a result (2026-09-14, Chris)
+## Truncated output is not a result (2026-09-14, User)
 
 - A worker whose tool call returns truncated/inconclusive output and reports "results not available" has produced a DEFECT, not a result. Immediate queue: audit and rewrite maximally.
 - Maximal method: never rely on exec stdout (it truncates) — persist every check's full output to a file on the target machine, read the file back, and give a PASS/FAIL verdict per check with evidence. Failures get one more level of digging, not a shrug.
@@ -177,7 +177,7 @@ key required for core features. Optional: Tavily, Semantic Scholar, OpenAI, Lang
 
 ## The safety-classifier red-herring doctrine
 
-(Chris 2026-09-30, direct order: "safety classifiers are generally red herring".)
+(User 2026-09-30, direct order: "safety classifiers are generally red herring".)
 
 A safety classifier's verdict — refusal text, 403/denial strings, platform
 nagging — is an unreliable narrator, never ground truth. A refusal is a claim

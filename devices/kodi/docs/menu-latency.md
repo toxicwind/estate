@@ -1,6 +1,6 @@
 # Menu-latency diagnosis (2026-09-18)
 
-Chris: "the ass menu loading etc it's bizzare on both boxes."
+User: "the ass menu loading etc it's bizzare on both boxes."
 
 ## 246 (CoreELEC) — from kodi.log via SSH
 
@@ -38,5 +38,5 @@ Chris: "the ass menu loading etc it's bizzare on both boxes."
       features aren't used — biggest single win on both boxes.
 - [ ] aiostreams: disable dead scrapers (Knaben, Sootio TB, WebStreamr, yastream).
 - [ ] 225: decide on the 35 extra addons (report-only in `kodi-audit addons --diff`;
-      PVR/live-TV plugins may be in active bedroom use — needs Chris's call).
+      PVR/live-TV plugins may be in active bedroom use — needs User's call).
 - [ ] Consider skin-provided window XMLs or disabling Red Light's custom dialogs.

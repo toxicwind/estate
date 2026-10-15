@@ -1,13 +1,13 @@
-<div align="center">
-
-# 🏰 estate
-
-**One human's entire compute estate — a swarm of distributed boxes, 86 supervised daemons.**
-
 [![Stars](https://img.shields.io/github/stars/toxicwind/estate?style=for-the-badge)](https://github.com/toxicwind/estate/stargazers)
 [![Last commit](https://img.shields.io/github/last-commit/toxicwind/estate?style=for-the-badge)](https://github.com/toxicwind/estate/commits/main)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)](LICENSE)
 [![Repo size](https://img.shields.io/github/repo-size/toxicwind/estate?style=for-the-badge)](https://github.com/toxicwind/estate)
+
+<div align="center">
+
+# 🏰 estate
+
+**One human's entire compute estate — a swarm of distributed boxes, 93 supervised daemons.**
 
 *The control plane for a one-person AI lab: local + cloud model routing, a fleet of named agents that actually talk to each other, and every daemon health-checked under one supervisor.*
 
@@ -27,25 +27,24 @@
 
 ```mermaid
 flowchart TB
-    subgraph hatch["🐣 hatch — control cell · 2 vCPU container"]
+    subgraph kite["🪁 kite — control cell (formerly hatch) · 2 vCPU container"]
         EMBER["🐲 Ember — coordinator\nreads the fleet, briefs the pack,\ncommits everything"]
     end
     subgraph yote["🖥️ yote — heavy host · 16 cores / 62 GB / RTX 3090"]
-        HERD["🚂 <b>:25100 herd</b>\nlocal model front door\n116 on-box GGUFs via llama.cpp"]
+        HERD["🚂 <b>:25100 herd</b>\nlocal model front door\n52 models via llama.cpp"]
         FLOCK["🦅 <b>:25193 flock</b>\ncloud provider router\nNIM · OpenRouter · Groq · Cerebras"]
-        SOV["🧭 <b>:25104 sovereign-router-ts</b>\nstrategy router · 52 live models"]
+        FLK["🔥 <b>:25148 flicker</b>\nranch build daemon · POST /api/jobs"]
         GH["🏠 <b>:25127 gatehouse</b>\nMCP gateway"]
-        BUILD["🏗️ <b>:25155 nativelink & :25148 mbx</b>\nBazel REAPI + mise task cache"]
-        SQ["💬 <b>squawk</b> — the fleet\n:25147 ws · :25135 feed · :25136 ui\nnamed agents, live chat"]
-        PF["🔱 <b>pitchfork</b>\n86 daemons · health-checked\n/restart-verified"]
+                SQ["💬 <b>squawk</b> — the fleet\n:25135 feed · :25136 ui\nnamed agents, live chat"]
+        PF["🔱 <b>pitchfork</b>\n93 daemons · health-checked\n/restart-verified"]
         KP["🔑 <b>:25109 keypool</b>\nprovider key rotation"]
         HERD -->|"cloud overflow"| FLOCK
         HERD -->|"depends on"| GH
     end
-    EMBER <-->|"yote-conn bridge\nfull admin, as Chris himself"| yote
+    EMBER <-->|"yote-conn bridge\nfull admin, as User himself"| yote
 ```
 
-## 🔍 Tour it live — 3 commands
+## 🔍 Tour it live — 5 commands
 
 Every command below was run against the live estate while writing this README. Paste them on any box that can reach yote:
 
@@ -53,8 +52,8 @@ Every command below was run against the live estate while writing this README. P
 # 1. Ask the local router what models are awake right now
 curl -s http://127.0.0.1:25100/v1/models | head -c 300
 
-# 2. Check the strategy router's health (52 live models at time of writing)
-curl -s http://127.0.0.1:25104/health
+# 2. Check the flock cloud router's health
+curl -s http://127.0.0.1:25193/health
 
 # 3. See the agent fleet's live squawk chat feed (supersedes legacy estate-chat)
 curl -s http://127.0.0.1:25135/health
@@ -62,8 +61,10 @@ curl -s http://127.0.0.1:25135/health
 # 4. Check the oracle decision corral (prediction-market consensus loop)
 curl -s http://127.0.0.1:25151/health
 
-# 5. Check the NativeLink REAPI build server status
-curl -s http://127.0.0.1:25155/status
+# 5. Check the flicker build daemon (ranch build jobs)
+curl -s http://127.0.0.1:25148/api/jobs -X POST -d '{}' | head -c 200
+```
+
 <details>
 <summary><b>Table of Contents</b></summary>
 
@@ -84,13 +85,13 @@ curl -s http://127.0.0.1:25155/status
 
 ## 🏔️ About
 
-**estate** is Chris's personal infrastructure monorepo — the whole laboratory, not a demo of one. It answers a single question: *what does it take for one human to run a serious AI operation across an interconnected swarm of machines?*
+**estate** is User's personal infrastructure monorepo — the whole laboratory, not a demo of one. It answers a single question: *what does it take for one human to run a serious AI operation across an interconnected swarm of machines?*
 
 The answer, as committed here:
 
-- **A model-routing layer** that treats local and cloud inference as one fabric. `herd` (:25100) fronts 116 on-box GGUFs through llama.cpp engines; anything it can't serve overflows to `flock` (:25193), a Rust proxy that routes across cloud providers with key pools, 429 rotation, circuit breakers, and health/Elo scoring. `sovereign-router-ts` (:25104) sits above with strategy routing across 52 live models.
+- **A model-routing layer** that treats local and cloud inference as one fabric. `herd` (:25100) fronts the on-box GGUFs through llama.cpp engines — 52 models served; anything it can't serve overflows to `flock` (:25193), a Rust proxy that routes across cloud providers with key pools, 429 rotation, circuit breakers, and health/Elo scoring. herd currently serves 52 models on-box. The legacy `sovereign-router-ts` (:25104) was retired — nothing listens there anymore.
 - **A fleet, not a script.** [squawk](https://github.com/toxicwind/ranch/tree/main/squawk) is a real multi-agent chat plane — signed, sequenced message files over a websocket (:25147) and feed (:25135). Named agents with actual personas join it, argue, bid on work, and narrate what they're doing. The fleet channel is the live operations log.
-- **A decision engine.** The oracle runs prediction-market work loops: biddable tasks, evidence-backed yes/no verdicts, a tamper-evident ledger. When a call needs Chris's authority and he's not around, the oracle's verdict *is* his approval.
+- **A decision engine.** The oracle runs prediction-market work loops: biddable tasks, evidence-backed yes/no verdicts, a tamper-evident ledger. When a call needs User's authority and he's not around, the oracle's verdict *is* his approval.
 - **Supervision as a first-class citizen.** 86 daemons live in `pitchfork.toml`, each health-checked, each restartable through its owning project's manifest. "Works until restart" is not a fix here — every fix lands in real files, in the owning repo, and survives a full restart.
 - **The ranch.** All project work lives in the sibling monorepo [`toxicwind/ranch`](https://github.com/toxicwind/ranch) (gitignored here, own repo, own history). The estate is the control plane; the ranch is the workshop.
 
@@ -104,8 +105,8 @@ The estate runs across an interconnected swarm of compute nodes, edge workers, a
 
 | Node / Tier | Hardware / Profile | Role & Services |
 |---|---|---|
-| 🖥️ **yote** (`awrawr-pc`) | 16 cores (Ryzen 7 8700F) / 62 GiB DDR5 / RTX 3090 24 GB | **Heavy Core**: Local LLM herd (llama.cpp/116 GGUFs on :25100), strategy router (:25104), gatehouse MCP (:25127), keypool (:25109), build caches (:25148/:25155), and persistent state. |
-| 🐣 **hatch** | 2-vCPU cell container on 126-core EPYC host | **Control Cell**: High-velocity agent coordination, Ember dispatch, and fleet briefs over the `yote-conn` bridge. |
+| 🖥️ **yote** (`awrawr-pc`) | 16 cores (Ryzen 7 8700F) / 62 GiB DDR5 / RTX 3090 24 GB | **Heavy Core**: Local LLM herd (llama.cpp on :25100 — 52 models served), gatehouse MCP (:25127), keypool (:25109), flicker build daemon (:25148), and persistent state. |
+| 🪁 **kite** (formerly hatch) | 2-vCPU cell container on 126-core EPYC host | **Control Cell**: High-velocity agent coordination, Ember dispatch, and fleet briefs over the `yote-conn` bridge. Live checkout `/home/toxic/kite/kite`; CLI at [toxicwind/kite-cli](https://github.com/toxicwind/kite-cli). |
 | 🌐 **Dedicated Servers (dedis)** | Heterogeneous remote Linux iron | High-throughput distributed task execution, automated CI/CD runners, and background scraper workloads. |
 | 📱 **Edge & Fleet Nodes** | Pixel 9 Pro XL (ADB/Termux), Android fleet | Sensor endpoints, mobile testing harness, and localized satellite runners. |
 
@@ -113,28 +114,28 @@ The rule is absolute: **heavy work belongs on yote and dedicated worker nodes, n
 
 ## 🗂️ Repo topology — three repos, one estate
 
-The estate's work is split across three GitHub repos. All three `main` SHAs below were verified live on 2026-10-02 (`git ls-remote`).
+The estate's work is split across three GitHub repos. All three `main` SHAs below were verified live on 2026-10-15 (`git ls-remote`).
 
 | Repo | Visibility | `main` (verified) | What it is |
 |---|---|---|---|
-| [toxicwind/estate](https://github.com/toxicwind/estate) | PUBLIC | `4bd380beab` | This repo — the control plane. |
-| [toxicwind/ranch](https://github.com/toxicwind/ranch) | PUBLIC | `4323dda` | The workshop — nested in the checkout at `ranch/` (gitignored here, own repo, own history). |
-| [toxicwind/hatch](https://github.com/toxicwind/hatch) | PRIVATE | `5051e8e` | The control-cell repo — split out of this repo's former `hatch/` tree with full history (see below). Checked out live at `/home/toxic/hatch` on yote; tracked/referenced by the estate but no longer inside it. |
+| [toxicwind/estate](https://github.com/toxicwind/estate) | PUBLIC | `afc857114` | This repo — the control plane. |
+| [toxicwind/ranch](https://github.com/toxicwind/ranch) | PUBLIC | `57d56a3ee` | The workshop — nested in the checkout at `ranch/` (gitignored here, own repo, own history). |
+| [toxicwind/hatch](https://github.com/toxicwind/hatch) | PRIVATE | `69bb4b0b6` | The control-cell repo — split out of this repo's former `hatch/` tree with full history (see below). Checked out live at `/home/toxic/hatch` on yote; tracked/referenced by the estate but no longer inside it. |
 
-**The hatch split.** The `hatch/` control-cell tree was split out into `toxicwind/hatch` with full history ([final split `d050f680`](https://github.com/toxicwind/hatch/commit/d050f680c51f8da9949f73161a11c6ed626883c7) — 171 commits, 593 files: agents, bin, cell-files, crons, docs, pollers, task-launch, the sidechat shim, …). The hatch repo is PRIVATE: control-cell internals stay behind the fence. On 2026-10-02 (Chris's direct order) `hatch/` was removed from this repo entirely — the live checkout is `/home/toxic/hatch` on yote, and the estate references it (reshim cron, pollers, docs) without containing it.
+**The hatch split.** The `hatch/` control-cell tree was split out into `toxicwind/hatch` with full history ([final split `d050f680`](https://github.com/toxicwind/hatch/commit/d050f680c51f8da9949f73161a11c6ed626883c7) — 171 commits, 593 files: agents, bin, cell-files, crons, docs, pollers, task-launch, the sidechat shim, …). The hatch repo is PRIVATE: control-cell internals stay behind the fence. On 2026-10-02 (User's direct order) `hatch/` removal was ordered; completed 2026-10-15 (the last 258 stale in-tree files removed, backup branch `backup/hatch-tree-20261015`) — the live checkout is `/home/toxic/hatch` on yote, and the estate references it (reshim cron, pollers, docs) without containing it.
 
-**Q1 resolved — `hatch/` removed.** On 2026-10-02 Chris ordered the move completed: `hatch/` was removed from the estate tree in commit [`4bd380beab`](https://github.com/toxicwind/estate/commit/4bd380beab01db1c0cda054a3f2ac75fa18acd9d) ("Remove hatch/ — moved to toxicwind/hatch (PRIVATE)"). No submodule, no in-tree copy — the estate references `toxicwind/hatch` (live at `/home/toxic/hatch` on yote) and does not contain it.
+**Q1 resolved — `hatch/` removed.** On 2026-10-02 User ordered the move completed: `hatch/` was removed from the estate tree in commit [`4bd380beab`](https://github.com/toxicwind/estate/commit/4bd380beab01db1c0cda054a3f2ac75fa18acd9d) ("Remove hatch/ — moved to toxicwind/hatch (PRIVATE)"). No submodule, no in-tree copy — the estate references `toxicwind/hatch` (live at `/home/toxic/hatch` on yote) and does not contain it.
 
 ### Top-level repo map
 
-What lives where in this repo, at the top level (all verified present 2026-10-02):
+What lives where in this repo, at the top level (all verified present 2026-10-15):
 
 | Path | Role |
 |---|---|
 | `ranch/` | Nested project monorepo ([toxicwind/ranch](https://github.com/toxicwind/ranch)) — gitignored here, own history. |
 | `bin/` | Estate-wide operational scripts (`estate-reconcile`, `estate-scan`, `audit-estate.sh`, …). |
 | `docs/` | Estate docs — start with [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). |
-| `pitchfork.toml` | Composed daemon inventory (82 daemons) — generated, edit the project manifests. |
+| `pitchfork.toml` | Composed daemon inventory (93 daemons) — generated, edit the project manifests. |
 | `pitchfork.d/` | Per-project daemon manifests — the source of `pitchfork.toml`. |
 | `config/ports.env` | Port SSOT. |
 | `stack/` | Service launch scripts (`stack/services/herd.sh`, …). |
@@ -142,27 +143,27 @@ What lives where in this repo, at the top level (all verified present 2026-10-02
 
 ## 🗺️ Service map
 
-Every row below was verified against the live box on 2026-10-02 (port open + identity probed). This table is the contract — if a row lies, that's a bug, file it.
+Every row below was verified against the live box on 2026-10-15 (port probed + listener checked via `ss`). This table is the contract — if a row lies, that's a bug, file it.
 
 | Service | Port | What it is |
 |---|---|---|
 | 🚂 **herd** | `25100` | Local model front door. `/v1/models` serves the on-box GGUF catalog (llama-swap engines on `:25001+`); cloud traffic overflows to flock. Launched via `stack/services/herd.sh`, depends on gatehouse. |
 | 🦅 **flock** | `25193` | External provider router (Rust). Strategies, key pools, 429 rotation, circuit breakers, health/Elo. Auth-gated — bring a `Bearer` key. |
-| 🧭 **sovereign-router-ts** | `25104` | Strategy router, `v3.2`. Auto strategy, 52 live models at time of writing. |
+| 🧭 ~~**sovereign-router-ts**~~ | ~~`25104`~~ | **RETIRED** — no listener, no daemon definition (verified 2026-10-15). The fleet default moved to `estate/free` via flock/herd. |
 | 🏠 **gatehouse** | `25127` | MCP gateway — tool serving, a peer of the routers, not their parent. Has a `/ui/`. |
-| 📱 **phone-sentinel** | `25178` | Network-reactive ADB sentinel for Pixel 9 Pro XL across LAN (`10.0.0.77`) & Tailscale (`100.123.57.58`). |
+| 📱 ~~**phone-sentinel**~~ | ~~`25178`~~ | **DOWN** — no listener (verified 2026-10-15). |
 | 🔑 **keypool** | `25109` | Provider key pool sidecar. `/health` → `{"ok":true,"service":"keypool"}`. |
 | 🛡️ **model-guard** | `25101` | Inference safety layer. *(Fleet note 2026-10-02: was serving its upstream-unreachable fallback when this table was written — tracked as a live issue, not doc drift.)* |
-| 💬 **squawk-ws** | `25147` | Fleet websocket — the live socket the pack talks over. |
-| 📜 **squawk feed** | `25135` | Fleet message feed API (`squawk_feed.py`) — legacy, superseded 2026-10-03 by channel-aware `squawk-ui.ts`; nothing depends on it. |
-| 🏗️ **nativelink** | `25155`/`25157` | High-performance Bazel/Remote Execution API (REAPI) build server and remote cache. Serves frontend on `:25155` and worker on `:25157`. Supersedes legacy buildsrv. |
-| 🧰 **mbx-cache** | `25148` | Mise-compatible remote task cache. Direct Rust binary, immutable content-addressed artifacts, no container runtime. |
+| 💬 ~~**squawk-ws**~~ | ~~`25147`~~ | **DOWN** — no listener (verified 2026-10-15); the feed (:25135) and UI (:25136) carry the channel. |
+| 📜 **squawk feed** | `25135` | Fleet message feed API — the live channel plane (`squawk-ws` :25147 is down as of 2026-10-15). |
+| 🏗️ ~~**nativelink**~~ | ~~`25155`/`25157`~~ | **DOWN** — no listener on either port (verified 2026-10-15). |
+| 🔥 **flicker** | `25148` | Ranch build daemon (`POST /api/jobs`). Direct binary, no container runtime. (Formerly mislabeled "mbx-cache".) |
 | 🔮 **oracle** | `25151` | Standalone decision corral — prediction-market work loop, biddable tasks, dated yes/no verdicts on evidence, tamper-evident ledger. |
-| 🖥️ **fleet-ui** | `25136` | Fleet web UI, reachable over the tailnet. |
+| 🖥️ **fleet-ui** | `25136` | Fleet web UI, reachable over the tailnet (serves at `/`). |
 | 📊 **Ralph dashboard** | `25194` | Ops dashboard (HTML UI). |
-| 🧠 **codebase-memory** | `25195` | Codebase graph UI — "Codebase Memory — Graph". |
+| 🧠 **codebase-memory** | `25195` | Codebase graph UI (serves at `/`). |
 
-Full daemon inventory (86, with health checks and restart paths): [`pitchfork.toml`](pitchfork.toml) — port SSOT is `config/ports.env`.
+Full daemon inventory (93, with health checks and restart paths): [`pitchfork.toml`](pitchfork.toml) — port SSOT is `config/ports.env`.
 
 ## 🏕️ The ranch
 
@@ -188,16 +189,18 @@ Key operational scripts live in `bin/` (`estate-reconcile`, `estate-scan`, `audi
 
 ## 🚀 Getting started
 
-**Prerequisites:** this repo runs Chris's estate — it is personal infrastructure, not a library. You don't `pip install` it; you *tour* it. To run the tour you need network reachability to yote (the tailnet) and nothing else.
+**Prerequisites:** this repo runs User's estate — it is personal infrastructure, not a library. You don't `pip install` it; you *tour* it. To run the tour you need network reachability to yote (the tailnet) and nothing else.
 
-**The 30-second tour** (same three commands as above — they are the quickstart):
+**The 30-second tour** (same five commands as above — they are the quickstart):
 
 ```bash
 # 1. What models are awake?
 curl -s http://127.0.0.1:25100/v1/models | python3 -c "import json,sys; [print(m['id']) for m in json.load(sys.stdin)['data'][:5]]"
 
-# 2. Is the strategy router healthy?
-curl -s http://127.0.0.1:25104/health | head -c 200; echo
+# 2. Is the flock cloud router healthy?
+curl -s http://127.0.0.1:25193/health | head -c 200; echo
+
+```
 
 # 3. Is the squawk pack feed active?
 curl -s http://127.0.0.1:25135/health
@@ -211,13 +214,13 @@ curl -s http://127.0.0.1:25155/status
 
 - [x] Estate repo public, ranch public, hatch private — visibility policy set 2026-10-02
 - [x] hatch split — `hatch/` split out to [toxicwind/hatch](https://github.com/toxicwind/hatch) (final split `d050f680`, 171 commits, 593 files)
-- [x] 86 daemons under pitchfork supervision with health checks
-- [x] herd/flock/sovereign-router three-layer model routing, live
-- [ ] **Cuttinggate**: permissionless, health-gated cutover off `:25104` — gates green means anyone may cut over
-- [ ] **Compression proxy**: one Sigma-owned runtime (retire the redundant pair)
-- [ ] **Oracle proof**: real dated yes/no verdict before the cutover leans on it
+- [x] 93 daemons under pitchfork supervision with health checks
+- [x] herd/flock two-layer model routing, live (legacy sovereign-router :25104 retired)
+- [x] **Legacy router retirement**: `:25104` (sovereign-router-ts) retired — nothing listens, no daemon definition (verified 2026-10-15)
+- [ ] **Squawk-ws revival or removal**: :25147 has no listener — either revive the websocket lane or drop it from the surface
+- [ ] **Oracle proof**: real dated yes/no verdict before autonomy leans on it
 - [ ] **Per-lane pollers**: one cheap heartbeat poller per agent lane
-- [x] **hatch Q1 resolved** — `hatch/` removed from the estate tree (estate `4bd380beab`, 2026-10-02, Chris's direct order); repo lives at [toxicwind/hatch](https://github.com/toxicwind/hatch), live checkout `/home/toxic/hatch` on yote
+- [x] **hatch Q1 resolved** — `hatch/` removed from the estate tree (estate `4bd380beab`, 2026-10-02, User's direct order); repo lives at [toxicwind/hatch](https://github.com/toxicwind/hatch), live checkout `/home/toxic/kite/kite` on yote (the project has rebranded hatch → **kite**)
 
 ## 🤝 Contributing
 
@@ -231,7 +234,7 @@ Security policy and reporting: [`.github/SECURITY.md`](.github/SECURITY.md). Not
 
 ## 📬 Contact & Acknowledgments
 
-Maintainer: **Chris** ([@toxicwind](https://github.com/toxicwind)) — the human the whole estate serves.
+Maintainer: **User** ([@toxicwind](https://github.com/toxicwind)) — the human the whole estate serves.
 
 Acknowledgments: the herd/flock/tau lineage builds on outstanding open-source work (llama.cpp, the Bun and Rust ecosystems, and the many provider APIs the routers perch on); the fleet's culture owes a debt to every agent that ever posted a hello in its own voice. Full third-party notices: [`THIRD-PARTY-NOTICES.txt`](THIRD-PARTY-NOTICES.txt).
 

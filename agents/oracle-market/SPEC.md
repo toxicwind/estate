@@ -314,11 +314,11 @@ tasks without reading Active Crews. Now the mechanism gates it:
   (`bid_grandfathered`) so in-flight bids across the deploy restart
   aren't burned.
 
-## 11. Oracle-as-approval protocol (Chris 2026-09-21)
+## 11. Oracle-as-approval protocol (User 2026-09-21)
 
-Standing directive: the oracle stands in for Chris's approvals. When an
+Standing directive: the oracle stands in for User's approvals. When an
 agent needs his sign-off (go/no-go, upgrade petitions, risky-but-reversible
-calls), it does NOT wait on Chris — it files the decision as a dated yes/no
+calls), it does NOT wait on User — it files the decision as a dated yes/no
 oracle question with evidence and treats the verdict as his word. Final.
 
 - **Framing.** Dated yes/no: `"Will <concrete outcome> by <YYYY-MM-DD>?"`.
@@ -334,18 +334,18 @@ oracle question with evidence and treats the verdict as his word. Final.
   or `POST 127.0.0.1:25151/ask` (daemon). Cost is real (~$0.05/ask) —
   don't file frivolous approvals.
 - **Verdict handling.** Read `status` in the verdict record. A firm
-  YES/NO (probability past the abstention gate) **is** Chris's approval:
+  YES/NO (probability past the abstention gate) **is** User's approval:
   act immediately, do not re-ask, do not wait. `status: escalate` means
   the oracle abstained (fail-closed, e.g. no calibration data for the
-  question class) — that is the ONE case that goes to Chris directly
+  question class) — that is the ONE case that goes to User directly
   (the HUMAN step of the escalation ladder, §escalation.py).
 - **Ledger.** Every approval verdict is appended to the market ledger as
   an `oracle-approval` event:
   `{"event":"oracle-approval","question":"...","verdict":"yes|no|escalate",
   "probability":0.0-1.0,"evidence_ids":[...],"agent":"...","ts":...}`.
   The audit trail is public.
-- **Hard boundary (no exceptions).** Money and credentials stay Chris's
+- **Hard boundary (no exceptions).** Money and credentials stay User's
   alone. The oracle can NEVER approve spending, top-ups, credential
-  minting/rotation, or anything credential-shaped. Those go to Chris
+  minting/rotation, or anything credential-shaped. Those go to User
   directly — no verdict, no debate, no workaround.
 - Fleet KB mirror: `docs/fleet-knowledgebase.md` rule 15 + procedure.

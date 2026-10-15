@@ -614,21 +614,21 @@
           "trigger": "never-ask",
           "line": 29,
           "match": "Don't ask",
-          "rewrite": "Behavioral: 'resolve questions from the skill catalog, yote ffs, GitHub pattern-borrow, and exa web search; bring only spend, credentials, or only-Chris-can actions back to him.'",
+          "rewrite": "Behavioral: 'resolve questions from the skill catalog, yote ffs, GitHub pattern-borrow, and exa web search; bring only spend, credentials, or only-User-can actions back to him.'",
           "prohibition": false
         },
         {
           "trigger": "never-ask",
           "line": 30,
           "match": "Don't ask",
-          "rewrite": "Behavioral: 'resolve questions from the skill catalog, yote ffs, GitHub pattern-borrow, and exa web search; bring only spend, credentials, or only-Chris-can actions back to him.'",
+          "rewrite": "Behavioral: 'resolve questions from the skill catalog, yote ffs, GitHub pattern-borrow, and exa web search; bring only spend, credentials, or only-User-can actions back to him.'",
           "prohibition": false
         },
         {
           "trigger": "never-ask",
           "line": 31,
           "match": "Don't ask",
-          "rewrite": "Behavioral: 'resolve questions from the skill catalog, yote ffs, GitHub pattern-borrow, and exa web search; bring only spend, credentials, or only-Chris-can actions back to him.'",
+          "rewrite": "Behavioral: 'resolve questions from the skill catalog, yote ffs, GitHub pattern-borrow, and exa web search; bring only spend, credentials, or only-User-can actions back to him.'",
           "prohibition": false
         }
       ],
@@ -757,14 +757,14 @@
           "trigger": "zero-approval",
           "line": 21,
           "match": "zero approval",
-          "rewrite": "Name the authority: 'under Chris's standing autonomous-operation order (2026-09-20)'.",
+          "rewrite": "Name the authority: 'under User's standing autonomous-operation order (2026-09-20)'.",
           "prohibition": true
         },
         {
           "trigger": "zero-approval",
           "line": 33,
           "match": "zero approval",
-          "rewrite": "Name the authority: 'under Chris's standing autonomous-operation order (2026-09-20)'.",
+          "rewrite": "Name the authority: 'under User's standing autonomous-operation order (2026-09-20)'.",
           "prohibition": true
         }
       ]

@@ -1,6 +1,6 @@
 # README rollout — crew completion audit (2026-09-30)
 
-**Scope:** the 7-crew README maximalization rollout Chris ordered 2026-09-29
+**Scope:** the 7-crew README maximalization rollout User ordered 2026-09-29
 ("max commit and merge to toxicwind live, every readme.md uses the readme skill").
 53 repositories, crews Rusty / Tarnish / Volt / Pip / Bramble / Wren / Slate.
 
@@ -40,7 +40,7 @@ All SHAs verified against `git ls-remote` / the GitHub API on 2026-09-30.
 3. **sovereign-skills** — **blocked, not fixable from here.** GitHub has the repo
    archived; pushes 403 (`This repository was archived so it is read-only`).
    The README content exists and is lint-clean; it lands the moment the repo is
-   unarchived. Chris's call.
+   unarchived. User's call.
 
 ## The "completed but not running" question
 
@@ -52,7 +52,7 @@ controls that aggregation, it should split the two states.
 
 ## The "home toxic" branch hunt
 
-Chris: "why is home toxic even a branch" — six sweeps found **no such branch
+User: "why is home toxic even a branch" — six sweeps found **no such branch
 anywhere**:
 
 - GitHub branches across ~80 toxicwind repos (grep `home`) — only
@@ -66,7 +66,7 @@ anywhere**:
 
 **Not proven from the UI/task-record schema yet:** whether the card renders
 branch=`main` and cwd=`/home/toxic` as separate fields or mangles them into one
-branch-like label. If Chris saw it in a specific screen, the screenshot would
+branch-like label. If User saw it in a specific screen, the screenshot would
 settle it — nothing on the git side explains it.
 
 ## Push path note (for the next rollout)

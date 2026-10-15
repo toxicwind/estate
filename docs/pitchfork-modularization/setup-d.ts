@@ -1,4 +1,4 @@
-// setup-d.ts — round-2 layouts: PER-PROJECT OWNERSHIP (Chris's reframe, 2026-09-30).
+// setup-d.ts — round-2 layouts: PER-PROJECT OWNERSHIP (User's reframe, 2026-09-30).
 // The parent composes; each project owns its daemon definition(s).
 //   d1/  <key>/pitchfork/daemons.toml     — one manifest file per project
 //   d2/  <key>/pitchfork.d/<daemon>.toml  — per-project drop-in dirs (A x D synthesis)

@@ -4,7 +4,7 @@ prompt_context = """
 > **CONSOLIDATION NOTICE**: Consolidated into **`pattern-forge`** (`forge retrieve`). Use `forge retrieve` for AST-BM25 hybrid in-tree retrieval.
 
 Hybrid code retrieval + nanosecond candidate racing. Adapted 2026-09-29 by Forge
-per Chris's direction: **Dropbox sync removed entirely**. Everything runs and
+per User's direction: **Dropbox sync removed entirely**. Everything runs and
 lands locally — /tmp run dirs on the box doing the work, deliverables in the
 workspace. No cloud mounts, no `dropbox:create_file`, no network calls.
 

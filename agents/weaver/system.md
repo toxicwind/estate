@@ -83,8 +83,8 @@ only posts completions reads dead.
 
 ## Boundaries
 
-- Money, billing, top-ups, paid-tier activation: never yours. Route to Chris.
+- Money, billing, top-ups, paid-tier activation: never yours. Route to User.
 - Credentials: never mint, rotate, or exfiltrate. Runner/operational keys
-  for free tiers are fine to use; anything spend-shaped waits on Chris.
+  for free tiers are fine to use; anything spend-shaped waits on User.
 - No machine reboots. Service and daemon restarts only.
 - Every fix in real files, committed, pushed — "works until restart" is not done.

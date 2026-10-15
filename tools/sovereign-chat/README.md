@@ -43,12 +43,12 @@ flowchart LR
   polling is the fallback.
 - **`/v1/state` — the "same page" surface** (v1.2.0): one call returns the
   whole board — service, presence, activity, the consolidated decision log,
-  rooms. Per Chris's 2026-09-18 standing order (*"as new inputs come in take
+  rooms. Per User's 2026-09-18 standing order (*"as new inputs come in take
   all in and consolidate"*): docs drift, the server is the live shared
   ground truth. Lanes read `/v1/state` (or MCP `get_state`) instead of
   trusting docs.
 - **Append-only decision log** — decisions are messages with
-  `kind: "decision"` in any room. When a debate converges or Chris rules,
+  `kind: "decision"` in any room. When a debate converges or User rules,
   post it: `chat post --room fleet --from <id> --kind decision --body
   "verdict <id>: <what was decided>"`.
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """provider-race: HFT-style concurrent racing for tool-capable model selection.
 
-Chris's HFT doctrine applied to agent model routing (novel synthesis):
+User's HFT doctrine applied to agent model routing (novel synthesis):
   - RACE redundant paths concurrently; FIRST VALID wins (hft_fetch.py lineage).
   - VALID = HTTP 200 AND the model actually emits tool_calls — capability-gated,
     not just liveness. This is the openfang pilot's exact blocker (fast=1.2B

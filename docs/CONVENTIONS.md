@@ -259,7 +259,7 @@ treats `ranch/` as a separate repo by simply not indexing it.
 
 ```bash
 USER=toxic
-REALNAME=Chris
+REALNAME=User
 HOSTNAME=awrawr-pc
 ```
 
@@ -287,7 +287,7 @@ sync and clean up.
 (processed / resulting commit / tag) to the fork's `MERGE-DECISIONS.md`. An
 unrecorded merge is a merge we cannot explain later.
 
-**Rule 15.4 — Opening upstream PRs is Chris's call, not an agent's.** Agents
+**Rule 15.4 — Opening upstream PRs is User's call, not an agent's.** Agents
 audit and prepare; they do not speak for toxicwind to an external maintainer
 group.
 
