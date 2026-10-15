@@ -285,3 +285,13 @@ nuclei passive + API shape matrix. Artifacts in /tmp/kilo/ferret-freeinf/.
   staging.freeinference.org is the real API (Next.js/React/Node/Webpack),
   www is dead (CF 521), data+opendata = "dataset hub for LLM serving research",
   status = model status page, docs = Sphinx (Furo).
+
+## 17. ferret-den kit completed (2026-10-15)
+
+- Installed via pdtm: aix, notify, proxify, shuffledns, simplehttpserver
+  (~/.pdtm/go/bin now 20 binaries). httpx shadowing fixed earlier (§16).
+- `chaos` is not in pdtm's catalog anymore (dataset-API service); installed
+  the legacy `projectdiscovery/chaos-client/cmd/chaos` via `go install`
+  (GOBIN=~/.pdtm/go/bin) — CLI present, uses CHAOS_KEY for the dataset API.
+- Full ferret kit resolves: 0/21 binaries missing. All 22 den:* jobs
+  executable; chaos job additionally needs CHAOS_KEY in the vault if used.
