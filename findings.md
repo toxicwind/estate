@@ -222,3 +222,24 @@ Audited 2026-10-15 (full evidence: `findings/prior-audits/network-audit-20261015
 
 ### Bind-fix backlog (documented, not forced — pitchfork-owned)
 For each 0.0.0.0-bound service, prefer `--bind 127.0.0.1` (or interface-specific) in its pitchfork run line, like the valkey fix. Ports still bound wide: 25102/25103/25105/25110/25201/25219 (bun), 25117 (hindsight-api), 25118 (next-server), 25148/25240 (flicker-server), 25212 (systemd user mgr), 43000 (effusion-web docker publish — change to `127.0.0.1:43000->80`), kafka 9093/37725/25144, syncthing 22000, dnsmasq 53 (LAN DNS — intentional), tailscaled 55911 (tailscale-owned).
+
+## 14. freeinference concurrency recon (2026-10-15, ferret-methodology)
+
+Probe matrix: 9 lanes, concurrent pairs racing; script + results in
+`findings/prior-audits/freeinference-concurrency-recon.sh`. Verdicts:
+
+| Lane | Result |
+|---|---|
+| same model x2 concurrent | one 200, one **429 concurrency_limit_exceeded (limit: 1)** |
+| two DIFFERENT models concurrent | one 200, one **429** — limit is GLOBAL per key, not per model |
+| UA curl/OpenAI/tau concurrent | UAs treated identically — pure arrival-order serialization |
+| Claude shape `/v1/messages` | **SUPPORTED** (200) — but routed to `qwen3.6-35b` while requesting `glm-5.3-flash`: the anthropic-shaped endpoint **silently remaps the model field** |
+| OpenAI shape `/chat/completions` | works (loses arrival race only) |
+
+Conclusions: (1) freeinference enforces ONE concurrent request per key,
+provider-side — Kilo Code imposes no such limit (both subagents spawned).
+(2) Whichever request arrives second eats the 429; serialization gate, not
+per-model quota. (3) Fleet rule: parallel lanes override off freeinference
+(kilo/Nemotron proven); freeinference jobs serialize or resume after 429.
+(4) Do not trust `model` on `/v1/messages` — verify `model` in the response
+payload (live example returned qwen3.6-35b for a glm request).
