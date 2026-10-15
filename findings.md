@@ -153,3 +153,17 @@ Repairs landed this session are marked [FIXED]; open items marked [OPEN].
   ${MCPPROXY_API_KEY} env interpolation — no secret literal in config.
 - `~/.bashrc.local` now exports MCPPROXY_API_KEY from the vault (64-char key
   verified present in fresh login shell; `bash -lc true` healthy).
+
+## 11. Forge decision (2026-10-15, Chris)
+
+- **GitHub stays primary** — Copilot subscription + provenance/contribution
+  history are assets; account is too good to lose.
+- **Forgejo self-hosted joins as secondary mirror/redundancy** (free tier,
+  one Go binary + sqlite, pitchfork daemon beside gatehouse/forge build
+  daemon). Private repos mirrored to Forgejo; public repos dual-push
+  (`git remote set-url --add --push` fan-out).
+- Cleanup ladder still applies first: tarball-monster slimming
+  (local-work-archive 3.5TB, three.ws 2.2TB, agent-dashboard 2.0TB,
+  sovereign-projects 1.8TB, estate 1.5TB, OmniRoute 1.4TB), backup/tmp repo
+  kills, 60 dual-truth name reconciliations — slim before mirroring.
+- Pilot: secretsmith → Forgejo first, then fleet-wide multi-remote sweep.
