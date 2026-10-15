@@ -1,7 +1,7 @@
 /**
  * audit — verify claims about code against the AST, via ast-grep.
  *
- * A claim like "sovereign router listens on port 25104" or "function X calls Y"
+ * A claim like "estate router listens on port 25104" or "function X calls Y"
  * is routed to structural queries. The verdict is VERIFIED only when an AST
  * node is quoted: file, line range, matched text, captured meta-variables.
  * Zero hits => NOT-FOUND (never "refuted" from a miss). A malformed or
@@ -262,7 +262,7 @@ const DEF_PATTERNS: Record<string, string[]> = {
 const LANGS = ["ts", "tsx", "js", "py", "go", "rs"];
 
 import { join, relative, resolve } from "node:path";
-import { accessSync, constants } from "node:fs";
+import { accessSync, constants, statSync } from "node:fs";
 import { homedir } from "node:os";
 
 /** Executable-file probe — no shell, no quoting games. */
@@ -344,6 +344,28 @@ export function audit(opts: AuditOptions): AuditResult {
       queries: [],
       evidence: [],
       notes: ["ast-grep binary not found. Install: download the release zip from github.com/ast-grep/ast-grep and put `ast-grep` on PATH (or set AST_GREP_BIN). Do NOT use `sg` — on Linux that's util-linux setgroups."],
+    };
+  }
+
+  // --root is a DIRECTORY that forge uses as the spawn cwd. A file path here
+  // produces a cryptic `ENOTDIR: not a directory, posix_spawn` from the
+  // spawnSync — fail with a clear message instead (2026-10-15).
+  const rootDir = resolve(opts.root);
+  let rootIsDir = false;
+  try {
+    rootIsDir = statSync(rootDir).isDirectory();
+  } catch {
+    rootIsDir = false;
+  }
+  if (!rootIsDir) {
+    return {
+      claim: opts.claim ?? opts.pattern ?? opts.rule ?? "",
+      claimType: "none",
+      verdict: "INCONCLUSIVE",
+      confidence: "low",
+      queries: [],
+      evidence: [],
+      notes: [`--root must be a DIRECTORY (used as the working dir), got: ${opts.root}. Pass a dir, e.g. --root src/ or --root <repo>/src/tools.`],
     };
   }
 
