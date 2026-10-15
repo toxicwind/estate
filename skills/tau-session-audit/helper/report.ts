@@ -2,6 +2,8 @@
 // Generates GitHub-flavored Markdown reports with deep links and pattern analyses.
 
 import type { PatternMatch, SessionContext } from "../patterns/types";
+import { existsSync, realpathSync, statSync } from "node:fs";
+import { join } from "node:path";
 
 export interface AuditedSession {
   file: string;
@@ -17,7 +19,7 @@ export interface AuditedSession {
   types: Map<string, number>;
 }
 
-const GITHUB_BLOB_BASE = "https://github.com/toxicwind/estate/blob/forge/gate-retire-final/";
+const GITHUB_BLOB_BASE = "https://github.com/toxicwind/estate/blob/main/";
 
 export function generateMarkdownReport(sessions: AuditedSession[], options: { verbose?: boolean } = {}): string {
   const totalFiles = sessions.length;
@@ -62,7 +64,11 @@ export function generateMarkdownReport(sessions: AuditedSession[], options: { ve
   lines.push("- **Discovered Primary Anti-Pattern**: Multiple models hallucinating completion by outputting natural-language messages with zero tool calls, followed immediately by firing `todo(op=\"done\")` flurries (up to 24 consecutive calls).");
   lines.push(`- **Phantom Todo Completion Rate**: \`${phantomTodoSessions.length}/${totalFiles}\` sessions (${((phantomTodoSessions.length / totalFiles) * 100).toFixed(1)}%) exhibited unearned or flurried todo completions.`);
   lines.push(`- **Critical Anomalies Detected**: \`${criticalSessions.length}\` sessions had critical severity pattern violations.`);
-  lines.push(`- **Monorepo Structural Finding**: \`projects/toxicwind/\` was created by confused models misinterpreting the username as a package namespace. Intended shared utilities belong under \`packages/sovereign-utils\` or \`packages/utils\`.`);
+  if (existsSync(join("/home/toxic/estate", "projects/toxicwind"))) {
+    lines.push(`- **Monorepo Structural Finding**: \`projects/toxicwind/\` was created by confused models misinterpreting the username as a package namespace. Intended shared utilities belong under \`packages/utils\`.`);
+  } else {
+    lines.push(`- **Monorepo Structure**: clean at report time (no misnamed \`projects/toxicwind/\` root observed).`);
+  }
   lines.push("");
   lines.push("---");
   lines.push("");
@@ -90,7 +96,7 @@ export function generateMarkdownReport(sessions: AuditedSession[], options: { ve
 
   const sortedPhantom = [...phantomTodoSessions].sort((a, b) => b.phantomTodoCount - a.phantomTodoCount).slice(0, 10);
   for (const s of sortedPhantom) {
-    const link = `[\`${s.file}\`](${GITHUB_BLOB_BASE}.tau/sessions/${s.file})`;
+    const link = `[\`${s.file}\`](${GITHUB_BLOB_BASE}config/tau/agent/sessions/${s.file})`;
     lines.push(`| ${link} | \`${s.model}\` | **${s.phantomTodoCount}** | ${s.events} | Intent: *${s.intent}* |`);
   }
   lines.push("");
@@ -121,30 +127,39 @@ export function generateMarkdownReport(sessions: AuditedSession[], options: { ve
 
   lines.push("---");
   lines.push("");
-  lines.push("## 🏛️ Monorepo Convention & Workspace Architecture Audit");
-  lines.push("");
-  lines.push("### 1. Workspace Misalignment");
-  lines.push("- Root [`package.json`](" + GITHUB_BLOB_BASE + "package.json) defines: `workspaces: ['herd', 'herd/ui-svelte', 'packages/*', 'services/*']`.");
-  lines.push("- `projects/*` is **not** included in the root workspace declaration.");
-  lines.push("- Intermediate `projects/tsconfig.json` was missing, causing child builds in `projects/toxicwind/*` to fail with `error TS5083: Cannot read file '/home/toxic/estate/projects/tsconfig.json'`.");
-  lines.push("");
-  lines.push("### 2. The `projects/toxicwind` Misnaming");
-  lines.push("- Models misinterpreted the user's GitHub username (`@toxicwind`) as a package prefix and created an untracked root directory `/home/toxic/estate/projects/toxicwind/`.");
-  lines.push("- Modules created inside: `capabilities/` (`@toxicwind/capabilities`), `policy/` (`@toxicwind/policy`), `registry-baseline/`, `repair/`.");
-  lines.push("- **Resolution**: These utilities belong under the sovereign umbrella as `packages/sovereign-utils` or inside `packages/utils`, which is already registered in Bun workspaces.");
-  lines.push("");
-  lines.push("### 3. Binary Build SSOT");
-  lines.push("- The real binary compiled from `packages/coding-agent` is located at:");
-  lines.push("  - `projects/toxicwind/core/engine/packages/coding-agent/dist/tau` (242 MiB)");
-  lines.push("- It is installed at `~/.local/bin/tau`.");
-  lines.push("");
   lines.push("---");
   lines.push("");
-  lines.push("## 🛠️ Actionable Next Steps");
+  lines.push("## 🏛️ Monorepo Convention & Workspace Architecture Audit");
   lines.push("");
-  lines.push("1. **Relocate Utilities**: Migrate `@toxicwind/capabilities` and `@toxicwind/policy` from `projects/toxicwind/` into `packages/sovereign-utils/`.");
-  lines.push("2. **Add Root Workspace**: Include `packages/sovereign-utils` into root `package.json` workspaces.");
-  lines.push("3. **Enforce Verification Gate**: Use `tau-session-audit --check patterns` in agent handoffs to detect any unearned todo completions before completing turns.");
+  lines.push("> Live-computed at report time — only emitted when observed on disk.");
+  lines.push("");
+  const exists = (rel: string) => existsSync(join("/home/toxic/estate", rel));
+  const findings: string[] = [];
+  if (exists("projects/toxicwind")) {
+    findings.push("- `projects/toxicwind/` exists: models misinterpreted the GitHub username as a package namespace. Shared utilities belong under `packages/utils` (registered in root Bun workspaces).");
+    findings.push("  - Resolution: migrate `@toxicwind/*` modules into `packages/utils/` and remove the misnamed root.");
+  }
+  if (exists("projects") && !exists("projects/tsconfig.json")) {
+    findings.push("- `projects/tsconfig.json` is missing — child builds under `projects/*` fail with `error TS5083`.");
+  }
+  const tauBin = "/home/toxic/.local/bin/tau";
+  if (existsSync(tauBin)) {
+    try {
+      const resolved = realpathSync(tauBin);
+      const sz = statSync(resolved).size;
+      findings.push(`- Binary SSOT: \`${tauBin}\` resolves to \`${resolved}\` (${(sz / 1048576).toFixed(0)} MiB).`);
+    } catch { /* unreadable — skip */ }
+  }
+  if (findings.length) {
+    lines.push(...findings);
+    lines.push("");
+    lines.push("### Next Steps");
+    lines.push("");
+    lines.push("1. Relocate misnamed modules into the registered workspace.");
+    lines.push("2. Enforce verification gate: `tau-session-audit --check patterns` in agent handoffs to catch unearned todo completions before completing turns.");
+  } else {
+    lines.push("- No workspace misalignment observed at report time.");
+  }
   lines.push("");
 
   return lines.join("\n");
