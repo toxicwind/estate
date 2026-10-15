@@ -36,5 +36,5 @@ done
 
 exec /home/toxic/.bun/bin/bun run "$SOV/src/services/mesh-front.ts" \
   --service grafana \
-  --listen "0.0.0.0:${PORT}" \
+  --listen "127.0.0.1:${PORT}" \
   --backend "127.0.0.1:${BACKEND}"

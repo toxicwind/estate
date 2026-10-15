@@ -92,8 +92,10 @@ const front = Bun.spawn({
     resolve(SOV, "src/services/mesh-front.ts"),
     "--service",
     "openfang",
+    // 2026-10-15: bind loopback, not 0.0.0.0 — recon front is internal-only,
+    // the tailnet is reached via estate-chat; remove the nftables dependency.
     "--listen",
-    `0.0.0.0:${PUBLIC}`,
+    `127.0.0.1:${PUBLIC}`,
     "--backend",
     `127.0.0.1:${KERNEL}`,
   ],
