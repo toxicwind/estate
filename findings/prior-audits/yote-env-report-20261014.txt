@@ -1,0 +1,556 @@
+yote-env-standalone report
+date: 2026-10-14T18:49:06-06:00
+host: awrawr-pc  user: toxic  home: /home/toxic
+tmpdir: /tmp/yote-env-toxic-5xR9jc  timeout: 10s  retries: 1  redacted: yes
+
+=== bashrc ===
+# =====================================================================
+# AESTHETIC INTERACTIVE TERMINAL CONFIGURATION
+# =====================================================================
+
+# 1. Load Universal Environment Tier First
+[ -f "$HOME/.bashrc.env" ] && . "$HOME/.bashrc.env"
+
+# 2. Re-entry Guard
+if [ -n "${__BASHRC_LOADED:-}" ]; then return 0 2>/dev/null || exit 0; fi
+__BASHRC_LOADED=1
+
+# 3. Non-Interactive Guard (Abort cleanly for scp/rsync)
+[[ $- != *i* ]] && return
+
+# 4. History Management
+HISTCONTROL=ignoreboth:erasedups
+HISTSIZE=200000
+HISTFILESIZE=500000
+HISTTIMEFORMAT='%F %T '
+shopt -s histappend cmdhist checkwinsize globstar nocaseglob cdspell dirspell dotglob extglob no_empty_cmd_completion
+
+# 5. Native Tool Integrations
+command -v zoxide  >/dev/null 2>&1 && eval "$(zoxide init bash --cmd cd)"
+command -v starship >/dev/null 2>&1 && eval "$(starship init bash)"
+command -v direnv  >/dev/null 2>&1 && eval "$(direnv hook bash)"
+command -v atuin   >/dev/null 2>&1 && eval "$(atuin init bash --disable-up-arrow --disable-ctrl-r)"
+
+if command -v mise >/dev/null 2>&1; then
+  case ":$PATH:" in
+    *":$HOME/.local/share/mise/shims:"*) ;;
+    *) eval "$(mise activate bash --shims)" ;;
+  esac
+fi
+
+# 6. Completions & FZF
+if ! shopt -oq posix; then
+  [ -f /usr/share/bash-completion/bash_completion ] && . /usr/share/bash-completion/bash_completion
+  for d in "$HOME/.bash_completion.d" "$HOME/.local/share/bash-completion/completions"; do
+    [ -d "$d" ] && for f in "$d"/*; do [ -r "$f" ] && . "$f"; done
+  done
+fi
+
+if command -v fzf >/dev/null 2>&1; then
+  [ -f /usr/share/fzf/key-bindings.bash ] && . /usr/share/fzf/key-bindings.bash
+  [ -f /usr/share/fzf/completion.bash ]   && . /usr/share/fzf/completion.bash
+  export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border --inline-info'
+  command -v fd >/dev/null 2>&1 && export FZF_DEFAULT_COMMAND='fd --type f --hidden --exclude .git' FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+fi
+
+# 7. Colors & Highlights
+export CLICOLOR=1
+unset NO_COLOR
+export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+export GREP_COLORS='ms=01;31:mc=01;31:sl=:cx=:fn=35:ln=32:bn=32:se=36'
+export LESS_TERMCAP_mb=$'\e[01;31m'
+export LESS_TERMCAP_md=$'\e[01;31m'
+export LESS_TERMCAP_me=$'\e[0m'
+export LESS_TERMCAP_se=$'\e[0m'
+export LESS_TERMCAP_so=$'\e[01;44;33m'
+export LESS_TERMCAP_ue=$'\e[0m'
+export LESS_TERMCAP_us=$'\e[01;32m'
+
+# 8. Core Ergonomic Aliases
+alias ls='ls --color=auto --group-directories-first'
+alias ll='ls -alFh'
+alias la='ls -A'
+alias l='ls -CF'
+alias lt='ls -alFht'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias p='pass'
+alias py='python3'
+alias k9='kubectl'
+alias d='docker'
+alias dc='docker compose'
+alias pf='pitchfork'   # was: $HOME/.local/bin/pitchfork-quiet (binary does not exist)
+
+# First-class Agent Finder Aliases (ffs)
+if command -v ffs >/dev/null 2>&1; then
+  alias ff='ffs find'
+  alias ffg='ffs grep'
+  alias ffr='ffs read'
+  alias ffm='ffs multi-grep'
+  alias ffo='ffs outline'
+  alias ffsym='ffs symbol'
+fi
+
+# 9. Engine Aliases
+# tau/omp/pi resolve via the pinned immutable launcher in ~/.local/bin/tau
+alias tau="$HOME/.local/bin/tau"
+alias omp="$HOME/.local/bin/omp"
+alias pi="$HOME/.local/bin/tau"
+
+# Disable non-standard pi-builtins so standard GNU coreutils (grep, find, sed, etc.) always run
+for _b in \
+  grep find sed cat cut diff head tail ls ln mv rm cp mkdir mktemp \
+  stat dirname basename touch tr sort uniq wc which whoami uname seq \
+  date timeout nohup ps top pgrep pkill pidwait printenv realpath \
+  readlink md5sum sha1sum sha256sum sha512sum b2sum cksum jq xargs rg fd
+do
+  enable -n "$_b" 2>/dev/null || true
+done
+unset _b
+# 10. Helper Functions
+mkcd() { mkdir -p -- "$1" && cd -- "$1"; }
+
+extract() {
+  case "$1" in
+    *.tar.bz2) tar xjf "$1";;
+    *.tar.gz)  tar xzf "$1";;
+    *.tar.xz)  tar xJf "$1";;
+    *.tar.zst) tar --zstd -xf "$1";;
+    *.bz2)     bunzip2 "$1";;
+    *.gz)      gunzip "$1";;
+    *.tar)     tar xf "$1";;
+    *.zip)     unzip "$1";;
+    *.7z)      7z x "$1";;
+    *)         printf 'unknown archive: %s\n' "$1";;
+  esac
+}
+
+# 11. Terminal & Ble.sh Hooks (Must load last)
+if [ "${TERM_PROGRAM:-}" = "WezTerm" ] && command -v wezterm >/dev/null 2>&1; then
+  [ -f "$HOME/.config/wezterm/shell-integration.sh" ] && . "$HOME/.config/wezterm/shell-integration.sh"
+fi
+
+[ -f "$HOME/.bashrc.local" ] && source "$HOME/.bashrc.local"
+
+# ── Skills: resolved, never hardcoded ───────────────────────────────────
+# Canonical skills home is estate/skills. See estate/docs/CONVENTIONS.md.
+# shellcheck source=/dev/null
+[ -f "${SKILLS_LIB:-$HOME/.tau/skills/lib}/estate.sh" ] && . "${SKILLS_LIB:-$HOME/.tau/skills/lib}/estate.sh"
+: "${SKILLS_HOME:=$HOME/.tau/skills}"
+: "${README_SKILL_DIR:=$SKILLS_HOME/readme}"
+
+# README-MAXIMAL skill — permanent (Chris 2026-09-29)
+# Aesthetic GitHub README doctrine lives here; every first-party README.md
+# in the estate must conform to it (badges first, why-care hero, feature
+# bullets, diagram, quick start, architecture, config, dev, license+security).
+export README_SKILL_DIR
+export README_SKILL_MD="$README_SKILL_DIR/SKILL.md"
+
+# FP-CANARY-REWRITE-PROOF-20260929
+# if this line is gone, an autonomous process rewrote $HOME/.bashrc
+
+# readme-check <file.md> — audit a README against the readme-maximal rubric.
+# Exit 0 = conformant, 1 = gaps listed.
+readme-check() {
+  local f="${1:?usage: readme-check <file.md>}"
+  [ -f "$f" ] || { echo "no such file: $f"; return 1; }
+  local fails=0
+  head -5 "$f" | grep -qiE 'shields\.io|img\.shields|badge' || { echo "FAIL: no badges in first 5 lines"; fails=1; }
+  grep -q '^# ' "$f" || { echo "FAIL: no H1 title"; fails=1; }
+  grep -qiE 'quick ?start|getting started' "$f" || { echo "FAIL: no Quick Start section"; fails=1; }
+  grep -q '```mermaid' "$f" || echo "WARN: no mermaid diagram"
+  grep -qiE '^#+ .*(license|security)' "$f" || { echo "FAIL: no License/Security section"; fails=1; }
+  grep -qiE 'TODO|FIXME|lorem|coming soon|under construction' "$f" && { echo "FAIL: contains TODO/placeholder text"; fails=1; }
+  grep -qi 'placeholder' "$f" && echo "WARN: contains the word placeholder - verify it is prose, not a doc stub"
+  [ "$fails" -eq 0 ] && echo "OK: $f conforms to readme-maximal"
+  return "$fails"
+}
+
+# >>> vercel ai-gateway >>>
+# Managed by `vercel ai-gateway setup` — safe to remove this block.
+export COPILOT_PROVIDER_BASE_URL='https://ai-gateway.vercel.sh/coding-agent/v1'
+export COPILOT_PROVIDER_API_KEY='vck_***REDACTED***\'
+export COPILOT_MODEL='zai/glm-5.3'
+export AI_GATEWAY_API_KEY='vck_***REDACTED***'
+# <<< vercel ai-gateway <<<
+
+
+# Generated for pdtm. Do not edit.
+export PATH=$PATH:/home/toxic/.pdtm/go/bin
+
+[ec=0] bashrc
+[RIGHT] bashrc
+
+=== bashrc-sources ===
+6:[ -f "$HOME/.bashrc.env" ] && . "$HOME/.bashrc.env"
+37:  [ -f /usr/share/bash-completion/bash_completion ] && . /usr/share/bash-completion/bash_completion
+39:    [ -d "$d" ] && for f in "$d"/*; do [ -r "$f" ] && . "$f"; done
+44:  [ -f /usr/share/fzf/key-bindings.bash ] && . /usr/share/fzf/key-bindings.bash
+45:  [ -f /usr/share/fzf/completion.bash ]   && . /usr/share/fzf/completion.bash
+123:# 11. Terminal & Ble.sh Hooks (Must load last)
+125:  [ -f "$HOME/.config/wezterm/shell-integration.sh" ] && . "$HOME/.config/wezterm/shell-integration.sh"
+128:[ -f "$HOME/.bashrc.local" ] && source "$HOME/.bashrc.local"
+132:# shellcheck source=/dev/null
+133:[ -f "${SKILLS_LIB:-$HOME/.tau/skills/lib}/estate.sh" ] && . "${SKILLS_LIB:-$HOME/.tau/skills/lib}/estate.sh"
+153:  head -5 "$f" | grep -qiE 'shields\.io|img\.shields|badge' || { echo "FAIL: no badges in first 5 lines"; fails=1; }
+166:export COPILOT_PROVIDER_BASE_URL='https://ai-gateway.vercel.sh/coding-agent/v1'
+[ec=0] bashrc-sources
+[RIGHT] bashrc-sources
+
+=== bash_profile ===
+--- /home/toxic/.bash_profile
+[ -f "$HOME/.bashrc" ] && . "$HOME/.bashrc"
+
+# Load universal environment
+[ -f "$HOME/.bashrc.env" ] && . "$HOME/.bashrc.env"
+--- /home/toxic/.profile
+if [ -n "${BASH_VERSION:-}" ]; then [ -f "$HOME/.bashrc" ] && . "$HOME/.bashrc"
+elif [ -f "$HOME/.bashrc.env" ]; then . "$HOME/.bashrc.env"; fi
+
+# Must stay in sync with ~/.bashrc: this block runs AFTER .bashrc is sourced
+# (line 1), so an older value here silently wins for every login shell.
+# ~/.tau is the config root; the engine's agent dir is ~/.tau/agent, which is
+# also where sessions/, managed-skills/, models.yml and mcp.json live.
+export PI_CODING_AGENT_DIR=$HOME/.tau/agent
+# PI_CONFIG_DIR is a NAME relative to $HOME: tau dirs.ts does path.join(os.homedir(), PI_CONFIG_DIR); an absolute value doubles the config root to $HOME/$HOME/.tau
+export PI_CONFIG_DIR=.tau
+export PI_DISABLE_UUTILS_BUILTINS=1
+export GITHUB_TOKEN="github_pat_***REDACTED***"
+export GH_TOKEN="github_pat_***REDACTED***"
+--- /home/toxic/.zshrc (missing — not an error)
+--- /home/toxic/.bash_login (missing — not an error)
+[ec=0] bash_profile
+[RIGHT] bash_profile
+
+=== bash_aliases ===
+--- /home/toxic/.bash_aliases (missing — not an error)
+--- /home/toxic/.bash_functions (missing — not an error)
+--- /home/toxic/.bashrc.d (missing — not an error)
+[ec=0] bash_aliases
+[RIGHT] bash_aliases
+
+=== referenced files ===
+--- /home/toxic/.config/wezterm/shell-integration.sh
+# wezterm shell integration for bash — OSC 133 semantic prompt markers.
+# Source from ~/.bashrc:
+#   [ -f ~/.config/wezterm/shell-integration.sh ] && . ~/.config/wezterm/shell-integration.sh
+# No-op unless running inside a wezterm pane.
+[ -n "${WEZTERM_PANE:-}" ] || return 0 2>/dev/null || exit 0
+
+__wezterm_osc133() { printf '\033]133;%s\007' "$1"; }
+
+__wezterm_precmd() {
+    # D = previous command finished (exit status), A = new prompt started
+    __wezterm_osc133 "D;$__wezterm_last_status"
+    __wezterm_osc133 "A"
+}
+
+__wezterm_preexec() {
+    # B = user input finished, C = command execution started
+    __wezterm_osc133 "B"
+    __wezterm_osc133 "C"
+}
+
+__wezterm_last_status=0
+__wezterm_prompt_wrapper() {
+    __wezterm_last_status=$?
+    __wezterm_precmd
+}
+
+# preexec via DEBUG trap; skip when bash is just running PROMPT_COMMAND
+__wezterm_debug_trap() {
+    case "$BASH_COMMAND" in
+        "$PROMPT_COMMAND") return 0 ;;
+    esac
+    __wezterm_preexec
+}
+trap '__wezterm_debug_trap' DEBUG
+
+case ";${PROMPT_COMMAND};" in
+    *";__wezterm_prompt_wrapper;"*) ;;
+    *) PROMPT_COMMAND="__wezterm_prompt_wrapper${PROMPT_COMMAND:+;$PROMPT_COMMAND}" ;;
+esac
+--- /home/toxic/.tau/skills/lib/estate.sh
+# estate.sh — canonical path resolution for shell-based skills.
+#
+# No skill hardcodes an estate path. They source this and ask it.
+#
+#   . /home/toxic/.tau/skills/lib/estate.sh
+#   echo "$ESTATE" "$RANCH" "$PORTS_ENV"
+#
+# Overrides: ESTATE_HOME, RANCH_HOME, VENDORED_HOME, MANOR_HOME, SKILLS_HOME, TAU_HOME
+
+_estate_first_existing() {
+  for candidate in "$@"; do
+    [ -e "$candidate" ] && { readlink -f "$candidate"; return 0; }
+  done
+  readlink -f "$1"
+}
+
+# Resolve the skills root from this file's own location, walking up.
+_estate_self="${BASH_SOURCE[0]}"
+while [ -n "$_estate_self" ] && [ "$_estate_self" != "/" ]; do
+  if [ -d "$_estate_self/lib" ] || [ -d "$_estate_self/pattern-forge" ]; then
+    _estate_guess="$_estate_self"
+    break
+  fi
+  _estate_self="$(dirname "$_estate_self")"
+done
+SKILLS_HOME="${SKILLS_HOME:-${_estate_guess:-$HOME/.tau/skills}}"
+SKILLS_HOME="$(readlink -f "$SKILLS_HOME")"
+
+ESTATE_HOME="${ESTATE_HOME:-$(_estate_first_existing "$SKILLS_HOME/../estate" "$HOME/estate" "$HOME/sovereign")}"
+RANCH_HOME="${RANCH_HOME:-$(_estate_first_existing "$ESTATE_HOME/ranch" "$HOME/ranch" "$HOME/projects")}"
+VENDORED_HOME="${VENDORED_HOME:-$(_estate_first_existing "$ESTATE_HOME/vendored")}"
+MANOR_HOME="${MANOR_HOME:-$(_estate_first_existing "$ESTATE_HOME/manor")}"
+VAR_HOME="${VAR_HOME:-$ESTATE_HOME/var}"
+TAU_HOME="${TAU_HOME:-$(_estate_first_existing "$RANCH_HOME/tau")}"
+
+ESTATE="$ESTATE_HOME"
+RANCH="$RANCH_HOME"
+VENDORED="$VENDORED_HOME"
+MANOR="$MANOR_HOME"
+VAR="$VAR_HOME"
+TAU="$TAU_HOME"
+PORTS_ENV="$ESTATE_HOME/config/ports.env"
+KNOWLEDGEBASE="$ESTATE_HOME/docs/fleet-knowledgebase.md"
+
+export SKILLS_HOME ESTATE_HOME RANCH_HOME VENDORED_HOME MANOR_HOME VAR_HOME TAU_HOME
+export ESTATE RANCH VENDORED MANOR VAR TAU PORTS_ENV KNOWLEDGEBASE
+[ec=0] referenced files
+[RIGHT] referenced files
+
+=== CPU ===
+Architecture:                            x86_64
+CPU op-mode(s):                          32-bit, 64-bit
+Address sizes:                           48 bits physical, 48 bits virtual
+Byte Order:                              Little Endian
+CPU(s):                                  16
+On-line CPU(s) list:                     0-15
+Vendor ID:                               AuthenticAMD
+Model name:                              AMD Ryzen 7 8700F 8-Core Processor
+CPU family:                              25
+Model:                                   117
+Thread(s) per core:                      2
+Core(s) per socket:                      8
+Socket(s):                               1
+Stepping:                                2
+Microcode version:                       0xa70520a
+Frequency boost:                         enabled
+CPU(s) scaling MHz:                      84%
+CPU max MHz:                             5055.3208
+CPU min MHz:                             412.6800
+BogoMIPS:                                8199.57
+Flags:                                   fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good amd_lbr_v2 nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpuid_fault cpb cat_l3 cdp_l3 hw_pstate ssbd mba perfmon_v2 ibrs ibpb stibp ibrs_enhanced vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a avx512f avx512dq rdseed adx smap avx512ifma clflushopt clwb avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk avx512_bf16 clzero irperf xsaveerptr rdpru wbnoinvd cppc arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic vgif x2avic v_spec_ctrl vnmi avx512vbmi umip pku ospke avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg avx512_vpopcntdq rdpid overflow_recov succor smca fsrm flush_l1d amd_lbr_pmc_freeze
+Virtualization:                          AMD-V
+L1d cache:                               256 KiB (8 instances)
+L1i cache:                               256 KiB (8 instances)
+L2 cache:                                8 MiB (8 instances)
+L3 cache:                                16 MiB (1 instance)
+NUMA node(s):                            1
+NUMA node0 CPU(s):                       0-15
+Vulnerability Gather data sampling:      Not affected
+Vulnerability Ghostwrite:                Not affected
+Vulnerability Indirect target selection: Not affected
+Vulnerability Itlb multihit:             Not affected
+Vulnerability L1tf:                      Not affected
+Vulnerability Mds:                       Not affected
+Vulnerability Meltdown:                  Not affected
+Vulnerability Mmio stale data:           Not affected
+Vulnerability Old microcode:             Not affected
+Vulnerability Reg file data sampling:    Not affected
+Vulnerability Retbleed:                  Not affected
+Vulnerability Spec rstack overflow:      Vulnerable
+Vulnerability Spec store bypass:         Vulnerable
+Vulnerability Spectre v1:                Vulnerable: __user pointer sanitization and usercopy barriers only; no swapgs barriers
+Vulnerability Spectre v2:                Vulnerable; IBPB: disabled; STIBP: disabled; PBRSB-eIBRS: Not affected; BHI: Not affected
+Vulnerability Srbds:                     Not affected
+Vulnerability Tsa:                       Vulnerable
+Vulnerability Tsx async abort:           Not affected
+Vulnerability Vmscape:                   Vulnerable
+--- /proc/cpuinfo
+model name	: AMD Ryzen 7 8700F 8-Core Processor
+cpu MHz		: 3998.639
+model name	: AMD Ryzen 7 8700F 8-Core Processor
+cpu MHz		: 3916.354
+model name	: AMD Ryzen 7 8700F 8-Core Processor
+cpu MHz		: 4021.138
+model name	: AMD Ryzen 7 8700F 8-Core Processor
+cpu MHz		: 4000.460
+model name	: AMD Ryzen 7 8700F 8-Core Processor
+cpu MHz		: 4003.141
+model name	: AMD Ryzen 7 8700F 8-Core Processor
+cpu MHz		: 5023.447
+model name	: AMD Ryzen 7 8700F 8-Core Processor
+cpu MHz		: 4980.395
+model name	: AMD Ryzen 7 8700F 8-Core Processor
+cpu MHz		: 4013.724
+model name	: AMD Ryzen 7 8700F 8-Core Processor
+cpu MHz		: 3946.182
+model name	: AMD Ryzen 7 8700F 8-Core Processor
+cpu MHz		: 3938.267
+--- nproc
+8
+[ec=0] CPU
+[RIGHT] CPU
+
+=== GPU ===
+[lspci]
+01:00.0 VGA compatible controller: NVIDIA Corporation GA102 [GeForce RTX 3090] (rev a1)
+[nvidia-smi]
+Wed Oct 14 18:49:06 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 615.71.09              KMD Version: 615.71.09     CUDA UMD Version: 13.4     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 3090        On  |   00000000:01:00.0  On |                  N/A |
+| 30%   32C    P8             43W /  300W |    3715MiB /  24576MiB |     14%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A            1277      C   ...build-cuda86/bin/llama-server       2134MiB |
+|    0   N/A  N/A            1567      C   bun                                     256MiB |
+|    0   N/A  N/A            1987      G   Hyprland                                208MiB |
+|    0   N/A  N/A            3257      G   easyeffects                              16MiB |
+|    0   N/A  N/A            3263      G   /usr/bin/quickshell                     283MiB |
+|    0   N/A  N/A            3391      G   Xwayland                                  7MiB |
+|    0   N/A  N/A           77735      G   /usr/bin/wezterm-gui                     32MiB |
+|    0   N/A  N/A          116601    C+G   ...rack-uuid=3190708988185955192         54MiB |
+|    0   N/A  N/A          140745      G   /usr/lib/firefox-nightly/firefox          7MiB |
+|    0   N/A  N/A          361560      G   ...rack-uuid=3190708988185955192         37MiB |
+|    0   N/A  N/A         1255730    C+G   ...rack-uuid=3190708988185955192         17MiB |
+|    0   N/A  N/A         3928670      C   ...0/FE1z5OVA0FFkPIXv/bin/python        360MiB |
++-----------------------------------------------------------------------------------------+
+[drm]
+total 0
+drwxr-xr-x  2 root root         80 Oct 12 13:55 by-path
+crw-rw-rw-+ 1 root render 226,   1 Oct 12 13:55 card1
+crw-rw-rw-  1 root render 226, 128 Oct 12 13:55 renderD128
+[ec=0] GPU
+[RIGHT] GPU
+
+=== MOBO ===
+board: PRO B650-VC WIFI (MS-7D78)
+product: MS-7D78
+[ec=0] MOBO
+[RIGHT] MOBO
+
+=== NETWORK ===
+[ip a]
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+enp12s0          UP             10.0.0.218/24 metric 100 2601:280:5280:1c00:da43:aeff:fef9:cef0/64 fe80::da43:aeff:fef9:cef0/64 
+wlan0            DOWN           
+tsd              UNKNOWN        100.108.135.48/32 fd7a:115c:a1e0::5333:8731/128 fe80::7cc8:d273:ce05:d41e/64 
+br-8aabe826d43b  DOWN           172.20.0.1/16 
+br-f5307473348a  DOWN           172.18.0.1/16 
+br-05ecbcc300e3  UP             172.19.0.1/16 fe80::a061:b1ff:fe76:9c64/64 
+docker0          UP             172.17.0.1/16 fe80::8423:20ff:fe87:19fc/64 
+br-687f22171e13  DOWN           172.21.0.1/16 
+vethdb3ae74@if2  UP             fe80::2c5a:73ff:fe2d:5802/64 
+veth660242e@if2  UP             fe80::18f8:4cff:feb1:e637/64 
+vethdf6dbc6@if2  UP             fe80::fcd1:f8ff:fe31:3ad0/64 
+tailscale0       UNKNOWN        100.72.199.93/32 fd7a:115c:a1e0::c233:c75d/128 fe80::e0a:d0b9:214b:c154/64 
+vethfab0ee4@if2  UP             fe80::3042:7cff:fef7:b038/64 
+[ip route]
+default via 10.0.0.1 dev enp12s0 proto dhcp src 10.0.0.218 metric 100 
+10.0.0.0/24 dev enp12s0 proto kernel scope link src 10.0.0.218 metric 100 
+10.0.0.1 dev enp12s0 proto dhcp scope link src 10.0.0.218 metric 100 
+75.75.75.75 via 10.0.0.1 dev enp12s0 proto dhcp src 10.0.0.218 metric 100 
+75.75.76.76 via 10.0.0.1 dev enp12s0 proto dhcp src 10.0.0.218 metric 100 
+172.17.0.0/16 dev docker0 proto kernel scope link src 172.17.0.1 
+172.18.0.0/16 dev br-f5307473348a proto kernel scope link src 172.18.0.1 linkdown 
+172.19.0.0/16 dev br-05ecbcc300e3 proto kernel scope link src 172.19.0.1 
+172.20.0.0/16 dev br-8aabe826d43b proto kernel scope link src 172.20.0.1 linkdown 
+172.21.0.0/16 dev br-687f22171e13 proto kernel scope link src 172.21.0.1 linkdown 
+[tailscale]
+100.72.199.93   estate            toxicwind@  linux    -                           
+100.86.83.77    almalinux-server  toxicwind@  linux    -                           
+100.78.166.107  doorbell          toxicwind@  linux    -                           
+100.108.135.48  github-mcp-host   toxicwind@  linux    -                           
+100.94.78.109   muse-1            toxicwind@           -                           
+100.91.187.58   muse              toxicwind@           offline, last seen 22d ago  
+100.123.57.58   pixel-9-pro-xl    toxicwind@  android  offline, last seen 2d ago   
+
+# Funnel on:
+#     - https://estate.tailc9ac71.ts.net
+
+[ec=0] NETWORK
+[RIGHT] NETWORK
+
+=== MEM ===
+               total        used        free      shared  buff/cache   available
+Mem:            62Gi        34Gi       776Mi       530Mi        28Gi        28Gi
+Swap:           77Gi        26Gi        51Gi
+---
+MemTotal:       65426724 kB
+MemFree:          795280 kB
+MemAvailable:   29498000 kB
+Buffers:             272 kB
+Cached:         20829052 kB
+[ec=0] MEM
+[RIGHT] MEM
+
+=== DISK ===
+Filesystem     Type      Size  Used Avail Use% Mounted on
+/dev/nvme1n1p2 btrfs     928G  827G   90G  91% /
+efivarfs       efivarfs  128K   30K   94K  24% /sys/firmware/efi/efivars
+/dev/nvme1n1p2 btrfs     928G  827G   90G  91% /home
+/dev/nvme1n1p1 vfat      4.1G  756M  3.4G  19% /boot
+/dev/sda4      ext4      846G  608G  196G  76% /mnt/sda4
+/dev/nvme0n1p1 btrfs     916G   86G  830G  10% /mnt/nvme0n1
+/dev/sdb2      fuseblk   7.3T  961G  6.4T  13% /mnt/8TB
+---
+NAME          SIZE TYPE MOUNTPOINT
+sda         931.5G disk 
+└─sda4      860.2G part /mnt/sda4
+sdb           7.3T disk 
+├─sdb1         16M part 
+└─sdb2        7.3T part /mnt/8TB
+zram0        62.4G disk [SWAP]
+nvme0n1     931.5G disk 
+├─nvme0n1p1   916G part /mnt/nvme0n1
+└─nvme0n1p2  15.5G part [SWAP]
+nvme1n1     931.5G disk 
+├─nvme1n1p1   4.1G part /boot
+└─nvme1n1p2 927.4G part /home
+[ec=0] DISK
+[RIGHT] DISK
+
+=== KERNEL ===
+Linux awrawr-pc 7.2.6-1-cachyos-bore #1 SMP PREEMPT_DYNAMIC Wed, 16 Sep 2026 18:34:30 +0000 x86_64 GNU/Linux
+---
+NAME="CachyOS Linux"
+PRETTY_NAME="CachyOS"
+ID=cachyos
+ID_LIKE=arch
+BUILD_ID=rolling
+---
+ 18:49:06 up 2 days,  4:53,  6 users,  load average: 2.64, 2.64, 2.75
+[ec=0] KERNEL
+[RIGHT] KERNEL
+
+Report saved to: /tmp/yote-env-toxic-5xR9jc/report.txt
+Section files:   /tmp/yote-env-toxic-5xR9jc/*.txt
+total 80
+-rw-r--r-- 1 toxic toxic   232 Oct 14 18:49 bash-aliases.txt
+-rw-r--r-- 1 toxic toxic  1154 Oct 14 18:49 bash-profile.txt
+-rw-r--r-- 1 toxic toxic  1037 Oct 14 18:49 bashrc-sources.txt
+-rw-r--r-- 1 toxic toxic  6837 Oct 14 18:49 bashrc.txt
+-rw-r--r-- 1 toxic toxic  4540 Oct 14 18:49 cpu.txt
+-rw-r--r-- 1 toxic toxic   916 Oct 14 18:49 disk.txt
+-rw-r--r-- 1 toxic toxic  3029 Oct 14 18:49 gpu.txt
+-rw-r--r-- 1 toxic toxic   316 Oct 14 18:49 kernel.txt
+-rw-r--r-- 1 toxic toxic   387 Oct 14 18:49 mem.txt
+-rw-r--r-- 1 toxic toxic    90 Oct 14 18:49 mobo.txt
+-rw-r--r-- 1 toxic toxic  2451 Oct 14 18:49 network.txt
+-rw-r--r-- 1 toxic toxic  3107 Oct 14 18:49 referenced-files.txt
+-rw-r--r-- 1 toxic toxic 24385 Oct 14 18:49 report.txt
