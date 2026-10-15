@@ -539,7 +539,7 @@ auto = ["start"]
 
 
 [daemons.redis]
-run = "exec valkey-server --port 25203 --bind 0.0.0.0 --protected-mode no --save '' --appendonly no" # 25203 == $REDIS_PORT (SSOT); literal: ${} not expanded in run lines. Moved 2026-10-14 off :25199 (squatted by hatch/shim_mcp.py).
+run = "exec valkey-server --port 25203 --bind 127.0.0.1 --protected-mode no --save '' --appendonly no" # 25203 == $REDIS_PORT (SSOT); literal: ${} not expanded in run lines. Moved 2026-10-14 off :25199 (squatted by hatch/shim_mcp.py).
 dir = "."
 mise = false
 retry = true

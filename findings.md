@@ -192,3 +192,33 @@ Repairs landed this session are marked [FIXED]; open items marked [OPEN].
   ID server `100.72.199.93:25221`, Relay `100.72.199.93:25222`,
   Key `VLtWm5nG+d9TYWxB1C1uLELf2cFYMtbT75fASh9DT2M=`.
   UDP 25221 must stay open on the tailnet for hole punching.
+
+## 13. Network & Tailscale
+
+Audited 2026-10-15 (full evidence: `findings/prior-audits/network-audit-20261015.txt`).
+
+| # | Item | Verdict | Evidence / fix |
+|---|---|---|---|
+| 1 | Interfaces/routes | PASS | enp12s0 10.0.0.218/24 (LAN), tailscale0 100.72.199.93, tsd 100.108.135.48 (2nd tailscale: github-mcp-host), docker bridges 172.17-21 |
+| 2 | MagicDNS | PASS (already on) | tailnet-wide, suffix `tailc9ac71.ts.net`; accept-dns enabled; systemd-resolved active + stub resolv.conf symlink |
+| 3 | Subnet router (10.0.0.0/24) | PASS (advertised) | `tailscale set --advertise-routes=10.0.0.0/24`; **approval pending in admin console** (PrimaryRoutes: None) |
+| 4 | Tailscale SSH | PASS (already on) | `RunSSH: true` in prefs; no reconfiguration needed |
+| 5 | Direct vs DERP | PASS | almalinux-server: direct `172.96.160.178:41641` ~41-44ms ( DERP warmup 141ms); doorbell direct (LAN) <1ms |
+| 6 | tailscaled boot | PASS | `systemctl is-enabled tailscaled` = enabled, active |
+| 7 | Host firewall | PASS (installed+enabled) | Was: only docker/tailscale chains, INPUT policy ACCEPT. Now: `inet awrawr_filter` baseline in `config/nftables.conf` → `/etc/nftables.conf`, `nft -c` validated, nftables.service enabled. Deliberately NO `flush ruleset` (protects docker/ts tables). Verified SSH survived (session from 10.0.0.77) |
+| 8 | RustDesk 25220-25224 | PASS (tailnet-only) | hbbs/hbbr bind * but firewall: full accept from `tailscale0`/`tsd`; LAN+public dropped |
+| 9 | Loopback exposure of 25xxx | PARTIAL | Many services bound 0.0.0.0/* (25102/25103/25105/25110/25117/25118/25148/25144/25201/25212/25219/25240, kafka 9093/37725/25144, dockerd 43000, effusion-web). **Firewall now blocks all non-loopback access** except LAN allowlist (3000/3001/8503/25100-25107/25203). Bind fixes per-service left to owners (see below) |
+| 10 | valkey 25203 on 0.0.0.0 | FIXED | pitchfork.toml `[daemons.redis]` run line: `--bind 0.0.0.0` → `--bind 127.0.0.1`, restarted, ss confirms 127.0.0.1:25203 |
+| 11 | ip_forward persistence | PASS (installed) | Was set live but not persisted under an explicit tailscale file. New: `config/sysctl.d/99-tailscale-forward.conf` → symlink `/etc/sysctl.d/99-tailscale-forward.conf` (ip_forward=1 v4+v6) |
+| 12 | DNS consistency | PASS | systemd-resolved stub (127.0.0.53) + tailscale accept-dns; dnsmasq 10.0.0.218:53 serves LAN (allowed from LAN only) |
+
+### Needs Chris (admin console)
+- **Approve subnet route** 10.0.0.0/24 for `estate` (100.72.199.93) at https://login.tailscale.com/admin/networks — advertised, not yet approved.
+
+### Client-facing facts
+- Tailscale IP `100.72.199.93`, MagicDNS `estate.tailc9ac71.ts.net`; funnel on `https://estate.tailc9ac71.ts.net`.
+- Subnet route 10.0.0.0/24 (once approved) reaches LAN incl. 10.0.0.218 services.
+- Tailscale SSH enabled; RustDesk via 100.72.199.93:25220-25224 (tailnet only).
+
+### Bind-fix backlog (documented, not forced — pitchfork-owned)
+For each 0.0.0.0-bound service, prefer `--bind 127.0.0.1` (or interface-specific) in its pitchfork run line, like the valkey fix. Ports still bound wide: 25102/25103/25105/25110/25201/25219 (bun), 25117 (hindsight-api), 25118 (next-server), 25148/25240 (flicker-server), 25212 (systemd user mgr), 43000 (effusion-web docker publish — change to `127.0.0.1:43000->80`), kafka 9093/37725/25144, syncthing 22000, dnsmasq 53 (LAN DNS — intentional), tailscaled 55911 (tailscale-owned).
