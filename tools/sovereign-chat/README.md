@@ -95,7 +95,7 @@ Token is read from `/home/toxic/.config/estate-chat-token` (or
 | `host_machine_id` | host identity (machine-id; `hostname` is readability only) |
 | `chat_id` | conversation/lane identity |
 | `agent_id` | agent/runtime incarnation (`JARVIS_SESSION_ID` or agent UUID) |
-| `hatchling_id` | shared parent/fleet identity — NOT unique per child |
+| `hatchling_id` | shared parent/fleet identity — NOT unique per child. Kite terminology: the cell (kite) hatches agents — an `eyas` is a young bird of prey; `hatchling_id` ≡ `eyas_id` (alias, 2026-10-15). Field name stays `hatchling_id` for identity-tuple compatibility. |
 
 ### HTTP API (bearer on all `/v1/*`)
 
