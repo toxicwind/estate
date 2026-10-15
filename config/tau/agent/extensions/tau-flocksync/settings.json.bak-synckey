@@ -1,0 +1,16 @@
+{
+  "serverUrl": "http://127.0.0.1:25193",
+  "providerName": "flock",
+  "onlyShowUsableModels": true,
+  "showGlobalRoutingModels": true,
+  "includeModels": [],
+  "excludeModels": [],
+  "syncOnStartup": true,
+  "modelCacheTtlMinutes": 60,
+  "autoSyncIntervalSeconds": 120,
+  "showGatewayTokensPerSecond": true,
+  "lastSuccessfulSyncAt": 1792103698164,
+  "onUnreachable": "none",
+  "fallbackModel": "openai/gpt-oss-20b",
+  "apiKey": "npk_05b0363e2282615b0376351522ab1857"
+}

@@ -354,7 +354,7 @@ COPY (SELECT * FROM read_csv_auto('${tempCsv}')) TO '${outputPath}' (FORMAT PARQ
     child.stderr.on("data", (data: Buffer) => { stderr += data.toString(); });
     
     child.on("close", (code: number) => {
-      fs.unlinkSync(tempCsv);
+      try { fs.unlinkSync(tempCsv); } catch {}
       if (code === 0) {
         resolve();
       } else {

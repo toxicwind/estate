@@ -1,0 +1,19 @@
+{
+  "name": "@toxic/forge-tampermonkey-bun",
+  "version": "1.0.0",
+  "description": "Bun-native Tampermonkey userscript framework — GM_* API, metadata parsing, styles, injection, and storage.",
+  "type": "module",
+  "main": "src/runtime/index.ts",
+  "bin": {
+    "forge-tampermonkey": "bin/forge-tampermonkey.ts"
+  },
+  "scripts": {
+    "dev": "bun src/runtime/index.ts",
+    "build": "bun build src/runtime/index.ts --outdir build --target bun",
+    "test": "bun test"
+  },
+  "engines": {
+    "bun": ">=1.4.0"
+  },
+  "license": "WTFPL"
+}

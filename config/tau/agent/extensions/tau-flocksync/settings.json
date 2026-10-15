@@ -9,8 +9,8 @@
   "modelCacheTtlMinutes": 60,
   "autoSyncIntervalSeconds": 120,
   "showGatewayTokensPerSecond": true,
-  "lastSuccessfulSyncAt": 1792046930024,
+  "lastSuccessfulSyncAt": 1792104759054,
   "onUnreachable": "none",
   "fallbackModel": "openai/gpt-oss-20b",
-  "apiKey": "npk_05b0363e2282615b0376351522ab1857"
+  "apiKey": "eyJhbGciOiAibm9uZSIsICJ0eXAiOiAiSldUIn0.eyJzdWIiOiAiZmxvY2stY2xpZW50IiwgIm5hbWUiOiAiY29ycmFsLWp3dGZtdCIsICJpYXQiOiAxNzkxOTAwMDAwfQ.d0391d5d684102b1ef80140f9920381b08aa43b417976ed1528618c7b76b60df"
 }
