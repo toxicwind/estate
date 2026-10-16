@@ -2,10 +2,10 @@
 name: plan-viz
 description: >-
   Create a rich, self-contained HTML visualization of an implementation plan.
-  Invoke whenever the user asks to visualize a plan, create a plan overview,
+  Invoke whenever the architect asks to visualize a plan, create a plan overview,
   make an implementation plan visual, "show me the plan," "plan as HTML," or
   any request to turn a project plan, roadmap, or architecture into a visual
-  artifact. Also trigger when the user mentions wanting mock-ups, code excerpts,
+  artifact. Also trigger when the architect mentions wanting mock-ups, code excerpts,
   or maximum context about a plan in a single viewable file. Also trigger
   automatically after a plan is created, saved, or just written (e.g., after
   `writing-plans` produces a plan file). This skill gathers plan content from
@@ -33,7 +33,7 @@ maximizes context at a glance.
 
 ### 1. Auto-detect recently-created plans
 
-Before asking the user, check whether a plan was just created:
+Before asking the architect, check whether a plan was just created:
 
 1. List `docs/plans/` for `.md` files sorted by modification time (newest first).
 2. If no `docs/plans/` directory exists, check the project root for `PLAN.md`,
@@ -54,7 +54,7 @@ This makes the skill self-sufficient when invoked immediately after
 
 ### 2. Gather plan content
 
-If the user has already described the plan in this conversation, synthesize it.
+If the architect has already described the plan in this conversation, synthesize it.
 If the plan exists in a file, read it. If neither, ask concise clarifying
 questions to elicit:
 
@@ -82,7 +82,7 @@ Determine the dominant domain so you know which sections to emphasize:
 ### 4. Load the template
 
 Read `assets/template.html`. It is a self-contained HTML file with embedded CSS.
-Fill in the marked sections. Do not alter the CSS or structure unless the user
+Fill in the marked sections. Do not alter the CSS or structure unless the architect
 explicitly asks for a different visual style.
 
 ### 5. Fill each section
@@ -138,7 +138,7 @@ should be dense with useful information.
 3. **Fallback output path:** If the `browser` call fails or the environment
    lacks a graphical browser, report the absolute file path and exit cleanly
    without retrying.
-4. **Alternative output path:** If the user explicitly asks for the file path
+4. **Alternative output path:** If the architect explicitly asks for the file path
    without a browser window (e.g., in a headless or CI context), skip the
    browser step and report the path directly.
 
@@ -165,6 +165,6 @@ A single `.html` file written to the filesystem. Provide the file path in chat.
   to `docs/plans/`. The `plan-viz` skill is designed to auto-detect those files
   within a 5-minute recency window.
 - **`executing-plans`** should reference `@skills/plan-viz` after loading a plan
-  so the user can view it visually before beginning implementation.
+  so the architect can view it visually before beginning implementation.
 - Do not modify the global `writing-plans` or `executing-plans` superpowers
   directly; document the intended hook here for future maintainers.

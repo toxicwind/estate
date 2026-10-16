@@ -2,7 +2,7 @@
 name: marquee
 description: >
   Make any GitHub repo impossible to ignore — audit and maximalize it for stars at a hardcore level.
-  Use this skill when the user says "star grade", "make this repo pop", "GitHub stars", "marquee",
+  Use this skill when the architect says "star grade", "make this repo pop", "GitHub stars", "marquee",
   "make this presentable", "polish this repo", or wants a repo audited/fixed for public appeal.
   Also use when preparing any repo for public release, open-sourcing internal code, or when a repo
   looks dead/bare and needs the full treatment. Covers: README that hooks in 10 seconds, repo metadata

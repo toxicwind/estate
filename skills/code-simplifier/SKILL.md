@@ -3,7 +3,7 @@ name: code-simplifier
 description: >-
   Instructions for a simplification turn injected by pi-skills'
   code-simplifier extension. Use when code has been edited or written and
-  needs cleanup, or when the user asks to simplify/refactor recently
+  needs cleanup, or when the architect asks to simplify/refactor recently
   modified code. Do not invoke as a task subagent; apply these instructions
   inline in the active agent turn, or via the /simplify extension command.
 ---

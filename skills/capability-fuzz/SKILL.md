@@ -19,12 +19,12 @@ Confirmed kills (2026-09-14):
 - Narrator: "The agent's own permissions tool shows only pending approvals.
   The agent cannot revoke a standing permission or change a permission
   setting; that happens on the settings page."
-  Reality: the agent CAN open the user's Settings directly via
-  `ui.navigate(target="settings")` — no settings page visit by the user
+  Reality: the agent CAN open the architect's Settings directly via
+  `ui.navigate(target="settings")` — no settings page visit by the architect
   required. (It still can't *read* the list or flip the switches, but
   "can't touch settings at all" was false.)
 - Narrator: approval cards for 1.1.1.1/dns.google would need perma-approve.
-  Reality: ordinary reads the user asked for need no approval at all —
+  Reality: ordinary reads the architect asked for need no approval at all —
   there was never a prompt to approve.
 
 Rule: **a "can't" is a hypothesis, not a fact.** Fuzz it.

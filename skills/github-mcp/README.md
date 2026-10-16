@@ -3,7 +3,7 @@
 ![GitHub Last Commit](https://img.shields.io/github/last-commit/toxicwind/github-mcp?style=for-the-badge)
 
 # github-mcp
-Use Github Mcp when the user asks for Github Mcp or this provider's API
+Use Github Mcp when the architect asks for Github Mcp or this provider's API
 
 ## What it does
 Client for GitHub's official remote MCP server (https://api.githubcopilot.com/mcp) that provides access to GitHub's Model Context Protocol tools with OAuth credential handling, transport hardening, and resource safety features.

@@ -26,13 +26,13 @@ docs/fleet-knowledgebase.md is generated from these files -- do not edit it by h
   (telemetric-runtime-oracle already in ranch/corral; dualspace-ast-bm25-v2 merged
   into v1). 1 QUARANTINED: metaclaw-runtime (auto-approves Sentinel HITL egress
   approvals, persists session/auth tokens, JWT-shaped token in test) -- needs
-  Chris's explicit call before any push.
+  the Architect's explicit call before any push.
 - Manifests in ranch/spark/manifests/: dropbox-inventory.json, shard manifests,
   old-to-new-manifest.json, repo-registry.json (23 entries), audit-batch-1..4.json.
 - Real bugs fixed: doubled-backslash regex breaking disclaimer matching (3 engines),
   175 tsc errors -> 0 in hyper-racer, pure-TS ChaCha20-Poly1305 fallback (RFC 8439
   verified), aerosol-deposition math bug in phytovapor.
-- OPEN phase 5: push organized tree back to Dropbox + renames. BLOCKED on Chris
+- OPEN phase 5: push organized tree back to Dropbox + renames. BLOCKED on the Architect
   granting the Dropbox content.manage scope:
   https://agent.meta.ai/connectors/dropbox/scope/content.manage/add
   (move/create_folder/create_file all return scope_status: not_granted).

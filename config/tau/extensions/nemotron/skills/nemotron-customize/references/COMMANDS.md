@@ -52,7 +52,7 @@ and mount prefixes. Do not simplify `/data/news/*.jsonl` to `/data/news`.
 
 ## Run Shapes
 
-Do not present these as runnable until every placeholder has a user-provided or
+Do not present these as runnable until every placeholder has an architect-provided or
 repo-verified value.
 
 ```bash
@@ -124,7 +124,7 @@ These are high-signal examples for the non-obvious translation flags. Replace
 paths, languages, model, and service URL with user-provided or repo-verified
 values before final output.
 
-If the user gives all required values and asks only for the command, emit only
+If the architect gives all required values and asks only for the command, emit only
 the command block.
 
 Plain text records:

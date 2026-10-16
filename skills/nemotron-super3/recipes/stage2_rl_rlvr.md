@@ -59,7 +59,7 @@ From `stage1_rlvr/config/default.yaml`:
 - can convert Megatron checkpoints to HF format,
 - launches GRPO training inside the NeMo-RL environment.
 
-This is the file to cite when the user wants the actual implementation entrypoint rather than only the YAML.
+This is the file to cite when the architect wants the actual implementation entrypoint rather than only the YAML.
 
 ---
 
@@ -83,5 +83,5 @@ That script resolves placeholder rows from the released HF RL blends and writes 
 
 ## Best next file
 
-- `stage2_rl_swe1.md` if the user wants to follow the actual stage chain.
-- `../paper/rl/rlvr.md` if the user wants the research-level rationale.
+- `stage2_rl_swe1.md` if the architect wants to follow the actual stage chain.
+- `../paper/rl/rlvr.md` if the architect wants the research-level rationale.

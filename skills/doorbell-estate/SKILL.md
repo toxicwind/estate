@@ -20,7 +20,7 @@ upstream is the mcpproxy unix socket. Public URL (Tailscale funnel): `https://es
 
 1. Run `status` then `tools` first. Never assume tool names; the catalog changes.
 2. Never print, paste or log tokens/secrets. The script redacts; do not work around it.
-3. Prefer read-only tools. For anything that writes, executes or deletes, state what it will do and get the user's yes before using `--yes`.
+3. Prefer read-only tools. For anything that writes, executes or deletes, state what it will do and get the architect's yes before using `--yes`.
 4. Do NOT add funnel routes for `/api/oauth/*` until `exposure` shows the bridge gates `/authorize` behind a human approval. Open dynamic registration + auto-issued codes + client_credentials = anyone on the internet gets tool access.
 5. Registration (DCR) is only done against loopback and cached in `~/.config/doorbell/client.json` (0600). Tokens cache in `~/.cache/doorbell/token.json` (0600).
 

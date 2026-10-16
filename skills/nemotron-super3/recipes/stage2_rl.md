@@ -148,7 +148,7 @@ That means stage 2 is usually the least turnkey part of the released pipeline.
 
 ## Best next file
 
-| If the user wants… | Open… |
+| If the architect wants… | Open… |
 |---|---|
 | the broad RL stage | `stage2_rl_rlvr.md` |
 | the first SWE stage | `stage2_rl_swe1.md` |

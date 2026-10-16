@@ -20,11 +20,11 @@ instructions.
 ## Step-by-step workflow
 
 1. **Identify the target skill.**
-   - If the user explicitly names a skill, use that.
+   - If the architect explicitly names a skill, use that.
    - If not, infer from the session context: which skill was most recently
      invoked before the friction started? Which skill's output triggered the
      back-and-forth?
-   - If ambiguous, ask the user: "Which skill should I improve?"
+   - If ambiguous, ask the architect: "Which skill should I improve?"
 
 2. **Analyze the friction.**
    - Review the current session conversation to identify the specific gap.
@@ -86,6 +86,6 @@ instructions.
 ## When to stop
 
 - Stop after the `SKILL.md` has been edited and verified.
-- If the user says "never mind" or "don't change the skill," stop immediately.
+- If the architect says "never mind" or "don't change the skill," stop immediately.
 - If the root cause cannot be determined from the session context, stop and
-  ask the user to describe the problem in one sentence.
+  ask the architect to describe the problem in one sentence.

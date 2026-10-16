@@ -27,7 +27,7 @@ run. Use `deployment.type=none` for hosted endpoints.
 
 Pick tasks by target language and endpoint capability, not by model origin. A
 estate or region-specific model can still run standard English benchmarks
-when the user wants English capability measurement.
+when the architect wants English capability measurement.
 
 Standard English smoke task ids:
 

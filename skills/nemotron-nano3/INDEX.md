@@ -89,7 +89,7 @@ Read this before answering “how do I reproduce it?” questions:
 
 ## Handoff Rule
 
-If the user asks to **generate code**, **build a pipeline**, or **customize Nano3 to their own data/hardware**:
+If the architect asks to **generate code**, **build a pipeline**, or **customize Nano3 to their own data/hardware**:
 
 1. answer the factual part briefly from this skill
 2. then hand off to `/nemotron-customize`

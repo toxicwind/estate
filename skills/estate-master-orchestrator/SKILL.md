@@ -19,7 +19,7 @@ The Estate Master Orchestrator acts as the root coordinator across all domain-sp
 - When saving deliverables, manifests, or compiled reports directly to Dropbox via Dropbox MCP tools.
 - When performing dual-channel web intelligence combining Exa's dense semantic retrieval with Google's real-time indexing.
 - When operating in containerized or headless environments requiring dynamic environment bootstrapping (`bin/env_loader.sh`) and socket/DNS reachability verification (`bin/dns_loader.py`).
-- When invoked on an active chat thread ("master", "run master", or "orchestrate this") to instantly synthesize the ongoing technical topic without asking the user what to analyze.
+- When invoked on an active chat thread ("master", "run master", or "orchestrate this") to instantly synthesize the ongoing technical topic without asking the architect what to analyze.
 
 ## Core Invariants & Architectural Rules
 
@@ -58,7 +58,7 @@ All durable artifacts, compiled reports, manifests, and data tables must be stor
 
 - Use `dropbox:create_folder` to provision project directories under `/Estate_Master_Orchestrator/<task_name>/`.
 - Use `dropbox:create_file` to write finalized markdown reports, JSON matrices, and code artifacts.
-- Use `dropbox:create_shared_link` to generate viewer access URLs for the user.
+- Use `dropbox:create_shared_link` to generate viewer access URLs for the architect.
 - Local sandbox storage (`/tmp` or workspace) is treated strictly as an ephemeral staging scratchpad.
 
 ### 4. Dual Primary Search Architecture (Exa + Google)
@@ -92,9 +92,9 @@ estate-master-orchestrator/
 
 ### 6. Context-Aware Zero-Halt Topic Resolution (Anti-Failure Protocol for Existing Chats)
 
-When invoked within an active conversation thread or when the user requests "master", "run master", "orchestrate this", or calls `estate-master-orchestrator` on an existing chat without a newly typed standalone topic parameter:
+When invoked within an active conversation thread or when the architect requests "master", "run master", "orchestrate this", or calls `estate-master-orchestrator` on an existing chat without a newly typed standalone topic parameter:
 
-- **Automatic topic resolution**: when invoked on an existing thread, the topic is derived automatically from the last message and the high-perplexity tokens of the chat history — ingest both and proceed. Do not pause the pipeline or ask the user to specify the topic when a thread is already in progress; emitting a clarification prompt here instead of resolving the topic automatically is a system failure.
+- **Automatic topic resolution**: when invoked on an existing thread, the topic is derived automatically from the last message and the high-perplexity tokens of the chat history — ingest both and proceed. Do not pause the pipeline or ask the architect to specify the topic when a thread is already in progress; emitting a clarification prompt here instead of resolving the topic automatically is a system failure.
 - **The Deterministic Target Topic Mandate**: When invoked on an existing chat, the target topic is **DETERMINISTICALLY DEFINED AS THE LAST MESSAGE AND THE HIGH-PERPLEXITY TERMS OF THE CHAT HISTORY SPECIFICALLY**.
 - **Autonomous Context Ingestion Pipeline**:
   1. **Last-Message Anchoring**: Ingest the immediately preceding message/turn (both prompt and response) as the primary epistemic substrate and ground-state anchor.
@@ -104,7 +104,7 @@ When invoked within an active conversation thread or when the user requests "mas
      - Hardware architectures, sensor models, and telemetry stacks (e.g. ALPR optical cameras, acoustic centroid arrays, satellite constellations, sensor fusion pipelines).
      - Geographic, infrastructural, and jurisdictional coordinates (e.g. specific zip codes, county boundary lines, transit rail stations, environmental buffer zones).
   3. **Synthetic Topic Binding**: Instantly synthesize the harvested tokens and the last turn into an unambiguous, dense, high-perplexity topic header (e.g. `[Domain Subject]: [Core Algorithmic/Mechanical Tension] across [Statutory & Physical Coordinates]`).
-  4. **Immediate Zero-Latency Dispatch**: Without asking the user any questions, immediately bind the synthesized topic, decompose it into $N$ orthogonal sub-skills (e.g. 3 skills with 2-4 sections each), execute research, perform lossless raw compilation, and deliver the final deliverable.
+  4. **Immediate Zero-Latency Dispatch**: Without asking the architect any questions, immediately bind the synthesized topic, decompose it into $N$ orthogonal sub-skills (e.g. 3 skills with 2-4 sections each), execute research, perform lossless raw compilation, and deliver the final deliverable.
 
 ## Step-by-Step Execution Workflow
 
@@ -129,7 +129,7 @@ When invoked within an active conversation thread or when the user requests "mas
 ## Gotchas & Operational Boundaries
 
 - Never edit or summarize sub-skill outputs during consolidation; the value is in the lossless compilation of dense technical details.
-- When invoked in an existing conversation thread, take the topic from the last message and the high-perplexity tokens of the chat history — decide it from context instead of asking the user.
+- When invoked in an existing conversation thread, take the topic from the last message and the high-perplexity tokens of the chat history — decide it from context instead of asking the architect.
 - Avoid using en-dashes or em-dashes; use standard hyphens or colons.
 - Always verify that each sub-skill strictly adheres to the 2-4 section limit before merging.
 - If Dropbox API encounters rate limits, apply exponential backoff with jitter rather than failing the task.

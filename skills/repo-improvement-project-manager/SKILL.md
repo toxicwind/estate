@@ -1,5 +1,5 @@
 ---
-description: Analyze a repository, produce a prioritized improvement report, convert user-selected improvements into incremental tasks, assign tasks to one or more developer agents, and review completed work with functional testing plus actionable feedback loops. Use when a user wants iterative and incremental project management for engineering improvements, including parallel task execution on separate feature branches.
+description: Analyze a repository, produce a prioritized improvement report, convert user-selected improvements into incremental tasks, assign tasks to one or more developer agents, and review completed work with functional testing plus actionable feedback loops. Use when an architect wants iterative and incremental project management for engineering improvements, including parallel task execution on separate feature branches.
 metadata:
     github-path: skills/repo-improvement-project-manager
     github-ref: refs/heads/main
@@ -35,12 +35,12 @@ Build a baseline report before planning tasks.
 - Provide impact, effort, risk, and rationale.
 - Mark top 3 recommended items.
 
-4. Stop and ask the user to select enhancement IDs.
+4. Stop and ask the architect to select enhancement IDs.
 - Do not auto-convert all enhancements into tasks.
 
 ## Phase 2: Plan Selected Enhancements
 
-After the user selects enhancement IDs:
+After the architect selects enhancement IDs:
 
 1. Update `agent-workflow/task-board.md`.
 - Add selected enhancements under "Selected Enhancements".
@@ -89,13 +89,13 @@ After a developer marks a task complete:
 
 ## Iteration Rules
 
-- Keep exactly one `in_progress` task unless the user asks for parallel work.
+- Keep exactly one `in_progress` task unless the architect asks for parallel work.
 - Repeat assignment -> implementation -> review/testing until selected enhancements are complete.
 - After each completed task, show updated board status and remaining risk.
 
 ## Parallel Rules
 
-When the user requests parallel execution:
+When the architect requests parallel execution:
 
 1. Use two assignees:
 - `$repo-improvement-developer-a`

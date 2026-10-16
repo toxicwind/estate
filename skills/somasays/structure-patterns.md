@@ -18,7 +18,7 @@ Is the input a .doc or .docx?
 ├── .doc → Convert to .docx first (see Converting Legacy Files)
 └── .docx → Proceed to analysis
 
-What does the user want?
+What does the architect want?
 ├── Read/extract content → See Step 1
 ├── Create new document → See Step 2
 └── Edit existing document → See Step 3

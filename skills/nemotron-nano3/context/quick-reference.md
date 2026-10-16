@@ -250,13 +250,13 @@ There is **currently no public catalog step** for Nano3 pretraining in `src/nemo
 
 For Nano3 RL builds, use `rl/nemo_rl/rlvr` and ground recipe-specific settings on `src/nemotron/recipes/nano3/stage2_rl/`.
 
-If the user asks to build stage0 pretraining via `/nemotron-customize`:
+If the architect asks to build stage0 pretraining via `/nemotron-customize`:
 
 - treat it as an **Explorer-mode** or direct recipe task
 - ground on `src/nemotron/recipes/nano3/stage0_pretrain/`
 - do not claim a catalog `pretrain/*` step exists unless one is later added
 
-If the user asks for Nano3 RL generation via `/nemotron-customize`:
+If the architect asks for Nano3 RL generation via `/nemotron-customize`:
 
 - mention `rl/nemo_rl/rlvr` as the catalog step surface
 - ground specifics on `src/nemotron/recipes/nano3/stage2_rl/`

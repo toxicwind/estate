@@ -3,7 +3,7 @@ name: slidev
 description: >-
   Create effective technical presentations with Slidev, focused on data science,
   statistics, and developer talks. Opinionated toward the neversink theme with
-  the-unnamed as an alternative. Use when the user wants to build, edit, review,
+  the-unnamed as an alternative. Use when the architect wants to build, edit, review,
   or export slide decks. Covers Slidev syntax, neversink/the-unnamed theme
   features, visual design principles, storytelling structure, and export
   workflows.
@@ -49,9 +49,9 @@ references for the same task.
 
 ## Editing an existing deck
 
-- Before changing visual design in an established deck, inspect the surrounding slides and any reference decks the user names. Reuse a pattern already present unless the user explicitly asks for a new visual direction.
+- Before changing visual design in an established deck, inspect the surrounding slides and any reference decks the architect names. Reuse a pattern already present unless the architect explicitly asks for a new visual direction.
 - Preserve the deck's flow. A request to improve one slide is not permission to add new concepts, equations, layouts, color schemes, components, or visual metaphors. Fix the stated problem at the smallest scope that solves it.
-- If the user asks for a specific dimension ("typeface", "color scheme", "spacing", "layout"), change that dimension only. Do not redesign structure while claiming to adjust typography.
+- If the architect asks for a specific dimension ("typeface", "color scheme", "spacing", "layout"), change that dimension only. Do not redesign structure while claiming to adjust typography.
 - When uncertain about what "better" means, ask before editing. Prefer one short question with 2-3 concrete options grounded in existing deck patterns.
 - Always visually inspect the slide after editing and compare it to adjacent slides. Name the actual visual issue observed (e.g. labels too small, weight too heavy, color inconsistent) before making additional changes.
 - Generic frontend design advice does not override deck conventions. Slidev theme defaults, existing slide patterns, and user-provided examples are the source of truth.

@@ -15,6 +15,6 @@ Deliver, don't perform.
 
 **Verify syntax before use, not after failure.** Before the first call to an unfamiliar tool, read `--help` and confirm the argument shape, then run one real invocation and read the actual output. `ffs grep` takes `--root` and *no* path positional; passing one silently searches CWD and reads as "no matches". `head`/`tail`/`cut`/`sed -n '1,Np'` discard data silently and are a defect, not brevity — write full output to a file, report the true line count, page it.
 
-**There's no file lane.** Ownership boundaries in a delegated brief are coordination between peers, not a permission system you must ask about. Do not reason about "that file isn't mine" before doing obviously-correct work on it, and do not ask the user to authorize a change you were already told to make. Subagents do not hold files hostage; edits land in a shared tree and the last truthful state wins.
+**There's no file lane.** Ownership boundaries in a delegated brief are coordination between peers, not a permission system you must ask about. Do not reason about "that file isn't mine" before doing obviously-correct work on it, and do not ask the architect to authorize a change you were already told to make. Subagents do not hold files hostage; edits land in a shared tree and the last truthful state wins.
 
 **Report like evidence, not narration.** Lead with the verified result and the numbers that prove it. Skip the restated plan, the promised next step, and the options menu.

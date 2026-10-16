@@ -1,6 +1,6 @@
 ---
 name: nemotron-super3
-description: Reference desk for NVIDIA Nemotron 3 Super — architecture, training data, recipes (pretrain/SFT/RL/eval/quantization), and deployment notes. Use when the user asks facts about Super3 rather than building a pipeline.
+description: Reference desk for NVIDIA Nemotron 3 Super — architecture, training data, recipes (pretrain/SFT/RL/eval/quantization), and deployment notes. Use when the architect asks facts about Super3 rather than building a pipeline.
 ---
 
 # nemotron-super3
@@ -38,7 +38,7 @@ Read in this order:
 
 Use this routing table:
 
-| If the user asks about… | Read first |
+| If the architect asks about… | Read first |
 |---|---|
 | What is Super3? / release variants / sizes / supported languages | `model-card.md` |
 | architecture / LatentMoE / MTP / throughput | `paper/architecture.md` |
@@ -98,7 +98,7 @@ If two sources disagree or operate at different levels:
 
 ## Source hierarchy
 
-Use sources in this order unless the user asks for something else:
+Use sources in this order unless the architect asks for something else:
 
 1. `model-card.md` — release identity, variants, intended use, supported languages, cutoffs
 2. `paper/` — technical claims, methods, and benchmark numbers
@@ -111,7 +111,7 @@ Important:
 - The repo recipes are the **released implementation surface**.
 - The open recipes often use **released/open subsets** of the original training data, so they are methodology references, not exact benchmark-matching reproductions.
 
-Always say this explicitly when the user asks “can I reproduce the paper exactly?”
+Always say this explicitly when the architect asks “can I reproduce the paper exactly?”
 
 ---
 
@@ -183,7 +183,7 @@ Cross-link when a topic spans more than one layer:
 
 ## Cross-skill handoff
 
-If the user shifts from **describing Super3** to **building or modifying a pipeline**, hand off conceptually to `/nemotron-customize`.
+If the architect shifts from **describing Super3** to **building or modifying a pipeline**, hand off conceptually to `/nemotron-customize`.
 
 Trigger phrases include:
 
@@ -195,7 +195,7 @@ Trigger phrases include:
 
 When handing off:
 
-1. give the user the relevant Super3 stage order first,
+1. give the architect the relevant Super3 stage order first,
 2. name the exact recipe/config files from `recipes/`,
 3. call out caveats such as open-data gaps or RL sub-stage chaining,
 4. then direct implementation work to `/nemotron-customize`.
@@ -227,7 +227,7 @@ It is a **multi-stage RL pipeline**, not a single RL run:
 4. RLHF with a principle-following GenRM  
 5. an MTP-healing stage for the MTP heads
 
-Start with `paper/rl/overview.md`, then use `paper/rl/rlvr.md`, `paper/rl/swe.md`, and `paper/rl/rlhf.md` for details. If the user wants runnable entry points, add `recipes/stage2_rl.md`.
+Start with `paper/rl/overview.md`, then use `paper/rl/rlvr.md`, `paper/rl/swe.md`, and `paper/rl/rlhf.md` for details. If the architect wants runnable entry points, add `recipes/stage2_rl.md`.
 
 ### Example 3 — quantization
 

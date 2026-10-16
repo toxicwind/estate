@@ -128,7 +128,7 @@ Common surrounding steps:
 
 - upstream `sft/megatron_bridge`
 - downstream `eval/model_eval`
-- `convert/megatron_to_hf` if the user wants HF export after RL
+- `convert/megatron_to_hf` if the architect wants HF export after RL
 
 ## Good Handoff Pattern
 

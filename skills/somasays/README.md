@@ -14,7 +14,7 @@ A Claude skill that creates other Claude skills. Add it to your environment and 
 
 - **Skill creation**: Generate production-quality skills from intent capture through testing and packaging
 - **Three-level loading**: Metadata (name + description in YAML frontmatter) always in context; SKILL.md body loaded when skill triggers; resources (scripts, references, assets) loaded on-demand
-- **Description as trigger**: The skill description is the primary mechanism — Claude decides whether to activate a skill based on how well the description matches the user's request
+- **Description as trigger**: The skill description is the primary mechanism — Claude decides whether to activate a skill based on how well the description matches the architect's request
 - **Progressive disclosure**: Manage context efficiently across three levels of disclosure
 - **Undertriggering prevention**: Teach Claude to write "pushy" descriptions that explicitly list trigger phrases, scenarios, and exclusions
 
@@ -32,7 +32,7 @@ A Claude skill that creates other Claude skills. Add it to your environment and 
 ## Quick Start
 
 ```bash
-# Create a user-level skill (available across all projects)
+# Create an architect-level skill (available across all projects)
 /skill-creator --user "Analytics with DuckDB"
 
 # Create a project-level skill (scoped to current project)

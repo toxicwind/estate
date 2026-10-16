@@ -4,7 +4,7 @@ List search lives under [B]My Lists[/B]. Each service is different — some sear
 - [COLOR magenta][I]Magenta italic[/I][/COLOR] — dynamic / AI list (MDBList and PunchPlay). Opens the same as a normal list.
 - [COLOR cyan][I]Cyan italic[/I][/COLOR] — MDBList external list (imported onto My Lists).
 - [B]Trakt Official[/B] — Trakt's own editorial lists (e.g. IMDb Top 250). Owner shows as Trakt Official. Like / Unlike (signed in) work via the list id. Name search hides them; paste a numeric ID or [I]trakt.tv/lists/{id}[/I] to open one.
-- Other Trakt rows — a user's public (unofficial) list. Owner is their username. Like / Unlike when signed in.
+- Other Trakt rows — an architect's public (unofficial) list. Owner is their username. Like / Unlike when signed in.
 
 [B]My Lists > Trakt Public Lists[/B] (no Trakt login)
 - [B]Search User Lists[/B]

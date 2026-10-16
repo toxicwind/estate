@@ -24,7 +24,7 @@ After creating the extensions and running the build, verify that:
 - The Nemotron 3 Super model no longer flails when used (this would require a test run, but we assume the build success and extension presence are proxies).
 
 ## Assumptions & contingencies
-- We assume that the user has write access to the `/home/toxic/estate/ranch/tau-extensions` directory.
+- We assume that the architect has write access to the `/home/toxic/estate/ranch/tau-extensions` directory.
 - We assume that the tau project is configured to build with `bun run build` in the ranch/tau directory.
-- If the build fails due to missing dependencies, we assume the user will install them (but note we are in plan mode and cannot run commands).
+- If the build fails due to missing dependencies, we assume the architect will install them (but note we are in plan mode and cannot run commands).
 - If an extension directory already exists, we will overwrite the index.ts file (but note we are in plan mode and cannot actually write).

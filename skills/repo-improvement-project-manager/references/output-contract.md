@@ -29,7 +29,7 @@ Include:
 - Mapping from design IDs to enhancement IDs
 ## 4) Selection Request
 
-Ask the user to choose enhancement IDs to convert into tasks.
+Ask the architect to choose enhancement IDs to convert into tasks.
 
 ## 5) Task Plan (only after selection)
 

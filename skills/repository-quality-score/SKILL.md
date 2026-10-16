@@ -1,5 +1,5 @@
 ---
-description: Calculate an explainable Repository Quality Score from Architect Playbook audit outputs. Use after audits finish, whenever a user asks for a repository score, audit roll-up, quality summary, category comparison, or assessment coverage.
+description: Calculate an explainable Repository Quality Score from Architect Playbook audit outputs. Use after audits finish, whenever an architect asks for a repository score, audit roll-up, quality summary, category comparison, or assessment coverage.
 metadata:
     github-path: repository-quality-score
     github-ref: refs/heads/main
@@ -88,7 +88,7 @@ inputs, score status, or outputs is needed.
 
 Use the current working directory unless an enclosing Git repository root is
 present, in which case use that root. Do not score the Architect Playbook clone
-when the user intended a different target; ask only when the target is genuinely
+when the architect intended a different target; ask only when the target is genuinely
 ambiguous.
 
 ### Step 2 — Resolve the calculator
@@ -106,7 +106,7 @@ formula into the chat or implement a second calculator.
 ### Step 3 — Run deterministic calculation
 
 Invoke the script with the resolved target. Pass
-`--current-worktree-only` only when the user supplied that flag. The script's
+`--current-worktree-only` only when the architect supplied that flag. The script's
 target and skill-root arguments are internal execution plumbing, not alternate
 scoring policies.
 
@@ -161,7 +161,7 @@ paths.
 
 | Failure | Behavior and remediation |
 | --- | --- |
-| No audit findings | Return unavailable and tell the user to run audits |
+| No audit findings | Return unavailable and tell the architect to run audits |
 | Only some audits completed | Produce a provisional score and list missing audits |
 | Results target another commit | Exclude them and rerun those audits on the current commit |
 | Findings are legacy-shaped | Use exact safe mappings when possible, always provisional, and name audits to rerun |

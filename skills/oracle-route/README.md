@@ -176,7 +176,7 @@ tail -f ledger/ledger.jsonl
 
 ## Contributing
 
-Use this skill when the user asks to "route this through the market", "post an intake", "open a debate", "bid", "attestation", "triage", "settle", "quorum". The oracle market is the fleet's standing work-routing mechanism — you don't assign agents directly.
+Use this skill when the architect asks to "route this through the market", "post an intake", "open a debate", "bid", "attestation", "triage", "settle", "quorum". The oracle market is the fleet's standing work-routing mechanism — you don't assign agents directly.
 
 ## License
 

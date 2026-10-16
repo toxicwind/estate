@@ -169,7 +169,7 @@ uv run nemotron super3 pretrain -c long_context_1m --run <profile>
 uv run nemotron super3 pretrain -c long_context_mixed --run <profile>
 ```
 
-This is the best answer when the user asks for a runnable order of operations.
+This is the best answer when the architect asks for a runnable order of operations.
 
 ---
 
@@ -198,5 +198,5 @@ raw text
 
 ## Best next file
 
-- `stage1_sft.md` if the user wants the next pipeline stage.
-- `../paper/pretraining.md` if the user wants the research rationale instead of the runnable config.
+- `stage1_sft.md` if the architect wants the next pipeline stage.
+- `../paper/pretraining.md` if the architect wants the research rationale instead of the runnable config.

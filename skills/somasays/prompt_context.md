@@ -28,7 +28,7 @@ Don't create a skill when:
 
 ## Step 1: Capture Intent
 
-Start by understanding what the user wants. Answer these four questions:
+Start by understanding what the architect wants. Answer these four questions:
 
 1. **What should the skill enable Claude to do?**
    Get specific: "Create pixel-perfect Word documents with corporate letterhead" is better than "make docs."
@@ -42,7 +42,7 @@ Start by understanding what the user wants. Answer these four questions:
 4. **Are the outputs objectively verifiable?**
    File transforms, data extraction, and code generation can be tested. Writing style and creative work usually can't. This determines whether to set up test cases.
 
-If the current conversation already contains a workflow the user wants to capture (e.g., "turn this into a skill"), extract answers from the conversation history — the tools used, the sequence of steps, corrections made, input/output formats observed. Fill gaps with targeted questions.
+If the current conversation already contains a workflow the architect wants to capture (e.g., "turn this into a skill"), extract answers from the conversation history — the tools used, the sequence of steps, corrections made, input/output formats observed. Fill gaps with targeted questions.
 
 ---
 
@@ -86,7 +86,7 @@ A short identifier. Lowercase, hyphenated. Examples: `docx`, `pdf`, `frontend-de
 
 ### The `description` Field (Critical)
 
-The description is the **primary trigger mechanism**. Claude decides whether to use a skill almost entirely based on the description matching the user's request. A bad description means the skill never fires.
+The description is the **primary trigger mechanism**. Claude decides whether to use a skill almost entirely based on the description matching the architect's request. A bad description means the skill never fires.
 
 **Common failure: undertriggering.** Claude tends to be conservative about activating skills. Combat this by making descriptions slightly "pushy" — explicitly list scenarios where the skill applies, even ones that seem obvious.
 
@@ -105,7 +105,7 @@ description: >
 
 ```yaml
 description: >
-  Use this skill whenever the user wants to create, read, edit, or
+  Use this skill whenever the architect wants to create, read, edit, or
   manipulate Word documents (.docx files). Triggers include: any mention
   of "Word doc", "word document", ".docx", or requests to produce
   professional documents with formatting like tables of contents,
@@ -113,7 +113,7 @@ description: >
   reorganizing content from .docx files, inserting or replacing images
   in documents, performing find-and-replace in Word files, working with
   tracked changes or comments, or converting content into a polished
-  Word document. If the user asks for a "report", "memo", "letter",
+  Word document. If the architect asks for a "report", "memo", "letter",
   "template", or similar deliverable as a Word or .docx file, use this
   skill. Do NOT use for PDFs, spreadsheets, Google Docs, or general
   coding tasks unrelated to document generation.
@@ -123,7 +123,7 @@ description: >
 - Lists the primary trigger phrases explicitly
 - Includes secondary triggers that could be missed
 - Has exclusions to prevent false positives
-- Mentions the user's likely vocabulary, not just technical terms
+- Mentions the architect's likely vocabulary, not just technical terms
 
 **Bad example:**
 
@@ -135,7 +135,7 @@ description: Creates Word documents.
 
 **Description writing checklist:**
 - [ ] States what the skill does in the first sentence
-- [ ] Lists explicit trigger phrases the user might say
+- [ ] Lists explicit trigger phrases the architect might say
 - [ ] Includes secondary/non-obvious trigger scenarios
 - [ ] Mentions relevant file types or extensions
 - [ ] Has exclusions to prevent false triggers
@@ -275,7 +275,7 @@ After drafting the skill, create 2-3 realistic test prompts — the kind of thin
 3. Is the **output quality** acceptable?
 4. Does it handle **edge cases** (missing inputs, ambiguous requests)?
 
-If the user wants formal evals, create an `evals/evals.json`:
+If the architect wants formal evals, create an `evals/evals.json`:
 
 ```json
 {
@@ -298,7 +298,7 @@ If the user wants formal evals, create an `evals/evals.json`:
 
 ### The Feedback Loop
 
-Every time the user provides an example or input, immediately run it rather than waiting for a full specification. Show the output and let the user react. Seeing what Claude actually does is the fastest way to refine requirements.
+Every time the architect provides an example or input, immediately run it rather than waiting for a full specification. Show the output and let the architect react. Seeing what Claude actually does is the fastest way to refine requirements.
 
 ---
 
@@ -323,8 +323,8 @@ Once the skill is finalized:
 
 1. **Verify the structure** — SKILL.md exists with valid YAML frontmatter
 2. **Check all file references** — scripts, references, and assets are present and paths are correct
-3. **Copy to the output directory** so the user can access it
-4. **Present the files** to the user with a brief summary of what the skill does and how to install it
+3. **Copy to the output directory** so the architect can access it
+4. **Present the files** to the architect with a brief summary of what the skill does and how to install it
 
 If a `package_skill.py` script is available, use it to create a `.skill` archive:
 
@@ -350,7 +350,7 @@ These principles come from extensive iteration on production skills:
 
 3. **Write a draft, then look at it fresh.** Your first draft will be either too detailed (overfitting to examples) or too vague (leaving room for interpretation where you don't want it). Revise with fresh eyes.
 
-4. **Generalize from specific feedback.** When a user says "this output is wrong," don't just fix that specific case. Understand what principle was violated and encode the principle.
+4. **Generalize from specific feedback.** When an architect says "this output is wrong," don't just fix that specific case. Understand what principle was violated and encode the principle.
 
 5. **Keep it lean.** Remove instructions that aren't pulling their weight. If something in the skill makes the model waste time on unproductive work, cut it.
 

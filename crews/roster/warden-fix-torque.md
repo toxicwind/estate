@@ -11,7 +11,7 @@ updated: '2026-09-30'
 # warden-fix-torque
 
 Torque the wolverine — warden lane, fixing the ferrous-warden self-alert loop
-(Chris 2026-09-30: "Fix warden pleass lol").
+(the Architect 2026-09-30: "Fix warden pleass lol").
 
 Root cause: Stampede's 00:08 herd rebuild was never recorded in declared
 intent (deploy/manifest.yaml), so every inotify event tripped drift; 6

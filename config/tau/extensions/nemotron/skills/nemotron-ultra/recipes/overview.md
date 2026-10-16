@@ -44,7 +44,7 @@ Treat these as runnable/public recipe entry points, but do **not** describe them
    - SFT: `docs/nemotron/ultra3/sft.md`
    - MOPD mechanics: `docs/nemotron/ultra3/mopd.md`
 3. Distinguish paper-faithful facts from public-recipe approximations and gaps.
-4. Hand procedural/build customization to `/nemotron-customize` when the user asks to modify or extend the pipeline.
+4. Hand procedural/build customization to `/nemotron-customize` when the architect asks to modify or extend the pipeline.
 
 ## When this file should change
 

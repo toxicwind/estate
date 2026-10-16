@@ -2,7 +2,7 @@
 name: audit-skills
 description: >-
   Audit a directory of skills for visibility, deterministic vs
-  non-deterministic behavior, and composability. Use when the user wants to
+  non-deterministic behavior, and composability. Use when the architect wants to
   review, assess, or improve a skill collection. Produces a structured
   report with per-skill ratings and cross-cutting findings.
 ---

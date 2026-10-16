@@ -140,7 +140,7 @@ fi
 : "${SKILLS_HOME:=$HOME/.tau/skills}"
 : "${README_SKILL_DIR:=$SKILLS_HOME/readme}"
 
-# README-MAXIMAL skill — permanent (Chris 2026-09-29)
+# README-MAXIMAL skill — permanent (the Architect 2026-09-29)
 # Aesthetic GitHub README doctrine lives here; every first-party README.md
 # in the estate must conform to it (badges first, why-care hero, feature
 # bullets, diagram, quick start, architecture, config, dev, license+security).

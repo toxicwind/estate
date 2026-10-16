@@ -11,7 +11,7 @@ This document contains the detailed execution steps, output format, and writebac
 td task list --filter "due: <date> | ##Ideas" --json
 ```
 
-This returns tasks still due today (excluding `#Ideas`). Tasks the user already moved to another day won't appear here — they'll surface in Step 3.
+This returns tasks still due today (excluding `#Ideas`). Tasks the architect already moved to another day won't appear here — they'll surface in Step 3.
 
 ### Step 2 — Pull completions
 
@@ -28,7 +28,7 @@ This may include tasks completed today that **weren't on the original slate** (b
 Compare the day's original slate against both the open-task list (Step 1) and completions (Step 2). Partition into:
 
 - **Completed** — in the completions list. Include bonus completions (tasks not on the original slate) as a separate note.
-- **Already moved** — tasks that were on today's slate but no longer appear in either list (the user already rescheduled or moved them during the day). Report these as-is; no action needed.
+- **Already moved** — tasks that were on today's slate but no longer appear in either list (the architect already rescheduled or moved them during the day). Report these as-is; no action needed.
 - **Incomplete** — still due today, not completed. These need decisions.
 
 Report the completion rate against the original slate size (e.g., "2 of 6 completed, 1 already moved, 3 incomplete").
@@ -42,7 +42,7 @@ User confirms per-task:
 - **Un-date** — `td task update <id> --due "no date"`. Returns to backlog.
 - **Delete** — `td task delete <id>`. Only if the task is no longer relevant.
 
-**Flag tasks that have rolled over three or more times** — they likely need to be broken down, reprioritized, or dropped. Surface this for the user's judgment; don't auto-decide.
+**Flag tasks that have rolled over three or more times** — they likely need to be broken down, reprioritized, or dropped. Surface this for the architect's judgment; don't auto-decide.
 
 **Stale times:** Tasks that were time-blocked today retain their start time even when pushed to a new date. When carrying forward, use date-only `--due` to clear the time so `plan_day` can re-slot them fresh.
 

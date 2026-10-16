@@ -48,7 +48,7 @@ Subtitle
 ---
 layout: about-me
 helloMsg: Hello!
-name: Chris Fonnesbeck
+name: the Architect Fonnesbeck
 imageSrc: /images/photo.jpg
 job: Principal Scientist
 line1: PyMC Labs

@@ -38,7 +38,7 @@ Use this pack for:
 - Keep global batch size divisible by data-parallel size.
 - Use `load_hf_weights=false` when starting from a Megatron checkpoint.
 - For adapter reliability, prefer simple checkpoint saves over async/optimizer
-  saves unless the user explicitly needs them.
+  saves unless the architect explicitly needs them.
 
 ## Failure Modes
 

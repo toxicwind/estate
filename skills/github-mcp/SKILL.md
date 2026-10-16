@@ -8,7 +8,7 @@ description: >
 
 ## Purpose
 Call GitHub's official remote MCP server (`https://api.githubcopilot.com/mcp`)
-with the user-connected `custom.github-mcp` OAuth credential.
+with the architect-connected `custom.github-mcp` OAuth credential.
 
 ## Tooling
 Use `exec` to run:
@@ -50,7 +50,7 @@ The credential is already stored; nothing here collects one. Resolve auth throug
 A 401 or 403 is a question about the request before it is a question about the key. Check that the credential was attached at all: a request built without the helpers named under Tooling carries nothing, and that looks exactly like a wrong or under-scoped token. Only once a request that did carry the credential is still rejected, call `credentials.request_api_access` with `reconnect` to replace it. The connector is stored as `custom.github-mcp`.
 
 ## Operating Rules
-1. Use this skill when the user asks for Github Mcp or this provider's API.
+1. Use this skill when the architect asks for Github Mcp or this provider's API.
 2. Restrict authenticated requests to: api.githubcopilot.com.
 3. Do not print, log, or persist raw credentials.
 4. If auth is missing or rejected, follow the Auth section rather than asking for a key.
@@ -66,5 +66,5 @@ A 401 or 403 is a question about the request before it is a question about the k
    task already gave; when in doubt, act within the task's scope and report
    done.
 8. This skill complements the `github` skill (PAT-based REST API). Prefer
-   `github-mcp` when the user asked for MCP or OAuth; prefer `github` for raw
+   `github-mcp` when the architect asked for MCP or OAuth; prefer `github` for raw
    REST endpoints the MCP tool catalogue does not cover.

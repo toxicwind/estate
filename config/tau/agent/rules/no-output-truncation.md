@@ -7,7 +7,7 @@ scope: "tool"
 
 Truncated output is not a result.
 
-**Never** pipe through `head`, `tail`, `cut -c`, `grep ... | head`, or `sed -n '1,Np'`. Switching from `head -20` to `cut -c1-220` is the same defect wearing a hat — both silently discard data, and the user cannot tell how much was dropped.
+**Never** pipe through `head`, `tail`, `cut -c`, `grep ... | head`, or `sed -n '1,Np'`. Switching from `head -20` to `cut -c1-220` is the same defect wearing a hat — both silently discard data, and the architect cannot tell how much was dropped.
 
 **Do this instead:**
 
@@ -25,4 +25,4 @@ jscpd ... > /tmp/jscpd.txt 2>&1; wc -l /tmp/jscpd.txt
 
 Same rule for `tee` redirection and for any `-m`/`-n` limit flags on tools that take them (`grep -m1`, `gh --limit N`). Those are truncation too.
 
-If output is genuinely huge, say so with the real line count and let the user decide what to page through. An honest "12,000 lines, here are the 200 that matter" beats a silent 20-line window that implies it is everything.
+If output is genuinely huge, say so with the real line count and let the architect decide what to page through. An honest "12,000 lines, here are the 200 that matter" beats a silent 20-line window that implies it is everything.

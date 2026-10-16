@@ -31,7 +31,7 @@ This chunk combines:
 - quantization evaluation
 - prompt sensitivity analysis
 
-Use it when the user asks for **numbers**.
+Use it when the architect asks for **numbers**.
 
 ## Throughput framing from the introduction
 
@@ -161,7 +161,7 @@ The paper says results were collected with:
 - dedicated packaged containers for some suites such as TauBench, ArenaHard v2, and AA-LCR
 - official open-source implementations for Terminal Bench, SWE-Bench, and Scale AI Multi Challenge when not yet onboarded in NVIDIA’s tooling
 
-This is important because it tells you where to look when a user asks “how were these numbers measured?”
+This is important because it tells you where to look when an architect asks “how were these numbers measured?”
 
 ## 4.1 Quantization calibration dataset
 

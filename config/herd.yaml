@@ -967,7 +967,7 @@ models:
       experimental: true
 
 # =============================================================================
-# ROUTING DOCTRINE (Chris, 2026-09-20): RANKING > FREE-ON-PROVIDER > PAY.
+# ROUTING DOCTRINE (the Architect, 2026-09-20): RANKING > FREE-ON-PROVIDER > PAY.
 # Default model preference, measured live 2026-09-20 ~09:00 MDT through herd
 # :25100 (tiny completion probe, first-valid-wins). Latency is the measured
 # ranking proxy until eval scores land. A 429 is a TRANSIENT routing signal --

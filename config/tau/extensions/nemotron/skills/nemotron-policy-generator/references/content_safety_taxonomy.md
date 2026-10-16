@@ -14,7 +14,7 @@ Sources:
 
 ## How to use this file
 
-In Step 2 of the workflow, scan the user's rough words against the synonym list under each category. If at least 80% of the rough words have a synonym match, treat the policy as a clean V2 map (`taxonomy_mode: clean_v2`). If 40–80% match, partial map (`v2_plus_custom`). Below 40%, mostly custom (`mostly_custom`).
+In Step 2 of the workflow, scan the architect's rough words against the synonym list under each category. If at least 80% of the rough words have a synonym match, treat the policy as a clean V2 map (`taxonomy_mode: clean_v2`). If 40–80% match, partial map (`v2_plus_custom`). Below 40%, mostly custom (`mostly_custom`).
 
 The synonym list is intentionally broad — match on intent, not exact wording.
 

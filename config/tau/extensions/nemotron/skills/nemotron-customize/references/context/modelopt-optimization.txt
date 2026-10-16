@@ -8,7 +8,7 @@ Use this pack when generating stage code for any of:
 
 These wrap NVIDIA Model Optimizer through Megatron-Bridge. The wrappers stay
 generic; algorithm-specific knobs go in YAML under `args:`. **Don't fork
-upstream scripts into generated projects** unless the user explicitly needs
+upstream scripts into generated projects** unless the architect explicitly needs
 custom algorithm code.
 
 ## Live Repo Verification

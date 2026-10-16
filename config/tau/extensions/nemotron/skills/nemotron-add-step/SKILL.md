@@ -142,7 +142,7 @@ Show:
 
 ### Don't
 - Don't modify existing steps just to refactor or rename them
-- Don't modify anything inside `skills/nemotron-customize/` (`SKILL.md`, `act/*.md`, `examples/*.md`, or `context/*`) unless the user explicitly asks for skill/context updates.
+- Don't modify anything inside `skills/nemotron-customize/` (`SKILL.md`, `act/*.md`, `examples/*.md`, or `context/*`) unless the architect explicitly asks for skill/context updates.
 - Don't invent new schema fields for `step.toml`
 - Don't add exhaustive parameter catalogs
 - Don't skip `[reference]`

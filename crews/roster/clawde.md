@@ -15,7 +15,7 @@ docs/fleet-knowledgebase.md is generated from these files -- do not edit it by h
 
 ## 2026-09-30 -- metaclaw-runtime hardening + publish (DONE)
 
-Chris's direct call: "gitignore hardened", publish -- not quarantine.
+the Architect's direct call: "gitignore hardened", publish -- not quarantine.
 
 - Read every persistence/token path: `SessionManager` persists
   hatchSessionCookie/authToken/noiseNotaryToken to `data/session.json`.

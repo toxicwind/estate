@@ -66,7 +66,7 @@ Heartbeat: `/home/toxic/.local/state/squawk-watchdog/heartbeat`
 
 Additive by design — the install touches nothing live. Single script +
 systemd timer; the timer (not a daemon loop) is the 60s cadence, so it
-survives machine restarts via the user manager.
+survives machine restarts via the architect manager.
 
 ## What it does NOT fix (needs User / fleet decision)
 

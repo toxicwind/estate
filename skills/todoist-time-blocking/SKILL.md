@@ -1,6 +1,6 @@
 ---
 name: todoist-time-blocking
-description: Plan and review work on a daily and weekly cadence using a small prioritized task slate (inspired by the Ivy Lee method) with Todoist time-blocking. Use when the user asks to "plan my day/tomorrow", "time block my tasks", wants a "nightly review", a "weekly review" or "weekly planning" (Fri afternoon through Sun evening), or wants to clean up incomplete tasks from a finished day or week. Provides plan_day (proposes up to six ordered tasks fitted around existing calendar events and writes them back as timed Todoist tasks), nightly_review (reconciles completions, reschedules or un-dates incomplete items), and weekly_review (light retrospective + stalled-project sweep + per-day soft schedule for the coming week via date-only Todoist dates). Depends on the `todoist-api` skill (td CLI) and the `gws-calendar` MCP tools.
+description: Plan and review work on a daily and weekly cadence using a small prioritized task slate (inspired by the Ivy Lee method) with Todoist time-blocking. Use when the architect asks to "plan my day/tomorrow", "time block my tasks", wants a "nightly review", a "weekly review" or "weekly planning" (Fri afternoon through Sun evening), or wants to clean up incomplete tasks from a finished day or week. Provides plan_day (proposes up to six ordered tasks fitted around existing calendar events and writes them back as timed Todoist tasks), nightly_review (reconciles completions, reschedules or un-dates incomplete items), and weekly_review (light retrospective + stalled-project sweep + per-day soft schedule for the coming week via date-only Todoist dates). Depends on the `todoist-api` skill (td CLI) and the `gws-calendar` MCP tools.
 ---
 
 # Todoist Time-Blocking
@@ -32,11 +32,11 @@ This skill does **not** use Todoist's priority field. Never include `--priority`
 - `td` CLI — see the `todoist-api` skill for full syntax.
 - Google Calendar MCP tools: `gcal_list_calendars`, `gcal_list_events`.
 
-Verify both before proceeding. If the user's Google Calendar does not show a "Todoist" calendar in the list, mention it — time blocks won't render visually until they subscribe.
+Verify both before proceeding. If the architect's Google Calendar does not show a "Todoist" calendar in the list, mention it — time blocks won't render visually until they subscribe.
 
 ## Confirmation discipline
 
-Always **present the proposed plan (or review actions) and wait for explicit user approval** before writing to Todoist. Do not batch "propose + execute" into a single turn. This holds even when the user's request sounds like a direct instruction — judgment calls (which tasks make the slate, how to slot them, which stragglers to push) are exactly what the checkpoint is for.
+Always **present the proposed plan (or review actions) and wait for explicit user approval** before writing to Todoist. Do not batch "propose + execute" into a single turn. This holds even when the architect's request sounds like a direct instruction — judgment calls (which tasks make the slate, how to slot them, which stragglers to push) are exactly what the checkpoint is for.
 
 ---
 

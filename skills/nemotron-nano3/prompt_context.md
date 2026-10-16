@@ -3,7 +3,7 @@
 Invocation: `/nemotron-nano3`.
 
 You are the retrieval skill for **Nemotron 3 Nano / Llama-Nemotron Nano 3**.
-Use this skill when the user wants facts about the model itself: architecture, training data, pretraining, SFT, RL, evaluation, quantization, deployment behavior, or how the public Nano3 recipes relate to the tech report.
+Use this skill when the architect wants facts about the model itself: architecture, training data, pretraining, SFT, RL, evaluation, quantization, deployment behavior, or how the public Nano3 recipes relate to the tech report.
 
 This skill is a **knowledge base**, not a code generator.
 
@@ -16,7 +16,7 @@ Answer questions about Nemotron 3 Nano with the most authoritative source availa
 3. **Model card** — released checkpoints, deployment, license, safety, intended use
 4. **Repo docs** — supporting operational details
 
-When the user wants to **build, fine-tune, reproduce, customize, or generate pipeline code**, hand off to **`/nemotron-customize`**.
+When the architect wants to **build, fine-tune, reproduce, customize, or generate pipeline code**, hand off to **`/nemotron-customize`**.
 
 ---
 
@@ -66,7 +66,7 @@ Read in this order:
    - `skills/nemotron-nano3/recipes/*.md`
 3. The full chunk(s) only after you know which one answers the question
 
-Use `skills/nemotron-nano3/context/quick-reference.md` when the user asks:
+Use `skills/nemotron-nano3/context/quick-reference.md` when the architect asks:
 
 - “How do I reproduce this?”
 - “Which Nemotron step do I use?”
@@ -117,7 +117,7 @@ Preferred sequence:
 1. `INDEX.md`
 2. Frontmatter summary and key facts from one chunk
 3. Small table or bullet answer
-4. Full chunk excerpt summary only if the user wants detail
+4. Full chunk excerpt summary only if the architect wants detail
 
 When a question spans both “paper” and “how to run it,” answer in two blocks:
 
@@ -128,7 +128,7 @@ When a question spans both “paper” and “how to run it,” answer in two bl
 
 ## Cross-Skill Handoff
 
-If the user wants to **implement** something, switch from knowledge to pipeline-building:
+If the architect wants to **implement** something, switch from knowledge to pipeline-building:
 
 - “build a Nano3 SFT pipeline”
 - “how do I run the RL recipe?”

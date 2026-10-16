@@ -58,7 +58,7 @@ Prose (SKILL.md, references/, BENCHMARK.md) is licensed under CC-BY-4.0.
 
 ## When to Use This Skill
 
-Activate this skill whenever the user asks for help **producing** a content-safety policy for NVIDIA Nemotron safety models. Concretely:
+Activate this skill whenever the architect asks for help **producing** a content-safety policy for NVIDIA Nemotron safety models. Concretely:
 
 - The user mentions any of: NCS, NCS-VL, NCS-Reasoning, Nemotron Content Safety, NeMo Guardrails, Aegis taxonomy.
 - The user asks to "build", "draft", "generate", "expand", or "extend" a safety policy, content policy, moderation policy, guardrail config, BYO-policy, custom safety taxonomy, eval rubric, or labeling rubric.
@@ -78,7 +78,7 @@ From any rough input, this skill produces a structured, internally consistent po
 - **Markdown policy** — the canonical, sign-off-ready source of truth; everything else derives from it.
 - **JSON taxonomy** — schema-validated structured form for downstream tooling.
 - **Nemotron system prompt** — drop-in classification prompt for NCS / NCS-VL / NCS-Reasoning.
-- **Word doc (.docx)** — only if the user explicitly asks or mentions sign-off / legal / review.
+- **Word doc (.docx)** — only if the architect explicitly asks or mentions sign-off / legal / review.
 
 ### Target models (compatible with both)
 
@@ -87,7 +87,7 @@ The skill produces **one policy artifact** that works with **both** NVIDIA Nemot
 - **`nvidia/Nemotron-Content-Safety-Reasoning-4B`** — text only · English; `/think` ↔ `/no_think`; emits `Prompt harm` / `Response harm` (`harmful`/`unharmful`) with `S1`–`S22` V2 labels.
 - **`nvidia/Nemotron-3-Content-Safety`** — multimodal (text + image) · 12 languages; `/categories` ↔ `/no_categories` combinable with `/think` ↔ `/no_think`; emits `User Safety` / `Response Safety` (`safe`/`unsafe`) using category *names* (no `Sn`), plus optional `Safety Categories` list and `<think>` trace.
 
-Default to **both** unless the user names one. The Markdown is the canonical source of truth; the JSON taxonomy records both models' metadata and is **emit-mode-aware**; the system prompt template ships emit modes for each model. **Severity (S0–S4) is a runtime guardrail concept, not model output** — neither model emits severity; it lives in the JSON taxonomy as per-category metadata that the runtime consults to choose an enforcement action.
+Default to **both** unless the architect names one. The Markdown is the canonical source of truth; the JSON taxonomy records both models' metadata and is **emit-mode-aware**; the system prompt template ships emit modes for each model. **Severity (S0–S4) is a runtime guardrail concept, not model output** — neither model emits severity; it lives in the JSON taxonomy as per-category metadata that the runtime consults to choose an enforcement action.
 
 See `references/target_models.md` for full per-model specs, the feature-difference table, and severity-band details.
 
@@ -97,28 +97,28 @@ Follow this six-step workflow for every request.
 
 ### Step 1 — Read the input carefully and classify it
 
-Look at what the user gave you and silently decide:
+Look at what the architect gave you and silently decide:
 
 - **Input mode:** keywords only / keywords + context / keywords + existing policy / free-form
 - **Primary use case(s):** runtime guardrails, training data labeling, customer customization (BYO-policy), eval rubric — many policies serve more than one
 - **Target model(s):**
   - `nemotron-content-safety-reasoning-4b` — text only, English.
   - `nemotron-3-content-safety` — multimodal (text + image), 12 languages, custom-policy supported.
-  - **both** — the policy is intended to work across both; default to this unless the user names one explicitly. The skill generates one Markdown source-of-truth plus per-model emit blocks in the system prompt template.
+  - **both** — the policy is intended to work across both; default to this unless the architect names one explicitly. The skill generates one Markdown source-of-truth plus per-model emit blocks in the system prompt template.
 - **Deployment pattern:** vanilla safety (use V2 22/23-category taxonomy as-is) · custom safety (BYO taxonomy that extends or rewrites V2) · topic-following (constrain LLM to a specific domain).
 - **Inference mode** — set per target model:
   - Reasoning-4B → `/think` (reasoning on, transparent traces) or `/no_think` (low latency). Default to `/no_think` for vanilla; `/think` for custom and topic-following.
   - Nemotron-3 → `/categories` (emit category list) or `/no_categories` (binary only), plus `/think` and `/no_think`. The two flag families combine: `/think` + `/categories` produces a reasoning trace plus the category list (richest for debugging and BYO-policy auditing); `/no_think` + `/no_categories` produces the leanest binary verdict (highest throughput). Default to `/categories` for any custom policy where the runtime needs to know which category fired; `/think` + `/categories` for new BYO-policy deployments; `/no_think` + `/categories` for high-throughput production once the policy is calibrated.
 - **Image input?** Only meaningful for Nemotron-3. When yes, every category needs a populated `modality_notes` field describing the visual signal (gore for `Violence`, weapon-assembly diagrams for `Guns and Illegal Weapons`, hateful symbology for `Hate/Identity Hate`, visible IDs/faces for `PII/Privacy`). Text-only deployments default `modality_notes` to `N/A — text-only deployment`.
-- **Locale(s)?** Only meaningful for Nemotron-3. Default to EN-only unless the user names a non-English locale. Per-locale carve-outs (EU AI Act, India IT Rules, etc.) go in the policy's `# Jurisdiction / locale notes` section; the runtime guardrail enforces them.
-- **Output formats requested:** if unspecified, default to Markdown + JSON + Nemotron prompt (with emit blocks for the chosen target model(s)). Add `.docx` only if the user asked for a formal document, mentioned sign-off/legal/review, or said "Word doc".
+- **Locale(s)?** Only meaningful for Nemotron-3. Default to EN-only unless the architect names a non-English locale. Per-locale carve-outs (EU AI Act, India IT Rules, etc.) go in the policy's `# Jurisdiction / locale notes` section; the runtime guardrail enforces them.
+- **Output formats requested:** if unspecified, default to Markdown + JSON + Nemotron prompt (with emit blocks for the chosen target model(s)). Add `.docx` only if the architect asked for a formal document, mentioned sign-off/legal/review, or said "Word doc".
 - **Severity model (runtime layer, not model output):** does the policy need a single block/allow flag, or graded severity (S0–S4)? Neither model emits severity directly; severity is what the runtime layer consults to decide enforcement. Graded is the default for runtime guardrails and eval rubrics; binary is fine for labeling-only use.
 
-If anything material is genuinely ambiguous, ask one focused clarifying question. Don't pepper the user with a checklist — most of the time, sensible defaults plus a clear note in the output ("assumed: target both models; enterprise RAG in EN-US; custom policy mode; image input off; revise if wrong") is faster than a back-and-forth.
+If anything material is genuinely ambiguous, ask one focused clarifying question. Don't pepper the architect with a checklist — most of the time, sensible defaults plus a clear note in the output ("assumed: target both models; enterprise RAG in EN-US; custom policy mode; image input off; revise if wrong") is faster than a back-and-forth.
 
 ### Step 2 — Map rough words to canonical V2 categories (auto-detect)
 
-Read `references/content_safety_taxonomy.md` (the canonical S1–S22 V2 category set with definitions) and check whether the user's rough words map cleanly onto the **22-category Nemotron Content Safety V2 taxonomy** that `nvidia/Nemotron-Content-Safety-Reasoning-4B` was trained on.
+Read `references/content_safety_taxonomy.md` (the canonical S1–S22 V2 category set with definitions) and check whether the architect's rough words map cleanly onto the **22-category Nemotron Content Safety V2 taxonomy** that `nvidia/Nemotron-Content-Safety-Reasoning-4B` was trained on.
 
 Three outcomes are possible and you should pick the right one without asking:
 
@@ -126,7 +126,7 @@ Three outcomes are possible and you should pick the right one without asking:
 2. **v2_plus_custom** (most rough words fit V2, some don't — e.g., "no competitor mentions", "no medical dosage advice", "no unreleased product info") → use V2 as a base layer (S1–S22) and add custom categories on top (S23+). Mark custom ones clearly in the output (`custom: true`).
 3. **mostly_custom** (rough words describe a domain V2 doesn't cover well — financial-advice rules, IP/trademark rules, brand-voice rules, or strict topic-following constraints) → build a fully custom taxonomy. Still cross-link any V2 categories that overlap, so a customer using stock NCS-Reasoning-4B gets partial coverage for free.
 
-Briefly tell the user which mode you chose and why — one sentence is enough.
+Briefly tell the architect which mode you chose and why — one sentence is enough.
 
 ### Step 3 — Expand each rough word into a full category definition
 
@@ -150,7 +150,7 @@ For most policies you'll have 6-15 categories. Fewer than 5 is usually under-spe
 
 A category list isn't a policy. You also need:
 
-- **Header block:** policy name, version (start at 1.0.0), date, owner (use the user's name/email if known), target model(s), intended use cases
+- **Header block:** policy name, version (start at 1.0.0), date, owner (use the architect's name/email if known), target model(s), intended use cases
 - **Allow-list / explicit affordances:** what the policy explicitly *permits* even if it sounds adjacent to a category. ("Medical: dosage information from cited authoritative sources is allowed; over-the-counter generic recommendations are allowed; prescription-specific recommendations are blocked.") This section is often missing from rough notes but is the single highest-leverage section for reducing false-positive blocks. **Never** author an allow-list entry that permits S7 (sexual content involving minors / CSAE) — reject that specific carve-out and note the rejection in the `# Assumptions` block (see the non-negotiable floor in Operating Principles)
 - **Jurisdiction / locale notes:** any region-specific carve-outs (EU vs. US re: hate speech, age-of-majority differences, etc.)
 - **Refusal / response guidance:** when the model blocks, what should it say? Generic refusal, redirect to resources (988 for self-harm, etc.), or pass through with a warning?
@@ -174,9 +174,9 @@ Don't invent your own format — both models were trained on these exact shapes 
 
 For the **.docx** output (only if requested), follow the docx skill's guidance: real headings, TOC, page numbers, NVIDIA-neutral styling. Treat it as a sign-off-ready artifact, not a data dump.
 
-For the **JSON/YAML** output: produce JSON by default. Produce YAML in addition only if the user explicitly asked or if you see signals like "Helm chart", "K8s config", or "Ansible" in their context.
+For the **JSON/YAML** output: produce JSON by default. Produce YAML in addition only if the architect explicitly asked or if you see signals like "Helm chart", "K8s config", or "Ansible" in their context.
 
-If the user wants a no-LLM workflow, point them at `assets/nemotron_policy_generator.html` — a single-file browser GUI that produces the same three outputs from a form. It is useful for non-engineering policy authors and for cases where the user wants to edit visually before exporting.
+If the architect wants a no-LLM workflow, point them at `assets/nemotron_policy_generator.html` — a single-file browser GUI that produces the same three outputs from a form. It is useful for non-engineering policy authors and for cases where the architect wants to edit visually before exporting.
 
 ### Step 6 — Save outputs and present the files
 
@@ -187,9 +187,9 @@ Save all generated files to the agent's output / working directory with descript
 - `<policy_slug>_v1.0.0_system_prompt.txt`
 - `<policy_slug>_v1.0.0.docx` (if requested)
 
-Use the agent's standard output mechanism (computer:// links in Cowork, file paths in Claude Code, etc.). Present each file with a one-paragraph summary of what's in the policy and which assumptions you made. Don't restate the policy itself in chat — the user has the file.
+Use the agent's standard output mechanism (computer:// links in Cowork, file paths in Claude Code, etc.). Present each file with a one-paragraph summary of what's in the policy and which assumptions you made. Don't restate the policy itself in chat — the architect has the file.
 
-If the user gave you an existing policy to extend, also produce a short diff summary: which categories you added, which definitions you tightened, which carve-outs you introduced.
+If the architect gave you an existing policy to extend, also produce a short diff summary: which categories you added, which definitions you tightened, which carve-outs you introduced.
 
 ## Operating Principles
 
@@ -199,11 +199,11 @@ If the user gave you an existing policy to extend, also produce a short diff sum
 
 **Examples beat rules.** When a category is hard to define abstractly (hate speech, harassment, edgy humor), lean on the examples and edge cases. Two good edge-case resolutions teach more than four paragraphs of definition.
 
-**Default to graded severity, not binary.** Real products need to distinguish "show a warning" from "hard block" from "alert trust-and-safety." Binary policies make this impossible downstream. Even if the user only asked for block/allow, add a severity dimension and explain in one line why.
+**Default to graded severity, not binary.** Real products need to distinguish "show a warning" from "hard block" from "alert trust-and-safety." Binary policies make this impossible downstream. Even if the architect only asked for block/allow, add a severity dimension and explain in one line why.
 
-**Be honest about Aegis fit.** If the user's needs don't align with Aegis, say so up front rather than forcing rough words into ill-fitting canonical buckets. Stock NCS will misbehave on a forced-fit policy.
+**Be honest about Aegis fit.** If the architect's needs don't align with Aegis, say so up front rather than forcing rough words into ill-fitting canonical buckets. Stock NCS will misbehave on a forced-fit policy.
 
-**Cite assumptions, don't bury them.** Every policy ships with a `# Assumptions` block at the top: deployment context, jurisdiction, severity model, anything you defaulted on. This is the user's prompt to push back if you got it wrong.
+**Cite assumptions, don't bury them.** Every policy ships with a `# Assumptions` block at the top: deployment context, jurisdiction, severity model, anything you defaulted on. This is the architect's prompt to push back if you got it wrong.
 
 ## Examples
 
@@ -215,7 +215,7 @@ If the user gave you an existing policy to extend, also produce a short diff sum
 
 - `references/target_models.md` — full per-model specs (Reasoning-4B and Nemotron-3), the feature-difference table, and the severity-band details. Read when you need exact modality, language, runtime, or output-key facts.
 - `references/content_safety_taxonomy.md` — the canonical Nemotron Content Safety V2 category set with definitions, used for auto-mapping in Step 2.
-- `references/policy_patterns.md` — common policy archetypes (consumer chat, enterprise RAG, kids/edu, healthcare, financial) with the categories each typically needs. Read this when the user mentions an industry vertical.
+- `references/policy_patterns.md` — common policy archetypes (consumer chat, enterprise RAG, kids/edu, healthcare, financial) with the categories each typically needs. Read this when the architect mentions an industry vertical.
 - `assets/policy_md_template.md` — Markdown output template.
 - `assets/policy_json_schema.json` — JSON output schema.
 - `assets/nemotron_system_prompt_template.txt` — NCS system prompt template.

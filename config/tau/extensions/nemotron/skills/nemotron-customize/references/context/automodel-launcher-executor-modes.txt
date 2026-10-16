@@ -1,6 +1,6 @@
 # AutoModel Launcher And Executor Context
 
-Use this pack only when a user asks how to run an AutoModel SFT/PEFT step on a
+Use this pack only when an architect asks how to run an AutoModel SFT/PEFT step on a
 specific execution backend. It is not the source of the training schema; read
 `../CATALOG.md` and `../COMMANDS.md` first, then verify the selected step config
 and `src/nemotron/steps/_runners/automodel.py` for live run details.

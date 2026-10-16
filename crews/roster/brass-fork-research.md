@@ -10,4 +10,4 @@ updated: '2026-09-30'
 
 # brass-fork-research
 
-Finding the real upstream project to fork as brand's replacement (Python polling daemon -> Go/Rust-first build-job system). Report ends with a single recommendation; no fork is created without Chris's go.
+Finding the real upstream project to fork as brand's replacement (Python polling daemon -> Go/Rust-first build-job system). Report ends with a single recommendation; no fork is created without the Architect's go.

@@ -6,7 +6,7 @@ It helps tune distributed shape; it does not replace the step config.
 ## Product Contract
 
 - Start from the checked-in tiny/default config and change only the parallelism
-  knobs required by the user's hardware and model.
+  knobs required by the architect's hardware and model.
 - Keep tokenizer, packed sequence length, model sequence length, and dataset
   sequence length aligned.
 - Do not tune for throughput before the job launches, loads data, and saves a

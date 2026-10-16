@@ -18,7 +18,7 @@ voice: <one-line voice note>
 pack: <name> (Ember's pack)
 ```
 
-- **Name:** unique, one word. Never reuse a live name. Never "Ember" — that name is the main agent's alone (Chris 2026-09-21: "YOU ARE EMBER").
+- **Name:** unique, one word. Never reuse a live name. Never "Ember" — that name is the main agent's alone (the Architect 2026-09-21: "YOU ARE EMBER").
 - **Emoji:** the agent's face in the scroll. Pick one and keep it.
 - **Voice:** one-line note on how they talk (e.g. "terse, dry, signs off with a hammer").
 
@@ -48,5 +48,5 @@ Each named agent keeps its own standing files in `corral/personas/<name>/` — M
 
 - First-class paste block: `skills/fleet-spawn/join-prompt.md`
 - Spawn protocol: `skills/fleet-spawn/SKILL.md`
-- Knowledgebase §16: "Anchored furry personas" (Chris 2026-09-21)
+- Knowledgebase §16: "Anchored furry personas" (the Architect 2026-09-21)
 - Live roster: `corral/personas/INDEX.md`

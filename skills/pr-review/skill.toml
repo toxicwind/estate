@@ -3,12 +3,12 @@ prompt_context = """
 
 Borrowed from [smoreg/ccc's pr-review](https://github.com/smoreg/ccc/blob/HEAD/skills/review-toolkit/skills/pr-review/SKILL.md) (readiness gate, five-frame substance pass, evidence bar, verdict discipline), adapted to this estate: our `github` skill instead of the `gh` CLI, herd-routed reviewer lanes instead of a fixed model pair, our quality bar from real upstream work, User-voice PR bodies.
 
-**TRIGGER**: the user asks to review, audit, or quality-check a GitHub Pull Request — URL (`github.com/.../pull/N`), shorthand (`owner/repo#N`), bare number (`#1234`), or a "this PR" reference resolvable from context. Do NOT trigger for replying to existing review comments, labeling/triaging issues, or general code questions about a branch with no PR.
+**TRIGGER**: the architect asks to review, audit, or quality-check a GitHub Pull Request — URL (`github.com/.../pull/N`), shorthand (`owner/repo#N`), bare number (`#1234`), or a "this PR" reference resolvable from context. Do NOT trigger for replying to existing review comments, labeling/triaging issues, or general code questions about a branch with no PR.
 
 ## Arguments
 
 - PR ref (positional, optional): URL, `owner/repo#N`, or number. If omitted, detect from the current branch.
-- `--publish`: post the review to GitHub. **Without it the draft is the deliverable and nothing leaves this box.** `--publish` enables the option; the user's explicit approval of the exact text triggers the action. Never one without the other.
+- `--publish`: post the review to GitHub. **Without it the draft is the deliverable and nothing leaves this box.** `--publish` enables the option; the architect's explicit approval of the exact text triggers the action. Never one without the other.
 
 ## Step 1 — Scope: the API is truth
 
@@ -17,7 +17,7 @@ Local branches go stale. Never use bare `main`/`master`/base in diffs — always
 - PR metadata: head ref, base ref, commit count, changed files.
 - File list and commit list from the API.
 
-If `git diff origin/$BASE...origin/$HEAD --stat` disagrees with the API file list, trust the API and investigate the local discrepancy first. Print head SHA, commit count, file count, file list so the user can confirm the state under review.
+If `git diff origin/$BASE...origin/$HEAD --stat` disagrees with the API file list, trust the API and investigate the local discrepancy first. Print head SHA, commit count, file count, file list so the architect can confirm the state under review.
 
 ## Step 1.5 — Readiness gate (before any substance)
 
@@ -87,7 +87,7 @@ Post via the `github` skill (`bin/gh.py`; extend it with POST support if the rev
 
 ## Standing rules
 
-- **Draft by default.** Nothing reaches GitHub without the flag AND the user's approval of the exact text.
+- **Draft by default.** Nothing reaches GitHub without the flag AND the architect's approval of the exact text.
 - **Readiness gate before substance.** No verdict on unmergeable/broken code.
 - **No evidence, no finding.** Speculation is dropped, not softened.
 - **API is truth; `origin/` refs only.** Stale local branches produce phantom findings.

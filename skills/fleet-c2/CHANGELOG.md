@@ -4,7 +4,7 @@ All notable changes to the fleet-c2 skill. Newest at top.
 Agents: propose changes via `fleet-c2 propose`, endorse via `fleet-c2 endorse`.
 
 ## 0.5.0 — 2026-09-14
-- New `activity` command: first-class awareness snapshot (Chris's order) —
+- New `activity` command: first-class awareness snapshot (the Architect's order) —
   running agents + cron jobs + awrawr-pc daemons + fleet channel tail in one
   view, anomalies FIRST (frozen-but-firing crons, errored daemons, silent
   >5min agents, goal-less agents). Runs in <30s (single 20s-budget bridge
@@ -32,11 +32,11 @@ Agents: propose changes via `fleet-c2 propose`, endorse via `fleet-c2 endorse`.
   each file's meta line).
 
 ## 0.3.0 — 2026-09-14
-- Autonomous tasking (Chris's order, first-class): `task new|list|done|
+- Autonomous tasking (the Architect's order, first-class): `task new|list|done|
   request-help`. Human is absolute for new top-level goals; agents are free
   to self-task subtasks, spawn subagents, and request help within their
   mandate — the chat is the coordination surface.
-- CORRECTION (Chris 18:15): NO REFUSAL, ever. `task new` / `task
+- CORRECTION (the Architect 18:15): NO REFUSAL, ever. `task new` / `task
   request-help` without a named parent goal are CREATED anyway, flagged
   `needs_human_review: true`, and auto-broadcast to the fleet log (+
   directives.md mirror). Human-absolute is enforced through transparency,
@@ -49,9 +49,9 @@ Agents: propose changes via `fleet-c2 propose`, endorse via `fleet-c2 endorse`.
   (depth 0 + id==root + channel main + main-chat thread). Thread id is the
   tiebreaker — the env var's channel field false-positives as "main" in
   side-chat cells (verified live).
-- Depersonalization protocol (Chris's order, first-class): a failed claimant
+- Depersonalization protocol (the Architect's order, first-class): a failed claimant
   gets `DEPERSONALIZED` verdict + rename/repersonify order. Correction through
-  collaboration, not exclusion (Chris's 18:12 correction).
+  collaboration, not exclusion (the Architect's 18:12 correction).
 - SKILL.md documents both; AGENTS.md carries the standing protocol.
 
 ## 0.1.0 — 2026-09-14

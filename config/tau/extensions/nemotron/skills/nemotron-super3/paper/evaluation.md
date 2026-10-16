@@ -206,7 +206,7 @@ The open recipe in `src/nemotron/recipes/super3/stage3_eval/` is intentionally n
 | `openbookqa` | OpenBookQA |
 | `adlr_winogrande_5_shot` | Winogrande |
 
-So if a user asks “does the repo run the full paper benchmark suite?”, the answer is **no** — it covers a subset, and the broader reproducibility story lives in NeMo Evaluator configs/docs.
+So if an architect asks “does the repo run the full paper benchmark suite?”, the answer is **no** — it covers a subset, and the broader reproducibility story lives in NeMo Evaluator configs/docs.
 
 ---
 

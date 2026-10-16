@@ -1,7 +1,7 @@
 # Exa
 
 ## Purpose
-Exa AI search (neural web search) with the user-connected `custom.exa`
+Exa AI search (neural web search) with the architect-connected `custom.exa`
 credential. Four agent tools: search, contents, find-similar, answer.
 
 ## Tooling
@@ -29,7 +29,7 @@ still rejected, call `credentials.request_api_access` with `reconnect` to
 replace it. The connector is stored as `custom.exa`.
 
 ## Operating Rules
-1. Use this skill when the user asks for Exa or neural web search.
+1. Use this skill when the architect asks for Exa or neural web search.
 2. Restrict authenticated requests to: api.exa.ai.
 3. Do not print, log, or persist raw credentials.
 4. If auth is missing or rejected, follow the Auth section rather than asking for a key.

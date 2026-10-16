@@ -14,7 +14,7 @@ isn't covered by a native Megatron-Bridge recipe.** Pick AutoModel when:
   recipes for a curated set of model families (nemotronh / Nano3 / Super3,
   llama, qwen, mixtral, deepseek, kimi, gpt_oss, etc.); anything outside
   that set goes through AutoModel.
-- The base model **is** in the MB recipe set but the user wants HF-native
+- The base model **is** in the MB recipe set but the architect wants HF-native
   outputs, single-node iteration speed, or doesn't need TP/PP/CP/EP scaling.
 - The deployment target consumes HuggingFace-format checkpoints
   (`checkpoint_hf`) directly, with no Megatron conversion in the path.
@@ -127,7 +127,7 @@ For dense (non-MoE) backbones drop `ep_size` (or set it to 1). Increase
 tensor/context parallelism only when model size or sequence length requires it.
 
 AutoModel is the **smaller-cluster** path compared with
-`pretrain/megatron_bridge`. If the user wants TP/PP/CP at scale, route them
+`pretrain/megatron_bridge`. If the architect wants TP/PP/CP at scale, route them
 to Megatron-Bridge instead.
 
 ## Output

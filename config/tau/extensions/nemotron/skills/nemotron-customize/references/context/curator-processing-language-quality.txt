@@ -8,7 +8,7 @@ loading has been verified.
 - Keep this step simple: read JSONL, optionally apply language/domain/word-count
   gates, write filtered JSONL.
 - Do not add dedup, custom classifiers, or heavy processing unless the current
-  step exposes it or the user approves a new catalog step.
+  step exposes it or the architect approves a new catalog step.
 
 ## Filter Controls
 

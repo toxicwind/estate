@@ -22,7 +22,7 @@ Reference: https://www.todoist.com/productivity-methods/ivy-lee-method
 
 - **"Up to six" is a ceiling, not a target.** Strict Ivy Lee says exactly six. We accept fewer — three real priorities beats six with filler.
 - **Explicit time-blocks.** Classical Ivy Lee is list-based. This skill adds a start time and duration for each slate item, via Todoist's `--due` + `--duration` fields, so the Todoist Google Calendar surface renders the day visually.
-- **Calendar-aware slotting.** The slate is fitted around fixed commitments already on the user's calendars, with realistic buffers — not planned in isolation.
+- **Calendar-aware slotting.** The slate is fitted around fixed commitments already on the architect's calendars, with realistic buffers — not planned in isolation.
 - **Separation of `plan_day` and `nightly_review` as named operations.** Gives the two halves of the loop distinct, repeatable workflows.
 
 ## Why a ceiling rather than exactly six
@@ -41,12 +41,12 @@ Sequential execution prevents context-switching. If task #3 turns out more urgen
 - **A task is too large for a day.** Break it into a concrete day-sized next action. The item on the slate should be completable in one sitting.
 - **Dependencies on others** (waiting on review, waiting on a reply). These shouldn't occupy a slate slot — they're backlog, not day-plan.
 - **Recurring operational work** (email, standups, slack triage). Treat as background load during gaps, not as slate slots.
-- **Pure leisure items** (reading, hobbies). Include only if the user explicitly wants them on the day-plan. Default: leave un-dated or weekend-dated.
+- **Pure leisure items** (reading, hobbies). Include only if the architect explicitly wants them on the day-plan. Default: leave un-dated or weekend-dated.
 - **A task that has rolled over three or more days.** Surface it — likely needs to be broken down, reprioritized lower, or dropped entirely.
 
 ## Interaction with time-blocking
 
-The time-blocking overlay is optional-but-default. If the user wants a plain ordered list with no times, skip `--duration` and use `--due "<YYYY-MM-DD>"` only. The slate discipline still applies; the Todoist calendar just won't render blocks.
+The time-blocking overlay is optional-but-default. If the architect wants a plain ordered list with no times, skip `--duration` and use `--due "<YYYY-MM-DD>"` only. The slate discipline still applies; the Todoist calendar just won't render blocks.
 
 ## Weekly cadence
 

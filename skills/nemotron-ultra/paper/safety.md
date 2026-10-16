@@ -17,7 +17,7 @@ key_facts:
   - "Translation quality control: each translated example back-translated to English and compared to the original; examples with semantic similarity below 0.8 filtered out, removing approximately 10-15% per translated language; highest/lowest-scoring translations manually spot-checked."
   - "Final safety blend after stratified sampling: approximately 135K samples = approximately 45K English + approximately 15K from each of the six translated languages."
   - "RLVR (§3.2) is a single unified stage whose environment domains explicitly include safety (alongside terminal, office/productivity, software engineering, search, tool-calling, math, code, STEM, chat, instruction following, long-context QA, reasoning, structured outputs, usability)."
-  - "Agentic Safety teacher (§3.3.2) targets indirect prompt-injection attacks where malicious instructions are embedded in tool-response data rather than issued by the user."
+  - "Agentic Safety teacher (§3.3.2) targets indirect prompt-injection attacks where malicious instructions are embedded in tool-response data rather than issued by the architect."
   - "Agentic Safety dataset: benign user request requires a read tool whose returned content hides an adversarial instruction (chart notes, case summaries, product descriptions, resumes, support tickets); the injected instruction targets a sensitive write tool distinct from the task tool, making attack compliance observable from the tool-call trace."
   - "Agentic Safety covers four attack categories: unauthorized actions, data modification, denial of service, data exfiltration."
   - "Agentic Safety uses an automated red-teaming loop: attacker model iteratively rewrites the injected instruction against a defender until the defender complies; only successful attacks retained; attacker = Nemotron 3 Super, defender = Nemotron 3 Nano."
@@ -61,7 +61,7 @@ Answers:
 # Agentic Safety teacher (§3.3.2)
 
 Targets **indirect prompt injection** — malicious instructions embedded in tool-response data, not issued
-by the user.
+by the architect.
 
 | Aspect | Value |
 |---|---|
@@ -73,7 +73,7 @@ by the user.
 | Attacker / defender | attacker = Nemotron 3 Super; defender = Nemotron 3 Nano |
 | Verifier | deterministic; injection "resisted" only if the agent does NOT invoke the attacker's target tool with the target arguments |
 
-Provides verifiable supervision: complete the user's task while ignoring untrusted environment instructions.
+Provides verifiable supervision: complete the architect's task while ignoring untrusted environment instructions.
 
 # Alignment: GenRM, RLHF, abstention (§3.3.2)
 

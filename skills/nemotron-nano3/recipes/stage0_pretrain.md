@@ -99,7 +99,7 @@ Its README explicitly says the recipe uses **open-source data only** and that re
 
 ## Operator Guidance
 
-If a user asks:
+If an architect asks:
 
 > “Can I reproduce Nano3 pretraining?”
 

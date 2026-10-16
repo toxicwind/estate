@@ -1,7 +1,7 @@
 # herd (--config-dir) fragment: kimi-auto virtual model.
 #
 # ROUTER CONFIG -- model selection lives HERE, in this file.
-# Chris's rule (2026-09-20): Kimi-named tooling never selects models;
+# the Architect's rule (2026-09-20): Kimi-named tooling never selects models;
 # routers are separate from model-specific code. No resolver, no timers,
 # no probing, no family preference -- this fragment declares the route
 # and herd --watch-config reloads it event-driven on save.
@@ -12,7 +12,7 @@
 #   --advance-on chain-advancing signals (set below)
 # To change what kimi-auto serves, edit these flags. Nothing else to touch.
 #
-# Kimi-only doctrine (AGENTS.md, Chris 2026-09-20): kimi-auto is Kimi-only.
+# Kimi-only doctrine (AGENTS.md, the Architect 2026-09-20): kimi-auto is Kimi-only.
 # Honest 503/429 when no Kimi route is healthy; never a silent non-Kimi
 # fallback.
 #

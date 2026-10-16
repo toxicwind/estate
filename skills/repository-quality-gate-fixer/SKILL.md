@@ -16,7 +16,7 @@ Use this skill to turn repository quality work into a closed loop: understand th
 
 ## Inputs
 
-Accept these optional inputs from the user or infer them safely:
+Accept these optional inputs from the architect or infer them safely:
 
 | Input | Default |
 |---|---|
@@ -37,7 +37,7 @@ Modes:
 | `commit` | Edit and commit after verification; do not push |
 | `push` | Edit, commit, push, and monitor remote CI within wait limits |
 
-Mode escalation is not implicit. The agent must not move from `audit-only` to `fix`, from `fix` to `commit`, or from `commit` to `push` unless the user explicitly authorizes that higher-impact action in the current task. Posting PR comments, resolving conversations, requesting re-review, merging, changing labels, changing branch protection, or modifying remote repository settings also require explicit authorization.
+Mode escalation is not implicit. The agent must not move from `audit-only` to `fix`, from `fix` to `commit`, or from `commit` to `push` unless the architect explicitly authorizes that higher-impact action in the current task. Posting PR comments, resolving conversations, requesting re-review, merging, changing labels, changing branch protection, or modifying remote repository settings also require explicit authorization.
 
 ## First Commands
 
@@ -67,7 +67,7 @@ The probe uses only the Python standard library, so `-S` is safe for the probe i
 
 ## Safety Rules
 
-- Do not lower quality gates as part of a quality-gate closure task. Do not skip tests, delete required tests, disable lint/security/Sonar/CodeRabbit/CI, reduce coverage thresholds, or hardcode fake outputs to create a passing result. If the user explicitly requests a quality-policy change, treat it as a separate configuration-governance change, document the rationale and risk, and do not present the weaker gate as equivalent to passing the original gate.
+- Do not lower quality gates as part of a quality-gate closure task. Do not skip tests, delete required tests, disable lint/security/Sonar/CodeRabbit/CI, reduce coverage thresholds, or hardcode fake outputs to create a passing result. If the architect explicitly requests a quality-policy change, treat it as a separate configuration-governance change, document the rationale and risk, and do not present the weaker gate as equivalent to passing the original gate.
 - Never discard user work. Before edits, record branch, `git status --short`, untracked files, remotes, recent commits, and merge/rebase/cherry-pick state.
 - Do not run destructive operations without explicit user authorization: `git reset --hard`, `git clean -fd`, force push, branch deletion, aborting merge/rebase/cherry-pick, or broad unrelated formatting.
 - Prefer minimal, local fixes that address root cause. Avoid unrelated rewrites and public API or data format changes unless required and explained.
@@ -83,11 +83,11 @@ Default scope order:
 2. The current branch diff against its upstream or base branch.
 3. PR changed files, PR review comments, and PR check failures when a PR is provided.
 4. New-code issues from SonarCloud/SonarQube.
-5. Full-repository issues only when they block current validation or the user explicitly asks for full cleanup.
+5. Full-repository issues only when they block current validation or the architect explicitly asks for full cleanup.
 
 Do not automatically fix unrelated legacy debt across the repository. Record unrelated findings as follow-up recommendations unless they are required to make the current branch pass the agreed quality gate.
 
-When the task scope is ambiguous, prefer the smallest scope that can satisfy the user's request and the current quality gate. If a broader cleanup appears useful, list it as a follow-up instead of mixing it into the current fix.
+When the task scope is ambiguous, prefer the smallest scope that can satisfy the architect's request and the current quality gate. If a broader cleanup appears useful, list it as a follow-up instead of mixing it into the current fix.
 
 For PR work, distinguish clearly between:
 
@@ -139,7 +139,7 @@ Redact values that look like:
 
 If a command output contains credentials, summarize the relevant failure without reproducing secret-bearing text.
 
-Never create commits that include `.env`, private keys, credential files, local machine configuration, editor state, or machine-specific paths unless the repository explicitly tracks such files and the user confirms the change.
+Never create commits that include `.env`, private keys, credential files, local machine configuration, editor state, or machine-specific paths unless the repository explicitly tracks such files and the architect confirms the change.
 
 Before commit or push, inspect staged files for likely secrets and unrelated local files.
 
@@ -324,15 +324,15 @@ When handling PR review comments:
 
 - Fix real issues in code when they are in scope.
 - For false positives or non-adopted suggestions, prepare concise technical response drafts.
-- Do not post PR comments, resolve conversations, request re-review, approve, close, merge, or change labels unless the user explicitly authorized that remote action in the current task.
-- If the user authorized posting, keep replies factual and evidence-based, and avoid argumentative language.
+- Do not post PR comments, resolve conversations, request re-review, approve, close, merge, or change labels unless the architect explicitly authorized that remote action in the current task.
+- If the architect authorized posting, keep replies factual and evidence-based, and avoid argumentative language.
 - Record every remote PR action in the final report.
 
 ## Commit Hooks And Verification Bypass
 
 Do not bypass project commit hooks or verification hooks by default.
 
-- Do not use `git commit --no-verify` unless the user explicitly authorizes it and the report explains why.
+- Do not use `git commit --no-verify` unless the architect explicitly authorizes it and the report explains why.
 - If hooks modify files, inspect the new diff, rerun affected checks, and include the hook result in evidence.
 - If hooks fail because local hook tooling is missing, mark the hook check as `Blocked` or install project-local dependencies when safe.
 - If commit message linting exists, follow the project convention before committing.

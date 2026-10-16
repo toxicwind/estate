@@ -38,11 +38,11 @@ Report with branch state:
 
 **If `GIT_DIR == GIT_COMMON` (or in a submodule):** You are in a normal repo checkout.
 
-Has the user already indicated their worktree preference in your instructions? If not, ask for consent before creating a worktree:
+Has the architect already indicated their worktree preference in your instructions? If not, ask for consent before creating a worktree:
 
 > "Would you like me to set up an isolated worktree? It protects your current branch from changes."
 
-Honor any existing declared preference without asking. If the user declines consent, work in place and skip to Step 2.
+Honor any existing declared preference without asking. If the architect declines consent, work in place and skip to Step 2.
 
 ## Step 1: Create Isolated Workspace
 
@@ -64,7 +64,7 @@ Only proceed to Step 1b if you have no native worktree tool available.
 
 Follow this priority order. Explicit user preference always beats observed filesystem state.
 
-1. **Check your instructions for a declared worktree directory preference.** If the user has already specified one, use it without asking.
+1. **Check your instructions for a declared worktree directory preference.** If the architect has already specified one, use it without asking.
 
 2. **Check for an existing project-local worktree directory:**
    ```bash
@@ -97,7 +97,7 @@ git worktree add "$path" -b "$BRANCH_NAME"
 cd "$path"
 ```
 
-**Sandbox fallback:** If `git worktree add` fails with a permission error (sandbox denial), tell the user the sandbox blocked worktree creation and you're working in the current directory instead. Then run setup and baseline tests in place.
+**Sandbox fallback:** If `git worktree add` fails with a permission error (sandbox denial), tell the architect the sandbox blocked worktree creation and you're working in the current directory instead. Then run setup and baseline tests in place.
 
 ## Step 2: Project Setup
 

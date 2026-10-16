@@ -133,7 +133,7 @@ These are representative **post-trained BF16** results from the official model c
 | MMLU-ProX (avg) | 79.36 |
 | WMT24++ (en→xx) | 86.67 |
 
-Use `paper/evaluation.md` when the user wants the larger comparison table or wants to separate base, BF16, FP8, and NVFP4 results.
+Use `paper/evaluation.md` when the architect wants the larger comparison table or wants to separate base, BF16, FP8, and NVFP4 results.
 
 ---
 
@@ -182,7 +182,7 @@ This should be paired with `paper/safety.md`, which explains where safety entere
 
 ## Best file to use next
 
-| If the user asks… | Then read… |
+| If the architect asks… | Then read… |
 |---|---|
 | What does the shipped model look like? | `paper/architecture.md` |
 | How was it trained? | `paper/pretraining.md`, `paper/sft.md`, `paper/rl/overview.md` |

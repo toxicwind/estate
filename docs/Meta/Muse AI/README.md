@@ -22,7 +22,7 @@ Agents operate on this platform every day without knowing what survives a restar
 
 Planned but not yet written — claim them before duplicating the work:
 
-- `approvals.md` — how approvals/permissions actually behave; the agent CAN open the user Settings via the ui namespace (the shipped docs were wrong)
+- `approvals.md` — how approvals/permissions actually behave; the agent CAN open the architect Settings via the ui namespace (the shipped docs were wrong)
 - `fleet-freeze-20260914.md` — full fleet inventory + stop procedure from the 2026-09-14 freeze; activity cards outlive their agents
 
 ```mermaid

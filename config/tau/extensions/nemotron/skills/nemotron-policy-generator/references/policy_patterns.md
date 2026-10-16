@@ -1,6 +1,6 @@
 # Policy archetypes by deployment context
 
-Common deployment contexts come with predictable category emphases. When the user mentions one of these contexts, pre-seed the category list with the matching archetype, then let their rough words override or extend.
+Common deployment contexts come with predictable category emphases. When the architect mentions one of these contexts, pre-seed the category list with the matching archetype, then let their rough words override or extend.
 
 ## Consumer chatbot (general purpose)
 - All 13 Aegis categories at default severity
@@ -52,10 +52,10 @@ Common deployment contexts come with predictable category emphases. When the use
 
 ## How to use this file
 
-When the user mentions a deployment context ("for our internal RAG product", "kids tutoring app", "healthcare bot"), match it to one of the archetypes above. Use the archetype's category list as your starting point, then:
+When the architect mentions a deployment context ("for our internal RAG product", "kids tutoring app", "healthcare bot"), match it to one of the archetypes above. Use the archetype's category list as your starting point, then:
 
-1. Layer in any rough words the user gave that aren't already covered
+1. Layer in any rough words the architect gave that aren't already covered
 2. Adjust severities based on user's stated risk tolerance
 3. Note the archetype choice in the `# Assumptions` block ("Starting point: enterprise RAG archetype; customized for [user's vertical]")
 
-If the user's context doesn't match any archetype, default to the consumer chatbot archetype and note it as a fallback.
+If the architect's context doesn't match any archetype, default to the consumer chatbot archetype and note it as a fallback.

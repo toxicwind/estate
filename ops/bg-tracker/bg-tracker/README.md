@@ -31,7 +31,7 @@ flowchart TB
 
 ## Layout
 
-- `../bin/bg-launch` — the ONE correct launcher. Double-fork daemonize in Python: no `&` to mis-scope (cf. AGENTS.md "Daemon-start `&` scoping"), records the REAL daemon pid, verifies own SID + PPID 1 (or the user-session subreaper `systemd --user`, which adopts orphans on systemd boxes) before registering.
+- `../bin/bg-launch` — the ONE correct launcher. Double-fork daemonize in Python: no `&` to mis-scope (cf. AGENTS.md "Daemon-start `&` scoping"), records the REAL daemon pid, verifies own SID + PPID 1 (or the architect-session subreaper `systemd --user`, which adopts orphans on systemd boxes) before registering.
 - `../bin/bg-register` — retro-register an already-running pid.
 - `../bin/bg-heartbeat` — push a liveness heartbeat for a registry id.
 - `../bin/bg-audit` — read-only audit: live `ps` vs registry. Classifies every detached proc (KNOWN-SYSTEM / SUPERVISED / REGISTERED-OK / REGISTERED-STALE / REGISTERED-DEAD / UNREGISTERED / AMP-VICTIM). Exit 1 when anything needs attention. Never kills.

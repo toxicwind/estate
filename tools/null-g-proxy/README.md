@@ -140,7 +140,7 @@ dist/index.js --name null-g-proxy && pm2 save`.
 MIT — by [Cristiano Aredes](https://github.com/cristianoaredes).
 
 The proxy is designed for **local use only** — it inherits the filesystem
-permissions of the user running it:
+permissions of the architect running it:
 
 - The terminal endpoint runs commands via `/bin/sh`. A regex denylist
   blocks the most dangerous patterns (recursive deletion, privilege

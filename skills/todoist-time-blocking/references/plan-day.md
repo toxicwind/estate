@@ -7,23 +7,23 @@ This document contains the detailed execution steps, templates, and verification
 
 ### Step 0 — Verify calendar access
 
-Before proceeding, confirm calendar tools are reachable and return non-empty results for the target date. If calendar access fails or returns zero events across all calendars, **flag this immediately** — proceeding without calendar context has caused repeated scheduling conflicts in the past. Do not assume or guess at the user's schedule.
+Before proceeding, confirm calendar tools are reachable and return non-empty results for the target date. If calendar access fails or returns zero events across all calendars, **flag this immediately** — proceeding without calendar context has caused repeated scheduling conflicts in the past. Do not assume or guess at the architect's schedule.
 
 ### Step 1 — Gather fixed commitments
 
 Call `gcal_list_calendars`, then `gcal_list_events` on every calendar that represents real commitments. Include owner/reader calendars for personal, family, work, sports schedules, and travel feeds. **Exclude** holiday calendars and the Todoist calendar itself (its events are the output of this skill; counting them would be circular). Skip resource calendars.
 
-Use the target date as `timeMin` / `timeMax` in the user's local timezone.
+Use the target date as `timeMin` / `timeMax` in the architect's local timezone.
 
 Record each event's: `summary`, `start`, `end`, `location` (for buffer sizing), and **`transparency`**.
 
-**Transparency filter:** Only treat events with `transparency` = `opaque` (or unset, which defaults to opaque) as fixed busy blocks. Events with `transparency` = `transparent` are marked "free" in Google Calendar and **must not** be treated as time-blocked commitments — they're informational only and don't reduce available work time. Surface them in the proposal table as context (e.g., italics with a "free" label) so the user sees them, but don't slot tasks around them.
+**Transparency filter:** Only treat events with `transparency` = `opaque` (or unset, which defaults to opaque) as fixed busy blocks. Events with `transparency` = `transparent` are marked "free" in Google Calendar and **must not** be treated as time-blocked commitments — they're informational only and don't reduce available work time. Surface them in the proposal table as context (e.g., italics with a "free" label) so the architect sees them, but don't slot tasks around them.
 
 ### Step 2 — Establish the work window
 
 Default **08:00–16:00 local**, minus a 30-min lunch flex between 12:00 and 13:00. Ask if the date looks unusual (weekend, holiday, travel day per the Travel calendar).
 
-The work window governs only the sequential deep-work portion of the day. Items the user designates as evening/household (shopping, personal errands, light decisions) can be placed outside the work window with an explicit evening time — they don't compete for work-window slots and don't count against the slate ceiling.
+The work window governs only the sequential deep-work portion of the day. Items the architect designates as evening/household (shopping, personal errands, light decisions) can be placed outside the work window with an explicit evening time — they don't compete for work-window slots and don't count against the slate ceiling.
 
 ### Step 3 — Read candidate tasks
 
@@ -53,7 +53,7 @@ A project is **stalled** when both hold (14-day look-back):
 
 Identify candidate projects via `td project list --json`, then inspect each: `td task list --filter "##<project name>" --json` for active-task `due` dates, and scan `td completed --since <target-14d> --until <target+1d>` filtered by `projectId` for recent completions. If multiple projects qualify, pick the one stalled longest.
 
-Select **one** concrete next-action task from that project as the nudge — prefer tasks with clear verbs and small scope over vague headings. Mark it distinctly in the proposal; it's not counted toward the six-task ceiling unless the user accepts.
+Select **one** concrete next-action task from that project as the nudge — prefer tasks with clear verbs and small scope over vague headings. Mark it distinctly in the proposal; it's not counted toward the six-task ceiling unless the architect accepts.
 
 If no project qualifies, skip this step silently.
 
@@ -63,7 +63,7 @@ Rank by true importance: deadline pressure, whether the task unblocks someone el
 
 The stalled-project nudge (if any) is proposed **separately** from the main slate — user accepts or rejects it. If accepted, it joins the slate and gets time-blocked; if rejected, take no action on it (don't re-date it).
 
-**Rest-of-week buckets.** If the query returned tasks dated to later days this week (typically from `weekly_review`), show a one-line summary in the proposal: `Rest-of-week: Tue=4, Wed=3, Thu=2, Fri=3`. If the target day has headroom and a later day is overweight, **propose** pulling one task forward — surface the rationale (overloaded source day, deadline interaction, cognitive fit) and let the user accept or reject. Pulled tasks get re-dated to the target and time-blocked like any other slate item.
+**Rest-of-week buckets.** If the query returned tasks dated to later days this week (typically from `weekly_review`), show a one-line summary in the proposal: `Rest-of-week: Tue=4, Wed=3, Thu=2, Fri=3`. If the target day has headroom and a later day is overweight, **propose** pulling one task forward — surface the rationale (overloaded source day, deadline interaction, cognitive fit) and let the architect accept or reject. Pulled tasks get re-dated to the target and time-blocked like any other slate item.
 
 ### Step 5 — Fit blocks around fixed events
 
@@ -75,16 +75,16 @@ Additional rules when fitting:
 
 - **Recurring tasks as fixed load.** Recurring operational tasks dated on the target day (filtered from the slate in Step 3) still occupy time on the Todoist calendar. Treat them as additional fixed blocks when computing free windows — same as calendar events.
 - **Pre-set task times yield to calendar events.** If a slate task carries a pre-set time (often inherited from a prior `weekly_review` or manual dating) and that time overlaps a fixed calendar event, re-time the task silently to the nearest suitable free window. Do not flag as a conflict — calendar events always win.
-- **No calendar-vs-calendar conflict flags.** If two fixed calendar events overlap, that's the user's calendar to reconcile, not `plan_day`'s. Just slot tasks around whatever calendar time remains free.
+- **No calendar-vs-calendar conflict flags.** If two fixed calendar events overlap, that's the architect's calendar to reconcile, not `plan_day`'s. Just slot tasks around whatever calendar time remains free.
 
-Present the **full day's agenda** as a single chronological table that interleaves proposed Todoist blocks with the fixed calendar events from Step 1 — the user needs to see the whole day to approve the decisions. Mark fixed events clearly (italics, source label, or both) so there's no ambiguity about what the user is approving vs. what's already committed.
+Present the **full day's agenda** as a single chronological table that interleaves proposed Todoist blocks with the fixed calendar events from Step 1 — the architect needs to see the whole day to approve the decisions. Mark fixed events clearly (italics, source label, or both) so there's no ambiguity about what the architect is approving vs. what's already committed.
 
 **Before presenting the proposal, run a reality check:**
 
 - Confirm every proposed block's start+end time does NOT overlap any opaque calendar event.
 - Confirm every proposed block fits within the declared work window (unless explicitly marked as evening).
 - Confirm total deep-work blocks ≤ 2 per day.
-- If any check fails, fix silently before presenting — never surface a conflict to the user.
+- If any check fails, fix silently before presenting — never surface a conflict to the architect.
 
 | Time | Item | Duration | Source | Why here |
 |---|---|---|---|---|
@@ -101,7 +101,7 @@ Include gaps/buffers as their own rows when material (>15 min) so the day reads 
 
 Tasks already dated on the target day that **aren't** in the chosen slate. For each, propose a **default action** (typically push 1–3 days forward or un-date) and present it as the recommendation. The user may override per straggler.
 
-**Do not bulk-decide, and do not allow unresolved stragglers.** If the user approves the slate without addressing every straggler, re-prompt explicitly: “You still have N stragglers — pick an action for each before I write anything back.”
+**Do not bulk-decide, and do not allow unresolved stragglers.** If the architect approves the slate without addressing every straggler, re-prompt explicitly: “You still have N stragglers — pick an action for each before I write anything back.”
 
 ### Step 7 — Wait for approval
 
@@ -142,4 +142,4 @@ td task list --filter "due: YYYY-MM-DD" --ndjson \
   | jq '{content, due: .due, duration}'
 ```
 
-Expected: exactly the chosen slate, each with a `due` containing a `datetime` field (`T` present) and a `duration`. Tell the user to refresh Google Calendar in ~1 minute if blocks aren't visible.
+Expected: exactly the chosen slate, each with a `due` containing a `datetime` field (`T` present) and a `duration`. Tell the architect to refresh Google Calendar in ~1 minute if blocks aren't visible.

@@ -35,7 +35,7 @@ Use these in every data_prep stage wrapper:
 Order in your `run.py`:
 
 1. Resolve all paths (input blend, output dir).
-2. Optionally `init_prep_wandb(...)` if the user opted into tracking.
+2. Optionally `init_prep_wandb(...)` if the architect opted into tracking.
 3. `chdir_to_scratch(...)` only after all paths are resolved.
 4. Call the recipe.
 

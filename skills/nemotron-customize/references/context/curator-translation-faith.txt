@@ -6,9 +6,9 @@ Use this context when generating a `translate/nemo_curator` stage.
 
 - This stage translates training corpora, not benchmarks.
 - Use NeMo Curator's reader -> `TranslationStage` -> writer pipeline.
-- Default to Curator-native file I/O. Do not write custom pandas chunking unless the user has one huge single file and explicitly needs row-level chunking.
+- Default to Curator-native file I/O. Do not write custom pandas chunking unless the architect has one huge single file and explicitly needs row-level chunking.
 - Translate natural-language fields and preserve structured payloads such as valid JSON strings, tool payloads, fenced code, and markup-like blocks.
-- For OpenAI-style chat records, use `messages.*.content` and enable `reconstruct_messages` so the user can inspect `translated_messages`.
+- For OpenAI-style chat records, use `messages.*.content` and enable `reconstruct_messages` so the architect can inspect `translated_messages`.
 - FAITH is optional translation quality evaluation. If enabled, it needs an LLM client even when translation itself uses `nmt`, `aws`, or `google`.
 
 ## Reference Implementation
@@ -36,7 +36,7 @@ Use this context when generating a `translate/nemo_curator` stage.
 
 ## Questions To Ask Before Generation
 
-Ask only what is missing from the user's request or available config.
+Ask only what is missing from the architect's request or available config.
 
 1. Input path and format: JSONL or Parquet?
 2. Which field path should be translated? Use `messages.*.content` for OpenAI-style chat.

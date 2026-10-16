@@ -119,7 +119,7 @@ uv run nemotron super3 sft --run <profile>
 uv run nemotron super3 sft -c tiny --run <profile>
 ```
 
-This is the simplest runnable answer unless the user specifically asks for the script/config path level.
+This is the simplest runnable answer unless the architect specifically asks for the script/config path level.
 
 ---
 
@@ -166,5 +166,5 @@ The paper is still the better source for:
 
 ## Best next file
 
-- `stage2_rl.md` if the user wants the next stage in the pipeline.
-- `../paper/sft.md` if the user wants the research-level explanation of the loss and reasoning controls.
+- `stage2_rl.md` if the architect wants the next stage in the pipeline.
+- `../paper/sft.md` if the architect wants the research-level explanation of the loss and reasoning controls.

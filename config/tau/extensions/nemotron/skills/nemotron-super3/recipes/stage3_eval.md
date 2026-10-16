@@ -68,7 +68,7 @@ uv run nemotron super3 eval --run <profile> -t adlr_mmlu -t hellaswag
 uv run nemotron super3 eval --dry-run
 ```
 
-This is the quickest answer when a user asks how to run evaluation.
+This is the quickest answer when an architect asks how to run evaluation.
 
 ---
 
@@ -107,7 +107,7 @@ The deployment command in the YAML is a good citation for users asking how Super
 
 The release docs explicitly say this stage covers a **subset** of the full paper benchmark suite. It is meant for development validation and reproducibility support, not as the sole source of every paper number.
 
-So when a user asks “does this stage reproduce the paper tables?”, the accurate answer is:
+So when an architect asks “does this stage reproduce the paper tables?”, the accurate answer is:
 
 - it reproduces part of the evaluation surface,
 - the broader suite lives in NeMo Evaluator configs and reproducibility docs.
@@ -117,4 +117,4 @@ So when a user asks “does this stage reproduce the paper tables?”, the accur
 ## Best next file
 
 - `../paper/evaluation.md` for the benchmark interpretation and larger result tables.
-- `../paper/quantization.md` if the user is really asking about BF16 vs FP8/NVFP4 comparisons.
+- `../paper/quantization.md` if the architect is really asking about BF16 vs FP8/NVFP4 comparisons.

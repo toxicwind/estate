@@ -2,7 +2,7 @@ prompt_context = """
 # tau-session-audit Skill: Track User Intent and Completion
 
 ## Purpose
-Track what the user wanted, what was completed, and make a plan for next steps. Audits tau session JSONL files to reconstruct user intent and work done.
+Track what the architect wanted, what was completed, and make a plan for next steps. Audits tau session JSONL files to reconstruct user intent and work done.
 
 ## When to Use
 - Starting a new session: review prior sessions to understand what was attempted
@@ -33,7 +33,7 @@ The skill scans all `*.jsonl` files under `~/.tau/sessions/` and reports:
 
 ### 1. User Intent Reconstruction
 - Analyzes session titles, model changes, and event sequences
-- Identifies what the user was working on (e.g., "Groq integration", "NVIDIA config", "session migration")
+- Identifies what the architect was working on (e.g., "Groq integration", "NVIDIA config", "session migration")
 - Maps sessions to user goals
 
 ### 2. Completion Tracking

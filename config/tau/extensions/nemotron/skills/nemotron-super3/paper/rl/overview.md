@@ -177,7 +177,7 @@ The repo hub is especially important because it makes the stage order operationa
 
 # Answering guide
 
-## If the user asks “what happens in RL?”
+## If the architect asks “what happens in RL?”
 
 Give the short ordered list first:
 
@@ -188,11 +188,11 @@ Give the short ordered list first:
 
 Then ask whether they want capability RL, SWE details, or RLHF behavior shaping.
 
-## If the user asks “why is SWE separate?”
+## If the architect asks “why is SWE separate?”
 
 Say: much longer rollouts, much larger contexts, and containerized test execution make SWE a throughput bottleneck if mixed into RLVR.
 
-## If the user asks “where does safety enter RL?”
+## If the architect asks “where does safety enter RL?”
 
 Say: partly in RLVR through safety environments and partly in RLHF through principle-following GenRM judgments.
 

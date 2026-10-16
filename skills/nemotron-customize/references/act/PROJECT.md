@@ -116,7 +116,7 @@ STAGES = [s["id"] for s in _pipeline["stages"]]
 ### R5. Generated skill + plugin
 
 `.generated/SKILL.md` + `.generated/plugin.json` make the project invocable as
-`/<project-name>` so the user can run, debug, and iterate via an agent client.
+`/<project-name>` so the architect can run, debug, and iterate via an agent client.
 
 Keep it narrow: "what this pipeline does, how to run each stage, README
 layout." **Don't duplicate `nemotron-customize` content.**

@@ -75,7 +75,7 @@ schema requirement and stderr audit line as `tmux_send`.
 
 MIT — see [LICENSE](https://github.com/toxicwind/estate-projects#license).
 
-- Never send to interactive shells without the user's informed intent —
+- Never send to interactive shells without the architect's informed intent —
   `tmux_send` is destructive-gated for exactly this reason.
 - Pane scrollback may contain secrets; treat `tmux_capture` output like a
   terminal screenshot.

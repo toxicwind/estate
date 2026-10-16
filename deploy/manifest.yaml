@@ -19,7 +19,7 @@
 #             runtime JSON in different places).
 #
 # Restore rules: NONE. Restoration is HARD-DISABLED in this workstream
-# (Chris 2026-09-30: the warden restores NOTHING). estate-reconcile is
+# (the Architect 2026-09-30: the warden restores NOTHING). estate-reconcile is
 # alert-only on every path: check and watch report drift; a human decides
 # rebuild, bless, or trusted-copy. Nothing here auto-restores.
 #   - declared_configs are REPORT-ONLY in this workstream: the tree is shared
@@ -47,7 +47,7 @@ binaries:
     git_path: bin/herd-keypool.py
     daemon: keypool
     immutable_copy: /home/toxic/estate/bin/herd-keypool.py.20261002-184500
-    note: blessed 2026-10-02 (warden) — live matches estate HEAD; Chris: "Bless live obv wtf"
+    note: blessed 2026-10-02 (warden) — live matches estate HEAD; the Architect: "Bless live obv wtf"
   herd-model-guard:
     path: /home/toxic/estate/bin/herd-model-guard.py
     sha256: "7ff038184434e52e6a0200b7d48fea80975f1d00e5d8b2ffb1ea10a67627f829"
@@ -56,14 +56,14 @@ binaries:
     git_path: bin/herd-model-guard.py
     daemon: model-guard
     immutable_copy: /home/toxic/estate/bin/herd-model-guard.py.20261002-184500
-    note: blessed 2026-10-02 (warden) — live matches estate HEAD; Chris: "Bless live"
+    note: blessed 2026-10-02 (warden) — live matches estate HEAD; the Architect: "Bless live"
   progress-watchdog:
     path: /home/toxic/estate/bin/progress-watchdog.py
     sha256: "64901196f4246de5f12a90388eda2c417d20f85db82f185d33e47c22bc8b433b"
     source: toxicwind/estate
     commit: 213218592259a0af3d403e6dc1f088358a23d79c
     git_path: bin/progress-watchdog.py
-    note: pinned 2026-10-02 (warden) — Chris: "Sure"; re-pinned 2026-10-04 osprey (stoat rename bless-live)
+    note: pinned 2026-10-02 (warden) — the Architect: "Sure"; re-pinned 2026-10-04 osprey (stoat rename bless-live)
   openfang-kernel:
     path: /home/toxic/.local/bin/openfang
     sha256: "8af8a1475908974717c7b5d2480abebd09418ae7b2cc58fa9185fbc500cd2695"

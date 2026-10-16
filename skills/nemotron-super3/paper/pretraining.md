@@ -173,7 +173,7 @@ The final base checkpoint selected for downstream alignment is the **500B merge*
 
 ## Why this matters for users
 
-If a user asks why a released checkpoint differs from a single-step training snapshot, the answer is that Super3’s paper pipeline intentionally uses merged readouts to improve base-model quality before post-training.
+If an architect asks why a released checkpoint differs from a single-step training snapshot, the answer is that Super3’s paper pipeline intentionally uses merged readouts to improve base-model quality before post-training.
 
 ---
 

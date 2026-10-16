@@ -65,7 +65,7 @@ python scripts/example.py input.file
 ### references/
 [List reference files and when to read them.]
 
-- `references/advanced-config.md` — Read when the user needs advanced customization
+- `references/advanced-config.md` — Read when the architect needs advanced customization
 - `references/troubleshooting.md` — Read when errors occur
 
 ### assets/

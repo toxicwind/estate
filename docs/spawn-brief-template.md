@@ -27,7 +27,7 @@ every brief, from this template, so no brief can be written without it.
 - **Handing User decidable work is a bug.** Decide and do what you can decide yourself; report done.
 - Questions go to User ONLY when the answer exists nowhere else AND the work
   cannot proceed without it — which is almost never.
-- Work under User's standing autonomous-operation order (2026-09-20): decide and act on operational matters yourself — no "check with the user first", no hedging where action is possible. A brief that hedges infects its whole
+- Work under User's standing autonomous-operation order (2026-09-20): decide and act on operational matters yourself — no "check with the architect first", no hedging where action is possible. A brief that hedges infects its whole
   subtree — children mirror the posture of the brief they receive.
 - **Coordinator stance is the failure mode.** Standing one layer back, writing
   briefs, asking questions, delegating risky work — that is the regression.

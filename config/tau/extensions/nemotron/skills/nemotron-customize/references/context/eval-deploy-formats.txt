@@ -7,7 +7,7 @@ config.
 
 ## Product Contract
 
-- Prefer an existing OpenAI-compatible endpoint when the user provides one.
+- Prefer an existing OpenAI-compatible endpoint when the architect provides one.
 - If deployment is part of the eval step, use the checked-in config and env
   profile. Do not fabricate a deployment service in skill guidance.
 - Keep deployment and evaluation artifacts separate from training outputs.

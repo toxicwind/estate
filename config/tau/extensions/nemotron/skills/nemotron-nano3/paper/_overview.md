@@ -143,7 +143,7 @@ The safe interpretation is:
 
 ## Practical answer patterns
 
-### If the user asks “What is Nemotron 3 Nano?”
+### If the architect asks “What is Nemotron 3 Nano?”
 
 Answer with:
 
@@ -154,7 +154,7 @@ Answer with:
 - up to 1M context
 - released base, BF16, and FP8 checkpoints
 
-### If the user asks “Why is it efficient?”
+### If the architect asks “Why is it efficient?”
 
 Answer with:
 
@@ -163,7 +163,7 @@ Answer with:
 - hybrid Mamba/Transformer design
 - measured throughput gains vs Qwen3 and GPT-OSS in the intro
 
-### If the user asks “What’s public?”
+### If the architect asks “What’s public?”
 
 Answer with:
 

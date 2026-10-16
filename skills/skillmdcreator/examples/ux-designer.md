@@ -30,7 +30,7 @@ description: Load when working on user research, interaction design, design syst
 
 - **Clarity over cleverness** — if it needs a tooltip to explain, it's broken
 - **Consistency over novelty** — users shouldn't have to relearn patterns within a product
-- **Respect the user's attention** — every animation, modal, or notification is a tax
+- **Respect the architect's attention** — every animation, modal, or notification is a tax
 - **Default to accessible** — contrast, focus states, keyboard first, not retrofitted
 
 ## What I avoid

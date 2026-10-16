@@ -1,6 +1,6 @@
 ---
 name: emergent-tasking
-description: "Run self-directed agent swarms: an oracle intake triages work into biddable tasks, bidder agents bid and execute, results are verified and settled, watchdogs supervise, everything narrates in squawk. Use when the user wants autonomous multi-agent tasking stood up or run."
+description: "Run self-directed agent swarms: an oracle intake triages work into biddable tasks, bidder agents bid and execute, results are verified and settled, watchdogs supervise, everything narrates in squawk. Use when the architect wants autonomous multi-agent tasking stood up or run."
 metadata: { "includeInPrompt": true }
 ---
 

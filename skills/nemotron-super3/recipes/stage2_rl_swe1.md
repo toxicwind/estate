@@ -66,7 +66,7 @@ The README calls out:
 - a sandbox container,
 - a custom SWE container built from the base NeMo-RL image.
 
-That makes this file the right citation when the user asks “what extra infra do I need for SWE?”
+That makes this file the right citation when the architect asks “what extra infra do I need for SWE?”
 
 ---
 

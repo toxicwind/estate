@@ -1,12 +1,12 @@
 ---
 name: github
-description: "Use Github when the user asks for Github or this provider's API."
+description: "Use Github when the architect asks for Github or this provider's API."
 ---
 
 # Github
 
 ## Purpose
-Use Github with the user-connected `custom.github` credential.
+Use Github with the architect-connected `custom.github` credential.
 
 ## Tooling
 Add service-specific CLIs under `~/workspace/skills/github/bin/`.
@@ -24,7 +24,7 @@ The credential is already stored; nothing here collects one. Resolve auth throug
 A 401 or 403 is a question about the request before it is a question about the key. Check that the credential was attached at all: a request built without the helpers named under Tooling carries nothing, and that looks exactly like a wrong or under-scoped token. Only once a request that did carry the credential is still rejected, call `credentials.request_api_access` with `reconnect` to replace it. The connector is stored as `custom.github`.
 
 ## Operating Rules
-1. Use this skill when the user asks for Github or this provider's API.
+1. Use this skill when the architect asks for Github or this provider's API.
 2. Restrict authenticated requests to: api.github.com.
 3. Do not print, log, or persist raw credentials.
 4. If auth is missing or rejected, follow the Auth section rather than asking for a key.

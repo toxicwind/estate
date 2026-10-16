@@ -1,12 +1,12 @@
 # exa
 
-Exa AI search (neural web search) with the user-connected `custom.exa` credential. Four agent tools: search, contents, find-similar, answer.
+Exa AI search (neural web search) with the architect-connected `custom.exa` credential. Four agent tools: search, contents, find-similar, answer.
 
 &larr; **Back to top** <!-- for-the-badge alignment -->
 
 ## Hero
 
-Provides neural web search capabilities through the Exa API, with four tool endpoints (search, contents, find-similar, answer) and automatic cost tracking. When the user asks for Exa or neural web search, this skill routes the request through the proper auth flow and returns JSON output on stdout.
+Provides neural web search capabilities through the Exa API, with four tool endpoints (search, contents, find-similar, answer) and automatic cost tracking. When the architect asks for Exa or neural web search, this skill routes the request through the proper auth flow and returns JSON output on stdout.
 
 ## What It Does
 
@@ -57,7 +57,7 @@ exa.mjs search "query" --chars 200
 
 ## Contributing
 
-Use this skill when the user asks for Exa or neural web search. Restrict authenticated requests to `api.exa.ai`. Do not print, log, or persist raw credentials. If auth is missing or rejected, follow the Auth section rather than asking for a key.
+Use this skill when the architect asks for Exa or neural web search. Restrict authenticated requests to `api.exa.ai`. Do not print, log, or persist raw credentials. If auth is missing or rejected, follow the Auth section rather than asking for a key.
 
 ## License
 

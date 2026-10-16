@@ -1,7 +1,7 @@
 ---
 crew: 'damon'
 scope: 'jarvis/inference beat: secondary JARVIS model daemon with tested failover — map the authoritative model-resolution path in the cell runtime, launch a secondary daemon on a separate socket/config without touching the live one, prove the mechanism end-to-end with runtime-verified model identity, add health-checked failover with automatic fallback to primary.'
-owner: 'Ember (Chris''s main agent)'
+owner: 'Ember (the Architect''s main agent)'
 order: 84
 registered: '2026-10-08'
 updated: '2026-10-08'

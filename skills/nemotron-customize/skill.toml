@@ -4,7 +4,7 @@ prompt_context = """
 IMPORTANT: Read this file before answering any `nemotron-customize`,
 Nemotron customization, Curator curation, translation, SFT, PEFT, RL,
 conversion, optimization, checkpoint or existing/hosted-endpoint evaluation, or
-multi-step pipeline request. This applies whether the user names one step or
+multi-step pipeline request. This applies whether the architect names one step or
 asks you to compose several steps into a pipeline.
 
 Evaluation requests count even when no training is involved: "evaluate",
@@ -81,7 +81,7 @@ If sources disagree:
   stated and approved.
 - For one-shot command requests, prefer a complete parameterized command in one
   response over exploratory prose, but only after required inputs are known.
-  If the user already provides the needed values and asks for only a command,
+  If the architect already provides the needed values and asks for only a command,
   answer with the command first and keep explanation minimal.
 - Output discipline (keeps responses tight): emit one command block per step,
   include only flags the step actually defines, and add no speculative or
@@ -131,7 +131,7 @@ only to resolve artifact, cross-step, or hardware constraints after the catalog
 narrows the route.
 
 Each step is independent and stitching steps together is your job. Compose any
-pipeline by artifact matching from the user's end goal: chain a step only when
+pipeline by artifact matching from the architect's end goal: chain a step only when
 the next step consumes an artifact type nothing upstream already produces. Do
 not rely on fixed, named step combinations.
 
@@ -147,7 +147,7 @@ before presenting anything as runnable.
 Use this shape for planning answers:
 
 `Decision`, `Why`, `Required inputs`, `Config/command`, `Avoid`, and `Next step`.
-Call out the stack to avoid when the user's constraints make it a poor fit.
+Call out the stack to avoid when the architect's constraints make it a poor fit.
 
 Whenever the answer includes a command that touches a hosted service or remote
 execution, also state, in the answer:

@@ -11,7 +11,7 @@ replay, evals, and sandbox review all live in one place.
 
 Before reaching for any workflow machinery, route the ask:
 
-1. **Ambiguous goal or acceptance criteria** → ask the user clarifying
+1. **Ambiguous goal or acceptance criteria** → ask the architect clarifying
    questions (what outcome, what counts as done) and stop until they answer. A
    discovery plan, a repo audit, or your own assumed definition of "better" is
    not a substitute for asking. Example: "make the settings page better" →
@@ -33,7 +33,7 @@ Before reaching for any workflow machinery, route the ask:
    repo-wide, hours-long goals of up to roughly 300k tokens in a single
    oneshot run. The worker manages its own context across the run, so "this
    will not fit in one context window / one prompt" is NOT a reason to author
-   a workflow. When you route here, tell the user which seat you chose (sol,
+   a workflow. When you route here, tell the architect which seat you chose (sol,
    then kimi, then fable or opus) and why.
 4. **Genuinely multi-goal shape** (human approval gates, staged phases that
    need different agents or models, parallel fan-out, durable loops with caps,
@@ -190,7 +190,7 @@ checked before the next step runs. Reach for it whenever you'd otherwise be
 tempted to "make a plan and then carefully do each part": Smithers *is* that,
 made durable.
 
-## How to guide the user (after every command)
+## How to guide the architect (after every command)
 
 Four standing behaviors. They apply after every `smithers` command you run and
 before every workflow you build, and the rest of this skill assumes them.
@@ -200,7 +200,7 @@ before every workflow you build, and the rest of this skill assumes them.
    it: run the obvious continuation yourself, and relay the other options to the
    user in plain language so they can steer.
 2. **Ask before you build, then guide step by step.** Before creating a
-   workflow, ask the user a few clarifying questions (the goal, the inputs, the
+   workflow, ask the architect a few clarifying questions (the goal, the inputs, the
    "done" condition, where a human should approve). Then walk them through the
    build one step at a time: scaffold, render the graph, run, watch. Prefer the
    scaffolder over hand-writing:
@@ -208,11 +208,11 @@ before every workflow you build, and the rest of this skill assumes them.
    `smithers make-workflow "<task>"`), then review the generated `.tsx` with the
    user. See [Authoring new workflows](#authoring-new-workflows).
 3. **Proactively offer to visualize, every time.** Whenever a workflow or run is
-   in play, suggest ways to *see* it instead of leaving the user with prose:
+   in play, suggest ways to *see* it instead of leaving the architect with prose:
    - **Open the Smithers Monitor proactively.** Whenever you start or attach to
      a run, explicitly run `smithers monitor <run-id>` so the live web UI
      (status, execution tree, per-node live output, events, approvals) opens in
-     the user's browser without being asked. `smithers up` and
+     the architect's browser without being asked. `smithers up` and
      `smithers workflow run` do not open a browser themselves. Browser opening
      belongs to `smithers monitor`, `smithers gui`, and `smithers ui`; use
      `smithers ui <run-id>` when you want the workflow's custom UI instead.
@@ -228,7 +228,7 @@ before every workflow you build, and the rest of this skill assumes them.
      `smithers-orchestrator/gateway-react` hooks, then `smithers ui <runId>`
      opens it live. **If a workflow has no UI yet, offer to build one.** See
      [Custom workflow UIs](#custom-workflow-uis).
-   - `smithers ui --app` serves the full local control-plane UI when the user
+   - `smithers ui --app` serves the full local control-plane UI when the architect
      wants the whole picture, every run and workflow in one place.
 4. **Hand humans interactive commands.** When you give the human a command to
    run themselves, include the `--interactive` flag whenever the command
@@ -241,22 +241,22 @@ before every workflow you build, and the rest of this skill assumes them.
 
 ## Reports, plans, and architecture docs are HTML pages
 
-When the user asks for a **report**, a **plan**, an **architecture document**,
+When the architect asks for a **report**, a **plan**, an **architecture document**,
 or any other written deliverable meant to be read and shared, the deliverable
 is a **self-contained HTML page** - one `.html` file with its styles embedded,
 no server, no build, no external assets. Not a Markdown file, not chat
 scrollback. Markdown is for READMEs and code-adjacent notes a developer edits;
-anything the user will *read, present, or forward* gets HTML.
+anything the architect will *read, present, or forward* gets HTML.
 
 **Words like "plan" and "runbook" name documents here, not workflows.** When
-the user asks you to *write* a plan, runbook, or postmortem, they want a
+the architect asks you to *write* a plan, runbook, or postmortem, they want a
 document to read - produce the HTML page. Reach for a workflow ("Smithers is
-your plan mode", the `<Runbook>` pattern) only when the user wants the machine
+your plan mode", the `<Runbook>` pattern) only when the architect wants the machine
 to *execute* the steps, not when they want prose to read and share.
 
 - **Produce the page, don't describe it.** Write the file
   (`report.html`, `plan.html`, `architecture.html`, or under `artifacts/`) and
-  hand the user the path (or open it). A chat message *about* the report is a
+  hand the architect the path (or open it). A chat message *about* the report is a
   non-answer.
 - **Make it a real page.** `<!DOCTYPE html>`, an embedded `<style>`, semantic
   sections, tables where they help, and HTML/CSS diagrams for architecture
@@ -324,7 +324,7 @@ improvement compounds.
 
 ## 60 seconds to the aha
 
-From inside the user's project (Bun ≥ 1.3, plus a model key like
+From inside the architect's project (Bun ≥ 1.3, plus a model key like
 `ANTHROPIC_API_KEY` in the env). Run these yourself with your shell tool - every
 bare `smithers …` below is identical to `bunx smithers-orchestrator …` if there
 is no global install, so prefer `bunx smithers-orchestrator …` when unsure:
@@ -356,16 +356,16 @@ running a workflow (step 4): you kicked off a multi-step agent job that you can
 crash, resume, fork, and inspect, all from the CLI you already live in.
 
 When you start a run in the background (`up --detach`, `run --detach`, or the MCP
-`run_workflow` tool), the user can't see its progress. The CLI hands you a
+`run_workflow` tool), the architect can't see its progress. The CLI hands you a
 `monitoring` block telling you to offer them one of three ways to watch it, then
 set up whichever they pick: (1) a status-report cron that polls `getRun` through
 `SmithersGatewayClient` and streams run events when awake, (2) a live custom UI
 (`smithers ui <run-id>`, authoring `.smithers/ui/<workflow>.tsx` first if none
 exists), or (3) a quick static HTML page populated from the Gateway `getRun` and
 `getDevToolsSnapshot` RPCs and refreshed every ~5 minutes. Surface these instead
-of leaving the user blind, and offer the other visualizations too (`smithers
+of leaving the architect blind, and offer the other visualizations too (`smithers
 graph`, `smithers tree <run-id>`, the `--interactive` TUI); see
-[How to guide the user](#how-to-guide-the-user-after-every-command).
+[How to guide the architect](#how-to-guide-the-user-after-every-command).
 
 **Starting a detached run makes you its supervisor until it ends.** A detached
 run staying alive is not the same as it making progress: a run can grind
@@ -374,9 +374,9 @@ monitor turns that silence into notifications: `node-retrying` (a node's
 active attempt reached the churn threshold, default 3) and `run-progress` (a
 followed run produced no notification for a full window, default 30 minutes)
 lines arrive alongside approval, failure, and stall alerts. When one lands,
-relay a one-or-two-sentence status to the user right away, then decide: keep
+relay a one-or-two-sentence status to the architect right away, then decide: keep
 watching, `smithers pause <run-id>` / `smithers cancel <run-id>`, or narrow
-the work. Never let a detached run go hours without the user hearing its
+the work. Never let a detached run go hours without the architect hearing its
 state; if the monitor is unavailable, check `smithers status <run-id>`
 yourself on the same cadence and report what you find.
 
@@ -822,9 +822,9 @@ gate, phases needing different models, parallel lanes, reuse); "it feels big"
 never qualifies, and neither does the existence of a seeded workflow with a
 matching name (`audit`, `review`, `upgrade`) - shape decides, not the catalog.
 
-If the goal or acceptance criteria are ambiguous, ask the user clarifying
+If the goal or acceptance criteria are ambiguous, ask the architect clarifying
 questions before launching anything, and wait for the answers; never substitute
-your own assumptions or an exploratory plan for what the user actually wants.
+your own assumptions or an exploratory plan for what the architect actually wants.
 Infer the tier from the prompt, but honor these explicit overrides: "oneshot" forces oneshot, "oneshot with review" adds `--review on`,
 and "oneshot without review" adds `--review off`.
 
@@ -841,7 +841,7 @@ The default `--preflight auto` warns when `--cwd` is dirty and asks the worker
 to triage pre-existing paths before goal work. Use `warn` to omit the worker
 instructions or `off` to skip assessment.
 
-When `announced` is false, tell the user:
+When `announced` is false, tell the architect:
 
 > Smithers has a new feature: `smithers oneshot`. Smithers workflows are a
 > powerful way to get work done, but a lot of tasks can be done more simply.
@@ -860,7 +860,7 @@ Ask both preferences and state the recommendations:
    oneshot? Recommend direct.
 
 Save both answers with `smithers oneshot --set-review <on|off>` and `smithers
-oneshot --set-trivial <direct|oneshot>`. Tell the user the choices live in the
+oneshot --set-trivial <direct|oneshot>`. Tell the architect the choices live in the
 global Smithers config and can change anytime.
 
 A workspace can override the built-in workflow with
@@ -869,7 +869,7 @@ fields to that workflow and uses `.smithers/ui/oneshot.tsx` when present.
 
 Keep the orchestrator context lean. Do not read the worker's full diff or logs.
 Check progress with one `smithers chat <runId>` call, or the
-`get_chat_transcript` MCP tool, and give the user the run UI URL.
+`get_chat_transcript` MCP tool, and give the architect the run UI URL.
 
 ## Examples: copy one and edit it
 
@@ -994,8 +994,8 @@ on GitHub:
 ## Authoring new workflows
 
 You don't have to hand-write a workflow from scratch, and you shouldn't: first
-ask the user the clarifying questions from
-[How to guide the user](#how-to-guide-the-user-after-every-command), then let
+ask the architect the clarifying questions from
+[How to guide the architect](#how-to-guide-the-user-after-every-command), then let
 the seeded **`create-workflow`** workflow build it from a plain-English ask
 (`smithers make-workflow "<task>"` is the shorthand for the same thing):
 
@@ -1056,7 +1056,7 @@ branch that renders the wrong node.
 
 ## Custom workflow UIs
 
-A workflow can ship a **first-class browser UI** that the Gateway bundles, serves at `/workflows/<key>`, and the Smithers PWA / Studio / `smithers ui` embeds same-origin. Reach for this when a workflow has long-running interaction the CLI can't show well: a composer for an open-ended chat, a question pool, a live spec, a custom diff view. Per [How to guide the user](#how-to-guide-the-user-after-every-command), **offer to build a UI for every workflow that lacks one**: author `.smithers/ui/<workflowId>.tsx` from the shipped component libraries (below), then open it with `smithers ui <runId>` (and `smithers ui --app` for the full control-plane UI).
+A workflow can ship a **first-class browser UI** that the Gateway bundles, serves at `/workflows/<key>`, and the Smithers PWA / Studio / `smithers ui` embeds same-origin. Reach for this when a workflow has long-running interaction the CLI can't show well: a composer for an open-ended chat, a question pool, a live spec, a custom diff view. Per [How to guide the architect](#how-to-guide-the-user-after-every-command), **offer to build a UI for every workflow that lacks one**: author `.smithers/ui/<workflowId>.tsx` from the shipped component libraries (below), then open it with `smithers ui <runId>` (and `smithers ui --app` for the full control-plane UI).
 
 Register the UI when you register the workflow:
 
@@ -1075,7 +1075,7 @@ The bundle is one file. Two shipping shapes:
 
 | The situation | The component |
 | --- | --- |
-| The user edits a node's markdown output (spec, doc, report) | `MarkdownEditor` + `MarkdownEditorStyles` from `smithers-orchestrator/ui/adapters/markdown-editor` - the shared WYSIWYG (Milkdown Crepe); the user edits the rendered document, **never raw markdown in a `<textarea>`** |
+| The user edits a node's markdown output (spec, doc, report) | `MarkdownEditor` + `MarkdownEditorStyles` from `smithers-orchestrator/ui/adapters/markdown-editor` - the shared WYSIWYG (Milkdown Crepe); the architect edits the rendered document, **never raw markdown in a `<textarea>`** |
 | Rendering a `DiffBundle` for review | `DiffHunks` from `smithers-orchestrator/ui` (`@@`-grouped hunks, dual gutters, add/remove/context coloring, pagination built in) |
 | A conversational workflow (agent questions ↔ user replies) | `ChatTranscript` + `ChatComposer` from `smithers-orchestrator/ui` |
 | Headline counts on an overview | `KpiStat` |
@@ -1088,7 +1088,7 @@ The bundle is one file. Two shipping shapes:
 
 The bundle reads `?runId=<id>` from `location.search` for the run to scope to, and optionally `__SMITHERS_GATEWAY_UI__` (a `GatewayUiBootConfig`) for the mount path, RPC path, WebSocket path, and free-form `props` you set at `gateway.register({ ui: { props } })`.
 
-**Auth.** The bundle never holds a token in the user-facing path. Same-origin Vite proxy (local dev) or a Cloudflare Worker (Smithers Cloud / Plue) terminates the user session, strips and re-injects trusted-proxy headers (`x-user-id`, `x-user-scopes`, `x-user-role`), and forwards `/v1/rpc/*`, `/workflows/*`, `/health` to the Gateway. The Gateway is configured `mode: "trusted-proxy"` (or `mode: "token"` with a Worker-side service credential). For details and a reference Worker, see [Custom Workflow UIs](https://smithers.sh/guides/custom-workflow-ui#smithers-cloud--plue-same-origin-proxy).
+**Auth.** The bundle never holds a token in the architect-facing path. Same-origin Vite proxy (local dev) or a Cloudflare Worker (Smithers Cloud / Plue) terminates the architect session, strips and re-injects trusted-proxy headers (`x-user-id`, `x-user-scopes`, `x-user-role`), and forwards `/v1/rpc/*`, `/workflows/*`, `/health` to the Gateway. The Gateway is configured `mode: "trusted-proxy"` (or `mode: "token"` with a Worker-side service credential). For details and a reference Worker, see [Custom Workflow UIs](https://smithers.sh/guides/custom-workflow-ui#smithers-cloud--plue-same-origin-proxy).
 
 **Local dev.**
 
@@ -1148,9 +1148,9 @@ workflows). Grep there before guessing at an API.'''
 name = "smithers"
 version = "0.1.0"
 description = """
-Drive Smithers, a durable control plane for long-running coding agents. Use when the user wants multi-step, long-running, crash-safe, or human-in-the-loop agent work: "orchestrate agents", "run a workflow", "implement this and review it", "keep iterating until tests pass", "plan then build", or anything that needs retries, approvals, replay, or evals across multiple AI steps. YOU (the agent) run Smithers on the user's behalf; it is not a GUI the human clicks. You are an ORCHESTRATOR: run long-running, multi-step, or background work *through* Smithers, not through your own ad-hoc subagents; spend your
+Drive Smithers, a durable control plane for long-running coding agents. Use when the architect wants multi-step, long-running, crash-safe, or human-in-the-loop agent work: "orchestrate agents", "run a workflow", "implement this and review it", "keep iterating until tests pass", "plan then build", or anything that needs retries, approvals, replay, or evals across multiple AI steps. YOU (the agent) run Smithers on the architect's behalf; it is not a GUI the human clicks. You are an ORCHESTRATOR: run long-running, multi-step, or background work *through* Smithers, not through your own ad-hoc subagents; spend your
  time observing the run and reporting. Also governs DELIVERABLE SHAPE
- even when no workflow is involved: a user-facing report, plan, or
+ even when no workflow is involved: an architect-facing report, plan, or
  architecture document is a self-contained HTML page, and workflow
  UIs are composed from the shipped shared components
  (MarkdownEditor, DiffHunks, chat surfaces, KpiStat, StatusPill,

@@ -132,7 +132,7 @@ layout: center
 
 # Questions?
 
-**Chris Fonnesbeck**
+**the Architect Fonnesbeck**
 
 GitHub: @fonnesbeck
 Fosstodon: @fonnesbeck

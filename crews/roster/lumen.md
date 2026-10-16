@@ -1,7 +1,7 @@
 ---
 crew: 'lumen'
 scope: 'Squawk UI lane (relaunch 2026-10-02): feed serve-stack canonicalization (estate paths, pitchfork launcher hardening) + UI renderer work'
-owner: 'Ember (Chris''s main agent)'
+owner: 'Ember (the Architect''s main agent)'
 status: 'RUNNING (2026-10-02)'
 order: 87
 registered: '2026-10-02'

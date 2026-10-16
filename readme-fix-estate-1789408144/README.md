@@ -169,7 +169,7 @@ bun src/maximal-estate-agentic-audit/src/index.ts -- [--json] [--parquet] [--fix
 
 ### Quickshell Screenshot Integration
 
-The agent captures the user's Hyprland desktop via quickshell (ii rice) snip tool:
+The agent captures the architect's Hyprland desktop via quickshell (ii rice) snip tool:
 
 - `~/.config/quickshell/ii/screenshot-region.sh` — socket-free primary capture (slurp+grim), recursive multifallback, AST-aware snip routing (code/text/image via tesseract+magick)
 - `~/.config/quickshell/ii/modules/common/utils/RecursiveFallback.qml` — QML singleton engine for nested fallback

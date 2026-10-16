@@ -32,6 +32,6 @@ pattern's full detail is needed.
 ## Planning Rules
 
 - Cite patterns that changed the DAG or config, not every potentially relevant pattern.
-- If a pattern conflicts with a user request, surface it as `WARNING:` and propose the least-disruptive fix.
+- If a pattern conflicts with an architect request, surface it as `WARNING:` and propose the least-disruptive fix.
 - Keep pattern names in generated READMEs so reviewers can trace decisions back to catalog rules.
 - For source fallbacks, prefer pattern markdown over generic category README because patterns capture cross-step constraints.

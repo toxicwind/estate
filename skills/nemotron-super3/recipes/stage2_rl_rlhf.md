@@ -53,7 +53,7 @@ The config makes the paper’s RLHF story concrete by showing:
 - an additional tool-use comparison environment,
 - the GenRM serving configuration and router DP size.
 
-If the user wants the implementation proof that RLHF is different from RLVR, cite this config.
+If the architect wants the implementation proof that RLHF is different from RLVR, cite this config.
 
 ---
 

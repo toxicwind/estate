@@ -1,6 +1,6 @@
 # warden-restore-kill
 
-**Scope:** Disable ALL estate-reconcile restore paths — autonomous watch AND manual `--apply` — alert-only everywhere (Chris 2026-09-30: ferrous warden should not restore anything).
+**Scope:** Disable ALL estate-reconcile restore paths — autonomous watch AND manual `--apply` — alert-only everywhere (the Architect 2026-09-30: ferrous warden should not restore anything).
 **Owner / coordinator:** ashen (Ember's crew)
 **Status:** DONE
 

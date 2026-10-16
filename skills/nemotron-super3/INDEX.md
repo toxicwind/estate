@@ -114,7 +114,7 @@ Do not mix these:
 
 The docs explicitly note that released recipes use open-source data subsets and should be treated as **reference implementations**.
 
-If the user asks whether they can reproduce the exact paper numbers, point them to:
+If the architect asks whether they can reproduce the exact paper numbers, point them to:
 
 - `paper/data.md`
 - `recipes/overview.md`

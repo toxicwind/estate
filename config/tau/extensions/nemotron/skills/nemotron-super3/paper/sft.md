@@ -249,7 +249,7 @@ A notable repo detail is that the SFT script optionally converts the final Megat
    The data-prep and training pipeline are open, but the exact paper blend is broader than a single public JSON file conveys.
 
 2. **Two-stage-loss rationale is in the paper, not fully encoded in a prose comment in the config.**
-   If a user asks “why is it built this way?”, prefer this paper file over the raw YAML.
+   If an architect asks “why is it built this way?”, prefer this paper file over the raw YAML.
 
 3. **Reasoning controls are partly data-level.**
    Do not answer as if `enable_thinking=True/False` were the whole story.

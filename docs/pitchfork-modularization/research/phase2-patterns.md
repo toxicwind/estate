@@ -89,7 +89,7 @@ perfect — ownership is by directory entry, there is no shared file.
   path list): generated files attached per project, registered attachments
   override ordinary project files, ancestor attachments load before child ones,
   files within an entry load in listed order. Registered under
-  `[namespaces.<ns>] config=[...]` in the user global config. Designed for
+  `[namespaces.<ns>] config=[...]` in the architect global config. Designed for
   generated files, not hand-written drop-ins — but it is the closest native
   hook and the natural sink for a generated merged config.
 - Upgrading 2.25.0→2.29.0 does **not** change any of this — verified precisely

@@ -7,7 +7,7 @@
 
 # 🔍 tau-session-audit — Intent Reconstruction, Hallucination Detection & Monorepo Health
 
-> **Reconstruct what the user wanted, verify what actually got done, and catch hallucinations in TAU session logs.**
+> **Reconstruct what the architect wanted, verify what actually got done, and catch hallucinations in TAU session logs.**
 
 A production-grade audit engine for `.tau/sessions/` JSONL logs. Reconstructs user intent, verifies genuine task completion vs. model hallucinations, and outputs GitHub-ready Markdown reports with deep links.
 

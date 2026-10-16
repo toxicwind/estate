@@ -1,6 +1,6 @@
 # Remote Execution
 
-Load this reference when the user mentions clusters, Slurm, `env.toml`, `--run`, `--batch`, remote logs, GPU placement, or session-safe long-running jobs.
+Load this reference when the architect mentions clusters, Slurm, `env.toml`, `--run`, `--batch`, remote logs, GPU placement, or session-safe long-running jobs.
 
 ## Profile Checks
 

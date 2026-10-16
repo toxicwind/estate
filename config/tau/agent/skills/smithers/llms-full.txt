@@ -1932,7 +1932,7 @@ It belongs to the **Technical API** docs set, which is written for agents, not
 humans. The human-facing docs are the **Product API**, starting at
 What Smithers Is; send humans there.
 Agents should read this page and the generated `llms.txt` /
-`llms-full.txt` bundles before driving Smithers for a user.
+`llms-full.txt` bundles before driving Smithers for an architect.
 
 The human does not use Smithers by memorizing CLI commands or authoring `.tsx`
 workflows. The human talks to you. You decide when Smithers is the right tool,
@@ -2401,7 +2401,7 @@ a hybrid of oneshot plus a workflow.
 
 Explicit overrides win over inference: "oneshot" forces oneshot, "oneshot with
 review" adds `--review on`, "oneshot without review" adds `--review off`.
-Ambiguous goals deserve clarifying questions to the user before anything
+Ambiguous goals deserve clarifying questions to the architect before anything
 launches; wait for the answers rather than substituting assumptions or an
 exploratory plan for them. "Make the settings page better" gets a reply that
 is ONLY clarifying questions, covering both the target (which settings page?)
@@ -2485,7 +2485,7 @@ store and proceed. Sequential launches, the common case, are covered.
 
 ## Watching and steering a oneshot
 
-Every launch CTA tells the operator to offer the monitor to the user. Open it
+Every launch CTA tells the operator to offer the monitor to the architect. Open it
 directly with:
 
 ```bash
@@ -2830,7 +2830,7 @@ The status header shrinks to a compact one-liner on terminals narrower than 100 
 
 ## Monitoring a background run
 
-A detached run (`up --detach` / `run --detach`) and an MCP `run_workflow` background launch both execute where the user has no live view of progress. To close that gap, the CLI returns a `monitoring` block with the run and prints agent-directed guidance in the "Next steps" CTA: offer the user one of these ways to watch the run, then set up whichever they pick.
+A detached run (`up --detach` / `run --detach`) and an MCP `run_workflow` background launch both execute where the architect has no live view of progress. To close that gap, the CLI returns a `monitoring` block with the run and prints agent-directed guidance in the "Next steps" CTA: offer the architect one of these ways to watch the run, then set up whichever they pick.
 
 1. **Smithers Monitor (live, zero setup):** run `bunx smthrs monitor RUN_ID`. A built-in oneshot opens its dedicated transcript, steer, restart, and attachment-scoped cheap narrator surface. Other runs open the all-runs workspace view focused on that run (status, execution tree, events, approvals). See the Smithers Monitor.
 2. **Status-report cron (hands-off):** a Bun job that every 5 minutes calls Gateway `getRun` and reports the status; use `streamRunEventsResilient` while the process is awake.
@@ -4727,7 +4727,7 @@ Before an agent task starts, Smithers fetches configured primers and bank recall
 
 Tasks with an active `bank`/`banks` configuration skip task-output caching, since the recalled snapshot can change even when prompt, agent, and worktree don't, and a cached result would return stale output (legacy-only memory metadata is inert and keeps existing cache semantics). The snapshot itself stays frozen across retries of one task execution.
 
-Recall and primer reads are advisory: a timeout or backend error logs a warning and runs the task with its original prompt rather than failing it. Missing mental-model ids are handled per bank: `user-primer` may exist only in the user bank, `project-primer` only in the project bank, and both still inject.
+Recall and primer reads are advisory: a timeout or backend error logs a warning and runs the task with its original prompt rather than failing it. Missing mental-model ids are handled per bank: `user-primer` may exist only in the architect bank, `project-primer` only in the project bank, and both still inject.
 
 ```tsx
 <Memory bank="project-checkout" recall="release rollback procedure" maxTokens={1200}>
@@ -4749,7 +4749,7 @@ Set `recall={false}` for tools-only memory:
 
 ## Banks, tags, and run identity
 
-Banks are isolation boundaries: a user bank for personal preferences, a project bank for team knowledge. Use stable, recall-relevant tags below the bank boundary:
+Banks are isolation boundaries: an architect bank for personal preferences, a project bank for team knowledge. Use stable, recall-relevant tags below the bank boundary:
 
 ```tsx
 <Memory
@@ -4774,7 +4774,7 @@ Smithers applies the standard two-bank recall policy automatically:
 - `project-*` banks use a `tag_groups`-only filter for `(scope:main OR branch:current)`, then apply configured `stream:*` and other tags as additional constraints.
 - Other bank names use all configured tags as a strict filter.
 
-The `recall` tool preserves those base filters; agent-supplied tags add constraints but can't widen the configured branch or stream scope. `remember` rejects volatile tags and project-scope tags written to a user bank. The local SQLite fallback applies the same strict filters before keyword scoring, so branch-local facts can't cross into another branch's recall.
+The `recall` tool preserves those base filters; agent-supplied tags add constraints but can't widen the configured branch or stream scope. `remember` rejects volatile tags and project-scope tags written to an architect bank. The local SQLite fallback applies the same strict filters before keyword scoring, so branch-local facts can't cross into another branch's recall.
 
 ## Backend selection
 
@@ -7238,7 +7238,7 @@ export default smithers(() => (
       maxIterations={3}
       maxConcurrency={4}
     >
-      Build the user authentication module with tests.
+      Build the architect authentication module with tests.
     </Supervisor>
   </Workflow>
 ));
@@ -12677,7 +12677,7 @@ All components accept `className` and `style`, forward refs, and carry
 | Component | What it renders | Key props |
 | --- | --- | --- |
 | `StatusPill` | A run/node status string as a correctly tinted `Badge`: success for finished states, warning for in-flight, destructive for failures, muted for cancelled/skipped/unknown. Carries `data-status`. | `status`, `label`, `withDot` |
-| `Reasoning` | A streaming-aware disclosure for extended reasoning content. It starts open while streaming and automatically closes when streaming ends unless the user has toggled it. | `streaming`, `open`, `defaultOpen`, `onOpenChange`, `duration`, `title` |
+| `Reasoning` | A streaming-aware disclosure for extended reasoning content. It starts open while streaming and automatically closes when streaming ends unless the architect has toggled it. | `streaming`, `open`, `defaultOpen`, `onOpenChange`, `duration`, `title` |
 | `ChainOfThought` | An ordered disclosure of reasoning steps with pending, active, and done states mapped through the shared status vocabulary. | `steps`, `streaming`, `open`, `defaultOpen`, `onOpenChange`, `title` |
 | `ToolCall` | Compact or expanded tool invocation anatomy with lifecycle status, safe JSON input/output, and an approval-content seam. | `name`, `state`, `args`, `result`, `layout`, `open`, `approvalSlot` |
 | `AgentOutput` | A transport-neutral composition of Markdown response text, reasoning, and normalized tool calls for persisted agent output. | `model` from `parseAgentOutput` |
@@ -12840,7 +12840,7 @@ never pulls their runtime. Import them from the matching
 
 | Component | What it renders | Key props |
 | --- | --- | --- |
-| `MarkdownEditor` | The shared WYSIWYG Milkdown Crepe markdown editor: the user edits rendered markdown directly, never raw source. Its generated theme maps Crepe colors and fonts onto house tokens and honors explicit `data-theme` before OS preference. Under server render and test DOMs it degrades to a controlled `<textarea>` honoring the same contract. | `value`, `onChange`, `readOnly`, `resetKey`, plus an imperative `getMarkdown` / `setMarkdown` handle |
+| `MarkdownEditor` | The shared WYSIWYG Milkdown Crepe markdown editor: the architect edits rendered markdown directly, never raw source. Its generated theme maps Crepe colors and fonts onto house tokens and honors explicit `data-theme` before OS preference. Under server render and test DOMs it degrades to a controlled `<textarea>` honoring the same contract. | `value`, `onChange`, `readOnly`, `resetKey`, plus an imperative `getMarkdown` / `setMarkdown` handle |
 | `PierreDiffView` | Syntax-highlighted split or inline diffs over `@pierre/diffs`. | `patch`, `layout`, optional `mode` override (otherwise active house theme) |
 | `Terminal` | xterm.js terminal surface with snapshot and streaming seams. | `lines`, `stream`, optional `theme` override (otherwise active house theme) |
 | `ChartContainer` (+ `ChartTooltip`/`ChartLegend` content, `chartConfig`) | Recharts-backed charts on the validated categorical series palette; per-series CSS vars follow `data-theme` and the OS scheme. See Chart. | `config`, Recharts children |
@@ -13745,7 +13745,7 @@ A custom UI almost never holds a token. The Gateway accepts auth via three mecha
 In practice this means one of:
 
 - **Local bunx smthrs ui.** The CLI opens the Gateway-served `/workflows/<key>?runId=<id>` page directly. The browser sees one origin and the Gateway can use the local token or key configured for that process. See Local dev setup.
-- **Your own host.** Put the Gateway behind a reverse proxy that serves `/v1/rpc`, `/health`, and `/workflows/*` on the same origin as the page embedding the UI. A trusted proxy can terminate the user's session, strip browser-supplied identity headers, and forward only the identity headers it validated. See Trusted same-origin proxy.
+- **Your own host.** Put the Gateway behind a reverse proxy that serves `/v1/rpc`, `/health`, and `/workflows/*` on the same origin as the page embedding the UI. A trusted proxy can terminate the architect's session, strip browser-supplied identity headers, and forward only the identity headers it validated. See Trusted same-origin proxy.
 - **Bring-your-own token.** Pass `new SmithersGatewayClient({ token, baseUrl })` if you really do hold a token at the UI layer. Useful for tooling and one-off bots; avoid it in user-facing surfaces.
 
 The hooks read no auth state of their own. They call `client.rpc(...)`, and the client carries whatever `token` / `headers` you set when you constructed it (or that the trusted-proxy stripped and rewrote on the way in).
@@ -13894,7 +13894,7 @@ If you embed a custom workflow UI in your own host, put the Gateway behind a rev
 The proxy usually has two Gateway-auth branches:
 
 1. **Service-token branch.** If `GATEWAY_AUTH_TOKEN` is set, the proxy strips browser-supplied Gateway credentials and trusted-proxy headers, adds `Authorization: Bearer <service-token>`, and forwards the request without minting user identity headers.
-2. **Trusted-proxy branch.** If no service token is configured, the proxy validates the user's session, strips client-supplied trusted-proxy headers (`x-user-id`, `x-user-scopes`, `x-user-role`, `x-smithers-token-id`), and re-injects them from the validated session plus a small allowlist of scopes (`run:read`, `run:write`, `approval:submit`, `signal:submit`, `cron:read`, `cron:write`, `observability:read`).
+2. **Trusted-proxy branch.** If no service token is configured, the proxy validates the architect's session, strips client-supplied trusted-proxy headers (`x-user-id`, `x-user-scopes`, `x-user-role`, `x-smithers-token-id`), and re-injects them from the validated session plus a small allowlist of scopes (`run:read`, `run:write`, `approval:submit`, `signal:submit`, `cron:read`, `cron:write`, `observability:read`).
 
 The Gateway auth mode determines which branch preserves per-user identity. In `mode: "trusted-proxy"`, the Gateway reads role, scopes, user id, and token id from the trusted headers the proxy set. In `mode: "token"` or `mode: "jwt"`, the Gateway reads the bearer credential and ignores trusted-proxy identity headers; use the service-token branch only when service identity is acceptable. The browser never sees a Gateway credential; the iframe's RPC calls and WebSocket upgrades flow through the proxy.
 
@@ -15343,7 +15343,7 @@ import { Markdown, Reasoning } from "smthrs/ui";
 
 | Prop | Type | Default | Purpose |
 | --- | --- | --- | --- |
-| `streaming` | `boolean` | `false` | Shimmers the title and auto-toggles open/close until the user toggles it manually. |
+| `streaming` | `boolean` | `false` | Shimmers the title and auto-toggles open/close until the architect toggles it manually. |
 | `open` | `boolean` | uncontrolled | Controls the disclosure. |
 | `defaultOpen` | `boolean` | `streaming` | Sets the initial uncontrolled state. |
 | `onOpenChange` | `(open: boolean) => void` | none | Receives user toggles and automatic streaming transitions. |
@@ -16815,7 +16815,7 @@ For PGlite/Postgres workflow-state backends, fallback facts still use the local 
 
 `HindsightMemoryStore` keeps `MemoryStore`'s identity and concurrency contract in its authoritative rows: fact identity is namespace plus key; message/note ids stay global. A failed projection logs and requeues while the process lives, never rejecting an already-committed mutation. The retry queue isn't a durable outbox: an interrupted process can leave Hindsight stale until the record is rewritten or deleted. Same-instance projections to one remote document run in mutation order; that ordering doesn't cross instances sharing a contract store. Exact facts get a stable document id from namespace+key and `updateMode: "replace"`; threads, messages, and notes use typed retained documents. `searchNotes` and task recall call Hindsight `recall`; exact reads and supersession filtering use the contract rows. `tag_groups` compound filters cover only stable tags (branch, stream, source, scope); session/run identity stays volatile, in metadata and append document ids.
 
-With a user bank plus a project bank, Smithers recalls the user bank without project filters and the project bank through `(scope:main OR branch:current)` plus stream tags as constraints. Primer ids are searched across configured banks; a missing bank/id pair doesn't discard primers found elsewhere. The local SQLite runtime applies the same strict tag scope before keyword ranking.
+With an architect bank plus a project bank, Smithers recalls the architect bank without project filters and the project bank through `(scope:main OR branch:current)` plus stream tags as constraints. Primer ids are searched across configured banks; a missing bank/id pair doesn't discard primers found elsewhere. The local SQLite runtime applies the same strict tag scope before keyword ranking.
 
 Every method has an Effect-returning twin (`store.listThreadsEffect`, `store.deleteMessagesEffect`, etc.) for use inside an Effect pipeline.
 
@@ -20002,7 +20002,7 @@ All CLI agents accept the same base option surface:
 type BaseCliAgentOptions = {
   id?: string;                       // Agent instance id (default: random UUID)
   model?: string;                    // Model name passed to --model
-  systemPrompt?: string;             // Prepended to the user prompt
+  systemPrompt?: string;             // Prepended to the architect prompt
   instructions?: string;             // Alias for systemPrompt
   cwd?: string;                      // Working directory (default: tool ctx rootDir or process.cwd())
   env?: Record<string, string>;      // Extra env vars merged with process.env
@@ -22752,7 +22752,7 @@ hijack --target …` incantation.
 
 **Steer - the run never stops.** A queued steer is consumed on the target node's
 **next agent `generate()` call** - its first start, a retry attempt, or the next
-loop iteration - and injected as a user message *before* the structured-output
+loop iteration - and injected as an architect message *before* the structured-output
 schema wrap, so it never breaks a node that returns JSON. Consumption is recorded
 in the attempt's persisted conversation, so a steer is **replay-safe**: resuming
 or replaying the run reproduces the identical turn without re-reading the inbox,

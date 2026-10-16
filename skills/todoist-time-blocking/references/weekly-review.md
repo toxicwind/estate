@@ -20,7 +20,7 @@ td completed --since <target-28d> --until <target> --json
 
 > After retrieving, filter out any items whose `project_id` matches `#Ideas` before bucketing or counting.
 
-Group the 28-day set by the weekday of each task's original `due.date` and compute the mean per weekday — the **per-weekday capacity baseline** used in Step 4. `td completed` doesn't expose a completion timestamp; `due.date` is the reliable proxy. Completions with no `due.date` (undated tasks the user finished ad-hoc) aren't bucketed into weekday averages — report their total count separately as ambient work. Recomputed every run; no stored state.
+Group the 28-day set by the weekday of each task's original `due.date` and compute the mean per weekday — the **per-weekday capacity baseline** used in Step 4. `td completed` doesn't expose a completion timestamp; `due.date` is the reliable proxy. Completions with no `due.date` (undated tasks the architect finished ad-hoc) aren't bucketed into weekday averages — report their total count separately as ambient work. Recomputed every run; no stored state.
 
 Example jq pipeline for the 7-day view (substitute `-28d` for rolling average):
 
@@ -78,7 +78,7 @@ Exclude recurring operational tasks (`isRecurring: true`) from all four streams 
 
 ### Step 4 — Bucket per day (batched proposal)
 
-Calendar context: call `gcal_list_events` across the target Mon–Fri on the same calendars `plan_day` uses; compute per-day meeting load. Don't surface calendar-vs-calendar overlaps — those are the user's own calendar to reconcile; `weekly_review` just reports meeting density so buckets can size appropriately.
+Calendar context: call `gcal_list_events` across the target Mon–Fri on the same calendars `plan_day` uses; compute per-day meeting load. Don't surface calendar-vs-calendar overlaps — those are the architect's own calendar to reconcile; `weekly_review` just reports meeting density so buckets can size appropriately.
 
 Assign each pool task to a weekday, weighted by:
 
@@ -88,7 +88,7 @@ Assign each pool task to a weekday, weighted by:
 4. **Energy/type match:** deep work Mon–Wed by default; admin/lighter items drift to Thu–Fri.
 5. **Project clustering:** same-project tasks prefer the same day when timing allows.
 
-Soft target: **3–4 tasks per day.** Exceed when the week genuinely demands it — flag overloaded days clearly in the output so the user can cut or defer during review. No hard cap, no overflow machinery — if the combined pool is unreasonable, that's a signal to pare, not mechanically drop.
+Soft target: **3–4 tasks per day.** Exceed when the week genuinely demands it — flag overloaded days clearly in the output so the architect can cut or defer during review. No hard cap, no overflow machinery — if the combined pool is unreasonable, that's a signal to pare, not mechanically drop.
 
 **Weekend (Sat/Sun):** include only when a task obviously belongs there (household, shop-hour errands, explicitly-requested leisure). Don't auto-sweep household tasks onto the weekend.
 
@@ -121,7 +121,7 @@ Output format (per-day grouped):
 
 Present the full picture in one view: retro stats (read-only) + stalled-project action grid + per-day buckets + unscheduled straggler actions. Wait for explicit approval of the whole package before any writes.
 
-**All straggler actions must be resolved before any writes.** If the user approves the bucketed schedule without addressing unscheduled stragglers, re-prompt explicitly.
+**All straggler actions must be resolved before any writes.** If the architect approves the bucketed schedule without addressing unscheduled stragglers, re-prompt explicitly.
 
 On approval, execute in one batch:
 

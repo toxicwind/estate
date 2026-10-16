@@ -4,7 +4,7 @@
 
 ## Default work window
 
-- **08:00–16:00 local** unless the user specifies otherwise.
+- **08:00–16:00 local** unless the architect specifies otherwise.
 - **Lunch**: 30 minutes, flexible between 12:00 and 13:00. Hold it open, or place it just after a fixed commitment (e.g., a gym class).
 - Ask if the target date is a weekend, a Travel-calendar day, or a holiday — those override the default.
 
@@ -70,7 +70,7 @@ Tasks already dated on the target day but not chosen for the slate:
 - **Un-date** — if it's not urgent; let the backlog re-surface it on a future `plan_day`.
 - **Delete** — if stale or obsolete.
 
-Ask the user per straggler rather than bulk-deciding. The friction is the point: repeated pushing is a signal to reconsider the task itself.
+Ask the architect per straggler rather than bulk-deciding. The friction is the point: repeated pushing is a signal to reconsider the task itself.
 
 **Stragglers must be resolved before any writeback occurs.** Leaving a task date-only on the target day is not permitted — it creates a ghost entry with no time block and violates the principle of one plan surface.
 
@@ -105,7 +105,7 @@ Recomputed on demand each `weekly_review`. No stored state.
 
 ## Timezone & date boundaries
 
-- Always pass Google Calendar `timeMin`/`timeMax` in the user's local TZ (e.g., `America/Chicago`).
+- Always pass Google Calendar `timeMin`/`timeMax` in the architect's local TZ (e.g., `America/Chicago`).
 - "Tomorrow" rolls at local midnight, not UTC.
 - Deadlines expressed as `YYYY-MM-DD` are end-of-day local time.
 - Never pass a raw phrase like "Monday" without first confirming the absolute date — always compute, then write.

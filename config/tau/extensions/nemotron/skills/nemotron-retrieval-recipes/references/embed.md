@@ -26,7 +26,7 @@ Load this reference for `nemotron embed ...` work or for questions about first-s
 
 ## When To Use Embed
 
-Use embedding fine-tuning when relevant documents are not retrieved into the candidate set, Recall@k is low, domain terms are poorly matched, or the user needs a better first-stage retrieval model. Embedding changes usually require re-embedding and re-indexing the deployment corpus.
+Use embedding fine-tuning when relevant documents are not retrieved into the candidate set, Recall@k is low, domain terms are poorly matched, or the architect needs a better first-stage retrieval model. Embedding changes usually require re-embedding and re-indexing the deployment corpus.
 
 ## Commands
 
@@ -73,7 +73,7 @@ uv run nemotron embed finetune -c default --batch my-cluster
 
 ## Data And Credential Safety
 
-Stage 0 SDG can transmit the user's text corpus or fetched HF corpus content to NVIDIA-hosted API endpoints for synthetic data generation. Before running SDG on proprietary, confidential, regulated, or customer data, confirm the user's data-governance policy permits that transfer; otherwise use an approved private or air-gapped path.
+Stage 0 SDG can transmit the architect's text corpus or fetched HF corpus content to NVIDIA-hosted API endpoints for synthetic data generation. Before running SDG on proprietary, confidential, regulated, or customer data, confirm the architect's data-governance policy permits that transfer; otherwise use an approved private or air-gapped path.
 
 Protect `NVIDIA_API_KEY` and `NGC_API_KEY` as secrets. The default
 Stage 0 profile uses Data Designer's built-in endpoint unless
@@ -176,7 +176,7 @@ uv run nemotron embed deploy -c llama -d
 
 ## Operating Patterns
 
-- Skip SDG when the user already has generated QA pairs or wants NVIDIA's pre-generated dataset; start Stage 1 with `sdg_input_path`.
+- Skip SDG when the architect already has generated QA pairs or wants NVIDIA's pre-generated dataset; start Stage 1 with `sdg_input_path`.
 - For production-like chunks, align `sentences_per_chunk`, `passage_max_length`, and eval `max_length` with expected retrieval chunks.
 - If increasing sequence length, reduce batch sizes before attempting to recover from OOM.
 - Mine at least as many hard negatives as Stage 2 will consume: `hard_negatives_to_mine >= train_n_passages - 1`.

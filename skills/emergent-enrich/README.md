@@ -12,7 +12,7 @@ Provides a routed approach to emergent research enrichment — starting with fre
 
 - **Free-first routing order**: GitHub code search → arXiv → OpenAlex → Semantic Scholar → Exa (last resort)
 - **No-auth paper legs**: arXiv, OpenAlex, and Semantic Scholar all work without authentication; generous free limits
-- **Exa with explicit opt-in**: Only when `--exa-ok` is passed, which requires the user's explicit approval for that call
+- **Exa with explicit opt-in**: Only when `--exa-ok` is passed, which requires the architect's explicit approval for that call
 - **JSON output**: Per-source blocks with relevance and a `credits_spent` flag tracking cost
 - **Shared arXiv rate limiter**: One budget across both `emergent-enrich` and `arxiv-mcp` skills
 - **Dynamic credentials**: Hatch cell surrogate auth is optional; on hosts without /opt/hatch (e.g. awrawr-pc), authenticated legs degrade gracefully and all keyless paper legs keep working

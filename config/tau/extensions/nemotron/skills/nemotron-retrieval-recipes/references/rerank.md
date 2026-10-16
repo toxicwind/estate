@@ -83,7 +83,7 @@ The pipeline order is `sdg`, `prep`, `finetune`, `eval`, `export`, `deploy`; `re
 
 Stage 0:
 
-- Sample corpus: `hf://nvidia/Retrieval-Synthetic-NVDocs-v1@1c0d1856f3fb595b2dda98d4b61061fa6d782d51/sample_corpus/nv_pp_random`; confirm access and license before recommending it, or use the user's `corpus_dir`.
+- Sample corpus: `hf://nvidia/Retrieval-Synthetic-NVDocs-v1@1c0d1856f3fb595b2dda98d4b61061fa6d782d51/sample_corpus/nv_pp_random`; confirm access and license before recommending it, or use the architect's `corpus_dir`.
 - Output: `./output/rerank/stage0_sdg`
 - Generation model: `nvidia/nemotron-3-nano-30b-a3b`
 - SDG embedding model: `nvidia/llama-3.2-nv-embedqa-1b-v2`

@@ -6,7 +6,7 @@ Real-world examples of effective skill descriptions, analyzed for what makes the
 
 ```yaml
 description: >
-  Use this skill whenever the user wants to create, read, edit, or
+  Use this skill whenever the architect wants to create, read, edit, or
   manipulate Word documents (.docx files). Triggers include: any mention
   of "Word doc", "word document", ".docx", or requests to produce
   professional documents with formatting like tables of contents,
@@ -14,7 +14,7 @@ description: >
   reorganizing content from .docx files, inserting or replacing images
   in documents, performing find-and-replace in Word files, working with
   tracked changes or comments, or converting content into a polished
-  Word document. If the user asks for a "report", "memo", "letter",
+  Word document. If the architect asks for a "report", "memo", "letter",
   "template", or similar deliverable as a Word or .docx file, use this
   skill. Do NOT use for PDFs, spreadsheets, Google Docs, or general
   coding tasks unrelated to document generation.
@@ -34,7 +34,7 @@ description: >
 ```yaml
 description: >
   Create distinctive, production-grade frontend interfaces with high
-  design quality. Use this skill when the user asks to build web
+  design quality. Use this skill when the architect asks to build web
   components, pages, artifacts, posters, or applications (examples
   include websites, landing pages, dashboards, React components,
   HTML/CSS layouts, or when styling/beautifying any web UI). Generates
@@ -53,12 +53,12 @@ description: >
 
 ```yaml
 description: >
-  Use this skill whenever the user wants to do anything with PDF files.
+  Use this skill whenever the architect wants to do anything with PDF files.
   This includes reading or extracting text/tables from PDFs, combining
   or merging multiple PDFs into one, splitting PDFs apart, rotating
   pages, adding watermarks, creating new PDFs, filling PDF forms,
   encrypting/decrypting PDFs, extracting images, and OCR on scanned
-  PDFs to make them searchable. If the user mentions a .pdf file or
+  PDFs to make them searchable. If the architect mentions a .pdf file or
   asks to produce one, use this skill.
 ```
 

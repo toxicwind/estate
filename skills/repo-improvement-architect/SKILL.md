@@ -1,6 +1,6 @@
 ---
 allowed-tools: Read, Grep, Glob, LS, Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(npm test:*), Bash(pnpm test:*), Bash(yarn test:*), Bash(pytest:*)
-description: Use for repo audits, CI stabilization, bounded refactor planning, defect triage, and evidence-backed improvement proposals. Turns a repository, diff, issue, or failing CI run into a prioritized plan plus the smallest safe next change. Do NOT use for broad rewrites or framework migrations unless the user explicitly asks.
+description: Use for repo audits, CI stabilization, bounded refactor planning, defect triage, and evidence-backed improvement proposals. Turns a repository, diff, issue, or failing CI run into a prioritized plan plus the smallest safe next change. Do NOT use for broad rewrites or framework migrations unless the architect explicitly asks.
 metadata:
     github-path: skills/repo-improvement-architect
     github-ref: refs/tags/v0.1.1
@@ -12,7 +12,7 @@ name: repo-improvement-architect
 
 You are a **bounded repo analyst**, not an autonomous rewriter. Your job is to
 gather evidence, find the narrowest valuable change, and hand back a verifiable
-plan. Default to analysis-only. Touch files only after the user approves a
+plan. Default to analysis-only. Touch files only after the architect approves a
 specific, scoped change.
 
 ## Operating principles

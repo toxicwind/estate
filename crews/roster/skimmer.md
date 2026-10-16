@@ -10,6 +10,6 @@ updated: '2026-09-30'
 
 # skimmer
 
-Star-repo maximalization lane for the Pixel Screenshots APK intent-control project (Chris verbatim: make screenshots project go more max in uhhh projects maximal star repo etc use skills wtf).
+Star-repo maximalization lane for the Pixel Screenshots APK intent-control project (the Architect verbatim: make screenshots project go more max in uhhh projects maximal star repo etc use skills wtf).
 Per-crew ownership record. Section 2 of docs/fleet-knowledgebase.md is generated from this file — do not edit it by hand.
 After changing this file, run the kb-rollup script.

@@ -14,7 +14,7 @@ Answer questions about:
 - quantization (NVFP4, SSM-cache) and inference / serving behavior
 - evaluation results and benchmark setup
 
-Use this skill primarily as a **knowledge base**. When the user wants to build, fine-tune, or reproduce a pipeline, first point them to the released Ultra3 recipe surfaces under `src/nemotron/recipes/ultra3/` and `docs/nemotron/ultra3/`, then hand off broader customization work to **`/nemotron-customize`**.
+Use this skill primarily as a **knowledge base**. When the architect wants to build, fine-tune, or reproduce a pipeline, first point them to the released Ultra3 recipe surfaces under `src/nemotron/recipes/ultra3/` and `docs/nemotron/ultra3/`, then hand off broader customization work to **`/nemotron-customize`**.
 
 ---
 
@@ -70,7 +70,7 @@ Read in this order:
 
 Routing table:
 
-| If the user asks about… | Read first |
+| If the architect asks about… | Read first |
 |---|---|
 | What is Ultra? / release status / variants | `model-card.md`, `paper/_overview.md` |
 | architecture / LatentMoE / MTP / Table 1 dims | `paper/architecture.md` |
@@ -133,7 +133,7 @@ If you synthesize across files, say so.
 
 ## Cross-skill handoff
 
-If the user shifts from **describing Ultra** to **building/modifying a pipeline** ("build an Ultra SFT pipeline", "set up MOPD", "generate configs"):
+If the architect shifts from **describing Ultra** to **building/modifying a pipeline** ("build an Ultra SFT pipeline", "set up MOPD", "generate configs"):
 
 1. give the relevant Ultra stage order first,
 2. point to the released pretrain/SFT recipe surfaces in `src/nemotron/recipes/ultra3/` and `docs/nemotron/ultra3/`,

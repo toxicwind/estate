@@ -57,7 +57,7 @@ They do **not** promise:
 - exact cluster scale and internal infra used for all reported results
 - exact published scores from a public clean-room rerun
 
-That boundary should be stated clearly whenever the user asks about “reproducing the paper.”
+That boundary should be stated clearly whenever the architect asks about “reproducing the paper.”
 
 ## Where the Public Repo Is Especially Close to the Paper
 
@@ -94,7 +94,7 @@ So the right framing is:
 
 ## Reproduce with nemotron-customize
 
-Use this map when the user shifts from “what is Nano3?” to “help me build something like Nano3.”
+Use this map when the architect shifts from “what is Nano3?” to “help me build something like Nano3.”
 
 | Goal | `nemotron-customize` path |
 |---|---|
@@ -110,7 +110,7 @@ Use this map when the user shifts from “what is Nano3?” to “help me build 
 ## Important Gaps and Maturity Notes
 
 `src/nemotron/steps/STEPS.md` does **not** currently expose a catalog `pretrain/*` step.
-So when a user wants to build Nano3-like pretraining with `/nemotron-customize`:
+So when an architect wants to build Nano3-like pretraining with `/nemotron-customize`:
 
 - treat stage0 as an **Explorer-mode** or direct recipe task
 - ground on `src/nemotron/recipes/nano3/stage0_pretrain/`
@@ -123,7 +123,7 @@ For RL, use `rl/nemo_rl/rlvr` as the catalog step and keep Nano3-specific detail
 
 ## Recommended Answer Pattern
 
-When the user asks a reproduction question, answer in this order:
+When the architect asks a reproduction question, answer in this order:
 
 1. **Paper answer** — what the report says
 2. **Public recipe answer** — what the repo exposes

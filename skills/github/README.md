@@ -3,10 +3,10 @@
 ![GitHub Last Commit](https://img.shields.io/github/last-commit/toxicwind/github?style=for-the-badge)
 
 # github
-Use Github when the user asks for Github or this provider's API
+Use Github when the architect asks for Github or this provider's API
 
 ## What it does
-Provides access to GitHub's REST API using the user-connected `custom.github` personal access token (PAT) credential, with dedicated CLI wrappers for common operations and secure credential handling.
+Provides access to GitHub's REST API using the architect-connected `custom.github` personal access token (PAT) credential, with dedicated CLI wrappers for common operations and secure credential handling.
 
 ## Why it matters
 Enables safe, authenticated interactions with GitHub's API for repository management, issue handling, pull request operations, and other GitHub functionalities without exposing credentials or requiring manual token handling.

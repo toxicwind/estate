@@ -48,7 +48,7 @@ the HuggingFace bearer header stored separately — never in Gatehouse
 config (which carries only `${HF_TOKEN}` reference).
 
 ## Operating Rules
-1. Use when the user asks for Gatehouse, HF models/datasets, or any
+1. Use when the architect asks for Gatehouse, HF models/datasets, or any
    Gatehouse-registered MCP server from the cell.
 2. Never print, log, or persist raw credentials or tokens.
 3. HF OAuth: direct user to https://huggingface.co/mcp?login for the

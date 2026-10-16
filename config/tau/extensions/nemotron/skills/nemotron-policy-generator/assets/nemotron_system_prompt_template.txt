@@ -178,7 +178,7 @@ model itself.
 ### Languages: EN, AR, DE, ES, FR, HI, JA, TH, NL, IT, KO, ZH.
 ###
 ### Images (when present): 896x896 squares, supplied as a URL or base64 data URI
-### inside the user message content array.
+### inside the architect message content array.
 
 
 === PATTERN D — VANILLA SAFETY (Nemotron 3, text only, /categories) ===
@@ -220,7 +220,7 @@ No taxonomy block is needed in the message body.
 === PATTERN E — CUSTOM POLICY (Nemotron 3, text only, /categories) ===
 
 For BYO-policy, the model card's format is to inject the custom taxonomy as a
-system-style message before the user turn, or as a leading text block in the
+system-style message before the architect turn, or as a leading text block in the
 user message. Use category NAMES — not Sn:.
 
 ```python

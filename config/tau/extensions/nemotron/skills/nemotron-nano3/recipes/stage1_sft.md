@@ -122,8 +122,8 @@ This stage maps cleanly to catalog steps:
 
 Optional surrounding steps:
 
-- `convert/hf_to_megatron` if the user starts from released HF weights instead of a Megatron checkpoint
-- `sft/automodel` if the user wants a smaller-GPU or LoRA-first path rather than Megatron SFT
+- `convert/hf_to_megatron` if the architect starts from released HF weights instead of a Megatron checkpoint
+- `sft/automodel` if the architect wants a smaller-GPU or LoRA-first path rather than Megatron SFT
 
 ## Good Handoff Pattern
 

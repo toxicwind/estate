@@ -23,7 +23,7 @@ Read these first:
 - `ARTIFACTS.md`
 - `PATTERNS.md`
 - `HARDWARE.md` when hardware is in scope
-- `COMMANDS.md` when the user asks for runnable commands
+- `COMMANDS.md` when the architect asks for runnable commands
 
 Verify via the CLI when available. If `CATALOG.md` already identifies a single
 step, skip broad list calls and go straight to `steps show <step_id>`.
@@ -44,11 +44,11 @@ category/step READMEs only as fallback for nuance not already captured in
 bundled references.
 
 Before planning, collect the selected-step constraints from `COMMANDS.md` and
-the user's goal. Ask for missing values instead of assuming them.
+the architect's goal. Ask for missing values instead of assuming them.
 
 ## Phase 2: Plan
 
-Produce a markdown plan the user reviews before code or config changes.
+Produce a markdown plan the architect reviews before code or config changes.
 
 Include:
 

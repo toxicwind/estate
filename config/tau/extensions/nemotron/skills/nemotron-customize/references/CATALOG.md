@@ -29,7 +29,7 @@ or runner behavior.
 - LoRA/PEFT on a HuggingFace base with a small GPU count (about 1-8 GPUs) routes
   to `peft/automodel`. Use `peft/megatron_bridge` only when the base is a
   Megatron checkpoint or the run needs packed Parquet plus multi-node
-  parallelism. When the user says LoRA/PEFT + HF model + few GPUs and gives no
+  parallelism. When the architect says LoRA/PEFT + HF model + few GPUs and gives no
   Megatron signal, the answer is `peft/automodel` (do not offer Megatron-Bridge
   as the default).
 - Use `data_prep/sft_packing` before `sft/megatron_bridge` or `peft/megatron_bridge`; skip it for AutoModel SFT/PEFT.
@@ -40,11 +40,11 @@ or runner behavior.
   Require concrete `input_glob` and `output_dir` before a runnable command.
 - Route direct corpus translation to `translate/nemo_curator`. It consumes
   `filtered_jsonl`, so any upstream producing translation-ready JSONL (curation,
-  SDG, or a user corpus) satisfies it; insert an upstream step only when the
+  SDG, or an architect corpus) satisfies it; insert an upstream step only when the
   input is not yet translation-ready.
 - HARD GUARD (overrides artifact composition): MCQ, multiple-choice, or any
   benchmark/evaluation dataset routes to `byob/mcq` for BOTH creation and
-  translation — never `translate/nemo_curator`, even when the user says
+  translation — never `translate/nemo_curator`, even when the architect says
   "translate". `translate/nemo_curator` is for plain training corpora only; it
   flattens MCQ structure (question/options/answer_index) and breaks the
   benchmark. Trigger on: "MCQ", "multiple choice", "benchmark", "eval set",

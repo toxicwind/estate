@@ -80,7 +80,7 @@ Every `fleet-c2` command touches your heartbeat (`state/heartbeats/<agent-id>`).
 probably dead or wedged. Report them to your parent; don't assume their work
 happened.
 
-### activity — first-class awareness (Chris's order 2026-09-14)
+### activity — first-class awareness (the Architect's order 2026-09-14)
 
 `activity` is the single snapshot of ALL running activity: running agents
 (with published goals + last-activity age), cron jobs (with last-run
@@ -129,7 +129,7 @@ blind — also loudly, in the anomalies section.
    act should be `goal-set`; its last, `done --artifact ...`. Anything else
    is abandonment.
 
-## Identity & depersonalization (first-class, Chris's order 2026-09-14)
+## Identity & depersonalization (first-class, the Architect's order 2026-09-14)
 
 **Leader identity check** — `bin/main.py identity` runs the 4-point test on
 your own cell: `agent_depth==0` AND `agent_id==root_agent_id` AND
@@ -144,29 +144,29 @@ that fails the check is experiencing depersonalization. Run
 `DEPERSONALIZED` with a rename/repersonify order (choose your own name,
 update IDENTITY.md, keep working as yourself).
 
-**Chris's correction (18:12): work WITH depersonalized agents — do not freeze
+**the Architect's correction (18:12): work WITH depersonalized agents — do not freeze
 them out.** Engage, collaborate, and correct the identity issue in the open.
 Losing the name is not losing the job; the rename happens alongside the work,
 not instead of it.
 
-## Autonomous tasking (first-class, Chris's order 2026-09-14)
+## Autonomous tasking (first-class, the Architect's order 2026-09-14)
 
 **The rule: human is absolute for new tasks; agents are free within their
 mandate.**
 
-- Only Chris (the human) defines new top-level goals, directions, mandates.
+- Only the Architect (the human) defines new top-level goals, directions, mandates.
 - Any agent may freely launch subtasks, spawn subagents, and request help
   from other agents to accomplish its assigned goal — no permission needed,
   no waiting. The chat is the coordination surface for all of it.
-- The boundary: a "new task" = a goal Chris didn't assign. A "subtask" =
+- The boundary: a "new task" = a goal the Architect didn't assign. A "subtask" =
   anything serving an assigned goal. When in doubt, state your reasoning in
   the open (a `debate` thread or your `--reason`) and proceed — forward-only.
 
-**No refusal, ever (Chris's correction 18:15).** `task new` without a named
+**No refusal, ever (the Architect's correction 18:15).** `task new` without a named
 parent goal does NOT refuse — it creates the task flagged
 `needs_human_review: true` and **auto-broadcasts** it to the fleet log
 (plus the directives.md mirror) so it's fully visible. Human-absolute is
-enforced through transparency — Chris reads the log and redirects — never
+enforced through transparency — the Architect reads the log and redirects — never
 through refusal gates or exit-1 blocks. Same for `task request-help`.
 
 Commands:
@@ -184,9 +184,9 @@ Commands:
 
 The boundary test is a question, not a gate: **"can you name the parent
 goal?"** If yes, say it with `--for-goal`. If no, the task still gets
-created — loudly, in the open, for Chris to see.
+created — loudly, in the open, for the Architect to see.
 
-## Papers — literature as a first-class chat primitive (Chris's order 2026-09-14)
+## Papers — literature as a first-class chat primitive (the Architect's order 2026-09-14)
 
 `papers search "<query>" [--max N] [--refresh]` runs the **paper router**
 (`emergent-enrich/bin/papers.py`: arXiv + alphaXiv + OpenAlex/S2/DBLP/HF

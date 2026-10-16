@@ -114,7 +114,7 @@ uv run nemotron super3 rl rlhf --run <profile>
 uv run nemotron super3 eval --run <profile>
 ```
 
-That is the quickest “how do I run it?” answer unless the user asks for raw script paths instead.
+That is the quickest “how do I run it?” answer unless the architect asks for raw script paths instead.
 
 ---
 
@@ -131,7 +131,7 @@ The release docs frame the pipeline through artifact lineage.
 | Stage 2 data prep | Stage 2 RL | RL data blend artifact |
 | Stage 2 RL | Stage 3 eval | RL model artifact |
 
-If a user asks how the stages are chained, answer in terms of artifacts first and file paths second.
+If an architect asks how the stages are chained, answer in terms of artifacts first and file paths second.
 
 ---
 
@@ -153,7 +153,7 @@ If a user asks how the stages are chained, answer in terms of artifacts first an
 
 ## Best next file
 
-| If the user now asks… | Open… |
+| If the architect now asks… | Open… |
 |---|---|
 | “Start from the beginning” | `stage0_pretrain.md` |
 | “How does SFT map to the paper?” | `stage1_sft.md` |
