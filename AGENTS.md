@@ -68,6 +68,33 @@
 | awrawr-mcp | `127.0.0.1:25198` | live + auth-gated (stale-definition bug) |
 | deep-paper-reader | `/home/toxic/src/local/deep-paper-reader` | paper-poller :25149/:25150 |
 
+
+
+## MCP servers + doorbell (2026-10-16)
+
+- **Config: `/home/toxic/config/.mcp.json`** — 13 servers registered
+  (grasp-hub, agent-mcp-gateway, fleet-bus-mcp, websearch-mcp,
+  agent-orchestration, hatch-mcp, mise-mcp-server, vram-mcp, redis-mcp,
+  sqlite-mcp, filesystem, context7, sequential-thinking-thin).
+  agent-mcp-gateway reads this file to discover servers; missing it caused
+  8760+ retry loops. All paths verified to exist on disk.
+- **grasp-hub MCP** (`/home/toxic/estate/grasp-hub/mcp/server.ts`) — healthy,
+  7 tools (skills_list, stats, validate, route, paper-match, papers,
+  registry_search). Read-only, wraps the skills-hub CLI.
+- **Doorbell health**: `doorbell-upstream_servers list` shows enabled/
+  quarantined/healthy state per server. Unhealthy servers retry forever
+  (agent-mcp-gateway was at 8760 retries before `.mcp.json` was created).
+- **Guide convention REQUIRED** for every MCP drop-in server:
+  `ranch/mcp-dropin-guide` (github: toxicwind/mcp-dropin-guide):
+  R-1xx Transport & Framing (Content-Length, dual input framing,
+  protocolVersion 2024-11-05), R-2xx Tool Definitions (schemas, descriptions,
+  confirm:true for mutating), R-3xx Registration & doorbell (`.mcp.json`,
+  unique names, health checks), R-4xx Code Quality (LF+ASCII, machine gate).
+  Scaffold with the `guide-project-creator` skill.
+- **R-503 autonomous enforcement**: `bin/r503-forge.sh` scans for hardcoded
+  `github.com/<owner>/<repo>` URLs in ts/py/sh/json/yaml — reference repos by
+  local path, resolve via `git -C <path> remote get-url origin`.
+
 `/home/toxic/sovereign/` does not exist (renamed to `estate`, commit `6af2094`).
 UUID-prefixed scratch under `/home/toxic/` only; nothing precious in `/tmp`.
 
