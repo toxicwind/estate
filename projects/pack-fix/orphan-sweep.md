@@ -12,7 +12,7 @@ process-orphan audit. This doc is the evidence log for this run.
 
 | pid | process | evidence | disposition |
 |-----|---------|----------|-------------|
-| 241217 | `python3 /tmp/dir-trap.py` | inotify trap watching `/home/toxic/sovereign/hatch/agents/ember/squawk-root` + `/home/toxic/.fleet-bus/squawk-root` (same target now). Log `/tmp/dir-trap.log` deleted; stdout `/tmp/dir-trap.out` 0 bytes. Migration it watched is committed (`5d8a02b4b3`). Redundant diagnostic. | **GONE by ~15:32** — cleaned by another fleet agent during the beat window |
+| 241217 | `python3 /tmp/dir-trap.py` | inotify trap watching `/home/toxic/estate/hatch/agents/ember/squawk-root` + `/home/toxic/.fleet-bus/squawk-root` (same target now). Log `/tmp/dir-trap.log` deleted; stdout `/tmp/dir-trap.out` 0 bytes. Migration it watched is committed (`5d8a02b4b3`). Redundant diagnostic. | **GONE by ~15:32** — cleaned by another fleet agent during the beat window |
 | 3427996/7 | `nginx -c /tmp/nginx-8901.conf` | 33h old, serving `kodi-fleet/releases` which **does not exist**; access log = only 404 probes. No repo refs to port 8901. No owner. Zero active connections. | **GONE by ~15:32** — cleaned by another fleet agent during the beat window |
 
 Their /tmp files (`dir-trap.py`, `dir-trap.out`, `nginx-8901.*`) are kimi-unlock-audit's
@@ -34,7 +34,7 @@ lane; /tmp/os-test.out is my own script-test artifact (6.6KB) — kimi-unlock-au
 
 `shingle → hatch/agents/ember` reorg is **complete and committed** (`5d8a02b4b3
 reorg: shingle->hatch/agents/ember, shingle-workspace->scratch, bridge/ canonical`).
-Symlinks intact: `~/.shingle → shingle → /home/toxic/sovereign/hatch/agents/ember`.
+Symlinks intact: `~/.shingle → shingle → /home/toxic/estate/hatch/agents/ember`.
 Squawk feed/ws daemons resolve correctly through them. No half-move remains.
 
 ## Stale pid files (14 found, then cleaned by another agent mid-sweep)
@@ -45,7 +45,7 @@ so nobody re-hunts them:
 
 - `/home/toxic/projects/moonbox-intel-v2/{github_audit,sync_daemon}.pid` (dead; no live moonbox procs)
 - `/home/toxic/projects/experimental-crisis-2026/zmq_daemon.pid` (dead)
-- `/home/toxic/sovereign/scratch/{service-health-poller,squawk-ws-client}.pid` (dead)
+- `/home/toxic/estate/scratch/{service-health-poller,squawk-ws-client}.pid` (dead)
 - `/home/toxic/paper-poller/state/poller.pid` (dead; poller now runs under pitchfork — pid file was a pre-pitchfork lie)
 - `/home/toxic/buildsrv/buildsrvd.pid` (dead; buildsrvd runs under pitchfork)
 - `sovereign-wt-provider-surgeon-2/scratch/`, `sovereign-eval-wt/scratch/`, `wt-tau-hyperfix/scratch/` — `service-health-poller.pid` + `squawk-ws-client.pid` (dead)

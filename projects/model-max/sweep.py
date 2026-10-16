@@ -11,7 +11,7 @@ Phases:
   deep      - for healthy models only: streaming probes measuring TTFT, total
               latency, tokens/sec, p50s, plus a 3-way concurrent burst for a
               measured valid-RPM and an ok-rate under load.
-  report    - writes /home/toxic/sovereign/data/model-health.json
+  report    - writes /home/toxic/estate/data/model-health.json
 
 Usage:
   sweep.py [--phase liveness|deep|report|all] [--models id1,id2] [--workdir DIR]
@@ -23,8 +23,8 @@ import urllib.request, urllib.error
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 BASE = "http://127.0.0.1:25100"
-WORKDIR = os.environ.get("MODEL_MAX_WORKDIR", "/home/toxic/sovereign/projects/model-max")
-HEALTH_JSON = "/home/toxic/sovereign/data/model-health.json"
+WORKDIR = os.environ.get("MODEL_MAX_WORKDIR", "/home/toxic/estate/projects/model-max")
+HEALTH_JSON = "/home/toxic/estate/data/model-health.json"
 PROMPT = "Reply with exactly: OK"
 MAX_TOKENS = 64
 WORKERS_LOCAL = 2

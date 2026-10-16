@@ -6,7 +6,7 @@ The key NEVER leaves this box and is NEVER printed or logged.
 Rank on quality/latency/availability only -- cost is NOT a factor (Chris directive).
 
 Usage: python3 probe_all.py
-Output: /home/toxic/sovereign/projects/openrouter-probe/results-<ts>.jsonl + stdout tables.
+Output: /home/toxic/estate/projects/openrouter-probe/results-<ts>.jsonl + stdout tables.
 """
 import json
 import os
@@ -19,7 +19,7 @@ from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 SECRETS = "/home/toxic/.secrets"
-OUTDIR = "/home/toxic/sovereign/projects/openrouter-probe"
+OUTDIR = "/home/toxic/estate/projects/openrouter-probe"
 BASE = "https://openrouter.ai/api/v1"
 KEY_NAME = "OPENROUTER_API_KEY_FREE"
 WORKERS = 8

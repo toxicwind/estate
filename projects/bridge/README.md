@@ -130,7 +130,7 @@ truth lives in files on yote), no monkeypatching, no `/tmp` dependencies.
 
 - `docs/fleet-knowledgebase.md` — estate map, services & ports, bridge tools.
 - `~/workspace/awrawr-bridge/exec.py` — the WS/HTTPS lane implementation (hatch cell).
-- `/home/toxic/sovereign/shingle-workspace/awrawr_ws_exec.py` — the yote-side WS exec server.
+- `/home/toxic/estate/shingle-workspace/awrawr_ws_exec.py` — the yote-side WS exec server.
 
 ## License & security
 

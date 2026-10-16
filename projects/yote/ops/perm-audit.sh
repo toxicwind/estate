@@ -38,7 +38,7 @@ unshare -pf true >/dev/null 2>&1 && note INFO unshare-bare-pf "works (unexpected
 # symlinks into the sovereign repo; a bare `find` on a symlink start-point
 # without trailing slash only stats the link itself (standard find behavior),
 # which silently skips the real directory. realpath avoids the false-negative.
-HOT=(/home/toxic/sovereign /home/toxic/.fleet-bus /home/toxic/.fleet-bus /home/toxic/.config /home/toxic/.local /home/toxic/.tau /home/toxic/sovereign/config)
+HOT=(/home/toxic/estate /home/toxic/.fleet-bus /home/toxic/.fleet-bus /home/toxic/.config /home/toxic/.local /home/toxic/.tau /home/toxic/estate/config)
 declare -a SEEN
 for d in "${HOT[@]}"; do
   [ -e "$d" ] || { note INFO "own-$d" "missing, skipped"; continue; }
@@ -84,7 +84,7 @@ script -qec true /dev/null >/dev/null 2>&1 && ok "pty" "/dev/ptmx usable" || bad
 [ -d /tmp/tmux-$MUID ] && ok "tmux-sock" "tmux socket dir present" || note INFO tmux-sock "no tmux server (ok)"
 
 # 7. write probes on hot paths
-for p in /home/toxic/.fleet-bus /home/toxic/sovereign; do
+for p in /home/toxic/.fleet-bus /home/toxic/estate; do
   t="$p/.perm-audit-probe"; touch "$t" 2>/dev/null && { rm -f "$t"; ok "write-$(basename "$p")" "writable"; } \
     || bad "write-$(basename "$p")" "NOT writable: $p"
 done

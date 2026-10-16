@@ -46,7 +46,7 @@ flowchart LR
 ## Quick Start
 
 ```bash
-ln -sf /home/toxic/sovereign/projects/mesh/secretsmith/bin/secretsmith ~/.local/bin/secretsmith
+ln -sf /home/toxic/estate/projects/mesh/secretsmith/bin/secretsmith ~/.local/bin/secretsmith
 secretsmith check
 secretsmith search --schema chromium
 ```

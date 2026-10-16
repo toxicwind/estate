@@ -4,7 +4,7 @@
 **Box:** yote (awrawr-pc / bridge box, CachyOS/Arch, systemd 261)
 **Auditor:** scheduler-audit (ember)
 **Status:** Complete — verdict with evidence
-**File:** `/home/toxic/sovereign/projects/audits/scheduler-audit-2026-09-20.md`
+**File:** `/home/toxic/estate/projects/audits/scheduler-audit-2026-09-20.md`
 
 ---
 

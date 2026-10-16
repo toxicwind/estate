@@ -19,7 +19,7 @@ from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 SECRETS = "/home/toxic/.secrets"
-OUTDIR = "/home/toxic/sovereign/projects/openrouter-probe"
+OUTDIR = "/home/toxic/estate/projects/openrouter-probe"
 BASE = "https://openrouter.ai/api/v1"
 KEY_NAME = "OPENROUTER_API_KEY_FREE"
 WORKERS = 8

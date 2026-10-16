@@ -48,7 +48,7 @@
 
 ## Deploy bundle (phase 5)
 
-- Staged at `projects/yote/ops/deploy/` — `MANIFEST.txt` + `apply.sh` + `VERIFY.md`. **Staged only; the parent applies it to `/home/toxic/sovereign` via the exec bridge.**
+- Staged at `projects/yote/ops/deploy/` — `MANIFEST.txt` + `apply.sh` + `VERIFY.md`. **Staged only; the parent applies it to `/home/toxic/estate` via the exec bridge.**
 - Bonus find during merge: `shingle-workspace/awrawr_ws_exec.py` (the box's WS server source) exists in SP — included in the bundle as review-only (parent diffs against the box's live copy before overwriting).
 
 ## Open decisions (not unilaterally resolved)

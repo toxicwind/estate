@@ -1,6 +1,6 @@
 # bin
 
-Hand-written glue between [pitchfork](/home/toxic/sovereign/pitchfork.toml) and
+Hand-written glue between [pitchfork](/home/toxic/estate/pitchfork.toml) and
 the services it supervises. Six files; nothing here is a library.
 
 > A pitchfork `run=` line wants a bare binary, and a bare binary cannot source
@@ -35,8 +35,8 @@ working directory:
 
 ```toml
 [daemons.gatehouse]
-run  = "exec /home/toxic/sovereign/projects/range/bin/gatehouse-serve.sh"
-dir  = "/home/toxic/sovereign/projects/range/ranch/barn/gatehouse"
+run  = "exec /home/toxic/estate/projects/range/bin/gatehouse-serve.sh"
+dir  = "/home/toxic/estate/projects/range/ranch/barn/gatehouse"
 port = 25127
 ```
 
@@ -92,7 +92,7 @@ server, named in `barn/gatehouse/mcp_config.json.dist` and nowhere else.
 ```json
 {
   "command": "/usr/bin/python3",
-  "args": ["/home/toxic/sovereign/projects/range/bin/openfang-mcp-shim.py"],
+  "args": ["/home/toxic/estate/projects/range/bin/openfang-mcp-shim.py"],
   "name": "openfang",
   "protocol": "stdio"
 }
@@ -175,6 +175,6 @@ orchestrator. Two consequences:
 
 ## See also
 
-- [`pitchfork.toml`](/home/toxic/sovereign/pitchfork.toml) — daemon definitions
+- [`pitchfork.toml`](/home/toxic/estate/pitchfork.toml) — daemon definitions
 - [`barn/gatehouse/`](../ranch/barn/gatehouse/) — the gateway this directory launches
 - [`../ranch/stockyard/herd/docs/flock/`](../ranch/stockyard/herd/docs/flock/) — the other side of the mesh

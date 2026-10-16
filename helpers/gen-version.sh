@@ -2,7 +2,7 @@
 set -euo pipefail
 ROOT="/home/toxic/estate/projects/tau"
 TAU_PKG="$ROOT/packages/coding-agent/package.json"
-SOV_ROOT="$HOME/sovereign"
+SOV_ROOT="$HOME/estate"
 VER_BASE=$(jq -r .version "$TAU_PKG" 2>/dev/null || echo "18.3.0")
 VER_BASE=${VER_BASE#tau/main-}
 VER_BASE=${VER_BASE%%-sovereign-tau-*}

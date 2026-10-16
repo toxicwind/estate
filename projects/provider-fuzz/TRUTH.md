@@ -103,5 +103,5 @@
 
 ## Artifacts
 
-- Fuzzer: `/home/toxic/sovereign/projects/provider-fuzz/fuzz.py` (reusable, max_tokens=100 default)
-- This file: `/home/toxic/sovereign/projects/provider-fuzz/TRUTH.md`
+- Fuzzer: `/home/toxic/estate/projects/provider-fuzz/fuzz.py` (reusable, max_tokens=100 default)
+- This file: `/home/toxic/estate/projects/provider-fuzz/TRUTH.md`

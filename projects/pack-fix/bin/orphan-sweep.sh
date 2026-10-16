@@ -27,7 +27,7 @@ while [[ $# -gt 0 ]]; do
     *) echo "usage: $0 [--json] [--pid-dirs DIR ...]" >&2; exit 2 ;;
   esac
 done
-[[ ${#PID_DIRS[@]} -eq 0 ]] && PID_DIRS=(/home/toxic /home/toxic/sovereign /home/toxic/paper-poller/state /home/toxic/buildsrv /home/toxic/projects)
+[[ ${#PID_DIRS[@]} -eq 0 ]] && PID_DIRS=(/home/toxic /home/toxic/estate /home/toxic/paper-poller/state /home/toxic/buildsrv /home/toxic/projects)
 
 ORPHANS=0; STALE=0
 declare -a REPORT_LINES=()

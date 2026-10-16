@@ -215,12 +215,12 @@ def pitchfork_daemon(name: str = "", action: str = "list") -> str:
             return "error: name required for restart"
         if name.split("/")[-1] in ("awrawr-ws-exec",):
             return "error: refusing to restart the live bridge (awrawr-ws-exec)"
-        cmd = ["/home/toxic/sovereign/bin/pitchfork-restart", name]
+        cmd = ["/home/toxic/estate/bin/pitchfork-restart", name]
     else:
         return "error: action must be list|status|restart"
     try:
         p = subprocess.run(cmd, capture_output=True, text=True, timeout=180,
-                           cwd="/home/toxic/sovereign")
+                           cwd="/home/toxic/estate")
         out = (p.stdout or "") + (p.stderr or "")
         return f"[exit={p.returncode}]\n{out[:8000]}" if out else \
             f"[exit={p.returncode}] (no output)"

@@ -5,11 +5,11 @@ Usage: python3 validate.py [--no-live]  (--no-live skips the /v1/models + :25104
 """
 import json, sys, yaml, urllib.request, os
 
-HERD = os.environ.get('NAMING_HERD', '/home/toxic/sovereign/config/herd.yaml')
+HERD = os.environ.get('NAMING_HERD', '/home/toxic/estate/config/herd.yaml')
 TAU_MODELS = os.environ.get('NAMING_TAU_MODELS', '/home/toxic/.tau/agent/models.yml')
 TAU_CONFIG = os.environ.get('NAMING_TAU_CONFIG', '/home/toxic/.tau/agent/config.yml')
 ROUTER_JSON = os.environ.get('NAMING_ROUTER_JSON', '/home/toxic/.tau/model-router.json')
-HEALTH = os.environ.get('NAMING_HEALTH', '/home/toxic/sovereign/data/model-health.json')
+HEALTH = os.environ.get('NAMING_HEALTH', '/home/toxic/estate/data/model-health.json')
 
 # Generic policy words: grandfathered set may exist, new ones are violations.
 GRANDFATHERED_GENERIC = {'fast', 'tiny', 'small', 'medium', 'code', 'long', 'uncensored'}

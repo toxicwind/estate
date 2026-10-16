@@ -211,7 +211,7 @@ REMOVED (dangling, zero consumers): `estate/openfang`, `/home/toxic/.fleet-bus`,
 `/home/toxic/tau/tau`, `/home/toxic/.tmp/tack`, `/home/toxic/smithers`.
 KEPT + documented: `/home/toxic/ranch`, `/home/toxic/projects`, `/home/toxic/workspace/skills`,
 `estate/{mesh,models,qed,shell,yote,tau-skills,shingle-workspace,.shared,cell-mirror}`,
-dots. `/home/toxic/sovereign → estate` deliberately KEPT — 188 live refs in the skills-hub
+dots. `/home/toxic/estate → estate` deliberately KEPT — 188 live refs in the skills-hub
 submodule resolve through it; removing it breaks them (separate job).
 
 **Notable catches during ref-fix:** flock-proxy `include_str!` pointed at the old catalog

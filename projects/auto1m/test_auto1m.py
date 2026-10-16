@@ -32,8 +32,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 # Corpus: targeted question files + real doc trees for ~700k-token weight.
 # Every EXPECT needle is grep-verified in its file (2026-09-21).
 CORPUS_DIRS = [
-    "/home/toxic/sovereign/docs",              # KB + estate docs (Q1, Q2 live here)
-    "/home/toxic/sovereign/projects/tau/docs",  # corpus weight (~2.5M chars)
+    "/home/toxic/estate/docs",              # KB + estate docs (Q1, Q2 live here)
+    "/home/toxic/estate/projects/tau/docs",  # corpus weight (~2.5M chars)
 ]
 CORPUS_EXTRA_FILES = [
     os.path.join(HERE, "corpus", "completions-internal.md"),  # Q3 lives here
@@ -52,12 +52,12 @@ QUESTIONS = [
 
 # Hard requirements on corpus files (fail fast if the corpus isn't real)
 NEEDLE_FILES = {
-    "16 cores": "/home/toxic/sovereign/docs/fleet-knowledgebase.md",
-    "62 GB": "/home/toxic/sovereign/docs/fleet-knowledgebase.md",
-    "RTX 3090": "/home/toxic/sovereign/docs/fleet-knowledgebase.md",
-    "nemotron-3-super-120b-a12b": "/home/toxic/sovereign/docs/fleet-knowledgebase.md",
-    "49c17bb9fd": "/home/toxic/sovereign/docs/fleet-knowledgebase.md",
-    "41.4s": "/home/toxic/sovereign/docs/fleet-knowledgebase.md",
+    "16 cores": "/home/toxic/estate/docs/fleet-knowledgebase.md",
+    "62 GB": "/home/toxic/estate/docs/fleet-knowledgebase.md",
+    "RTX 3090": "/home/toxic/estate/docs/fleet-knowledgebase.md",
+    "nemotron-3-super-120b-a12b": "/home/toxic/estate/docs/fleet-knowledgebase.md",
+    "49c17bb9fd": "/home/toxic/estate/docs/fleet-knowledgebase.md",
+    "41.4s": "/home/toxic/estate/docs/fleet-knowledgebase.md",
     "Muse Spark": os.path.join(HERE, "corpus", "completions-internal.md"),
     "200,000 tokens": os.path.join(HERE, "corpus", "completions-internal.md"),
 }

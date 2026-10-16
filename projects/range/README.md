@@ -175,7 +175,7 @@ There are no home-root compat symlinks left to fix. `~/squawk` and
 `~/squawk-ws` are both gone outright — no symlink entries at all at home
 root, not dangling ones. The consumer that used to break on them has
 already been repointed: `squawk-relay`'s `run-sink.sh` now defaults
-`SQUAWK_CODE_DIR` to `/home/toxic/sovereign/projects/range/ranch/squawk`
+`SQUAWK_CODE_DIR` to `/home/toxic/estate/projects/range/ranch/squawk`
 instead of the dead `/home/toxic/squawk`, and the `squawk-relay-sink`
 unit sets no `env`, so the script default is the live one.
 

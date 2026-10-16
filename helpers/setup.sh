@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euo pipefail
-SOV="$HOME/sovereign"
+SOV="$HOME/estate"
 TAU="$SOV/projects/tau"
 CONFIG="$SOV/config"
 QUEUE="$HOME/brand/queue"

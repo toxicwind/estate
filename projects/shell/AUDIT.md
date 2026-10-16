@@ -1,4 +1,4 @@
-# AUDIT — /home/toxic/sovereign/projects/shell
+# AUDIT — /home/toxic/estate/projects/shell
 
 Inventory of 2026-09-19 (UTC). Evidence, not opinions. Read-only probe; nothing moved or deleted.
 
@@ -30,7 +30,7 @@ projects/shell/
 
 ## B. The `ii` fork (untouched by this redo)
 
-- Git submodule: `.git` gitfile → `/home/toxic/sovereign/.git/modules/shell/sovereign-end4`;
+- Git submodule: `.git` gitfile → `/home/toxic/estate/.git/modules/shell/sovereign-end4`;
   submodule NAME `shell/sovereign-end4` ≠ checkout path `projects/shell/ii` (cosmetic mismatch, noted).
 - Remote: `https://github.com/toxicwind/sovereign-end4.git` (fresh repo, not a GitHub fork; no upstream remote).
 - Top level: `AGENTS.md`, `diagnose`, `diagnose.result`, `docs/`, `dots/`, `dots-extra/`, `.github/`,
@@ -40,7 +40,7 @@ projects/shell/
 - Live config: `ii/dots/.config/quickshell/ii/` (shell.qml, GlobalStates.qml, settings.qml,
   modules/, services/, panelFamilies/, scripts/, assets/, defaults/).
 - **Deployment is a real symlink, not a copy**: `/home/toxic/.config/quickshell`
-  → `/home/toxic/sovereign/projects/shell/ii/dots/.config/quickshell` (installed 2026-09-14 18:51,
+  → `/home/toxic/estate/projects/shell/ii/dots/.config/quickshell` (installed 2026-09-14 18:51,
   per `install.conf.yaml:18`). Verified same inode for shell.qml (113747522) in both paths.
   Edits in the repo reach the live config immediately (no redeploy step needed for quickshell).
 
@@ -86,12 +86,12 @@ IPC reachability and fails loudly if it regresses.
 
 ## F. Git state (pre-existing, preserved)
 
-- Sovereign repo root `/home/toxic/sovereign`; `fff4dcae9f` verified on origin/main
+- Sovereign repo root `/home/toxic/estate`; `fff4dcae9f` verified on origin/main
   (`merge-base --is-ancestor fff4dcae9f origin/main` → yes).
 - Pre-existing dirt, NOT touched by this redo:
   - `M pitchfork.toml` — +5 comment lines (chat-coord retirement note, unrelated).
   - `m projects/shell/ii` — submodule content dirty: `dots/.config/fuzzel/fuzzel_theme.ini`,
     `dots/.config/hypr/hyprland/colors.lua`, `dots/.config/hypr/hyprlock/colors.conf`.
 - Many pre-existing untracked scratch dirs at repo level — unrelated, left alone.
-- Pre-push hook: absent in `/home/toxic/sovereign/.git/hooks/` (only `pre-commit`); installed
+- Pre-push hook: absent in `/home/toxic/estate/.git/hooks/` (only `pre-commit`); installed
   from `/home/toxic/bin/pre-push` before pushing this rework.

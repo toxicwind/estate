@@ -30,7 +30,7 @@ flowchart LR
 ## Quick start
 
 ```bash
-cd /home/toxic/sovereign/projects/model-max
+cd /home/toxic/estate/projects/model-max
 python3 sweep.py --phase=all        # liveness + deep + report
 ```
 
@@ -59,7 +59,7 @@ distinguish rate-limit from death.
 Measures TTFT, total latency, tokens/sec, and an *observed* valid-RPM
 (successful completions per minute during the probe window).
 
-**Report:** writes `/home/toxic/sovereign/data/model-health.json` — the
+**Report:** writes `/home/toxic/estate/data/model-health.json` — the
 artifact consumed by herd racing, `robust.py`, and Tau. Schema is documented
 at the top of that file (`_schema` key).
 

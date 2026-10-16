@@ -7,7 +7,7 @@ import sys
 TARGET = "/home/toxic/awrawr_mcp.py"
 ANCHOR = "# --- hft race tool ---"
 MARKER = "bridge-max: multitask + background dispatch"
-BLOCK_SRC = "/home/toxic/sovereign/projects/bridge/yote/mcp_patch_block.py"
+BLOCK_SRC = "/home/toxic/estate/projects/bridge/yote/mcp_patch_block.py"
 
 
 def main():

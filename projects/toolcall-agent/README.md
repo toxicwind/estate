@@ -30,7 +30,7 @@ flowchart LR
 ## Quick start
 
 ```bash
-cd /home/toxic/sovereign/projects/toolcall-agent
+cd /home/toxic/estate/projects/toolcall-agent
 TOOLCALL_BASE=http://127.0.0.1:25152 python3 agent_loop.py "your prompt"
 # or via herd: model=toolcall-local/qwen3.5-9b-tool on http://127.0.0.1:25100
 ```

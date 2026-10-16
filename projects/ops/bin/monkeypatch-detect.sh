@@ -18,7 +18,7 @@
 #   --quiet  only print findings (skip section headers when clean)
 #   --json   machine-readable output (one JSON object per line)
 #
-# Durable home: /home/toxic/sovereign/projects/ops/bin/monkeypatch-detect.sh
+# Durable home: /home/toxic/estate/projects/ops/bin/monkeypatch-detect.sh
 # (sovereign-projects, canonical main). Safe to run anytime, read-only:
 # it never modifies, kills, or restarts anything.
 
@@ -53,7 +53,7 @@ emit() { # emit <category> <what> <where> <home>
 section() { (( QUIET )) || (( JSON )) || printf '\n=== %s ===\n' "$1"; }
 
 HOME_DIR="${HOME:-/home/toxic}"
-SOV="${SOVEREIGN_DIR:-/home/toxic/sovereign}"
+SOV="${SOVEREIGN_DIR:-/home/toxic/estate}"
 
 # ---------------------------------------------------------------- 1. /tmp production scripts
 section "/tmp scripts doing production jobs"

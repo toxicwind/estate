@@ -6,7 +6,7 @@
    "note": "No stable tokenizer for openrouter/free; ran on the explicitly labelled gpt2 fallback. Token counts and any tokenizer-derived metrics are NOT comparable with the ranked tier. Scores from deterministic instruction-following are still reported for the record.",
    "result": {
     "free": true,
-    "guidellm_json": "/home/toxic/sovereign-eval-wt/projects/openrouter-probe/eval-20260920-152756-openrouter_free.json",
+    "guidellm_json": "/home/toxic/estate-eval-wt/projects/openrouter-probe/eval-20260920-152756-openrouter_free.json",
     "instrument": {
      "compiled_at": 1789939697.0476098,
      "formality_tier": "deterministic-instrument",
@@ -289,7 +289,7 @@
   },
   {
    "free": true,
-   "guidellm_json": "/home/toxic/sovereign-eval-wt/projects/openrouter-probe/eval-20260920-152756-nvidia_nemotron-3.5-lightning:free.json",
+   "guidellm_json": "/home/toxic/estate-eval-wt/projects/openrouter-probe/eval-20260920-152756-nvidia_nemotron-3.5-lightning:free.json",
    "instrument": {
     "compiled_at": 1789939995.1122866,
     "formality_tier": "deterministic-instrument",

@@ -13,7 +13,7 @@ import platform
 import subprocess
 import time
 
-REPO_BG = "/home/toxic/sovereign/projects/ops/bg-tracker/state"
+REPO_BG = "/home/toxic/estate/projects/ops/bg-tracker/state"
 HATCH_BG = os.path.expanduser("~/workspace/state/bg-tracker")
 
 
@@ -23,7 +23,7 @@ def box():
 
 
 def state_dir():
-    base = REPO_BG if os.path.isdir("/home/toxic/sovereign") else HATCH_BG
+    base = REPO_BG if os.path.isdir("/home/toxic/estate") else HATCH_BG
     os.makedirs(base, exist_ok=True)
     return base
 

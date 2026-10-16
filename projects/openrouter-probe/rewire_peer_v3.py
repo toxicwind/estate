@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Rewire herd.yaml openrouter-free peer: comment block + models list -> v3 ordering.
-Replaces lines 796..848 (1-based, inclusive) of /home/toxic/sovereign/config/herd.yaml.
+Replaces lines 796..848 (1-based, inclusive) of /home/toxic/estate/config/herd.yaml.
 Idempotent guard: refuses to run if the v3 marker is already present.
 """
 import sys
 
-PATH = "/home/toxic/sovereign/config/herd.yaml"
+PATH = "/home/toxic/estate/config/herd.yaml"
 START, END = 796, 848  # 1-based inclusive
 
 NEW_BLOCK = '''\

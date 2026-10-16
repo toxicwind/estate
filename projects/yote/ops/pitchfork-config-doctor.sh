@@ -19,7 +19,7 @@
 set -u
 export LC_ALL=C  # comm(1) and sort(1) must agree on collation order
 
-CANON="${PITCHFORK_CANON:-/home/toxic/sovereign/pitchfork.toml}"
+CANON="${PITCHFORK_CANON:-/home/toxic/estate/pitchfork.toml}"
 NS="${PITCHFORK_NS:-sovereign}"
 SCAN_ROOT="${PITCHFORK_SCAN_ROOT:-/home/toxic}"
 FAIL=0

@@ -24,14 +24,14 @@
 ### Sovereign Directory — Key Files
 | File | Purpose | Priority |
 |------|---------|----------|
-| `/home/toxic/sovereign/README.md` | Full stack docs | HIGH |
-| `/home/toxic/sovereign/pitchfork.toml` | Service orchestration | HIGH |
-| `/home/toxic/sovereign/mise.toml` | Toolchain + tasks | HIGH |
-| `/home/toxic/sovereign/config/ports.env` | Port SSOT | HIGH |
-| `/home/toxic/sovereign/.envrc` | Direnv auto-load | MEDIUM |
-| `/home/toxic/sovereign/.secrets.age` | Encrypted secrets | CRITICAL |
-| `/home/toxic/sovereign/.gitignore` | Git hygiene | MEDIUM |
-| `/home/toxic/sovereign/MASTER_PLAN.md` | Master execution plan | HIGH |
+| `/home/toxic/estate/README.md` | Full stack docs | HIGH |
+| `/home/toxic/estate/pitchfork.toml` | Service orchestration | HIGH |
+| `/home/toxic/estate/mise.toml` | Toolchain + tasks | HIGH |
+| `/home/toxic/estate/config/ports.env` | Port SSOT | HIGH |
+| `/home/toxic/estate/.envrc` | Direnv auto-load | MEDIUM |
+| `/home/toxic/estate/.secrets.age` | Encrypted secrets | CRITICAL |
+| `/home/toxic/estate/.gitignore` | Git hygiene | MEDIUM |
+| `/home/toxic/estate/MASTER_PLAN.md` | Master execution plan | HIGH |
 
 ---
 
@@ -126,7 +126,7 @@
 - [x] Add to `.env`
 
 ### 1.4 README.md Alignment
-- [x] Update `/home/toxic/sovereign/README.md` to reflect:
+- [x] Update `/home/toxic/estate/README.md` to reflect:
   - Correct ports for all services
   - OpenFang agent model mappings
   - Yote → OpenFang integration details
@@ -185,7 +185,7 @@
 - [x] `/agent <name> @chat` — cross-chat agent invocation
 
 ### 2.2 Agent Personality & System Prompts (MAXIMAL)
-- [x] **Agent Registry**: `/home/toxic/sovereign/yote/config/agents/*.yaml` — each agent has:
+- [x] **Agent Registry**: `/home/toxic/estate/yote/config/agents/*.yaml` — each agent has:
   - `system_prompt`: Role-specific system prompt
   - `model`: Exact model ID (e.g., `thinkingmachines/inkling`)
   - `provider`: `nvidia` | `llama` | `openrouter` | `groq`
@@ -479,21 +479,21 @@ jobs:
 
 | File | Purpose | Priority | Managed By |
 |------|---------|----------|------------|
-| `/home/toxic/sovereign/yote/.env.age` | Secrets (encrypted) | CRITICAL | `age` + `sops` |
-| `/home/toxic/sovereign/yote/config/agents/*.yaml` | Agent Registry | HIGH | Git |
-| `/home/toxic/sovereign/yote/src/yote.ts` | Main Logic | HIGH | Git |
-| `/home/toxic/sovereign/yote/src/lib/openfang-client.ts` | OpenFang Client | HIGH | Git |
-| `/home/toxic/sovereign/yote/src/lib/overlord.ts` | MTProto Userbot | HIGH | Git |
-| `/home/toxic/sovereign/config/ports.env` | Port SSOT | HIGH | Git |
-| `/home/toxic/sovereign/.secrets.age` | Shared Secrets | CRITICAL | `age` + `sops` |
-| `/home/toxic/sovereign/config/ports.env` | Port SSOT | HIGH | Git |
-| `/home/toxic/sovereign/pitchfork.toml` | Service Definitions | HIGH | Git |
-| `/home/toxic/sovereign/mise.toml` | Toolchain + Tasks | HIGH | Git |
-| `/home/toxic/sovereign/README.md` | Documentation | HIGH | Git |
-| `/home/toxic/sovereign/.envrc` | Direnv Config | MEDIUM | Git |
-| `/home/toxic/sovereign/.secrets.age` | Shared Secrets | CRITICAL | `age` + `sops` |
-| `/home/toxic/sovereign/.gitignore` | Git Hygiene | MEDIUM | Git |
-| `/home/toxic/sovereign/MASTER_PLAN.md` | Master Plan | HIGH | Git |
+| `/home/toxic/estate/yote/.env.age` | Secrets (encrypted) | CRITICAL | `age` + `sops` |
+| `/home/toxic/estate/yote/config/agents/*.yaml` | Agent Registry | HIGH | Git |
+| `/home/toxic/estate/yote/src/yote.ts` | Main Logic | HIGH | Git |
+| `/home/toxic/estate/yote/src/lib/openfang-client.ts` | OpenFang Client | HIGH | Git |
+| `/home/toxic/estate/yote/src/lib/overlord.ts` | MTProto Userbot | HIGH | Git |
+| `/home/toxic/estate/config/ports.env` | Port SSOT | HIGH | Git |
+| `/home/toxic/estate/.secrets.age` | Shared Secrets | CRITICAL | `age` + `sops` |
+| `/home/toxic/estate/config/ports.env` | Port SSOT | HIGH | Git |
+| `/home/toxic/estate/pitchfork.toml` | Service Definitions | HIGH | Git |
+| `/home/toxic/estate/mise.toml` | Toolchain + Tasks | HIGH | Git |
+| `/home/toxic/estate/README.md` | Documentation | HIGH | Git |
+| `/home/toxic/estate/.envrc` | Direnv Config | MEDIUM | Git |
+| `/home/toxic/estate/.secrets.age` | Shared Secrets | CRITICAL | `age` + `sops` |
+| `/home/toxic/estate/.gitignore` | Git Hygiene | MEDIUM | Git |
+| `/home/toxic/estate/MASTER_PLAN.md` | Master Plan | HIGH | Git |
 
 ---
 

@@ -8,7 +8,7 @@ The 2-model remainder report (152756) is loaded as-is.
 import json, glob, os
 import ranking_lib
 
-D = "/home/toxic/sovereign-eval-wt/projects/openrouter-probe/"
+D = "/home/toxic/estate-eval-wt/projects/openrouter-probe/"
 bench = json.load(open(D + "models-bench.json"))
 tokmap = {m["openrouter_id"]: m for m in bench["models"]}
 

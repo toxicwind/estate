@@ -47,7 +47,7 @@ flowchart LR
 /home/toxic/.venv-guidellm/bin/python3 eval_runner.py --models "a/b:free,c/d:free" --n 6
 ```
 
-The runner reads `OPENROUTER_API_KEY_FREE` from the environment (never logged). GuideLLM source: `/home/toxic/sovereign/projects/range/ranch/guidellm/fork` (remote `toxicwind/guidellm`).
+The runner reads `OPENROUTER_API_KEY_FREE` from the environment (never logged). GuideLLM source: `/home/toxic/estate/projects/range/ranch/guidellm/fork` (remote `toxicwind/guidellm`).
 
 ## License & security
 

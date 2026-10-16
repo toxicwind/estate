@@ -29,7 +29,7 @@
 
 set -uo pipefail
 
-SOV="${SOV:-/home/toxic/sovereign}"
+SOV="${SOV:-/home/toxic/estate}"
 SSOT="$SOV/config/ports.env"
 PITCHFORK="$SOV/pitchfork.toml"
 HERD_YAML="$SOV/config/herd.yaml"

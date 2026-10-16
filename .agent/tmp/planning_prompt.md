@@ -112,7 +112,7 @@ implementation work.
 
 PROMPT:
 
-Read the complete prompt from file at `/home/toxic/sovereign/.agent/PRODUCT_CRITERIA.md` before continuing.
+Read the complete prompt from file at `/home/toxic/estate/.agent/PRODUCT_CRITERIA.md` before continuing.
 This file is the authoritative source for prompt in this prompt.
 Do not ask the user to paste it again, and do not claim the prompt is missing.
 

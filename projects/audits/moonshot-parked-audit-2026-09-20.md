@@ -2,7 +2,7 @@
 
 - **Date:** 2026-09-20 ~15:05 MDT
 - **Auditor:** moonshot-parked-audit (ember, subagent)
-- **Scope:** the PARKED `moonshot` peer in `/home/toxic/sovereign/config/herd.yaml` (lines 749–768), against all information as of 2026-09-20.
+- **Scope:** the PARKED `moonshot` peer in `/home/toxic/estate/config/herd.yaml` (lines 749–768), against all information as of 2026-09-20.
 - **Status:** PROPOSED — nothing was applied. No shared file was edited, no daemon touched.
 - **Verdict: RESTORE the moonshot peer** (proposed diff in §5, Chris decides).
 
@@ -125,25 +125,25 @@ Retarget the Kimi alias shims back to the direct peer (they were moved to `openr
 +  # moonshot/* — the direct peer is restored; openrouter-pool Kimi is 402
 +  # "Insufficient credits" until the account is topped up.
    kimi:
--    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-pool/moonshotai/kimi-k2.6
+-    cmd: python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-pool/moonshotai/kimi-k2.6
 -    description: "Kimi (alias -> openrouter-pool/moonshotai/kimi-k2.6)"
-+    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target moonshot/kimi-k2.6
++    cmd: python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${PORT} --target moonshot/kimi-k2.6
 +    description: "Kimi (alias -> moonshot/kimi-k2.6)"
      metadata:
 -      alias_of: openrouter-pool/moonshotai/kimi-k2.6
 +      alias_of: moonshot/kimi-k2.6
    kimi-k2:
--    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-pool/moonshotai/kimi-k2.6
+-    cmd: python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-pool/moonshotai/kimi-k2.6
 -    description: "Kimi K2 (alias -> openrouter-pool/moonshotai/kimi-k2.6)"
-+    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target moonshot/kimi-k2.6
++    cmd: python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${PORT} --target moonshot/kimi-k2.6
 +    description: "Kimi K2 (alias -> moonshot/kimi-k2.6)"
      metadata:
 -      alias_of: openrouter-pool/moonshotai/kimi-k2.6
 +      alias_of: moonshot/kimi-k2.6
    kimi-code:
--    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-pool/moonshotai/kimi-k2.7-code
+-    cmd: python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-pool/moonshotai/kimi-k2.7-code
 -    description: "Kimi code specialist (alias -> openrouter-pool/moonshotai/kimi-k2.7-code)"
-+    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target moonshot/kimi-k2.7-code
++    cmd: python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${PORT} --target moonshot/kimi-k2.7-code
 +    description: "Kimi code specialist (alias -> moonshot/kimi-k2.7-code)"
      metadata:
 -      alias_of: openrouter-pool/moonshotai/kimi-k2.7-code
@@ -173,8 +173,8 @@ Deployment (only on Chris's approval — shared tree, shared daemon):
 
 ## 7. References
 
-- Live config: `/home/toxic/sovereign/config/herd.yaml` (moonshot block 749–768, modelMap 53–54, shims 186–202); `config/keypools.yaml` (paid-pool health = `GET /v1/auth/key`); `config/model_constraints.yaml` (revive-order debate verdict).
-- Keypool: `http://127.0.0.1:25109/status`, `/home/toxic/sovereign/data/keypool-audit.jsonl`, `bin/herd-keypool.py` (`free_only` enforcement, cooldown + recovery sweep).
+- Live config: `/home/toxic/estate/config/herd.yaml` (moonshot block 749–768, modelMap 53–54, shims 186–202); `config/keypools.yaml` (paid-pool health = `GET /v1/auth/key`); `config/model_constraints.yaml` (revive-order debate verdict).
+- Keypool: `http://127.0.0.1:25109/status`, `/home/toxic/estate/data/keypool-audit.jsonl`, `bin/herd-keypool.py` (`free_only` enforcement, cooldown + recovery sweep).
 - Prior research: `~/workspace/audits/kimi-k3/kimi-k3-provider-research.md` (OpenRouter/Pollinations/NIM/Moonshot catalog 2026-09-20); `projects/openrouter-probe/RANKING.md` + `probe_reliability.py` (v3: 446 IDs, 10 winners).
 - Web (via `~/workspace/skills/exa/SKILL.md`): https://ai-api-hub.com/providers/moonshot/ (pub. 2026-09-12, verified 2026-09-13); https://www.kimi.com/en/help/kimi-api/api-rate-limits (official rate-limit docs); Moonshot status https://status.moonshot.cn/ (per provider-research).
 - Standing rules applied: `~/AGENTS.md` (model-family tooling never hardcodes model IDs — this audit proposes router-config changes only); 429/402 = transient routing signals (cooldown + auto-recovery); verify-before-claiming (every status above was probed live this session).

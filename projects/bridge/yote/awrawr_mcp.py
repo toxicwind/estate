@@ -808,12 +808,12 @@ def pitchfork_daemon(name: str = "", action: str = "list") -> str:
         if name.split("/")[-1] in ("awrawr-ws-exec", "awrawr-mcp"):
             return ("error: refusing to restart a live transport lane "
                     "(awrawr-ws-exec/awrawr-mcp)")
-        cmd = ["/home/toxic/sovereign/bin/pitchfork-restart", name]
+        cmd = ["/home/toxic/estate/bin/pitchfork-restart", name]
     else:
         return "error: action must be list|status|restart"
     try:
         p = subprocess.run(cmd, capture_output=True, text=True, timeout=180,
-                           cwd="/home/toxic/sovereign")
+                           cwd="/home/toxic/estate")
         out = (p.stdout or "") + (p.stderr or "")
         return f"[exit={p.returncode}]\n{out[:8000]}" if out else \
             f"[exit={p.returncode}] (no output)"
@@ -942,7 +942,7 @@ def _buildsrv_check_id(job_id):
     return None
 
 
-_BUILDSRV_DEFAULT_REPO = "/home/toxic/sovereign/tools/buildsrv"
+_BUILDSRV_DEFAULT_REPO = "/home/toxic/estate/tools/buildsrv"
 
 
 @mcp.tool()
@@ -1279,10 +1279,10 @@ tools/call over localhost.
 # --- mesh (mcpproxy/gatehouse) proxy -------------------------------------------
 MESH_MCP_URL = os.environ.get("MESH_MCP_URL", "http://127.0.0.1:25127/mcp")
 MESH_SHEP_BIN = os.environ.get(
-    "MESH_SHEP_BIN", "/home/toxic/sovereign/projects/range/bin/gatehouse")
+    "MESH_SHEP_BIN", "/home/toxic/estate/projects/range/bin/gatehouse")
 MESH_SHEP_CONFIG = os.environ.get(
     "MESH_SHEP_CONFIG",
-    "/home/toxic/sovereign/projects/range/ranch/barn/gatehouse/mcp_config.json")
+    "/home/toxic/estate/projects/range/ranch/barn/gatehouse/mcp_config.json")
 MESH_OUT_CAP = 20000
 _MESH_INTENTS = {"read": "call_tool_read", "write": "call_tool_write",
                  "destructive": "call_tool_destructive"}

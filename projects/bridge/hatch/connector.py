@@ -62,9 +62,9 @@ MAX_BODY = 10 * 1024 * 1024
 
 # --- bridge-max: background dispatch ---------------------------------------
 BG_BASE_YOTE = "/home/toxic/.cache/bridge-bg"
-BG_RUN_PY = "/home/toxic/sovereign/projects/bridge/bin/bg-run.py"
-BG_STATUS_PY = "/home/toxic/sovereign/projects/bridge/bin/bg-status.py"
-BG_KILL_PY = "/home/toxic/sovereign/projects/bridge/bin/bg-kill.py"
+BG_RUN_PY = "/home/toxic/estate/projects/bridge/bin/bg-run.py"
+BG_STATUS_PY = "/home/toxic/estate/projects/bridge/bin/bg-status.py"
+BG_KILL_PY = "/home/toxic/estate/projects/bridge/bin/bg-kill.py"
 REGISTRY = os.path.expanduser("~/.cache/bridge-bg-registry.json")
 HANDLE_RX = re.compile(r"^[A-Za-z0-9_-]{1,64}$")
 

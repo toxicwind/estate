@@ -135,7 +135,7 @@ for p in 25147 25135; do
     ALL_OK=0
   fi
 done
-WS=/home/toxic/sovereign/shingle-workspace
+WS=/home/toxic/estate/shingle-workspace
 for pf in "$WS/squawk-ws-client.pid" "$WS/service-health-poller.pid"; do
   if [ -f "$pf" ]; then
     pid=$(cat "$pf" 2>/dev/null)
@@ -156,7 +156,7 @@ for f in "$WS/awrawr_ws_exec.py" "$WS/squawk_ws_server.py" "$WS/squawk-ws-client
   grep -nE 'PORT|port ?[=:] ?[0-9]{4,5}|:[0-9]{4,5}' "$f" 2>/dev/null | head -8 | sed 's/^/    /'
 done
 say "  bin dirs:"
-for d in "$WS/bin" /home/toxic/sovereign/gear-lane1-20260914/awrawr-mcp/bin /home/toxic/worktrees/ctm-mode-fix/gear/awrawr-mcp/bin; do
+for d in "$WS/bin" /home/toxic/estate/gear-lane1-20260914/awrawr-mcp/bin /home/toxic/worktrees/ctm-mode-fix/gear/awrawr-mcp/bin; do
   [ -d "$d" ] && say "    $d: $(ls "$d" 2>/dev/null | tr '\n' ' ')"
 done
 say "  systemd units mentioning mcp/awrawr/squawk:"

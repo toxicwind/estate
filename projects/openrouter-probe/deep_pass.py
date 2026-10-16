@@ -14,7 +14,7 @@ import urllib.request
 import urllib.error
 
 SECRETS = "/home/toxic/.secrets"
-OUTDIR = "/home/toxic/sovereign/projects/openrouter-probe"
+OUTDIR = "/home/toxic/estate/projects/openrouter-probe"
 BASE = "https://openrouter.ai/api/v1"
 KEY_NAME = "OPENROUTER_API_KEY_FREE"
 REQS_PER_MODEL = 5

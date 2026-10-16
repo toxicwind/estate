@@ -1,0 +1,142 @@
+ERROR RECOVERY REQUIRED
+PREVIOUS ATTEMPT FAILED: the previous attempt failed because of agent session exited without required completion evidence
+The exact cause may be unknown.
+If the signal above names a reason, use it; otherwise treat transient or external issues (for example, an internet outage) as possible contributors.
+Focus on resolving the failure above before continuing. Do not restart the task from scratch.
+Original prompt: `.agent/tmp/planning_prompt.md`
+Previous context summary: `/home/toxic/sovereign/.agent/tmp/agent_retry_context_a6b298d782fa40f9bbabfc058375aa58.md`
+PREVIOUS OUTPUT SUMMARY EXCERPT:
+<previous log omitted> (93 earlier lines)
+"path": "/home/toxic/sovereign/.agent/tmp/planning_prompt.md"
+}
+},
+{
+"tool": "mcp__ralph__read_file",
+"arguments": {
+"path": "/home/toxic/sovereign/.agent/tmp/agent_retry_context_b1573900a8324aeea359340a4279c5a2.md"
+}
+}
+],
+"next_steps": "After reading these files, I will orient to understand the outcome and relevant repository areas, then proceed with characterization, change identification, and verification steps as per the planning order."
+}
+
+ORIGINAL TASK PROMPT:
+Produce an executor-ready plan from the request and repository evidence.
+
+You are in PLANNING MODE.
+
+## Planning order
+
+Plan in this order:
+
+1. **Orient** — identify the outcome and relevant repository areas.
+2. **Characterize** — establish current behavior.
+3. **Change** — name the smallest concrete edits and dependencies.
+4. **Verify** — name runnable proof for the outcome.
+
+Inspect the repository before naming paths or commands; use a discovery step for an honest unknown.
+
+*** UNATTENDED MODE ***
+
+This run is unattended. Proceed from available evidence, make and record
+result-affecting assumptions, and do not ask the user for confirmation. Write
+under `.agent/` only when instructed; do not create status Markdown files.
+
+SESSION CAPABILITIES (Granted by Ralph Workflow)
+
+Capabilities:
+  - artifact.plan_read
+  - artifact.plan_write
+  - artifact.submit
+  - git.diff_read
+  - git.status_read
+  - media.capture
+  - media.read
+  - process.exec_bounded
+  - web.search
+  - web.visit
+  - workspace.metadata_read
+  - workspace.read
+
+Policy Flags:
+  - no_edit
+
+These define the brokered operations Ralph Workflow authorizes. Treat actions outside
+them as prohibited even when a particular runtime cannot technically hide all
+native tools.
+
+MCP TOOLS (Ralph Workflow Brokered)
+
+Use Ralph Workflow's MCP tools for file and shell operations. Use only the brokered
+tools from the exact rendered name below. Tool names are callable identifiers,
+not shell commands.
+
+READ / SEARCH: `mcp__ralph__read_file`, `mcp__ralph__read_multiple_files`, `mcp__ralph__stat_path`, `mcp__ralph__list_allowed_roots`, `mcp__ralph__list_directory`, `mcp__ralph__list_directory_recursive`, `mcp__ralph__directory_tree`, `mcp__ralph__search_files`, `mcp__ralph__grep_files`
+Use these for every workspace read or search; native shell/file commands must not be used to read or search the workspace.
+
+EXPLORE INDEX: `mcp__ralph__ralph_index_status`, `mcp__ralph__ralph_reindex` (call when results look stale or the index reports cold), `mcp__ralph__ralph_graph`
+
+EXEC: `mcp__ralph__exec`
+
+GIT: `mcp__ralph__git_status`, `mcp__ralph__git_diff`, `mcp__ralph__git_log`, `mcp__ralph__git_show`
+
+COORDINATION: `mcp__ralph__coordinate`
+
+BROKERED-ONLY: Ralph Workflow's brokered tools are the only permitted workspace path.
+
+WEB / MEDIA: `mcp__ralph__web_search`, `mcp__ralph__visit_url`, `mcp__ralph__read_image`, `mcp__ralph__read_media`
+
+## SHIPPED SKILLS
+
+Use only task-relevant skills the runtime lists as available, through its
+documented mechanism. If none are available, continue from this prompt and the
+canonical artifact-format docs; do not search unrelated skill directories or
+invent skills.
+
+Record only task-relevant available skill names in `## Skills MCP`; omit the
+section when none are available.
+
+This is read-only planning: inspect the repository and run only non-mutating
+commands. Do not edit files or install dependencies.
+
+Read `.agent/artifact-formats/plan.md` for the authoritative, validator-backed
+plan spec.
+
+## Plan submission
+
+Submit one executor-ready Markdown plan with stable `### [S-n] Title` steps.
+IDs are stable and never renumbered. Each step states its purpose and `Type`: `file_change`, `file_create`,
+`file_delete`, `refactor`, `config_change`, `discovery`, or `verify`; use
+`Type: verify` for proof-only work.
+
+Work types require `Files`, a concrete `Verify`, and observable `Expect`. A `verify` step requires `Verify` plus `Expect` or `Location`; a `discovery` step requires `Verify`, `Evidence`, or `Location`. Recommend `Type: verify` for a step whose only job is running an existing test suite. Add `Depends on: S-n` only for real ordering and `Satisfies:` when a requirement mapping applies. Do not use `schema_version` or `Validation Overrides`; repair validator findings directly. The only step-less plan is `noop: true`.
+
+On revision, retain every step ID and valid `Depends on:`/`Satisfies:` reference.
+When repairing a diagnostic, change only the named field; other valid fields are
+preserved verbatim. `PLAN001` means the submission was not
+a plan.
+
+Submit a complete plan with `mcp__ralph__ralph_submit_md_artifact`
+(`artifact_type="plan"`). For a similar revision, use
+`mcp__ralph__ralph_edit_md_artifact`; it resubmits once valid. Staging is not
+submission. Validate first with `mcp__ralph__ralph_verify_md_artifact` if exposed. After a valid receipt—or a validated promoted fallback receipt—call
+`mcp__ralph__declare_complete` as the final explicit action.
+
+## Verification
+
+Discover the project's narrowest relevant check and full gate. Run focused
+checks during work and the full gate before completion. Never weaken a gate or
+claim completion without reproducible proof; if verification cannot finish,
+report an honest partial result.
+
+Use subagents only when independent repository discovery genuinely reduces
+uncertainty. A compact linear plan is valid; use work units only for disjoint
+implementation work.
+
+PROMPT:
+
+Read the complete prompt from file at `/home/toxic/sovereign/.agent/PRODUCT_CRITERIA.md` before continuing.
+This file is the authoritative source for prompt in this prompt.
+Do not ask the user to paste it again, and do not claim the prompt is missing.
+
+

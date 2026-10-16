@@ -165,7 +165,7 @@ for p in $(pgrep -f '[a]wrawr|[w]s_exec|[s]quawk' 2>/dev/null); do
   _cwd="$(readlink "/proc/$p/cwd" 2>/dev/null)"
   [ -n "$_cwd" ] && [ -d "$_cwd" ] && SRV_ROOTS="$SRV_ROOTS $_cwd"
 done
-[ -d /home/toxic/sovereign/shingle-workspace ] && SRV_ROOTS="$SRV_ROOTS /home/toxic/sovereign/shingle-workspace"
+[ -d /home/toxic/estate/shingle-workspace ] && SRV_ROOTS="$SRV_ROOTS /home/toxic/estate/shingle-workspace"
 # de-dupe
 SRV_ROOTS="$(printf '%s' "$SRV_ROOTS" | tr ' ' '\n' | awk 'NF && !seen[$0]++' | tr '\n' ' ')"
 [ -z "$SRV_ROOTS" ] && SRV_ROOTS="/home/toxic"

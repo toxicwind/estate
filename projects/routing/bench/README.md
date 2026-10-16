@@ -11,7 +11,7 @@
 
 Two contenders, one prompt matrix:
 
-- **Contender A — TAU/oh-my-pi's actual routing extension** (`@cakriwut/omp-model-router` 0.8.9, canonical at `/home/toxic/sovereign/tau-extensions/omp-model-router`). The bench exercises the extension's **real** routing core (`src/routing/compose.ts` `resolveRouting`: heuristic → context promotion → adaptive classifier attempt → image upgrade → tier mapping) and serves the chosen tier model through pi-ai's `streamSimple` — the same provider path the extension's own `provider.ts` uses. The only stub is the model registry (maps `herd/*` refs to the estate's real routers) plus a Bun loader stub for `getAgentDir()`; **no routing logic is stubbed or replaced**.
+- **Contender A — TAU/oh-my-pi's actual routing extension** (`@cakriwut/omp-model-router` 0.8.9, canonical at `/home/toxic/estate/tau-extensions/omp-model-router`). The bench exercises the extension's **real** routing core (`src/routing/compose.ts` `resolveRouting`: heuristic → context promotion → adaptive classifier attempt → image upgrade → tier mapping) and serves the chosen tier model through pi-ai's `streamSimple` — the same provider path the extension's own `provider.ts` uses. The only stub is the model registry (maps `herd/*` refs to the estate's real routers) plus a Bun loader stub for `getAgentDir()`; **no routing logic is stubbed or replaced**.
 - **Contender B — Sovereign router** (`:25104`, model `sovereign/free`): `routeFree` → `freeCandidates` → `astRace`, first-substantive-wins, with circuit breakers and local llama-swap fallback roles.
 
 ## What gets measured
@@ -32,12 +32,12 @@ flowchart LR
 ## Quick start
 
 ```bash
-cd /home/toxic/sovereign/projects/routing/bench
+cd /home/toxic/estate/projects/routing/bench
 /home/toxic/.bun/bin/bun run.ts --prompts prompts.json --out results/<stamp>.json --legs tau,sovereign --retries 3
 python3 score.py results/<stamp>.json
 ```
 
-**Bun version:** the repo pins bun 1.1.38 via `/home/toxic/sovereign/mise.toml`, but the extension's transitive `embedded-client.generated.txt` is zero bytes and older Bun loaders reject it. Run the harness with bun ≥ 1.4 (`/home/toxic/.bun/bin/bun`). This is a loader compatibility note, not a routing-code change — nothing measured is altered.
+**Bun version:** the repo pins bun 1.1.38 via `/home/toxic/estate/mise.toml`, but the extension's transitive `embedded-client.generated.txt` is zero bytes and older Bun loaders reject it. Run the harness with bun ≥ 1.4 (`/home/toxic/.bun/bin/bun`). This is a loader compatibility note, not a routing-code change — nothing measured is altered.
 
 ## License & security
 

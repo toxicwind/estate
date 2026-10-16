@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Add nemotron-3-ultra-550b-a55b:free (verified by 14:29 probe) to the peer."""
-P = "/home/toxic/sovereign/config/herd.yaml"
+P = "/home/toxic/estate/config/herd.yaml"
 src = open(P).read()
 
 OLD = """    # Ordered score desc, latency asc. The :free suffix is an unreliable
