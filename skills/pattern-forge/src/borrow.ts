@@ -18,7 +18,7 @@ import { emit } from "./concurrent";
 import { measure } from "./measure";
 import * as P from "./providers";
 
-export type SourceName = "local" | "github" | "arxiv" | "openalex" | "semanticscholar" | "dblp" | "hf_papers" | "exa";
+export type SourceName = "local" | "github" | "github_repos" | "arxiv" | "openalex" | "semanticscholar" | "dblp" | "hf_papers" | "exa";
 
 export type BorrowOptions = {
   perSource?: number;
@@ -159,6 +159,7 @@ export async function borrow(query: string, opts: BorrowOptions = {}): Promise<B
   const legs: { name: SourceName; enabled: boolean; run: () => Promise<P.SourceResult> }[] = [
     { name: "local", enabled: !skip.has("local"), run: () => P.localTreeSearch(query, perSource) },
     { name: "github", enabled: !skip.has("github") && gh.key.length > 0, run: () => P.githubCodeSearch(query, perSource) },
+    { name: "github_repos", enabled: !skip.has("github_repos"), run: () => P.githubRepoSearch(query, perSource) },
     { name: "arxiv", enabled: !skip.has("arxiv"), run: () => P.arxivSearch(query, perSource) },
     { name: "openalex", enabled: !skip.has("openalex"), run: () => P.openAlexSearch(query, perSource) },
     { name: "semanticscholar", enabled: !skip.has("semanticscholar"), run: () => P.s2Search(query, perSource) },

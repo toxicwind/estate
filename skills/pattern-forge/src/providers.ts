@@ -20,7 +20,7 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 import { emit } from "./concurrent";
 import { buildIndex } from "./repo-index";
-import { Bm25Index } from "./bm25";
+import { Bm25Index, tokenize } from "./bm25";
 import { ESTATE } from "./paths";
 
 export const ARXIV_BASE = "https://export.arxiv.org";
@@ -182,6 +182,70 @@ export async function githubCodeSearch(query: string, perPage = 5): Promise<Sour
     score: (it.score as number) ?? null,
   }));
   return { ok: true, items, cost: "free", totalCount: body.total_count ?? null, timingMs: ms, ranking: "best-match relevance (not stars)" };
+}
+
+/**
+ * GitHub repository search — the repo-finder leg. Unlike code search this
+ * returns WHOLE REPOSITORIES matching a concept ("LLM router in bun"),
+ * with stars/language/description so the caller can pick a comparative
+ * implementation to borrow from. Unauthenticated calls are allowed but
+ * heavily rate-limited; a resolved token (same chain as code search)
+ * raises the ceiling, so we send it when present.
+ *
+ * Relevance: GitHub best-match when no sort is given; `stars` reranks
+ * client-side by BM25 over (description + topics + name) so star count
+ * cannot bury a better-matching small repo.
+ */
+export async function githubRepoSearch(query: string, perPage = 5, opts: { sort?: "best-match" | "stars" } = {}): Promise<SourceResult> {
+  const token = resolveGithubToken();
+  const params = new URLSearchParams({ q: query, per_page: String(perPage) });
+  if (opts.sort === "stars") params.set("sort", "stars");
+  const url = `https://api.github.com/search/repositories?${params}`;
+  const headers: Record<string, string> = {
+    Accept: "application/vnd.github+json",
+    "User-Agent": USER_AGENT,
+    "X-GitHub-Api-Version": "2022-11-28",
+  };
+  if (token.key) headers.Authorization = `Bearer ${token.key}`;
+  const { data, ms } = await fetchJson(url, { headers, timeoutMs: 25_000 });
+  const body = data as { total_count?: number; items?: Record<string, unknown>[] };
+  const items: CodeItem[] = (body.items ?? []).map((it) => {
+    const full = (it.full_name as string) ?? null;
+    const desc = (it.description as string) ?? "";
+    const topics = (it.topics as string[] | undefined) ?? [];
+    return {
+      name: (it.name as string) ?? null,
+      path: null,
+      repo: full,
+      html_url: (it.html_url as string) ?? (full ? `https://github.com/${full}` : null),
+      score: (it.stargazers_count as number) ?? 0,
+      description: desc,
+      language: (it.language as string) ?? null,
+      topics,
+      stars: (it.stargazers_count as number) ?? 0,
+      bm25: bm25DocScore(`${(full ?? "").replace(/[-_/]/g, " ")} ${desc} ${topics.join(" ")}`, query),
+    } as unknown as CodeItem;
+  });
+  return {
+    ok: true, items, cost: "free",
+    totalCount: body.total_count ?? null, timingMs: ms,
+    ranking: token.key ? "GitHub relevance; BM25 rerank over name/description/topics" : "GitHub relevance (unauthenticated)",
+  };
+}
+
+/**
+ * One-doc BM25-style relevance for repo finder results: token-overlap
+ * scoring between the repo text (name/description/topics) and the query.
+ * Cheap on purpose — GitHub relevance remains the primary signal; this
+ * only breaks ties between GitHub's order and our query intent.
+ */
+function bm25DocScore(doc: string, query: string): number {
+  const docT = new Set(tokenize(doc));
+  const q = tokenize(query);
+  if (docT.size === 0 || q.length === 0) return 0;
+  let hits = 0;
+  for (const t of q) if (docT.has(t)) hits++;
+  return hits / q.length;
 }
 
 /** arXiv Atom, parsed without an XML dependency. Entries only — that is all we use. */
@@ -347,37 +411,77 @@ function s2ToItem(p: S2Paper): PaperItem {
 }
 
 /** Semantic Scholar: 200M+ papers, free anonymous tier, strictly more signal than arXiv. */
-export async function s2Search(query: string, maxResults: number): Promise<SourceResult> {
+/** Semantic Scholar key resolver: env first, then the secretsmith vault ($HOME/.secrets). */
+export function resolveS2Key(explicit = ""): { key: string; from: string } {
+  if (explicit) return { key: explicit, from: "explicit" };
+  const env = process.env.S2_API_KEY || process.env.SEMANTIC_SCHOLAR_API_KEY || "";
+  if (env) return { key: env, from: "environment" };
+  try {
+    const vault = readFileSync(join(homedir(), ".secrets"), "utf8");
+    for (const line of vault.split("\n")) {
+      const m = /^\s*(?:export\s+)?S2_API_KEY\s*=\s*\"?([^"\s]+)\"?/.exec(line)
+        || /^\s*(?:export\s+)?SEMANTIC_SCHOLAR_API_KEY\s*=\s*\"?([^"\s]+)\"?/.exec(line);
+      if (m?.[1]) return { key: m[1], from: "$HOME/.secrets" };
+    }
+  } catch { /* no vault */ }
+  return { key: "", from: "none" };
+}
+
+export async function s2Search(query: string, maxResults: number, explicitKey = ""): Promise<SourceResult> {
   throttle("semanticscholar", 1000);
   const url = `${S2_BASE}/graph/v1/paper/search?${new URLSearchParams({
     query, limit: String(Math.max(1, Math.min(25, maxResults))),
     fields: "title,abstract,authors,year,url,openAccessPdf,citationCount,externalIds",
   })}`;
-  const { data, ms } = await fetchJson(url, { headers: { "User-Agent": USER_AGENT } });
+  const key = resolveS2Key(explicitKey);
+  const headers: Record<string, string> = { "User-Agent": USER_AGENT };
+  // Authenticated key avoids the anonymous 429 ceiling entirely.
+  if (key.key) headers["x-api-key"] = key.key;
+  const { data, ms } = await fetchJson(url, { headers });
   const body = data as { data?: S2Paper[] };
-  return { ok: true, items: (body.data ?? []).map(s2ToItem), cost: "free", ranking: "relevance", timingMs: ms };
+  return { ok: true, items: (body.data ?? []).map(s2ToItem), cost: "free", ranking: key.key ? "relevance (authenticated)" : "relevance", timingMs: ms };
 }
 
 /** DBLP: CS-only, no abstracts, CC0 metadata. Best for venue-aware CS work. */
-export async function dblpSearch(query: string, maxResults: number): Promise<SourceResult> {
+export async function dblpSearch(query: string, maxResults: number, opts: { retries?: number } = {}): Promise<SourceResult> {
   throttle("dblp", 1000);
-  const url = `${DBLP_BASE}?${new URLSearchParams({ q: query, format: "json", h: String(Math.max(1, Math.min(30, maxResults))), c: "0" })}`;
-  const { data, ms } = await fetchJson(url, { headers: { "User-Agent": USER_AGENT } });
-  const body = data as { result?: { hits?: { hit?: { info?: Record<string, unknown> }[] } } };
-  const hits = body.result?.hits?.hit ?? [];
-  const items = hits.map((h): PaperItem => {
-    const info = h.info ?? {};
-    const raw = (info.authors as { author?: unknown })?.author ?? [];
-    const list = Array.isArray(raw) ? raw : [raw];
-    return {
-      title: (info.title as string) ?? null,
-      authors: list.filter((a): a is { text?: string } => typeof a === "object" && a !== null).slice(0, 6).map((a) => a.text ?? ""),
-      venue: (info.venue as string) ?? null,
-      year: (info.year as string) ?? null,
-      url: (info.url as string) ?? null,
-    };
-  });
-  return { ok: true, items, cost: "free", ranking: "relevance", timingMs: ms, note: "CS-only, no abstracts, CC0" };
+  const maxRetries = opts.retries ?? 2;
+  const mkUrl = () => `${DBLP_BASE}?${new URLSearchParams({ q: query, format: "json", h: String(Math.max(1, Math.min(30, maxResults))), c: "0" })}`;
+  // dblp fronts a bot-challenge interstitial that serves HTML instead of JSON.
+  // One polite retry after a short backoff clears the challenge for the
+  // session; a second failure degrades the leg with a clear note (never fatal).
+  const headers = { "User-Agent": USER_AGENT, Accept: "application/json" };
+  let lastError = "unknown";
+  const t0 = performance.now();
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const { data, ms } = await fetchJson(mkUrl(), { headers, timeoutMs: 20_000 });
+      const body = data as { result?: { hits?: { hit?: { info?: Record<string, unknown> }[] } } };
+      const hits = body.result?.hits?.hit ?? [];
+      const items = hits.map((h): PaperItem => {
+        const info = h.info ?? {};
+        const raw = (info.authors as { author?: unknown })?.author ?? [];
+        const list = Array.isArray(raw) ? raw : [raw];
+        return {
+          title: (info.title as string) ?? null,
+          authors: list.filter((a): a is { text?: string } => typeof a === "object" && a !== null).slice(0, 6).map((a) => a.text ?? ""),
+          venue: (info.venue as string) ?? null,
+          year: Number(info.year ?? 0) || null,
+          url: (info.url as string) ?? null,
+          summary: "",
+        };
+      });
+      return { ok: true, items, cost: "free", timingMs: performance.now() - t0, ranking: "relevance", retriesUsed: attempt };
+    } catch (err) {
+      lastError = String((err as Error).message ?? err);
+      if (/HTML|Challenge/i.test(lastError) && attempt < maxRetries) {
+        await Bun.sleep(1500 * (attempt + 1));
+        continue;
+      }
+      break;
+    }
+  }
+  return { ok: false, items: [], cost: "free", timingMs: performance.now() - t0, error: `dblp challenge persisted after ${maxRetries} retries: ${lastError}` };
 }
 
 /** HF Papers: hybrid semantic + keyword over arXiv-indexed AI/ML, no token needed. */
