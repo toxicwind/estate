@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# mise run tailnet-doctor — tailnet connectivity report
+# Probes RustDesk/SSH ports, validates routes egress via tailscale0/tsd,
+# and checks tailscaled daemon health. Project: ranch/tailnet-doctor.
+set -euo pipefail
+cd /home/toxic/estate/ranch/tailnet-doctor
+bun install --frozen-lockfile
+bun start
