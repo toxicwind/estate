@@ -268,6 +268,61 @@ export async function freeinfModels(): Promise<string[]> {
   }
 }
 
+export interface EmbedResult {
+  ok: boolean;
+  winner: string;
+  score: number;   // cosine to winner
+  margin: number;  // winner minus runner-up
+  ranked: { label: string; score: number }[];
+  model: string;
+  dims: number;
+  error?: string;
+  ms: number;
+}
+
+export function cosine(a: number[], b: number[]): number {
+  let dot = 0, an = 0, bn = 0;
+  for (let i = 0; i < a.length; i++) { dot += a[i] * b[i]; an += a[i] * a[i]; bn += b[i] * b[i]; }
+  return dot / (Math.sqrt(an) * Math.sqrt(bn) || 1);
+}
+
+/** Embedding-based classifier via FreeInference bge-m3. Embed the probe text and
+ *  each candidate label, pick the nearest by cosine. Deterministic, fast, and
+ *  credit-free — the "actual bge-m3" path, not an LLM. Margin-gated. */
+export async function embedClassify(text: string, labels: string[], opts: { model?: string; labelDesc?: boolean; timeoutMs?: number } = {}): Promise<EmbedResult> {
+  if (!FREEINF_KEY) return { ok: false, winner: "", score: 0, margin: 0, ranked: [], model: opts.model ?? "bge-m3", dims: 0, error: "no FREEINFERENCE_API_KEY", ms: 0 };
+  const model = opts.model ?? "bge-m3";
+  const started = Date.now();
+  const inputs = [text, ...labels.map((l) => (opts.labelDesc ? `label: ${l}` : l))];
+  try {
+    const ac = new AbortController();
+    const timer = setTimeout(() => ac.abort(), opts.timeoutMs ?? 30_000);
+    const res = await fetch(`${FREEINF_BASE}/embeddings`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${FREEINF_KEY}` },
+      body: JSON.stringify({ model, input: inputs }),
+      signal: ac.signal,
+    });
+    clearTimeout(timer);
+    if (!res.ok) return { ok: false, winner: "", score: 0, margin: 0, ranked: [], model, dims: 0, error: `HTTP ${res.status}`, ms: Date.now() - started };
+    const d = await res.json();
+    const vecs: number[][] = (d.data ?? []).map((x: any) => x.embedding);
+    const dims = vecs[0]?.length ?? 0;
+    const probe = vecs[0];
+    if (dims === 0) return { ok: false, winner: "", score: 0, margin: 0, ranked: [], model, dims: 0, error: "empty embedding", ms: Date.now() - started };
+    const ranked = labels.map((l, i) => ({
+      label: l,
+      score: vecs[i + 1] ? cosine(probe, vecs[i + 1]) : 0,
+    })).sort((a, b) => b.score - a.score);
+    const top = ranked[0];
+    const margin = (top?.score ?? 0) - (ranked[1]?.score ?? 0);
+    const confident = (top?.score ?? 0) > 0.2 && margin > 0.02;
+    return { ok: confident, winner: confident ? top.label : "", score: top?.score ?? 0, margin, ranked, model, dims, ms: Date.now() - started };
+  } catch (e: any) {
+    return { ok: false, winner: "", score: 0, margin: 0, ranked: [], model, dims: 0, error: e?.message ?? "timeout", ms: Date.now() - started };
+  }
+}
+
 /** Resolve classifier model ids: explicit list wins; else curated 2026 default. */
 export async function bestClassifyModels(explicit: string[], labels: string[]): Promise<string[]> {
   if (explicit.length) return explicit;

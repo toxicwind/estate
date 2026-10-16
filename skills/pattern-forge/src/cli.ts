@@ -468,8 +468,8 @@ async function cmdHf(args: Args): Promise<number> {
     }
   }
 
-  // classify <text> --labels a,b,c [--models m1,m2,m3] [--engine local|freeinference|hf]
-  if (sub === "classify" || sub === "completions") {
+  // classify <text> --labels a,b,c [--models m1,m2,m3] [--engine local|freeinference|hf|embed]
+  if (sub === "classify" || sub === "completions" || sub === "embed" || sub === "bge") {
     const text = REST.join(" ");
     const labels = String(args.flags.get("labels") ?? "").split(",").filter(Boolean);
     const explicit = String(args.flags.get("models") ?? "").split(",").filter(Boolean);
@@ -478,6 +478,18 @@ async function cmdHf(args: Args): Promise<number> {
       return 2;
     }
     const engine = String(args.flags.get("engine") ?? (sub === "completions" ? "freeinference" : "local"));
+    if (engine === "embed" || engine === "bge" || sub === "embed" || sub === "bge") {
+      const r = await hf.embedClassify(text, labels, { model: String(args.flags.get("model") ?? "bge-m3") });
+      if (args.flags.get("json") === true) {
+        process.stdout.write(JSON.stringify({ text, engine: "embed", model: r.model, ok: r.ok, winner: r.winner, score: r.score, margin: r.margin, dims: r.dims, ranked: r.ranked, error: r.error, ms: r.ms }) + "\n");
+        return r.ok ? 0 : 2;
+      }
+      process.stdout.write(`HF classify "${text.slice(0, 50)}" [embed/${r.model} dims=${r.dims}]\n`);
+      for (const l of r.ranked) process.stdout.write(`  ${l.label === r.winner ? "→" : " "} ${l.label.padEnd(60)} ${l.score.toFixed(4)}\n`);
+      if (r.error) process.stdout.write(`  ✗ ${r.error}\n`);
+      process.stdout.write(`\n  ${r.ok ? `winner: ${r.winner} (cos ${r.score.toFixed(4)}, +${r.margin.toFixed(4)})` : `ABSTAIN: best ${r.winner || "none"} @ ${r.score.toFixed(4)}, margin ${r.margin.toFixed(4)} too thin`}\n`);
+      return r.ok ? 0 : 2;
+    }
     if (engine === "freeinference" || sub === "completions") {
       const model = String(args.flags.get("model") ?? "glm-5.3-flash");
       const r = await hf.completionsClassify(text, labels, { model });
@@ -579,7 +591,8 @@ const HELP = `forge — pattern-forge: retrieve, race, borrow, search. Pure Bun.
   forge subgraph --root <dir> --trace <file> [--depth N]
   forge hf search <query> [--sort downloads|likes|trendingScore] [--task zero-shot|embed|gen] [--limit N]
   forge hf models --provider freeinference
-  forge hf classify <text> --labels a,b,c [--engine local|freeinference|hf] [--model glm-5.3-flash]
+  forge hf classify <text> --labels a,b,c [--engine local|freeinference|hf|embed] [--model glm-5.3-flash]
+  forge hf embed <text> --labels a,b,c [--model bge-m3]  (bge-m3 cosine-nearest classifier)
   forge hf find-classifier <text> --labels a,b,c [--task zero-shot] [--limit N]
   forge audit --root <dir> --claim "<claim>" [--globs a,b] [--top N]
   forge audit --root <dir> --pattern '<ast-grep pattern>' [--lang ts] [--globs a,b]

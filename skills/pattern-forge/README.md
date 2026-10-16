@@ -67,10 +67,10 @@ forge. One pure-Bun CLI with zero dependencies and no API-key gate:
 # Find the best 2026 model for a task (ranked by downloads/likes/trending/recency)
 forge hf search "zero-shot" --task zero-shot --limit 8
 
-# Classify text against your own labels — serverless race, then pure-Bun offline
-forge hf classify "self-hosted agent tooling" --labels tool,infra,vendor,mcp
+# Classify text into your own labels — bge-m3 embeddings (the actual classifier)
+forge hf embed "self-hosted agent tooling" --labels tool,infra,vendor,mcp
 
-# Completion-based classifier via FreeInference (free, no credits, OpenAI-compatible)
+# Completion-based classifier via FreeInference LLM (glm-5.3-flash), credit-free
 forge hf classify "self-hosted agent tooling" --labels tool,infra,vendor --engine freeinference --model glm-5.3-flash
 
 # Find the model that SHOULD be your classifier, then verify it on real input
@@ -92,9 +92,10 @@ forge hf classify "self-hosted agent tooling" --labels tool,infra,vendor --json
 | Model finder ("best 2026") | **rank-normalized** | list only | no |
 
 The killer behaviors: it **never bails** (when HF serverless is 402-gated it
-switches to a deterministic pure-Bun idf-weighted + n-gram scorer and reports an
-ABSTAIN instead of a false-best), and it **races** candidate models the same way
-`forge race` races implementations — pattern-borrow applied to models.
+switches to `embed` — FreeInference **bge-m3** embeddings, cosine-nearest label,
+credit-free and deterministic — or a pure-Bun `local` idf+ngram scorer with ABSTAIN),
+and it **races** candidate models the same way `forge race` races
+implementations — pattern-borrow applied to models.
 
 ### Architecture
 

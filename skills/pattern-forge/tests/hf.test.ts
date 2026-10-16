@@ -1,5 +1,5 @@
 import { test, describe, expect } from "bun:test";
-import { localZeroShot, rankModel, sortByRank, pickLabel, completionsClassify } from "../src/hf";
+import { localZeroShot, rankModel, sortByRank, pickLabel, completionsClassify, cosine } from "../src/hf";
 
 describe("hf module — pure-Bun, no network", () => {
   test("localZeroShot ranks relevant label first", () => {
@@ -46,5 +46,13 @@ describe("hf module — pure-Bun, no network", () => {
     expect(pickLabel("website neither...", labels)).toBe("website");
     expect(pickLabel("weird output", labels)).toBe("");
     expect(pickLabel("", ["a", "b"])).toBe("");
+  });
+
+  test("cosine similarity (bge-m3 embed classifier math)", () => {
+    expect(cosine([1, 0], [1, 0])).toBeCloseTo(1, 6);
+    expect(cosine([1, 0], [0, 1])).toBeCloseTo(0, 6);
+    expect(cosine([1, 1], [1, 1])).toBeCloseTo(1, 6);
+    expect(cosine([2, 0], [0, 2])).toBeCloseTo(0, 6);
+    expect(cosine([1, 0], [3, 0])).toBeCloseTo(1, 6); // collinear
   });
 });
