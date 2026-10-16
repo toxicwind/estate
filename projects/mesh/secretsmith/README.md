@@ -9,6 +9,24 @@
 > friendly schema registry, JSON scripting mode, and a Chromium
 > `os_crypt` pipeline that can **never** print the raw key.
 
+## 🧪 Selftest — main feature
+
+`secretsmith selftest` is the headline guarantee: one command that proves,
+on the box it runs on, that secrets round-trip, listings redact, and the
+Chromium `os_crypt` key is refused on every display path. Everything runs
+inside a throwaway collection that is deleted on every exit path, success
+or failure.
+
+```bash
+secretsmith selftest
+# selftest: PASSED
+```
+
+With `--json` you get a machine-readable report of every check:
+collection-create, item-create, search-finds-item, secret-round-trip,
+listing-redacts, show-reveals-only-on-flag, os-crypt-key-refused,
+key-never-fetched-on-refusal, cleanup.
+
 Fork lineage: [GNOME/libsecret](https://github.com/GNOME/libsecret)
 (`secret-tool`), forked to
 [toxicwind/libsecret](https://github.com/toxicwind/libsecret) — this tool
@@ -17,18 +35,20 @@ reimplements and maximalizes `secret-tool`'s D-Bus semantics in Python.
 **Why it exists.** A real bug started it: a Chromium `os_crypt` key lookup
 filtered on `xdg:schema org.freedesktop.Secret.Generic` — a schema Chromium
 never uses — and came back empty. `secretsmith` makes that impossible:
-**default search has no schema filter**, and `--schema` resolves through the
-known-schema registry (`schemas.json`) instead of a raw string you can get
+**default search has no schema filter**, and `--schema` resolves through
+the known-schema registry (`schemas.json`) instead of a raw string you can get
 wrong.
 
 ## Features
 
 - 🔍 **Schema-free search by default** — the original empty-result bug is impossible
 - 📇 **Schema registry** (`schemas.json`): `--schema chromium` instead of memorizing `xdg:schema` URIs; unknown schemas warn, not fail
-- 🧪 **JSON mode for everything** (`--json`) — fully scriptable
+- 🧪 **Selftest** (`secretsmith selftest`): live end-to-end proof — round-trip, redaction, key refusal, guaranteed cleanup. Main feature.
+- 📄 **JSON mode for everything** (`--json`) — fully scriptable
 - 🔒 **Never leaks**: secrets print only under `--show`; `set` reads from stdin/`--secret-file`, never argv (no `ps` snooping)
 - 🛡️ **Chromium os_crypt key is never printed on any path** — not with `--show`, not as JSON; `get`/`search --show` on key items is refused *before* the secret is fetched
 - 🍪 **Chromium pipeline**: decrypt `Login Data` / cookies in place, key consumed internally, never emitted
+- 🔗 **Keypool integration**: optional secretsmith store overlay for keypool secrets; degrades gracefully when absent
 - 📦 Single-file CLI (`secretsmith.py`), stdlib + `dbus-python` (+ `cryptography` for Chromium)
 
 ## Architecture
@@ -41,6 +61,7 @@ flowchart LR
     BUS --> COL[default collection / items]
     CLI --> CRYPT[chromium os_crypt pipeline]
     CRYPT -->|key consumed internally<br/>NEVER printed| L[chromium-logins / cookies]
+    CLI --> KP[keypool store overlay<br/>optional, degrades on absence]
 ```
 
 ## Quick Start
@@ -48,6 +69,7 @@ flowchart LR
 ```bash
 ln -sf /home/toxic/estate/projects/mesh/secretsmith/bin/secretsmith ~/.local/bin/secretsmith
 secretsmith check
+secretsmith selftest
 secretsmith search --schema chromium
 ```
 
@@ -56,6 +78,10 @@ secretsmith search --schema chromium
 ```bash
 # health: service reachable, default collection unlocked, Chromium entry readable
 secretsmith check
+
+# selftest: live proof of round-trip, redaction, key refusal, cleanup
+secretsmith selftest
+secretsmith selftest --json
 
 # search everything (no schema filter — the original bug is impossible)
 secretsmith search --attr application=chromium
@@ -81,10 +107,11 @@ secretsmith lock default / unlock default
 
 # registry
 secretsmith schemas
+secretsmith registry-add ops com.example.ops
 
 # Chromium/Chrome os_crypt pipeline (the use case that started this)
-secretsmith check                        # key metadata: byte count, AES key candidates
-secretsmith chromium-logins              # decrypt ~/.config/chromium/Default/Login Data
+secretsmith check                      # key metadata: byte count, AES key candidates
+secretsmith chromium-logins            # decrypt ~/.config/chromium/Default/Login Data
 secretsmith chromium-logins --profile-dir /path/to/profile --show
 secretsmith chromium-cookies
 
@@ -111,19 +138,40 @@ alias of `chromium` (`chrome_libsecret_os_crypt_password_v2`); `generic` is
 `org.freedesktop.Secret.Generic` — explicitly documented as *not* what
 Chromium uses. Unregistered raw schema strings still work but warn.
 
+## Keypool integration
+
+`secretsmith` doubles as an optional secrets store for [keypool](https://github.com/toxicwind/estate).
+When `KEYPOOL_SECRETS_BACKEND=secretsmith`, keypool-attributed items
+(stored under the attribute `keypool=1`) are overlaid on top of the
+file/dir transport — store wins, files stay the transport.
+
+The overlay degrades to a no-op whenever the secretsmith CLI is absent or
+its session bus is unreachable: keypool never fails to boot because of the
+optional store. `os_crypt` key items (`secret_is_key` schemas) are refused
+by secretsmith *before* they are fetched, so they can never enter keypool's
+key dict through this loader. That refusal is structural, not a convention.
+
+| Env var | What |
+|---|---|
+| `KEYPOOL_SECRETS_BACKEND` | Set to `secretsmith` to enable the store overlay |
+| `KEYPOOL_SECRETSMITH_PATH` | Directory containing `secretsmith.py` (default: `../projects/mesh/secretsmith` relative to the loader) |
+
 ## Config
 
 | Env / file | What |
 |---|---|
 | `DBUS_SESSION_BUS_ADDRESS` | session bus; `bin/secretsmith` defaults it to the user's session bus when unset |
 | `schemas.json` | friendly-name → `xdg:schema` registry, extended in place |
+| `KEYPOOL_SECRETS_BACKEND` | Set to `secretsmith` to enable the keypool store overlay |
+| `KEYPOOL_SECRETSMITH_PATH` | Directory containing `secretsmith.py` for the keypool loader |
 
 Deps: `python3`, `dbus-python`, `cryptography` (Chromium pipeline only).
 
 ## Dev
 
 ```bash
-python3 -m unittest discover -s tests -v          # unit tests (no keyring needed)
+python3 -m unittest discover -s tests -v
+         # unit tests (no keyring needed)
 SSM_TEST_KEYRING=1 python3 -m unittest discover -s tests -v   # + live D-Bus integration
 ```
 
@@ -137,6 +185,9 @@ secretsmith/
 ├── secretsmith.py           # the CLI (single file)
 ├── schemas.json             # known-schema registry
 ├── bin/secretsmith          # launcher (PATH install target)
+├── keypool-secrets.py       # keypool secrets loader drop-in
+├── keypool_secrets.py       # keypool secrets loader drop-in (alt name)
+├── compat-chromium-keyring.sh
 ├── tests/test_secretsmith.py
 └── README.md
 ```
