@@ -1,0 +1,23 @@
+[skill]
+name = "mbx-cache"
+version = "1.0.0"
+description = "Direct local mise remote task cache (port 25148), built from pinned upstream Rust source without containers."
+author = ""
+license = "MIT"
+tags = ["mise", "build-cache", "local"]
+
+[runtime]
+type = "promptonly"
+entry = ""
+
+[tools]
+provided = []
+
+[requirements]
+tools = ["mise", "cargo", "pitchfork"]
+capabilities = []
+
+[source]
+type = "estate"
+
+[config]

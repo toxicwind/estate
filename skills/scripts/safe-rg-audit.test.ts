@@ -8,9 +8,11 @@ test("safeSearch ignores log files and session directories", () => {
     timeoutMs: 4000,
   });
 
-  // Verify it never touches active session log files
-  expect(result.stdout).not.toContain(".bash.log");
-  expect(result.stdout).not.toContain(".jsonl");
+  // Verify it never touches active session log files: no matched FILE PATH
+  // may be a .log/.jsonl file. (Matched line *content* mentioning ".jsonl"
+  // is fine — e.g. evals.json fixtures — only real transcript hits are bad.)
+  expect(result.stdout).not.toMatch(/\/[^:\s]+\.jsonl:\d+/);
+  expect(result.stdout).not.toMatch(/\/[^:\s]+\.log:\d+/);
   expect(result.exitCode).toBeDefined();
 });
 

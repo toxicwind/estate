@@ -1,3 +1,9 @@
+---
+name: awrawr-shim
+description: Expose the sidechat shim on the Awrawr MCP connector — 5 sidechat tools riding the proven custom.awrawr-mcp streamable-HTTP connector, no new connector required.
+allowed-tools: inherited
+---
+
 # awrawr-shim — sidechat shim tools on the Awrawr Mcp connector
 
 The sidechat shim (`/home/toxic/hatch/sidechat_shim.py`, owner Pry) is
