@@ -1,0 +1,18 @@
+{
+  "chromium": {
+    "xdg:schema": "chrome_libsecret_os_crypt_password_v2",
+    "secret_is_key": true
+  },
+  "chrome": {
+    "xdg:schema": "chrome_libsecret_os_crypt_password_v2",
+    "secret_is_key": true
+  },
+  "chromium-v1": {
+    "xdg:schema": "chrome_libsecret_os_crypt_password_v1",
+    "secret_is_key": true
+  },
+  "generic": {
+    "xdg:schema": "org.freedesktop.Secret.Generic",
+    "secret_is_key": false
+  }
+}
