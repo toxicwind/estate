@@ -4,8 +4,8 @@ One-shot migration package from **July 2026** that converted the grok-build stac
 
 <div align="right">
 
-[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate-projects#license)
+[![estate-projects](https://img.shields.io/badge/estate--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/estate-projects)
 
 </div>
 
@@ -120,4 +120,4 @@ grok-build's hardcoded `mcp_servers` TOML block is replaced by a federated gatew
 
 ## License & security
 
-MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). Configs derived from the July 2026 grok-build `config.toml`, mapped to pi.dev's documented schema. This directory is archived reference — don't resurrect `install.sh` as a live installer without reviewing it against the current shep-based MCP setup. API keys go in `auth.json` (encrypted) or env vars — never in a committed config.
+MIT where marked — [LICENSE](https://github.com/toxicwind/estate-projects#license). Configs derived from the July 2026 grok-build `config.toml`, mapped to pi.dev's documented schema. This directory is archived reference — don't resurrect `install.sh` as a live installer without reviewing it against the current shep-based MCP setup. API keys go in `auth.json` (encrypted) or env vars — never in a committed config.

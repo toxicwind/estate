@@ -1,7 +1,7 @@
 # Herd Maximal Merge Plan
 
 ## Context
-Integrate upstream `sovereign-swap` and latest `llama-swap` features into `projects/herd` to create a unified, robust AI router backend that supports advanced MCP, tailcat peering, sqlite activity storage, capability compatibility checks, and concurrency limits without breaking existing herd configurations.
+Integrate upstream `estate-swap` and latest `llama-swap` features into `projects/herd` to create a unified, robust AI router backend that supports advanced MCP, tailcat peering, sqlite activity storage, capability compatibility checks, and concurrency limits without breaking existing herd configurations.
 
 ## Approach
 1. **Dependency & Struct Alignment**:

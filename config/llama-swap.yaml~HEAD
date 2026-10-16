@@ -152,12 +152,12 @@ routing:
 
 macros:
   MODEL_DIR: /home/toxic/models
-  BEELLAMA_BIN: /home/toxic/projects/sovereign-projects/herd/engines/beellama.cpp/build-cuda86/bin/llama-server
-  TURBO_BIN: /home/toxic/projects/sovereign-projects/herd/engines/llama-cpp-turboquant/build/bin/llama-server
-  IK_BIN: /home/toxic/projects/sovereign-projects/herd/engines/ik_llama.cpp/build/bin/llama-server
-  BEELLAMA_LD: /home/toxic/projects/sovereign-projects/herd/engines/beellama.cpp/build-cuda86/bin
-  TURBO_LD: /home/toxic/projects/sovereign-projects/herd/engines/llama-cpp-turboquant/build/bin
-  IK_LD: /home/toxic/projects/sovereign-projects/herd/engines/ik_llama.cpp/build/src:/home/toxic/projects/sovereign-projects/herd/engines/ik_llama.cpp/build/ggml/src
+  BEELLAMA_BIN: /home/toxic/projects/estate-projects/herd/engines/beellama.cpp/build-cuda86/bin/llama-server
+  TURBO_BIN: /home/toxic/projects/estate-projects/herd/engines/llama-cpp-turboquant/build/bin/llama-server
+  IK_BIN: /home/toxic/projects/estate-projects/herd/engines/ik_llama.cpp/build/bin/llama-server
+  BEELLAMA_LD: /home/toxic/projects/estate-projects/herd/engines/beellama.cpp/build-cuda86/bin
+  TURBO_LD: /home/toxic/projects/estate-projects/herd/engines/llama-cpp-turboquant/build/bin
+  IK_LD: /home/toxic/projects/estate-projects/herd/engines/ik_llama.cpp/build/src:/home/toxic/projects/estate-projects/herd/engines/ik_llama.cpp/build/ggml/src
 
   EXAONE_1B_IQ4XS: ${MODEL_DIR}/EXAONE-4.0-1.2B-IQ4_XS.gguf
   EXAONE_1B_Q4KM: ${MODEL_DIR}/EXAONE-4.0-1.2B-Q4_K_M.gguf

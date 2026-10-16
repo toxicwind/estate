@@ -5,7 +5,7 @@
 
 </div>
 
-# Sovereign
+# Estate
 
 > Local multi-service stack — one OpenAI-compatible LLM front door, agent kernel, Telegram bot, ops dashboard, metrics, optional Tailscale exposure.
 
@@ -13,7 +13,7 @@
 
 - **One front door — llama-swap `:25100` (toxicwind fork): inference router + `/ui` + `/v1`**
 - **Agent kernel — OpenFang OS with 206 models, 61 skills, Discord bridge**
-- **Ops visibility — rust-web dashboard, Prometheus metrics, Grafana, Sovereign Monitor**
+- **Ops visibility — rust-web dashboard, Prometheus metrics, Grafana, Estate Monitor**
 - **MCP federation — 43 MCPs behind one endpoint**
 - **Ports SSOT — `config/ports.env` (25xxx); orchestration via `mise` + `pitchfork`**
 
@@ -133,7 +133,7 @@ The TypeScript flock router (`tools/estate-router/estate-router-ts/router.ts`) h
 
 The standalone Bun `estate-router` (`tools/estate-router/estate-router-ts/`) remains in-tree for external tooling use — no port assigned in `config/ports.env`, not started by `mise run up`. The Go port inside llama-swap is the primary router.
 
-### Sovereign Monitor — Agentic Runtime Intelligence
+### Estate Monitor — Agentic Runtime Intelligence
 
 `tools/estate-monitor/` provides kernel-aware, autonomous failure-recovery primitives used by the agent loop itself:
 
@@ -211,7 +211,7 @@ Access services **directly** on their ports (LAN or Tailscale MagicDNS). Optiona
 
 ## Workspaces (`toxicwind/estate-projects`)
 
-The **Sovereign Workspaces** repo is the unified workspace layer that operates in tandem with this control plane.
+The **Estate Workspaces** repo is the unified workspace layer that operates in tandem with this control plane.
 
 - **GitHub**: [toxicwind/estate-projects](https://github.com/toxicwind/estate-projects)
 - **Local**: `/home/toxic/projects/estate-projects/`
@@ -287,9 +287,9 @@ estate/
 
 ## Zed Provider Integration
 
-Zed is configured to connect directly to Sovereign Stack services. All provider configs live in `.zed/settings.json` (in-repo).
+Zed is configured to connect directly to Estate Stack services. All provider configs live in `.zed/settings.json` (in-repo).
 
-### Sovereign Stack providers
+### Estate Stack providers
 
 | Provider          | Wire                            | Port     | Why                                                                                                               |
 | ----------------- | ------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------- |
@@ -307,7 +307,7 @@ Free/keyless endpoints configured under `language_models.openai_compatible` (via
 
 | Name                             | Model                       | Auth             |
 | -------------------------------- | --------------------------- | ---------------- |
-| **Sovereign Hybrid**             | `auto` (6-strategy routing) | Local (standalone router) |
+| **Estate Hybrid**             | `auto` (6-strategy routing) | Local (standalone router) |
 | **Free Coding Model**            | `fcm`                       | Local (standalone router) |
 | **Tencent Hy3**                  | `hy3`                       | OpenRouter free  |
 | **Poolside Laguna M.1**          | `laguna-m1`                 | OpenRouter free  |

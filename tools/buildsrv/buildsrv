@@ -8,7 +8,7 @@ only the filesystem — no RPC to break).
     buildsrv submit --name NAME --repo DIR --toolchain bun \
         --cmd "bunx tsc --noEmit" [--workdir DIR] [--timeout 600] \
         [--artifact dist/] [--env KEY=VAL]
-    buildsrv submit --name pi-ast --repo /home/toxic/sovereign/tau/engine \
+    buildsrv submit --name pi-ast --repo /home/toxic/estate/tau/engine \
         --toolchain rust --cmd "cargo build -p pi-ast"
     buildsrv status [ID]        # one job, or a table of recent jobs
     buildsrv logs ID [-f] [-n N]

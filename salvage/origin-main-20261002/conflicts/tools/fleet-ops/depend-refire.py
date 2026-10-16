@@ -125,8 +125,8 @@ def wait_running(fqdn: str, timeout_s: int = 15) -> bool:
 def main() -> int:
     cfg = tomllib.loads(TOML.read_text())
     daemons = cfg.get("daemons", {})
-    # project prefix: pitchfork.toml at /home/toxic/estate -> "sovereign/"
-    prefix = "sovereign/"
+    # project prefix: pitchfork.toml at /home/toxic/estate -> "Estate/"
+    prefix = "Estate/"
     evidence = load_evidence()
     fired = []
     skipped_manual = []

@@ -1,5 +1,5 @@
-# sovereign — project-owned daemon manifest. Source of truth for 'stash-guard'.
-# Owned by the sovereign project; the parent only composes it.
+# Estate — project-owned daemon manifest. Source of truth for 'stash-guard'.
+# Owned by the Estate project; the parent only composes it.
 
 
 [daemons.stash-guard]

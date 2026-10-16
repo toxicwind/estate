@@ -1,4 +1,4 @@
-# Canonical source: sovereign/agents/trailboss/agent.toml
+# Canonical source: estate/agents/trailboss/agent.toml
 # Live copy: ~/.openfang/agents/trailboss/agent.toml (kernel re-seeds from disk on boot)
 name = "trailboss"
 version = "1.0.0"

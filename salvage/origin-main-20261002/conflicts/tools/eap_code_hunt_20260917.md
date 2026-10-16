@@ -24,7 +24,7 @@ layer* (`defer_loading`, `tool_search`, `ToolRetrieval`,
 the version number with a public release that lacks the feature. Real code
 options: (a) fetch the preview builds from the EAP bucket (needs Google-issued
 access; gsutil not installed on awrawr-pc), or (b) hand-roll the wire shapes in
-sovereign-router-ts against `/v1beta/interactions` from the verified spec.
+Estate-router-ts against `/v1beta/interactions` from the verified spec.
 Live verification remains blocked only by billing (429, project prepay
 depleted).
 
@@ -137,7 +137,7 @@ All unrelated to the Gemini EAP:
 
 ## Bottom line for the router work
 
-The native Gemini Interactions path in sovereign-router-ts must be hand-rolled
+The native Gemini Interactions path in Estate-router-ts must be hand-rolled
 from the verified spec: `POST /v1beta/interactions` with
 `{"model": "gemini-flash-tool-retrieval", "input": ..., "tools":
 [{"type": "tool_search"}, {"type": "function", "name": ..., "defer_loading":

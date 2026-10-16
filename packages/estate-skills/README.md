@@ -1,4 +1,4 @@
-# sovereign-skills
+# Estate-skills
 
 Skill definitions, agent recipes, and behavioral conventions for the Estate ecosystem — consumed by Pi, Tau, and subagents. Keep definitions atomic, self-contained, and deterministic.
 
@@ -33,7 +33,7 @@ flowchart TB
 
 ```bash
 # audit the Tau engine vs upstream
-bun run sovereign-skills/engine-audit.ts
+bun run Estate-skills/engine-audit.ts
 ```
 
 ## Adding a skill

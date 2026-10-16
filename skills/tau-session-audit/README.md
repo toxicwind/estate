@@ -84,7 +84,7 @@ During the audit of recent sessions (`2026-09-24T00-56-17` and `2026-09-23T20-59
 
 - **Workspace Root**: [`/home/toxic/estate/package.json`](https://github.com/toxicwind/estate/blob/forge/gate-retire-final/package.json)
   - Workspaces configured: `['herd', 'herd/ui-svelte', 'packages/*', 'services/*']`.
-  - Intended home for shared utilities: `packages/sovereign-utils` or `packages/utils` (already registered in workspace).
+  - Intended home for shared utilities: `packages/estate-utils` or `packages/utils` (already registered in workspace).
 - **Binary Distribution SSOT**:
   - Compiled binary: `projects/toxicwind/core/engine/packages/coding-agent/dist/tau` (242 MiB).
   - Production launcher: `~/.local/bin/tau` (Bun ELF binary).

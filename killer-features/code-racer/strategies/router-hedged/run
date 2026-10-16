@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""router-hedged: single-shot codegen through sovereign-router-ts (:25104).
+"""router-hedged: single-shot codegen through estate-router-ts (:25104).
 
 The router does speculative hedging (hedgedChain), circuit-breaker failover,
 and latency-EMA candidate scoring. Strategy = infrastructure diversity:

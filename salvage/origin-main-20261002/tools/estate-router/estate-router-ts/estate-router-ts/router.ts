@@ -1,13 +1,13 @@
 #!/usr/bin/env bun
 /**
- * Sovereign Router v3.1 (Bun/TypeScript)
- * Port of sovereign-router/router.py — same strategies, HealthDB WAL, circuit breakers.
+ * Estate Router v3.1 (Bun/TypeScript)
+ * Port of estate-router/router.py — same strategies, HealthDB WAL, circuit breakers.
  *
  * Strategies: fifo_matrix | ast_race | sticky_affinity | weighted_elo | circuit_chain | hybrid
  * Default hybrid: sticky → ast_race → circuit_chain; explicit CODING aliases go direct.
  *
- * Env SSOT: sovereign/config/ports.env (mise _.file) + ~/.secrets
- *   SOVEREIGN_ROUTER_PORT / SOVEREIGN_PORT — never invent non-25xxx ports
+ * Env SSOT: estate/config/ports.env (mise _.file) + ~/.secrets
+ *   ESTATE_ROUTER_PORT / ESTATE_PORT — never invent non-25xxx ports
  */
 
 import { createHash } from "node:crypto";
@@ -80,7 +80,7 @@ const server = Bun.serve({
 
     if (path.startsWith("/mesh")) {
       const m = await handleMeshRequest(req, {
-        service: "sovereign-router",
+        service: "estate-router",
         version: "v3.1",
       });
       if (m) return m;
@@ -114,7 +114,7 @@ const server = Bun.serve({
       }
       return json({
         status: "ok",
-        router: "sovereign-router-ts",
+        router: "estate-router-ts",
         version: "v3.1",
         strategy: STRATEGY,
         parallel: MAX_PARALLEL,
@@ -153,7 +153,7 @@ const server = Bun.serve({
         return json({ error: "invalid_json" }, 400);
       }
       const sid = sessionId(req, body);
-      const strat = req.headers.get("X-Sovereign-Strategy") || STRATEGY;
+      const strat = req.headers.get("X-Estate-Strategy") || STRATEGY;
       log(`${req.method} ${path} model=${body.model} strat=${strat}`);
 
       if (body.stream) {
@@ -185,7 +185,7 @@ const server = Bun.serve({
 
 const keyed = Object.keys(PROVIDERS).filter(keyOk);
 
-console.log(`Sovereign Router TS v3.1 on http://127.0.0.1:${PORT}/v1`);
+console.log(`Estate Router TS v3.1 on http://127.0.0.1:${PORT}/v1`);
 
 console.log(
   `Strategy=${STRATEGY} | routes: ${Object.keys(ROUTERS).join(", ")}`,

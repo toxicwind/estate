@@ -12,7 +12,7 @@ No code needs to move into flock — it's already there.
 The rename User is asking about **already happened once**: on 2026-09-30,
 commit `5d75050 "flock: rename Tack to Roost, nest as flock/roost/"` renamed
 Tack → Roost and nested it under flock. The next day (2026-10-01), commit
-`79a7a78 "feat(tack): sovereign provider wire-data authority (36 providers)"`
+`79a7a78 "feat(tack): Estate provider wire-data authority (36 providers)"`
 re-created `ranch/tack/` as a fresh duplicate. That directory is the entire
 problem. Everything below is the evidence.
 

@@ -20,19 +20,19 @@
 - `profiles.backup.selector`: `herd/pollinations-free/openai` → `herd/gemma-4-12b-unified`
 - Why this pick: measured HEALTHY local (499ms TTFT p50, 92 RPM), different model from `balanced` (real redundancy), zero external API dependency.
 
-### 2. `sovereign/config/herd.yaml` — canonical alias additions (additive only)
+### 2. `Estate/config/herd.yaml` — canonical alias additions (additive only)
 | New alias | Model block | Supersedes (deprecated, still works) |
 |-----------|-------------|--------------------------------------|
 | `exaone-1.2b-iq4xs-32k` | `beellama/exaone-4-0-1-2b-iq4xs` | `fast`, `tiny` |
 | `qwen3.5-9b-i1-q4km-64k` | `mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_m` | `small` |
 
-### 3. `sovereign/config/herd.yaml` — dead macro removal
+### 3. `Estate/config/herd.yaml` — dead macro removal
 - Removed `macros.HERETIC_27B_Q5XL` (referenced nowhere; model quarantined).
 
 ## Explicitly NOT renamed (decision points)
 
 - **Peer names** (`openrouter-ling` vs `openrouter-free`, `flock-direct`, `toolcall-local`): renaming a peer changes live model IDs (`{peer}/{upstream}`) with no alias mechanism — unsafe. Documented in grammar instead.
-- **Tau provider/lane names** (`herd`, `sovereign`): established across tau engine configs; renaming breaks the provider map. Documented as canonical lane names.
+- **Tau provider/lane names** (`herd`, `Estate`): established across tau engine configs; renaming breaks the provider map. Documented as canonical lane names.
 - **Tau role names** (`tiny`, `smol`, `fast` profile): separate namespace from herd aliases; the `fast` profile → `herd/beellama/qwen-flash-64k` vs `fast` alias → exaone is documented as a known meaning-collision, not a technical one.
 - **Generic aliases** (`fast`, `tiny`, `small`, `medium`, `code`, `long`, `uncensored`): live consumers exist (`null-g-proxy`, `fast_race.py` use `fast`). Kept working, marked deprecated, validator bans NEW ones.
 - **`reasoning-router.ts`**: orphaned file with stale refs; dead code removal is a separate cleanup, not a naming change.

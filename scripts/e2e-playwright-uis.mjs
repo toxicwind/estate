@@ -1,5 +1,5 @@
 /**
- * Real Playwright UI smoke for sovereign dashboards.
+ * Real Playwright UI smoke for Estate dashboards.
  * Writes {SCRATCH}/playwright/report.json + screenshots when E2E_PW_OUT is set.
  */
 
@@ -9,7 +9,7 @@ import { chromium } from "playwright";
 
 const outDir =
   process.env.E2E_PW_OUT ||
-  resolve(process.env.HOME || "/home/toxic", "sovereign/.state/playwright");
+  resolve(process.env.HOME || "/home/toxic", "Estate/.state/playwright");
 mkdirSync(outDir, { recursive: true });
 
 const pagesSpec = [

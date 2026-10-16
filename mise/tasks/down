@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # mise run down — stop core daemons via pitchfork with robust checks.
 set -euo pipefail
-export SOV="${SOVEREIGN_ROOT:-$PWD}"
+export SOV="${ESTATE_ROOT:-$PWD}"
 cd "$SOV"
 
 echo "--- Mise Run Down: Stopping Core Daemons ---"
@@ -25,11 +25,11 @@ echo "--- Mise Run Down: Port Check ---"
 # it missed 25122/25146/25152/25153/25201/25202 and others).
 PORTS=$(grep -oP 'ready_http\s*=\s*"http://[^:]+:\K[0-9]+' pitchfork.toml | sort -u | paste -sd"|" -)
 if [[ -n "$PORTS" ]] && ss -tlnp 2>/dev/null | grep -E "(${PORTS})" >/dev/null; then
-  echo "WARNING: Some sovereign service ports are still open. Manual intervention may be required." >&2
+  echo "WARNING: Some Estate service ports are still open. Manual intervention may be required." >&2
   ss -tlnp 2>/dev/null | grep -E "(${PORTS})" >&2 || true
   exit 1
 else
-  echo "INFO: All sovereign service ports appear to be closed."
+  echo "INFO: All Estate service ports appear to be closed."
 fi
 
 echo "--- Mise Run Down: Completed ---"

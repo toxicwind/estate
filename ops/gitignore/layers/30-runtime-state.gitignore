@@ -94,7 +94,7 @@ config/tau/agent/extensions/*/settings.json
 # ── Estate workspace packages (2026-10-15) ──────────────────────────────
 # Root package.json declares workspaces: packages/*, but the VisualStudio
 # template layer ships **/[Pp]ackages/* which swallowed the whole tree —
-# 14 files in packages/sovereign-utils were silently unstaged. Re-include,
+# 14 files in packages/Estate-utils were silently unstaged. Re-include,
 # then re-ignore the build artifacts the negation would otherwise
 # resurrect (these negations come after the template layers).
 !/packages/**

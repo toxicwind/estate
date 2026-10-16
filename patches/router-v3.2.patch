@@ -12,7 +12,7 @@ Research loop 2 (HFT corpus: squawk-hft-latency.md, squawk-hft-microsecond.md,
 hft-specs/, race skill) synthesized into the router:
 
 - hedgedChain(): preferred lane gets a head start; if no winner within
-  SOVEREIGN_HEDGE_MS (1500ms), the whole remaining field races in parallel.
+  ESTATE_HEDGE_MS (1500ms), the whole remaining field races in parallel.
   First substantive wins; loser aborts are NOT circuit strikes. Lanes with
   recent strikes lose the lane-0 head start (still race at the hedge).
   HEDGE_MS=0 restores the sequential chain.
@@ -22,7 +22,7 @@ hft-specs/, race skill) synthesized into the router:
 - Latency-aware ordering: per-provider latency EMA (alpha 0.2) feeds
   candidateScore() = Elo - EMA_ms/50. Chronic slowness demotes a provider
   despite higher Elo.
-- Per-hop telemetry: X-Sovereign-Timings (connect_ms/ttft_ms/total_ms) on
+- Per-hop telemetry: X-Estate-Timings (connect_ms/ttft_ms/total_ms) on
   every chat response; p50/p95 per provider in /status (SQLite, 30min).
 - Push-not-poll kimi-auto: fs.watch on the resolver state.json keeps
   /status resolved_model instant; shim reads state live per request.
@@ -43,32 +43,32 @@ Live evidence 2026-09-20: blackhole :25100 -> explicit llama-swap request
 dead backend; prober healed on recovery (open->half->closed). Shim
 fail-fast: /home/toxic/kimi-auto/shim.py upstream timeout 120s -> 8s.
 
-Docs: tools/sovereign-router/ROUTER.md (arch, env, endpoints, papers,
+Docs: tools/estate-router/ROUTER.md (arch, env, endpoints, papers,
 Openfang config).
 ---
- tools/sovereign-router/ROUTER.md              | 175 ++++++++
- .../sovereign-router-ts/router.ts             | 232 +++++++++-
- .../sovereign-router-ts/router_config.ts      | 122 +++++-
- .../sovereign-router-ts/router_health.ts      |  26 ++
- .../sovereign-router-ts/router_matrix.ts      | 185 +++++++-
- .../sovereign-router-ts/router_strategy.ts    | 401 ++++++++++++++----
- .../sovereign-router-ts/router_types.ts       |   2 +
- .../sovereign-router-ts/tests/hedge.test.ts   | 171 ++++++++
+ tools/estate-router/ROUTER.md              | 175 ++++++++
+ .../estate-router-ts/router.ts             | 232 +++++++++-
+ .../estate-router-ts/router_config.ts      | 122 +++++-
+ .../estate-router-ts/router_health.ts      |  26 ++
+ .../estate-router-ts/router_matrix.ts      | 185 +++++++-
+ .../estate-router-ts/router_strategy.ts    | 401 ++++++++++++++----
+ .../estate-router-ts/router_types.ts       |   2 +
+ .../estate-router-ts/tests/hedge.test.ts   | 171 ++++++++
  8 files changed, 1201 insertions(+), 113 deletions(-)
- create mode 100644 tools/sovereign-router/ROUTER.md
- create mode 100644 tools/sovereign-router/sovereign-router-ts/tests/hedge.test.ts
+ create mode 100644 tools/estate-router/ROUTER.md
+ create mode 100644 tools/estate-router/estate-router-ts/tests/hedge.test.ts
 
-diff --git a/tools/sovereign-router/ROUTER.md b/tools/sovereign-router/ROUTER.md
+diff --git a/tools/estate-router/ROUTER.md b/tools/estate-router/ROUTER.md
 new file mode 100644
 index 0000000000..a086adb63d
 --- /dev/null
-+++ b/tools/sovereign-router/ROUTER.md
++++ b/tools/estate-router/ROUTER.md
 @@ -0,0 +1,175 @@
-+# Sovereign Router v3.2 — Resilient Multi-Provider LLM Router
++# Estate Router v3.2 — Resilient Multi-Provider LLM Router
 +
 +OpenAI-compatible chat router on `http://127.0.0.1:25104`, supervised by
-+pitchfork (`sovereign/sovereign-router`). Bun/TypeScript single binary
-+(`tools/sovereign-router/sovereign-router-ts/`).
++pitchfork (`estate/estate-router`). Bun/TypeScript single binary
++(`tools/estate-router/estate-router-ts/`).
 +
 +## Architecture
 +
@@ -89,12 +89,12 @@ index 0000000000..a086adb63d
 +proxy :8000), `openrouter`, `nvidia` (multi-key rotation + per-key token
 +bucket), `groq`, `cerebras`, `google`, `mistral`.
 +
-+**Strategies** (`SOVEREIGN_STRATEGY`): `hybrid` (default), `ast_race`,
++**Strategies** (`ESTATE_STRATEGY`): `hybrid` (default), `ast_race`,
 +`circuit_chain`, `cascade`, `weighted`, `fifo`, `sticky`, `free`.
 +
 +## v3.2 resilience features
 +
-+- **Fail-fast ceilings**: `SOVEREIGN_CONNECT_MS` (8s), `SOVEREIGN_TTFT_MS`
++- **Fail-fast ceilings**: `ESTATE_CONNECT_MS` (8s), `ESTATE_TTFT_MS`
 +  (45s), per-attempt totals. A hanging backend never holds a client hostage.
 +- **Exponential quarantine**: 3 consecutive failures → circuit opens with
 +  backoff `30s * 2^(level-1)` capped at 10 min. Successful requests reset.
@@ -107,7 +107,7 @@ index 0000000000..a086adb63d
 +  without restart.
 +- **`/status`**: per-provider circuit detail, last error, Elo, live models,
 +  p50/p95 latency (SQLite, 30 min window), kimi-auto resolved model.
-+- **`X-Sovereign-Timings`**: every chat response ships
++- **`X-Estate-Timings`**: every chat response ships
 +  `connect_ms / ttft_ms / total_ms` per-hop timings.
 +
 +## HFT synthesis (the novel part)
@@ -117,7 +117,7 @@ index 0000000000..a086adb63d
 +fallback planned before primary) applied to LLM routing:
 +
 +1. **Speculative hedging** (`hedgedChain`): the preferred lane gets a head
-+   start; if no winner within `SOVEREIGN_HEDGE_MS` (1500ms), the whole
++   start; if no winner within `ESTATE_HEDGE_MS` (1500ms), the whole
 +   remaining field races in parallel. First substantive wins; losers are
 +   aborted and their aborts are **not** circuit strikes. A lane that fails
 +   fast immediately triggers the next lane. Providers with recent strikes
@@ -132,7 +132,7 @@ index 0000000000..a086adb63d
 +4. **Push-not-poll kimi-auto**: `fs.watch` on the resolver's `state.json`
 +   keeps `/status`'s resolved-model marker instant; the shim reads state
 +   live per request.
-+5. **Per-hop telemetry**: `X-Sovereign-Timings` on every response; p50/p95
++5. **Per-hop telemetry**: `X-Estate-Timings` on every response; p50/p95
 +   per provider in `/status`.
 +
 +Measured: hedge fires at ~1500ms (test); blackholed-backend failover serves
@@ -144,16 +144,16 @@ index 0000000000..a086adb63d
 +
 +| Variable | Default | Purpose |
 +|---|---|---|
-+| `SOVEREIGN_STRATEGY` | `hybrid` | routing strategy |
-+| `SOVEREIGN_CONNECT_MS` | `8000` | per-attempt connect ceiling |
-+| `SOVEREIGN_TTFT_MS` | `45000` | streaming first-token ceiling |
-+| `SOVEREIGN_ATTEMPT_MS` | `120000` | non-stream attempt ceiling |
-+| `SOVEREIGN_ATTEMPT_STREAM_MS` | `180000` | streaming attempt ceiling |
-+| `SOVEREIGN_HEDGE_MS` | `1500` | speculative hedge delay (0=sequential) |
-+| `SOVEREIGN_QUARANTINE_BASE_S` | `30` | quarantine backoff base |
-+| `SOVEREIGN_QUARANTINE_MAX_S` | `600` | quarantine backoff cap |
-+| `SOVEREIGN_QUARANTINE_PROBE_MS` | `15000` | re-probe cadence |
-+| `SOVEREIGN_DB` | `…/sovereign_router.db` | SQLite path (tests override) |
++| `ESTATE_STRATEGY` | `hybrid` | routing strategy |
++| `ESTATE_CONNECT_MS` | `8000` | per-attempt connect ceiling |
++| `ESTATE_TTFT_MS` | `45000` | streaming first-token ceiling |
++| `ESTATE_ATTEMPT_MS` | `120000` | non-stream attempt ceiling |
++| `ESTATE_ATTEMPT_STREAM_MS` | `180000` | streaming attempt ceiling |
++| `ESTATE_HEDGE_MS` | `1500` | speculative hedge delay (0=sequential) |
++| `ESTATE_QUARANTINE_BASE_S` | `30` | quarantine backoff base |
++| `ESTATE_QUARANTINE_MAX_S` | `600` | quarantine backoff cap |
++| `ESTATE_QUARANTINE_PROBE_MS` | `15000` | re-probe cadence |
++| `ESTATE_DB` | `…/estate_router.db` | SQLite path (tests override) |
 +| `KIMI_AUTO_SHIM_PORT` | `25105` | kimi-auto shim port (in `config/ports.env`) |
 +| `KIMI_AUTO_STATE` | `~/.local/share/kimi-auto/state.json` | resolver state (fs.watch) |
 +
@@ -215,7 +215,7 @@ index 0000000000..a086adb63d
 +`bun test tests/hedge.test.ts` (8 tests): hedged second-lane wins at
 +~1500ms, loser aborts take no circuit strike, strike-demotion of lane 0,
 +spec normalization (colon/slash/bare), exponential quarantine via synthetic
-+probes, latency-EMA scoring. Uses a temp SQLite DB (`SOVEREIGN_DB`).
++probes, latency-EMA scoring. Uses a temp SQLite DB (`ESTATE_DB`).
 +
 +## Failover demo (2026-09-20, live)
 +
@@ -239,16 +239,16 @@ index 0000000000..a086adb63d
 +- Chain-level give-up for all-dead scenarios (fast 503 instead of waiting
 +  out hangers).
 +- Concurrency sweeps + p95 methodology doc (per the HFT microsecond audit).
-diff --git a/tools/sovereign-router/sovereign-router-ts/router.ts b/tools/sovereign-router/sovereign-router-ts/router.ts
+diff --git a/tools/estate-router/estate-router-ts/router.ts b/tools/estate-router/estate-router-ts/router.ts
 index 0d095e8909..8ffecfc9d6 100755
---- a/tools/sovereign-router/sovereign-router-ts/router.ts
-+++ b/tools/sovereign-router/sovereign-router-ts/router.ts
+--- a/tools/estate-router/estate-router-ts/router.ts
++++ b/tools/estate-router/estate-router-ts/router.ts
 @@ -1,6 +1,6 @@
  #!/usr/bin/env bun
  /**
-- * Sovereign Router v3.1 (Bun/TypeScript)
-+ * Sovereign Router v3.2 (Bun/TypeScript)
-  * Port of sovereign-router/router.py — same strategies, HealthDB WAL, circuit breakers.
+- * Estate Router v3.1 (Bun/TypeScript)
++ * Estate Router v3.2 (Bun/TypeScript)
+  * Port of estate-router/router.py — same strategies, HealthDB WAL, circuit breakers.
   *
   * Strategies: fifo_matrix (alias fifo_flock) | ast_race (alias flock_race) | sticky_affinity | weighted_elo | circuit_chain | hybrid
 @@ -11,13 +11,14 @@
@@ -284,7 +284,7 @@ index 0d095e8909..8ffecfc9d6 100755
          "X-Routed-Via": `${p}/${mid}`,
 +        ...(st
 +          ? {
-+              "X-Sovereign-Timings": `connect_ms=${st.connect_ms};ttft_ms=${st.ttft_ms ?? "-"};total_ms=${st.total_ms}`,
++              "X-Estate-Timings": `connect_ms=${st.connect_ms};ttft_ms=${st.ttft_ms ?? "-"};total_ms=${st.total_ms}`,
 +            }
 +          : {}),
        },
@@ -317,7 +317,7 @@ index 0d095e8909..8ffecfc9d6 100755
 @@ -133,7 +143,7 @@ const server = Bun.serve({
      if (path.startsWith("/mesh")) {
        const m = await handleMeshRequest(req, {
-         service: "sovereign-router",
+         service: "estate-router",
 -        version: "v3.1",
 +        version: "v3.2",
        });
@@ -348,7 +348,7 @@ index 0d095e8909..8ffecfc9d6 100755
 +      }
 +      return json({
 +        status: "ok",
-+        router: "sovereign-router-ts",
++        router: "estate-router-ts",
 +        version: "v3.2",
 +        strategy: STRATEGY,
 +        uptime_s: Math.round(process.uptime()),
@@ -363,7 +363,7 @@ index 0d095e8909..8ffecfc9d6 100755
 @@ -309,13 +349,47 @@ const server = Bun.serve({
        return json({
          status: "ok",
-         router: "sovereign-router-ts",
+         router: "estate-router-ts",
 -        version: "v3.1",
 +        version: "v3.2",
          strategy: STRATEGY,
@@ -412,7 +412,7 @@ index 0d095e8909..8ffecfc9d6 100755
 @@ -348,6 +422,17 @@ const server = Bun.serve({
        }
        const sid = sessionId(req, body);
-       const strat = req.headers.get("X-Sovereign-Strategy") || STRATEGY;
+       const strat = req.headers.get("X-Estate-Strategy") || STRATEGY;
 +      // openfang shim: canonicalize "provider:model" / "provider/model"
 +      // mangled specs before routing.
 +      const rawModel = String(body.model || "auto");
@@ -441,7 +441,7 @@ index 0d095e8909..8ffecfc9d6 100755
              "X-Strategy": strat,
 +            ...(t
 +              ? {
-+                  "X-Sovereign-Timings": `connect_ms=${t.connect_ms};ttft_ms=${t.ttft_ms ?? "-"};total_ms=${t.total_ms}`,
++                  "X-Estate-Timings": `connect_ms=${t.connect_ms};ttft_ms=${t.ttft_ms ?? "-"};total_ms=${t.total_ms}`,
 +                }
 +              : {}),
            },
@@ -456,7 +456,7 @@ index 0d095e8909..8ffecfc9d6 100755
 +const SECRET_FILES = [
 +  `${process.env.HOME}/.secrets`,
 +  "/home/toxic/.secrets",
-+  "/home/toxic/sovereign/.env.local",
++  "/home/toxic/estate/.env.local",
 +];
 +function hotReload(source: string): Record<string, unknown> {
 +  for (const f of SECRET_FILES) loadEnvFile(f, true);
@@ -478,7 +478,7 @@ index 0d095e8909..8ffecfc9d6 100755
 +  if (!conf) return false;
 +  const headers: Record<string, string> = {
 +    Accept: "application/json",
-+    "User-Agent": "SovereignRouter/3.2 quarantine-probe",
++    "User-Agent": "EstateRouter/3.2 quarantine-probe",
 +  };
 +  if (!conf.no_auth) {
 +    const k = getKey(p);
@@ -546,7 +546,7 @@ index 0d095e8909..8ffecfc9d6 100755
 +        const conf = PROVIDERS[p];
 +        const headers: Record<string, string> = {
 +          Accept: "application/json",
-+          "User-Agent": "SovereignRouter/3.2 warm-standby",
++          "User-Agent": "EstateRouter/3.2 warm-standby",
 +        };
 +        const r = await fetch(`${conf.base.replace(/\/+$/, "")}/models`, {
 +          headers,
@@ -571,15 +571,15 @@ index 0d095e8909..8ffecfc9d6 100755
  
  const keyed = Object.keys(PROVIDERS).filter(keyOk);
  
--console.log(`Sovereign Router TS v3.1 on http://127.0.0.1:${PORT}/v1`);
-+console.log(`Sovereign Router TS v3.2 on http://127.0.0.1:${PORT}/v1`);
+-console.log(`Estate Router TS v3.1 on http://127.0.0.1:${PORT}/v1`);
++console.log(`Estate Router TS v3.2 on http://127.0.0.1:${PORT}/v1`);
  
  console.log(
    `Strategy=${STRATEGY} | routes: ${Object.keys(ROUTERS).join(", ")}`,
-diff --git a/tools/sovereign-router/sovereign-router-ts/router_config.ts b/tools/sovereign-router/sovereign-router-ts/router_config.ts
+diff --git a/tools/estate-router/estate-router-ts/router_config.ts b/tools/estate-router/estate-router-ts/router_config.ts
 index 8a06d5b0c2..16069cddcd 100755
---- a/tools/sovereign-router/sovereign-router-ts/router_config.ts
-+++ b/tools/sovereign-router/sovereign-router-ts/router_config.ts
+--- a/tools/estate-router/estate-router-ts/router_config.ts
++++ b/tools/estate-router/estate-router-ts/router_config.ts
 @@ -4,7 +4,7 @@ import { homedir } from "node:os";
  // ---------------------------------------------------------------------------
  // Secrets + local stack env (mise loads these; standalone bun needs them too)
@@ -606,31 +606,31 @@ index 8a06d5b0c2..16069cddcd 100755
 +// CONNECT_MS: headers must arrive (dead backend detected fast).
 +// TTFT_MS: first body byte must arrive for streaming (time-to-first-token).
 +// ATTEMPT_MS / ATTEMPT_STREAM_MS: total per-attempt caps.
-+export const CONNECT_MS = parseInt(process.env.SOVEREIGN_CONNECT_MS || "8000", 10);
-+export const TTFT_MS = parseInt(process.env.SOVEREIGN_TTFT_MS || "45000", 10);
-+export const ATTEMPT_MS = parseInt(process.env.SOVEREIGN_ATTEMPT_MS || "120000", 10);
++export const CONNECT_MS = parseInt(process.env.ESTATE_CONNECT_MS || "8000", 10);
++export const TTFT_MS = parseInt(process.env.ESTATE_TTFT_MS || "45000", 10);
++export const ATTEMPT_MS = parseInt(process.env.ESTATE_ATTEMPT_MS || "120000", 10);
 +export const ATTEMPT_STREAM_MS = parseInt(
-+  process.env.SOVEREIGN_ATTEMPT_STREAM_MS || "180000",
++  process.env.ESTATE_ATTEMPT_STREAM_MS || "180000",
 +  10,
 +);
 +// QUARANTINE: dead providers are quarantined with exponential backoff
 +// re-probing: BASE * 2^(level-1) capped at MAX.
 +export const QUARANTINE_BASE_S = parseInt(
-+  process.env.SOVEREIGN_QUARANTINE_BASE_S || "60",
++  process.env.ESTATE_QUARANTINE_BASE_S || "60",
 +  10,
 +);
 +export const QUARANTINE_MAX_S = parseInt(
-+  process.env.SOVEREIGN_QUARANTINE_MAX_S || "1800",
++  process.env.ESTATE_QUARANTINE_MAX_S || "1800",
 +  10,
 +);
 +// HEDGE_MS: speculative hedging (HFT redundant-feeds pattern). When a chain
 +// lane hasn't produced a winner within HEDGE_MS, the next lane fires in
 +// parallel; first substantive wins, losers are aborted. 0 disables.
-+export const HEDGE_MS = parseInt(process.env.SOVEREIGN_HEDGE_MS || "1500", 10);
++export const HEDGE_MS = parseInt(process.env.ESTATE_HEDGE_MS || "1500", 10);
 +
 +// Active quarantine re-probe cadence.
 +export const QUARANTINE_PROBE_MS = parseInt(
-+  process.env.SOVEREIGN_QUARANTINE_PROBE_MS || "15000",
++  process.env.ESTATE_QUARANTINE_PROBE_MS || "15000",
 +  10,
 +);
 +
@@ -752,10 +752,10 @@ index 8a06d5b0c2..16069cddcd 100755
    if (model in CODING && CODING[model] != null) return CODING[model]!;
    // Prefer llama-swap for any local GGUF id so hybrid never sends GPU models to Gemini
    if (isLocalSwapModelId(model)) return ["llama-swap", model];
-diff --git a/tools/sovereign-router/sovereign-router-ts/router_health.ts b/tools/sovereign-router/sovereign-router-ts/router_health.ts
+diff --git a/tools/estate-router/estate-router-ts/router_health.ts b/tools/estate-router/estate-router-ts/router_health.ts
 index 4c50650e6a..ce7cde8395 100755
---- a/tools/sovereign-router/sovereign-router-ts/router_health.ts
-+++ b/tools/sovereign-router/sovereign-router-ts/router_health.ts
+--- a/tools/estate-router/estate-router-ts/router_health.ts
++++ b/tools/estate-router/estate-router-ts/router_health.ts
 @@ -220,6 +220,32 @@ export class HealthDB {
      return result;
    }
@@ -789,10 +789,10 @@ index 4c50650e6a..ce7cde8395 100755
    stickyGet(
      sessionId: string,
      ttl = STICKY_TTL,
-diff --git a/tools/sovereign-router/sovereign-router-ts/router_matrix.ts b/tools/sovereign-router/sovereign-router-ts/router_matrix.ts
+diff --git a/tools/estate-router/estate-router-ts/router_matrix.ts b/tools/estate-router/estate-router-ts/router_matrix.ts
 index 1d3749dbaa..813d9323fb 100755
---- a/tools/sovereign-router/sovereign-router-ts/router_matrix.ts
-+++ b/tools/sovereign-router/sovereign-router-ts/router_matrix.ts
+--- a/tools/estate-router/estate-router-ts/router_matrix.ts
++++ b/tools/estate-router/estate-router-ts/router_matrix.ts
 @@ -1,5 +1,13 @@
  import { HealthDB } from "./router_health.ts";
 -import { DB_PATH, STICKY_TTL, PROVIDERS, nvidiaKeys } from "./router_config.ts";
@@ -1024,10 +1024,10 @@ index 1d3749dbaa..813d9323fb 100755
 +    tick().catch((e) => console.error("[router] quarantine prober tick:", e));
 +  }, QUARANTINE_PROBE_MS);
 +}
-diff --git a/tools/sovereign-router/sovereign-router-ts/router_strategy.ts b/tools/sovereign-router/sovereign-router-ts/router_strategy.ts
+diff --git a/tools/estate-router/estate-router-ts/router_strategy.ts b/tools/estate-router/estate-router-ts/router_strategy.ts
 index d3d2a9fd7c..61346c9efb 100755
---- a/tools/sovereign-router/sovereign-router-ts/router_strategy.ts
-+++ b/tools/sovereign-router/sovereign-router-ts/router_strategy.ts
+--- a/tools/estate-router/estate-router-ts/router_strategy.ts
++++ b/tools/estate-router/estate-router-ts/router_strategy.ts
 @@ -1,6 +1,6 @@
  import type { ChatBody, RouteResult } from "./router_types.ts";
  import { state, isWorkerExhausted } from "./router_matrix.ts";
@@ -1543,10 +1543,10 @@ index d3d2a9fd7c..61346c9efb 100755
  };
  
  // freeCandidates: the free pool is derived from LIVE catalog metadata, not a
-diff --git a/tools/sovereign-router/sovereign-router-ts/router_types.ts b/tools/sovereign-router/sovereign-router-ts/router_types.ts
+diff --git a/tools/estate-router/estate-router-ts/router_types.ts b/tools/estate-router/estate-router-ts/router_types.ts
 index a474256bc2..64e074cbcc 100755
---- a/tools/sovereign-router/sovereign-router-ts/router_types.ts
-+++ b/tools/sovereign-router/sovereign-router-ts/router_types.ts
+--- a/tools/estate-router/estate-router-ts/router_types.ts
++++ b/tools/estate-router/estate-router-ts/router_types.ts
 @@ -14,4 +14,6 @@ export type RouteResult = {
    stream?: ReadableStream<Uint8Array> | null;
    err?: string;
@@ -1554,13 +1554,13 @@ index a474256bc2..64e074cbcc 100755
 +  // Per-hop timings (HFT: measure every hop) — populated by callOne.
 +  timings?: { connect_ms: number; ttft_ms: number | null; total_ms: number };
  };
-diff --git a/tools/sovereign-router/sovereign-router-ts/tests/hedge.test.ts b/tools/sovereign-router/sovereign-router-ts/tests/hedge.test.ts
+diff --git a/tools/estate-router/estate-router-ts/tests/hedge.test.ts b/tools/estate-router/estate-router-ts/tests/hedge.test.ts
 new file mode 100644
 index 0000000000..e9d3e5ec39
 --- /dev/null
-+++ b/tools/sovereign-router/sovereign-router-ts/tests/hedge.test.ts
++++ b/tools/estate-router/estate-router-ts/tests/hedge.test.ts
 @@ -0,0 +1,171 @@
-+// HFT-synthesis tests for sovereign-router v3.2:
++// HFT-synthesis tests for estate-router v3.2:
 +//  1. Speculative hedging (hedgedChain): slow first lane loses to a hedged
 +//     second lane, and the loser's abort is NOT recorded as a provider failure.
 +//  2. Model-spec normalization (router-side Openfang-shim parsing).
@@ -1569,7 +1569,7 @@ index 0000000000..e9d3e5ec39
 +import { describe, test, expect, afterAll } from "bun:test";
 +
 +// Must be set before the router modules are imported (DB_PATH is read once).
-+process.env.SOVEREIGN_DB = "/tmp/sovereign_router_hedge_test.db";
++process.env.ESTATE_DB = "/tmp/estate_router_hedge_test.db";
 +
 +const { state } = await import("../router_matrix");
 +const { hedgedChain, substantive } = await import("../router_strategy");

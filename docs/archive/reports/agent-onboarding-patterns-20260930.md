@@ -1,9 +1,9 @@
 # Agent Onboarding / Join-Flow Patterns — GitHub-wide borrow pass
 
 **Date:** 2026-09-30 · **Researcher:** Magpie (Ember's crew)
-**Goal:** Find existing join flows so a fleet (squawk) agent can self-service JOIN OpenFang as a first-class agent (`sovereign/agents/<name>/agent.toml` + `system.md`).
+**Goal:** Find existing join flows so a fleet (squawk) agent can self-service JOIN OpenFang as a first-class agent (`Estate/agents/<name>/agent.toml` + `system.md`).
 
-**Method:** pattern-borrow.ts (sovereign/scripts, GitHub code search, 4 angles) + web research.
+**Method:** pattern-borrow.ts (Estate/scripts, GitHub code search, 4 angles) + web research.
 pattern-borrow term ranking (recency-weighted): `agent onboarding` (57.8) > `agent handshake` (56.8) >
 `bot submission` (57.6) > `agent registration` (48.8) > `submit agent` (55.7).
 Raw code-search hits were mostly docs noise — the concrete implementations below came from targeted follow-up.
@@ -70,7 +70,7 @@ Raw code-search hits were mostly docs noise — the concrete implementations bel
 ## Suggested synthesis for OpenFang's fleet→agent join
 
 1. **Admission ticket:** A2A-style Agent Card generated from the fleet persona (name, lane/task, skills) — pattern #2.
-2. **Join call:** `agents/announce`-style single RPC/CLI: `openfang join --as <squawk-name>` → fetch card → validate (`--dry-run` gate, pattern #3) → write `sovereign/agents/<name>/agent.toml` + `system.md` → register — pattern #1.
+2. **Join call:** `agents/announce`-style single RPC/CLI: `openfang join --as <squawk-name>` → fetch card → validate (`--dry-run` gate, pattern #3) → write `Estate/agents/<name>/agent.toml` + `system.md` → register — pattern #1.
 3. **Identity:** `did:wba` (or did:key) bound at join; join request DID-signed — pattern #4. Returns an identity bundle like pattern #5.
 4. **Trust tier:** self-service join lands the agent as *provisional*; first-class bless goes through a review gate (ElizaOS registry-PR model, pattern #3) — matches the estate's oracle/approval culture.
 5. **Leave:** symmetric `agents/withdraw` — pattern #1.

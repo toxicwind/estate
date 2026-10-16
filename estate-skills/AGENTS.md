@@ -1,6 +1,6 @@
-# AGENTS.md — Sovereign Skills (`/home/toxic/projects/estate-skills`)
+# AGENTS.md — Estate Skills (`/home/toxic/projects/estate-skills`)
 
-**Role**: Skill definitions, agent recipes, and behavioral orchestrations for the Sovereign ecosystem.
+**Role**: Skill definitions, agent recipes, and behavioral orchestrations for the Estate ecosystem.
 **Stack**: Markdown, YAML, JSON, shell scripts.
 
 ---

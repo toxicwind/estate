@@ -19,8 +19,8 @@ export interface SocketStreamConfig {
 }
 
 export const DEFAULT_SOCKET_PATH = fs.existsSync("/run/user/1000")
-  ? "/run/user/1000/sovereign-stream-broker.sock"
-  : path.join(os.tmpdir(), "sovereign-stream-broker.sock");
+  ? "/run/user/1000/Estate-stream-broker.sock"
+  : path.join(os.tmpdir(), "Estate-stream-broker.sock");
 
 export const DEFAULT_SOCKET_STREAM_CONFIG: SocketStreamConfig = {
   socketPath: DEFAULT_SOCKET_PATH,

@@ -1,4 +1,4 @@
-# Sovereign Router / Bodybuilder / Estate Audit — 2026-10-01
+# Estate Router / Bodybuilder / Estate Audit — 2026-10-01
 
 ## 1. Bodybuilder claim verification
 
@@ -13,7 +13,7 @@ Run-receipt: `~/workspace/bodybuilder-explainer-2026-10-01.md`; live curl timing
 
 ## 2. Router live surface (:25104)
 
-- `GET /health` → 200, ~0.57ms. Identifies `sovereign-router-ts` v3.2, strategy `auto`, parallel 4.
+- `GET /health` → 200, ~0.57ms. Identifies `estate-router-ts` v3.2, strategy `auto`, parallel 4.
 - `GET /status` → 200.
 - `POST /v1/chat/completions` → 503 `{"error":"circuit_chain_exhausted","status":503}` (19:48–19:55 UTC). Tripped circuits; openrouter-free keypool has no healthy key. Earlier 2026-10-01 receipts were 200 with totals 0.957731s and 1.261645s, `X-Strategy: auto`, routed model `meta/llama-3.2-11b-vision-instruct`.
 - The 90B model (`meta/llama-3.2-90b-vision-instruct`) exists as a catalog/Bodybuilder target via NVIDIA, not as an observed winner.

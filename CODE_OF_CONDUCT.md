@@ -16,5 +16,5 @@ harassment, doxxing, or other unprofessional conduct.
 ## Enforcement
 
 Report to the maintainers via the
-[sovereign-projects issue tracker](https://github.com/toxicwind/sovereign-projects/issues).
+[Estate-projects issue tracker](https://github.com/toxicwind/Estate-projects/issues).
 Adapted from the [Contributor Covenant](https://www.contributor-covenant.org) v2.1.

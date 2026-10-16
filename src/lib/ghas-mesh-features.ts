@@ -14,7 +14,7 @@ export type MeshServiceId =
   | "rust-web"
   | "yote"
   | "openfang"
-  | "sovereign-router"
+  | "estate-router"
   | "prometheus"
   | "hf-downloader"
   | "null-g-proxy"
@@ -114,7 +114,7 @@ export function serviceCatalog(): ServiceMeta[] {
       ghas_borrow: "multi-provider hand swarm",
     },
     {
-      id: "sovereign-router",
+      id: "estate-router",
       portEnv: "ESTATE_ROUTER_PORT",
       healthPath: "/health",
       role: "model-router",
@@ -341,10 +341,10 @@ export async function runFeature(
         "rust-web": ["herd", "hf-downloader", "prometheus"],
         yote: ["openfang", "herd"],
         openfang: ["herd"],
-        "sovereign-router": ["herd"],
+        "estate-router": ["herd"],
         prometheus: [],
         "hf-downloader": [],
-        "null-g-proxy": ["herd", "sovereign-router"],
+        "null-g-proxy": ["herd", "estate-router"],
         grafana: ["prometheus"],
         "ghas-api": ["ghas-mcp"],
         "ghas-mcp": [],
@@ -425,7 +425,7 @@ export async function runFeature(
             hot_reload: true,
             openai_compat: [
               "herd",
-              "sovereign-router",
+              "estate-router",
               "null-g-proxy",
               "yote",
               "openfang",

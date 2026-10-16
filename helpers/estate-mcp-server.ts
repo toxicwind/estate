@@ -7,8 +7,8 @@ console.error(`[estate-mcp] STARTUP at ${new Date().toISOString()} pid=${process
 
 import { join, resolve } from "node:path";
 const SCRIPT_DIR = import.meta.dir;
-const SOVEREIGN_ROOT = process.env.SOVEREIGN_ROOT || resolve(SCRIPT_DIR, "..");
-const HELPERS_DIR = join(SOVEREIGN_ROOT, "helpers");
+const ESTATE_ROOT = process.env.ESTATE_ROOT || resolve(SCRIPT_DIR, "..");
+const HELPERS_DIR = join(ESTATE_ROOT, "helpers");
 
 const TOOLS: Record<string, { desc: string; params: any[] }> = {
   estate_scan: { desc: "Fast estate path/broken-symlink audit (estate-scanner)", params: [{ name: "quick", type: "boolean" }] },
@@ -72,7 +72,7 @@ function handle(req: any) {
           out = new TextDecoder().decode(res.stdout) || res.stderr || "{}";
         } else if (name === "estate_git_mutator") {
           const cmd = args.subcmd || "status";
-          const res = Bun.spawnSync(["bun", join(HELPERS_DIR, "git-mutator/cli.ts"), cmd], { cwd: SOVEREIGN_ROOT });
+          const res = Bun.spawnSync(["bun", join(HELPERS_DIR, "git-mutator/cli.ts"), cmd], { cwd: ESTATE_ROOT });
           out = new TextDecoder().decode(res.stdout) || "{}";
         } else if (name === "estate_safe_rg") {
           const pat = args.pattern || ".";

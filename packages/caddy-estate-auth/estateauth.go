@@ -1,4 +1,4 @@
-package sovereignauth
+package Estateauth
 
 import (
 	"net/http"
@@ -10,29 +10,29 @@ import (
 )
 
 func init() {
-	caddy.RegisterModule(SovereignAuth{})
+	caddy.RegisterModule(EstateAuth{})
 }
 
-type SovereignAuth struct {
+type EstateAuth struct {
 	APIKeys          []string `json:"api_keys,omitempty"`
 	TailscaleAuth    bool     `json:"tailscale_auth,omitempty"`
 	TrustedNetworks  []string `json:"trusted_networks,omitempty"`
 	logger           *zap.Logger
 }
 
-func (SovereignAuth) CaddyModule() caddy.ModuleInfo {
+func (EstateAuth) CaddyModule() caddy.ModuleInfo {
 	return caddy.ModuleInfo{
-		ID:  "http.handlers.sovereign_auth",
-		New: func() caddy.Module { return new(SovereignAuth) },
+		ID:  "http.handlers.Estate_auth",
+		New: func() caddy.Module { return new(EstateAuth) },
 	}
 }
 
-func (m *SovereignAuth) Provision(ctx caddy.Context) error {
+func (m *EstateAuth) Provision(ctx caddy.Context) error {
 	m.logger = ctx.Logger()
 	return nil
 }
 
-func (m *SovereignAuth) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddyhttp.Handler) error {
+func (m *EstateAuth) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddyhttp.Handler) error {
 	clientIP := r.RemoteAddr
 	for _, cidr := range m.TrustedNetworks {
 		if strings.HasPrefix(clientIP, strings.Split(cidr, "/")[0]) {
@@ -63,7 +63,7 @@ func (m *SovereignAuth) ServeHTTP(w http.ResponseWriter, r *http.Request, next c
 		}
 	}
 
-	w.Header().Set("WWW-Authenticate", "Bearer realm=\"sovereign\"")
+	w.Header().Set("WWW-Authenticate", "Bearer realm=\"Estate\"")
 	http.Error(w, `{"error":"unauthorized"}`, http.StatusUnauthorized)
 	return nil
 }

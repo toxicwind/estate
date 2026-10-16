@@ -4,8 +4,8 @@ The permanent mechanism behind "no monkeypatching": hunts the recurring monkey-p
 
 <div align="right">
 
-[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/Estate-projects#license)
+[![Estate-projects](https://img.shields.io/badge/Estate--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/Estate-projects)
 
 </div>
 
@@ -41,7 +41,7 @@ flowchart LR
 
 | File | Role |
 |---|---|
-| `durability-audit.sh` | The audit (host-agnostic; `SOVEREIGN_REPO` env overrides repo path) |
+| `durability-audit.sh` | The audit (host-agnostic; `ESTATE_REPO` env overrides repo path) |
 | `allowlist.txt` | Cmdline substrings known-OK in ephemeral paths (session tooling, not services). Keep tight. |
 | `systemd/` | `durability-audit.service` + `durability-audit.timer`; installed as symlinks in `~/.config/systemd/user/` so the repo stays the source of truth. Runs daily at 04:30, `Persistent=true`. |
 
@@ -73,4 +73,4 @@ journalctl --user -u durability-audit.service -n 20
 
 ## License & security
 
-MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). The audit is read-only — it finds and reports, never fixes. Findings are evidence for a human decision, not an auto-remediation trigger: a daemon in `/tmp` might be a legit diagnostic. `allowlist.txt` is the known-good list — keep it tight, review additions.
+MIT where marked — [LICENSE](https://github.com/toxicwind/Estate-projects#license). The audit is read-only — it finds and reports, never fixes. Findings are evidence for a human decision, not an auto-remediation trigger: a daemon in `/tmp` might be a legit diagnostic. `allowlist.txt` is the known-good list — keep it tight, review additions.

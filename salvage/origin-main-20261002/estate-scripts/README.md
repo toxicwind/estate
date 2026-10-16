@@ -1,25 +1,25 @@
 <div align="right">
 
-[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-1f6feb?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/Estate-projects#license)
+[![Estate-projects](https://img.shields.io/badge/Estate--projects-1f6feb?style=for-the-badge)](https://github.com/toxicwind/Estate-projects)
 
 </div>
 
-# sovereign-scripts
+# Estate-scripts
 
-> Python automation toolkit for Sovereign infrastructure.
+> Python automation toolkit for Estate infrastructure.
 
 > **Why care? GitHub API ops, repo audits, archiving, sandboxing, health checks — the unglamorous glue that keeps hundreds of repos manageable. Async, parallel, rate-limited, and ready to run.**
 
-- **`sovereign_helper.py` — master hook for GitHub API ops (async, parallel, rate-limited)**
+- **`Estate_helper.py` — master hook for GitHub API ops (async, parallel, rate-limited)**
 - **`commit_extractor.py` — bulk commit extraction with resumable state**
 - **`archivefs_v3.py` / `arfs-cat.py` — mount-like binary archives with 90MB chunking; read without extracting**
-- **`health_check.py` — port/socket health checks for the Sovereign environment**
+- **`health_check.py` — port/socket health checks for the Estate environment**
 - **Sandboxing + security probes — `unshare-root.py`, `namespace_probe.py`, MITM helpers**
 
 ```mermaid
 flowchart LR
-    YOU[you] --> SH[sovereign_helper.py: GitHub API]
+    YOU[you] --> SH[Estate_helper.py: GitHub API]
     YOU --> CE[commit_extractor.py: bulk history]
     YOU --> AR[archivefs_v3.py: chunked archives]
     YOU --> HC[health_check.py: ports/sockets]
@@ -29,27 +29,27 @@ flowchart LR
 ## Quick start
 
 ```bash
-python3 sovereign_helper.py
+python3 Estate_helper.py
 python3 health_check.py
 python3 commit_extractor.py --owner toxicwind --output ./commits
 ```
 
 ## License & security
 
-- **License:** [MIT](https://github.com/toxicwind/sovereign-projects#license)
+- **License:** [MIT](https://github.com/toxicwind/Estate-projects#license)
 - **Security:** Includes cache-timing and namespace probes — educational/security tooling; run sandboxing scripts with intent. See `AGENTS.md` in this directory for repo conventions.
 
 ---
 
-Python automation toolkit for Sovereign infrastructure — GitHub API ops, repo
+Python automation toolkit for Estate infrastructure — GitHub API ops, repo
 audits, archiving, sandboxing, and health checks.
 
 ## Scripts
 
 | Script                 | What it does                                                              |
 | ---------------------- | ------------------------------------------------------------------------- |
-| `sovereign_helper.py`  | Master hook for GitHub API ops — async, parallel, rate-limited             |
-| `health_check.py`      | Port/socket health checks for the Sovereign environment                   |
+| `Estate_helper.py`  | Master hook for GitHub API ops — async, parallel, rate-limited             |
+| `health_check.py`      | Port/socket health checks for the Estate environment                   |
 | `git-push-one.py`      | Push one file to a GitHub repo with per-repo identity                     |
 | `commit_extractor.py`  | Bulk GitHub commit extraction with resumable state                        |
 | `archivefs_v3.py`      | Mount-like binary archive with 90MB chunking                              |
@@ -66,7 +66,7 @@ See `AGENTS.md` in this directory for repo conventions.
 ## Usage
 
 ```bash
-python3 sovereign_helper.py
+python3 Estate_helper.py
 python3 health_check.py
 python3 git-push-one.py --help
 python3 commit_extractor.py --owner toxicwind --output ./commits

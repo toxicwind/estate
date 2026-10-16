@@ -1,7 +1,7 @@
 plugins:
 - name: herd
   source: ./projects/range/ranch/stockyard/herd
-  merged: sovereign-swap
+  merged: estate-swap
   privileged: true
 - name: flock
   source: ./projects/range/ranch/stockyard/flock
@@ -15,7 +15,7 @@ plugins:
   merged:
   - router-legacy
   - stockyard-flock-router
-  - sovereign-router
+  - estate-router
   privileged: true
 - name: barn-browser
   source: ./projects/range/ranch/barn/browserless
@@ -55,7 +55,7 @@ providers:
   openrouterVariant: default
   fetch: auto
 modelRoles:
-  # Sovereign custom routes (2026-10-13): custom/dots (Dots-3-Note coercion
+  # Estate custom routes (2026-10-13): custom/dots (Dots-3-Note coercion
   # layer neutralizing ghost outputs, content=null replay crashes, strict tools),
   # custom/bodybuilder (POST /v1/custom/bodybuilder parallel job decomposer),
   # custom/zen, custom/copilot, custom/openfang-resolve.
@@ -110,7 +110,7 @@ subagents:
   - explorer
   - analyst
   - debugger
-  # Was sovereign/free — provider baseUrl http://127.0.0.1:25104/v1, which has
+  # Was estate/free — provider baseUrl http://127.0.0.1:25104/v1, which has
   # no daemon in pitchfork.toml at all and nothing listening. Every subagent
   # dispatch resolved to a dead endpoint. Same live default as modelRoles.
   defaultModel: openrouter/nvidia/nemotron-3.5-lightning:free
@@ -282,7 +282,7 @@ retry:
     - openrouter/liquid/lfm-2.5-2.6b:free
     - openrouter/nvidia/nemotron-3-super-120b-a12b:free
     - openrouter/inclusionai/ling-3.0-flash-fin:free
-    # sovereign/free (:25104) and herd/qwen-flash-da-128k (:25100) are both
+    # estate/free (:25104) and herd/qwen-flash-da-128k (:25100) are both
     # down — herd's dependency gatehouse aborts startup on a missing
     # projects/range/ranch/barn/gatehouse/bin/github-mcp.sh. These two are verified
     # 200 against openrouter and restore the chain's whole point.
@@ -573,7 +573,7 @@ title:
 skills:
   enableSkillCommands: true
   customDirectories:
-  - /home/toxic/sovereign/skills
+  - /home/toxic/estate/skills
   # Register a flat skill repo by its root. The loader reads <dir>/<name>/SKILL.md
   # at depth 1 only, so a repo whose skills sit directly at the root works as-is.
   # Nothing is copied or symlinked: each skill keeps its own code, its relative
@@ -581,7 +581,7 @@ skills:
   # repo-aware. This is the universal rule -- any flat skill repo registers this
   # way. toxicwind/gear (486 skills) holds the *-swarm family, including
   # webapp-building-swarm, vibecoding-webapp-swarm and backend-building-swarm.
-  - /home/toxic/sovereign/projects/range/ranch/gear
+  - /home/toxic/estate/projects/range/ranch/gear
 commands:
   enableClaudeUser: true
   enableClaudeProject: true

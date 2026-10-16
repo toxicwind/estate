@@ -1,4 +1,4 @@
-# Sovereign Ecosystem — Deep Fork & Repository Audit
+# Estate Ecosystem — Deep Fork & Repository Audit
 
 ## Executive Summary
 
@@ -17,11 +17,11 @@ This document provides a comprehensive structural audit of all 14 custom forks a
 | **`beellama`**        | `/home/toxic/projects/beellama.cpp`               | `ggerganov/llama.cpp`                  | C++ (CMake/CUDA) | DFlash speculative decoding (3.5-4.4x speedup on RTX 3090), MTP head support, `--kv-unified`.                                                                                           |
 | **`ik_llama`**        | `/home/toxic/projects/ik_llama.cpp-main`          | `ikawrakow/ik_llama.cpp`               | C++ (CMake/CUDA) | Extreme quantization kernels (IQ4_XS, Q5_K_XL), Heretic 27B long-context offload.                                                                                                       |
 | **`turboquant`**      | `/home/toxic/projects/llama-cpp-turboquant`       | `llama.cpp`                            | C++ (CMake/CUDA) | TurboQuant 3-bit / 4-bit KV Cache compression (`turbo2`, `turbo3`), fused dequantization flash attention.                                                                               |
-| **`kimi-code`**       | `/home/toxic/projects/kimi-code-sovereign`        | `MoonshotAI/kimi-code`                 | Bun / TS / Vue   | Multi-kernel agent runtime, tree-sitter bash service, structured OAuth usage, modern Web UI.                                                                                            |
+| **`kimi-code`**       | `/home/toxic/projects/kimi-code-Estate`        | `MoonshotAI/kimi-code`                 | Bun / TS / Vue   | Multi-kernel agent runtime, tree-sitter bash service, structured OAuth usage, modern Web UI.                                                                                            |
 | **`antigravity-gw`**  | `/home/toxic/projects/antigravity-gateway-master` | `toxicwind/antigravity-gateway`        | Next.js / TS     | Single-port Next.js + API + WebSocket gateway on `:25128`, active server discovery.                                                                                                     |
 | **`zedra`**           | `/home/toxic/projects/zedra-tanlethanh`           | `tanlethanh/zedra`                     | Rust (Cargo)     | Mobile & remote Zed agent host (`zedra-host` on `:25130`), GPUI bindings.                                                                                                               |
-| **`sovereign`**       | `/home/toxic/estate`                           | `toxicwind/sovereign`                  | Bun / TS         | Master control plane: ports SSOT (`config/ports.env`), `pitchfork.toml` / `mise.toml` generation, stack orchestration (`core`, `main`, `agents`, `search`, `mcp`, `monitoring`, `all`). |
-| **`caddy-auth`**      | `/home/toxic/projects/caddy-sovereign-auth`       | `caddyserver/caddy`                    | Go               | Tailscale identity extraction and API key auth middleware.                                                                                                                              |
+| **`Estate`**       | `/home/toxic/estate`                           | `toxicwind/Estate`                  | Bun / TS         | Master control plane: ports SSOT (`config/ports.env`), `pitchfork.toml` / `mise.toml` generation, stack orchestration (`core`, `main`, `agents`, `search`, `mcp`, `monitoring`, `all`). |
+| **`caddy-auth`**      | `/home/toxic/projects/caddy-Estate-auth`       | `caddyserver/caddy`                    | Go               | Tailscale identity extraction and API key auth middleware.                                                                                                                              |
 | **`greprip`**         | `/home/toxic/projects/greprip`                    | `toxicwind/greprip`                    | Python / Rust    | Fast ERE/BRE pattern translation with SIGPIPE suppression.                                                                                                                              |
 | **`process-compose`** | `/home/toxic/projects/process-compose`            | `F1bonacc1/process-compose`            | Go               | TUI supervisor with MCP SSE security origin filtering and cross-namespace dependency pruning.                                                                                           |
 
@@ -30,7 +30,7 @@ This document provides a comprehensive structural audit of all 14 custom forks a
 ## Inter-Dependency & Data Flow
 
 ```
-                                [Sovereign Control Plane]
+                                [Estate Control Plane]
                                 (/home/toxic/estate)
                                            │
           ┌────────────────────────────────┼────────────────────────────────┐

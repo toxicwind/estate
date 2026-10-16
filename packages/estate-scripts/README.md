@@ -1,4 +1,4 @@
-# sovereign-scripts
+# Estate-scripts
 
 Python automation toolkit for Estate infrastructure — GitHub API ops, repo audits, archiving, sandboxing, and health checks. One directory of sharp tools, each doing one job.
 

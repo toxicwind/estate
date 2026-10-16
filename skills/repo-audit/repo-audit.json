@@ -1,7 +1,7 @@
 [
   {
-    "name":"sovereign-scripts",
-    "full_name":"toxicwind\/sovereign-scripts",
+    "name":"estate-scripts",
+    "full_name":"toxicwind\/estate-scripts",
     "private":false,
     "visibility":"public",
     "fork":false,
@@ -391,8 +391,8 @@
     "has_ci":false
   },
   {
-    "name":"sovereign-swap",
-    "full_name":"toxicwind\/sovereign-swap",
+    "name":"estate-swap",
+    "full_name":"toxicwind\/estate-swap",
     "private":false,
     "visibility":"public",
     "fork":true,
@@ -3655,8 +3655,8 @@
     "has_ci":false
   },
   {
-    "name":"sovereign-skills",
-    "full_name":"toxicwind\/sovereign-skills",
+    "name":"estate-skills",
+    "full_name":"toxicwind\/estate-skills",
     "private":false,
     "visibility":"public",
     "fork":false,

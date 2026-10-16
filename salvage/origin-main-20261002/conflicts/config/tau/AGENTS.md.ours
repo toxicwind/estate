@@ -1,21 +1,21 @@
-# AGENTS.md — .tau Sovereign Architecture Source of Truth
+# AGENTS.md — .tau Estate Architecture Source of Truth
 # Source: .local/bin/agent -> .local/bin/tau -> /home/toxic/estate/agent
-#   (cli framework: projects/sovereign-projects/tau/packages/coding-agent/src/cli.ts)
+#   (cli framework: projects/estate-projects/tau/packages/coding-agent/src/cli.ts)
 #   invoked by: bash via /home/toxic/estate/agent (shebang: #!/usr/bin/env bash)
 #   bun path: /home/toxic/.bun/bin/bun
 #   config: PI_CONFIG_DIR=$HOME/.tau, PI_CODING_AGENT_DIR=$HOME/.tau/agent
 #   single default profile, no toxic
 # References: debate.md (449l; line refs 195/218/241/44/54/59/332/36/401/33/315); SYNTHESIS.md; verify_report.md (PASS); fill_confirm.md (PASS); computer-use.json (first-class); no-echo-ban.md (toxic-persona MANDATORY #2)
 #
-# SOVEREIGN REPO: /home/toxic/estate (first-class operational repo)
+# ESTATE REPO: /home/toxic/estate (first-class operational repo)
 # - AGENTS.md: /home/toxic/.tau/AGENTS.md → /home/toxic/estate/AGENTS.md (symlink, full docs)
 # - helpers/: Bun/TS operational helpers (git-mutator, health-audit, mesh-probe, safe-rg-audit, ast-migrate, hardware-telemetry.sh, clean-orphans.sh)
-# - packages/sovereign-utils: Shared sovereign utilities and ecosystem helpers
+# - packages/estate-utils: Shared estate utilities and ecosystem helpers
 # - projects/range/ranch: Ranch system (supersedes legacy mesh)
 # - config/ports.env: Port SSOT for all 25xxx services
 # - mise.toml / pitchfork.toml: Service orchestration
 # - src/: hal-substrate, openfang, services, mcp, deploy
-# - tools/: llama-swap, nuvio-webos, sovereign-router, etc.
+# - tools/: llama-swap, nuvio-webos, estate-router, etc.
 #
 # KEY COMMANDS:
 #   bun /home/toxic/estate/helpers/git-mutator.ts status|commit-push|scan-secrets
@@ -34,5 +34,5 @@
 - **Context Synthesis**: When user provides iterative/ADHD stream-of-consciousness, synthesize multi-turn context; do not anchor rigidly on a single token or username.
 
 ## 📁 Workspace Paths
-- `packages/sovereign-utils` — Shared sovereign utilities and helpers.
+- `packages/estate-utils` — Shared estate utilities and helpers.
 - `projects/range/ranch` — Ranch architecture (supersedes legacy mesh).

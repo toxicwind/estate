@@ -1,9 +1,9 @@
 <div align="right">
 
-[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/Estate-projects#license)
 [![bun: 1.4+](https://img.shields.io/badge/bun-1.4%2B-f0f0f0?style=for-the-badge&logo=bun)](https://bun.sh)
 [![npm deps: 0](https://img.shields.io/badge/npm%20deps-0-success?style=for-the-badge)](https://bun.sh)
-[![estate](https://img.shields.io/badge/estate-1f6feb?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![estate](https://img.shields.io/badge/estate-1f6feb?style=for-the-badge)](https://github.com/toxicwind/Estate-projects)
 
 </div>
 
@@ -93,7 +93,7 @@ logs paid-source cost to `~/.cache/pattern-forge/`.
 
 ## License
 
-[MIT](https://github.com/toxicwind/sovereign-projects#license) — mixed with
+[MIT](https://github.com/toxicwind/Estate-projects#license) — mixed with
 upstream licenses where noted. Symlinked as `helpers/` at the estate root.
 
 ---

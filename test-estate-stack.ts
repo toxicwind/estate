@@ -1,6 +1,6 @@
 import { describe, test, expect } from "bun:test";
 
-describe("Sovereign Core Stack Verification", () => {
+describe("Estate Core Stack Verification", () => {
   test("Cuttinggate (:25200) health and live catalog", async () => {
     const res = await fetch("http://127.0.0.1:25200/health");
     expect(res.status).toBe(200);

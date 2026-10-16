@@ -1,7 +1,7 @@
 <div align="right">
 
-[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-1f6feb?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/Estate-projects#license)
+[![Estate-projects](https://img.shields.io/badge/Estate--projects-1f6feb?style=for-the-badge)](https://github.com/toxicwind/Estate-projects)
 
 </div>
 
@@ -47,5 +47,5 @@ bun helpers/git-mutator/cli.ts commit-push "feat: safe change"
 
 ## License & security
 
-- **License:** [MIT](https://github.com/toxicwind/sovereign-projects#license)
+- **License:** [MIT](https://github.com/toxicwind/Estate-projects#license)
 - **Security:** this tool exists to enforce the secret boundary — `commit-push` refuses to push when `scan-secrets` finds a leak. Never bypass with a raw `git push` carrying a token in the URL; see `SKILL.md` for the full trigger list and conventions.

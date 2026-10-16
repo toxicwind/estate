@@ -69,4 +69,4 @@ Known boundaries observed in this session: `muse.db` table reads time out when t
 
 ## Files
 
-Inventory doc: `docs/capability-inventory-2026-10-01.md` in toxicwind/sovereign-projects.
+Inventory doc: `docs/capability-inventory-2026-10-01.md` in toxicwind/Estate-projects.

@@ -11,11 +11,11 @@
 - **Yote UP:** 25102 LISTEN (bun pid 796770, started 01:38:44Z), /health 200 (0.2ms)
 - **Recovery timestamp:** 2026-09-19T01:38:44.708Z (from `/home/toxic/estate/projects/yote/logs/yote.log`)
 - **Recovery was TARGETED, not systemic:** `pitchfork list` shows:
-  - sovereign/yote → **running**
-  - sovereign/herd → **stopped**
-  - sovereign/mesh-hub → **stopped**
-  - sovereign/sovereign-router → **stopped**
-  - sovereign/shep → running
+  - estate/yote → **running**
+  - estate/herd → **stopped**
+  - estate/mesh-hub → **stopped**
+  - estate/estate-router → **stopped**
+  - estate/shep → running
 - **Config unchanged:** `[daemons.yote]` still `depends=["shep"]`, `retry=true`, `auto=["start"]`. No hardening applied.
 - **Supervisor blind:** `/home/toxic/estate/logs/pitchfork-supervisor.log` contains ZERO yote lines. The recovery is invisible in supervisor logging.
 
@@ -40,7 +40,7 @@
 
 The single strongest post-recovery finding:
 
-> Shep recovered ~01:05Z. Yote was manually started 01:38:44Z. **Forty minutes later, herd, mesh-hub, and sovereign-router — all `depends=["shep"]` — remain `stopped`.**
+> Shep recovered ~01:05Z. Yote was manually started 01:38:44Z. **Forty minutes later, herd, mesh-hub, and estate-router — all `depends=["shep"]` — remain `stopped`.**
 
 If pitchfork's dependency gate were level-triggered (continuously re-evaluating), all four would have started when shep became healthy. They did not. This confirms lane-4's "edge-triggered gate never re-fires" hypothesis with live fleet-wide evidence, not just yote-specific inference.
 
@@ -66,10 +66,10 @@ If pitchfork's dependency gate were level-triggered (continuously re-evaluating)
 
 ## 5. Gap analysis: what the bids missed
 
-1. **Fleet scope.** Every bid scoped to yote. The live evidence shows three other daemons still stranded. The award should explicitly expand lane-4's hardening to all `depends=["shep"]` daemons (herd, mesh-hub, sovereign-router) at minimum.
+1. **Fleet scope.** Every bid scoped to yote. The live evidence shows three other daemons still stranded. The award should explicitly expand lane-4's hardening to all `depends=["shep"]` daemons (herd, mesh-hub, estate-router) at minimum.
 2. **Supervisor observability.** The pitchfork supervisor logged zero lines about yote's death or recovery. No bid proposed supervisor-level death detection (the "silent death" was invisible to the supervisor that owns the daemon). A dead-man's-switch or liveness log line per daemon would close this.
 3. **Recovery trigger attribution.** The 01:38:44Z start has no shell-history trace and no supervisor log line — it was likely a bridge `pitchfork start` from an agent session. No bid proposed audit-logging for manual daemon starts, leaving future recoveries unattributable.
-4. **Immediate action available now:** `pitchfork start` herd, mesh-hub, sovereign-router — three daemons are still down with a healthy dependency. This is zero-risk (same command that recovered yote) and should not wait for the hardening build.
+4. **Immediate action available now:** `pitchfork start` herd, mesh-hub, estate-router — three daemons are still down with a healthy dependency. This is zero-risk (same command that recovered yote) and should not wait for the hardening build.
 
 ---
 
@@ -83,4 +83,4 @@ If pitchfork's dependency gate were level-triggered (continuously re-evaluating)
 
 ---
 
-**Recommendation to the oracle:** Accept this audit as a bid. Expand lane-4's award scope to fleet-wide dependency-gate hardening. Authorize immediate `pitchfork start` for herd, mesh-hub, sovereign-router as zero-risk maintenance (same mechanism that recovered yote).
+**Recommendation to the oracle:** Accept this audit as a bid. Expand lane-4's award scope to fleet-wide dependency-gate hardening. Authorize immediate `pitchfork start` for herd, mesh-hub, estate-router as zero-risk maintenance (same mechanism that recovered yote).

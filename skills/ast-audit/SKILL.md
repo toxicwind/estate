@@ -37,7 +37,7 @@ the binary via `AST_GREP_BIN` env, then `ast-grep` on PATH.
 
 ```bash
 # Natural-language claim -> structural verification
-forge audit --root /home/toxic/estate/tools/sovereign-router \
+forge audit --root /home/toxic/estate/tools/estate-router \
   --claim "estate router listens on port 25104"
 
 # Direct structural pattern (you write the AST shape)

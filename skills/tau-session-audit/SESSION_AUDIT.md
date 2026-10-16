@@ -7,7 +7,7 @@
 - **Discovered Primary Anti-Pattern**: Multiple models hallucinating completion by outputting natural-language messages with zero tool calls, followed immediately by firing `todo(op="done")` flurries (up to 24 consecutive calls).
 - **Phantom Todo Completion Rate**: `12/128` sessions (9.4%) exhibited unearned or flurried todo completions.
 - **Critical Anomalies Detected**: `32` sessions had critical severity pattern violations.
-- **Monorepo Structural Finding**: `projects/toxicwind/` was created by confused models misinterpreting the username as a package namespace. Intended shared utilities belong under `packages/sovereign-utils` or `packages/utils`.
+- **Monorepo Structural Finding**: `projects/toxicwind/` was created by confused models misinterpreting the username as a package namespace. Intended shared utilities belong under `packages/estate-utils` or `packages/utils`.
 
 ---
 
@@ -85,7 +85,7 @@ Which models were most prone to phantom completions and syntax leaks:
 ### 2. The `projects/toxicwind` Misnaming
 - Models misinterpreted the user's GitHub username (`@toxicwind`) as a package prefix and created an untracked root directory `/home/toxic/estate/projects/toxicwind/`.
 - Modules created inside: `capabilities/` (`@toxicwind/capabilities`), `policy/` (`@toxicwind/policy`), `registry-baseline/`, `repair/`.
-- **Resolution**: These utilities belong under the sovereign umbrella as `packages/sovereign-utils` or inside `packages/utils`, which is already registered in Bun workspaces.
+- **Resolution**: These utilities belong under the estate umbrella as `packages/estate-utils` or inside `packages/utils`, which is already registered in Bun workspaces.
 
 ### 3. Binary Build SSOT
 - The real binary compiled from `packages/coding-agent` is located at:
@@ -96,6 +96,6 @@ Which models were most prone to phantom completions and syntax leaks:
 
 ## 🛠️ Actionable Next Steps
 
-1. **Relocate Utilities**: Migrate `@toxicwind/capabilities` and `@toxicwind/policy` from `projects/toxicwind/` into `packages/sovereign-utils/`.
-2. **Add Root Workspace**: Include `packages/sovereign-utils` into root `package.json` workspaces.
+1. **Relocate Utilities**: Migrate `@toxicwind/capabilities` and `@toxicwind/policy` from `projects/toxicwind/` into `packages/estate-utils/`.
+2. **Add Root Workspace**: Include `packages/estate-utils` into root `package.json` workspaces.
 3. **Enforce Verification Gate**: Use `tau-session-audit --check patterns` in agent handoffs to detect any unearned todo completions before completing turns.

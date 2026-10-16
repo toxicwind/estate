@@ -11,5 +11,5 @@ env = { CUTTINGGATE_PORT = "25200", CUTTINGGATE_LOG_LEVEL = "info" }
 auto = ["start"]
 
 # ---- project: ranch/stream-broker (1 daemon) ----
-# ranch/stream-broker — project-owned daemon manifest. Source of truth for 'sovereign-stream-broker'.
+# ranch/stream-broker — project-owned daemon manifest. Source of truth for 'Estate-stream-broker'.
 # Owned by the ranch/stream-broker project; the parent only composes it.

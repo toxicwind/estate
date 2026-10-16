@@ -1,5 +1,5 @@
 # ============================================================================
-# SOVEREIGN MISE CONFIG — hand-edited source of truth (2026-09-20).
+# ESTATE MISE CONFIG — hand-edited source of truth (2026-09-20).
 # NOTE: scripts/generate.ts was RETIRED 2026-09-14 (do not run: it overwrites
 # pitchfork.toml and destroys native additions). Edit this file directly.
 # ============================================================================
@@ -187,7 +187,7 @@ sshx = "sshx"
 nv-build = { run = "cd tools/nuvio-platform && npm run build:webos", dir = "tools/nuvio-platform" }
 nv-test = { run = "cd tools/nuvio-platform && npm run test:coverage", dir = "tools/nuvio-platform" }
 nv-package = { run = "cd tools/nuvio-platform && npm run package:webos", dir = "tools/nuvio-platform", depends = ["nv-build"] }
-health-notify = "mise run svc-check || curl -s -X POST -d Stack_degraded https://ntfy.sh/sovereign-alerts"
+health-notify = "mise run svc-check || curl -s -X POST -d Stack_degraded https://ntfy.sh/estate-alerts"
 nv-dev = { run = "cd tools/nuvio-platform && npm run dev", dir = "tools/nuvio-platform" }
 
 # ─── Test suite ───

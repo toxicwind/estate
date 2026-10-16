@@ -1,11 +1,11 @@
 <div align="right">
 
-[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-1f6feb?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/Estate-projects#license)
+[![Estate-projects](https://img.shields.io/badge/Estate--projects-1f6feb?style=for-the-badge)](https://github.com/toxicwind/Estate-projects)
 
 </div>
 
-# Skills — Sovereign Helpers Toolkit
+# Skills — Estate Helpers Toolkit
 
 > First-class reusable automation: health checks, telemetry, migration tools, fleet utilities.
 
@@ -37,12 +37,12 @@ bun run skills/health-audit.ts --json   # untruncated JSON for tooling
 
 ## License & security
 
-- **License:** [MIT](https://github.com/toxicwind/sovereign-projects#license)
+- **License:** [MIT](https://github.com/toxicwind/Estate-projects#license)
 - **Security:** Local operational tooling — `clean-orphans.sh` terminates runaway processes by design; review before running on a shared box. Symlinked as `helpers/` at the repo root.
 
 ---
 
-First-class reusable automation for the Sovereign ecosystem: health checks,
+First-class reusable automation for the Estate ecosystem: health checks,
 telemetry, migration tools, and fleet utilities. Built for Bun / POSIX, zero
 data loss. (Symlinked as `helpers/` at the repo root.)
 

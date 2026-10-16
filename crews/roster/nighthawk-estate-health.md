@@ -18,7 +18,7 @@ After changing this file, run `bun projects/ops/bin/kb-rollup.ts`.
 
 - yote-conn exec round-trip: OK (awrawr-pc, 16-core box, load ~3.06).
 - Listeners verified with REAL responses, not just port-open:
-  - :25100 herd — `/health` → OK; :25104 sovereign-router v3.2 — `/health` JSON ok, 112 live models
+  - :25100 herd — `/health` → OK; :25104 estate-router v3.2 — `/health` JSON ok, 112 live models
   - :25109 keypool — `/health` ok (7 pools, all keys healthy)
   - :25101 model-guard — OK; :25110 grafana — HTTP 200
   - :25135 squawk-feed — `/squawk-feed/ping` → `{"seq": 1790772066180}` (seq advancing; note: feed routes live under `/squawk-feed/*`, `/seq` 404s — not a fault)

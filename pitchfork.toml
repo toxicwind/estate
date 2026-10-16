@@ -593,13 +593,13 @@ auto = ["start"]
 # on :25203 sharing the kernel SQLite DB. Now proxy-only; the kernel is
 # daemons.openfang on :25196. See src/services/openfang.ts.)
 
-# sovereign — project-owned daemon manifest. Source of truth for 'sovereign-exporter'.
+# estate — project-owned daemon manifest. Source of truth for 'estate-exporter'.
 # Owned by the estate project; the parent only composes it.
 
 
-[daemons.sovereign-exporter]
+[daemons.estate-exporter]
 port = 25213
-run = "exec python3 ./stack/services/sovereign-exporter.py"
+run = "exec python3 ./stack/services/estate-exporter.py"
 dir = "."
 retry = true
 ready_http = "http://127.0.0.1:25213/metrics"
@@ -895,10 +895,10 @@ env = { CUTTINGGATE_PORT = "25200", CUTTINGGATE_LOG_LEVEL = "info" }
 auto = ["start"]
 
 # ---- project: ranch/stream-broker (1 daemon) ----
-# ranch/stream-broker — project-owned daemon manifest. Source of truth for 'sovereign-stream-broker'.
+# ranch/stream-broker — project-owned daemon manifest. Source of truth for 'estate-stream-broker'.
 # Owned by the ranch/stream-broker project; the parent only composes it.
 
-[daemons.sovereign-stream-broker]
+[daemons.estate-stream-broker]
 dir = "/home/toxic/estate/ranch/stream-broker"
 run = "exec bun run src/index.ts"
 port = 25215

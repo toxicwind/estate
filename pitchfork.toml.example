@@ -1,4 +1,4 @@
-# pitchfork.toml.example — structure reference for the sovereign pitchfork config.
+# pitchfork.toml.example — structure reference for the estate pitchfork config.
 # Copy to pitchfork.toml and adjust host-specific paths/ports as needed.
 #
 # SECRETS: this file contains NO secret values. The only secret-bearing daemon
@@ -16,7 +16,7 @@
 # tracked pitchfork.toml only carries the non-secret WHATSAPP_MCP_PORT.
 # =============================================================================
 
-# SOVEREIGN PITCHFORK CONFIG — GENERATED from config/ports.env + service definitions
+# ESTATE PITCHFORK CONFIG — GENERATED from config/ports.env + service definitions
 # DO NOT EDIT DIRECTLY — Run: bun run scripts/generate.ts
 env_file = "config/ports.env"
 
@@ -66,7 +66,7 @@ auto = ["start"]
 
 [daemons.search-api]
 run = "exec bun --hot run apps/api/src/server.ts"
-dir = "/home/toxic/projects/sovereign-projects/sovereign-github-search"
+dir = "/home/toxic/projects/estate-projects/estate-github-search"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25112/health"
@@ -75,7 +75,7 @@ auto = ["start"]
 
 [daemons.search-ui]
 run = "exec ./node_modules/.bin/next dev -p 25114"
-dir = "/home/toxic/projects/sovereign-projects/sovereign-github-search/apps/frontend"
+dir = "/home/toxic/projects/estate-projects/estate-github-search/apps/frontend"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25114/"
@@ -129,7 +129,7 @@ auto = ["start"]
 
 [daemons.mcp-gateway]
 run = "exec bun run gateway.ts"
-dir = "/home/toxic/estate/ranch/mesh/router/sovereign-mcp-gateway"
+dir = "/home/toxic/estate/ranch/mesh/router/estate-mcp-gateway"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25120/health"
@@ -156,7 +156,7 @@ auto = ["start"]
 
 [daemons.tau-code]
 run = "exec bun run src/server.ts --port 25145"
-dir = "/home/toxic/projects/sovereign-projects/tau/engine/packages/metaharness"
+dir = "/home/toxic/projects/estate-projects/tau/engine/packages/metaharness"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25145/"
@@ -165,8 +165,8 @@ env = { TAU_CODE_PORT = "25145" }
 auto = ["start"]
 
 [daemons.kimi-code]
-run = "exec /home/toxic/projects/sovereign-projects/tau/vendors/kimi-code/apps/kimi-code/dist/main.mjs web --no-open --port 25126"
-dir = "/home/toxic/projects/sovereign-projects/tau/vendors/kimi-code/apps/kimi-code"
+run = "exec /home/toxic/projects/estate-projects/tau/vendors/kimi-code/apps/kimi-code/dist/main.mjs web --no-open --port 25126"
+dir = "/home/toxic/projects/estate-projects/tau/vendors/kimi-code/apps/kimi-code"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25126/health"
@@ -249,7 +249,7 @@ env = { MATTER_SERVER_PORT = "5580" }
 auto = ["start"]
 
 [daemons.tau]
-run = "exec bun run /home/toxic/projects/sovereign-projects/tau/packages/coding-agent/src/cli.ts"
+run = "exec bun run /home/toxic/projects/estate-projects/tau/packages/coding-agent/src/cli.ts"
 dir = "/home/toxic"
 mise = true
 retry = true
@@ -311,14 +311,14 @@ retry = true
 ready_http = "http://127.0.0.1:8378/health"
 auto = ["start"]
 
-[daemons.sovereign-router]
+[daemons.estate-router]
 run = "exec bun run router.ts"
-dir = "/home/toxic/estate/ranch/mesh/router/sovereign-router/sovereign-router-ts"
+dir = "/home/toxic/estate/ranch/mesh/router/estate-router/estate-router-ts"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25104/health"
 depends = ["shep"]
-env = { SOVEREIGN_ROUTER_PORT = "25104" }
+env = { ESTATE_ROUTER_PORT = "25104" }
 auto = ["start"]
 
 # WhatsApp Cloud API MCP server + inbound webhook (2026-09-14).
@@ -369,7 +369,7 @@ auto = ["start"]
 
 # brand - fleet continuous-modification engine (2026-09-14): disk-backed
 # job queue, streaming logs, content-hash artifact cache. Source:
-# tools/brand in toxicwind/sovereign-projects. Submit via the brand CLI.
+# tools/brand in toxicwind/estate-projects. Submit via the brand CLI.
 # NOTE: pitchfork.toml is hand-edited (generator retired 2026-09-14, never run it).
 [daemons.brand]
 run = "exec /usr/bin/python3 /home/toxic/estate/tools/brand/brandd.py"

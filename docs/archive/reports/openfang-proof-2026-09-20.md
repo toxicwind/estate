@@ -7,7 +7,7 @@ service was stopped/started (with liveness checks between).
 ## 1. What OpenFang is here
 
 - Kernel binary: `/home/toxic/projects/rig-work/target/debug/openfang` (Rig fork, v0.6.9)
-- Supervised as pitchfork daemon `sovereign/openfang` via `/home/toxic/estate/ops/openfang-run.sh`
+- Supervised as pitchfork daemon `Estate/openfang` via `/home/toxic/estate/ops/openfang-run.sh`
 - Config: `/home/toxic/estate/config/openfang-25196.toml` → `api_listen = "127.0.0.1:25196"`
 - HOME=/home/toxic; agent definitions in `/home/toxic/estate/agents/*/agent.toml`
   (`/home/toxic/.openfang/agents` symlinks there)
@@ -42,8 +42,8 @@ Pre-restart snapshot (21:54 MDT): 8 agents, 16 sessions, kimiclaw-1 latest sessi
 `2026-09-21T03:54:53` (9537 bytes of message history), audit head seq 1110
 hash `749d994e80b8`, 2 triggers.
 
-Restart: `pitchfork stop sovereign/openfang` → verified PID gone + port 25196 closed →
-`pitchfork start sovereign/openfang` → `/api/status` 200.
+Restart: `pitchfork stop Estate/openfang` → verified PID gone + port 25196 closed →
+`pitchfork start Estate/openfang` → `/api/status` 200.
 
 Post-restart verification — all state survived:
 
@@ -59,7 +59,7 @@ Post-restart verification — all state survived:
 **Reboot:** deliberately NOT tested — the reboot ban covers the physical host.
 Persistence across a full host reboot is therefore unproven for the kernel process,
 but all durable state (registry, sessions, audit chain, triggers-via-run.sh,
-workspaces) lives on disk in `/home/toxic/.openfang` + `sovereign/agents`, and the
+workspaces) lives on disk in `/home/toxic/.openfang` + `Estate/agents`, and the
 pitchfork supervisor restarts the daemon from that state — this is exactly what the
 service-restart cycle above exercised.
 

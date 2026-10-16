@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # KimiClaw repair deploy — idempotent. Safe to re-run.
 # Deploys: bridge.ts, instances/kimiclaw-{a,b}.json, pitchfork daemons
-#          sovereign/kimiclaw-a and sovereign/kimiclaw-b (squawk fleet relays).
+#          Estate/kimiclaw-a and Estate/kimiclaw-b (squawk fleet relays).
 # Does NOT touch the bridge (awrawr-ws-exec) or any squawk process.
 set -euo pipefail
 
@@ -50,10 +50,10 @@ done
 
 # --- 5. start (or confirm running) ---------------------------------------
 for inst in a b; do
-  if "$PF" status "sovereign/kimiclaw-$inst" 2>/dev/null | grep -q running; then
+  if "$PF" status "Estate/kimiclaw-$inst" 2>/dev/null | grep -q running; then
     say "kimiclaw-$inst already running"
   else
-    "$PF" start "sovereign/kimiclaw-$inst"
+    "$PF" start "Estate/kimiclaw-$inst"
     say "started kimiclaw-$inst"
   fi
 done

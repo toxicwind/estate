@@ -136,12 +136,12 @@ async fn get_integrations() -> Json<IntegrationsResponse> {
     let hf_downloader = probe_url("hf-downloader", &hf_url, "/api/health").await;
 
     let fleet_last = std::fs::read_to_string(
-        "/home/toxic/sovereign/tools/fleet/results/bench-forks-latest.json",
+        "/home/toxic/estate/tools/fleet/results/bench-forks-latest.json",
     )
     .ok()
     .and_then(|s| serde_json::from_str(&s).ok());
 
-    let forks = std::fs::read_to_string("/home/toxic/sovereign/tools/fleet/forks.json")
+    let forks = std::fs::read_to_string("/home/toxic/estate/tools/fleet/forks.json")
         .ok()
         .and_then(|s| serde_json::from_str(&s).ok());
 
@@ -306,7 +306,7 @@ async fn get_squawk_channel(
 }
 
 async fn get_fleet_last() -> Json<serde_json::Value> {
-    let path = "/home/toxic/sovereign/tools/fleet/results/bench-forks-latest.json";
+    let path = "/home/toxic/estate/tools/fleet/results/bench-forks-latest.json";
     match std::fs::read_to_string(path) {
         Ok(s) => Json(serde_json::from_str(&s).unwrap_or(serde_json::json!({"raw": s}))),
         Err(_) => Json(serde_json::json!({
@@ -319,7 +319,7 @@ async fn get_fleet_last() -> Json<serde_json::Value> {
 /// /ops/api/rankings — ranked bench throughput per inference fork, derived
 /// from the latest bench-forks results. Higher score = faster bench.
 async fn get_rankings() -> Json<serde_json::Value> {
-    let path = "/home/toxic/sovereign/tools/fleet/results/bench-forks-latest.json";
+    let path = "/home/toxic/estate/tools/fleet/results/bench-forks-latest.json";
     let mut rankings: Vec<serde_json::Value> = Vec::new();
     if let Ok(s) = std::fs::read_to_string(path) {
         if let Ok(v) = serde_json::from_str::<serde_json::Value>(&s) {
@@ -391,7 +391,7 @@ async fn health() -> Json<Health> {
 async fn get_logs() -> Json<Vec<String>> {
     let mut logs = Vec::new();
 
-    if let Ok(content) = std::fs::read_to_string("/home/toxic/sovereign/.state/logs/llama-swap.log")
+    if let Ok(content) = std::fs::read_to_string("/home/toxic/estate/.state/logs/llama-swap.log")
     {
         let lines: Vec<&str> = content.lines().collect();
         let start = if lines.len() > 15 {
@@ -535,7 +535,7 @@ async fn get_telemetry() -> Json<TelemetryResponse> {
 fn get_model_priorities() -> HashMap<String, u32> {
     let mut map = HashMap::new();
     if let Ok(content) =
-        std::fs::read_to_string("/home/toxic/sovereign/tools/llama-swap/config.yaml")
+        std::fs::read_to_string("/home/toxic/estate/tools/llama-swap/config.yaml")
     {
         let mut in_priority = false;
         for line in content.lines() {

@@ -1,4 +1,4 @@
-# Canonical source: sovereign/agents/squawk-relay/agent.toml
+# Canonical source: estate/agents/squawk-relay/agent.toml
 # Live copy: ~/.openfang/agents/squawk-relay/agent.toml (kernel re-seeds from disk on boot)
 name = "squawk-relay"
 version = "1.0.0"

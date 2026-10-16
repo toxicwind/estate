@@ -186,7 +186,7 @@ Claims about code get verified against the AST — not curl, not ls. Merged
 2026-10-02 from the global GitHub AST-audit search (winner: ast-grep).
 
 ```bash
-forge audit --root /home/toxic/estate/tools/sovereign-router \
+forge audit --root /home/toxic/estate/tools/estate-router \
   --claim "estate router listens on port 25104"
 # === audit: "..." [port-bind (port 25104)] -> VERIFIED (confidence: high) ===
 #   router.ts:87:2-87:31  Bun.serve({ port: 25104, ... })

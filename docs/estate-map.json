@@ -363,7 +363,7 @@
       "port": 25104,
       "ssot": "ESTATE_ROUTER_PORT",
       "daemons": [
-        "sovereign-router"
+        "Estate-router"
       ],
       "live": true,
       "addr": "127.0.0.1",
@@ -374,7 +374,7 @@
       "port": 25104,
       "ssot": "ESTATE_ROUTER_PORT",
       "daemons": [
-        "sovereign-router"
+        "Estate-router"
       ],
       "live": true,
       "addr": "127.0.0.1",
@@ -1651,7 +1651,7 @@
       "port": 25213,
       "ssot": "ESTATE_EXPORTER_PORT",
       "daemons": [
-        "sovereign-exporter"
+        "Estate-exporter"
       ],
       "live": false,
       "addr": null,
@@ -1662,7 +1662,7 @@
       "port": 25213,
       "ssot": "ESTATE_EXPORTER_PORT",
       "daemons": [
-        "sovereign-exporter"
+        "Estate-exporter"
       ],
       "live": false,
       "addr": null,
@@ -1682,7 +1682,7 @@
       "port": 25215,
       "ssot": "STREAM_BROKER_PORT",
       "daemons": [
-        "sovereign-stream-broker"
+        "Estate-stream-broker"
       ],
       "live": false,
       "addr": null,
@@ -1693,7 +1693,7 @@
       "port": 25215,
       "ssot": "STREAM_BROKER_PORT",
       "daemons": [
-        "sovereign-stream-broker"
+        "Estate-stream-broker"
       ],
       "live": false,
       "addr": null,

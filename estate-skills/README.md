@@ -38,7 +38,7 @@ bun run estate-skills/engine-audit.ts   # audit Tau engine vs upstream
 
 ---
 
-Skill definitions, agent recipes, and behavioral conventions for the Sovereign
+Skill definitions, agent recipes, and behavioral conventions for the Estate
 ecosystem — consumed by Pi, Tau, and subagents. Keep definitions atomic,
 self-contained, and deterministic.
 

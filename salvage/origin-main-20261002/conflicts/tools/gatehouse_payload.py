@@ -1,7 +1,7 @@
 """Deprecated — use payload_builder.build() which reads
 the live gatehouse catalog."""
 import sys, os, json
-sys.path.insert(0, os.path.expanduser("~/sovereign"))
+sys.path.insert(0, os.path.expanduser("~/Estate"))
 from tools.payload_builder import build
 
 def payload(input_text: str, **kw) -> dict:

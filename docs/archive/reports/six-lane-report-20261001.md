@@ -1,4 +1,4 @@
-# Sovereign Estate — Six-Lane Execution Report
+# Estate Estate — Six-Lane Execution Report
 ## 2026-10-01
 
 ## -0 Metadata
@@ -32,7 +32,7 @@
 
 A structural Android platform crate was added to the QED/Zedra monorepo at
 /home/toxic/estate/projects/qed/zedra (remote
-https://github.com/toxicwind/sovereign-projects.git, branch android-platform).
+https://github.com/toxicwind/Estate-projects.git, branch android-platform).
 
 Files added: crates/gpui_android/Cargo.toml, crates/gpui_android/README.md,
 crates/gpui_android/src/lib.rs, crates/gpui_android/src/platform.rs,
@@ -45,7 +45,7 @@ Verification run 2026-10-01:
       --target aarch64-linux-android --message-format short
 
 Android and host checks completed with no errors. Commit 77143ace8f69c56b30bf
-714be61fe084811b31ef pushed to toxicwind/sovereign-projects main; remote ref
+714be61fe084811b31ef pushed to toxicwind/Estate-projects main; remote ref
 verified with git ls-remote. Fleet receipt: 1790844725029-ember-msg.md.
 
 Limitation, stated plainly: this is a clean Android compile contract, not a
@@ -57,7 +57,7 @@ Receipt: the crate sources themselves, which contain the stubs.
 ## 2. Noise_XX toolkit
 
 Canonical repository: /home/toxic/estate-hatch-toolkit (remote
-https://github.com/toxicwind/sovereign-hatch-toolkit.git). Live profile kept
+https://github.com/toxicwind/Estate-hatch-toolkit.git). Live profile kept
 as observed: Noise_XX_25519_AESGCM_SHA256. The cell copy's speculative
 dual-suite API was not ported; the standalone implementation was corrected
 instead.
@@ -75,10 +75,10 @@ green; yote 58/58 pytest green; yote 6/6 verify_all suites green.
 Commit f62088dc7320c6d53f4900b146bb7e61a0ff7929 ("Python: identity_router,
 scripts/verify_all, AESGCM test suite, doc sync") pushed to main; git
 ls-remote origin main returned the same SHA. Dropbox mirror
-/home/toxic/dropbox-mirror/organized/repos/sovereign-hatch-toolkit reset to
+/home/toxic/dropbox-mirror/organized/repos/Estate-hatch-toolkit reset to
 verified origin/main at f62088d.
 
-The yote skill-tree copy (/home/toxic/estate/skills/sovereign-hatch-toolkit)
+The yote skill-tree copy (/home/toxic/estate/skills/Estate-hatch-toolkit)
 was verified byte-identical to the canonical repo after sync (diff -q clean).
 
 ## 3. Runtime, approval, and schema surfaces
@@ -144,7 +144,7 @@ skill-tree renames exists; the rename state itself is the record.
 
 ## 5. Dependency and CVE audit
 
-Scope: sovereign-hatch-toolkit Python and TypeScript dependencies, plus a
+Scope: Estate-hatch-toolkit Python and TypeScript dependencies, plus a
 sweep of the yote skills tree for other dependency manifests.
 
 - Python: requirements.txt names cryptography (floor raised this session from

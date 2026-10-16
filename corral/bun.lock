@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "@sovereign/corral",
+      "name": "@estate/corral",
       "dependencies": {
         "@opentui/core": "^0.1.81",
         "better-sqlite3": "^11.0.0",

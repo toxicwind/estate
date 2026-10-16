@@ -1,10 +1,10 @@
 # MCPProxy — vendored gateway engine (shep)
 
-*One safe endpoint in front of every MCP server. Vendored upstream source for **shep**, the sovereign mesh's MCP federation daemon (`:25127`).*
+*One safe endpoint in front of every MCP server. Vendored upstream source for **shep**, the estate mesh's MCP federation daemon (`:25127`).*
 
-![sovereign](https://img.shields.io/badge/sovereign--projects-blue?style=for-the-badge) ![vendored](https://img.shields.io/badge/vendored-upstream-orange?style=for-the-badge) ![go](https://img.shields.io/badge/go-00ADD8?style=for-the-badge)
+![estate](https://img.shields.io/badge/estate--projects-blue?style=for-the-badge) ![vendored](https://img.shields.io/badge/vendored-upstream-orange?style=for-the-badge) ![go](https://img.shields.io/badge/go-00ADD8?style=for-the-badge)
 
-> **Mesh context.** This directory is the vendored source of [smart-mcp-proxy/mcpproxy-go](https://github.com/smart-mcp-proxy/mcpproxy-go) — the engine behind **shep**, which fronts 30 upstream MCP servers on the mesh. The sovereign deployment is configured in `sovereign-projects/mesh/gateway/mcp_config.json` and runs as the pitchfork `shep` daemon on `:25127`. Vendored code tracks upstream; keep local diffs minimal so re-vends stay clean.
+> **Mesh context.** This directory is the vendored source of [smart-mcp-proxy/mcpproxy-go](https://github.com/smart-mcp-proxy/mcpproxy-go) — the engine behind **shep**, which fronts 30 upstream MCP servers on the mesh. The estate deployment is configured in `estate-projects/mesh/gateway/mcp_config.json` and runs as the pitchfork `shep` daemon on `:25127`. Vendored code tracks upstream; keep local diffs minimal so re-vends stay clean.
 
 <div align="center">
 
@@ -49,7 +49,7 @@ flowchart LR
     scan -->|risk score| q
 ```
 
-In the sovereign deployment, agents see a handful of built-in MCPProxy tools instead of hundreds of upstream schemas. Shep's config (`mcp_config.json`) declares the 30 upstream servers; the quarantine gate holds new servers until approved; BM25 `retrieve_tools` keeps agent context small. The reproducible numbers behind the token-reduction claims are measured by `bench/` — see [bench/README.md](bench/README.md).
+In the estate deployment, agents see a handful of built-in MCPProxy tools instead of hundreds of upstream schemas. Shep's config (`mcp_config.json`) declares the 30 upstream servers; the quarantine gate holds new servers until approved; BM25 `retrieve_tools` keeps agent context small. The reproducible numbers behind the token-reduction claims are measured by `bench/` — see [bench/README.md](bench/README.md).
 
 ---
 
@@ -280,7 +280,7 @@ curl -k https://localhost:8080/api/v1/status   # test HTTPS connection
 
 ## Dev / contributing
 
-We welcome issues, feature ideas, and PRs! (Upstream: contribute to [smart-mcp-proxy/mcpproxy-go](https://github.com/smart-mcp-proxy/mcpproxy-go); mesh-local fixes go to the sovereign-projects repo with minimal local diffs.)
+We welcome issues, feature ideas, and PRs! (Upstream: contribute to [smart-mcp-proxy/mcpproxy-go](https://github.com/smart-mcp-proxy/mcpproxy-go); mesh-local fixes go to the estate-projects repo with minimal local diffs.)
 
 ### Development Setup
 
@@ -318,5 +318,5 @@ make lint           # Run linters
 
 ## License & Security
 
-- **License:** MIT — see [LICENSE](LICENSE). (Vendored copy carries the upstream license; the sovereign deployment config around it follows the sovereign-projects repo licensing.)
+- **License:** MIT — see [LICENSE](LICENSE). (Vendored copy carries the upstream license; the estate deployment config around it follows the estate-projects repo licensing.)
 - **Security posture:** automatic quarantine blocks tool-poisoning attacks until new servers are manually approved; pluggable Docker-based security scanners (Snyk, Semgrep, Trivy, Cisco) scan quarantined servers with findings normalized to SARIF + a composite risk score; intent is validated against tool annotations on every call; arguments and responses are scanned for sensitive data; every call lands in the local activity log with a request ID. Report upstream vulnerabilities to the [smart-mcp-proxy/mcpproxy-go](https://github.com/smart-mcp-proxy/mcpproxy-go) maintainers.

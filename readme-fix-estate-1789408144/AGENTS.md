@@ -1,6 +1,6 @@
-# AGENTS.md — Sovereign Control Plane (`/home/toxic/estate`)
+# AGENTS.md — Estate Control Plane (`/home/toxic/estate`)
 
-**Role**: Core control plane & orchestration layer for the Sovereign ecosystem.
+**Role**: Core control plane & orchestration layer for the Estate ecosystem.
 **Stack**: TypeScript (Bun), Python, mise, pitchfork, Kafka, Qdrant, Prometheus/Grafana.
 **Host**: toxic (Ryzen 7 8700F, 62 GiB DDR5, RTX 3090 24 GB).
 
@@ -157,7 +157,7 @@ opencode/hy3-free`. The `subagent` spawn tool is a LIVE-PI builtin (not callable
 - `config/ports.env` — Port SSOT
 - `pitchfork.toml` — Daemon service definitions
 - `mise.toml` — Task runner and tool versions
-- `src/` — Sovereign backend, mesh frontend, HAL substrate
+- `src/` — Estate backend, mesh frontend, HAL substrate
 - `agents/` — Subagent profiles and identities
 
 ## maximal-estate-agentic-audit
@@ -168,7 +168,7 @@ opencode/hy3-free`. The `subagent` spawn tool is a LIVE-PI builtin (not callable
 - **Build**: `cd src/maximal-estate-agentic-audit && bun run check`
 - **Tests**: `cd src/maximal-estate-agentic-audit && bun test --coverage`
 
-## Maximal Sovereign Agentic Audit
+## Maximal Estate Agentic Audit
 
 **Location**: `src/maximal-estate-agentic-audit/`
 **Architecture**: Fully modular with 10 separate module files

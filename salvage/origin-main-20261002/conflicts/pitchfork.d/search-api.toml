@@ -1,11 +1,11 @@
-# sovereign — project-owned daemon manifest. Source of truth for 'search-api'.
-# Owned by the sovereign project; the parent only composes it.
+# Estate — project-owned daemon manifest. Source of truth for 'search-api'.
+# Owned by the Estate project; the parent only composes it.
 
 
 [daemons.search-api]
 port = 25112
 run = "exec bun --hot run apps/api/src/server.ts"
-dir = "/home/toxic/estate/sovereign-github-search"
+dir = "/home/toxic/estate/Estate-github-search"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25112/health"

@@ -6,8 +6,8 @@
 
 <div align="right">
 
-[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/Estate-projects#license)
+[![Estate-projects](https://img.shields.io/badge/Estate--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/Estate-projects)
 
 </div>
 
@@ -88,4 +88,4 @@ WantedBy=multi-user.target
 
 ## License & security
 
-MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). The registry is the fleet's memory of what's running: `bg-audit` is read-only by design and `bg-kill` refuses PID reuse — a recycled pid is never signaled. Kills need positive orphan confirmation plus a fleet note with evidence; when in doubt, leave it running and flag it. `state/` is gitignored runtime state — real files on disk, not committed.
+MIT where marked — [LICENSE](https://github.com/toxicwind/Estate-projects#license). The registry is the fleet's memory of what's running: `bg-audit` is read-only by design and `bg-kill` refuses PID reuse — a recycled pid is never signaled. Kills need positive orphan confirmation plus a fleet note with evidence; when in doubt, leave it running and flag it. `state/` is gitignored runtime state — real files on disk, not committed.

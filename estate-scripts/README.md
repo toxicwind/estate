@@ -7,14 +7,14 @@
 
 # estate-scripts
 
-> Python automation toolkit for Sovereign infrastructure.
+> Python automation toolkit for Estate infrastructure.
 
 > **Why care? GitHub API ops, repo audits, archiving, sandboxing, health checks — the unglamorous glue that keeps hundreds of repos manageable. Async, parallel, rate-limited, and ready to run.**
 
 - **`estate_helper.py` — master hook for GitHub API ops (async, parallel, rate-limited)**
 - **`commit_extractor.py` — bulk commit extraction with resumable state**
 - **`archivefs_v3.py` / `arfs-cat.py` — mount-like binary archives with 90MB chunking; read without extracting**
-- **`health_check.py` — port/socket health checks for the Sovereign environment**
+- **`health_check.py` — port/socket health checks for the Estate environment**
 - **Sandboxing + security probes — `unshare-root.py`, `namespace_probe.py`, MITM helpers**
 
 ```mermaid
@@ -41,7 +41,7 @@ python3 commit_extractor.py --owner toxicwind --output ./commits
 
 ---
 
-Python automation toolkit for Sovereign infrastructure — GitHub API ops, repo
+Python automation toolkit for Estate infrastructure — GitHub API ops, repo
 audits, archiving, sandboxing, and health checks.
 
 ## Scripts
@@ -49,7 +49,7 @@ audits, archiving, sandboxing, and health checks.
 | Script                 | What it does                                                              |
 | ---------------------- | ------------------------------------------------------------------------- |
 | `estate_helper.py`  | Master hook for GitHub API ops — async, parallel, rate-limited             |
-| `health_check.py`      | Port/socket health checks for the Sovereign environment                   |
+| `health_check.py`      | Port/socket health checks for the Estate environment                   |
 | `git-push-one.py`      | Push one file to a GitHub repo with per-repo identity                     |
 | `commit_extractor.py`  | Bulk GitHub commit extraction with resumable state                        |
 | `archivefs_v3.py`      | Mount-like binary archive with 90MB chunking                              |

@@ -1,6 +1,6 @@
-[daemons.sovereign-exporter]
+[daemons.Estate-exporter]
 port = 25213
-run = "exec python3 ./stack/services/sovereign-exporter.py"
+run = "exec python3 ./stack/services/Estate-exporter.py"
 dir = "."
 retry = true
 ready_http = "http://127.0.0.1:25213/metrics"

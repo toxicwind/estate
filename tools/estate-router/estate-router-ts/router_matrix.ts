@@ -379,7 +379,7 @@ export class Matrix {
       this.health = new HealthDB(dbPath);
     } catch (e) {
       console.error(
-        `[sovereign-router] HealthDB unavailable at ${dbPath}, ` +
+        `[estate-router] HealthDB unavailable at ${dbPath}, ` +
           `Elo persistence disabled (routing on priors):`,
         e,
       );
@@ -387,7 +387,7 @@ export class Matrix {
     }
     const seeded = this.applyBenchPriors(true);
     console.log(
-      `[sovereign-router] bench priors: source=${seeded.source} ` +
+      `[estate-router] bench priors: source=${seeded.source} ` +
         `seeded=${seeded.reseeded.join(",")}` +
         (seeded.restored.length
           ? ` restored=${seeded.restored.join(",")}`

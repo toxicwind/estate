@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-FORK_ROOT="$HOME/sovereign/projects/tau"
+FORK_ROOT="$HOME/Estate/projects/tau"
 REAL="$FORK_ROOT/packages/coding-agent/scripts/omp"
 
 if [ ! -x "$REAL" ]; then

@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
  * Estate Router v3.2 (Bun/TypeScript)
- * Port of sovereign-router/router.py — same strategies, HealthDB WAL, circuit breakers.
+ * Port of estate-router/router.py — same strategies, HealthDB WAL, circuit breakers.
  *
  * Strategies: fifo_matrix (alias fifo_flock) | ast_race (alias flock_race) | sticky_affinity | weighted_elo | circuit_chain | hybrid
  * Default hybrid: sticky → ast_race → circuit_chain; explicit CODING aliases go direct.
@@ -165,7 +165,7 @@ const server = Bun.serve({
 
     if (path.startsWith("/mesh")) {
       const m = await handleMeshRequest(req, {
-        service: "sovereign-router",
+        service: "estate-router",
         version: "v3.2",
       });
       if (m) return m;
@@ -281,7 +281,7 @@ const server = Bun.serve({
       }
       return json({
         status: "ok",
-        router: "sovereign-router-ts",
+        router: "estate-router-ts",
         version: "v3.2",
         strategy: STRATEGY,
         uptime_s: Math.round(process.uptime()),
@@ -372,7 +372,7 @@ const server = Bun.serve({
       }
       return json({
         status: "ok",
-        router: "sovereign-router-ts",
+        router: "estate-router-ts",
         version: "v3.2",
         strategy: STRATEGY,
         parallel: MAX_PARALLEL,

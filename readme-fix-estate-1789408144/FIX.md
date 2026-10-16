@@ -1,4 +1,4 @@
-# Sovereign Mesh — FIX.md (Live Mutable Checklist)
+# Estate Mesh — FIX.md (Live Mutable Checklist)
 
 > **Status**: Core services UP. Executing fixes in dependency order.
 > **Rule**: Check off `[x]` immediately after doing. Add sub-tasks with `-- [ ]`. Reorder as needed.

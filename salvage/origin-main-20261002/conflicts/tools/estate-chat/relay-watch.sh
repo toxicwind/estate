@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # relay-watch.sh — outbound leg of the #relay (WhatsApp) bridge.
-# Polls sovereign-chat /v1/state for new decision-kind messages since the
+# Polls Estate-chat /v1/state for new decision-kind messages since the
 # durable watermark and prints them for the relay agent. Prints QUIET when
 # there is nothing new (the relay agent then stays silent).
 #
@@ -18,10 +18,10 @@
 # follow-up sweep via /v1/rooms/<room>/messages instead.
 set -u
 
-STATE_DIR="${SOVEREIGN_CHAT_STATE_DIR:-/home/toxic/estate/tools/sovereign-chat/state}"
+STATE_DIR="${ESTATE_CHAT_STATE_DIR:-/home/toxic/estate/tools/Estate-chat/state}"
 WM="$STATE_DIR/relay-watermark"
-TOKEN_FILE="${SOVEREIGN_CHAT_TOKEN_FILE:-/home/toxic/.config/sovereign-chat-token}"
-BASE="${SOVEREIGN_CHAT_BASE:-http://127.0.0.1:25120}"
+TOKEN_FILE="${ESTATE_CHAT_TOKEN_FILE:-/home/toxic/.config/Estate-chat-token}"
+BASE="${ESTATE_CHAT_BASE:-http://127.0.0.1:25120}"
 RELAY_AGENT="${RELAY_AGENT_ID:-20260918-whatsapp-d0d198ad}"
 
 last=0

@@ -1,5 +1,5 @@
 {
-  description = "Sovereign projects development environment (OMP build retired: source de-vendored to toxicwind/tau)";
+  description = "Estate projects development environment (OMP build retired: source de-vendored to toxicwind/tau)";
 
   nixConfig = {
     extra-substituters = [ "https://nix-community.cachix.org" ];
@@ -102,7 +102,7 @@
           bun2nix = bun2nixFor system;
         in
         {
-          bun-lock = pkgs.runCommand "sovereign-bun-lock" { nativeBuildInputs = [ bun2nix ]; } ''
+          bun-lock = pkgs.runCommand "Estate-bun-lock" { nativeBuildInputs = [ bun2nix ]; } ''
             cp -R ${self.outPath} source
             chmod -R u+w source
             cd source

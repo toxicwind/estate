@@ -4,5 +4,5 @@
 # llama-swap exists (renamed to herd long ago). Now uses the owned
 # pitchfork-restart wrapper, which reconciles against the port.
 set -euo pipefail
-cd "${SOVEREIGN_ROOT:-/home/toxic/sovereign}"
-exec ./bin/pitchfork-restart sovereign/herd
+cd "${ESTATE_ROOT:-/home/toxic/Estate}"
+exec ./bin/pitchfork-restart Estate/herd

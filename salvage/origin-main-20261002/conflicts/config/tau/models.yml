@@ -1,4 +1,4 @@
-# Tau provider catalog -- CANONICAL SOURCE (tracked in sovereign-projects).
+# Tau provider catalog -- CANONICAL SOURCE (tracked in estate-projects).
 # Reference catalog only: the engine reads providers from ~/.tau/config.yml
 # (no ~/.tau/agent/models.yml is deployed; verified 2026-10-01).
 # NOTE 2026-09-20 tau-hyperfix: the engine does NOT expand ${VAR:-default}
@@ -10,8 +10,8 @@
 # live-verified changes go here first, then sync to the overlay.
 #
 # Provider ORDER authority: bench/rankers/robust.py (ranker-audit 2026-09-20):
-#   nim (sovereign/free) 0.8087 > pollinations 0.7535 > herd-local 0.5791.
-# Every provider below is verified live on yote; herd and sovereign use
+#   nim (estate/free) 0.8087 > pollinations 0.7535 > herd-local 0.5791.
+# Every provider below is verified live on yote; herd and estate use
 # openai-models-list discovery so tau dynamically exposes EVERY genuinely
 # available herd model (no curated subset). Static entries exist only where
 # discovery cannot name the route (`free`/`ling` pool aliases on :25104,
@@ -33,8 +33,8 @@ providers:
     auth: none
     discovery:
       type: openai-models-list
-  sovereign:
-    # Sovereign free pool: live router on :25104. `free` races all free-tier
+  estate:
+    # Estate free pool: live router on :25104. `free` races all free-tier
     # models and serves the first non-empty completion (substance-guarded).
     # Measured live 2026-09-20: 0pct errors, 781 models.
     baseUrl: http://127.0.0.1:25104/v1
@@ -44,7 +44,7 @@ providers:
       type: openai-models-list
     models:
       - id: free
-        name: Sovereign free pool
+        name: Estate free pool
         api: openai-completions
         reasoning: false
         input: [text]
@@ -54,7 +54,7 @@ providers:
           cacheRead: 0
           cacheWrite: 0
       - id: ling
-        name: Ling 3.0 Flash (Sovereign default free model)
+        name: Ling 3.0 Flash (Estate default free model)
         api: openai-completions
         reasoning: false
         input: [text]

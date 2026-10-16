@@ -74,8 +74,8 @@ manifest = "tools/null-g-proxy/pitchfork.d"
 kind = "dir"
 
 [[project]]
-key = "tools/sovereign-chat"
-manifest = "tools/sovereign-chat/pitchfork.d"
+key = "tools/estate-chat"
+manifest = "tools/estate-chat/pitchfork.d"
 kind = "dir"
 
 [[project]]

@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 set -euo pipefail
-bun run "${SOVEREIGN_ROOT:-$HOME/sovereign}/src/mcp/llama_swap.ts" models
+bun run "${ESTATE_ROOT:-$HOME/Estate}/src/mcp/llama_swap.ts" models

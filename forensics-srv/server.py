@@ -8,7 +8,7 @@ Exposes the refusal-hunt forensics pipeline as a service:
   (4) trigger-token census
 
 Internal only: binds 127.0.0.1, bearer-token auth (token in .token, 0600).
-Managed by pitchfork as sovereign/forensics-srv (retry, boot_start).
+Managed by pitchfork as Estate/forensics-srv (retry, boot_start).
 Stdlib HTTP server; pyarrow + tiktoken from the venv.
 """
 import base64

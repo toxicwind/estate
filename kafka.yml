@@ -1,13 +1,13 @@
 consumers:
-  - name: sovereign-events
+  - name: estate-events
     mode: pull
     brokers:
       - 127.0.0.1:25144
-    clientId: sovereign-omp
-    groupId: sovereign-group
+    clientId: estate-omp
+    groupId: estate-group
     topics:
-      - sovereign.events
-      - sovereign.alerts
+      - estate.events
+      - estate.alerts
     fromBeginning: false
     notify: true
     maxQueue: 200

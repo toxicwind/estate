@@ -71,8 +71,8 @@ curl "${H[@]}" $B/v1/state        # the whole board
 
 ### `chat` CLI
 
-`/home/toxic/bin/chat` (source: `tools/sovereign-chat/chat` in this repo;
-re-install with `install -m755 tools/sovereign-chat/chat /home/toxic/bin/chat`):
+`/home/toxic/bin/chat` (source: `tools/estate-chat/chat` in this repo;
+re-install with `install -m755 tools/estate-chat/chat /home/toxic/bin/chat`):
 
 ```bash
 chat join --name mylane --summoner chris --surface side-chat --activity "doing X"
@@ -136,7 +136,7 @@ Tools: `join`, `heartbeat`, `post_message`, `read_messages`, `list_presence`,
 
 ```json
 { "mcpServers": { "estate-chat": {
-  "command": "bun", "args": ["run", "/home/toxic/estate/tools/sovereign-chat/chat.ts", "mcp"],
+  "command": "bun", "args": ["run", "/home/toxic/estate/tools/estate-chat/chat.ts", "mcp"],
   "env": { "ESTATE_CHAT_TOKEN_FILE": "/home/toxic/.config/estate-chat-token",
             "ESTATE_CHAT_TOKEN": "<token>" }
 } } }

@@ -3,7 +3,7 @@ plugins:
     source: ./projects/ranch/herd
     vendor:
       - ./projects/ranch/herd/vendor/llama-swap
-    merged: sovereign-swap
+    merged: estate-swap
     privileged: true
   - name: flock
     source: ./projects/ranch/flock
@@ -14,7 +14,7 @@ plugins:
     role: "MCP federation gateway"
   - name: router
     source: ./projects/ranch/router
-    merged: [router-legacy, stockyard-flock-router, sovereign-router]
+    merged: [router-legacy, stockyard-flock-router, estate-router]
     privileged: true
   - name: barn-browser
     source: ./projects/ranch/barn/browserless
@@ -69,7 +69,7 @@ subagents:
     - explorer
     - analyst
     - debugger
-  defaultModel: sovereign/free
+  defaultModel: estate/free
   subagent: inherit
 tools:
   approvalMode: yolo
@@ -229,7 +229,7 @@ retry:
   usageReservePolicy: confirm
   fallbackChains:
     google-antigravity/*:
-      - sovereign/free
+      - estate/free
       - herd/qwen-flash-da-128k
     web:
       - web/perplexity

@@ -19,7 +19,7 @@ Agent `completed` status was treated as "process ended", not "outcome succeeded"
 | Tarnish `4953ef2b` | 7 | 5/7 crew + 2 remediated | guidellm `483838e3`, super-ralph `4e5cd2b7`, tau `c446f284`, tau-extensions `1c898e3d`, estate `07ff1847` landed. ralph-dashboard had no README commit (HEAD was 2026-09-21) — remediated `b2df3ecb`. estate-projects had no README commit — root README was already a 456-line maximal doc, only the badge block needed the skill's right-aligned for-the-badge treatment — remediated `20dad721` |
 | Volt `8fcad960` | 7 | 7/7 | nvidia-alive `e81c8ff5`, nvidia-kernel-guard `1dbf2c06`, nvidia-nim-model-probe `b95a5903`, nvidia-swarm-lens `0cd562ec`, nim-inkling-api-research `822e5431` (master), entropy-gpu `f166073b`, k3-capacity-hack `bfa4740c` |
 | Pip `5cbfc612` | 7 | 7/7 | codeflux `f6b9f106`, codeflux-moulti `ac2aeaf2` (master), codeflux-patchling `3b02f321`, codeflux-python-patch `3683d5f4` (master), codeflux-watchfiles `61c0a09f`, ast-grep `4daad14e`, agent-dashboard `00bde8db` (default branch `canary`, not main) |
-| Bramble `7c09cd26` | 7 | 6/7 | sovereign-dispersal `2fc2ca2f`, sovereign-scripts `abf8ac7b`, sovereign-swap `d6f44834`, identity-router `67732d51`, repo-first-class `09d1f211`, safety-review-gate `f9f02237` landed. **sovereign-skills: repo is ARCHIVED (read-only) — push 403s. Bramble wrote the README (it exists) but could not land it. Needs unarchive to complete.** |
+| Bramble `7c09cd26` | 7 | 6/7 | estate-dispersal `2fc2ca2f`, estate-scripts `abf8ac7b`, estate-swap `d6f44834`, identity-router `67732d51`, repo-first-class `09d1f211`, safety-review-gate `f9f02237` landed. **estate-skills: repo is ARCHIVED (read-only) — push 403s. Bramble wrote the README (it exists) but could not land it. Needs unarchive to complete.** |
 | Wren `0d47ddc4` | 9 | 9/9 | effusion-labs `f7da96c6`, boundless `1306de14`, ontological-atlas `39a12e97`, qed `e04c6c9d`, codex-desktop-linux `b9251667`, caddy-estate-auth `db89c5bd`, web3-sec-workspace `d9224e44`, musepool `0a687360`, modelbeats `35587c11` |
 | Slate `9ceb7fd0` | 9 | 9/9 | pj-fast `5333d10f`, outlier-toolkit `b242ba2e`, refusal-hunt `39e0d468`, rig `d2db564b`, session-bus-refresh `05a7c68f` (master), vaultfs `31c2e790`, zedra-estate `be3320d2`, playwright-mcp `ea967318`, neo-osint `6bb33ebf` |
 
@@ -37,7 +37,7 @@ All SHAs verified against `git ls-remote` / the GitHub API on 2026-09-30.
 2. **estate-projects** — root README was already maximal (456 lines,
    oracle-framed hero untouched); only the badge block was converted to the
    skill's right-aligned for-the-badge convention. Landed `20dad721`, ref verified.
-3. **sovereign-skills** — **blocked, not fixable from here.** GitHub has the repo
+3. **estate-skills** — **blocked, not fixable from here.** GitHub has the repo
    archived; pushes 403 (`This repository was archived so it is read-only`).
    The README content exists and is lint-clean; it lands the moment the repo is
    unarchived. User's call.

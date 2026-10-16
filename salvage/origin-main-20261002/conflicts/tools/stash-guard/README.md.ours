@@ -2,13 +2,13 @@
 
 <div align="right">
 
-[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/Estate-projects#license)
+[![Estate-projects](https://img.shields.io/badge/Estate--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/Estate-projects)
 
 </div>
 
 Autonomous WIP flight-recorder + drop-proof stash vault for the
-sovereign/tau monorepo (and, in `--deep` mode, every git repo on the box).
+Estate/tau monorepo (and, in `--deep` mode, every git repo on the box).
 `git stash drop` and `git stash clear` can no longer lose work — every live
 stash entry is pinned at a guard ref that survives.
 
@@ -85,7 +85,7 @@ protects is a liability. Extend excludes via `.stashguardignore` per repo.
 
 ## License & security
 
-MIT — see [LICENSE](https://github.com/toxicwind/sovereign-projects#license).
+MIT — see [LICENSE](https://github.com/toxicwind/Estate-projects#license).
 
 - Guard refs hold copies of your uncommitted work — including anything
   sensitive in the tree. The `archive` remote must be as trusted as the

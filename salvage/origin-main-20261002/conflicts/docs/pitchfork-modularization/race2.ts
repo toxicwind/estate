@@ -108,18 +108,18 @@ async function agentEdit(root: string, variant: string, daemon: string): Promise
     return f;
   }
   if (variant === "D1") {
-    const proj = daemon.startsWith("oracle") || daemon.startsWith("bidder") || daemon === "market-watchdog" ? "ranch/oracle" : "sovereign";
+    const proj = daemon.startsWith("oracle") || daemon.startsWith("bidder") || daemon === "market-watchdog" ? "ranch/oracle" : "Estate";
     const f = `${root}/${proj}/pitchfork/daemons.toml`;
     await Bun.$`echo "# touch by agent" >> ${f}`.quiet();
     return f;
   }
   if (variant === "D2") {
-    const proj = daemon.startsWith("oracle") || daemon.startsWith("bidder") || daemon === "market-watchdog" ? "ranch/oracle" : "sovereign";
+    const proj = daemon.startsWith("oracle") || daemon.startsWith("bidder") || daemon === "market-watchdog" ? "ranch/oracle" : "Estate";
     const f = `${root}/${proj}/pitchfork.d/${daemon}.toml`;
     await Bun.$`echo "# touch by agent" >> ${f}`.quiet();
     return f;
   }
-  const proj = daemon.startsWith("oracle") || daemon.startsWith("bidder") || daemon === "market-watchdog" ? "ranch/oracle" : "sovereign";
+  const proj = daemon.startsWith("oracle") || daemon.startsWith("bidder") || daemon === "market-watchdog" ? "ranch/oracle" : "Estate";
   const f = `${root}/${proj}/mise.toml`;
   await Bun.$`echo "# touch by agent" >> ${f}`.quiet();
   return f;

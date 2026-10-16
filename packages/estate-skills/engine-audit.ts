@@ -1,6 +1,6 @@
-// Engine Audit Skill — sovereign-skills/engine-audit.ts
+// Engine Audit Skill — Estate-skills/engine-audit.ts
 // Audits the tau engine fork vs upstream oh-my-pi, produces structured diff dataframes.
-// Usage: bun run sovereign-skills/engine-audit.ts
+// Usage: bun run Estate-skills/engine-audit.ts
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { execSync } from "node:child_process";

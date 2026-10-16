@@ -418,12 +418,12 @@ export const SURFACES: readonly Surface[] = [
 		description: "Host metrics.",
 	},
 	{
-		id: "sovereign-exporter",
+		id: "Estate-exporter",
 		label: "Estate Exporter",
 		group: "Ops",
 		origin: loopback(25213),
 		kind: "api",
-		daemon: "sovereign-exporter",
+		daemon: "Estate-exporter",
 		healthPath: "/metrics",
 		description: "Stack-level Prometheus exporter.",
 	},
@@ -523,7 +523,7 @@ export const SURFACES: readonly Surface[] = [
 		group: "Automation",
 		origin: loopback(25215),
 		kind: "api",
-		daemon: "sovereign-stream-broker",
+		daemon: "Estate-stream-broker",
 		description: "Fleet event stream broker.",
 	},
 	{

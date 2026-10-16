@@ -1,8 +1,8 @@
 {
- "title": "Sovereign Workflows",
- "uid": "sovereign-workflows",
+ "title": "Estate Workflows",
+ "uid": "estate-workflows",
  "tags": [
-  "sovereign",
+  "estate",
   "workflows",
   "estate"
  ],
@@ -35,7 +35,7 @@
    },
    "targets": [
     {
-     "expr": "sovereign_market_bidders"
+     "expr": "estate_market_bidders"
     }
    ],
    "fieldConfig": {
@@ -55,7 +55,7 @@
    },
    "targets": [
     {
-     "expr": "sovereign_oracle_loop_up"
+     "expr": "estate_oracle_loop_up"
     }
    ],
    "fieldConfig": {
@@ -75,7 +75,7 @@
    },
    "targets": [
     {
-     "expr": "sovereign_oracle_core_up"
+     "expr": "estate_oracle_core_up"
     }
    ],
    "fieldConfig": {
@@ -95,7 +95,7 @@
    },
    "targets": [
     {
-     "expr": "sovereign_market_open_tasks"
+     "expr": "estate_market_open_tasks"
     }
    ],
    "fieldConfig": {
@@ -115,7 +115,7 @@
    },
    "targets": [
     {
-     "expr": "sum by (event) (sovereign_market_events_1h)",
+     "expr": "sum by (event) (estate_market_events_1h)",
      "legendFormat": "__auto"
     }
    ],
@@ -134,7 +134,7 @@
    },
    "targets": [
     {
-     "expr": "sum(sovereign_daemon_up)"
+     "expr": "sum(estate_daemon_up)"
     }
    ],
    "fieldConfig": {
@@ -154,7 +154,7 @@
    },
    "targets": [
     {
-     "expr": "sovereign_bridge_lane_up",
+     "expr": "estate_bridge_lane_up",
      "legendFormat": "__auto"
     }
    ],
@@ -192,7 +192,7 @@
    },
    "targets": [
     {
-     "expr": "sovereign_daemon_up",
+     "expr": "estate_daemon_up",
      "format": "table",
      "instant": true
     }
@@ -226,7 +226,7 @@
    },
    "targets": [
     {
-     "expr": "sovereign_port_listening",
+     "expr": "estate_port_listening",
      "format": "table",
      "instant": true
     }
@@ -265,7 +265,7 @@
    },
    "targets": [
     {
-     "expr": "sovereign_brand_up"
+     "expr": "estate_brand_up"
     }
    ]
   },
@@ -285,7 +285,7 @@
    },
    "targets": [
     {
-     "expr": "sovereign_brand_queue_depth"
+     "expr": "estate_brand_queue_depth"
     }
    ]
   },
@@ -305,7 +305,7 @@
    },
    "targets": [
     {
-     "expr": "sovereign_brand_active_jobs"
+     "expr": "estate_brand_active_jobs"
     }
    ]
   }

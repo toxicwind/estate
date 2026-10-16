@@ -20,7 +20,7 @@
 | **QED** | `qed/` | AI-native editor (Zedra host) | Owned |
 | **Shell** | `shell/` | Desktop (Hyprland) | Owned |
 | **Boundless** | `boundless/` | Document ingestion | Owned |
-| **Sovereign-router** | `sovereign-router/` | Model discovery / routing | De-submoduled |
+| **Estate-router** | `Estate-router/` | Model discovery / routing | De-submoduled |
 | **Estate-rebrand** | `estate-rebrand/` | Branding/assets | De-submoduled |
 
 **Packages** (`packages/`): `utils/`, `agent/`, `catalog/`, etc. — tracked.
@@ -103,12 +103,12 @@ bun ~/estate/helpers/git-mutator/cli.ts agentic-audit
 *Audit kept under 200 lines. No full file dumps. Evidence: `read` + `grep` + `find` outputs embedded above.*
 === submodule inventory (verified tracked) ===
 - estate-rebrand: 0 files | embedded .git: NO (good)
-- sovereign-router: 0 files | embedded .git: NO (good)
-- sovereign-router-backup: 0 files | embedded .git: NO (good)
-- sovereign-router-clean: 0 files | embedded .git: NO (good)
-- sovereign-scripts: 0 files | embedded .git: NO (good)
-- sovereign-skills: 0 files | embedded .git: NO (good)
-- sovereign-swap: 0 files | embedded .git: NO (good)
+- Estate-router: 0 files | embedded .git: NO (good)
+- Estate-router-backup: 0 files | embedded .git: NO (good)
+- Estate-router-clean: 0 files | embedded .git: NO (good)
+- Estate-scripts: 0 files | embedded .git: NO (good)
+- Estate-skills: 0 files | embedded .git: NO (good)
+- Estate-swap: 0 files | embedded .git: NO (good)
 - estate-zed: 0 files | embedded .git: NO (good)
 - tau-extensions: 0 files | embedded .git: NO (good)
 - tau/engine: 0 files | embedded .git: NO (good)
@@ -120,12 +120,12 @@ bun ~/estate/helpers/git-mutator/cli.ts agentic-audit
 - zedra-virtual0ps: 0 files | embedded .git: NO (good)
 === CORRECTED sub-audits ===
 - estate-rebrand: 14029 files | embedded .git: GOOD | tracked: 4299 refs
-- sovereign-router: 120 files | embedded .git: GOOD | tracked: 360 refs
-- sovereign-router-backup: 120 files | embedded .git: GOOD | tracked: 120 refs
-- sovereign-router-clean: 120 files | embedded .git: GOOD | tracked: 120 refs
-- sovereign-scripts: 17 files | embedded .git: GOOD | tracked: 17 refs
-- sovereign-skills: 3 files | embedded .git: GOOD | tracked: 3 refs
-- sovereign-swap: 460 files | embedded .git: GOOD | tracked: 428 refs
+- Estate-router: 120 files | embedded .git: GOOD | tracked: 360 refs
+- Estate-router-backup: 120 files | embedded .git: GOOD | tracked: 120 refs
+- Estate-router-clean: 120 files | embedded .git: GOOD | tracked: 120 refs
+- Estate-scripts: 17 files | embedded .git: GOOD | tracked: 17 refs
+- Estate-skills: 3 files | embedded .git: GOOD | tracked: 3 refs
+- Estate-swap: 460 files | embedded .git: GOOD | tracked: 428 refs
 - estate-zed: 3958 files | embedded .git: GOOD | tracked: 4211 refs
 - tau-extensions: 100 files | embedded .git: GOOD | tracked: 25 refs
 - tau/engine: 58390 files | embedded .git: GOOD | tracked: 13780 refs

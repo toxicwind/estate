@@ -1,4 +1,4 @@
-# Tau provider catalog -- CANONICAL SOURCE (tracked in sovereign-projects).
+# Tau provider catalog -- CANONICAL SOURCE (tracked in estate-projects).
 # Reference catalog only: the engine reads providers from ~/.tau/config.yml
 # (no ~/.tau/agent/models.yml is deployed; verified 2026-10-01).
 # NOTE 2026-09-20 tau-hyperfix: the engine does NOT expand ${VAR:-default}
@@ -10,7 +10,7 @@
 # live-verified changes go here first, then sync to the overlay.
 #
 # Provider ORDER authority: bench/rankers/robust.py (ranker-audit 2026-09-20):
-#   nim (sovereign/free) 0.8087 > pollinations 0.7535 > herd-local 0.5791.
+#   nim (estate/free) 0.8087 > pollinations 0.7535 > herd-local 0.5791.
 # Every provider below is verified live on yote; herd and flock use
 # openai-models-list discovery so tau dynamically exposes EVERY genuinely
 # available herd model (no curated subset). Static entries exist only where

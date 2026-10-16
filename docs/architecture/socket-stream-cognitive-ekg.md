@@ -14,13 +14,13 @@ Long-running reasoning SSE streams are dropped by middleboxes (NAT, load balance
 
 A two-tier transport architecture:
 
-1. **Socket Stream Config** (`estate/packages/sovereign-utils/src/transport/socket-stream.ts`)
+1. **Socket Stream Config** (`estate/packages/estate-utils/src/transport/socket-stream.ts`)
    - `SocketStreamConfig` interface with OS-level keepalive parameters
    - `RingTokenBuffer` — append-only ring buffer preserving validated reasoning tokens across mid-flight network interrupts
    - `DirectSocketStreamClient` — connects to the Stream Broker UNIX socket or TCP port with robust keepalive
 
 2. **Stream Broker Daemon** (`ranch/stream-broker/`)
-   - UNIX socket server (`/run/user/1000/sovereign-stream-broker.sock`)
+   - UNIX socket server (`/run/user/1000/estate-stream-broker.sock`)
    - TCP server (port 25215)
    - Echo service with OS-level keepalive (TCP_KEEPIDLE=30s)
    - Supervised by Pitchfork with auto-restart
@@ -29,7 +29,7 @@ A two-tier transport architecture:
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `socketPath` | `/run/user/1000/sovereign-stream-broker.sock` | UNIX socket path |
+| `socketPath` | `/run/user/1000/estate-stream-broker.sock` | UNIX socket path |
 | `tcpPort` | `25215` | TCP listen port |
 | `tcpHost` | `127.0.0.1` | TCP bind address |
 | `tcpKeepAlive` | `true` | Enable OS-level keepalive |
@@ -39,8 +39,8 @@ A two-tier transport architecture:
 
 ### Integration
 
-- The Stream Broker is registered in `pitchfork.toml` as `[daemons.sovereign-stream-broker]`
-- The `socket-stream.ts` module is exported from `estate/packages/sovereign-utils/src/index.ts`
+- The Stream Broker is registered in `pitchfork.toml` as `[daemons.estate-stream-broker]`
+- The `socket-stream.ts` module is exported from `estate/packages/estate-utils/src/index.ts`
 - The Stream Broker listens on port 25215 (per `config/ports.env`)
 
 ## Cognitive EKG (Electrocardiogram Monitoring)
@@ -65,7 +65,7 @@ The model-guard proxy (`herd-model-guard.py`) serves as the primary health enfor
 |--------|------|-------------|
 | herd | 25100 | `GET /health` → 200 |
 | model-guard | 25101 | `GET /health` → 200 |
-| sovereign-router | 25104 | `GET /health` → 200 |
+| estate-router | 25104 | `GET /health` → 200 |
 | squawk-feed | 25135 | `GET /seq` → 200 |
 | stream-broker | 25215 | `ss -ltn 'sport = :25215'` |
 

@@ -15,7 +15,7 @@ Source of truth for the rebuild: `/home/toxic/estate/tools/kimi-claw/`
   forwardToolCalls,cronSessionTarget,imBypassCommandNames,shell,terminalWs},
   gateway{url,clientId,clientMode,agentId})
 - Live OpenFang registry on :4200 (agents coyote, kimiclaw-1, kimiclaw-2 all
-  Running) and the sovereign/src/lib/openfang_api.ts chat surface
+  Running) and the Estate/src/lib/openfang_api.ts chat surface
   (POST :4200/v1/chat/completions with model `openfang:<agent>`).
 
 The pre-repair `bridge.ts` (Sep 17) was inspected and retired to
@@ -27,9 +27,9 @@ dead direct Coyote route on :25143, and imported a stale client path.
 2. Direct Coyote :25143 route REMOVED; coyote dispatches via the OpenFang
    agent `coyote` (`dispatchToCoyote`).
 3. Per-instance endpoints:
-   - kimiclaw-a → instanceId `sovereign-yote-kimiclaw-a`, transport
+   - kimiclaw-a → instanceId `Estate-yote-kimiclaw-a`, transport
      `im_rpc`, OpenFang agent `kimiclaw-1`, squawk `@kimiclaw-a`
-   - kimiclaw-b → instanceId `sovereign-yote-kimiclaw-b`, transport
+   - kimiclaw-b → instanceId `Estate-yote-kimiclaw-b`, transport
      `bridge_ws` (normalized to `im_rpc` at runtime per the port source's
      own `readDeprecatedOutboundTransport` + validation warning), OpenFang
      agent `kimiclaw-2`, squawk `@kimiclaw-b`
@@ -48,7 +48,7 @@ dead direct Coyote route on :25143, and imported a stale client path.
 
 ## Deployment
 `deploy.sh` (idempotent): bun build check → --check-route both instances →
-register `sovereign/kimiclaw-a` + `sovereign/kimiclaw-b` pitchfork daemons
+register `Estate/kimiclaw-a` + `Estate/kimiclaw-b` pitchfork daemons
 → start. pitchfork.toml backed up before edit. Bridge (awrawr-ws-exec) and
 all squawk processes untouched.
 

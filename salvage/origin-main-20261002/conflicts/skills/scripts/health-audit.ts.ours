@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
- * Sovereign Health Audit Helper (September 2026)
- * Native Bun / TypeScript live probe across all Sovereign ecosystem endpoints.
+ * Estate Health Audit Helper (September 2026)
+ * Native Bun / TypeScript live probe across all Estate ecosystem endpoints.
  * Concurrent parallel execution via Promise.all (< 50ms total run time).
  * Preserves full, untruncated JSON diagnostics without arbitrary string slicing.
  */
@@ -67,7 +67,7 @@ const HTTP_SERVICES: ServiceEndpoint[] = [
   { name: "windmill", url: "http://127.0.0.1:25219/api/status", port: 25219 },
 ========
   { name: "hal-substrate", url: "http://127.0.0.1:25143/health", port: 25143 },
->>>>>>>> origin/main:readme-fix-sovereign-1789408144/skills/health-audit.ts
+>>>>>>>> origin/main:readme-fix-Estate-1789408144/skills/health-audit.ts
 ];
 
 const TCP_SERVICES: TcpEndpoint[] = [
@@ -79,7 +79,7 @@ async function checkHttp(endpoint: ServiceEndpoint): Promise<ProbeResult> {
   const t0 = performance.now();
   try {
     const resp = await fetch(endpoint.url, {
-      headers: { "User-Agent": "sovereign-health-audit/bun" },
+      headers: { "User-Agent": "Estate-health-audit/bun" },
       signal: AbortSignal.timeout(2000),
     });
     const elapsed_ms = Number((performance.now() - t0).toFixed(1));
@@ -185,7 +185,7 @@ async function main() {
   }
 
   console.log(
-    `\nSovereign Stack Status: ${upCount}/${total} services healthy (${totalMs}ms parallel scan)`,
+    `\nEstate Stack Status: ${upCount}/${total} services healthy (${totalMs}ms parallel scan)`,
   );
 }
 

@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "sovereign",
+      "name": "estate",
       "devDependencies": {
         "bun-types": "^1.1.0",
         "jscpd": "5.4.0",

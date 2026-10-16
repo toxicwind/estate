@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # mise run up — start core daemons via pitchfork
 set -euo pipefail
-export SOV="${SOVEREIGN_ROOT:-$PWD}"
+export SOV="${ESTATE_ROOT:-$PWD}"
 cd "$SOV"
 
 if ! command -v pitchfork >/dev/null; then
@@ -62,7 +62,7 @@ echo "up: $ok  down: $fail  total: $total"
 [[ $fail -eq 0 ]] && echo "ALL HEALTHY" || echo "DEGRADED — $fail service(s) down"
 EOF
 
-# Fixed by toxic/toxic-agent - sovereign stack recovery
+# Fixed by toxic/toxic-agent - estate stack recovery
 # Applied: ast-grep installed, pitchfork.toml fixed (no zed-editor ghost),
 # supervisor restarted, core services started.
-# See AGENTS.md / sovereign docs for details.
+# See AGENTS.md / estate docs for details.

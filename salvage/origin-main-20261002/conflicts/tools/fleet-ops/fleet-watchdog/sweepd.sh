@@ -2,7 +2,7 @@
 # fleet-watchdog direct sweeper daemon (runs ON awrawr-pc).
 #
 # This is the PRIMARY heartbeat path: a lightweight loop running sweep.py
-# every 60s with no agent-wrapper dispatch and no bridge hop. sovereign-chat
+# every 60s with no agent-wrapper dispatch and no bridge hop. Estate-chat
 # presence TTL is 120s, so a 60s cadence keeps the lane-7 heartbeat alive
 # with 60s of margin — immune to agent-dispatch jitter and bridge 502s.
 #

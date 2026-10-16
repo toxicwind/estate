@@ -33,7 +33,7 @@ binaries:
     path: /home/toxic/estate/projects/herd/llama-swap
     sha256: "e1d70dd074bf6c1218ce45be5e2cf9ebb609cf7439d279989d2429c2f08e2e4e"
     immutable_copy: /home/toxic/estate/projects/herd/llama-swap.20260930-052800
-    source: toxicwind/sovereign-swap
+    source: toxicwind/Estate-swap
     commit: 7fc25280816fa7f98764ac46d1435d55ac9dc3c3
     upstream_base: 7a14664d98f0e66bc68bba08548290ca0b469f98
     built_at: "2026-09-21T12:40:37Z"
@@ -42,7 +42,7 @@ binaries:
   herd-keypool:
     path: /home/toxic/estate/bin/herd-keypool.py
     sha256: "432c60f839be5fe4823461b103cb53b808d41d6d73283cc7702103506a6a92b2"
-    source: toxicwind/sovereign-projects
+    source: toxicwind/Estate-projects
     commit: 020f479aa899a5c6dc4226fdec690420540c20f9
     git_path: bin/herd-keypool.py
     daemon: keypool
@@ -50,7 +50,7 @@ binaries:
   herd-model-guard:
     path: /home/toxic/estate/bin/herd-model-guard.py
     sha256: "2621d6524b4633292dfbe1a6bf837bc7d297372bbe74598f6556630b2f0aee9f"
-    source: toxicwind/sovereign-projects
+    source: toxicwind/Estate-projects
     commit: b135cd2e7c6f4b0e76d33c272e88f5806399f436
     git_path: bin/herd-model-guard.py
     daemon: model-guard

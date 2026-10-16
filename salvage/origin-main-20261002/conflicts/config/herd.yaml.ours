@@ -1017,7 +1017,7 @@ models:
 # Verified with a YAML-library parse of this file plus a live /v1/models diff.
 # 2026-09-21 06:26 MDT; restored here durably. Each entry is a full cmd
 # model (distinct ctx/reasoning params per tier) -- the estate's
-# sovereign-swap fork serves cmd blocks under top-level `aliases:`.
+# estate-swap fork serves cmd blocks under top-level `aliases:`.
 # Model files come from the macros: section (MODEL_DIR, QWEN35_9B_FLASH_IQ4XS,
 # GEMMA_12B_BASE_Q4KM); both gguf files verified on disk 2026-09-21.
 # Router config owns selection: retarget by editing the --model macros.

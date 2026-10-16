@@ -83,7 +83,7 @@ If neither key variable is set, the extension reads, in order:
 2. `~/.secrets`
 
 …looking for `VANSROUTER_API_KEY=` or `API_KEY_SECRET=`. If all of those miss it
-falls back to the literal string `local-sovereign`.
+falls back to the literal string `local-estate`.
 
 #### `VANSROUTER_URL` must carry `/v1`
 

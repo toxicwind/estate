@@ -6,7 +6,7 @@ executed consolidation into `ranch/mesh/`.
 
 > This report covers the audit AND the executed migration. User's directive evolved during
 > the operation: audit-only → full migration → "audit phase OVER, execute now" → consolidate
-> into the *existing* `ranch/mesh/` (it already existed as the sovereign mesh; creating a new
+> into the *existing* `ranch/mesh/` (it already existed as the Estate mesh; creating a new
 > one would have collided) → no lane ownership, no approval gates, merge duplicates by hand
 > with hashline, lose zero code.
 
@@ -55,7 +55,7 @@ executed consolidation into `ranch/mesh/`.
   in its pitchfork stanza. The estate's canonical OpenAI-wire router: fronts herd `:25100`
   (local GGUFs) and cloud providers, with auto-quarantine of dead model slugs, per-provider
   breakers, and a winner ledger. Its README: "The canonical router… Replacing :25104
-  (sovereign-router-ts)".
+  (Estate-router-ts)".
 - **Live state:** HEALTHY on `:25200`, pitchfork-supervised, restarted from the new path
   after the move (PID 80415, `/health` → `{"ok":true}`, `/v1/models` serving live data).
   With flock `:25193` down, cuttinggate has effectively absorbed the cloud-router role
@@ -66,20 +66,20 @@ executed consolidation into `ranch/mesh/`.
   Port-lane backlog.
 - **Home:** `ranch/mesh/proxy/cuttinggate/`.
 
-### 1.4 sovereign-router — TypeScript router — `:25104` RETIRED (down)
+### 1.4 Estate-router — TypeScript router — `:25104` RETIRED (down)
 
 - **Language:** TypeScript/Bun.
 - **What it does (AST evidence):** OpenAI-compatible multi-provider LLM router —
   `/v1/chat/completions`, hybrid/hedged routing (`routeHybrid`), Elo health matrix, bench
   priors, `/mesh*` federation via `handleMeshRequest`. `Bun.serve({ port: PORT, hostname:
-  "127.0.0.1" })` at `router.ts:182-184`; port from `SOVEREIGN_ROUTER_PORT || SOVEREIGN_PORT`
+  "127.0.0.1" })` at `router.ts:182-184`; port from `ESTATE_ROUTER_PORT || ESTATE_PORT`
   (required — `router_config.ts:51-59` throws if unset). Docs say `:25104`;
   `estate/config/ports.env:80` says `:25104` retired ("merged into flock (:25193)") — the
   ports.env claim matches reality, and the router docs now carry a retired banner.
 - **Live state:** DOWN. Nothing on `:25104`; its pitchfork manifest is `retired-20261002`.
 - **Tests:** `bun run check` bundles 19 modules; `bun test` 114/114 pass (3 relative imports
   broke in the cross-repo move — fixed forward via hashline).
-- **Home:** `ranch/mesh/router/sovereign-router/` (imported from `estate/tools/`).
+- **Home:** `ranch/mesh/router/Estate-router/` (imported from `estate/tools/`).
 
 ### 1.5 keypool — key-management sidecar — `:25109` (down)
 
@@ -89,7 +89,7 @@ executed consolidation into `ranch/mesh/`.
   of the older `herd-keypool.py`.
 - **Relation to routers:** called by `ranch/roundup/scripts/probe-keypool.py:13`
   (`KEYPOOL_BASE = "http://127.0.0.1:25109"`) and `estate/skills/scripts/health-audit.ts:62`
-  (`:25109/health`). NOT called by sovereign-router (zero refs) or cuttinggate (which folded
+  (`:25109/health`). NOT called by Estate-router (zero refs) or cuttinggate (which folded
   its own in-process keypool module — `proxy/cuttinggate/src/keypool.ts` references `:25109`
   only as "a separate keypool service").
 - **Live state:** DOWN. Nothing on `:25109`.
@@ -126,12 +126,12 @@ several router attempts. All preserved — nothing of value left behind:
 
 | Variant | What it is | Home |
 |---|---|---|
-| `sovereign-mcp-gateway` | Whole MCP trust-boundary service (`:25120`); 23/23 bun tests pass | `mesh/router/sovereign-mcp-gateway/` |
-| `sovereign-ast-router` | TS/Bun port of the AST router (9Router/ULTIMATE_JULY_2026 lineage) | `mesh/router/flock-router/` |
+| `Estate-mcp-gateway` | Whole MCP trust-boundary service (`:25120`); 23/23 bun tests pass | `mesh/router/Estate-mcp-gateway/` |
+| `Estate-ast-router` | TS/Bun port of the AST router (9Router/ULTIMATE_JULY_2026 lineage) | `mesh/router/flock-router/` |
 | `flock-py` extras | v2 Python reference router (`router.py`, `router_config.py`, `router_strategy.py`, …) | `mesh/router/flock-py/` |
 | `free_zed_gateway` extras | free-provider gateway (3-source lineage) | `mesh/router/free_zed_gateway/` |
 | estate CloudRouter (`package flock`) | circuit breakers, Elo selection, health DB, token-bucket rate limit (Go) | `mesh/gateway/` |
-| `flock-pkg` v1 | v1 synthesis + `i.py` command auto-fixer | `mesh/research/sovereign-ast-router-v1/` |
+| `flock-pkg` v1 | v1 synthesis + `i.py` command auto-fixer | `mesh/research/Estate-ast-router-v1/` |
 
 505 redundant snapshot files were dropped only after per-file verification (byte-identical
 twins elsewhere in the ranch, or older upstream revisions). Husk deletion was justified by
@@ -145,13 +145,13 @@ ast-grep over Go files → 0 matches.
 | Pair | Relationship | Verdict |
 |---|---|---|
 | cuttinggate ↔ flock-proxy (Rust) | TS port per CONTRACT.md | Port won operationally (live :25200); Rust preserved, not live |
-| cuttinggate ↔ sovereign-router | Successor | cuttinggate replaced `:25104` ("Replacing :25104"); old router retired, preserved |
+| cuttinggate ↔ Estate-router | Successor | cuttinggate replaced `:25104` ("Replacing :25104"); old router retired, preserved |
 | cuttinggate ↔ herd | Edge router ↔ inference backplane | Complementary layers, not duplicates |
 | cuttinggate ↔ flock `:25193` | Cloud-router role | flock down; cuttinggate absorbed the role |
 | keypool ↔ cuttinggate in-process keypool | Standalone service vs folded module | Distinct generations; standalone preserved |
 | keypool ↔ `herd-keypool.py` | Bun port of Python predecessor | Distinct generations; both kept |
 | catalog ↔ everything | Data layer (SSOT library) | No overlap — consumed by routers, duplicates nothing |
-| Variants (flock-py, flock-router, free_zed_gateway, sovereign-mcp-gateway, ast-router) | Distinct attempts | Each unique; preserved in own homes |
+| Variants (flock-py, flock-router, free_zed_gateway, Estate-mcp-gateway, ast-router) | Distinct attempts | Each unique; preserved in own homes |
 
 **No true duplication requiring a merge was found** — every component does a distinct job or
 is a distinct generation. Per User ("this is NOT a scrap operation"), everything was kept
@@ -166,8 +166,8 @@ ranch/mesh/
   README.md            # one-pager: layers, ports, data flow (ss+curl verified)
   router/
     herd/              # Go inference backplane :25100 (DOWN — needs pitchfork restart)
-    sovereign-router/  # TS router :25104 (retired, preserved)
-    sovereign-mcp-gateway/ # MCP trust boundary :25120
+    Estate-router/  # TS router :25104 (retired, preserved)
+    Estate-mcp-gateway/ # MCP trust boundary :25120
     flock-py/          # v2 Python reference router
     flock-router/      # TS/Bun AST router
     free_zed_gateway/  # free-provider gateway variant
@@ -192,7 +192,7 @@ its own in-process pool).
 **ranch** (`toxicwind/ranch`, origin/main `7b4d536`):
 - `57ac1b8` mesh: move flock/proxy → mesh/proxy/flock-proxy
 - `9a9a55d` mesh: move flock/roost → mesh/catalog
-- `f6410f9` mesh: import sovereign-router from estate/tools (+ cuttinggate renames)
+- `f6410f9` mesh: import Estate-router from estate/tools (+ cuttinggate renames)
 - `5a46db0` mesh: import keypool from estate/services
 - `2738644` mesh: move herd → mesh/router/herd
 - `283f32f` / `b9de0c5` / `aff7d72` / `6c9e7dd` variant preservation + snapshot removal
@@ -200,7 +200,7 @@ its own in-process pool).
 - `7b4d536` mesh README one-pager
 
 **estate** (`toxicwind/estate`, origin/main `55cb68c764`):
-- `8b25849` / `fbed6a9` remove `tools/sovereign-router`, `services/keypool` (moved to ranch)
+- `8b25849` / `fbed6a9` remove `tools/Estate-router`, `services/keypool` (moved to ranch)
 - `e4a383cad8` ref fixes: `stack/services/herd.sh` → new binary path; pitchfork keypool +
   cuttinggate stanzas; `projects.toml` cuttinggate manifest (was about to silently drop
   cuttinggate from future composes); `config/tau` herd/router sources
@@ -228,8 +228,8 @@ astmatrix serve-404 default moved off retired `:25104` → `:25200`.
    that CONTRACT.md declares).
 3. **flock-proxy test-rot** — 8 pre-existing `cargo check --tests` errors.
 4. **`docs/estate-map.*` regen** — Sable's lane (generated file, stale router rows).
-5. **`sovereign/pitchfork.toml` `[daemons.mcp-gateway]`** — points at a path that never
-   existed; code now lives at `ranch/mesh/router/sovereign-mcp-gateway/`. Repoint or retire
+5. **`Estate/pitchfork.toml` `[daemons.mcp-gateway]`** — points at a path that never
+   existed; code now lives at `ranch/mesh/router/Estate-mcp-gateway/`. Repoint or retire
    the stanza (submodule repo — separate commit).
 
 *Crew: Bramble (herd), Tinder (proxy), Sedge (catalog), Vole (cross-repo), Pipit (variants),

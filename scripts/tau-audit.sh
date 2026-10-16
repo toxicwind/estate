@@ -82,7 +82,7 @@ esac
 
 # --- bridge (3) ---
 # flock :25193 is the live fleet router (auth-gated /v1/models, open /health).
-# sovereign-router :25104 retired — no daemon defined, nothing listens (verified 2026-10-15).
+# Estate-router :25104 retired — no daemon defined, nothing listens (verified 2026-10-15).
 for spec in "herd:25100:/v1/models:200" "flock:25193:/health:200" "vansrouter:20128:/v1/models:200"; do
   IFS=: read -r name port path want <<<"$spec"
   code=$(curl -s -m 8 -o /dev/null -w "%{http_code}" "http://127.0.0.1:${port}${path}" 2>/dev/null || echo "000")

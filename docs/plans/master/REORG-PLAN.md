@@ -104,7 +104,7 @@ pitchfork-supervised yote service inside the cell-material tree, confusing the n
 - **Services & code:** `src/`, `tools/`, `projects/`, `fleet/`, `gear/`, `9router`, `bin/`, `lib/`, `scripts/`
 - **Data/state (do not reorganize):** `data/`, `logs/`, `qdrant_data/`, `prometheus-data/`, `brain/`, `snapshots/`
 - **Docs/research:** `docs/`, `research/`, `audit/`, `audit-output/`, `architecture.d2`, `appinfo.json`
-- **Skills/rules:** `skills/`, `sovereign-skills/`, `ast-grep-rules/`
+- **Skills/rules:** `skills/`, `estate-skills/`, `ast-grep-rules/`
 - **Lane/worktree dirs (dated `*-20260914`, `wt-*`, `stash-*`, `merge-*`, `worktrees/`, `buildsrv-test*`):** stay as-is; future consolidation candidate, explicitly out of scope for this reorg
 - **Runtime/build:** `node_modules/`, `tests/`, `test/`, `tools-2/`, `coverage/`, `output/`, `xfer-report-20260915`, `analysis-*`
 - **Special:** `yote -> projects/yote` (symlink, untouched), `tailscale/`, `forensics-srv/`

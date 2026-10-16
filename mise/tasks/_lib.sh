@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Shared helpers for mise file tasks.
 set -euo pipefail
-export SOV="${SOVEREIGN_ROOT:-$PWD}"
+export SOV="${ESTATE_ROOT:-$PWD}"
 cd "$SOV"
 
 # shellcheck source=/dev/null

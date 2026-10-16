@@ -5,18 +5,18 @@ index 99c08f7619..a88cb0408a 100755
 @@ -5,7 +5,7 @@
  # shellcheck source=./.env.local
  
- # 1. Absolute sovereign home (does not rely on .bashrc)
--export SOVEREIGN_HOME="/home/toxic/estate"
+ # 1. Absolute estate home (does not rely on .bashrc)
+-export ESTATE_HOME="/home/toxic/estate"
 +export ESTATE_HOME="/home/toxic/estate"
- export SOVEREIGN_ROOT="/home/toxic/estate"
+ export ESTATE_ROOT="/home/toxic/estate"
  
  # 2. Absolute tau config (independent of CWD)
 @@ -22,8 +22,8 @@ fi
  
  # 4. .env.local overrides (single source of truth for non-secret env vars)
  # shellcheck source=/home/toxic/estate/.env.local
--if [[ -f "$SOVEREIGN_HOME/.env.local" ]]; then
--  set -a; source "$SOVEREIGN_HOME/.env.local"; set +a
+-if [[ -f "$ESTATE_HOME/.env.local" ]]; then
+-  set -a; source "$ESTATE_HOME/.env.local"; set +a
 +if [[ -f "$ESTATE_HOME/.env.local" ]]; then
 +  set -a; source "$ESTATE_HOME/.env.local"; set +a
  fi
@@ -26,13 +26,13 @@ index 99c08f7619..a88cb0408a 100755
  fi
  
  # 5. Agent launcher is the canonical entrypoint
--export PATH="$SOVEREIGN_HOME:$PATH"
+-export PATH="$ESTATE_HOME:$PATH"
 +export PATH="$ESTATE_HOME:$PATH"
  
  # 6. Watch files that change config behavior
  watch_file "$HOME/.secrets"
--watch_file "$SOVEREIGN_HOME/.env.local"
--watch_file "$SOVEREIGN_HOME/agent"
+-watch_file "$ESTATE_HOME/.env.local"
+-watch_file "$ESTATE_HOME/agent"
 +watch_file "$ESTATE_HOME/.env.local"
 +watch_file "$ESTATE_HOME/agent"
  watch_file "$HOME/$PI_CONFIG_DIR/agent/config.yml"
@@ -104,17 +104,17 @@ index 97151fdaff..d86781696f 100644
  
 -> ⚠️ **Known conflicts.** `.env` sets `SCOUT_BASE_URL=…:25104/v1` while
 -> `mise.toml` sets `:25100/v1`. `.env` §8 re-declares ports that `ports.env`
--> owns. `estate/.envrc` still exports `SOVEREIGN_HOME=/home/toxic/estate`.
--> `skills/git-mutator/types.ts` still points `SOVEREIGN_PORT_SSOT` at
--> `sovereign/config/ports.env`. All four need resolution during the mise rebuild.
+-> owns. `estate/.envrc` still exports `ESTATE_HOME=/home/toxic/estate`.
+-> `skills/git-mutator/types.ts` still points `ESTATE_PORT_SSOT` at
+-> `estate/config/ports.env`. All four need resolution during the mise rebuild.
 +> **Resolved 2026-10-03.** All four were real; each is closed.
 +> `SCOUT_BASE_URL`/`SCOUT_API_KEY`/`SCOUT_MODEL` were removed from the estate
 +> config — zero consumers, and `/home/toxic/.tau/.env` defines all three with
-+> different values (`:25193` + `sovereign/free`). Two contradictory copies of one
++> different values (`:25193` + `estate/free`). Two contradictory copies of one
 +> setting is worse than one, so the estate defers to the agent config that reads
 +> them. `.env` §8 and `config/tau/.env` §8 no longer declare ports: each carried
 +> six keys under names that disagreed with the SSOT, and `MCPPROXY_PORT` pointed
-+> at `:25109`, which is `KEYPOOL_PORT`. `SOVEREIGN_HOME` in `.envrc` is now
++> at `:25109`, which is `KEYPOOL_PORT`. `ESTATE_HOME` in `.envrc` is now
 +> `ESTATE_HOME` — it had no consumer outside `.envrc` itself, and that is the
 +> fixed override name from Rule 2.2 which `skills/lib/estate.sh` already
 +> resolves, so the two now compose instead of disagreeing.
@@ -135,7 +135,7 @@ index de185d95ad..7ca39575c4 100644
 +++ b/docs/daemons.md
 @@ -48,7 +48,7 @@ herd → flock`.
  | `herd` | 25100 | The local model router. ELO-ranks providers, enforces the circuit breaker, owns the 25xxx model path. |
- | `sovereign-router` | 25104 | The older TS router, still serving. Runs *beside* herd, not behind it. Superseded but not retired — killing it is a separate decision. |
+ | `estate-router` | 25104 | The older TS router, still serving. Runs *beside* herd, not behind it. Superseded but not retired — killing it is a separate decision. |
  | `flock` | 25193 | The cloud/paid provider router. Holds the `VANSROUTER_API_KEY` namespace vansrouter used to own. |
 -| `cuttinggate` | — | The guard plane in front of herd and flock: quarantine, circuit breaker, credential rotation, winner ledger. Not in `groups.*` because it fronts everything else. |
 +| `cuttinggate` | 25200 | The guard plane in front of herd and flock: quarantine, circuit breaker, credential rotation, winner ledger. Its project overlay (`ranch/mesh/proxy/cuttinggate/pitchfork.d/cuttinggate.toml`) supplies `CUTTINGGATE_PORT=25200` and the readiness URL, so the top-level daemon object has no `port =` field. Not in `groups.*` because it fronts everything else. |
@@ -181,11 +181,11 @@ index ae6bced314..1fda306960 100755
  export MESH_HUB_PORT="${MESH_HUB_PORT:-25115}"
  export HINDSIGHT_API_PORT="${HINDSIGHT_API_PORT:-25117}"
  export HINDSIGHT_CP_PORT="${HINDSIGHT_CP_PORT:-25118}"
--# MCP_GATEWAY_PORT :25120 was retired with the sovereign-router merge. The
+-# MCP_GATEWAY_PORT :25120 was retired with the estate-router merge. The
 -# gatehouse meta-tool layer is what still answers, on :25127 -- the same port
 -# MCPPROXY_GO_PORT carries. Both names meant one daemon; see config/ports.env.
 +# MCP_GATEWAY_PORT is a compatibility alias for gatehouse :25127, the same
-+# daemon MCPPROXY_GO_PORT names. :25120 belongs to SOVEREIGN_CHAT_PORT; it was
++# daemon MCPPROXY_GO_PORT names. :25120 belongs to ESTATE_CHAT_PORT; it was
 +# never this gateway. See config/ports.env.
  export MCP_GATEWAY_PORT="${MCP_GATEWAY_PORT:-25127}"
 -export MCPPROXY_GO_PORT="${MCPPROXY_GO_PORT:-25127}"
@@ -200,7 +200,7 @@ index 17cd90f05b..03bf4a1e16 100755
  export NIM_QUEUE_BASE_URL="http://127.0.0.1:8000/v1"
  export LLAMA_SWAP_MODEL="beellama/qwen-flash-64k"
  
--# 2. Local Mesh & Gateway Ports (Aligned with sovereign/config/ports.env)
+-# 2. Local Mesh & Gateway Ports (Aligned with estate/config/ports.env)
 +# 2. Local Mesh & Gateway Ports (aligned with estate/config/ports.env)
  export LLAMA_SWAP_PORT="25100"
  export HERD_PORT="25100"
@@ -209,11 +209,11 @@ index 17cd90f05b..03bf4a1e16 100755
  export MESH_HUB_PORT="25115"
  export HINDSIGHT_API_PORT="25117"
  export HINDSIGHT_CP_PORT="25118"
--# MCP_GATEWAY_PORT :25120 was retired with the sovereign-router merge. The
+-# MCP_GATEWAY_PORT :25120 was retired with the estate-router merge. The
 -# gatehouse meta-tool layer is what still answers, on :25127 -- the same port
 -# MCPPROXY_GO_PORT carries. Both names meant one daemon; see config/ports.env.
 +# MCP_GATEWAY_PORT is a compatibility alias for gatehouse :25127, the same
-+# daemon MCPPROXY_GO_PORT names. :25120 belongs to SOVEREIGN_CHAT_PORT; it was
++# daemon MCPPROXY_GO_PORT names. :25120 belongs to ESTATE_CHAT_PORT; it was
 +# never this gateway. See config/ports.env.
  export MCP_GATEWAY_PORT="25127"
  export BYTE_VISION_PORT="25121"

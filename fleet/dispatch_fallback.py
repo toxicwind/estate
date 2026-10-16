@@ -22,7 +22,7 @@ import time
 import urllib.request
 import urllib.error
 
-TOKEN_FILE = "/home/toxic/.config/sovereign-chat-token"
+TOKEN_FILE = "/home/toxic/.config/estate-chat-token"
 DEFAULT_DIRECTIVES = "/home/toxic/estate/hatch/agents/ember/directives.md"
 
 

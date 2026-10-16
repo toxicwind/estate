@@ -2,8 +2,8 @@
 
 <div align="right">
 
-[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/Estate-projects#license)
+[![Estate-projects](https://img.shields.io/badge/Estate--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/Estate-projects)
 
 </div>
 
@@ -65,7 +65,7 @@ tool entry here with the same `--json` pass-through shape.
 
 ## License & security
 
-MIT — see [LICENSE](https://github.com/toxicwind/sovereign-projects#license).
+MIT — see [LICENSE](https://github.com/toxicwind/Estate-projects#license).
 
 - The wrapper fetches arbitrary URLs on the agent's behalf — `web_fetch`
   of untrusted pages is the same trust call as the agent browsing itself.

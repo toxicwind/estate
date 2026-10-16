@@ -8,9 +8,9 @@ WezTerm tabs and window switching are broken due to `enable_tab_bar = false` in 
 ## Architectural Placement: Socket Stream & Cognitive EKG between Ranch and Tau
 
 ### 1. Section 1 (Direct Socket Task Runner & Egress) -> Ranch Transport Adapter
-- **Placement**: `sovereign/projects/range/ranch/stockyard/stream-broker` & `packages/sovereign-utils/src/transport/socket-stream.ts`.
+- **Placement**: `estate/projects/range/ranch/stockyard/stream-broker` & `packages/estate-utils/src/transport/socket-stream.ts`.
 - **Role**: Ranch operates as the external provider multiplexer and inference front door (`herd` :25100, `flock` :25193). Standard Node/Python fetch layers drop SSE streams during prolonged model thinking phases when middlebox TCP keepalive fails.
-- **Mechanism**: The Direct Socket Task Runner establishes OS-level keepalive (`SO_KEEPALIVE`, `TCP_KEEPIDLE=30`, `TCP_KEEPINTVL=10`, `TCP_KEEPCNT=3`, `TCP_NODELAY=1`) and exposes a local UNIX domain socket (`/run/user/1000/sovereign-stream-broker.sock`). When connection reset occurs mid-generation, it salvages validated reasoning tokens in an append-only ring buffer and performs assistant-prefix continuation instead of re-prompting from scratch.
+- **Mechanism**: The Direct Socket Task Runner establishes OS-level keepalive (`SO_KEEPALIVE`, `TCP_KEEPIDLE=30`, `TCP_KEEPINTVL=10`, `TCP_KEEPCNT=3`, `TCP_NODELAY=1`) and exposes a local UNIX domain socket (`/run/user/1000/estate-stream-broker.sock`). When connection reset occurs mid-generation, it salvages validated reasoning tokens in an append-only ring buffer and performs assistant-prefix continuation instead of re-prompting from scratch.
 
 ### 2. Section 2 (Telemetric Runtime Oracle & Thermodynamic Loop Interception) -> Tau Agent Runtime
 - **Placement**: `estate/tau/engine/packages/coding-agent/src/telemetry/cognitive-ekg.ts` and `tau` turn supervisor.
@@ -22,7 +22,7 @@ WezTerm tabs and window switching are broken due to `enable_tab_bar = false` in 
   - **STALLED** ($v_{\text{gen}} < 15\text{ tok/s}$): Routes socket to fast local fallback.
 
 ### 3. Section 3 (Estate Master Orchestrator) -> Pitchfork Supervised Daemon
-- **Placement**: `sovereign/pitchfork.toml` daemon `[daemons.sovereign-stream-broker]`, listening on UNIX socket and port :25145, supervised with auto-restart.
+- **Placement**: `estate/pitchfork.toml` daemon `[daemons.estate-stream-broker]`, listening on UNIX socket and port :25145, supervised with auto-restart.
 
 ---
 
@@ -92,7 +92,7 @@ WezTerm tabs and window switching are broken due to `enable_tab_bar = false` in 
 1. **Audit & Fix Daemon Definitions in `pitchfork.toml`**:
    - **`squawk-feed`**: Update `/home/toxic/estate/hatch/agents/ember/squawk-relay/run-feed.sh` line 9 to execute `/home/toxic/estate/ranch/squawk/squawk_feed.py` instead of the nonexistent `/home/toxic/squawk/squawk_feed.py`. Restart `estate/squawk-feed`.
    - **`model-guard`**: Edit `/home/toxic/estate/bin/herd-model-guard.py` to catch `ConnectionResetError` and `BrokenPipeError` in request handling without crashing the server thread. Restart `estate/model-guard`.
-   - **`sovereign-router`**: Add `auto = ["start"]` to `[daemons.sovereign-router]` in `sovereign/pitchfork.toml` and verify health on port 25104.
+   - **`estate-router`**: Add `auto = ["start"]` to `[daemons.estate-router]` in `estate/pitchfork.toml` and verify health on port 25104.
    - **`herd` (:25100)**: Audit status (currently running, health OK).
    - **`flock` (:25193)**: Audit status (currently running, health ok).
    - **`rust-web` (:25201)**: Audit status (currently running, serving ops dashboard).
@@ -118,7 +118,7 @@ WezTerm tabs and window switching are broken due to `enable_tab_bar = false` in 
 2. `estate/projects/shell/ii/dots/.config/hypr/hyprland/keybinds.lua`: Hyprland keybindings file; anchors at line 155 (`Window: Focus`) where `ALT + Tab` and `cycle_next` are bound.
 3. `estate/projects/shell/ii/install.conf.yaml`: Dotbot manifest defining declarative symlinks between `dots/` and `~/.config`.
 4. `estate/hatch/agents/ember/squawk-relay/run-feed.sh`: Launcher script for `squawk-feed`; anchor at line 9 (path to `squawk_feed.py`).
-5. `sovereign/pitchfork.toml`: Master Pitchfork daemon supervisor; anchors at `[daemons.sovereign-router]`, `[daemons.model-guard]`, and `[daemons.squawk-feed]`.
+5. `estate/pitchfork.toml`: Master Pitchfork daemon supervisor; anchors at `[daemons.estate-router]`, `[daemons.model-guard]`, and `[daemons.squawk-feed]`.
 6. `estate/README.md`: Central documentation for the estate estate.
 
 ---
@@ -140,7 +140,7 @@ WezTerm tabs and window switching are broken due to `enable_tab_bar = false` in 
    - Run `curl -fsS http://127.0.0.1:25100/health`: expect `OK` (herd).
    - Run `curl -fsS http://127.0.0.1:25193/health`: expect `ok` (flock).
    - Run `curl -fsS -I http://127.0.0.1:25201/`: expect `200 OK` (rust-web ops dashboard).
-   - Run `curl -fsS http://127.0.0.1:25104/health`: expect `ok` or JSON status (sovereign-router).
+   - Run `curl -fsS http://127.0.0.1:25104/health`: expect `ok` or JSON status (estate-router).
    - Run `pitchfork status estate/squawk-feed`: expect `running`.
    - Run `mise run health`: verify all core daemons pass health checks.
 

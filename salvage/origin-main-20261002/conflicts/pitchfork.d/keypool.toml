@@ -1,5 +1,5 @@
-# sovereign — project-owned daemon manifest. Source of truth for 'keypool'.
-# Owned by the sovereign project; the parent only composes it.
+# Estate — project-owned daemon manifest. Source of truth for 'keypool'.
+# Owned by the Estate project; the parent only composes it.
 
 [daemons.keypool]
 health_http = { url = "http://127.0.0.1:25109/health", interval = "30s", timeout = "5s", retries = 3 }

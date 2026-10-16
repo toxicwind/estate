@@ -108,7 +108,7 @@ ast-grep exits 1 with valid `[]`; unquoted `$SPEC` binds the import clause).
   is util-linux setgroups — the engine never calls `sg`.
 - Synthetic: port-bind VERIFIED with `$PORT="25100"` capture; call-edge
   VERIFIED (`push()` inside `deploy()`); NOT-FOUND paths return honest notes.
-- Real estate code (yote, `/home/toxic/estate/ranch/mesh/router/sovereign-router`):
+- Real estate code (yote, `/home/toxic/estate/ranch/mesh/router/estate-router`):
   "router imports router_config" → VERIFIED, `$SPEC="./router_config.ts"`,
   router_ui.ts:1. "estate router listens on port 25104" → bind sites
   found as `Bun.serve({ port: PORT })` (router.ts:183), port symbolic —

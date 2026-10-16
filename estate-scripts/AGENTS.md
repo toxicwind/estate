@@ -1,4 +1,4 @@
-# AGENTS.md — Sovereign Scripts (`/home/toxic/projects/estate-scripts`)
+# AGENTS.md — Estate Scripts (`/home/toxic/projects/estate-scripts`)
 
 **Role**: Reusable automation scripts, batch tooling, and maintenance routines for estate infrastructure.
 **Stack**: Python (asyncio/aiohttp), Bash, Node/Bun.

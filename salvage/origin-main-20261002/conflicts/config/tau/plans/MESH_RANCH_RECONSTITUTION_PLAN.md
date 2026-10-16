@@ -14,9 +14,9 @@ Reconstitute and rename the `mesh/ranch` tree according to the structural topolo
    - Rename `ranch/mcp` to `ranch/barn/`.
    - Move child components into their respective monorepos (`stockyard/herd`, `stockyard/flock`, `barn/shep`).
 4. **Rewrite Configs**
-   - Update all references in `pitchfork.toml`, `mise.toml`, `stack/services/*.sh`, systemd units, environment files, and launchers to eliminate retired names (`super-ralph`, `llama-swap`, `sovereign-swap`, `ranch/routers`, `ranch/mcp`).
+   - Update all references in `pitchfork.toml`, `mise.toml`, `stack/services/*.sh`, systemd units, environment files, and launchers to eliminate retired names (`super-ralph`, `llama-swap`, `estate-swap`, `ranch/routers`, `ranch/mcp`).
 5. **Purge Symlinks**
-   - Delete all user-created symlinks under `~/sovereign` and `~/projects` after repointing callers directly to canonical paths.
+   - Delete all user-created symlinks under `~/estate` and `~/projects` after repointing callers directly to canonical paths.
 6. **Verify**
    - Run builds and tests for touched Go and other language modules.
    - Assert zero symlinks, zero retired names, and zero conflict markers.
@@ -27,9 +27,9 @@ Reconstitute and rename the `mesh/ranch` tree according to the structural topolo
 - `mise.toml` — task and task environment paths.
 
 ## Verification
-- Run `fd -t l -H . ~/sovereign ~/projects | wc -l` (assert 0).
-- Run `rg -c 'super-ralph|llama-swap|sovereign-swap' ~/sovereign ~/projects` (assert 0).
-- Run `rg -c '^<<<<<<<|^=======|^>>>>>>>' ~/sovereign ~/projects` (assert 0).
+- Run `fd -t l -H . ~/estate ~/projects | wc -l` (assert 0).
+- Run `rg -c 'super-ralph|llama-swap|estate-swap' ~/estate ~/projects` (assert 0).
+- Run `rg -c '^<<<<<<<|^=======|^>>>>>>>' ~/estate ~/projects` (assert 0).
 - Run `go build ./... && go test ./...` in touched modules.
 
 ## Assumptions & Contingencies

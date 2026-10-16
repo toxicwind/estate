@@ -70,7 +70,7 @@ where things run; 30 projects, 82 daemons):
 | `range` | 1 | mesh-landing — the ONLY daemon owned by range proper |
 | `tools/buildsrv` | 2 | buildsrv, buildsrv-watchdog (1 stale) |
 | `tools/kimi-claw` | 2 | |
-| `tools/{null-g-proxy,sovereign-chat,ml-serve,bench-radar,sovereign-router}` | 1 each | |
+| `tools/{null-g-proxy,Estate-chat,ml-serve,bench-radar,Estate-router}` | 1 each | |
 | `projects/yote` | 1 | |
 | `standalone/{12 projects}` | 16 | tau, awrawr×2, paper-poller×2, squawk-relay×2, … |
 

@@ -44,9 +44,9 @@
       "new_path": "salvage/origin-main-20261002/projects/yote/tsconfig.json"
     },
     {
-      "origin_path": "readme-fix-sovereign-1789408144/agent",
+      "origin_path": "readme-fix-estate-1789408144/agent",
       "blob": "1c516756db423c99638eefee8c68837efd95fbdf",
-      "new_path": "salvage/origin-main-20261002/readme-fix-sovereign-1789408144/agent"
+      "new_path": "salvage/origin-main-20261002/readme-fix-estate-1789408144/agent"
     },
     {
       "origin_path": "research/pi-per-model-prompt/package/README.md",
@@ -159,14 +159,14 @@
       "new_path": "salvage/origin-main-20261002/scratch/tau-ext-forks/packages/pi-workflow/LICENSE"
     },
     {
-      "origin_path": "sovereign-scripts/README.md",
+      "origin_path": "estate-scripts/README.md",
       "blob": "ab72d0d6f428cb57d63f2d8385660d9527be69b2",
-      "new_path": "salvage/origin-main-20261002/sovereign-scripts/README.md"
+      "new_path": "salvage/origin-main-20261002/estate-scripts/README.md"
     },
     {
-      "origin_path": "sovereign-skills/README.md",
+      "origin_path": "estate-skills/README.md",
       "blob": "e8462a6bc06e51fd478e6b2312ed4a2cf9d05b6b",
-      "new_path": "salvage/origin-main-20261002/sovereign-skills/README.md"
+      "new_path": "salvage/origin-main-20261002/estate-skills/README.md"
     },
     {
       "origin_path": "tools/nuvio-platform",
@@ -179,14 +179,14 @@
       "new_path": "salvage/origin-main-20261002/tools/nuvio-webos"
     },
     {
-      "origin_path": "tools/sovereign-router/sovereign-router-ts/router.ts",
+      "origin_path": "tools/estate-router/estate-router-ts/router.ts",
       "blob": "13ef51519692218fbac244d49f11f7b4a6dbae0f",
-      "new_path": "salvage/origin-main-20261002/tools/sovereign-router/sovereign-router-ts/router.ts"
+      "new_path": "salvage/origin-main-20261002/tools/estate-router/estate-router-ts/router.ts"
     },
     {
-      "origin_path": "tools/sovereign-router/sovereign-router-ts/sovereign-router-ts/router.ts",
+      "origin_path": "tools/estate-router/estate-router-ts/estate-router-ts/router.ts",
       "blob": "f525cff392b27b44ef2c534e1d0514b872777596",
-      "new_path": "salvage/origin-main-20261002/tools/sovereign-router/sovereign-router-ts/sovereign-router-ts/router.ts"
+      "new_path": "salvage/origin-main-20261002/tools/estate-router/estate-router-ts/estate-router-ts/router.ts"
     },
     {
       "origin_path": ".gitignore",
@@ -447,15 +447,15 @@
       "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
     },
     {
-      "origin_path": "config/tau/plans/SOVEREIGN_MASTER_CONSOLIDATION_PLAN.md",
+      "origin_path": "config/tau/plans/ESTATE_MASTER_CONSOLIDATION_PLAN.md",
       "blob": "4dc909da44c186cdb47817b5f17c22ffce6a29a5",
-      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/plans/SOVEREIGN_MASTER_CONSOLIDATION_PLAN.md",
+      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/plans/ESTATE_MASTER_CONSOLIDATION_PLAN.md",
       "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
     },
     {
-      "origin_path": "config/tau/plans/SOVEREIGN_SHELL_RANCH_TAU_PLAN.md",
+      "origin_path": "config/tau/plans/ESTATE_SHELL_RANCH_TAU_PLAN.md",
       "blob": "ecf56da2cc7ce9f0f32cc0a3235619f0b7b4008f",
-      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/plans/SOVEREIGN_SHELL_RANCH_TAU_PLAN.md",
+      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/plans/ESTATE_SHELL_RANCH_TAU_PLAN.md",
       "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
     },
     {
@@ -753,15 +753,15 @@
       "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
     },
     {
-      "origin_path": "skills/sovereign-hatch-toolkit/LICENSE",
+      "origin_path": "skills/estate-hatch-toolkit/LICENSE",
       "blob": "544ebefd6cf0dc70863f307fcb3f63154f96478b",
-      "new_path": "salvage/origin-main-20261002/conflicts/skills/sovereign-hatch-toolkit/LICENSE",
+      "new_path": "salvage/origin-main-20261002/conflicts/skills/estate-hatch-toolkit/LICENSE",
       "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
     },
     {
-      "origin_path": "skills/sovereign-hatch-toolkit/README.md",
+      "origin_path": "skills/estate-hatch-toolkit/README.md",
       "blob": "8b923252d04ab98957f018bc65527a3d83bee485",
-      "new_path": "salvage/origin-main-20261002/conflicts/skills/sovereign-hatch-toolkit/README.md",
+      "new_path": "salvage/origin-main-20261002/conflicts/skills/estate-hatch-toolkit/README.md",
       "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
     },
     {
@@ -795,9 +795,9 @@
       "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
     },
     {
-      "origin_path": "stack/services/sovereign-exporter.py",
+      "origin_path": "stack/services/estate-exporter.py",
       "blob": "a1ae4000695f91c8c8da6be2b93bce0887ec1636",
-      "new_path": "salvage/origin-main-20261002/conflicts/stack/services/sovereign-exporter.py",
+      "new_path": "salvage/origin-main-20261002/conflicts/stack/services/estate-exporter.py",
       "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
     },
     {
@@ -999,21 +999,21 @@
       "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
     },
     {
-      "origin_path": "tools/sovereign-chat/README.md",
+      "origin_path": "tools/estate-chat/README.md",
       "blob": "177d1a643a859a4e8623b5650008db01de41b3f1",
-      "new_path": "salvage/origin-main-20261002/conflicts/tools/sovereign-chat/README.md",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/estate-chat/README.md",
       "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
     },
     {
-      "origin_path": "tools/sovereign-chat/pitchfork.d/sovereign-chat.toml",
+      "origin_path": "tools/estate-chat/pitchfork.d/estate-chat.toml",
       "blob": "19954afce9e813ba358190f9de1daccd0a4536cd",
-      "new_path": "salvage/origin-main-20261002/conflicts/tools/sovereign-chat/pitchfork.d/sovereign-chat.toml",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/estate-chat/pitchfork.d/estate-chat.toml",
       "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
     },
     {
-      "origin_path": "tools/sovereign-chat/relay-watch.sh",
+      "origin_path": "tools/estate-chat/relay-watch.sh",
       "blob": "2ef7120f1b160f0ca67df90805247ab26ada206a",
-      "new_path": "salvage/origin-main-20261002/conflicts/tools/sovereign-chat/relay-watch.sh",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/estate-chat/relay-watch.sh",
       "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
     },
     {

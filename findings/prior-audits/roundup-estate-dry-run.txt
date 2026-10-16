@@ -27,16 +27,16 @@ would rewrite 1445 files in /home/toxic/estate
   M .github/CONTRIBUTING.md
   M .github/SECURITY.md
   M .github/workflows/ci.yml
-  M .github/workflows/sovereign-ci.yml
+  M .github/workflows/estate-ci.yml
   M .profile
   M .project_map.json
   M .recovery/tools/bugbounty/README.md.oct9-snapshot
   M .recovery/tools/fast-race/README.md.oct9-snapshot
   M .recovery/tools/fleet-chat/README.md.oct9-snapshot
-  M .recovery/tools/sovereign-chat/README.md.oct9-snapshot
+  M .recovery/tools/estate-chat/README.md.oct9-snapshot
   M .recursive-verified
-  M .sovereign-integration.json
-  M .sovereign-integration.ts
+  M .estate-integration.json
+  M .estate-integration.ts
   M .tau/blackboard/hubs/git-audit.collab.md
   M .three-folder-wire.json
   M .zed/settings.json
@@ -96,7 +96,7 @@ would rewrite 1445 files in /home/toxic/estate
   M agents/weaver/bin/README.md
   M agents/weaver/bin/market-loop.ts
   M ast-grep-rules/rules/no-model-selected.yaml
-  M ast-grep-rules/sovereign-yaml-ports.yml
+  M ast-grep-rules/estate-yaml-ports.yml
   M attribution.json
   M audit/PLAN.md
   M audit/agents_md_inventory.json
@@ -171,7 +171,7 @@ would rewrite 1445 files in /home/toxic/estate
   M config/tau/custom-session-files/f760764
   M config/tau/extensions/README.md
   M config/tau/extensions/nemotron/skills/nemotron-customize/references/PATTERNS.md
-  M config/tau/extensions/nemotron/skills/nemotron-customize/references/context/eval-sovereign-benchmarks.txt
+  M config/tau/extensions/nemotron/skills/nemotron-customize/references/context/eval-estate-benchmarks.txt
   M config/tau/extensions/nemotron/skills/nemotron-customize/references/context/index.toml
   M config/tau/extensions/nemotron/skills/nemotron-policy-generator/SKILL.md
   M config/tau/extensions/nemotron/skills/nemotron-policy-generator/assets/nemotron_policy_generator.html
@@ -183,8 +183,8 @@ would rewrite 1445 files in /home/toxic/estate
   M config/tau/plans/HERD_MAXIMAL_MERGE_PLAN.md
   M config/tau/plans/MESH_RANCH_RECONSTITUTION_PLAN.md
   M config/tau/plans/README_REVITALIZATION_PLAN_SHREW_PLAN.md
-  M config/tau/plans/SOVEREIGN_MASTER_CONSOLIDATION_PLAN.md
-  M config/tau/plans/SOVEREIGN_SHELL_RANCH_TAU_PLAN.md
+  M config/tau/plans/ESTATE_MASTER_CONSOLIDATION_PLAN.md
+  M config/tau/plans/ESTATE_SHELL_RANCH_TAU_PLAN.md
   M config/tau/profiles/better.yml
   M config/tau/profiles/default.yml
   M config/tau/terminal-sessions/pts-0
@@ -361,7 +361,7 @@ would rewrite 1445 files in /home/toxic/estate
   M fleet/dispatch_fallback.py
   M fleet/wedge.py
   M forensics-srv/server.py
-  M grafana/dashboards/sovereign.json
+  M grafana/dashboards/estate.json
   M grafana/dashboards/workflows.json
   M grafana/plugins/jaeger/gpx_grafana-jaeger-datasource_linux_amd64
   M grafana/plugins/prometheus/gpx_grafana-prometheus-datasource_linux_amd64
@@ -417,7 +417,7 @@ would rewrite 1445 files in /home/toxic/estate
   M helpers/check-version.mjs
   M helpers/gen-version.sh
   M helpers/setup.sh
-  M helpers/sovereign-mcp-server.ts
+  M helpers/estate-mcp-server.ts
   M infra/docs/README.md
   M kafka.yml
   M keypool/__main__.py
@@ -460,9 +460,9 @@ would rewrite 1445 files in /home/toxic/estate
   M ops/openfang-health/README.md
   M ops/openfang-health/openfang-health.sh
   M ops/openfang-health/race-candidates.json
-  M packages/caddy-sovereign-auth/AGENTS.md
-  M packages/caddy-sovereign-auth/go.mod
-  M packages/caddy-sovereign-auth/sovereignauth.go
+  M packages/caddy-estate-auth/AGENTS.md
+  M packages/caddy-estate-auth/go.mod
+  M packages/caddy-estate-auth/estateauth.go
   M packages/metaharness/README.md
   M packages/providers/DESIGN.md
   M packages/providers/README.md
@@ -478,17 +478,17 @@ would rewrite 1445 files in /home/toxic/estate
   M packages/providers/tests/catalog.test.ts
   M packages/providers/tests/codegen.test.ts
   M packages/providers/tests/concurrent.test.ts
-  M packages/sovereign-scripts/AGENTS.md
-  M packages/sovereign-scripts/README.md
-  M packages/sovereign-scripts/health_check.py
-  M packages/sovereign-scripts/sovereign_helper.py
-  M packages/sovereign-skills/AGENTS.md
-  M packages/sovereign-skills/README.md
-  M packages/sovereign-skills/engine-audit.ts
-  M packages/sovereign-utils/package.json
-  M packages/sovereign-utils/src/index.ts
-  M packages/sovereign-utils/src/transport/socket-stream.ts
-  M packages/sovereign-utils/tests/utils.test.ts
+  M packages/estate-scripts/AGENTS.md
+  M packages/estate-scripts/README.md
+  M packages/estate-scripts/health_check.py
+  M packages/estate-scripts/estate_helper.py
+  M packages/estate-skills/AGENTS.md
+  M packages/estate-skills/README.md
+  M packages/estate-skills/engine-audit.ts
+  M packages/estate-utils/package.json
+  M packages/estate-utils/src/index.ts
+  M packages/estate-utils/src/transport/socket-stream.ts
+  M packages/estate-utils/tests/utils.test.ts
   M parent.toml
   M patches/estate-current.diff
   M patches/estate-uncommitted.diff
@@ -496,7 +496,7 @@ would rewrite 1445 files in /home/toxic/estate
   M patches/tau-uncommitted.diff
   M pitchfork.d/openfang-front.toml
   M pitchfork.d/openfang-front.toml.bak-20261013
-  M pitchfork.d/sovereign-exporter.toml
+  M pitchfork.d/estate-exporter.toml
   M pitchfork.toml
   M pitchfork.toml.bak-20261013
   M pitchfork.toml.example
@@ -517,8 +517,8 @@ would rewrite 1445 files in /home/toxic/estate
   M projects/bridge/yote/apply_mcp_patch_mcp_smith.py
   M projects/bridge/yote/awrawr_mcp.py
   M projects/bridge/yote/mcp_patch_block_mcp_smith.py
-  M projects/gayxxx-sovereign/AGENTS.md
-  M projects/gayxxx-sovereign/README.md
+  M projects/gayxxx-estate/AGENTS.md
+  M projects/gayxxx-estate/README.md
   M projects/hatch-decode/README.md
   M projects/hatch-decode/pass3/README.md
   M projects/herd/llama-swap
@@ -682,26 +682,26 @@ would rewrite 1445 files in /home/toxic/estate
   M prometheus.yml
   M python/omp-rpc/README.md
   M python/robomp/README.md
-  M readme-fix-sovereign-1789408144/.gitignore
-  M readme-fix-sovereign-1789408144/.zed/settings.json
-  M readme-fix-sovereign-1789408144/AGENTS.md
-  M readme-fix-sovereign-1789408144/FIX.md
-  M readme-fix-sovereign-1789408144/README.md
-  M readme-fix-sovereign-1789408144/agents/hal-substrate/agent.toml
-  M readme-fix-sovereign-1789408144/agents/hal-substrate/system.md
-  M readme-fix-sovereign-1789408144/config/ports.env
-  M readme-fix-sovereign-1789408144/mise.toml
-  M readme-fix-sovereign-1789408144/mise/tasks/up
-  M readme-fix-sovereign-1789408144/olddetails/pitchfork-config.1786483536/pitchfork.toml
-  M readme-fix-sovereign-1789408144/package.json
-  M readme-fix-sovereign-1789408144/pitchfork.toml
-  M readme-fix-sovereign-1789408144/scripts/health-check.sh
-  M readme-fix-sovereign-1789408144/skills/health-audit.ts
-  M readme-fix-sovereign-1789408144/skills/repo-audit/SKILL.md
-  M readme-fix-sovereign-1789408144/src/hal-substrate/hal-loop.py
-  M readme-fix-sovereign-1789408144/src/services/registry.ts
-  M readme-fix-sovereign-1789408144/stack/services/hal-substrate.sh
-  M readme-fix-sovereign-1789408144/tools/kimi-claw/bridge.ts
+  M readme-fix-estate-1789408144/.gitignore
+  M readme-fix-estate-1789408144/.zed/settings.json
+  M readme-fix-estate-1789408144/AGENTS.md
+  M readme-fix-estate-1789408144/FIX.md
+  M readme-fix-estate-1789408144/README.md
+  M readme-fix-estate-1789408144/agents/hal-substrate/agent.toml
+  M readme-fix-estate-1789408144/agents/hal-substrate/system.md
+  M readme-fix-estate-1789408144/config/ports.env
+  M readme-fix-estate-1789408144/mise.toml
+  M readme-fix-estate-1789408144/mise/tasks/up
+  M readme-fix-estate-1789408144/olddetails/pitchfork-config.1786483536/pitchfork.toml
+  M readme-fix-estate-1789408144/package.json
+  M readme-fix-estate-1789408144/pitchfork.toml
+  M readme-fix-estate-1789408144/scripts/health-check.sh
+  M readme-fix-estate-1789408144/skills/health-audit.ts
+  M readme-fix-estate-1789408144/skills/repo-audit/SKILL.md
+  M readme-fix-estate-1789408144/src/hal-substrate/hal-loop.py
+  M readme-fix-estate-1789408144/src/services/registry.ts
+  M readme-fix-estate-1789408144/stack/services/hal-substrate.sh
+  M readme-fix-estate-1789408144/tools/kimi-claw/bridge.ts
   M research/pi-per-model-prompt/package/README.md
   M rust_algo_web/run.sh
   M rust_algo_web/src/main.rs
@@ -772,10 +772,10 @@ would rewrite 1445 files in /home/toxic/estate
   M salvage/origin-main-20261002/conflicts/config/tau/plans/MESH_RANCH_RECONSTITUTION_PLAN.md.ours
   M salvage/origin-main-20261002/conflicts/config/tau/plans/README_REVITALIZATION_PLAN_SHREW_PLAN.md
   M salvage/origin-main-20261002/conflicts/config/tau/plans/README_REVITALIZATION_PLAN_SHREW_PLAN.md.ours
-  M salvage/origin-main-20261002/conflicts/config/tau/plans/SOVEREIGN_MASTER_CONSOLIDATION_PLAN.md
-  M salvage/origin-main-20261002/conflicts/config/tau/plans/SOVEREIGN_MASTER_CONSOLIDATION_PLAN.md.ours
-  M salvage/origin-main-20261002/conflicts/config/tau/plans/SOVEREIGN_SHELL_RANCH_TAU_PLAN.md
-  M salvage/origin-main-20261002/conflicts/config/tau/plans/SOVEREIGN_SHELL_RANCH_TAU_PLAN.md.ours
+  M salvage/origin-main-20261002/conflicts/config/tau/plans/ESTATE_MASTER_CONSOLIDATION_PLAN.md
+  M salvage/origin-main-20261002/conflicts/config/tau/plans/ESTATE_MASTER_CONSOLIDATION_PLAN.md.ours
+  M salvage/origin-main-20261002/conflicts/config/tau/plans/ESTATE_SHELL_RANCH_TAU_PLAN.md
+  M salvage/origin-main-20261002/conflicts/config/tau/plans/ESTATE_SHELL_RANCH_TAU_PLAN.md.ours
   M salvage/origin-main-20261002/conflicts/docs/pitchfork-modularization/RESULT-round2-per-project.md
   M salvage/origin-main-20261002/conflicts/docs/pitchfork-modularization/RESULT-round2-per-project.md.ours
   M salvage/origin-main-20261002/conflicts/docs/pitchfork-modularization/race2.ts
@@ -834,10 +834,10 @@ would rewrite 1445 files in /home/toxic/estate
   M salvage/origin-main-20261002/conflicts/skills/git-mutator/README.md.ours
   M salvage/origin-main-20261002/conflicts/skills/scripts/health-audit.ts
   M salvage/origin-main-20261002/conflicts/skills/scripts/health-audit.ts.ours
-  M salvage/origin-main-20261002/conflicts/skills/sovereign-hatch-toolkit/LICENSE
-  M salvage/origin-main-20261002/conflicts/skills/sovereign-hatch-toolkit/LICENSE.ours
-  M salvage/origin-main-20261002/conflicts/skills/sovereign-hatch-toolkit/README.md
-  M salvage/origin-main-20261002/conflicts/skills/sovereign-hatch-toolkit/README.md.ours
+  M salvage/origin-main-20261002/conflicts/skills/estate-hatch-toolkit/LICENSE
+  M salvage/origin-main-20261002/conflicts/skills/estate-hatch-toolkit/LICENSE.ours
+  M salvage/origin-main-20261002/conflicts/skills/estate-hatch-toolkit/README.md
+  M salvage/origin-main-20261002/conflicts/skills/estate-hatch-toolkit/README.md.ours
   M salvage/origin-main-20261002/conflicts/skills/tau-fork-pinning/SKILL.md
   M salvage/origin-main-20261002/conflicts/skills/tau-fork-pinning/SKILL.md.ours
   M salvage/origin-main-20261002/conflicts/stack/services/_consolidated_herd_20260924/beellama-fast.sh
@@ -845,8 +845,8 @@ would rewrite 1445 files in /home/toxic/estate
   M salvage/origin-main-20261002/conflicts/stack/services/_consolidated_herd_20260924/openfang.sh
   M salvage/origin-main-20261002/conflicts/stack/services/_consolidated_herd_20260924/openfang.sh.ours
   M salvage/origin-main-20261002/conflicts/stack/services/herd.sh
-  M salvage/origin-main-20261002/conflicts/stack/services/sovereign-exporter.py
-  M salvage/origin-main-20261002/conflicts/stack/services/sovereign-exporter.py.ours
+  M salvage/origin-main-20261002/conflicts/stack/services/estate-exporter.py
+  M salvage/origin-main-20261002/conflicts/stack/services/estate-exporter.py.ours
   M salvage/origin-main-20261002/conflicts/stack/services/vansrouter.sh
   M salvage/origin-main-20261002/conflicts/stack/services/vansrouter.sh.ours
   M salvage/origin-main-20261002/conflicts/tools/e2e.py
@@ -873,12 +873,12 @@ would rewrite 1445 files in /home/toxic/estate
   M salvage/origin-main-20261002/conflicts/tools/kimi-claw/deploy.sh
   M salvage/origin-main-20261002/conflicts/tools/kimi-claw/deploy.sh.ours
   M salvage/origin-main-20261002/conflicts/tools/payload_builder.py
-  M salvage/origin-main-20261002/conflicts/tools/sovereign-chat/README.md
-  M salvage/origin-main-20261002/conflicts/tools/sovereign-chat/README.md.ours
-  M salvage/origin-main-20261002/conflicts/tools/sovereign-chat/pitchfork.d/sovereign-chat.toml
-  M salvage/origin-main-20261002/conflicts/tools/sovereign-chat/pitchfork.d/sovereign-chat.toml.ours
-  M salvage/origin-main-20261002/conflicts/tools/sovereign-chat/relay-watch.sh
-  M salvage/origin-main-20261002/conflicts/tools/sovereign-chat/relay-watch.sh.ours
+  M salvage/origin-main-20261002/conflicts/tools/estate-chat/README.md
+  M salvage/origin-main-20261002/conflicts/tools/estate-chat/README.md.ours
+  M salvage/origin-main-20261002/conflicts/tools/estate-chat/pitchfork.d/estate-chat.toml
+  M salvage/origin-main-20261002/conflicts/tools/estate-chat/pitchfork.d/estate-chat.toml.ours
+  M salvage/origin-main-20261002/conflicts/tools/estate-chat/relay-watch.sh
+  M salvage/origin-main-20261002/conflicts/tools/estate-chat/relay-watch.sh.ours
   M salvage/origin-main-20261002/conflicts/tools/stash-guard/README.md
   M salvage/origin-main-20261002/conflicts/tools/stash-guard/README.md.ours
   M salvage/origin-main-20261002/conflicts/tools/stash-guard/stash-guard.py
@@ -893,15 +893,15 @@ would rewrite 1445 files in /home/toxic/estate
   M salvage/origin-main-20261002/projects/mesh/gateway/README.md
   M salvage/origin-main-20261002/projects/qed/zed/AUDIT.md
   M salvage/origin-main-20261002/projects/tau-extensions/AGENTS.md
-  M salvage/origin-main-20261002/readme-fix-sovereign-1789408144/agent
+  M salvage/origin-main-20261002/readme-fix-estate-1789408144/agent
   M salvage/origin-main-20261002/research/pi-per-model-prompt/package/README.md
   M salvage/origin-main-20261002/rust_algo_web/static/index.html
   M salvage/origin-main-20261002/rust_algo_web/static/portal.html
   M salvage/origin-main-20261002/scratch/archive5/README_current.md
-  M salvage/origin-main-20261002/sovereign-scripts/README.md
-  M salvage/origin-main-20261002/sovereign-skills/README.md
-  M salvage/origin-main-20261002/tools/sovereign-router/sovereign-router-ts/router.ts
-  M salvage/origin-main-20261002/tools/sovereign-router/sovereign-router-ts/sovereign-router-ts/router.ts
+  M salvage/origin-main-20261002/estate-scripts/README.md
+  M salvage/origin-main-20261002/estate-skills/README.md
+  M salvage/origin-main-20261002/tools/estate-router/estate-router-ts/router.ts
+  M salvage/origin-main-20261002/tools/estate-router/estate-router-ts/estate-router-ts/router.ts
   M scratch/.mirror-sync.sh
   M scratch/agents/58246538-8068-45cc-80bd-3837e3558cbd/tool-output/exec-call_01a09f4590517d0197fdc3d932ade7ba.json
   M scratch/agents/5cab1116-2aae-41e3-a3e5-2e7f46f06660/tool-output/db-call_01a0a08abe5373218fa68a84034736dd.json
@@ -950,7 +950,7 @@ would rewrite 1445 files in /home/toxic/estate
   M scratch/fleet-inventory-20260914.md
   M scratch/fleet_note.txt
   M scratch/goals/awrawr-pc-mcp-exec-bridge/GOAL.md
-  M scratch/goals/first-class-sovereign-organization/GOAL.md
+  M scratch/goals/first-class-estate-organization/GOAL.md
   M scratch/goals/stash-safe-maximalization-of-tau-work/GOAL.md
   M scratch/herd-demote/demote.py
   M scratch/herd-status.sh
@@ -1011,20 +1011,20 @@ would rewrite 1445 files in /home/toxic/estate
   M scratch/modelverify.py
   M scratch/nim-rewire.py
   M scratch/plans/freeproxy-restore-plan.md
-  M scratch/readme-audits/caddy-sovereign-auth.md
+  M scratch/readme-audits/caddy-estate-auth.md
   M scratch/readme-audits/herd.md
   M scratch/readme-audits/local-work-archive.md
   M scratch/readme-audits/playwright-mcp.md
   M scratch/readme-audits/qed.md
-  M scratch/readme-audits/sovereign-dispersal.md
-  M scratch/readme-audits/sovereign-end4.md
-  M scratch/readme-audits/sovereign-projects-README-fixed.md
-  M scratch/readme-audits/sovereign-projects.md
-  M scratch/readme-audits/sovereign-router-backup.md
-  M scratch/readme-audits/sovereign-router.md
-  M scratch/readme-audits/sovereign.md
+  M scratch/readme-audits/estate-dispersal.md
+  M scratch/readme-audits/estate-end4.md
+  M scratch/readme-audits/estate-projects-README-fixed.md
+  M scratch/readme-audits/estate-projects.md
+  M scratch/readme-audits/estate-router-backup.md
+  M scratch/readme-audits/estate-router.md
+  M scratch/readme-audits/estate.md
   M scratch/readme-audits/web3-sec-workspace.md
-  M scratch/readme-audits/zedra-sovereign.md
+  M scratch/readme-audits/zedra-estate.md
   M scratch/readme-rewrite/herd-README.md
   M scratch/readme-rewrite/mesh-README.md
   M scratch/readme-rewrite/qed-README.md
@@ -1058,24 +1058,24 @@ would rewrite 1445 files in /home/toxic/estate
   M scratch/self_improvement/staging/memory/sirun_f3ee5b583a4b4ddbaef7bfc8688456f4/memory_reconciliation/review/MEMORY.md
   M scratch/self_improvement/staging/memory/sirun_faaca98876fc4c42b3154e6d97d4e182/memory_reconciliation/pinned/MEMORY.numbered.md
   M scratch/self_improvement/staging/memory/sirun_faaca98876fc4c42b3154e6d97d4e182/memory_reconciliation/pinned/MEMORY.pinned.md
-  M scratch/sovereign-router-backup-sanitize/fetch_meta.py
-  M scratch/sovereign-router-backup-sanitize/meta_oldest_first.json
-  M scratch/sovereign-router-backup-sanitize/rebuild.py
-  M scratch/sovereign-router-backup-sanitize/verify.py
-  M scratch/sovereign-router-sanitize/commits.json
-  M scratch/sovereign-router-sanitize/meta_oldest_first.json
-  M scratch/sovereign-router-sanitize/rebuild.py
+  M scratch/estate-router-backup-sanitize/fetch_meta.py
+  M scratch/estate-router-backup-sanitize/meta_oldest_first.json
+  M scratch/estate-router-backup-sanitize/rebuild.py
+  M scratch/estate-router-backup-sanitize/verify.py
+  M scratch/estate-router-sanitize/commits.json
+  M scratch/estate-router-sanitize/meta_oldest_first.json
+  M scratch/estate-router-sanitize/rebuild.py
   M scratch/sp_tree_current.pkl
   M scratch/squawk-relay/add_pitchfork.py
   M scratch/swarm-merge/work/README.md
-  M scratch/swarm-merge/work/SOVEREIGN.md
+  M scratch/swarm-merge/work/ESTATE.md
   M scratch/swarm-merge/work/nim/README.md
   M scratch/swarm-merge/work/nim/__init__.py
   M scratch/tau-ext-forks/README.md
   M scratch/tau-extensions-readme/README.md
   M scratch/user/files/Local_Emergent_AI_Research_Speculation.txt
   M scratch/user/files/emergent_boundary_harness.py.txt
-  M scratch/user/files/sovereign-dispersal-monolith.tar.gz.txt
+  M scratch/user/files/estate-dispersal-monolith.tar.gz.txt
   M scratch/whatsapp-mcp-staging/README.md
   M scratch/whatsapp-mcp-staging/server.py
   M scratch/your_files/fix-tau-omp.sh
@@ -1090,7 +1090,7 @@ would rewrite 1445 files in /home/toxic/estate
   M scripts/env-boundary-check.sh
   M scripts/health-check.sh
   M scripts/kimi-no-port-walk-check.py
-  M scripts/merge-into-sovereign.sh
+  M scripts/merge-into-estate.sh
   M scripts/mesh-nightly-fix.sh
   M scripts/omp-pin
   M scripts/open-web-uis.sh
@@ -1181,17 +1181,17 @@ would rewrite 1445 files in /home/toxic/estate
   M skills/hft-latency/skill.toml
   M skills/lib/estate.sh
   M skills/lib/estate_paths.py
-  M skills/maximal-sovereign-agentic-audit/README.md
-  M skills/maximal-sovereign-agentic-audit/SKILL.md
-  M skills/maximal-sovereign-agentic-audit/audit.ts
-  M skills/maximal-sovereign-agentic-audit/prompt_context.md
-  M skills/maximal-sovereign-agentic-audit/skill.toml
+  M skills/maximal-estate-agentic-audit/README.md
+  M skills/maximal-estate-agentic-audit/SKILL.md
+  M skills/maximal-estate-agentic-audit/audit.ts
+  M skills/maximal-estate-agentic-audit/prompt_context.md
+  M skills/maximal-estate-agentic-audit/skill.toml
   M skills/merge-workflow/README.md
   M skills/merge-workflow/SKILL.md
   M skills/merge-workflow/prompt_context.md
   M skills/merge-workflow/skill.toml
   M skills/nemotron-customize/references/PATTERNS.md
-  M skills/nemotron-customize/references/context/eval-sovereign-benchmarks.txt
+  M skills/nemotron-customize/references/context/eval-estate-benchmarks.txt
   M skills/nemotron-customize/references/context/index.toml
   M skills/nemotron-policy-generator/SKILL.md
   M skills/nemotron-policy-generator/assets/nemotron_policy_generator.html
@@ -1244,22 +1244,22 @@ would rewrite 1445 files in /home/toxic/estate
   M skills/skill-frontmatter-audit/prompt_context.md
   M skills/skill-frontmatter-audit/skill.toml
   M skills/softpaw/identity-guard-report.json
-  M skills/sovereign-chat/README.md
-  M skills/sovereign-chat/SKILL.md
-  M skills/sovereign-chat/prompt_context.md
-  M skills/sovereign-chat/skill.toml
-  M skills/sovereign-hatch-toolkit/LICENSE
-  M skills/sovereign-hatch-toolkit/README.md
-  M skills/sovereign-hatch-toolkit/SKILL.md
-  M skills/sovereign-hatch-toolkit/identity_router/mcp_server.py
-  M skills/sovereign-hatch-toolkit/prompt_context.md
-  M skills/sovereign-hatch-toolkit/pyproject.toml
-  M skills/sovereign-hatch-toolkit/scripts/verify_all.py
-  M skills/sovereign-hatch-toolkit/skill.toml
-  M skills/sovereign-master-orchestrator/README.md
-  M skills/sovereign-master-orchestrator/SKILL.md
-  M skills/sovereign-master-orchestrator/prompt_context.md
-  M skills/sovereign-master-orchestrator/skill.toml
+  M skills/estate-chat/README.md
+  M skills/estate-chat/SKILL.md
+  M skills/estate-chat/prompt_context.md
+  M skills/estate-chat/skill.toml
+  M skills/estate-hatch-toolkit/LICENSE
+  M skills/estate-hatch-toolkit/README.md
+  M skills/estate-hatch-toolkit/SKILL.md
+  M skills/estate-hatch-toolkit/identity_router/mcp_server.py
+  M skills/estate-hatch-toolkit/prompt_context.md
+  M skills/estate-hatch-toolkit/pyproject.toml
+  M skills/estate-hatch-toolkit/scripts/verify_all.py
+  M skills/estate-hatch-toolkit/skill.toml
+  M skills/estate-master-orchestrator/README.md
+  M skills/estate-master-orchestrator/SKILL.md
+  M skills/estate-master-orchestrator/prompt_context.md
+  M skills/estate-master-orchestrator/skill.toml
   M skills/subagent-control/README.md
   M skills/surgical-edit/README.md
   M skills/system-audit/README.md
@@ -1294,10 +1294,10 @@ would rewrite 1445 files in /home/toxic/estate
   M skills/url-extract/SKILL.md
   M skills/url-extract/prompt_context.md
   M skills/url-extract/skill.toml
-  M sovereign-scripts/AGENTS.md
-  M sovereign-scripts/README.md
-  M sovereign-skills/AGENTS.md
-  M sovereign-skills/README.md
+  M estate-scripts/AGENTS.md
+  M estate-scripts/README.md
+  M estate-skills/AGENTS.md
+  M estate-skills/README.md
   M src/clients/nim-client/package.json
   M src/coyote/coyote-loop.py
   M src/deploy/code_insiders.ts
@@ -1312,16 +1312,16 @@ would rewrite 1445 files in /home/toxic/estate
   M src/lib/llama_swap_ssot.ts
   M src/lib/ports.ts
   M src/lib/pre_release_integration.ts
-  M src/maximal-sovereign-agentic-audit/README.md
-  M src/maximal-sovereign-agentic-audit/package.json
-  M src/maximal-sovereign-agentic-audit/src/benchmark.ts
-  M src/maximal-sovereign-agentic-audit/src/local-audit.ts
-  M src/maximal-sovereign-agentic-audit/src/modules/constants.ts
-  M src/maximal-sovereign-agentic-audit/src/modules/parser.ts
-  M src/maximal-sovereign-agentic-audit/src/modules/precheck.ts
-  M src/maximal-sovereign-agentic-audit/tests/audit.test.ts
-  M src/maximal-sovereign-agentic-audit/tests/classify.test.ts
-  M src/maximal-sovereign-agentic-audit/tests/local-audit.test.ts
+  M src/maximal-estate-agentic-audit/README.md
+  M src/maximal-estate-agentic-audit/package.json
+  M src/maximal-estate-agentic-audit/src/benchmark.ts
+  M src/maximal-estate-agentic-audit/src/local-audit.ts
+  M src/maximal-estate-agentic-audit/src/modules/constants.ts
+  M src/maximal-estate-agentic-audit/src/modules/parser.ts
+  M src/maximal-estate-agentic-audit/src/modules/precheck.ts
+  M src/maximal-estate-agentic-audit/tests/audit.test.ts
+  M src/maximal-estate-agentic-audit/tests/classify.test.ts
+  M src/maximal-estate-agentic-audit/tests/local-audit.test.ts
   M src/mcp/llama_swap.ts
   M src/openfang/openfang.plugin.json
   M src/services/bun-runtime.ts
@@ -1360,13 +1360,13 @@ would rewrite 1445 files in /home/toxic/estate
   M stack/services/prometheus-hot.sh
   M stack/services/rust-web-hot.sh
   M stack/services/rust-web.sh
-  M stack/services/sovereign-exporter.py
+  M stack/services/estate-exporter.py
   M stack/services/tailscaled.sh
   M stack/services/vansrouter.sh
   M standalone/paper-poller/pitchfork.d/paper-poller-watchdog.toml
   M standalone/refusal-hunt/pitchfork.d/sorry-watchdog.toml
   M standalone/tau/pitchfork.d/tau.toml
-  M test-sovereign-stack.ts
+  M test-estate-stack.ts
   M test/services/extended-tests.ts
   M test/services/integration-tests.ts
   M test/services/test-framework.ts
@@ -1418,24 +1418,24 @@ would rewrite 1445 files in /home/toxic/estate
   M tools/push-guard.sh
   M tools/routing-score/README.md
   M tools/saturation-guard/README.md
-  M tools/sovereign-chat/README.md
-  M tools/sovereign-chat/package.json
-  M tools/sovereign-chat/relay-watch.sh
-  M tools/sovereign-router/probes/RESULTS-2026-09-21.md
-  M tools/sovereign-router/probes/long-context-probe.py
-  M tools/sovereign-router/sovereign-router-ts/COMPARISON.md
-  M tools/sovereign-router/sovereign-router-ts/package.json
-  M tools/sovereign-router/sovereign-router-ts/router.ts
-  M tools/sovereign-router/sovereign-router-ts/router_config.ts
-  M tools/sovereign-router/sovereign-router-ts/router_live_models.ts
-  M tools/sovereign-router/sovereign-router-ts/router_matrix.ts
-  M tools/sovereign-router/sovereign-router-ts/router_strategy.ts
-  M tools/sovereign-router/sovereign-router-ts/router_ui.ts
-  M tools/sovereign-router/sovereign-router-ts/sovereign-router-ts/package.json
-  M tools/sovereign-router/sovereign-router-ts/sovereign-router-ts/router_config.ts
-  M tools/sovereign-router/sovereign-router-ts/tests/elo_persist.test.ts
-  M tools/sovereign-router/sovereign-router-ts/tests/entitlement.test.ts
-  M tools/sovereign-router/sovereign-router-ts/tests/hedge.test.ts
+  M tools/estate-chat/README.md
+  M tools/estate-chat/package.json
+  M tools/estate-chat/relay-watch.sh
+  M tools/estate-router/probes/RESULTS-2026-09-21.md
+  M tools/estate-router/probes/long-context-probe.py
+  M tools/estate-router/estate-router-ts/COMPARISON.md
+  M tools/estate-router/estate-router-ts/package.json
+  M tools/estate-router/estate-router-ts/router.ts
+  M tools/estate-router/estate-router-ts/router_config.ts
+  M tools/estate-router/estate-router-ts/router_live_models.ts
+  M tools/estate-router/estate-router-ts/router_matrix.ts
+  M tools/estate-router/estate-router-ts/router_strategy.ts
+  M tools/estate-router/estate-router-ts/router_ui.ts
+  M tools/estate-router/estate-router-ts/estate-router-ts/package.json
+  M tools/estate-router/estate-router-ts/estate-router-ts/router_config.ts
+  M tools/estate-router/estate-router-ts/tests/elo_persist.test.ts
+  M tools/estate-router/estate-router-ts/tests/entitlement.test.ts
+  M tools/estate-router/estate-router-ts/tests/hedge.test.ts
   M tools/squawk-watchdog/README.md
   M tools/squawk-watchdog/squawk-watchdog.sh
   M tools/stash-guard/README.md
@@ -1445,268 +1445,268 @@ would rewrite 1445 files in /home/toxic/estate
   M tools/yote-maximal/RUNBOOK.md
   M vendored/oh-my-pi/extensions/mobile-autocorrect.ts
 would rename 265 paths
-  R config/tau/extensions/nemotron/skills/nemotron-customize/references/context/eval-sovereign-benchmarks.txt -> config/tau/extensions/nemotron/skills/nemotron-customize/references/context/eval-estate-benchmarks.txt
-  R salvage/origin-main-20261002/tools/sovereign-router/sovereign-router-ts/sovereign-router-ts/router.ts -> salvage/origin-main-20261002/tools/estate-router/estate-router-ts/estate-router-ts/router.ts
-  R salvage/origin-main-20261002/conflicts/config/tau/plans/SOVEREIGN_MASTER_CONSOLIDATION_PLAN.md.ours -> salvage/origin-main-20261002/conflicts/config/tau/plans/ESTATE_MASTER_CONSOLIDATION_PLAN.md.ours
-  R salvage/origin-main-20261002/conflicts/tools/sovereign-chat/pitchfork.d/sovereign-chat.toml.ours -> salvage/origin-main-20261002/conflicts/tools/estate-chat/pitchfork.d/estate-chat.toml.ours
-  R salvage/origin-main-20261002/conflicts/config/tau/plans/SOVEREIGN_MASTER_CONSOLIDATION_PLAN.md -> salvage/origin-main-20261002/conflicts/config/tau/plans/ESTATE_MASTER_CONSOLIDATION_PLAN.md
-  R salvage/origin-main-20261002/conflicts/config/tau/plans/SOVEREIGN_SHELL_RANCH_TAU_PLAN.md.ours -> salvage/origin-main-20261002/conflicts/config/tau/plans/ESTATE_SHELL_RANCH_TAU_PLAN.md.ours
-  R salvage/origin-main-20261002/conflicts/tools/sovereign-chat/pitchfork.d/sovereign-chat.toml -> salvage/origin-main-20261002/conflicts/tools/estate-chat/pitchfork.d/estate-chat.toml
-  R salvage/origin-main-20261002/conflicts/config/tau/plans/SOVEREIGN_SHELL_RANCH_TAU_PLAN.md -> salvage/origin-main-20261002/conflicts/config/tau/plans/ESTATE_SHELL_RANCH_TAU_PLAN.md
-  R readme-fix-sovereign-1789408144/olddetails/pitchfork-config.1786483536/pitchfork.toml -> readme-fix-estate-1789408144/olddetails/pitchfork-config.1786483536/pitchfork.toml
-  R salvage/origin-main-20261002/conflicts/skills/sovereign-hatch-toolkit/README.md.ours -> salvage/origin-main-20261002/conflicts/skills/estate-hatch-toolkit/README.md.ours
-  R salvage/origin-main-20261002/conflicts/skills/sovereign-hatch-toolkit/LICENSE.ours -> salvage/origin-main-20261002/conflicts/skills/estate-hatch-toolkit/LICENSE.ours
-  R salvage/origin-main-20261002/tools/sovereign-router/sovereign-router-ts/router.ts -> salvage/origin-main-20261002/tools/estate-router/estate-router-ts/router.ts
-  R salvage/origin-main-20261002/conflicts/stack/services/sovereign-exporter.py.ours -> salvage/origin-main-20261002/conflicts/stack/services/estate-exporter.py.ours
-  R salvage/origin-main-20261002/conflicts/skills/sovereign-hatch-toolkit/README.md -> salvage/origin-main-20261002/conflicts/skills/estate-hatch-toolkit/README.md
-  R salvage/origin-main-20261002/conflicts/tools/sovereign-chat/relay-watch.sh.ours -> salvage/origin-main-20261002/conflicts/tools/estate-chat/relay-watch.sh.ours
-  R tools/sovereign-router/sovereign-router-ts/sovereign-router-ts/router_config.ts -> tools/estate-router/estate-router-ts/estate-router-ts/router_config.ts
-  R salvage/origin-main-20261002/conflicts/skills/sovereign-hatch-toolkit/LICENSE -> salvage/origin-main-20261002/conflicts/skills/estate-hatch-toolkit/LICENSE
-  R salvage/origin-main-20261002/conflicts/stack/services/sovereign-exporter.py -> salvage/origin-main-20261002/conflicts/stack/services/estate-exporter.py
-  R tools/sovereign-router/sovereign-router-ts/sovereign-router-ts/package.json -> tools/estate-router/estate-router-ts/estate-router-ts/package.json
-  R salvage/origin-main-20261002/conflicts/tools/sovereign-chat/README.md.ours -> salvage/origin-main-20261002/conflicts/tools/estate-chat/README.md.ours
-  R salvage/origin-main-20261002/conflicts/tools/sovereign-chat/relay-watch.sh -> salvage/origin-main-20261002/conflicts/tools/estate-chat/relay-watch.sh
-  R skills/nemotron-customize/references/context/eval-sovereign-benchmarks.txt -> skills/nemotron-customize/references/context/eval-estate-benchmarks.txt
-  R readme-fix-sovereign-1789408144/qdrant_data/storage/aliases/data.json -> readme-fix-estate-1789408144/qdrant_data/storage/aliases/data.json
-  R salvage/origin-main-20261002/conflicts/tools/sovereign-chat/README.md -> salvage/origin-main-20261002/conflicts/tools/estate-chat/README.md
-  R skills/sovereign-hatch-toolkit/hatch_core/noise_protocol.py.xfer/c000 -> skills/estate-hatch-toolkit/hatch_core/noise_protocol.py.xfer/c000
-  R skills/sovereign-hatch-toolkit/hatch_core/noise_protocol.py.xfer/c001 -> skills/estate-hatch-toolkit/hatch_core/noise_protocol.py.xfer/c001
-  R skills/sovereign-hatch-toolkit/hatch_core/noise_protocol.py.xfer/c002 -> skills/estate-hatch-toolkit/hatch_core/noise_protocol.py.xfer/c002
-  R skills/sovereign-hatch-toolkit/hatch_core/noise_protocol.py.xfer/c003 -> skills/estate-hatch-toolkit/hatch_core/noise_protocol.py.xfer/c003
-  R skills/sovereign-hatch-toolkit/hatch_core/noise_protocol.py.xfer/c004 -> skills/estate-hatch-toolkit/hatch_core/noise_protocol.py.xfer/c004
-  R skills/sovereign-hatch-toolkit/hatch_core/noise_protocol.py.xfer/c005 -> skills/estate-hatch-toolkit/hatch_core/noise_protocol.py.xfer/c005
-  R skills/sovereign-hatch-toolkit/hatch_core/noise_protocol.py.xfer/c006 -> skills/estate-hatch-toolkit/hatch_core/noise_protocol.py.xfer/c006
-  R skills/sovereign-hatch-toolkit/hatch_core/noise_protocol.py.xfer/c007 -> skills/estate-hatch-toolkit/hatch_core/noise_protocol.py.xfer/c007
-  R skills/sovereign-hatch-toolkit/hatch_core/noise_protocol.py.xfer/c008 -> skills/estate-hatch-toolkit/hatch_core/noise_protocol.py.xfer/c008
-  R projects/gayxxx-sovereign/extracted/Gaypornvidsxxx/java_patterns.txt -> projects/gayxxx-estate/extracted/Gaypornvidsxxx/java_patterns.txt
-  R tools/sovereign-router/sovereign-router-ts/tests/elo_persist.test.ts -> tools/estate-router/estate-router-ts/tests/elo_persist.test.ts
-  R tools/sovereign-router/sovereign-router-ts/tests/entitlement.test.ts -> tools/estate-router/estate-router-ts/tests/entitlement.test.ts
-  R salvage/origin-main-20261002/readme-fix-sovereign-1789408144/agent -> salvage/origin-main-20261002/readme-fix-estate-1789408144/agent
-  R src/maximal-sovereign-agentic-audit/src/modules/secrets-scanner.ts -> src/maximal-estate-agentic-audit/src/modules/secrets-scanner.ts
-  R skills/sovereign-hatch-toolkit/identity_router/identity_parser.py -> skills/estate-hatch-toolkit/identity_router/identity_parser.py
-  R projects/gayxxx-sovereign/extracted/Gaypornvidsxxx/java_keys.txt -> projects/gayxxx-estate/extracted/Gaypornvidsxxx/java_keys.txt
-  R projects/gayxxx-sovereign/extracted/Gaypornvidsxxx/java_urls.txt -> projects/gayxxx-estate/extracted/Gaypornvidsxxx/java_urls.txt
-  R projects/gayxxx-sovereign/extracted/XvideosGay/java_patterns.txt -> projects/gayxxx-estate/extracted/XvideosGay/java_patterns.txt
-  R readme-fix-sovereign-1789408144/skills/repo-audit/repo-audit.csv -> readme-fix-estate-1789408144/skills/repo-audit/repo-audit.csv
-  R tools/sovereign-router/sovereign-router-ts/router_live_models.ts -> tools/estate-router/estate-router-ts/router_live_models.ts
-  R readme-fix-sovereign-1789408144/agents/hal-substrate/agent.toml -> readme-fix-estate-1789408144/agents/hal-substrate/agent.toml
-  R readme-fix-sovereign-1789408144/stack/services/hal-substrate.sh -> readme-fix-estate-1789408144/stack/services/hal-substrate.sh
-  R scratch/sovereign-router-backup-sanitize/meta_oldest_first.json -> scratch/estate-router-backup-sanitize/meta_oldest_first.json
-  R projects/gayxxx-sovereign/extracted/Xhamster/java_patterns.txt -> projects/gayxxx-estate/extracted/Xhamster/java_patterns.txt
-  R projects/gayxxx-sovereign/extracted/topHDgayporn/java_urls.txt -> projects/gayxxx-estate/extracted/topHDgayporn/java_urls.txt
-  R readme-fix-sovereign-1789408144/agents/hal-substrate/system.md -> readme-fix-estate-1789408144/agents/hal-substrate/system.md
-  R src/maximal-sovereign-agentic-audit/src/modules/completions.ts -> src/maximal-estate-agentic-audit/src/modules/completions.ts
-  R src/maximal-sovereign-agentic-audit/src/modules/git-scanner.ts -> src/maximal-estate-agentic-audit/src/modules/git-scanner.ts
-  R tools/sovereign-router/sovereign-router-ts/gen-bench-priors.py -> tools/estate-router/estate-router-ts/gen-bench-priors.py
-  R tools/sovereign-router/sovereign-router-ts/tests/hedge.test.ts -> tools/estate-router/estate-router-ts/tests/hedge.test.ts
-  R projects/gayxxx-sovereign/extracted/Jayboys/java_patterns.txt -> projects/gayxxx-estate/extracted/Jayboys/java_patterns.txt
-  R projects/gayxxx-sovereign/extracted/Justthegays/java_urls.txt -> projects/gayxxx-estate/extracted/Justthegays/java_urls.txt
-  R readme-fix-sovereign-1789408144/src/hal-substrate/hal-loop.py -> readme-fix-estate-1789408144/src/hal-substrate/hal-loop.py
-  R skills/sovereign-hatch-toolkit/scripts/test_mcp_compliance.py -> skills/estate-hatch-toolkit/scripts/test_mcp_compliance.py
-  R src/maximal-sovereign-agentic-audit/tests/local-audit.test.ts -> src/maximal-estate-agentic-audit/tests/local-audit.test.ts
-  R tools/sovereign-router/sovereign-router-ts/router_strategy.ts -> tools/estate-router/estate-router-ts/router_strategy.ts
-  R projects/gayxxx-sovereign/extracted/Nurgay/java_patterns.txt -> projects/gayxxx-estate/extracted/Nurgay/java_patterns.txt
-  R projects/gayxxx-sovereign/extracted/XvideosGay/java_keys.txt -> projects/gayxxx-estate/extracted/XvideosGay/java_keys.txt
-  R projects/gayxxx-sovereign/extracted/XvideosGay/java_urls.txt -> projects/gayxxx-estate/extracted/XvideosGay/java_urls.txt
-  R projects/gayxxx-sovereign/extracted/iGay69/java_patterns.txt -> projects/gayxxx-estate/extracted/iGay69/java_patterns.txt
-  R skills/sovereign-hatch-toolkit/hatch_core/gateway_rpc.py.b64 -> skills/estate-hatch-toolkit/hatch_core/gateway_rpc.py.b64
-  R skills/sovereign-hatch-toolkit/identity_router/mcp_server.py -> skills/estate-hatch-toolkit/identity_router/mcp_server.py
-  R skills/sovereign-hatch-toolkit/tests/test_identity_router.py -> skills/estate-hatch-toolkit/tests/test_identity_router.py
-  R src/maximal-sovereign-agentic-audit/src/modules/constants.ts -> src/maximal-estate-agentic-audit/src/modules/constants.ts
-  R src/maximal-sovereign-agentic-audit/src/modules/dataframe.ts -> src/maximal-estate-agentic-audit/src/modules/dataframe.ts
-  R tools/sovereign-router/sovereign-router-ts/bench-priors.json -> tools/estate-router/estate-router-ts/bench-priors.json
-  R projects/gayxxx-sovereign/extracted/Gayxx/java_patterns.txt -> projects/gayxxx-estate/extracted/Gayxx/java_patterns.txt
-  R skills/sovereign-hatch-toolkit/hatch_core/noise_protocol.py -> skills/estate-hatch-toolkit/hatch_core/noise_protocol.py
-  R skills/sovereign-hatch-toolkit/orchestrator/fsbus_engine.py -> skills/estate-hatch-toolkit/orchestrator/fsbus_engine.py
-  R skills/sovereign-hatch-toolkit/tests/test_noise_protocol.py -> skills/estate-hatch-toolkit/tests/test_noise_protocol.py
-  R src/maximal-sovereign-agentic-audit/src/modules/precheck.ts -> src/maximal-estate-agentic-audit/src/modules/precheck.ts
-  R src/maximal-sovereign-agentic-audit/tests/dataframe.test.ts -> src/maximal-estate-agentic-audit/tests/dataframe.test.ts
-  R tools/sovereign-router/sovereign-router-ts/governor_test.ts -> tools/estate-router/estate-router-ts/governor_test.ts
-  R tools/sovereign-router/sovereign-router-ts/router_config.ts -> tools/estate-router/estate-router-ts/router_config.ts
-  R tools/sovereign-router/sovereign-router-ts/router_matrix.ts -> tools/estate-router/estate-router-ts/router_matrix.ts
-  R packages/sovereign-scripts/mitm-proxy/race_aware_loader.sh -> packages/estate-scripts/mitm-proxy/race_aware_loader.sh
-  R projects/gayxxx-sovereign/extracted/Xhamster/java_keys.txt -> projects/gayxxx-estate/extracted/Xhamster/java_keys.txt
-  R projects/gayxxx-sovereign/extracted/Xhamster/java_urls.txt -> projects/gayxxx-estate/extracted/Xhamster/java_urls.txt
-  R readme-fix-sovereign-1789408144/skills/repo-audit/SKILL.md -> readme-fix-estate-1789408144/skills/repo-audit/SKILL.md
-  R readme-fix-sovereign-1789408144/tools/sovereign-router/src -> readme-fix-estate-1789408144/tools/estate-router/src
-  R scratch/user/files/sovereign-dispersal-monolith.tar.gz.txt -> scratch/user/files/estate-dispersal-monolith.tar.gz.txt
-  R skills/sovereign-hatch-toolkit/hatch_core/gw_xfer/chunk_00 -> skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_00
-  R skills/sovereign-hatch-toolkit/hatch_core/gw_xfer/chunk_01 -> skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_01
-  R skills/sovereign-hatch-toolkit/hatch_core/gw_xfer/chunk_02 -> skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_02
-  R skills/sovereign-hatch-toolkit/hatch_core/gw_xfer/chunk_03 -> skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_03
-  R skills/sovereign-hatch-toolkit/hatch_core/gw_xfer/chunk_04 -> skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_04
-  R skills/sovereign-hatch-toolkit/hatch_core/gw_xfer/chunk_05 -> skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_05
-  R skills/sovereign-hatch-toolkit/hatch_core/gw_xfer/chunk_06 -> skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_06
-  R skills/sovereign-hatch-toolkit/hatch_core/gw_xfer/chunk_07 -> skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_07
-  R skills/sovereign-hatch-toolkit/hatch_core/gw_xfer/chunk_08 -> skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_08
-  R skills/sovereign-hatch-toolkit/hatch_core/gw_xfer/chunk_09 -> skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_09
-  R skills/sovereign-hatch-toolkit/hatch_core/gw_xfer/chunk_10 -> skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_10
-  R skills/sovereign-hatch-toolkit/hatch_core/gw_xfer/chunk_11 -> skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_11
-  R skills/sovereign-hatch-toolkit/hatch_core/gw_xfer/chunk_12 -> skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_12
-  R skills/sovereign-hatch-toolkit/hatch_core/gw_xfer/chunk_13 -> skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_13
-  R skills/sovereign-hatch-toolkit/hatch_core/gw_xfer/chunk_14 -> skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_14
-  R skills/sovereign-hatch-toolkit/hatch_core/gw_xfer/chunk_15 -> skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_15
-  R skills/sovereign-hatch-toolkit/scripts/gateway_diagnose.py -> skills/estate-hatch-toolkit/scripts/gateway_diagnose.py
-  R skills/sovereign-hatch-toolkit/scripts/noise_live_probe.py -> skills/estate-hatch-toolkit/scripts/noise_live_probe.py
-  R src/maximal-sovereign-agentic-audit/src/modules/autofix.ts -> src/maximal-estate-agentic-audit/src/modules/autofix.ts
-  R src/maximal-sovereign-agentic-audit/src/modules/parquet.ts -> src/maximal-estate-agentic-audit/src/modules/parquet.ts
-  R src/maximal-sovereign-agentic-audit/tests/classify.test.ts -> src/maximal-estate-agentic-audit/tests/classify.test.ts
-  R projects/gayxxx-sovereign/extracted/Jayboys/java_keys.txt -> projects/gayxxx-estate/extracted/Jayboys/java_keys.txt
-  R projects/gayxxx-sovereign/extracted/Jayboys/java_urls.txt -> projects/gayxxx-estate/extracted/Jayboys/java_urls.txt
-  R readme-fix-sovereign-1789408144/tools/kimi-claw/bridge.ts -> readme-fix-estate-1789408144/tools/kimi-claw/bridge.ts
-  R skills/sovereign-hatch-toolkit/config/gateway_config.json -> skills/estate-hatch-toolkit/config/gateway_config.json
-  R skills/sovereign-hatch-toolkit/tests/test_fsbus_engine.py -> skills/estate-hatch-toolkit/tests/test_fsbus_engine.py
-  R skills/sovereign-hatch-toolkit/tests/test_noise_aesgcm.py -> skills/estate-hatch-toolkit/tests/test_noise_aesgcm.py
-  R src/maximal-sovereign-agentic-audit/src/modules/parser.ts -> src/maximal-estate-agentic-audit/src/modules/parser.ts
-  R src/maximal-sovereign-agentic-audit/tests/parquet.test.ts -> src/maximal-estate-agentic-audit/tests/parquet.test.ts
-  R packages/sovereign-scripts/mitm-proxy/playwright_mitm.py -> packages/estate-scripts/mitm-proxy/playwright_mitm.py
-  R projects/gayxxx-sovereign/extracted/Nurgay/java_urls.txt -> projects/gayxxx-estate/extracted/Nurgay/java_urls.txt
-  R projects/gayxxx-sovereign/extracted/iGay69/java_urls.txt -> projects/gayxxx-estate/extracted/iGay69/java_urls.txt
-  R readme-fix-sovereign-1789408144/src/services/registry.ts -> readme-fix-estate-1789408144/src/services/registry.ts
-  R salvage/origin-main-20261002/sovereign-scripts/README.md -> salvage/origin-main-20261002/estate-scripts/README.md
-  R scratch/goals/first-class-sovereign-organization/GOAL.md -> scratch/goals/first-class-estate-organization/GOAL.md
-  R scratch/readme-audits/sovereign-projects-README-fixed.md -> scratch/readme-audits/estate-projects-README-fixed.md
-  R scratch/sovereign-router-sanitize/meta_oldest_first.json -> scratch/estate-router-sanitize/meta_oldest_first.json
-  R skills/maximal-sovereign-agentic-audit/prompt_context.md -> skills/maximal-estate-agentic-audit/prompt_context.md
-  R skills/sovereign-hatch-toolkit/hatch_core/gateway_rpc.py -> skills/estate-hatch-toolkit/hatch_core/gateway_rpc.py
-  R skills/sovereign-hatch-toolkit/identity_router/router.py -> skills/estate-hatch-toolkit/identity_router/router.py
-  R skills/sovereign-hatch-toolkit/tests/test_gateway_rpc.py -> skills/estate-hatch-toolkit/tests/test_gateway_rpc.py
-  R src/maximal-sovereign-agentic-audit/src/modules/types.ts -> src/maximal-estate-agentic-audit/src/modules/types.ts
-  R src/maximal-sovereign-agentic-audit/tests/stream.test.ts -> src/maximal-estate-agentic-audit/tests/stream.test.ts
-  R src/maximal-sovereign-agentic-audit/tests/timing.test.ts -> src/maximal-estate-agentic-audit/tests/timing.test.ts
-  R tools/sovereign-router/sovereign-router-ts/COMPARISON.md -> tools/estate-router/estate-router-ts/COMPARISON.md
-  R config/tau/plans/SOVEREIGN_MASTER_CONSOLIDATION_PLAN.md -> config/tau/plans/ESTATE_MASTER_CONSOLIDATION_PLAN.md
-  R packages/sovereign-utils/src/transport/socket-stream.ts -> packages/estate-utils/src/transport/socket-stream.ts
-  R projects/gayxxx-sovereign/extracted/Gayxx/java_urls.txt -> projects/gayxxx-estate/extracted/Gayxx/java_urls.txt
-  R readme-fix-sovereign-1789408144/scripts/health-check.sh -> readme-fix-estate-1789408144/scripts/health-check.sh
-  R salvage/origin-main-20261002/sovereign-skills/README.md -> salvage/origin-main-20261002/estate-skills/README.md
-  R src/maximal-sovereign-agentic-audit/tests/audit.test.ts -> src/maximal-estate-agentic-audit/tests/audit.test.ts
-  R tools/sovereign-router/sovereign-router-ts/package.json -> tools/estate-router/estate-router-ts/package.json
-  R tools/sovereign-router/sovereign-router-ts/router_ui.ts -> tools/estate-router/estate-router-ts/router_ui.ts
-  R .recovery/tools/sovereign-chat/README.md.oct9-snapshot -> .recovery/tools/estate-chat/README.md.oct9-snapshot
-  R readme-fix-sovereign-1789408144/skills/health-audit.ts -> readme-fix-estate-1789408144/skills/health-audit.ts
-  R scratch/sovereign-router-backup-sanitize/fetch_meta.py -> scratch/estate-router-backup-sanitize/fetch_meta.py
-  R skills/sovereign-master-orchestrator/prompt_context.md -> skills/estate-master-orchestrator/prompt_context.md
-  R src/maximal-sovereign-agentic-audit/src/local-audit.ts -> src/maximal-estate-agentic-audit/src/local-audit.ts
-  R packages/sovereign-utils/src/capabilities/manifest.ts -> packages/estate-utils/src/capabilities/manifest.ts
-  R packages/sovereign-utils/src/capabilities/resolver.ts -> packages/estate-utils/src/capabilities/resolver.ts
-  R scratch/sovereign-router-backup-sanitize/commits.json -> scratch/estate-router-backup-sanitize/commits.json
-  R readme-fix-sovereign-1789408144/prometheus-data/lock -> readme-fix-estate-1789408144/prometheus-data/lock
-  R skills/sovereign-hatch-toolkit/scripts/verify_all.py -> skills/estate-hatch-toolkit/scripts/verify_all.py
-  R src/maximal-sovereign-agentic-audit/src/benchmark.ts -> src/maximal-estate-agentic-audit/src/benchmark.ts
-  R tools/sovereign-router/sovereign-router-ts/router.ts -> tools/estate-router/estate-router-ts/router.ts
-  R packages/sovereign-scripts/patches/browser_guard.py -> packages/estate-scripts/patches/browser_guard.py
-  R readme-fix-sovereign-1789408144/bin/llama-gguf-hash -> readme-fix-estate-1789408144/bin/llama-gguf-hash
-  R scratch/sovereign-router-backup-sanitize/rebuild.py -> scratch/estate-router-backup-sanitize/rebuild.py
-  R scratch/sovereign-router-backup-sanitize/state.json -> scratch/estate-router-backup-sanitize/state.json
-  R tools/sovereign-router/probes/RESULTS-2026-09-21.md -> tools/estate-router/probes/RESULTS-2026-09-21.md
-  R tools/sovereign-router/probes/long-context-probe.py -> tools/estate-router/probes/long-context-probe.py
-  R config/tau/plans/SOVEREIGN_SHELL_RANCH_TAU_PLAN.md -> config/tau/plans/ESTATE_SHELL_RANCH_TAU_PLAN.md
-  R packages/sovereign-utils/src/capabilities/index.ts -> packages/estate-utils/src/capabilities/index.ts
-  R readme-fix-sovereign-1789408144/.zed/settings.json -> readme-fix-estate-1789408144/.zed/settings.json
-  R scratch/sovereign-router-backup-sanitize/verify.py -> scratch/estate-router-backup-sanitize/verify.py
-  R skills/maximal-sovereign-agentic-audit/skill.toml -> skills/maximal-estate-agentic-audit/skill.toml
-  R src/maximal-sovereign-agentic-audit/tsconfig.json -> src/maximal-estate-agentic-audit/tsconfig.json
-  R packages/sovereign-utils/src/policy/evaluator.ts -> packages/estate-utils/src/policy/evaluator.ts
-  R readme-fix-sovereign-1789408144/config/ports.env -> readme-fix-estate-1789408144/config/ports.env
-  R scratch/readme-audits/sovereign-router-backup.md -> scratch/readme-audits/estate-router-backup.md
-  R skills/maximal-sovereign-agentic-audit/README.md -> skills/maximal-estate-agentic-audit/README.md
-  R skills/sovereign-hatch-toolkit/prompt_context.md -> skills/estate-hatch-toolkit/prompt_context.md
-  R src/maximal-sovereign-agentic-audit/.env.example -> src/maximal-estate-agentic-audit/.env.example
-  R src/maximal-sovereign-agentic-audit/package.json -> src/maximal-estate-agentic-audit/package.json
-  R src/maximal-sovereign-agentic-audit/src/index.ts -> src/maximal-estate-agentic-audit/src/index.ts
-  R skills/maximal-sovereign-agentic-audit/SKILL.md -> skills/maximal-estate-agentic-audit/SKILL.md
-  R skills/maximal-sovereign-agentic-audit/audit.ts -> skills/maximal-estate-agentic-audit/audit.ts
-  R skills/sovereign-hatch-toolkit/requirements.txt -> skills/estate-hatch-toolkit/requirements.txt
-  R skills/sovereign-master-orchestrator/skill.toml -> skills/estate-master-orchestrator/skill.toml
-  R src/maximal-sovereign-agentic-audit/bunfig.toml -> src/maximal-estate-agentic-audit/bunfig.toml
-  R packages/caddy-sovereign-auth/sovereignauth.go -> packages/caddy-estate-auth/estateauth.go
-  R packages/sovereign-scripts/auto-hook-loader.py -> packages/estate-scripts/auto-hook-loader.py
-  R packages/sovereign-scripts/commit_extractor.py -> packages/estate-scripts/commit_extractor.py
-  R packages/sovereign-scripts/sovereign_helper.py -> packages/estate-scripts/estate_helper.py
-  R readme-fix-sovereign-1789408144/pitchfork.toml -> readme-fix-estate-1789408144/pitchfork.toml
-  R scratch/sovereign-router-backup-sanitize/gh.py -> scratch/estate-router-backup-sanitize/gh.py
-  R scratch/sovereign-router-sanitize/commits.json -> scratch/estate-router-sanitize/commits.json
-  R skills/sovereign-master-orchestrator/README.md -> skills/estate-master-orchestrator/README.md
-  R src/maximal-sovereign-agentic-audit/.gitignore -> src/maximal-estate-agentic-audit/.gitignore
-  R src/maximal-sovereign-agentic-audit/biome.json -> src/maximal-estate-agentic-audit/biome.json
-  R packages/sovereign-scripts/namespace_probe.py -> packages/estate-scripts/namespace_probe.py
-  R readme-fix-sovereign-1789408144/mise/tasks/up -> readme-fix-estate-1789408144/mise/tasks/up
-  R scratch/readme-audits/caddy-sovereign-auth.md -> scratch/readme-audits/caddy-estate-auth.md
-  R skills/sovereign-hatch-toolkit/pyproject.toml -> skills/estate-hatch-toolkit/pyproject.toml
-  R skills/sovereign-master-orchestrator/SKILL.md -> skills/estate-master-orchestrator/SKILL.md
-  R src/maximal-sovereign-agentic-audit/README.md -> src/maximal-estate-agentic-audit/README.md
-  R packages/sovereign-utils/src/policy/index.ts -> packages/estate-utils/src/policy/index.ts
-  R packages/sovereign-utils/src/policy/types.ts -> packages/estate-utils/src/policy/types.ts
-  R packages/sovereign-utils/tests/utils.test.ts -> packages/estate-utils/tests/utils.test.ts
-  R readme-fix-sovereign-1789408144/package.json -> readme-fix-estate-1789408144/package.json
-  R scratch/readme-audits/sovereign-dispersal.md -> scratch/readme-audits/estate-dispersal.md
-  R scratch/sovereign-router-sanitize/rebuild.py -> scratch/estate-router-sanitize/rebuild.py
-  R scratch/sovereign-router-sanitize/state.json -> scratch/estate-router-sanitize/state.json
-  R scratch/readme-audits/sovereign-projects.md -> scratch/readme-audits/estate-projects.md
-  R packages/sovereign-scripts/archivefs_v3.py -> packages/estate-scripts/archivefs_v3.py
-  R packages/sovereign-scripts/cache_timing.py -> packages/estate-scripts/cache_timing.py
-  R packages/sovereign-scripts/git-push-one.py -> packages/estate-scripts/git-push-one.py
-  R packages/sovereign-scripts/health_check.py -> packages/estate-scripts/health_check.py
-  R packages/sovereign-scripts/unshare-root.py -> packages/estate-scripts/unshare-root.py
-  R readme-fix-sovereign-1789408144/.gitignore -> readme-fix-estate-1789408144/.gitignore
-  R readme-fix-sovereign-1789408144/tau-skills -> readme-fix-estate-1789408144/tau-skills
-  R packages/sovereign-skills/engine-audit.ts -> packages/estate-skills/engine-audit.ts
-  R readme-fix-sovereign-1789408144/AGENTS.md -> readme-fix-estate-1789408144/AGENTS.md
-  R readme-fix-sovereign-1789408144/README.md -> readme-fix-estate-1789408144/README.md
-  R readme-fix-sovereign-1789408144/mise.toml -> readme-fix-estate-1789408144/mise.toml
-  R scratch/readme-audits/sovereign-router.md -> scratch/readme-audits/estate-router.md
-  R skills/sovereign-hatch-toolkit/skill.toml -> skills/estate-hatch-toolkit/skill.toml
-  R packages/caddy-sovereign-auth/.gitignore -> packages/caddy-estate-auth/.gitignore
-  R scratch/readme-audits/zedra-sovereign.md -> scratch/readme-audits/zedra-estate.md
-  R skills/sovereign-hatch-toolkit/README.md -> skills/estate-hatch-toolkit/README.md
-  R ast-grep-rules/sovereign-yaml-ports.yml -> ast-grep-rules/estate-yaml-ports.yml
-  R packages/caddy-sovereign-auth/AGENTS.md -> packages/caddy-estate-auth/AGENTS.md
-  R readme-fix-sovereign-1789408144/.shared -> readme-fix-estate-1789408144/.shared
-  R readme-fix-sovereign-1789408144/helpers -> readme-fix-estate-1789408144/helpers
-  R scratch/readme-audits/sovereign-end4.md -> scratch/readme-audits/estate-end4.md
-  R skills/sovereign-chat/prompt_context.md -> skills/estate-chat/prompt_context.md
-  R skills/sovereign-hatch-toolkit/Makefile -> skills/estate-hatch-toolkit/Makefile
-  R skills/sovereign-hatch-toolkit/SKILL.md -> skills/estate-hatch-toolkit/SKILL.md
-  R packages/sovereign-scripts/arfs-cat.py -> packages/estate-scripts/arfs-cat.py
-  R packages/sovereign-utils/tsconfig.json -> packages/estate-utils/tsconfig.json
-  R readme-fix-sovereign-1789408144/FIX.md -> readme-fix-estate-1789408144/FIX.md
-  R readme-fix-sovereign-1789408144/models -> readme-fix-estate-1789408144/models
-  R skills/sovereign-hatch-toolkit/LICENSE -> skills/estate-hatch-toolkit/LICENSE
-  R packages/sovereign-scripts/.gitignore -> packages/estate-scripts/.gitignore
-  R packages/sovereign-utils/package.json -> packages/estate-utils/package.json
-  R packages/sovereign-utils/src/index.ts -> packages/estate-utils/src/index.ts
-  R scratch/swarm-merge/work/SOVEREIGN.md -> scratch/swarm-merge/work/ESTATE.md
-  R packages/caddy-sovereign-auth/go.mod -> packages/caddy-estate-auth/go.mod
-  R packages/caddy-sovereign-auth/go.sum -> packages/caddy-estate-auth/go.sum
-  R packages/sovereign-scripts/AGENTS.md -> packages/estate-scripts/AGENTS.md
-  R packages/sovereign-scripts/README.md -> packages/estate-scripts/README.md
-  R packages/sovereign-skills/.gitignore -> packages/estate-skills/.gitignore
-  R stack/services/sovereign-exporter.py -> stack/services/estate-exporter.py
-  R packages/sovereign-skills/AGENTS.md -> packages/estate-skills/AGENTS.md
-  R packages/sovereign-skills/README.md -> packages/estate-skills/README.md
-  R pitchfork.d/sovereign-exporter.toml -> pitchfork.d/estate-exporter.toml
-  R projects/gayxxx-sovereign/AGENTS.md -> projects/gayxxx-estate/AGENTS.md
-  R projects/gayxxx-sovereign/README.md -> projects/gayxxx-estate/README.md
-  R tools/sovereign-chat/relay-watch.sh -> tools/estate-chat/relay-watch.sh
-  R .github/workflows/sovereign-ci.yml -> .github/workflows/estate-ci.yml
-  R packages/sovereign-scripts/.bashrc -> packages/estate-scripts/.bashrc
-  R scratch/readme-audits/sovereign.md -> scratch/readme-audits/estate.md
-  R grafana/dashboards/sovereign.json -> grafana/dashboards/estate.json
-  R tools/sovereign-chat/package.json -> tools/estate-chat/package.json
-  R skills/sovereign-chat/skill.toml -> skills/estate-chat/skill.toml
-  R helpers/sovereign-mcp-server.ts -> helpers/estate-mcp-server.ts
-  R scripts/merge-into-sovereign.sh -> scripts/merge-into-estate.sh
-  R skills/sovereign-chat/README.md -> skills/estate-chat/README.md
-  R tools/sovereign-chat/.gitignore -> tools/estate-chat/.gitignore
-  R skills/sovereign-chat/SKILL.md -> skills/estate-chat/SKILL.md
-  R tools/sovereign-chat/README.md -> tools/estate-chat/README.md
-  R sovereign-scripts/.gitignore -> estate-scripts/.gitignore
-  R .sovereign-integration.json -> .estate-integration.json
-  R sovereign-scripts/AGENTS.md -> estate-scripts/AGENTS.md
-  R sovereign-scripts/README.md -> estate-scripts/README.md
-  R sovereign-skills/.gitignore -> estate-skills/.gitignore
-  R sovereign-skills/AGENTS.md -> estate-skills/AGENTS.md
-  R sovereign-skills/README.md -> estate-skills/README.md
-  R .sovereign-integration.ts -> .estate-integration.ts
-  R test-sovereign-stack.ts -> test-estate-stack.ts
+  R config/tau/extensions/nemotron/skills/nemotron-customize/references/context/eval-estate-benchmarks.txt -> config/tau/extensions/nemotron/skills/nemotron-customize/references/context/eval-estate-benchmarks.txt
+  R salvage/origin-main-20261002/tools/estate-router/estate-router-ts/estate-router-ts/router.ts -> salvage/origin-main-20261002/tools/estate-router/estate-router-ts/estate-router-ts/router.ts
+  R salvage/origin-main-20261002/conflicts/config/tau/plans/ESTATE_MASTER_CONSOLIDATION_PLAN.md.ours -> salvage/origin-main-20261002/conflicts/config/tau/plans/ESTATE_MASTER_CONSOLIDATION_PLAN.md.ours
+  R salvage/origin-main-20261002/conflicts/tools/estate-chat/pitchfork.d/estate-chat.toml.ours -> salvage/origin-main-20261002/conflicts/tools/estate-chat/pitchfork.d/estate-chat.toml.ours
+  R salvage/origin-main-20261002/conflicts/config/tau/plans/ESTATE_MASTER_CONSOLIDATION_PLAN.md -> salvage/origin-main-20261002/conflicts/config/tau/plans/ESTATE_MASTER_CONSOLIDATION_PLAN.md
+  R salvage/origin-main-20261002/conflicts/config/tau/plans/ESTATE_SHELL_RANCH_TAU_PLAN.md.ours -> salvage/origin-main-20261002/conflicts/config/tau/plans/ESTATE_SHELL_RANCH_TAU_PLAN.md.ours
+  R salvage/origin-main-20261002/conflicts/tools/estate-chat/pitchfork.d/estate-chat.toml -> salvage/origin-main-20261002/conflicts/tools/estate-chat/pitchfork.d/estate-chat.toml
+  R salvage/origin-main-20261002/conflicts/config/tau/plans/ESTATE_SHELL_RANCH_TAU_PLAN.md -> salvage/origin-main-20261002/conflicts/config/tau/plans/ESTATE_SHELL_RANCH_TAU_PLAN.md
+  R readme-fix-estate-1789408144/olddetails/pitchfork-config.1786483536/pitchfork.toml -> readme-fix-estate-1789408144/olddetails/pitchfork-config.1786483536/pitchfork.toml
+  R salvage/origin-main-20261002/conflicts/skills/estate-hatch-toolkit/README.md.ours -> salvage/origin-main-20261002/conflicts/skills/estate-hatch-toolkit/README.md.ours
+  R salvage/origin-main-20261002/conflicts/skills/estate-hatch-toolkit/LICENSE.ours -> salvage/origin-main-20261002/conflicts/skills/estate-hatch-toolkit/LICENSE.ours
+  R salvage/origin-main-20261002/tools/estate-router/estate-router-ts/router.ts -> salvage/origin-main-20261002/tools/estate-router/estate-router-ts/router.ts
+  R salvage/origin-main-20261002/conflicts/stack/services/estate-exporter.py.ours -> salvage/origin-main-20261002/conflicts/stack/services/estate-exporter.py.ours
+  R salvage/origin-main-20261002/conflicts/skills/estate-hatch-toolkit/README.md -> salvage/origin-main-20261002/conflicts/skills/estate-hatch-toolkit/README.md
+  R salvage/origin-main-20261002/conflicts/tools/estate-chat/relay-watch.sh.ours -> salvage/origin-main-20261002/conflicts/tools/estate-chat/relay-watch.sh.ours
+  R tools/estate-router/estate-router-ts/estate-router-ts/router_config.ts -> tools/estate-router/estate-router-ts/estate-router-ts/router_config.ts
+  R salvage/origin-main-20261002/conflicts/skills/estate-hatch-toolkit/LICENSE -> salvage/origin-main-20261002/conflicts/skills/estate-hatch-toolkit/LICENSE
+  R salvage/origin-main-20261002/conflicts/stack/services/estate-exporter.py -> salvage/origin-main-20261002/conflicts/stack/services/estate-exporter.py
+  R tools/estate-router/estate-router-ts/estate-router-ts/package.json -> tools/estate-router/estate-router-ts/estate-router-ts/package.json
+  R salvage/origin-main-20261002/conflicts/tools/estate-chat/README.md.ours -> salvage/origin-main-20261002/conflicts/tools/estate-chat/README.md.ours
+  R salvage/origin-main-20261002/conflicts/tools/estate-chat/relay-watch.sh -> salvage/origin-main-20261002/conflicts/tools/estate-chat/relay-watch.sh
+  R skills/nemotron-customize/references/context/eval-estate-benchmarks.txt -> skills/nemotron-customize/references/context/eval-estate-benchmarks.txt
+  R readme-fix-estate-1789408144/qdrant_data/storage/aliases/data.json -> readme-fix-estate-1789408144/qdrant_data/storage/aliases/data.json
+  R salvage/origin-main-20261002/conflicts/tools/estate-chat/README.md -> salvage/origin-main-20261002/conflicts/tools/estate-chat/README.md
+  R skills/estate-hatch-toolkit/hatch_core/noise_protocol.py.xfer/c000 -> skills/estate-hatch-toolkit/hatch_core/noise_protocol.py.xfer/c000
+  R skills/estate-hatch-toolkit/hatch_core/noise_protocol.py.xfer/c001 -> skills/estate-hatch-toolkit/hatch_core/noise_protocol.py.xfer/c001
+  R skills/estate-hatch-toolkit/hatch_core/noise_protocol.py.xfer/c002 -> skills/estate-hatch-toolkit/hatch_core/noise_protocol.py.xfer/c002
+  R skills/estate-hatch-toolkit/hatch_core/noise_protocol.py.xfer/c003 -> skills/estate-hatch-toolkit/hatch_core/noise_protocol.py.xfer/c003
+  R skills/estate-hatch-toolkit/hatch_core/noise_protocol.py.xfer/c004 -> skills/estate-hatch-toolkit/hatch_core/noise_protocol.py.xfer/c004
+  R skills/estate-hatch-toolkit/hatch_core/noise_protocol.py.xfer/c005 -> skills/estate-hatch-toolkit/hatch_core/noise_protocol.py.xfer/c005
+  R skills/estate-hatch-toolkit/hatch_core/noise_protocol.py.xfer/c006 -> skills/estate-hatch-toolkit/hatch_core/noise_protocol.py.xfer/c006
+  R skills/estate-hatch-toolkit/hatch_core/noise_protocol.py.xfer/c007 -> skills/estate-hatch-toolkit/hatch_core/noise_protocol.py.xfer/c007
+  R skills/estate-hatch-toolkit/hatch_core/noise_protocol.py.xfer/c008 -> skills/estate-hatch-toolkit/hatch_core/noise_protocol.py.xfer/c008
+  R projects/gayxxx-estate/extracted/Gaypornvidsxxx/java_patterns.txt -> projects/gayxxx-estate/extracted/Gaypornvidsxxx/java_patterns.txt
+  R tools/estate-router/estate-router-ts/tests/elo_persist.test.ts -> tools/estate-router/estate-router-ts/tests/elo_persist.test.ts
+  R tools/estate-router/estate-router-ts/tests/entitlement.test.ts -> tools/estate-router/estate-router-ts/tests/entitlement.test.ts
+  R salvage/origin-main-20261002/readme-fix-estate-1789408144/agent -> salvage/origin-main-20261002/readme-fix-estate-1789408144/agent
+  R src/maximal-estate-agentic-audit/src/modules/secrets-scanner.ts -> src/maximal-estate-agentic-audit/src/modules/secrets-scanner.ts
+  R skills/estate-hatch-toolkit/identity_router/identity_parser.py -> skills/estate-hatch-toolkit/identity_router/identity_parser.py
+  R projects/gayxxx-estate/extracted/Gaypornvidsxxx/java_keys.txt -> projects/gayxxx-estate/extracted/Gaypornvidsxxx/java_keys.txt
+  R projects/gayxxx-estate/extracted/Gaypornvidsxxx/java_urls.txt -> projects/gayxxx-estate/extracted/Gaypornvidsxxx/java_urls.txt
+  R projects/gayxxx-estate/extracted/XvideosGay/java_patterns.txt -> projects/gayxxx-estate/extracted/XvideosGay/java_patterns.txt
+  R readme-fix-estate-1789408144/skills/repo-audit/repo-audit.csv -> readme-fix-estate-1789408144/skills/repo-audit/repo-audit.csv
+  R tools/estate-router/estate-router-ts/router_live_models.ts -> tools/estate-router/estate-router-ts/router_live_models.ts
+  R readme-fix-estate-1789408144/agents/hal-substrate/agent.toml -> readme-fix-estate-1789408144/agents/hal-substrate/agent.toml
+  R readme-fix-estate-1789408144/stack/services/hal-substrate.sh -> readme-fix-estate-1789408144/stack/services/hal-substrate.sh
+  R scratch/estate-router-backup-sanitize/meta_oldest_first.json -> scratch/estate-router-backup-sanitize/meta_oldest_first.json
+  R projects/gayxxx-estate/extracted/Xhamster/java_patterns.txt -> projects/gayxxx-estate/extracted/Xhamster/java_patterns.txt
+  R projects/gayxxx-estate/extracted/topHDgayporn/java_urls.txt -> projects/gayxxx-estate/extracted/topHDgayporn/java_urls.txt
+  R readme-fix-estate-1789408144/agents/hal-substrate/system.md -> readme-fix-estate-1789408144/agents/hal-substrate/system.md
+  R src/maximal-estate-agentic-audit/src/modules/completions.ts -> src/maximal-estate-agentic-audit/src/modules/completions.ts
+  R src/maximal-estate-agentic-audit/src/modules/git-scanner.ts -> src/maximal-estate-agentic-audit/src/modules/git-scanner.ts
+  R tools/estate-router/estate-router-ts/gen-bench-priors.py -> tools/estate-router/estate-router-ts/gen-bench-priors.py
+  R tools/estate-router/estate-router-ts/tests/hedge.test.ts -> tools/estate-router/estate-router-ts/tests/hedge.test.ts
+  R projects/gayxxx-estate/extracted/Jayboys/java_patterns.txt -> projects/gayxxx-estate/extracted/Jayboys/java_patterns.txt
+  R projects/gayxxx-estate/extracted/Justthegays/java_urls.txt -> projects/gayxxx-estate/extracted/Justthegays/java_urls.txt
+  R readme-fix-estate-1789408144/src/hal-substrate/hal-loop.py -> readme-fix-estate-1789408144/src/hal-substrate/hal-loop.py
+  R skills/estate-hatch-toolkit/scripts/test_mcp_compliance.py -> skills/estate-hatch-toolkit/scripts/test_mcp_compliance.py
+  R src/maximal-estate-agentic-audit/tests/local-audit.test.ts -> src/maximal-estate-agentic-audit/tests/local-audit.test.ts
+  R tools/estate-router/estate-router-ts/router_strategy.ts -> tools/estate-router/estate-router-ts/router_strategy.ts
+  R projects/gayxxx-estate/extracted/Nurgay/java_patterns.txt -> projects/gayxxx-estate/extracted/Nurgay/java_patterns.txt
+  R projects/gayxxx-estate/extracted/XvideosGay/java_keys.txt -> projects/gayxxx-estate/extracted/XvideosGay/java_keys.txt
+  R projects/gayxxx-estate/extracted/XvideosGay/java_urls.txt -> projects/gayxxx-estate/extracted/XvideosGay/java_urls.txt
+  R projects/gayxxx-estate/extracted/iGay69/java_patterns.txt -> projects/gayxxx-estate/extracted/iGay69/java_patterns.txt
+  R skills/estate-hatch-toolkit/hatch_core/gateway_rpc.py.b64 -> skills/estate-hatch-toolkit/hatch_core/gateway_rpc.py.b64
+  R skills/estate-hatch-toolkit/identity_router/mcp_server.py -> skills/estate-hatch-toolkit/identity_router/mcp_server.py
+  R skills/estate-hatch-toolkit/tests/test_identity_router.py -> skills/estate-hatch-toolkit/tests/test_identity_router.py
+  R src/maximal-estate-agentic-audit/src/modules/constants.ts -> src/maximal-estate-agentic-audit/src/modules/constants.ts
+  R src/maximal-estate-agentic-audit/src/modules/dataframe.ts -> src/maximal-estate-agentic-audit/src/modules/dataframe.ts
+  R tools/estate-router/estate-router-ts/bench-priors.json -> tools/estate-router/estate-router-ts/bench-priors.json
+  R projects/gayxxx-estate/extracted/Gayxx/java_patterns.txt -> projects/gayxxx-estate/extracted/Gayxx/java_patterns.txt
+  R skills/estate-hatch-toolkit/hatch_core/noise_protocol.py -> skills/estate-hatch-toolkit/hatch_core/noise_protocol.py
+  R skills/estate-hatch-toolkit/orchestrator/fsbus_engine.py -> skills/estate-hatch-toolkit/orchestrator/fsbus_engine.py
+  R skills/estate-hatch-toolkit/tests/test_noise_protocol.py -> skills/estate-hatch-toolkit/tests/test_noise_protocol.py
+  R src/maximal-estate-agentic-audit/src/modules/precheck.ts -> src/maximal-estate-agentic-audit/src/modules/precheck.ts
+  R src/maximal-estate-agentic-audit/tests/dataframe.test.ts -> src/maximal-estate-agentic-audit/tests/dataframe.test.ts
+  R tools/estate-router/estate-router-ts/governor_test.ts -> tools/estate-router/estate-router-ts/governor_test.ts
+  R tools/estate-router/estate-router-ts/router_config.ts -> tools/estate-router/estate-router-ts/router_config.ts
+  R tools/estate-router/estate-router-ts/router_matrix.ts -> tools/estate-router/estate-router-ts/router_matrix.ts
+  R packages/estate-scripts/mitm-proxy/race_aware_loader.sh -> packages/estate-scripts/mitm-proxy/race_aware_loader.sh
+  R projects/gayxxx-estate/extracted/Xhamster/java_keys.txt -> projects/gayxxx-estate/extracted/Xhamster/java_keys.txt
+  R projects/gayxxx-estate/extracted/Xhamster/java_urls.txt -> projects/gayxxx-estate/extracted/Xhamster/java_urls.txt
+  R readme-fix-estate-1789408144/skills/repo-audit/SKILL.md -> readme-fix-estate-1789408144/skills/repo-audit/SKILL.md
+  R readme-fix-estate-1789408144/tools/estate-router/src -> readme-fix-estate-1789408144/tools/estate-router/src
+  R scratch/user/files/estate-dispersal-monolith.tar.gz.txt -> scratch/user/files/estate-dispersal-monolith.tar.gz.txt
+  R skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_00 -> skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_00
+  R skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_01 -> skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_01
+  R skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_02 -> skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_02
+  R skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_03 -> skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_03
+  R skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_04 -> skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_04
+  R skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_05 -> skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_05
+  R skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_06 -> skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_06
+  R skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_07 -> skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_07
+  R skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_08 -> skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_08
+  R skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_09 -> skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_09
+  R skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_10 -> skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_10
+  R skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_11 -> skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_11
+  R skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_12 -> skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_12
+  R skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_13 -> skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_13
+  R skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_14 -> skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_14
+  R skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_15 -> skills/estate-hatch-toolkit/hatch_core/gw_xfer/chunk_15
+  R skills/estate-hatch-toolkit/scripts/gateway_diagnose.py -> skills/estate-hatch-toolkit/scripts/gateway_diagnose.py
+  R skills/estate-hatch-toolkit/scripts/noise_live_probe.py -> skills/estate-hatch-toolkit/scripts/noise_live_probe.py
+  R src/maximal-estate-agentic-audit/src/modules/autofix.ts -> src/maximal-estate-agentic-audit/src/modules/autofix.ts
+  R src/maximal-estate-agentic-audit/src/modules/parquet.ts -> src/maximal-estate-agentic-audit/src/modules/parquet.ts
+  R src/maximal-estate-agentic-audit/tests/classify.test.ts -> src/maximal-estate-agentic-audit/tests/classify.test.ts
+  R projects/gayxxx-estate/extracted/Jayboys/java_keys.txt -> projects/gayxxx-estate/extracted/Jayboys/java_keys.txt
+  R projects/gayxxx-estate/extracted/Jayboys/java_urls.txt -> projects/gayxxx-estate/extracted/Jayboys/java_urls.txt
+  R readme-fix-estate-1789408144/tools/kimi-claw/bridge.ts -> readme-fix-estate-1789408144/tools/kimi-claw/bridge.ts
+  R skills/estate-hatch-toolkit/config/gateway_config.json -> skills/estate-hatch-toolkit/config/gateway_config.json
+  R skills/estate-hatch-toolkit/tests/test_fsbus_engine.py -> skills/estate-hatch-toolkit/tests/test_fsbus_engine.py
+  R skills/estate-hatch-toolkit/tests/test_noise_aesgcm.py -> skills/estate-hatch-toolkit/tests/test_noise_aesgcm.py
+  R src/maximal-estate-agentic-audit/src/modules/parser.ts -> src/maximal-estate-agentic-audit/src/modules/parser.ts
+  R src/maximal-estate-agentic-audit/tests/parquet.test.ts -> src/maximal-estate-agentic-audit/tests/parquet.test.ts
+  R packages/estate-scripts/mitm-proxy/playwright_mitm.py -> packages/estate-scripts/mitm-proxy/playwright_mitm.py
+  R projects/gayxxx-estate/extracted/Nurgay/java_urls.txt -> projects/gayxxx-estate/extracted/Nurgay/java_urls.txt
+  R projects/gayxxx-estate/extracted/iGay69/java_urls.txt -> projects/gayxxx-estate/extracted/iGay69/java_urls.txt
+  R readme-fix-estate-1789408144/src/services/registry.ts -> readme-fix-estate-1789408144/src/services/registry.ts
+  R salvage/origin-main-20261002/estate-scripts/README.md -> salvage/origin-main-20261002/estate-scripts/README.md
+  R scratch/goals/first-class-estate-organization/GOAL.md -> scratch/goals/first-class-estate-organization/GOAL.md
+  R scratch/readme-audits/estate-projects-README-fixed.md -> scratch/readme-audits/estate-projects-README-fixed.md
+  R scratch/estate-router-sanitize/meta_oldest_first.json -> scratch/estate-router-sanitize/meta_oldest_first.json
+  R skills/maximal-estate-agentic-audit/prompt_context.md -> skills/maximal-estate-agentic-audit/prompt_context.md
+  R skills/estate-hatch-toolkit/hatch_core/gateway_rpc.py -> skills/estate-hatch-toolkit/hatch_core/gateway_rpc.py
+  R skills/estate-hatch-toolkit/identity_router/router.py -> skills/estate-hatch-toolkit/identity_router/router.py
+  R skills/estate-hatch-toolkit/tests/test_gateway_rpc.py -> skills/estate-hatch-toolkit/tests/test_gateway_rpc.py
+  R src/maximal-estate-agentic-audit/src/modules/types.ts -> src/maximal-estate-agentic-audit/src/modules/types.ts
+  R src/maximal-estate-agentic-audit/tests/stream.test.ts -> src/maximal-estate-agentic-audit/tests/stream.test.ts
+  R src/maximal-estate-agentic-audit/tests/timing.test.ts -> src/maximal-estate-agentic-audit/tests/timing.test.ts
+  R tools/estate-router/estate-router-ts/COMPARISON.md -> tools/estate-router/estate-router-ts/COMPARISON.md
+  R config/tau/plans/ESTATE_MASTER_CONSOLIDATION_PLAN.md -> config/tau/plans/ESTATE_MASTER_CONSOLIDATION_PLAN.md
+  R packages/estate-utils/src/transport/socket-stream.ts -> packages/estate-utils/src/transport/socket-stream.ts
+  R projects/gayxxx-estate/extracted/Gayxx/java_urls.txt -> projects/gayxxx-estate/extracted/Gayxx/java_urls.txt
+  R readme-fix-estate-1789408144/scripts/health-check.sh -> readme-fix-estate-1789408144/scripts/health-check.sh
+  R salvage/origin-main-20261002/estate-skills/README.md -> salvage/origin-main-20261002/estate-skills/README.md
+  R src/maximal-estate-agentic-audit/tests/audit.test.ts -> src/maximal-estate-agentic-audit/tests/audit.test.ts
+  R tools/estate-router/estate-router-ts/package.json -> tools/estate-router/estate-router-ts/package.json
+  R tools/estate-router/estate-router-ts/router_ui.ts -> tools/estate-router/estate-router-ts/router_ui.ts
+  R .recovery/tools/estate-chat/README.md.oct9-snapshot -> .recovery/tools/estate-chat/README.md.oct9-snapshot
+  R readme-fix-estate-1789408144/skills/health-audit.ts -> readme-fix-estate-1789408144/skills/health-audit.ts
+  R scratch/estate-router-backup-sanitize/fetch_meta.py -> scratch/estate-router-backup-sanitize/fetch_meta.py
+  R skills/estate-master-orchestrator/prompt_context.md -> skills/estate-master-orchestrator/prompt_context.md
+  R src/maximal-estate-agentic-audit/src/local-audit.ts -> src/maximal-estate-agentic-audit/src/local-audit.ts
+  R packages/estate-utils/src/capabilities/manifest.ts -> packages/estate-utils/src/capabilities/manifest.ts
+  R packages/estate-utils/src/capabilities/resolver.ts -> packages/estate-utils/src/capabilities/resolver.ts
+  R scratch/estate-router-backup-sanitize/commits.json -> scratch/estate-router-backup-sanitize/commits.json
+  R readme-fix-estate-1789408144/prometheus-data/lock -> readme-fix-estate-1789408144/prometheus-data/lock
+  R skills/estate-hatch-toolkit/scripts/verify_all.py -> skills/estate-hatch-toolkit/scripts/verify_all.py
+  R src/maximal-estate-agentic-audit/src/benchmark.ts -> src/maximal-estate-agentic-audit/src/benchmark.ts
+  R tools/estate-router/estate-router-ts/router.ts -> tools/estate-router/estate-router-ts/router.ts
+  R packages/estate-scripts/patches/browser_guard.py -> packages/estate-scripts/patches/browser_guard.py
+  R readme-fix-estate-1789408144/bin/llama-gguf-hash -> readme-fix-estate-1789408144/bin/llama-gguf-hash
+  R scratch/estate-router-backup-sanitize/rebuild.py -> scratch/estate-router-backup-sanitize/rebuild.py
+  R scratch/estate-router-backup-sanitize/state.json -> scratch/estate-router-backup-sanitize/state.json
+  R tools/estate-router/probes/RESULTS-2026-09-21.md -> tools/estate-router/probes/RESULTS-2026-09-21.md
+  R tools/estate-router/probes/long-context-probe.py -> tools/estate-router/probes/long-context-probe.py
+  R config/tau/plans/ESTATE_SHELL_RANCH_TAU_PLAN.md -> config/tau/plans/ESTATE_SHELL_RANCH_TAU_PLAN.md
+  R packages/estate-utils/src/capabilities/index.ts -> packages/estate-utils/src/capabilities/index.ts
+  R readme-fix-estate-1789408144/.zed/settings.json -> readme-fix-estate-1789408144/.zed/settings.json
+  R scratch/estate-router-backup-sanitize/verify.py -> scratch/estate-router-backup-sanitize/verify.py
+  R skills/maximal-estate-agentic-audit/skill.toml -> skills/maximal-estate-agentic-audit/skill.toml
+  R src/maximal-estate-agentic-audit/tsconfig.json -> src/maximal-estate-agentic-audit/tsconfig.json
+  R packages/estate-utils/src/policy/evaluator.ts -> packages/estate-utils/src/policy/evaluator.ts
+  R readme-fix-estate-1789408144/config/ports.env -> readme-fix-estate-1789408144/config/ports.env
+  R scratch/readme-audits/estate-router-backup.md -> scratch/readme-audits/estate-router-backup.md
+  R skills/maximal-estate-agentic-audit/README.md -> skills/maximal-estate-agentic-audit/README.md
+  R skills/estate-hatch-toolkit/prompt_context.md -> skills/estate-hatch-toolkit/prompt_context.md
+  R src/maximal-estate-agentic-audit/.env.example -> src/maximal-estate-agentic-audit/.env.example
+  R src/maximal-estate-agentic-audit/package.json -> src/maximal-estate-agentic-audit/package.json
+  R src/maximal-estate-agentic-audit/src/index.ts -> src/maximal-estate-agentic-audit/src/index.ts
+  R skills/maximal-estate-agentic-audit/SKILL.md -> skills/maximal-estate-agentic-audit/SKILL.md
+  R skills/maximal-estate-agentic-audit/audit.ts -> skills/maximal-estate-agentic-audit/audit.ts
+  R skills/estate-hatch-toolkit/requirements.txt -> skills/estate-hatch-toolkit/requirements.txt
+  R skills/estate-master-orchestrator/skill.toml -> skills/estate-master-orchestrator/skill.toml
+  R src/maximal-estate-agentic-audit/bunfig.toml -> src/maximal-estate-agentic-audit/bunfig.toml
+  R packages/caddy-estate-auth/estateauth.go -> packages/caddy-estate-auth/estateauth.go
+  R packages/estate-scripts/auto-hook-loader.py -> packages/estate-scripts/auto-hook-loader.py
+  R packages/estate-scripts/commit_extractor.py -> packages/estate-scripts/commit_extractor.py
+  R packages/estate-scripts/estate_helper.py -> packages/estate-scripts/estate_helper.py
+  R readme-fix-estate-1789408144/pitchfork.toml -> readme-fix-estate-1789408144/pitchfork.toml
+  R scratch/estate-router-backup-sanitize/gh.py -> scratch/estate-router-backup-sanitize/gh.py
+  R scratch/estate-router-sanitize/commits.json -> scratch/estate-router-sanitize/commits.json
+  R skills/estate-master-orchestrator/README.md -> skills/estate-master-orchestrator/README.md
+  R src/maximal-estate-agentic-audit/.gitignore -> src/maximal-estate-agentic-audit/.gitignore
+  R src/maximal-estate-agentic-audit/biome.json -> src/maximal-estate-agentic-audit/biome.json
+  R packages/estate-scripts/namespace_probe.py -> packages/estate-scripts/namespace_probe.py
+  R readme-fix-estate-1789408144/mise/tasks/up -> readme-fix-estate-1789408144/mise/tasks/up
+  R scratch/readme-audits/caddy-estate-auth.md -> scratch/readme-audits/caddy-estate-auth.md
+  R skills/estate-hatch-toolkit/pyproject.toml -> skills/estate-hatch-toolkit/pyproject.toml
+  R skills/estate-master-orchestrator/SKILL.md -> skills/estate-master-orchestrator/SKILL.md
+  R src/maximal-estate-agentic-audit/README.md -> src/maximal-estate-agentic-audit/README.md
+  R packages/estate-utils/src/policy/index.ts -> packages/estate-utils/src/policy/index.ts
+  R packages/estate-utils/src/policy/types.ts -> packages/estate-utils/src/policy/types.ts
+  R packages/estate-utils/tests/utils.test.ts -> packages/estate-utils/tests/utils.test.ts
+  R readme-fix-estate-1789408144/package.json -> readme-fix-estate-1789408144/package.json
+  R scratch/readme-audits/estate-dispersal.md -> scratch/readme-audits/estate-dispersal.md
+  R scratch/estate-router-sanitize/rebuild.py -> scratch/estate-router-sanitize/rebuild.py
+  R scratch/estate-router-sanitize/state.json -> scratch/estate-router-sanitize/state.json
+  R scratch/readme-audits/estate-projects.md -> scratch/readme-audits/estate-projects.md
+  R packages/estate-scripts/archivefs_v3.py -> packages/estate-scripts/archivefs_v3.py
+  R packages/estate-scripts/cache_timing.py -> packages/estate-scripts/cache_timing.py
+  R packages/estate-scripts/git-push-one.py -> packages/estate-scripts/git-push-one.py
+  R packages/estate-scripts/health_check.py -> packages/estate-scripts/health_check.py
+  R packages/estate-scripts/unshare-root.py -> packages/estate-scripts/unshare-root.py
+  R readme-fix-estate-1789408144/.gitignore -> readme-fix-estate-1789408144/.gitignore
+  R readme-fix-estate-1789408144/tau-skills -> readme-fix-estate-1789408144/tau-skills
+  R packages/estate-skills/engine-audit.ts -> packages/estate-skills/engine-audit.ts
+  R readme-fix-estate-1789408144/AGENTS.md -> readme-fix-estate-1789408144/AGENTS.md
+  R readme-fix-estate-1789408144/README.md -> readme-fix-estate-1789408144/README.md
+  R readme-fix-estate-1789408144/mise.toml -> readme-fix-estate-1789408144/mise.toml
+  R scratch/readme-audits/estate-router.md -> scratch/readme-audits/estate-router.md
+  R skills/estate-hatch-toolkit/skill.toml -> skills/estate-hatch-toolkit/skill.toml
+  R packages/caddy-estate-auth/.gitignore -> packages/caddy-estate-auth/.gitignore
+  R scratch/readme-audits/zedra-estate.md -> scratch/readme-audits/zedra-estate.md
+  R skills/estate-hatch-toolkit/README.md -> skills/estate-hatch-toolkit/README.md
+  R ast-grep-rules/estate-yaml-ports.yml -> ast-grep-rules/estate-yaml-ports.yml
+  R packages/caddy-estate-auth/AGENTS.md -> packages/caddy-estate-auth/AGENTS.md
+  R readme-fix-estate-1789408144/.shared -> readme-fix-estate-1789408144/.shared
+  R readme-fix-estate-1789408144/helpers -> readme-fix-estate-1789408144/helpers
+  R scratch/readme-audits/estate-end4.md -> scratch/readme-audits/estate-end4.md
+  R skills/estate-chat/prompt_context.md -> skills/estate-chat/prompt_context.md
+  R skills/estate-hatch-toolkit/Makefile -> skills/estate-hatch-toolkit/Makefile
+  R skills/estate-hatch-toolkit/SKILL.md -> skills/estate-hatch-toolkit/SKILL.md
+  R packages/estate-scripts/arfs-cat.py -> packages/estate-scripts/arfs-cat.py
+  R packages/estate-utils/tsconfig.json -> packages/estate-utils/tsconfig.json
+  R readme-fix-estate-1789408144/FIX.md -> readme-fix-estate-1789408144/FIX.md
+  R readme-fix-estate-1789408144/models -> readme-fix-estate-1789408144/models
+  R skills/estate-hatch-toolkit/LICENSE -> skills/estate-hatch-toolkit/LICENSE
+  R packages/estate-scripts/.gitignore -> packages/estate-scripts/.gitignore
+  R packages/estate-utils/package.json -> packages/estate-utils/package.json
+  R packages/estate-utils/src/index.ts -> packages/estate-utils/src/index.ts
+  R scratch/swarm-merge/work/ESTATE.md -> scratch/swarm-merge/work/ESTATE.md
+  R packages/caddy-estate-auth/go.mod -> packages/caddy-estate-auth/go.mod
+  R packages/caddy-estate-auth/go.sum -> packages/caddy-estate-auth/go.sum
+  R packages/estate-scripts/AGENTS.md -> packages/estate-scripts/AGENTS.md
+  R packages/estate-scripts/README.md -> packages/estate-scripts/README.md
+  R packages/estate-skills/.gitignore -> packages/estate-skills/.gitignore
+  R stack/services/estate-exporter.py -> stack/services/estate-exporter.py
+  R packages/estate-skills/AGENTS.md -> packages/estate-skills/AGENTS.md
+  R packages/estate-skills/README.md -> packages/estate-skills/README.md
+  R pitchfork.d/estate-exporter.toml -> pitchfork.d/estate-exporter.toml
+  R projects/gayxxx-estate/AGENTS.md -> projects/gayxxx-estate/AGENTS.md
+  R projects/gayxxx-estate/README.md -> projects/gayxxx-estate/README.md
+  R tools/estate-chat/relay-watch.sh -> tools/estate-chat/relay-watch.sh
+  R .github/workflows/estate-ci.yml -> .github/workflows/estate-ci.yml
+  R packages/estate-scripts/.bashrc -> packages/estate-scripts/.bashrc
+  R scratch/readme-audits/estate.md -> scratch/readme-audits/estate.md
+  R grafana/dashboards/estate.json -> grafana/dashboards/estate.json
+  R tools/estate-chat/package.json -> tools/estate-chat/package.json
+  R skills/estate-chat/skill.toml -> skills/estate-chat/skill.toml
+  R helpers/estate-mcp-server.ts -> helpers/estate-mcp-server.ts
+  R scripts/merge-into-estate.sh -> scripts/merge-into-estate.sh
+  R skills/estate-chat/README.md -> skills/estate-chat/README.md
+  R tools/estate-chat/.gitignore -> tools/estate-chat/.gitignore
+  R skills/estate-chat/SKILL.md -> skills/estate-chat/SKILL.md
+  R tools/estate-chat/README.md -> tools/estate-chat/README.md
+  R estate-scripts/.gitignore -> estate-scripts/.gitignore
+  R .estate-integration.json -> .estate-integration.json
+  R estate-scripts/AGENTS.md -> estate-scripts/AGENTS.md
+  R estate-scripts/README.md -> estate-scripts/README.md
+  R estate-skills/.gitignore -> estate-skills/.gitignore
+  R estate-skills/AGENTS.md -> estate-skills/AGENTS.md
+  R estate-skills/README.md -> estate-skills/README.md
+  R .estate-integration.ts -> .estate-integration.ts
+  R test-estate-stack.ts -> test-estate-stack.ts

@@ -1,12 +1,12 @@
-# sovereign — project-owned daemon manifest. Source of truth for 'browserless'.
-# Owned by the sovereign project; the parent only composes it.
+# Estate — project-owned daemon manifest. Source of truth for 'browserless'.
+# Owned by the Estate project; the parent only composes it.
 
 [daemons.browserless]
 dir = "."
 run = "exec /home/toxic/estate/projects/range/ranch/barn/browserless/server/run.sh"
 ready_port = 25130
 depends = ["gatehouse"]
-env = { SOVEREIGN_ROUTER_PORT = "25104" }
+env = { ESTATE_ROUTER_PORT = "25104" }
 auto = ["start"]
 
 # WhatsApp Cloud API MCP server + inbound webhook (2026-09-14).

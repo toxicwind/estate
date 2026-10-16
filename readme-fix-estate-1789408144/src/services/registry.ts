@@ -1,5 +1,5 @@
 // ============================================================================
-// SOVEREIGN — Unified Service Registry
+// ESTATE — Unified Service Registry
 // ============================================================================
 
 import type { ServiceDef } from "../types/index.ts";
@@ -85,7 +85,7 @@ export const ALL_SERVICES: ServiceDef[] = [
     name: "search-api",
     portKey: "GHAS_API_PORT",
     run: "exec bun --hot run apps/api/src/server.ts",
-    dir: "/home/toxic/projects/sovereign-projects/sovereign-github-search",
+    dir: "/home/toxic/projects/estate-projects/estate-github-search",
     readyHttp: "/health",
     group: "core",
     autoStart: true,
@@ -98,7 +98,7 @@ export const ALL_SERVICES: ServiceDef[] = [
     name: "search-ui",
     portKey: "GHAS_FRONTEND_PORT",
     run: "exec ./node_modules/.bin/next dev -p 25114",
-    dir: "/home/toxic/projects/sovereign-projects/sovereign-github-search/apps/frontend",
+    dir: "/home/toxic/projects/estate-projects/estate-github-search/apps/frontend",
     readyHttp: "/",
     group: "core",
     autoStart: true,
@@ -186,7 +186,7 @@ export const ALL_SERVICES: ServiceDef[] = [
     name: "mcp-gateway",
     portKey: "MCP_GATEWAY_PORT",
     run: "exec bun run gateway.ts",
-    dir: "/home/toxic/estate/ranch/mesh/router/sovereign-mcp-gateway",
+    dir: "/home/toxic/estate/ranch/mesh/router/estate-mcp-gateway",
     readyHttp: "/health",
     group: "core",
     autoStart: true,
@@ -248,7 +248,7 @@ export const ALL_SERVICES: ServiceDef[] = [
     id: "tau",
     name: "tau",
     portKey: "PI_AGENT_PORT",
-    run: "exec bun run /home/toxic/projects/sovereign-projects/tau/packages/coding-agent/src/cli.ts",
+    run: "exec bun run /home/toxic/projects/estate-projects/tau/packages/coding-agent/src/cli.ts",
     dir: "/home/toxic",
     readyCmd: "sleep 2 && echo ready",
     group: "agents",
@@ -264,10 +264,10 @@ export const ALL_SERVICES: ServiceDef[] = [
   },
   {
     id: "kimi-code",
-    name: "kimi-code-sovereign",
+    name: "kimi-code-estate",
     portKey: "KIMI_CODE_PORT",
-    run: "exec /home/toxic/projects/sovereign-projects/tau/kimi/apps/kimi-code/dist/main.mjs web --no-open --port 25126",
-    dir: "/home/toxic/projects/sovereign-projects/tau/kimi",
+    run: "exec /home/toxic/projects/estate-projects/tau/kimi/apps/kimi-code/dist/main.mjs web --no-open --port 25126",
+    dir: "/home/toxic/projects/estate-projects/tau/kimi",
     readyHttp: "/health",
     group: "main",
     autoStart: true,
@@ -279,8 +279,8 @@ export const ALL_SERVICES: ServiceDef[] = [
     id: "mesh",
     name: "mesh",
     portKey: "MCPPROXY_GO_PORT",
-    run: "exec /home/toxic/projects/sovereign-projects/mesh/gateway/mcpproxy-go serve --config=/home/toxic/.mcpproxy/mcp_config.json --log-level=warn --log-to-file --listen=127.0.0.1:25127",
-    dir: "/home/toxic/projects/sovereign-projects/mesh/gateway",
+    run: "exec /home/toxic/projects/estate-projects/mesh/gateway/mcpproxy-go serve --config=/home/toxic/.mcpproxy/mcp_config.json --log-level=warn --log-to-file --listen=127.0.0.1:25127",
+    dir: "/home/toxic/projects/estate-projects/mesh/gateway",
     readyHttp: "/health",
     group: "core",
     autoStart: true,

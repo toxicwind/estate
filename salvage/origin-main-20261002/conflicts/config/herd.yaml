@@ -669,7 +669,7 @@ models:
 # worktree-only WIP and were wiped by an unrelated config rewrite at
 # 2026-09-21 06:26 MDT; restored here durably. Each entry is a full cmd
 # model (distinct ctx/reasoning params per tier) -- the estate's
-# sovereign-swap fork serves cmd blocks under top-level `aliases:`.
+# Estate-swap fork serves cmd blocks under top-level `aliases:`.
 # Model files come from the macros: section (MODEL_DIR, QWEN35_9B_FLASH_IQ4XS,
 # GEMMA_12B_BASE_Q4KM); both gguf files verified on disk 2026-09-21.
 # Router config owns selection: retarget by editing the --model macros.
@@ -701,14 +701,14 @@ peers:
   # no-auth and dummy-bearer both return HTTP 200 with real completions
   # (kimi-k3 @ 0.24-0.53s, openai @ 0.28s). Free-Kimi route is live;
   # re-probe before disabling. (openrouter-kimi/hf-free/flock disables verified dead.)
-  # RE-ENABLED 2026-09-21 (forge): herd rebuilt from sovereign-swap branch
+  # RE-ENABLED 2026-09-21 (forge): herd rebuilt from Estate-swap branch
   # herd-fqn-fix commit 7fc25280816f -- the Sep-18 dummy-Bearer workaround is gone:
   # empty apiKey now sends NO auth headers (peer.go strips client auth too).
   # Direct no-auth probe 2026-09-21 returned HTTP 200 on openai; through-herd
   # verification after restart below. Re-park if 401s return.
   pollinations-free:
     proxy: https://gen.pollinations.ai
-    # apiKey omitted -> anonymous: no auth headers sent (sovereign-swap rebuild 2026-09-21, commit 7fc2528)
+    # apiKey omitted -> anonymous: no auth headers sent (Estate-swap rebuild 2026-09-21, commit 7fc2528)
     models:
       - gpt-oss  # live 2026-10-01 (quill)
       - kimi-k3  # live 2026-10-01 (quill); free-Kimi via Fireworks backend

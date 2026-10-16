@@ -1,4 +1,4 @@
-module github.com/toxicwind/caddy-sovereign-auth
+module github.com/toxicwind/caddy-Estate-auth
 
 go 1.26.5
 

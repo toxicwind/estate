@@ -12,5 +12,5 @@ auto = ["start"]
 # on :25203 sharing the kernel SQLite DB. Now proxy-only; the kernel is
 # daemons.openfang on :25196. See src/services/openfang.ts.)
 
-# sovereign — project-owned daemon manifest. Source of truth for 'sovereign-exporter'.
+# Estate — project-owned daemon manifest. Source of truth for 'Estate-exporter'.
 # Owned by the estate project; the parent only composes it.

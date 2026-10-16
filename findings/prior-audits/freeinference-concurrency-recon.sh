@@ -42,7 +42,7 @@ wait
 
 echo "=== lane 3: different user-agents concurrent ==="
 probe "ua-openai" "$OPEN_BODY" "OpenAI/Python 1.54.0" &
-probe "ua-tau" "$OPEN_BODY" "tau/18.8.4-sovereign.tau" &
+probe "ua-tau" "$OPEN_BODY" "tau/18.8.4-estate.tau" &
 probe "ua-claude-cli" "$OPEN_BODY" "claude-cli/2.0.0 (external, cli)" &
 wait
 

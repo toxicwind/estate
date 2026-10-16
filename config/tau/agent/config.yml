@@ -710,7 +710,7 @@ worktree:
 plugins:
   - name: herd
     source: ./estate/ranch/mesh/router/herd
-    merged: sovereign-swap
+    merged: estate-swap
     privileged: true
   - name: flock
     source: ./estate/ranch/flock
@@ -720,7 +720,7 @@ plugins:
     privileged: true
     role: MCP federation gateway
   - name: router
-    source: ./estate/ranch/mesh/router/sovereign-router
+    source: ./estate/ranch/mesh/router/estate-router
     merged:
       - router-legacy
       - stockyard-flock-router

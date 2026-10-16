@@ -1,5 +1,5 @@
 {
-  "name": "sovereign",
+  "name": "estate",
   "module": "index.ts",
   "type": "module",
   "private": true,
@@ -34,8 +34,8 @@
     "pattern:borrow": "bun run scripts/pattern-borrow.ts",
     "test": "bun test tests/open_web_uis.test.ts",
     "test:best-models": "bun test tests/best_models_ssot.test.ts",
-    "test:gateway": "bun test tools/sovereign-router/sovereign-mcp-gateway/gateway-core.test.ts",
-    "test:gateway:cov": "bun test --coverage --coverage-reporter=text --coverage-reporter=lcov tools/sovereign-router/sovereign-mcp-gateway/gateway-core.test.ts",
+    "test:gateway": "bun test tools/estate-router/estate-mcp-gateway/gateway-core.test.ts",
+    "test:gateway:cov": "bun test --coverage --coverage-reporter=text --coverage-reporter=lcov tools/estate-router/estate-mcp-gateway/gateway-core.test.ts",
     "test:cov": "bun test --coverage --coverage-reporter=text --coverage-reporter=lcov",
     "lang:python": "bun run src/services/language-router.ts python",
     "lang:rust": "bun run src/services/language-router.ts rust",
@@ -73,14 +73,14 @@
     "zod": "^4.4.3"
   },
   "version": "1.0.0",
-  "description": "Sovereign mesh: multi-language runtime, LLM mesh, agent kernel, analytics, ops.",
+  "description": "Estate mesh: multi-language runtime, LLM mesh, agent kernel, analytics, ops.",
   "main": "index.js",
   "directories": {
     "doc": "docs",
     "test": "tests"
   },
   "keywords": [
-    "sovereign",
+    "estate",
     "bun",
     "mcp",
     "llm",

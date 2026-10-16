@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# REORG-EXECUTE.sh — sovereign reorg, staged one-command execution.
+# REORG-EXECUTE.sh — estate reorg, staged one-command execution.
 # PLAN: /home/toxic/estate/REORG-PLAN.md — READ IT FIRST. DO NOT RUN BLINDLY.
 # Runs on yote as user `toxic` (via the exec bridge or a local shell).
 # This script does NOT restart the bridge itself; the cutover is OPERATOR-DRIVEN
 # (systemd-run --user is broken on yote — user manager degraded, transient units
 # vanish; verified 2026-09-20). The hatch operator runs `pitchfork restart
-# sovereign/awrawr-ws-exec` from hatch AFTER this script's bridge call returns.
+# estate/awrawr-ws-exec` from hatch AFTER this script's bridge call returns.
 # Copy-first (Phase 4) means the toml never points at a missing file meanwhile.
 # See REORG-PLAN.md §6.
 set -euo pipefail
@@ -31,7 +31,7 @@ note() { echo "$*" >> "$MANIFEST"; }
 # The secret-entropy rule must NOT be bypassed, so we stage only our own paths.
 reorg_add() {
   local args=()
-  for q in shingle-workspace sovereign/bin hatch bridge scratch \
+  for q in shingle-workspace estate/bin hatch bridge scratch \
       docs/ws-exec-8379-audit-20260914.md docs/connector-bridge-routing-d4734168.md \
       pitchfork.toml tools/stash-guard/stash-guard.py \
       fleet/dispatch_fallback.py REORG-PLAN.md REORG-EXECUTE.sh REORG-MANIFEST.txt \
@@ -95,7 +95,7 @@ EOF
 [ -f "$SOV/bridge/README.md" ] || cat > "$SOV/bridge/README.md" <<'EOF'
 # bridge/ — production home of the live hatch<->yote exec bridge
 `awrawr_ws_exec.py` is the canonical tracked copy, run by pitchfork daemon
-`sovereign/awrawr-ws-exec` (Funnel /exec-ws -> 127.0.0.1:8379).
+`estate/awrawr-ws-exec` (Funnel /exec-ws -> 127.0.0.1:8379).
 Compat: /home/toxic/estate/shingle-workspace/awrawr_ws_exec.py resolves here via symlink.
 EOF
 
@@ -141,7 +141,7 @@ log "phase 4: extract bridge file (copy-first, daemon untouched)"
 if [ ! -f "$SOV/bridge/awrawr_ws_exec.py" ]; then
   cp -p "$SOV/shingle-workspace/awrawr_ws_exec.py" "$SOV/bridge/awrawr_ws_exec.py"
   # update the "Tracked copy" header note inside the file
-  sed -i 's|sovereign/shingle-workspace/awrawr_ws_exec.py|sovereign/bridge/awrawr_ws_exec.py|' "$SOV/bridge/awrawr_ws_exec.py"
+  sed -i 's|estate/shingle-workspace/awrawr_ws_exec.py|estate/bridge/awrawr_ws_exec.py|' "$SOV/bridge/awrawr_ws_exec.py"
   note "cp shingle-workspace/awrawr_ws_exec.py -> bridge/awrawr_ws_exec.py"
 else
   log "bridge file already extracted, skipping"
@@ -153,9 +153,9 @@ if [ -d "$SOV/shingle-workspace/bin" ] && [ ! -L "$SOV/shingle-workspace" ]; the
   for f in "$SOV/shingle-workspace/bin/"*; do
     b=$(basename "$f")
     if [ -e "$SOV/bin/$b" ]; then
-      log "WARN: collision, leaving in place: $f (already in sovereign/bin)"
+      log "WARN: collision, leaving in place: $f (already in estate/bin)"
     else
-      mv "$f" "$SOV/bin/$b" && note "mv shingle-workspace/bin/$b -> sovereign/bin/$b"
+      mv "$f" "$SOV/bin/$b" && note "mv shingle-workspace/bin/$b -> estate/bin/$b"
     fi
   done
   rmdir "$SOV/shingle-workspace/bin" 2>/dev/null || true
@@ -209,8 +209,8 @@ import sys
 p = sys.argv[1]
 s = open(p).read()
 subs = [
-  ('# SOVEREIGN PITCHFORK CONFIG — GENERATED from config/ports.env + service definitions\n# DO NOT EDIT DIRECTLY — Run: bun run scripts/generate.ts',
-   '# SOVEREIGN PITCHFORK CONFIG — HAND-EDITED (generator retired 2026-09-14 per sovereign/AGENTS.md;\n# never run bun run scripts/generate.ts — it would destroy live daemons). Port SSOT: config/ports.env.'),
+  ('# ESTATE PITCHFORK CONFIG — GENERATED from config/ports.env + service definitions\n# DO NOT EDIT DIRECTLY — Run: bun run scripts/generate.ts',
+   '# ESTATE PITCHFORK CONFIG — HAND-EDITED (generator retired 2026-09-14 per estate/AGENTS.md;\n# never run bun run scripts/generate.ts — it would destroy live daemons). Port SSOT: config/ports.env.'),
   ('run = "exec /home/toxic/.fleet-bus/squawk-relay/run-feed.sh"',
    'run = "exec /home/toxic/estate/hatch/agents/ember/squawk-relay/run-feed.sh"'),
   ('SQUAWK_CHAT_ROOT = "/home/toxic/.fleet-bus/squawk-root"',
@@ -238,9 +238,9 @@ if [ -f "$SG" ] && grep -q '"shingle-workspace/"' "$SG"; then
   python3 -c "import ast; ast.parse(open('$SG').read())" \
     || die "stash-guard.py edit broke syntax"
   note "stash-guard.py exclude list updated (shingle-workspace/ -> scratch/ + bridge/)"
-  "$PITCHFORK_BIN" restart sovereign/stash-guard \
+  "$PITCHFORK_BIN" restart estate/stash-guard \
     && log "stash-guard restarted (new excludes live)" \
-    || log "WARN: stash-guard restart failed — restart sovereign/stash-guard manually"
+    || log "WARN: stash-guard restart failed — restart estate/stash-guard manually"
 else
   log "WARN: stash-guard.py not found or already updated — excludes NOT touched"
 fi

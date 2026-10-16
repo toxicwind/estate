@@ -1,10 +1,10 @@
-# sovereign — project-owned daemon manifest. Source of truth for 'search-ui'.
-# Owned by the sovereign project; the parent only composes it.
+# Estate — project-owned daemon manifest. Source of truth for 'search-ui'.
+# Owned by the Estate project; the parent only composes it.
 
 [daemons.search-ui]
 port = 25114
 run = "exec ./node_modules/.bin/next dev -p 25114"
-dir = "/home/toxic/estate/sovereign-github-search/apps/frontend"
+dir = "/home/toxic/estate/Estate-github-search/apps/frontend"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25114/"

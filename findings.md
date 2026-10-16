@@ -61,7 +61,7 @@ Repairs landed this session are marked [FIXED]; open items marked [OPEN].
   root cause. [OPEN — sweep to archive/fix-campaigns-20261014/]
 - Family sprawl: 4 repos in 3 homes (ranch/tau, ranch/tau-extensions,
   ranch/tau-marketplace, estate/tau-skills); tau-extensions still has
-  `omp-*` dirs; version identity still `+sovereign.tau.*`. [OPEN]
+  `omp-*` dirs; version identity still `+estate.tau.*`. [OPEN]
 - Self-documented live bugs (docs/MISSING-FEATURES.md, 2026-10-08): B1 no
   hedged-stream.ts, B2 no HotfixRegistry, B3 no estate/integrations/,
   B4/B5 missing @ranch/tack → **gen:compat unrunnable**. [OPEN]
@@ -69,16 +69,16 @@ Repairs landed this session are marked [FIXED]; open items marked [OPEN].
   embedded-addons.linux-x64.tar.gz deleted (mid-flight natives rebuild).
   [OPEN — commit or restore]
 
-## 5. Namespace debt (sovereign → estate, announced in 6af2094)
+## 5. Namespace debt (estate → estate, announced in 6af2094)
 
-- rename-roundup dry-run (full report: ~/roundup-sovereign-report-20261014.txt):
+- rename-roundup dry-run (full report: ~/roundup-estate-report-20261014.txt):
   **265 path renames + 1445 content rewrites** still pending in estate.
-  Hotspots: skills/sovereign-{chat,hatch-toolkit}, packages/sovereign-{scripts,
-  utils,skills}, packages/caddy-sovereign-auth, stack/services/sovereign-
-  exporter.py, pitchfork.d/sovereign-exporter.toml, tools/sovereign-chat,
-  .github/workflows/sovereign-ci.yml, sovereign-scripts/, sovereign-skills/.
+  Hotspots: skills/estate-{chat,hatch-toolkit}, packages/estate-{scripts,
+  utils,skills}, packages/caddy-estate-auth, stack/services/estate-
+  exporter.py, pitchfork.d/estate-exporter.toml, tools/estate-chat,
+  .github/workflows/estate-ci.yml, estate-scripts/, estate-skills/.
   [OPEN — content-only subset is safe; path renames need per-daemon care]
-- Residue beyond estate: kimi-code-sovereign (src/local), gayxxx-sovereign
+- Residue beyond estate: kimi-code-estate (src/local), gayxxx-estate
   (ranch), roundup result keys `sov__*`, ranch/pitchfork.d flicker→forge done
   but flicker-agent→forge-agent only partial in docs.
 
@@ -128,11 +128,11 @@ Repairs landed this session are marked [FIXED]; open items marked [OPEN].
   (cuttinggate :25200 canonical, estate-router :25104 LIVE, herd :25100,
   flock :25193 retired, keypool :25109, gatehouse :25127 fronts MCP).
   Estate-level docs contradict it: CONTROL_PLANE.md + MASTER_PLAN.md still
-  cite "sovereign-router :25104 stopped"/"mcpproxy :25109 as MCP federation
+  cite "estate-router :25104 stopped"/"mcpproxy :25109 as MCP federation
   gateway" (wrong service), MASTER_PLAN.md:8 "herd DOWN" vs mesh README's
   live check. [OPEN — rewrite CONTROL_PLANE.md/MASTER_PLAN.md against mesh
   README]
-- **Dead-path docs**: plans/master/REORG-PLAN.md (assumes ~/sovereign exists),
+- **Dead-path docs**: plans/master/REORG-PLAN.md (assumes ~/estate exists),
   pitchfork-modularization/sandbox/pitchfork.toml.orig (hardcodes dead
   projects/range/ranch), CONVENTIONS.md:66-67 (skills-hub as skills home,
   ~/workspace/skills symlink target missing), mbx.md + daemons.md +
@@ -142,7 +142,7 @@ Repairs landed this session are marked [FIXED]; open items marked [OPEN].
 - **Ranch structure**: 87 tracked git submodules + 6 ignored nested repos
   (vansrouter, tau, boundless, sigma, omp-semantic-policy, barn/woodpecker)
   + ~200 plain dirs. Duplications: paper-poller (ranch submodule vs
-  deep-paper-reader leg), pi-skills (estate root checkout), sovereign-skills
+  deep-paper-reader leg), pi-skills (estate root checkout), estate-skills
   (submodule) vs estate/skills canonical. [OPEN — see monorepo options]
 
 ## 10. Kilo MCP wiring [FIXED]
@@ -164,7 +164,7 @@ Repairs landed this session are marked [FIXED]; open items marked [OPEN].
   (`git remote set-url --add --push` fan-out).
 - Cleanup ladder still applies first: tarball-monster slimming
   (local-work-archive 3.5TB, three.ws 2.2TB, agent-dashboard 2.0TB,
-  sovereign-projects 1.8TB, estate 1.5TB, OmniRoute 1.4TB), backup/tmp repo
+  estate-projects 1.8TB, estate 1.5TB, OmniRoute 1.4TB), backup/tmp repo
   kills, 60 dual-truth name reconciliations — slim before mirroring.
 - Pilot: secretsmith → Forgejo first, then fleet-wide multi-remote sweep.
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	// The sovereign control surface. Every daemon the stack runs that serves a
+	// The Estate control surface. Every daemon the stack runs that serves a
 	// page is a tab here, so "what is up" is one screen instead of a memory test
 	// across 25xxx ports. The registry lives in lib/surfaces.ts.
 	import { onDestroy, onMount } from "svelte";

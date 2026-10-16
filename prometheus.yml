@@ -3,7 +3,7 @@ global:
   scrape_timeout: 10s
 
 scrape_configs:
-  - job_name: "sovereign"
+  - job_name: "Estate"
     metrics_path: /metrics
     static_configs:
       - targets:
@@ -11,8 +11,8 @@ scrape_configs:
           - "127.0.0.1:25101"   # model-guard
           - "127.0.0.1:25105"   # prometheus self
           - "127.0.0.1:25211"   # node-exporter
-          - "127.0.0.1:25213"   # sovereign-exporter (daemons/ports/lanes/market/gpu)
+          - "127.0.0.1:25213"   # Estate-exporter (daemons/ports/lanes/market/gpu)
 
 # NOTE: 25102/25103/25106/25107/25203/25208 have no /metrics endpoint
-# (404 on scrape). Their up/down is covered by sovereign-exporter
-# (sovereign_port_listening / sovereign_daemon_up).
+# (404 on scrape). Their up/down is covered by Estate-exporter
+# (Estate_port_listening / Estate_daemon_up).

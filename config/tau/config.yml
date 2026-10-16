@@ -1,7 +1,7 @@
 plugins:
 - name: herd
   source: ./projects/range/ranch/stockyard/herd
-  merged: sovereign-swap
+  merged: estate-swap
   privileged: true
 - name: flock
   source: ./projects/range/ranch/stockyard/flock
@@ -15,7 +15,7 @@ plugins:
   merged:
   - router-legacy
   - stockyard-flock-router
-  - sovereign-router
+  - estate-router
   privileged: true
 - name: barn-browser
   source: ./projects/range/ranch/barn/browserless

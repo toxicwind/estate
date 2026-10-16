@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # mise run status — pitchfork daemon list + ports
 set -euo pipefail
-export SOV="${SOVEREIGN_ROOT:-$PWD}"
+export SOV="${ESTATE_ROOT:-$PWD}"
 cd "$SOV"
 
 echo "=== pitchfork list ==="

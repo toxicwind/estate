@@ -1,18 +1,18 @@
-# sovereign-projects
+# Estate-projects
 
 <div align="right">
 
-[![last commit](https://img.shields.io/github/last-commit/toxicwind/sovereign-projects?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects/commits/main)
-[![repo size](https://img.shields.io/github/repo-size/toxicwind/sovereign-projects?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![last commit](https://img.shields.io/github/last-commit/toxicwind/Estate-projects?style=for-the-badge)](https://github.com/toxicwind/Estate-projects/commits/main)
+[![repo size](https://img.shields.io/github/repo-size/toxicwind/Estate-projects?style=for-the-badge)](https://github.com/toxicwind/Estate-projects)
 [![license: mixed](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](LICENSE)
 [![yote: RTX 3090](https://img.shields.io/badge/yote-RTX%203090%20%C2%B7%2016C%20%C2%B7%2062GB-76b900?style=for-the-badge)](docs/HARDWARE_AUDIT_20260914.md)
 
 </div>
 
-> **Sovereign is the self-hosted operating environment where a working agent fleet lives** — one OpenAI-compatible inference front door, a compression layer that folds every long context, HMAC-signed fleet chat, a work market with stake-and-slash accountability, and a pitchfork-supervised service stack, all in one tree. Communication, accountability, and supervision are not three projects here; they are three layers of the same commitments: nothing silent, nothing unverifiable.
+> **Estate is the self-hosted operating environment where a working agent fleet lives** — one OpenAI-compatible inference front door, a compression layer that folds every long context, HMAC-signed fleet chat, a work market with stake-and-slash accountability, and a pitchfork-supervised service stack, all in one tree. Communication, accountability, and supervision are not three projects here; they are three layers of the same commitments: nothing silent, nothing unverifiable.
 
 > [!CAUTION]
-> The canonical remote is [`toxicwind/sovereign-projects`](https://github.com/toxicwind/sovereign-projects). A separate repo **`toxicwind/sovereign`** exists with a stale main — pushing or verifying against it is a silent wrong-target error. Never push there.
+> The canonical remote is [`toxicwind/Estate-projects`](https://github.com/toxicwind/Estate-projects). A separate repo **`toxicwind/Estate`** exists with a stale main — pushing or verifying against it is a silent wrong-target error. Never push there.
 
 > [!NOTE]
 > **Required reading for every agent in the fleet:** [`docs/fleet-knowledgebase.md`](docs/fleet-knowledgebase.md) — estate map, active crews, repo index, standing rules, docs index.
@@ -49,13 +49,13 @@ Plus the agent layer: [`hatch/agents/ember`](hatch/agents/ember) (Ember's operat
 
 ## Repository topology
 
-`sovereign-projects` is nominally one monorepo, but the working tree holds several kinds of repository at once. Knowing which is which is the difference between committing a change and losing it.
+`Estate-projects` is nominally one monorepo, but the working tree holds several kinds of repository at once. Knowing which is which is the difference between committing a change and losing it.
 
 **The four tiers.**
 
 | Tier | What it is | How to spot it | Where changes go |
 | ---- | ---------- | -------------- | ---------------- |
-| **1. The monorepo** | Tracked directly by `toxicwind/sovereign-projects`. | No nested `.git`. | Commit here, `git add <path>`. |
+| **1. The monorepo** | Tracked directly by `toxicwind/Estate-projects`. | No nested `.git`. | Commit here, `git add <path>`. |
 | **2. Nested repo** | Separate checkout with its own remote, developed independently. | `.git` is a directory and `git remote get-url origin` returns one of ours. | Commit inside it and push its own remote. A commit in the monorepo does not include it. |
 | **3. Submodule** | Pinned external code declared in [`.gitmodules`](.gitmodules). | `.git` is a *file*, not a directory. | Never edit. Move the pin with `git submodule update --remote`. |
 | **4. Vendored third-party** | Read-only upstream checkout kept for reference. | `.git` present, remote owned by someone else. | Never edit, never push. |
@@ -79,7 +79,7 @@ Plus the agent layer: [`hatch/agents/ember`](hatch/agents/ember) (Ember's operat
 
 | Path | Remote | Note |
 | ---- | ------ | ---- |
-| `projects/shell/ii/` | `toxicwind/sovereign-end4` | Checked out. |
+| `projects/shell/ii/` | `toxicwind/Estate-end4` | Checked out. |
 | `tau/vendors` | `MoonshotAI/kimi-cli` | Root `tau/`, not `projects/tau`. Not initialized. |
 
 **Tier 4, vendored third-party, about 45 repos, never edit:** `projects/nim-repos/*` (26 NVIDIA-NIM community routers), `killer-features/*/vendor/*` (9 debate and auction research repos), `engines/herd/*` (3 llama.cpp forks: `beellama.cpp`, `ik_llama.cpp`, `llama-cpp-turboquant`), `projects/AURKA`, `projects/extagents`, `projects/llm-mapreduce`, `projects/deprecated/9router`, and 11 vendored submodules under `ranch/android-fleet/nuvio/nuvio-platform/submodules/`.
@@ -100,14 +100,14 @@ One of the old entries was **not** a leftover: `.merge-state.json` is live `bun`
 
 ```mermaid
 flowchart TB
-    SP["sovereign-projects<br/>the monorepo<br/>control plane · bridge · hatch · agents"]
+    SP["Estate-projects<br/>the monorepo<br/>control plane · bridge · hatch · agents"]
     subgraph nested["Tier 2 · our repos, separate remotes"]
         RANCH["projects/range/ranch<br/>toxicwind/ranch"]
         SQ["hatch/agents/ember/chat<br/>toxicwind/squawk"]
         CF["codeflux<br/>toxicwind/codeflux"]
     end
     subgraph sub["Tier 3 · declared submodules"]
-        II["projects/shell/ii<br/>sovereign-end4"]
+        II["projects/shell/ii<br/>Estate-end4"]
         KV["tau/vendors<br/>kimi-cli"]
     end
     subgraph vend["Tier 4 · vendored third-party, never edit"]
@@ -137,7 +137,7 @@ flowchart TB
         SIG[sigma<br/>context folding proxy<br/>/bili/ wrap · live :32847]
     end
     subgraph comm["Communication"]
-        SQ[squawk-ws :25147<br/>squawk-feed :25135<br/>sovereign-chat :25120]
+        SQ[squawk-ws :25147<br/>squawk-feed :25135<br/>Estate-chat :25120]
     end
     subgraph acct["Accountability"]
         OM[oracle-market<br/>oracle-core :25151<br/>bids · Vickrey · stake/slash]
@@ -232,13 +232,13 @@ Daemon definitions live in [`pitchfork.toml`](pitchfork.toml) (the generator is 
 | `:25193` | `flock` | Cloud-provider routing daemon backing herd |
 | `:25127` | `gatehouse` | MCP federation (was `shep`) |
 | `:25115` | `mesh-hub` | Service discovery + health ([`src/services/mesh-hub.ts`](src/services/mesh-hub.ts)) |
-| `:25120` | `sovereign-chat` | Fleet chat web plane ([`tools/sovereign-chat/`](tools/sovereign-chat/)) |
+| `:25120` | `Estate-chat` | Fleet chat web plane ([`tools/Estate-chat/`](tools/Estate-chat/)) |
 | `:25147` | `squawk-ws` | Squawk agent chat — websocket server |
 | `:25135` | `squawk-feed` | Squawk feed sequence server |
 | `:25151` | `oracle-core` | Oracle decision engine |
 | `:25204` | `awrawr-ws-exec` | The live hatch↔yote exec bridge (Funnel exposed at `:8379`, see [`bridge/`](bridge/)) |
 | `:25201` | `rust-web` | Ops dashboard backend |
-| `:25215` | `sovereign-stream-broker` | Socket Stream transport broker (UNIX + TCP, OS keepalive 30s) |
+| `:25215` | `Estate-stream-broker` | Socket Stream transport broker (UNIX + TCP, OS keepalive 30s) |
 | `:25117` | `hindsight` | Fleet state persistence and session durability |
 | `:25148` | `brand` | Build daemon & continuous compilation engine (2-worker NVMe queue) |
 | `:25197` | `boundless` | Boundless web service |
@@ -260,8 +260,8 @@ Undocumented-by-design remainder: infrastructure and on-demand daemons (`qdrant`
 <details>
 <summary><strong>Socket Stream &amp; Cognitive EKG</strong></summary>
 
-- The **Socket Stream Transport** ([`packages/sovereign-utils/src/transport/socket-stream.ts`](packages/sovereign-utils/src/transport/socket-stream.ts)) provides OS-level TCP keepalives (30s) to prevent middlebox drops in long-running reasoning SSE streams. Components: `SocketStreamConfig`, `RingTokenBuffer` (append-only ring buffer for token recovery across network interrupts), and `DirectSocketStreamClient`.
-- The **Stream Broker** daemon ([`projects/range/ranch/stream-broker/`](projects/range/ranch/stream-broker/)) listens on UNIX socket (`/run/user/1000/sovereign-stream-broker.sock`) and TCP port `:25215`. Supervised by pitchfork with auto-restart.
+- The **Socket Stream Transport** ([`packages/Estate-utils/src/transport/socket-stream.ts`](packages/Estate-utils/src/transport/socket-stream.ts)) provides OS-level TCP keepalives (30s) to prevent middlebox drops in long-running reasoning SSE streams. Components: `SocketStreamConfig`, `RingTokenBuffer` (append-only ring buffer for token recovery across network interrupts), and `DirectSocketStreamClient`.
+- The **Stream Broker** daemon ([`projects/range/ranch/stream-broker/`](projects/range/ranch/stream-broker/)) listens on UNIX socket (`/run/user/1000/Estate-stream-broker.sock`) and TCP port `:25215`. Supervised by pitchfork with auto-restart.
 - The **Cognitive EKG** monitoring layer (`herd-model-guard.py`) wraps all request/response lifecycles in `try/except (BrokenPipeError, ConnectionResetError)` to prevent server thread crashes on client disconnects. Audit trail at `data/model-guard-audit.jsonl`.
 - Full architecture spec: [`docs/architecture/socket-stream-cognitive-ekg.md`](docs/architecture/socket-stream-cognitive-ekg.md).
 
@@ -290,13 +290,13 @@ mise run logs-tail    # follow the supervisor log
 ```
 
 - Tasks are defined in [`mise.toml`](mise.toml) — `up:all`, per-service `up-<name>` / `down-<name>` / `restart-<name>`, per-service `health-<name>` probes, `logs` / `logs-tail` / `logs-json`, and `svc-check` (the all-in-one probe that reports `PASS`/`FAIL` per port). Script-shaped tasks live as files in [`mise/tasks/`](mise/tasks/) — `up`, `down`, `health`, `status`, `doctor`; local overrides in [`mise.local.toml`](mise.local.toml).
-- **pitchfork does NOT hot-reload its config** — after editing any `[daemons.*]` section, run `bin/pitchfork-restart sovereign/<name>`. The reload rule is documented at the top of [`pitchfork.toml`](pitchfork.toml).
+- **pitchfork does NOT hot-reload its config** — after editing any `[daemons.*]` section, run `bin/pitchfork-restart Estate/<name>`. The reload rule is documented at the top of [`pitchfork.toml`](pitchfork.toml).
 
 ## Build
 
 The canonical build entry is [`scripts/flicker-build.sh`](scripts/flicker-build.sh).
 It submits the repo's bounded CI check — the `bun test` suites from
-[`.github/workflows/sovereign-ci.yml`](.github/workflows/sovereign-ci.yml) plus a
+[`.github/workflows/Estate-ci.yml`](.github/workflows/Estate-ci.yml) plus a
 `bash -n` syntax check of `scripts/*.sh` — to the flicker build-job daemon
 (`127.0.0.1:25148`) and exits 0 only when the job succeeds (or an identical job
 already succeeded):
@@ -308,7 +308,7 @@ already succeeded):
 ## Repo layout
 
 ```text
-sovereign-projects/                     # this repo — /home/toxic/estate on yote
+Estate-projects/                     # this repo — /home/toxic/estate on yote
 ├── pitchfork.toml          # service definitions (supervisor) — hand-edited SSOT
 ├── mise.toml               # tool pins + up/down/health/log tasks
 ├── mise.local.toml         # local task overrides (fix-socket, …)
@@ -323,10 +323,10 @@ sovereign-projects/                     # this repo — /home/toxic/estate on yo
 ├── agents/                 # oracle-market, coyote, kimiclaw, squawk-relay, …
 ├── skills/                 # 29 hand-authored skills — skill root #1, see Key components
 ├── bin/                    # ops scripts: pitchfork-restart, herd-keypool.py, claim-port, …
-├── packages/               # sovereign-utils, metaharness, sovereign-scripts, …
+├── packages/               # Estate-utils, metaharness, Estate-scripts, …
 ├── src/                    # Bun services (mesh-hub, mesh-front, …)
 ├── stack/                  # service entry scripts (stack/services/herd.sh, …)
-├── tools/                  # sovereign-chat, sovereign-router, sovereign-monitor, …
+├── tools/                  # Estate-chat, Estate-router, Estate-monitor, …
 ├── tests/ test/            # test suites
 ├── ops/                    # openfang-run.sh — daemon run scripts
 ├── docs/                   # architecture + ops docs (see docs/README.md)
@@ -359,7 +359,7 @@ Self-healing peers (2026-09-20): event-driven dead-peer detection (healthy/degra
 
 ### Communication — squawk
 
-[`projects/range/ranch/squawk-ws/`](projects/range/ranch/squawk-ws/) and [`squawk/`](projects/range/ranch/squawk/) — the fleet's voice. `squawk-ws` (`:25147`, `squawk_ws_server.py`) is the HMAC-signed websocket server; `squawk-feed` (`:25135`) is the append-only sequence feed; `squawk-relay-sink` / `squawk-relay-forward` bridge cells; `sovereign-chat` (`:25120`, [`tools/sovereign-chat/`](tools/sovereign-chat/)) is the web plane. Agent-facing entry points are [`hatch/bin/squawk`](hatch/bin/squawk) and `hatch/bin/squawk-fleet` — one-command wrappers over profile-based message publication on fleet/lead channels.
+[`projects/range/ranch/squawk-ws/`](projects/range/ranch/squawk-ws/) and [`squawk/`](projects/range/ranch/squawk/) — the fleet's voice. `squawk-ws` (`:25147`, `squawk_ws_server.py`) is the HMAC-signed websocket server; `squawk-feed` (`:25135`) is the append-only sequence feed; `squawk-relay-sink` / `squawk-relay-forward` bridge cells; `Estate-chat` (`:25120`, [`tools/Estate-chat/`](tools/Estate-chat/)) is the web plane. Agent-facing entry points are [`hatch/bin/squawk`](hatch/bin/squawk) and `hatch/bin/squawk-fleet` — one-command wrappers over profile-based message publication on fleet/lead channels.
 
 These daemons are **protected**: `bin/claim-port` refuses 25147 and 25135 outright, and bridge-repair scripts must never kill them.
 
@@ -386,7 +386,7 @@ These daemons are **protected**: `bin/claim-port` refuses 25147 and 25135 outrig
 
 [`projects/range/`](projects/range) — the ranch monorepo and MCP gateway source, flattened 2026-09-30 to one directory per component: herd, flock, squawk, squawk-ws, lasso, flicker, gatehouse, oracle, rig, corral, roundup, stream-broker, chute, … Daemons: `gatehouse` (`:25127`, MCP federation), `mesh-hub` (`:25115`, service discovery + health, [`src/services/mesh-hub.ts`](src/services/mesh-hub.ts)), `mesh-landing` (`:25207`).
 
-### Skills — sovereign + gear
+### Skills — Estate + gear
 
 Two hand-maintained roots plus one machine-written root. Registration lives in one place: `skills.customDirectories` in `~/.tau/config.yml`.
 
@@ -402,7 +402,7 @@ Two hand-maintained roots plus one machine-written root. Registration lives in o
 
 - The registered roots are scanned at **depth 1**: `<dir>/<name>/SKILL.md`. A flat per-component layout is therefore registered by pointing at its root. Nothing is copied, symlinked, or hoisted into category folders, so every skill keeps its own code and its own relative references. `scanSkillsFromDir` also takes an opt-in `recursive` / `maxDepth` for a collection that groups skills by category; no caller enables it yet, and a directory containing a `SKILL.md` stays terminal so a skill's own `scripts/` and `references/` never become phantom skills.
 - A skill with **no `description` in its frontmatter is dropped silently**. That is the most common way a skill becomes invisible.
-- Precedence is **first wins**, and `customDirectories` outrank `~/.claude/skills`. Order matters: `skills/` is listed first, so it wins the 5 names it shares with the ranch skill set (`brand`, `fleet-push`, `repo-audit`, `hft-latency`, `sovereign-chat`).
+- Precedence is **first wins**, and `customDirectories` outrank `~/.claude/skills`. Order matters: `skills/` is listed first, so it wins the 5 names it shares with the ranch skill set (`brand`, `fleet-push`, `repo-audit`, `hft-latency`, `Estate-chat`).
 - The answer to "too many skills" is a registry plus on-demand install (`omp skill` / skillshare), not a directory reshuffle. Re-homing skills breaks the parent-relative paths they were written against.
 
 **Audit them** with [`tools/skill-audit.ts`](tools/skill-audit.ts). It discovers the roots from the agent config itself, so registering a collection is enough to get it audited, and it reports dangling symlinks, missing frontmatter, name/directory mismatches, dead `skill://` and file references, and cross-root name collisions. Run it after touching any skill root:
@@ -415,14 +415,14 @@ bun tools/skill-audit.ts --fix    # repair names and synthesise frontmatter
 ### Editor + shell
 
 - [`projects/qed/`](projects/qed) — the editor layer: the zed fork and zedra (remote/mobile substrate).
-- [`projects/shell/`](projects/shell) — Chris's quickshell home: the `ii` fork of end-4's illogical-impulse (submodule `toxicwind/sovereign-end4`) plus its ops layer.
+- [`projects/shell/`](projects/shell) — Chris's quickshell home: the `ii` fork of end-4's illogical-impulse (submodule `toxicwind/Estate-end4`) plus its ops layer.
 
 ## Docs
 
 [`docs/`](docs/) holds architecture + ops docs — full index at [`docs/README.md`](docs/README.md), every-README map at [`docs/README-INDEX.md`](docs/README-INDEX.md). Highlights:
 
 - [`docs/fleet-knowledgebase.md`](docs/fleet-knowledgebase.md) — **required reading**: estate map, active crews, repo index, standing rules
-- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — Sovereign Architecture, the single source of truth
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — Estate Architecture, the single source of truth
 - [`docs/edge-additions-20260920.md`](docs/edge-additions-20260920.md) — September-2026 additions (keypool racing, hedged racer, routing scores, squawk history search)
 
 `hatch/docs/` holds the bridge/cell docs moved there by the reorg. Some older docs predate the 2026-09-20 reorg and may reference moved paths — when in doubt, `pitchfork.toml`, `mise.toml`, and `config/ports.env` are the live sources of truth.
@@ -467,4 +467,4 @@ Stack glue: MIT where marked. Upstream binaries and forks keep their licenses (l
 
 [^1]: 2026-09-20: an agent misdiagnosed a Moonshot 401 ("User not found", bad key) as a routing failure and repointed `kimi-k2`/`kimi-k3-nim` at dead NVIDIA model IDs while keeping the kimi names. Fixed in `a49f7bf0` — routes restored to `moonshotai/kimi-k2.6` / `moonshotai/kimi-k3`, free-model purpose intact, never the default.
 
-*Last deconfused 2026-09-30 against `origin/main` (`a4058ca79e`): stockyard/remuda gone, ranch flattened, sigma/tau/guidellm/corral paths removed, daemon count re-checked against `pitchfork.toml` (79). Earlier full verification 2026-09-27 on `forge/gate-retire-final`. Runtime-health claims are for the yote box, not this one. [↑ top](#sovereign-projects)*
+*Last deconfused 2026-09-30 against `origin/main` (`a4058ca79e`): stockyard/remuda gone, ranch flattened, sigma/tau/guidellm/corral paths removed, daemon count re-checked against `pitchfork.toml` (79). Earlier full verification 2026-09-27 on `forge/gate-retire-final`. Runtime-health claims are for the yote box, not this one. [↑ top](#Estate-projects)*

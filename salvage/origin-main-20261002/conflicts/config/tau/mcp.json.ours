@@ -6,9 +6,9 @@
       "enabled": true
     }
     ,
-    "sovereign-tools": {
+    "estate-tools": {
       "command": "bun",
-      "args": ["/home/toxic/estate/helpers/sovereign-mcp-server.ts"],
+      "args": ["/home/toxic/estate/helpers/estate-mcp-server.ts"],
       "enabled": true
     }
     ,

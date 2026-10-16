@@ -1,12 +1,12 @@
 # Router comparison — all forms (2026-09-17)
 
-Live router: `tools/sovereign-router/sovereign-router-ts/` on `:25104`.
+Live router: `tools/estate-router/estate-router-ts/` on `:25104`.
 
 ## The forms
 
 Three separate implementations have carried similar routing DNA:
 
-1. **sovereign-router-ts** (Bun/TypeScript) — the **live production router**,
+1. **estate-router-ts** (Bun/TypeScript) — the **live production router**,
    pitchfork daemon on `:25104`. Live provider `/models` discovery, 7
    strategies, streaming, sticky sessions, ELO, circuits, HealthDB, free
    racing, `/ui` dashboard.
@@ -21,17 +21,17 @@ Three separate implementations have carried similar routing DNA:
 
 Stale copies of the TS tree exist at `projects/range/ranch/stockyard/router-legacy/`,
 `projects/herd/mesh/router/`, and a nested duplicate
-`sovereign-router-ts/sovereign-router-ts/` — the live daemon runs from
-`tools/sovereign-router/sovereign-router-ts/` only. The old TS User-Agent
+`estate-router-ts/estate-router-ts/` — the live daemon runs from
+`tools/estate-router/estate-router-ts/` only. The old TS User-Agent
 and `[matrix]` log prefix were renamed to `Estate-Router/3.1` /
 `[router]`; nothing of the old branding carries into the consolidated
 router.
 
 ## Side by side
 
-| | sovereign-router-ts (LIVE) | Go module |
+| | estate-router-ts (LIVE) | Go module |
 |---|---|---|
-| Location | `tools/sovereign-router/sovereign-router-ts/` | `projects/herd/internal/flock/` |
+| Location | `tools/estate-router/estate-router-ts/` | `projects/herd/internal/flock/` |
 | Status | **Production** — pitchfork daemon `:25104` | Library, compiled into herd llama-swap builds |
 | Providers | 7: llama-swap (herd main port `:25100`), openrouter, nvidia (direct multi-key), groq, cerebras, google, mistral | 13: llama-swap, openrouter, nvidia, groq, together, cerebras, fireworks, hyperbolic, github, mistral, openai, perplexity, siliconflow |
 | Strategies | 7 canonical: fifo_matrix, free, sticky_affinity, weighted_elo, circuit_chain, hybrid, flock_race (`fifo_flock` / `flock_race` aliases live; legacy `ast_race` / `fifo_matrix` still accepted) | 8: hybrid, flock_race (alias `ast_race`), sticky_affinity, weighted_elo, least_latency, round_robin, free, circuit_chain |
@@ -49,14 +49,14 @@ renamed. Archives and frozen snapshots are documented, not renamed.
 
 | # | Form | Location | Kind | Status |
 |---|---|---|---|---|
-| 1 | sovereign-router-ts | `tools/sovereign-router/sovereign-router-ts/` | Bun/TS multi-provider model router | **LIVE** - pitchfork daemon `sovereign-router` on `:25104` |
+| 1 | estate-router-ts | `tools/estate-router/estate-router-ts/` | Bun/TS multi-provider model router | **LIVE** - pitchfork daemon `estate-router` on `:25104` |
 | 2 | flock (proxy) | `/home/toxic/projects/flock`, daemon `/home/toxic/.flock/flock` on `:8000` | Rust NVIDIA NIM OpenAI-compatible proxy | **LIVE** - separate repo; NIM-side consolidation owned by main chat |
 | 3 | Go flock module | `projects/herd/internal/flock/` | llama-swap library module (13 providers) | Active source; NOT the running `:25100` binary (built 2026-09-12 from an incomplete tree) |
 | 4 | mesh gateway router | `projects/range/ranch/barn/shep/flock.go`, `projects/herd/mesh/gateway/flock.go` | Go MCP/tool-call router | Reference copies; live `:25115` is the Bun mesh-hub |
 | 5 | flock-py | `projects/range/ranch/stockyard/router-legacy/flock-py/`, `projects/herd/mesh/router/flock-py/` | Python reference router | Frozen reference |
 | 6 | flock-router | `projects/range/ranch/stockyard/router-legacy/flock-router/` | TS reference router | Frozen reference |
 | 7 | flock-pkg | `projects/range/flock-pkg/`, `projects/herd/mesh/flock-pkg/` | Semantic/AST extraction snapshots | Frozen snapshots (not request routers) |
-| 8 | tau archive | `projects/tau/archive/from-sovereign-swap/internal/astmatrix` | Old Go copy | **Frozen archive - do not edit** |
+| 8 | tau archive | `projects/tau/archive/from-estate-swap/internal/astmatrix` | Old Go copy | **Frozen archive - do not edit** |
 | 9 | tau-flock extension | `projects/tau/extensions/flock/` (`@toxicwind/tau-flock`) | Tau extension: flock client + slash commands + LLM tools | **LIVE-registered** - linked in `~/.tau/plugins`, `plugin list` shows it |
 | 10 | stray NIM implementations | various | NVIDIA NIM clients | Owned by main chat - out of this lane |
 

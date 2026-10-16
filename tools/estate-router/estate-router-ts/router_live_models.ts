@@ -1,5 +1,5 @@
 /**
- * router_live_models.ts — live model discovery for sovereign-router-ts.
+ * router_live_models.ts — live model discovery for estate-router-ts.
  *
  * Why: PROVIDER_MODELS in router_config.ts is a hardcoded curated list. It
  * goes stale (new releases, key-specific entitlements, empty lists like

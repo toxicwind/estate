@@ -5,8 +5,8 @@
 # Only real CLI subcommands remain: health, models, e2e.
 set -euo pipefail
 
-# Resolve the repo from this script's own location. SOVEREIGN_ROOT is unset in
-# practice, and its $HOME/sovereign fallback is a stale duplicate with no
+# Resolve the repo from this script's own location. ESTATE_ROOT is unset in
+# practice, and its $HOME/Estate fallback is a stale duplicate with no
 # src/mcp/, so every subcommand died on "Module not found src/mcp/llama_swap.ts".
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$ROOT"

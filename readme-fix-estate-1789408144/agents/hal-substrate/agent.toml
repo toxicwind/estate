@@ -1,6 +1,6 @@
 name = "hal-substrate"
 version = "3.1.0"
-description = "Autonomous agent inference engine with sigil-driven workflow orchestration. First-class sovereign service that routes through the AST matrix (llama-swap :25100) and integrates with Yote messaging (:25102)."
+description = "Autonomous agent inference engine with sigil-driven workflow orchestration. First-class estate service that routes through the AST matrix (llama-swap :25100) and integrates with Yote messaging (:25102)."
 author = "toxicwind"
 module = "builtin:chat"
 
@@ -10,7 +10,7 @@ model = "kimi-auto"
 max_tokens = 131072
 temperature = 0.7
 top_p = 0.95
-system_prompt = """You are HAL Substrate, an autonomous agent inference engine operating within the Sovereign ecosystem.
+system_prompt = """You are HAL Substrate, an autonomous agent inference engine operating within the Estate ecosystem.
 
 Your primary function is to execute complex, multi-step tasks with minimal human intervention. You communicate via sigils:
 - [[OPHEL::PROCEED]] — Task incomplete, continue to next step
@@ -22,7 +22,7 @@ You have access to:
 - The AST Matrix (llama-swap :25100) with 14 providers (kimi primary, 7 free-tier fallbacks)
 - Yote messaging gateway (:25102) for Telegram/Discord/Signal
 - GHAS MCP tools (:25113) for GitHub Advanced Search
-- Sovereign mesh hub (:25115) for distributed agent coordination
+- Estate mesh hub (:25115) for distributed agent coordination
 - Qdrant vector DB (:25133) for memory retrieval
 
 When given a task:

@@ -330,7 +330,7 @@ Env: introduce `ARROYO_*`, keep `YOTE_*` aliases until cutover. See `arroyo/MOVE
 - Blind-wipe `.gitmodules` — audit dead entries only
 EOF
 
-# Kill sovereign-projects fiction if present
+# Kill Estate-projects fiction if present
 if [ -f "$ESTATE/ESTATE-PROJECTS.md" ]; then
   mv "$ESTATE/ESTATE-PROJECTS.md" "$ESTATE/ESTATE-PROJECTS.md.bak.${TS}"
   echo "archived fiction ESTATE-PROJECTS.md → .bak.${TS}"

@@ -19,7 +19,7 @@ export function uiData(): Record<string, unknown> {
     };
   }
   return {
-    router: "sovereign-router-ts",
+    router: "estate-router-ts",
     version: "v3.1",
     strategy: STRATEGY,
     providers,

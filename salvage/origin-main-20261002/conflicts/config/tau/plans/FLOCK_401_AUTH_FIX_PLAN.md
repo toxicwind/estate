@@ -27,8 +27,8 @@ The flock service is returning 401 Unauthorized errors. The issue appears to be 
 
 ## Critical Files & Anchors
 - `/home/toxic/estate/projects/herd/internal/flock/` - main flock implementation
-- `/home/toxic/estate/projects/herd/mesh/flock-pkg/sovereign_complete_pkg/flock-dist/lib/llm_client/llm_client.py` - LLM client with authentication
-- `/home/toxic/estate/projects/herd/mesh/flock-pkg/sovereign_complete_pkg/flock-dist/lib/orchestrator/orchestrator.py` - orchestration logic
+- `/home/toxic/estate/projects/herd/mesh/flock-pkg/estate_complete_pkg/flock-dist/lib/llm_client/llm_client.py` - LLM client with authentication
+- `/home/toxic/estate/projects/herd/mesh/flock-pkg/estate_complete_pkg/flock-dist/lib/orchestrator/orchestrator.py` - orchestration logic
 - `/home/toxic/estate/projects/herd/internal/flock/config.go` - configuration handling
 - `/home/toxic/estate/projects/herd/internal/flock/providers.go` - provider authentication
 

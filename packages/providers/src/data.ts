@@ -2,7 +2,7 @@
  * Canonical provider data — the single source of truth for the estate.
  *
  * Reconciled 2026-09-30 from:
- * - tools/sovereign-router/sovereign-router-ts/router_config.ts
+ * - tools/Estate-router/Estate-router-ts/router_config.ts
  *   (PROVIDERS, PROVIDER_MODELS, CODING, DEAD_MODEL_IDS)
  * - projects/range/ranch/stockyard/herd/internal/astmatrix/providers.go
  *   (defaultProviders, codingAlias)
@@ -180,7 +180,7 @@ export const PROVIDER_DEFS: ProviderDef[] = [
 /**
  * MODEL_ALIASES — friendly alias → [provider, model] (UX layer).
  *
- * Union of sovereign-router-ts CODING and herd codingAlias (see header for
+ * Union of Estate-router-ts CODING and herd codingAlias (see header for
  * the exclusion rules). Strategy directives and runtime-dynamic local-role
  * aliases stay router-local overlays.
  */

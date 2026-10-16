@@ -1,7 +1,7 @@
 # Herd Maximal Merge Plan
 
 ## Context
-Integrate upstream `sovereign-swap` and latest `llama-swap` features into `projects/herd` to create a unified, robust AI router backend that supports advanced MCP, tailcat peering, sqlite activity storage, capability compatibility checks, and concurrency limits without breaking existing herd configurations.
+Integrate upstream `estate-swap` and latest `llama-swap` features into `projects/herd` to create a unified, robust AI router backend that supports advanced MCP, tailcat peering, sqlite activity storage, capability compatibility checks, and concurrency limits without breaking existing herd configurations.
 
 ## Approach
 1. **Dependency & Struct Alignment**:
@@ -12,7 +12,7 @@ Integrate upstream `sovereign-swap` and latest `llama-swap` features into `proje
    - Fix any missing fields, package reference mismatches, or syntax errors.
 3. **Service Integration**:
    - Update `/home/toxic/projects/llama-swap` symlink if needed to point to the unified `projects/herd` directory.
-   - Restart the `sovereign/herd` daemon via Pitchfork and verify successful health check and chat completion proxying.
+   - Restart the `estate/herd` daemon via Pitchfork and verify successful health check and chat completion proxying.
 
 ## Verification
 - **Build Verification**: `go build -o llama-swap .` completes with zero errors/warnings.

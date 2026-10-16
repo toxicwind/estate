@@ -1,11 +1,11 @@
 <div align="right">
 
-[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-1f6feb?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/Estate-projects#license)
+[![Estate-projects](https://img.shields.io/badge/Estate--projects-1f6feb?style=for-the-badge)](https://github.com/toxicwind/Estate-projects)
 
 </div>
 
-# sovereign-skills
+# Estate-skills
 
 > Skill definitions, agent recipes, and behavioral conventions — for Pi, Tau, and subagents.
 
@@ -27,18 +27,18 @@ flowchart LR
 ## Quick start
 
 ```bash
-bun run sovereign-skills/engine-audit.ts   # audit Tau engine vs upstream
+bun run Estate-skills/engine-audit.ts   # audit Tau engine vs upstream
 # add a skill: create skills/<name>/SKILL.md, add references/, register in skills.json
 ```
 
 ## License & security
 
-- **License:** [MIT](https://github.com/toxicwind/sovereign-projects#license)
+- **License:** [MIT](https://github.com/toxicwind/Estate-projects#license)
 - **Security:** Repo rules are the security posture: verify live before claiming, fail loud (never silence errors). Keep definitions atomic so a bad skill can't smuggle broad behavior.
 
 ---
 
-Skill definitions, agent recipes, and behavioral conventions for the Sovereign
+Skill definitions, agent recipes, and behavioral conventions for the Estate
 ecosystem — consumed by Pi, Tau, and subagents. Keep definitions atomic,
 self-contained, and deterministic.
 
@@ -54,7 +54,7 @@ See `AGENTS.md` for the repo rules: verify live before claiming, fail loud
 
 ```bash
 # Audit the Tau engine vs upstream
-bun run sovereign-skills/engine-audit.ts
+bun run Estate-skills/engine-audit.ts
 ```
 
 ## Adding a skill

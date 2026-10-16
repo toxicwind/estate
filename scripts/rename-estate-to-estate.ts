@@ -1,7 +1,7 @@
-// Mass rename: sovereign -> estate across live estate text files.
+// Mass rename: Estate -> estate across live estate text files.
 // Preserves:
-//   * physical dirs whose name contains "sovereign" (references to them stay valid)
-//   * pitchfork daemon keys sovereign-exporter / sovereign-stream-broker
+//   * physical dirs whose name contains "Estate" (references to them stay valid)
+//   * pitchfork daemon keys Estate-exporter / Estate-stream-broker
 // Skips: .git, node_modules, var/, salvage/, archives, scratch, binaries, logs, baks.
 import { readdirSync, statSync, existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -23,12 +23,12 @@ function* walk(dir: string): Generator<string> {
 const ROOT = "/home/toxic/estate";
 // live estate surface only — ranch/* are independent subrepos with their own naming
 const SUBDIRS = ["docs", "skills", "scripts", "config", "agents", "manor", "services", "stack", "tools", "python", "infra", "profiles", "migration", "crews", ".github", ".code-scalpel", "audit", "brain", "corral", "deploy", "devices", "gear", "keypool", "lib", "nix", "packages", "pdfshield", "research", "src", "standalone", "tests", "trail-runner", "ts", "work", "killer-features", "completion-audit", "bridge", "pi-skills", "six-task-loop", "skills-hub", "mesh", "hatch", "bin", "ast-grep-rules", "hooks", "deploy", "test", "types", "corral", "devices", "gear", "infra"];
-const ROOT_FILES = ["pitchfork.toml", "mise.toml", "AGENTS.md", "README.md", "TASKS.md", "SOUL.md", "IDENTITY.md", "projects.toml", "AUDIT.md", "MERGE-DECISIONS.md", ".sovereign-integration.ts", ".sovereign-integration.json", ".env.example", ".envrc"];
+const ROOT_FILES = ["pitchfork.toml", "mise.toml", "AGENTS.md", "README.md", "TASKS.md", "SOUL.md", "IDENTITY.md", "projects.toml", "AUDIT.md", "MERGE-DECISIONS.md", ".Estate-integration.ts", ".Estate-integration.json", ".env.example", ".envrc"];
 const PRESERVE_TOKENS = [
-  "sovereign-exporter",
-  "sovereign-stream-broker",
-  "sovereign-swap",
-  "sovereign-router",
+  "Estate-exporter",
+  "Estate-stream-broker",
+  "Estate-swap",
+  "Estate-router",
 ];
 const SKIP_DIRS = [
   ".git", "node_modules", "var", "salvage", "scratch", "archives",
@@ -37,11 +37,11 @@ const SKIP_DIRS = [
   ".prometheus", "state", "engines", "venv",
 ];
 const SKIP_EXT = [".pyc", ".log", ".bak", ".png", ".jpg", ".woff", ".bin", ".sqlite"];
-const SKIP_FILES = ["rename-sovereign-to-estate.ts"];
+const SKIP_FILES = ["rename-Estate-to-estate.ts"];
 
-function lineRefsExistingSovereignPath(line: string): boolean {
-  // find path-ish tokens containing "sovereign" that exist on disk
-  const re = /[\w.$~\/-]*sovereign[\w.-]*/gi;
+function lineRefsExistingEstatePath(line: string): boolean {
+  // find path-ish tokens containing "Estate" that exist on disk
+  const re = /[\w.$~\/-]*Estate[\w.-]*/gi;
   for (const m of line.matchAll(re)) {
     const tok = m[0];
     const cands = [
@@ -50,7 +50,7 @@ function lineRefsExistingSovereignPath(line: string): boolean {
       `/home/toxic/estate/${tok.replace(/^\.\//, "")}`,
     ];
     for (const c of cands) {
-      if (c.includes("sovereign") && existsSync(c)) return true;
+      if (c.includes("Estate") && existsSync(c)) return true;
     }
   }
   return false;
@@ -76,24 +76,24 @@ for (const p of targets) {
   try {
     text = new TextDecoder().decode(readFileSync(p));
   } catch { console.log(`SKIP (read): ${p}`); continue; }
-  if (!/sovereign/i.test(text)) continue;
+  if (!/Estate/i.test(text)) continue;
   if (text.includes("\0")) continue; // binary guard
 
   const isPitchfork = p.endsWith("pitchfork.toml");
   const out: string[] = [];
   let fc = 0;
   for (const line of text.split("\n")) {
-    if (!/sovereign/i.test(line)) { out.push(line); continue; }
-    if (PRESERVE_TOKENS.some((t) => line.includes(t)) || lineRefsExistingSovereignPath(line)) {
+    if (!/Estate/i.test(line)) { out.push(line); continue; }
+    if (PRESERVE_TOKENS.some((t) => line.includes(t)) || lineRefsExistingEstatePath(line)) {
       preservedLines++;
       preserved.push(`${p.replace(ROOT + "/", "")}: ${line.trim().slice(0, 100)}`);
       out.push(line);
       continue;
     }
     const nl = line
-      .replace(/SOVEREIGN/g, "ESTATE")
-      .replace(/Sovereign/g, "Estate")
-      .replace(/sovereign/g, "estate");
+      .replace(/ESTATE/g, "ESTATE")
+      .replace(/Estate/g, "Estate")
+      .replace(/Estate/g, "estate");
     if (isPitchfork && /\[daemons\.estate[\w-]*\]/.test(nl) === false) { /* fine */ }
     if (nl !== line) { fc++; }
     out.push(nl);

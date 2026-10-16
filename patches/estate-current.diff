@@ -10,19 +10,19 @@ index 99c08f7619..a88cb0408a 100755
 --- a/.envrc
 +++ b/.envrc
 @@ -8 +8 @@
--export SOVEREIGN_HOME="/home/toxic/estate"
+-export ESTATE_HOME="/home/toxic/estate"
 +export ESTATE_HOME="/home/toxic/estate"
 @@ -25,2 +25,2 @@ fi
--if [[ -f "$SOVEREIGN_HOME/.env.local" ]]; then
--  set -a; source "$SOVEREIGN_HOME/.env.local"; set +a
+-if [[ -f "$ESTATE_HOME/.env.local" ]]; then
+-  set -a; source "$ESTATE_HOME/.env.local"; set +a
 +if [[ -f "$ESTATE_HOME/.env.local" ]]; then
 +  set -a; source "$ESTATE_HOME/.env.local"; set +a
 @@ -34 +34 @@ fi
--export PATH="$SOVEREIGN_HOME:$PATH"
+-export PATH="$ESTATE_HOME:$PATH"
 +export PATH="$ESTATE_HOME:$PATH"
 @@ -38,2 +38,2 @@ watch_file "$HOME/.secrets"
--watch_file "$SOVEREIGN_HOME/.env.local"
--watch_file "$SOVEREIGN_HOME/agent"
+-watch_file "$ESTATE_HOME/.env.local"
+-watch_file "$ESTATE_HOME/agent"
 +watch_file "$ESTATE_HOME/.env.local"
 +watch_file "$ESTATE_HOME/agent"
 diff --git a/Cargo.toml b/Cargo.toml
@@ -169,17 +169,17 @@ index 97151fdaff..d86781696f 100644
 @@ -118,5 +118,19 @@ runtime config SSOT (identity, stream tuning, model names). Secrets live in
 -> ⚠️ **Known conflicts.** `.env` sets `SCOUT_BASE_URL=…:25104/v1` while
 -> `mise.toml` sets `:25100/v1`. `.env` §8 re-declares ports that `ports.env`
--> owns. `estate/.envrc` still exports `SOVEREIGN_HOME=/home/toxic/estate`.
--> `skills/git-mutator/types.ts` still points `SOVEREIGN_PORT_SSOT` at
--> `sovereign/config/ports.env`. All four need resolution during the mise rebuild.
+-> owns. `estate/.envrc` still exports `ESTATE_HOME=/home/toxic/estate`.
+-> `skills/git-mutator/types.ts` still points `ESTATE_PORT_SSOT` at
+-> `estate/config/ports.env`. All four need resolution during the mise rebuild.
 +> **Resolved 2026-10-03.** All four were real; each is closed.
 +> `SCOUT_BASE_URL`/`SCOUT_API_KEY`/`SCOUT_MODEL` were removed from the estate
 +> config — zero consumers, and `/home/toxic/.tau/.env` defines all three with
-+> different values (`:25193` + `sovereign/free`). Two contradictory copies of one
++> different values (`:25193` + `estate/free`). Two contradictory copies of one
 +> setting is worse than one, so the estate defers to the agent config that reads
 +> them. `.env` §8 and `config/tau/.env` §8 no longer declare ports: each carried
 +> six keys under names that disagreed with the SSOT, and `MCPPROXY_PORT` pointed
-+> at `:25109`, which is `KEYPOOL_PORT`. `SOVEREIGN_HOME` in `.envrc` is now
++> at `:25109`, which is `KEYPOOL_PORT`. `ESTATE_HOME` in `.envrc` is now
 +> `ESTATE_HOME` — it had no consumer outside `.envrc` itself, and that is the
 +> fixed override name from Rule 2.2 which `skills/lib/estate.sh` already
 +> resolves, so the two now compose instead of disagreeing.
@@ -218,7 +218,7 @@ index 54109ae357..1b0ddf99e1 100644
 -    "tauConfigDir": "/home/toxic/.tau"
 +    "tauConfigDir": ".tau"
 @@ -17,4 +17,4 @@
--      "remote": "https://github.com/toxicwind/sovereign-projects.git",
+-      "remote": "https://github.com/toxicwind/estate-projects.git",
 -      "head": "4820dfca5e",
 -      "committedAt": "2026-10-02T06:35:46-06:00",
 -      "dirtyPaths": 66
@@ -461,9 +461,9 @@ index 54109ae357..1b0ddf99e1 100644
 +    },
 +    {
 +      "port": 25104,
-+      "ssot": "SOVEREIGN_ROUTER_PORT",
++      "ssot": "ESTATE_ROUTER_PORT",
 +      "daemons": [
-+        "sovereign-router"
++        "estate-router"
 +      ],
 @@ -397 +369 @@
 -      "addr": "0.0.0.0",
@@ -473,7 +473,7 @@ index 54109ae357..1b0ddf99e1 100644
 +      "pid": 3872168
 @@ -403 +375 @@
 -      "ssot": null,
-+      "ssot": "SOVEREIGN_ROUTER_PORT",
++      "ssot": "ESTATE_ROUTER_PORT",
 @@ -410 +382 @@
 -      "pid": 1250659
 +      "pid": 3872168
@@ -534,7 +534,7 @@ index 54109ae357..1b0ddf99e1 100644
 -      "daemons": [],
 -      "live": true,
 -      "addr": "127.0.0.1",
--      "process": "sovereign_web",
+-      "process": "estate_web",
 -      "pid": 3282129
 +      "live": false,
 +      "addr": null,
@@ -543,7 +543,7 @@ index 54109ae357..1b0ddf99e1 100644
 @@ -491,4 +454,4 @@
 -      "live": true,
 -      "addr": "127.0.0.1",
--      "process": "sovereign_web",
+-      "process": "estate_web",
 -      "pid": 3282129
 +      "live": false,
 +      "addr": null,
@@ -1223,7 +1223,7 @@ index 54109ae357..1b0ddf99e1 100644
 @@ -1547,4 +1470,4 @@
 -      "live": true,
 -      "addr": "0.0.0.0",
--      "process": "sovereign_web",
+-      "process": "estate_web",
 -      "pid": 3282129
 +      "live": false,
 +      "addr": null,
@@ -1235,7 +1235,7 @@ index 54109ae357..1b0ddf99e1 100644
 @@ -1558,4 +1481,4 @@
 -      "live": true,
 -      "addr": "0.0.0.0",
--      "process": "sovereign_web",
+-      "process": "estate_web",
 -      "pid": 3282129
 +      "live": false,
 +      "addr": null,
@@ -1387,7 +1387,7 @@ index 54109ae357..1b0ddf99e1 100644
 +      "pid": null
 @@ -1756 +1652 @@
 -      "ssot": null,
-+      "ssot": "SOVEREIGN_EXPORTER_PORT",
++      "ssot": "ESTATE_EXPORTER_PORT",
 @@ -1760,4 +1656,24 @@
 -      "live": true,
 -      "addr": "127.0.0.1",
@@ -1400,9 +1400,9 @@ index 54109ae357..1b0ddf99e1 100644
 +    },
 +    {
 +      "port": 25213,
-+      "ssot": "SOVEREIGN_EXPORTER_PORT",
++      "ssot": "ESTATE_EXPORTER_PORT",
 +      "daemons": [
-+        "sovereign-exporter"
++        "estate-exporter"
 +      ],
 +      "live": false,
 +      "addr": null,
@@ -1434,7 +1434,7 @@ index 54109ae357..1b0ddf99e1 100644
 +      "port": 25215,
 +      "ssot": "STREAM_BROKER_PORT",
 +      "daemons": [
-+        "sovereign-stream-broker"
++        "estate-stream-broker"
 +      ],
 +      "live": false,
 +      "addr": null,
@@ -1574,8 +1574,8 @@ index 54109ae357..1b0ddf99e1 100644
 -      },
 -      {
 -        "name": "router",
--        "source": "./estate/tools/sovereign-router",
--        "resolved": "/home/toxic/estate/tools/sovereign-router",
+-        "source": "./estate/tools/estate-router",
+-        "resolved": "/home/toxic/estate/tools/estate-router",
 -        "exists": true
 -      },
 -      {
@@ -1605,7 +1605,7 @@ index 54109ae357..1b0ddf99e1 100644
 -    ],
 -    "selectors": [
 -      "herd",
--      "sovereign"
+-      "estate"
 -    ],
 -    "mcpServers": [
 -      {
@@ -1613,8 +1613,8 @@ index 54109ae357..1b0ddf99e1 100644
 -        "target": "http://127.0.0.1:25127/mcp"
 -      },
 -      {
--        "name": "sovereign-tools",
--        "target": "bun /home/toxic/estate/helpers/sovereign-mcp-server.ts"
+-        "name": "estate-tools",
+-        "target": "bun /home/toxic/estate/helpers/estate-mcp-server.ts"
 -      },
 -      {
 -        "name": "browserless",
@@ -1709,8 +1709,8 @@ index 54109ae357..1b0ddf99e1 100644
 +      "fix": "start the daemon or drop the SSOT entry"
 @@ -2186,3 +2066,21 @@
 -      "kind": "selector-provider-unwired",
--      "detail": "model-router selects 'sovereign/…' but no provider block or baseUrl in ~/.tau maps that prefix to a live port",
--      "fix": "add a 'sovereign:' provider block with a live baseUrl, or drop the selector"
+-      "detail": "model-router selects 'estate/…' but no provider block or baseUrl in ~/.tau maps that prefix to a live port",
+-      "fix": "add a 'estate:' provider block with a live baseUrl, or drop the selector"
 +      "kind": "port-ssot-dead",
 +      "detail": "ports.env claims 25210 (GRAFANA_BACKEND_PORT) — no listener, no pitchfork daemon claims it",
 +      "fix": "start the daemon or drop the SSOT entry"
@@ -1740,7 +1740,7 @@ index 069008e603..936abcc266 100644
 -Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/estate`.
 +Generated 2026-10-03T07:22:51.621Z on `awrawr-pc`. Estate root `/home/toxic/estate`.
 @@ -16,4 +16,4 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
--| 🟢 **estate** | `/home/toxic/estate` | https://github.com/toxicwind/sovereign-projects.git | 4820dfca5e | 2026-10-02T06:35:46 | 66 | nested |
+-| 🟢 **estate** | `/home/toxic/estate` | https://github.com/toxicwind/estate-projects.git | 4820dfca5e | 2026-10-02T06:35:46 | 66 | nested |
 -| 🟢 **ranch** | `/home/toxic/estate/ranch` | https://github.com/toxicwind/ranch | 6a4640f | 2026-10-02T06:33:45 | 320 | nested |
 -| 🟢 **ranch** | `/home/toxic/ranch` | https://github.com/toxicwind/ranch | 6a4640f | 2026-10-02T06:33:45 | 320 | nested |
 -| 🟢 **tau-config** | `/home/toxic/.tau` | — | — | — | 0 | none |
@@ -1791,15 +1791,15 @@ index 069008e603..936abcc266 100644
 -| 25102 | YOTE_PORT | yote | 🟢 | bun |
 -| 25103 | OPENFANG_PORT | openfang-front | 🟢 | bun |
 -| 25103 | OPENFANG_PORT | openfang-front | 🟢 | bun |
--| 25104 | — | sovereign-router | 🟢 | bun |
+-| 25104 | — | estate-router | 🟢 | bun |
 -| 25105 | PROMETHEUS_PORT | prometheus | 🟢 | bun |
 -| 25105 | PROMETHEUS_PORT | prometheus | 🟢 | bun |
 -| 25106 | HF_DOWNLOADER_PORT | hf-downloader | 🟢 | bun |
 -| 25106 | HF_DOWNLOADER_PORT | hf-downloader | 🟢 | bun |
 -| 25107 | NULL_G_PORT | null-g-proxy | 🟢 | bun |
 -| 25107 | NULL_G_PORT | null-g-proxy | 🟢 | bun |
--| 25108 | WATCHDOG_PORT | — | 🟢 | sovereign_web |
--| 25108 | WATCHDOG_PORT | — | 🟢 | sovereign_web |
+-| 25108 | WATCHDOG_PORT | — | 🟢 | estate_web |
+-| 25108 | WATCHDOG_PORT | — | 🟢 | estate_web |
 -| 25109 | KEYPOOL_PORT | keypool | 🟢 | bun |
 -| 25109 | KEYPOOL_PORT | keypool | 🟢 | bun |
 -| 25110 | GRAFANA_PORT | grafana | 🟢 | bun |
@@ -1813,8 +1813,8 @@ index 069008e603..936abcc266 100644
 +| 25102 | YOTE_PORT | yote | ⚪️ | — |
 +| 25103 | OPENFANG_PORT | openfang-front | ⚪️ | — |
 +| 25103 | OPENFANG_PORT | openfang-front | ⚪️ | — |
-+| 25104 | SOVEREIGN_ROUTER_PORT | sovereign-router | 🟢 | bun |
-+| 25104 | SOVEREIGN_ROUTER_PORT | sovereign-router | 🟢 | bun |
++| 25104 | ESTATE_ROUTER_PORT | estate-router | 🟢 | bun |
++| 25104 | ESTATE_ROUTER_PORT | estate-router | 🟢 | bun |
 +| 25105 | PROMETHEUS_PORT | prometheus | ⚪️ | — |
 +| 25105 | PROMETHEUS_PORT | prometheus | ⚪️ | — |
 +| 25106 | HF_DOWNLOADER_PORT | hf-downloader | ⚪️ | — |
@@ -1840,8 +1840,8 @@ index 069008e603..936abcc266 100644
 -| 25117 | HINDSIGHT_API_PORT | hindsight | 🟢 | hindsight-api |
 -| 25118 | HINDSIGHT_CP_PORT | — | 🟢 | next-server (v |
 -| 25118 | HINDSIGHT_CP_PORT | — | 🟢 | next-server (v |
--| 25120 | SOVEREIGN_CHAT_PORT | sovereign-chat | 🟢 | bun |
--| 25120 | SOVEREIGN_CHAT_PORT | sovereign-chat | 🟢 | bun |
+-| 25120 | ESTATE_CHAT_PORT | estate-chat | 🟢 | bun |
+-| 25120 | ESTATE_CHAT_PORT | estate-chat | 🟢 | bun |
 -| 25121 | BYTE_VISION_PORT | byte-vision | 🟢 | python3 |
 -| 25121 | BYTE_VISION_PORT | byte-vision | 🟢 | python3 |
 -| 25122 | BEELLAMA_PORT | beellama-fast | 🟢 | llama-server |
@@ -1852,8 +1852,8 @@ index 069008e603..936abcc266 100644
 +| 25117 | HINDSIGHT_API_PORT | hindsight | ⚪️ | — |
 +| 25117 | HINDSIGHT_API_PORT | hindsight | ⚪️ | — |
 +| 25118 | HINDSIGHT_CP_PORT | — | ⚪️ | — |
-+| 25120 | SOVEREIGN_CHAT_PORT | sovereign-chat | ⚪️ | — |
-+| 25120 | SOVEREIGN_CHAT_PORT | sovereign-chat | ⚪️ | — |
++| 25120 | ESTATE_CHAT_PORT | estate-chat | ⚪️ | — |
++| 25120 | ESTATE_CHAT_PORT | estate-chat | ⚪️ | — |
 +| 25121 | BYTE_VISION_PORT | byte-vision | ⚪️ | — |
 +| 25121 | BYTE_VISION_PORT | byte-vision | ⚪️ | — |
 +| 25122 | BEELLAMA_PORT | beellama-fast | ⚪️ | — |
@@ -1942,8 +1942,8 @@ index 069008e603..936abcc266 100644
 @@ -173,4 +162,6 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
 -| 25199 | REDIS_PORT | redis | 🟢 | valkey-server |
 -| 25199 | REDIS_PORT | redis | 🟢 | valkey-server |
--| 25201 | RUST_WEB_BACKEND_PORT | rust-web | 🟢 | sovereign_web |
--| 25201 | RUST_WEB_BACKEND_PORT | rust-web | 🟢 | sovereign_web |
+-| 25201 | RUST_WEB_BACKEND_PORT | rust-web | 🟢 | estate_web |
+-| 25201 | RUST_WEB_BACKEND_PORT | rust-web | 🟢 | estate_web |
 +| 25199 | REDIS_PORT | redis | ⚪️ | — |
 +| 25199 | REDIS_PORT | redis | ⚪️ | — |
 +| 25200 | CUTTINGGATE_PORT | — | 🟢 | bun |
@@ -1981,13 +1981,13 @@ index 069008e603..936abcc266 100644
 +| 25211 | NODE_EXPORTER_PORT | node-exporter | ⚪️ | — |
 +| 25211 | NODE_EXPORTER_PORT | node-exporter | ⚪️ | — |
 @@ -196,2 +184,6 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
--| 25213 | — | sovereign-exporter | 🟢 | python3 |
--| 25215 | — | sovereign-stream-broker | 🟢 | bun |
-+| 25213 | SOVEREIGN_EXPORTER_PORT | sovereign-exporter | ⚪️ | — |
-+| 25213 | SOVEREIGN_EXPORTER_PORT | sovereign-exporter | ⚪️ | — |
+-| 25213 | — | estate-exporter | 🟢 | python3 |
+-| 25215 | — | estate-stream-broker | 🟢 | bun |
++| 25213 | ESTATE_EXPORTER_PORT | estate-exporter | ⚪️ | — |
++| 25213 | ESTATE_EXPORTER_PORT | estate-exporter | ⚪️ | — |
 +| 25214 | ZEDRA_HOST_PORT | — | ⚪️ | — |
-+| 25215 | STREAM_BROKER_PORT | sovereign-stream-broker | ⚪️ | — |
-+| 25215 | STREAM_BROKER_PORT | sovereign-stream-broker | ⚪️ | — |
++| 25215 | STREAM_BROKER_PORT | estate-stream-broker | ⚪️ | — |
++| 25215 | STREAM_BROKER_PORT | estate-stream-broker | ⚪️ | — |
 +| 25216 | TTYD_PORT | — | ⚪️ | — |
 @@ -200,5 +191,0 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
 -| 25220 | — | — | 🟢 | bun |
@@ -2012,15 +2012,15 @@ index 069008e603..936abcc266 100644
 -| herd | `./estate/ranch/herd` | `/home/toxic/estate/ranch/herd` | 🟢 |
 -| flock | `./estate/ranch/flock` | `/home/toxic/estate/ranch/flock` | 🟢 |
 -| gatehouse | `./estate/ranch/barn/gatehouse` | `/home/toxic/estate/ranch/barn/gatehouse` | 🟢 |
--| router | `./estate/tools/sovereign-router` | `/home/toxic/estate/tools/sovereign-router` | 🟢 |
+-| router | `./estate/tools/estate-router` | `/home/toxic/estate/tools/estate-router` | 🟢 |
 -| barn-browser | `./estate/ranch/barn/browserless` | `/home/toxic/estate/ranch/barn/browserless` | 🟢 |
 -| barn-gemini | `./estate/ranch/barn/gemini-mcp` | `/home/toxic/estate/ranch/barn/gemini-mcp` | 🟢 |
 -| secretsmith | `./projects/range/ranch/barn/secretsmith` | `/home/toxic/projects/range/ranch/barn/secretsmith` | 🟢 |
 @@ -237 +215,0 @@ Config dir: `/home/toxic/.tau`
 -| `providers.openai-compatible` | `http://127.0.0.1:25100/v1` |
 @@ -239,3 +217,3 @@ Config dir: `/home/toxic/.tau`
--- **Model-router selectors use:** `herd`, `sovereign`
--- **MCP servers:** `mesh-gateway` → http://127.0.0.1:25127/mcp · `sovereign-tools` → bun /home/toxic/estate/helpers/sovereign-mcp-server.ts · `browserless` → node /home/toxic/estate/ranch/barn/browserless/dist/index.js
+-- **Model-router selectors use:** `herd`, `estate`
+-- **MCP servers:** `mesh-gateway` → http://127.0.0.1:25127/mcp · `estate-tools` → bun /home/toxic/estate/helpers/estate-mcp-server.ts · `browserless` → node /home/toxic/estate/ranch/barn/browserless/dist/index.js
 -- **Credentials present:** flock client key: yes
 +- **Model-router selectors use:** none
 +- **MCP servers:** none
@@ -2050,7 +2050,7 @@ index 069008e603..936abcc266 100644
 -| medium | `port-ssot-dead` | ports.env claims 25192 (CUTTINGGATE_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
 +| medium | `port-ssot-dead` | ports.env claims 25192 (PI_WEB_DASHBOARD_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
 @@ -271 +258,5 @@ something that looks wired and is not.
--| medium | `selector-provider-unwired` | model-router selects 'sovereign/…' but no provider block or baseUrl in ~/.tau maps that prefix to a live port | add a 'sovereign:' provider block with a live baseUrl, or drop the selector |
+-| medium | `selector-provider-unwired` | model-router selects 'estate/…' but no provider block or baseUrl in ~/.tau maps that prefix to a live port | add a 'estate:' provider block with a live baseUrl, or drop the selector |
 +| medium | `port-ssot-dead` | ports.env claims 25205 (PROMETHEUS_BACKEND_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
 +| medium | `port-ssot-dead` | ports.env claims 25206 (HF_DOWNLOADER_BACKEND_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
 +| medium | `port-ssot-dead` | ports.env claims 25210 (GRAFANA_BACKEND_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
@@ -2111,8 +2111,8 @@ index 7be6322c39..2a43ee340f 100644
 -Why workers = 2: yote has 16 logical CPUs / 62 GB RAM / NVMe, but two Cargo
 -builds already oversubscribe it. Keep BRAND_WORKERS=2.
 -
--Observability: sovereign-exporter (:25213) exposes sovereign_brand_up,
--sovereign_brand_queue_depth, sovereign_brand_active_jobs; Grafana
+-Observability: estate-exporter (:25213) exposes estate_brand_up,
+-estate_brand_queue_depth, estate_brand_active_jobs; Grafana
 -workflows.json has a brand row.
 -
 -New-toolchain rule: persistent config in projects/yote/host/home/, daemon
@@ -2173,7 +2173,7 @@ index f8616b8d87..965be232fe 100644
 -
 -| Value | Where it was declared | Why it was dead |
 -|---|---|---|
--| `sovereign/free` | `estate/.env` | `sovereign` was sovereign-router's provider; the daemon and repo are deleted |
+-| `estate/free` | `estate/.env` | `estate` was estate-router's provider; the daemon and repo are deleted |
 -| `local-fast` | `estate/mise.toml` | the alias exists only in `config/llama-swap/config.yaml`, **which nothing reads** |
 -| `nvidia/nemotron-3.5-lightning-30b-a3b` | `config/llama-swap/config.yaml` | a **cloud** NIM model with `cmd: llama-server --model /mnt/8TB/…`; `/mnt/8TB` is a media drive (`$RECYCLE.BIN`, `.rar`, `.mp4`), not a model store |
 -
@@ -2183,7 +2183,7 @@ index f8616b8d87..965be232fe 100644
 +`SCOUT_*` is declared **once**, in `/home/toxic/.tau/.env`, the configuration
 +Tau actually loads. Estate's old `SCOUT_*` mise block and `.env` declarations
 +were removed because they disagreed (`:25100` / `local-fast` versus `:25193` /
-+`sovereign/free`). No estate source reads those values. The absence is
++`estate/free`). No estate source reads those values. The absence is
 +intentional: a second declaration is drift, not fallback.
 diff --git a/engines/herd/beellama.cpp b/engines/herd/beellama.cpp
 --- a/engines/herd/beellama.cpp
@@ -2216,18 +2216,18 @@ index 6e03897414..edaf09203a 100755
 +# ownership is now local: `mise exec` resolves the declared tools and mbx-cache
 +# restores eligible task artifacts at :25148.
 @@ -3,41 +8,5 @@ set -euo pipefail
--set -a; source "$HOME/sovereign/config/.secrets" 2>/dev/null || true; set +a
+-set -a; source "$HOME/estate/config/.secrets" 2>/dev/null || true; set +a
 -ROOT="/home/toxic/estate/projects/tau"
 -REPO=$(basename "$ROOT")
 -PKG="$ROOT/packages/coding-agent/package.json"
 -VER_BASE=$(jq -r .version "$PKG" 2>/dev/null || echo "18.3.0")
 -VER_BASE=${VER_BASE#tau/main-}
--VER_BASE=${VER_BASE%%-sovereign-tau-*}
--SOV_ROOT="$HOME/sovereign"
+-VER_BASE=${VER_BASE%%-estate-tau-*}
+-SOV_ROOT="$HOME/estate"
 -SOV_SHA=$(git -C "$SOV_ROOT" rev-parse --short=8 HEAD 2>/dev/null || echo "nosov")
 -SOV_FULL=$(git -C "$SOV_ROOT" rev-parse HEAD 2>/dev/null || echo "nosov")
 -TAU_SHA=$(git -C "$ROOT" rev-parse --short=8 HEAD 2>/dev/null || echo "notau")
--CANONICAL="tau/main-${VER_BASE}-sovereign-tau-${SOV_SHA}"
+-CANONICAL="tau/main-${VER_BASE}-estate-tau-${SOV_SHA}"
 -QUEUE_DIR="$HOME/brand/queue"
 -mkdir -p "$QUEUE_DIR"
 -bash "$ROOT/helpers/gen-version.sh"
@@ -2241,9 +2241,9 @@ index 6e03897414..edaf09203a 100755
 -  "root": "${ROOT}",
 -  "versionBase": "${VER_BASE}",
 -  "canonical": "${CANONICAL}",
--  "canonicalFull": "tau/main-${VER_BASE}-sovereign-tau-${SOV_FULL}",
--  "sovereignMainShort": "${SOV_SHA}",
--  "sovereignMainFull": "${SOV_FULL}",
+-  "canonicalFull": "tau/main-${VER_BASE}-estate-tau-${SOV_FULL}",
+-  "estateMainShort": "${SOV_SHA}",
+-  "estateMainFull": "${SOV_FULL}",
 -  "tauShort": "${TAU_SHA}",
 -  "artifactHash": "${HASH}",
 -  "timestamp": "${TS}",
@@ -2335,11 +2335,11 @@ index ae6bced314..1fda306960 100755
 --- a/profiles/default/env.sh
 +++ b/profiles/default/env.sh
 @@ -22,3 +22,3 @@ export HINDSIGHT_CP_PORT="${HINDSIGHT_CP_PORT:-25118}"
--# MCP_GATEWAY_PORT :25120 was retired with the sovereign-router merge. The
+-# MCP_GATEWAY_PORT :25120 was retired with the estate-router merge. The
 -# gatehouse meta-tool layer is what still answers, on :25127 -- the same port
 -# MCPPROXY_GO_PORT carries. Both names meant one daemon; see config/ports.env.
 +# MCP_GATEWAY_PORT is a compatibility alias for gatehouse :25127, the same
-+# daemon MCPPROXY_GO_PORT names. :25120 belongs to SOVEREIGN_CHAT_PORT; it was
++# daemon MCPPROXY_GO_PORT names. :25120 belongs to ESTATE_CHAT_PORT; it was
 +# never this gateway. See config/ports.env.
 @@ -26 +25,0 @@ export MCP_GATEWAY_PORT="${MCP_GATEWAY_PORT:-25127}"
 -export MCPPROXY_GO_PORT="${MCPPROXY_GO_PORT:-25127}"
@@ -2348,14 +2348,14 @@ index 17cd90f05b..03bf4a1e16 100755
 --- a/profiles/toxic/env.sh
 +++ b/profiles/toxic/env.sh
 @@ -19 +19 @@ export LLAMA_SWAP_MODEL="beellama/qwen-flash-64k"
--# 2. Local Mesh & Gateway Ports (Aligned with sovereign/config/ports.env)
+-# 2. Local Mesh & Gateway Ports (Aligned with estate/config/ports.env)
 +# 2. Local Mesh & Gateway Ports (aligned with estate/config/ports.env)
 @@ -34,3 +34,3 @@ export HINDSIGHT_CP_PORT="25118"
--# MCP_GATEWAY_PORT :25120 was retired with the sovereign-router merge. The
+-# MCP_GATEWAY_PORT :25120 was retired with the estate-router merge. The
 -# gatehouse meta-tool layer is what still answers, on :25127 -- the same port
 -# MCPPROXY_GO_PORT carries. Both names meant one daemon; see config/ports.env.
 +# MCP_GATEWAY_PORT is a compatibility alias for gatehouse :25127, the same
-+# daemon MCPPROXY_GO_PORT names. :25120 belongs to SOVEREIGN_CHAT_PORT; it was
++# daemon MCPPROXY_GO_PORT names. :25120 belongs to ESTATE_CHAT_PORT; it was
 +# never this gateway. See config/ports.env.
 @@ -42 +41,0 @@ export KIMI_CODE_PORT="25126"
 -export MCPPROXY_GO_PORT="25127"
@@ -2402,20 +2402,20 @@ index e2d6e08f93..0000000000
 -
 -## ci-push-building-and-engine-audit
 -
--Automated CI/CD push building via brand and engine migration auditing. Ensures sovereign fork enhancements and CI/CD status are always documented and preserved.
+-Automated CI/CD push building via brand and engine migration auditing. Ensures estate fork enhancements and CI/CD status are always documented and preserved.
 -
--### When setting up push-building or auditing engine fork migrations in sovereign projects:
+-### When setting up push-building or auditing engine fork migrations in estate projects:
 -
 -1. **Use `push-build.sh` to queue versioned builds into `brand` (port 25148) upon commit**
 -2. **Analyze engine vs vendor diffs using pandas DataFrames over `engine-vendor-diff.csv`** to ensure all custom features (OAuth refresh, storage contracts, API key logins) are preserved
--3. **Keep README.md updated with sovereign fork enhancements and CI/CD status**
+-3. **Keep README.md updated with estate fork enhancements and CI/CD status**
 -
 -### Features
 -
 -- **Push build dispatch**: `push-build.sh` queues versioned builds into `brand` (port 25148) upon commit
 -- **Engine migration auditing**: Analyze engine vs vendor diffs using pandas DataFrames over `engine-vendor-diff.csv`
 -- **Custom feature preservation**: Ensures OAuth refresh, storage contracts, API key logins are preserved across engine migrations
--- **README integration**: Keeps README.md updated with sovereign fork enhancements and CI/CD status
+-- **README integration**: Keeps README.md updated with estate fork enhancements and CI/CD status
 -
 -### Quick start (3 commands max)
 -
@@ -2445,7 +2445,7 @@ index e2d6e08f93..0000000000
 -The ci-push-building-and-engine-audit skill combines two concerns:
 -
 -1. **Push building** (from `cicd-push-building`): git post-commit hook → `push-build.sh` → brand queue (port 25148) → dispatched builds
--2. **Engine auditing**: pandas DataFrame analysis of `engine-vendor-diff.csv` to diff custom features between sovereign engine and vendor baseline
+-2. **Engine auditing**: pandas DataFrame analysis of `engine-vendor-diff.csv` to diff custom features between estate engine and vendor baseline
 -
 -The engine-vendor-diff.csv contains rows of features with columns for: feature name, status (preserved/missing/altered), and migration notes. The pandas DataFrame analysis reports which custom features survived the engine fork migration.
 -
@@ -2462,7 +2462,7 @@ index e2d6e08f93..0000000000
 -- Ensure `engine-vendor-diff.csv` is kept up to date with each engine migration
 -- Add new feature tracking columns to the diff CSV as new custom features are added
 -- Verify brand queue is running before expecting auto-dispatch on commits
--- Keep README.md synchronized with new sovereign fork enhancements
+-- Keep README.md synchronized with new estate fork enhancements
 -- pandas must be available for the diff analysis script
 -
 -### License
@@ -2488,10 +2488,10 @@ index f1aed4695b..0000000000
 -
 -# CI/CD Push Building & Engine Migration
 -
--When setting up push-building or auditing engine fork migrations in sovereign projects:
+-When setting up push-building or auditing engine fork migrations in estate projects:
 -1. Use `push-build.sh` to queue versioned builds into `brand` (port 25148) upon commit.
 -2. Analyze engine vs vendor diffs using pandas DataFrames over `engine-vendor-diff.csv` to ensure all custom features (OAuth refresh, storage contracts, API key logins) are preserved.
--3. Keep README.md updated with sovereign fork enhancements and CI/CD status.
+-3. Keep README.md updated with estate fork enhancements and CI/CD status.
 diff --git a/skills/ci-push-building-and-engine-audit/prompt_context.md b/skills/ci-push-building-and-engine-audit/prompt_context.md
 deleted file mode 100644
 index a33fcfcc39..0000000000
@@ -2500,10 +2500,10 @@ index a33fcfcc39..0000000000
 @@ -1,6 +0,0 @@
 -# CI/CD Push Building & Engine Migration
 -
--When setting up push-building or auditing engine fork migrations in sovereign projects:
+-When setting up push-building or auditing engine fork migrations in estate projects:
 -1. Use `push-build.sh` to queue versioned builds into `brand` (port 25148) upon commit.
 -2. Analyze engine vs vendor diffs using pandas DataFrames over `engine-vendor-diff.csv` to ensure all custom features (OAuth refresh, storage contracts, API key logins) are preserved.
--3. Keep README.md updated with sovereign fork enhancements and CI/CD status.
+-3. Keep README.md updated with estate fork enhancements and CI/CD status.
 \ No newline at end of file
 diff --git a/skills/ci-push-building-and-engine-audit/skill.toml b/skills/ci-push-building-and-engine-audit/skill.toml
 deleted file mode 100644
@@ -2514,10 +2514,10 @@ index 1d7390146b..0000000000
 -prompt_context = """
 -# CI/CD Push Building & Engine Migration
 -
--When setting up push-building or auditing engine fork migrations in sovereign projects:
+-When setting up push-building or auditing engine fork migrations in estate projects:
 -1. Use `push-build.sh` to queue versioned builds into `brand` (port 25148) upon commit.
 -2. Analyze engine vs vendor diffs using pandas DataFrames over `engine-vendor-diff.csv` to ensure all custom features (OAuth refresh, storage contracts, API key logins) are preserved.
--3. Keep README.md updated with sovereign fork enhancements and CI/CD status."""
+-3. Keep README.md updated with estate fork enhancements and CI/CD status."""
 -
 -[skill]
 -name = "ci-push-building-and-engine-audit"
@@ -2900,8 +2900,8 @@ index c197693b53..0000000000
 -## Daemons
 -
 -Pitchfork supervises:
--- `sovereign/flicker` — the server (port 25148, gRPC 25240)
--- `sovereign/flicker-agent` — the local execution agent
+-- `estate/flicker` — the server (port 25148, gRPC 25240)
+-- `estate/flicker-agent` — the local execution agent
 -
 -## CLI
 -
@@ -3013,8 +3013,8 @@ index 0923ec5c11..0000000000
 -## Daemons
 -
 -Pitchfork supervises:
--- `sovereign/flicker` — the server (port 25148, gRPC 25240)
--- `sovereign/flicker-agent` — the local execution agent
+-- `estate/flicker` — the server (port 25148, gRPC 25240)
+-- `estate/flicker-agent` — the local execution agent
 -
 -## CLI
 -
@@ -3128,8 +3128,8 @@ index b0804ac249..0000000000
 -## Daemons
 -
 -Pitchfork supervises:
--- `sovereign/flicker` — the server (port 25148, gRPC 25240)
--- `sovereign/flicker-agent` — the local execution agent
+-- `estate/flicker` — the server (port 25148, gRPC 25240)
+-- `estate/flicker-agent` — the local execution agent
 -
 -## CLI
 -

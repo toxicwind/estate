@@ -14,7 +14,7 @@
 # Usage: durability-audit.sh [--alert]   # --alert posts to fleet; default prints
 set -uo pipefail
 
-REPO="${SOVEREIGN_REPO:-/home/toxic/estate}"
+REPO="${ESTATE_REPO:-/home/toxic/estate}"
 TOML="$REPO/pitchfork.toml"
 ALLOW="$REPO/ops/durability/allowlist.txt"
 SQUAWK_ROOT="${SQUAWK_ROOT:-/home/toxic/.fleet-bus/squawk-root}"
@@ -91,7 +91,7 @@ for p in \
     20241 `# cloudflared tunnel -> 8379` \
     25014 `# llama-server beellama (own start)` \
     25102 `# yote.ts (own start)` \
-    25108 `# sovereign_web (own start)` \
+    25108 `# Estate_web (own start)` \
     25134 `# qdrant second listen (same supervised proc as 25133)` \
     25160 `# forensics-srv (own venv)` \
     25161 `# herd-race (own start)` \
@@ -106,7 +106,7 @@ if [[ -f "$TOML" ]]; then
     for p in "${!PORT_OWNER[@]}"; do
         ss -ltn 2>/dev/null | grep -qE "[:.]$p([^0-9]|$)" && continue
         d="${PORT_OWNER[$p]}"
-        st="$("$PF_BIN" status --json "sovereign/$d" 2>/dev/null | \
+        st="$("$PF_BIN" status --json "Estate/$d" 2>/dev/null | \
               python3 -c 'import json,sys; print(json.load(sys.stdin).get("status",""))' 2>/dev/null)"
         [[ "$st" == "running" ]] && \
             note "STALE-READY :$p (daemon $d reports running but nothing listens; re-register via bin/pitchfork-restart)"
@@ -147,7 +147,7 @@ done
 if [[ -d "$REPO/.git" ]]; then
     dirty="$(git -C "$REPO" status --porcelain 2>/dev/null | \
         grep -vE 'squawk-relay/|var/openfang-health/|todos\.md|\.pid$|\.backup/|^\?\? \.staging/' || true)"
-    [[ -n "$dirty" ]] && note "UNCOMMITTED sovereign: $(echo "$dirty" | wc -l) files: $(echo "$dirty" | awk '{print $2}' | tr '\n' ' ' | cut -c1-400)"
+    [[ -n "$dirty" ]] && note "UNCOMMITTED Estate: $(echo "$dirty" | wc -l) files: $(echo "$dirty" | awk '{print $2}' | tr '\n' ' ' | cut -c1-400)"
     # submodule drift (bulk ops must be submodule-aware)
     while IFS= read -r sm; do
         [[ -n "$sm" ]] && note "SUBMODULE-DIRTY $sm"

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""sovereign-exporter: estate metrics for Prometheus/Grafana (port 25213).
+"""Estate-exporter: estate metrics for Prometheus/Grafana (port 25213).
 
 Covers what the estate's dashboards actually query but nothing exports:
   fleet_gpu_*            GPU via nvidia-smi (Fleet-Bench dashboard)
-  sovereign_daemon_up    pitchfork daemon states from state.toml
-  sovereign_port_listening  ss listeners, labeled with known service names
-  sovereign_bridge_lane_up  TCP connect checks on the bridge lanes
-  sovereign_market_*     oracle-market workflow: bidders, loop, ledger events
+  Estate_daemon_up    pitchfork daemon states from state.toml
+  Estate_port_listening  ss listeners, labeled with known service names
+  Estate_bridge_lane_up  TCP connect checks on the bridge lanes
+  Estate_market_*     oracle-market workflow: bidders, loop, ledger events
 Stdlib only. Scraped every 15s by Prometheus.
 """
 import json
@@ -32,7 +32,7 @@ KNOWN_PORTS = {
     25193: "flock", 25198: "mcp", 25201: "serve-root", 25202: "gemini-mcp",
     25204: "exec-ws", 25205: "prom-backend", 25207: "status",
     25208: "nginx", 25209: "matter", 25210: "grafana-backend",
-    25211: "node-exporter", 25213: "sovereign-exporter",
+    25211: "node-exporter", 25213: "Estate-exporter",
 }
 BRIDGE_LANES = {"ws-exec": 25204, "mcp": 25198, "squawk-ws": 25147,
                 "squawk-feed": 25135}
@@ -80,7 +80,7 @@ def daemon_metrics(out):
         name = str(d.get("id", did)).split("/")[-1]
         name = re.sub(r"[^a-zA-Z0-9_:]", "_", name)
         up = 1 if d.get("status") == "running" else 0
-        out.append('sovereign_daemon_up{name="%s"} %d' % (name, up))
+        out.append('Estate_daemon_up{name="%s"} %d' % (name, up))
 
 
 def port_metrics(out):
@@ -90,7 +90,7 @@ def port_metrics(out):
         if m:
             listening.add(int(m.group(1)))
     for port, svc in KNOWN_PORTS.items():
-        out.append('sovereign_port_listening{port="%d",service="%s"} %d'
+        out.append('Estate_port_listening{port="%d",service="%s"} %d'
                    % (port, svc, 1 if port in listening else 0))
 
 
@@ -103,7 +103,7 @@ def lane_metrics(out):
             ok = 1
         except OSError:
             pass
-        out.append('sovereign_bridge_lane_up{lane="%s"} %d' % (lane, ok))
+        out.append('Estate_bridge_lane_up{lane="%s"} %d' % (lane, ok))
 
 
 def market_metrics(out):
@@ -111,9 +111,9 @@ def market_metrics(out):
     bidders = len(re.findall(r"bidder\.py", procs))
     loop_up = 1 if "oracle_loop.py" in procs else 0
     core_up = 1 if "oracle_daemon.py" in procs else 0
-    out.append("sovereign_market_bidders %d" % bidders)
-    out.append("sovereign_oracle_loop_up %d" % loop_up)
-    out.append("sovereign_oracle_core_up %d" % core_up)
+    out.append("Estate_market_bidders %d" % bidders)
+    out.append("Estate_oracle_loop_up %d" % loop_up)
+    out.append("Estate_oracle_core_up %d" % core_up)
     cutoff = time.time() - 3600
     events = {}
     opened = settled = 0
@@ -139,8 +139,8 @@ def market_metrics(out):
         pass
     for ev, n in sorted(events.items()):
         ev = re.sub(r"[^a-zA-Z0-9_:]", "_", str(ev))
-        out.append('sovereign_market_events_1h{event="%s"} %d' % (ev, n))
-    out.append("sovereign_market_open_tasks %d" % max(0, opened - settled))
+        out.append('Estate_market_events_1h{event="%s"} %d' % (ev, n))
+    out.append("Estate_market_open_tasks %d" % max(0, opened - settled))
 
 
 def brand_metrics(out):
@@ -154,9 +154,9 @@ def brand_metrics(out):
                 up = 1 if body.get("ok") is True else 0
     except Exception:
         pass
-    out.append("sovereign_brand_up %d" % up)
-    for metric, sub in (("sovereign_brand_queue_depth", "queue"),
-                        ("sovereign_brand_active_jobs", "active")):
+    out.append("Estate_brand_up %d" % up)
+    for metric, sub in (("Estate_brand_queue_depth", "queue"),
+                        ("Estate_brand_active_jobs", "active")):
         n = 0
         try:
             d = os.path.join("/home/toxic/brand", sub)

@@ -57,7 +57,7 @@ Zed Agent
 | 25101 | rust-web (mesh-front) | **LISTEN** | |
 | 25102 | yote | **LISTEN** | |
 | 25103 | openfang (mesh-front) | **LISTEN** | |
-| 25104 | sovereign-router | **LISTEN** | |
+| 25104 | estate-router | **LISTEN** | |
 | 25105 | prometheus | **DOWN** | Not listening; prometheus-mcp-server configured to this |
 | 25106 | hf-downloader (mesh-front) | **LISTEN** | |
 | 25107 | null-g | **LISTEN** | |
@@ -84,7 +84,7 @@ Zed Agent
 | `~/.config/agent-mcp-gateway/.mcp.json` | agent-mcp-gateway config (context7, filesystem) |
 | `~/estate/config/.mcp.json` | Project-level MCP config (computer-use-linux) |
 | `~/estate/config/ports.env` | Port SSOT |
-| `~/sovereign/tools/sovereign-router/sovereign-mcp-gateway/` | Gateway source (gateway.ts, gateway-core.ts, tests) |
+| `~/estate/tools/estate-router/estate-mcp-gateway/` | Gateway source (gateway.ts, gateway-core.ts, tests) |
 
 ---
 

@@ -61,7 +61,7 @@ const SOURCE_NOT_SWALLOWED = [
   "ops/bin/x.ts",
   "ops/gitignore/layers/x.gitignore",
   "config/tau/extensions/nemotron/lib/x.ts",
-  "packages/sovereign-utils/x.ts",
+  "packages/Estate-utils/x.ts",
   "packages/metaharness/x.ts",
   "tools/stash-guard/x.py",
   "docs/x.md",

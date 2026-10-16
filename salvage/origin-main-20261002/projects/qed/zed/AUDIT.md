@@ -2,7 +2,7 @@
 
 **Verdict:** A Rust/GPUI fork of Zed (the Zed Industries editor + agent). This
 fork adds hardened OpenAI-compatible provider plumbing for untrusted/free model
-routers (mcpproxy, NVIDIA NIM, sovereign-router) and — as of this audit — a
+routers (mcpproxy, NVIDIA NIM, estate-router) and — as of this audit — a
 per-model **`autonomous_edits`** capability flag that enforces least-privilege at
 the tool-dispatch boundary. The feature is the implementable version of "don't
 let this model change things outside the worktree autonomously."
@@ -68,7 +68,7 @@ based access control (CBAC) per model, fail-safe default `true`.
 - `tool_permissions` settings provide user-level Allow/Deny/Confirm per tool.
 - `autonomous_edits` is a *model-level* hard override layered *above* settings:
   a model without it can never mutate, regardless of `tool_permissions`.
-- `session.trust_all_worktrees` (sovereign config) widens trust scope; pair it
+- `session.trust_all_worktrees` (estate config) widens trust scope; pair it
   with `autonomous_edits: false` on untrusted models to keep them read-only.
 
 ## Build / run / setup

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""sovereign-exporter: estate metrics for Prometheus/Grafana (port 25213).
+"""estate-exporter: estate metrics for Prometheus/Grafana (port 25213).
 
 Covers what the estate's dashboards actually query but nothing exports:
   fleet_gpu_*            GPU via nvidia-smi (Fleet-Bench dashboard)
@@ -32,7 +32,7 @@ KNOWN_PORTS = {
     25193: "flock", 25198: "mcp", 25201: "serve-root", 25202: "gemini-mcp",
     25204: "exec-ws", 25205: "prom-backend", 25207: "status",
     25208: "nginx", 25209: "matter", 25210: "grafana-backend",
-    25211: "node-exporter", 25213: "sovereign-exporter",
+    25211: "node-exporter", 25213: "estate-exporter",
 }
 BRIDGE_LANES = {"ws-exec": 25204, "mcp": 25198, "squawk-ws": 25147,
                 "squawk-feed": 25135}

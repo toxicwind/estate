@@ -5,7 +5,7 @@ Date: 2026-10-13. Lane: Osprey (emergent). Commit: `c917869e` on toxicwind/tau m
 ## What was built
 
 New module `packages/ai/src/providers/openrouter-coercion.ts` — the
-SovereignDotsClient coercions generalized to **any OpenRouter-routed model**,
+EstateDotsClient coercions generalized to **any OpenRouter-routed model**,
 gated on `compat.isOpenRouterHost` (catalog-resolved), never on model ID:
 
 - `normalizeOpenRouterMessages` — assistant `content` null/undefined → `""`

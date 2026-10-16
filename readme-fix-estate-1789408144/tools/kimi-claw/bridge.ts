@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * Sovereign Kimi-Claw Bridge
+ * Estate Kimi-Claw Bridge
  * Connects Kimi IM / Bridge events to OpenFang (:25103), Herd (:25100), and HAL Substrate (:25143).
  */
 import { existsSync, readFileSync } from "node:fs";

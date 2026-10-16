@@ -2,7 +2,7 @@
 # merge-into-estate.sh — Merge all Pi-related repos INTO toxicwind/estate
 # estate = root monolith, everything else = packages/
 #
-# Run: bash scripts/merge-into-sovereign.sh
+# Run: bash scripts/merge-into-Estate.sh
 
 set -euo pipefail
 
@@ -36,7 +36,7 @@ MERGES=(
     "toxicwind/estate-pi:packages/pi"
 
     # Model routing
-    "toxicwind/sovereign-swap:packages/swap"
+    "toxicwind/Estate-swap:packages/swap"
     "toxicwind/estate-rebrand:packages/rebrand"
 
     # Agent OS / Framework

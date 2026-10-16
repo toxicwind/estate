@@ -2,7 +2,7 @@
 """Shared helpers for the bg-tracker suite (bg-launch/register/heartbeat/audit/kill).
 
 State lives in <repo>/projects/ops/bg-tracker/state/ on yote, or
-~/workspace/state/bg-tracker/ on hatch (no sovereign checkout there).
+~/workspace/state/bg-tracker/ on hatch (no Estate checkout there).
 The state dir is gitignored runtime state: it survives restarts because it
 is a real file on disk, not because it is committed.
 """

@@ -2,7 +2,7 @@
 # mise run health — LLM-friendly health probes.
 # Fully dynamic: reads ready_http / ready_cmd from pitchfork.toml.
 set -euo pipefail
-export SOV="${SOVEREIGN_ROOT:-$PWD}"
+export SOV="${ESTATE_ROOT:-$PWD}"
 cd "$SOV"
 
 # Source ports

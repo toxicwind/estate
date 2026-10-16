@@ -1,4 +1,4 @@
-# Sovereign Pi Fork — Master Execution Plan
+# Estate Pi Fork — Master Execution Plan
 
 > **Generated**: 2026-07-28 | **Updated**: 2026-08-06 | **Context**: Full session replay across pi fork, llama-swap, GHAS MCP, mcpproxy, dashboards
 
@@ -24,8 +24,8 @@ User runs "pi"
 | **Pi fork** (`toxicwind/pi`)  | 4/9 critical PRs cherry-picked, 2 blocked on conflicts    | Current            |
 | **llama-swap flock router**      | Rate limiter rewritten (Go, full jitter)                  | Need to build+test |
 | **GHAS MCP**                  | REFACTORED — needs full integration                       | In Progress        |
-| **sovereign-router**          | STOPPED (:25104)                                          | Need restart       |
-| **NIM e2e**                   | Config via sovereign-router, tested via llama-swap health | ✅                 |
+| **estate-router**          | STOPPED (:25104)                                          | Need restart       |
+| **NIM e2e**                   | Config via estate-router, tested via llama-swap health | ✅                 |
 | **Dashboard SPA**             | Done (JSON-driven, hash-routed)                           | ✅                 |
 | **AGENTS.md audit**           | 358 files found, need dedup                               | In Progress        |
 | **mcpproxy+ghas integration** | DISCONNECTED — needs unification                          | In Progress        |
@@ -57,7 +57,7 @@ See: `/home/toxic/estate/audit/GHAS_INTEGRATION_PLAN.md`
 ## 📋 PHASE 1: Fix Services (NOW)
 
 ```bash
-1. mise run restart sovereign-router  # :25104 is stopped
+1. mise run restart estate-router  # :25104 is stopped
 2. mise run health                     # verify all green
 3. cd /home/toxic/projects/github-advanced-search-mcp && bun build    # GHAS MCP streamable-http
 ```

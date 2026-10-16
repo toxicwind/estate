@@ -1,4 +1,4 @@
-// HFT-synthesis tests for sovereign-router v3.2:
+// HFT-synthesis tests for estate-router v3.2:
 //  1. Speculative hedging (hedgedChain): slow first lane loses to a hedged
 //     second lane, and the loser's abort is NOT recorded as a provider failure.
 //  2. Model-spec normalization (router-side Openfang-shim parsing).

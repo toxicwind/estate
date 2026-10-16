@@ -1,4 +1,4 @@
-[daemons.sovereign-stream-broker]
+[daemons.Estate-stream-broker]
 dir = "/home/toxic/estate/ranch/stream-broker"
 run = "exec bun run src/index.ts"
 port = 25215

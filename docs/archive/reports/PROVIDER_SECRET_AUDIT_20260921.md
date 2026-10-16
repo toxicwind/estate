@@ -13,7 +13,7 @@ modified.
 - Provider keys live in `/home/toxic/.secrets` (136 exports, mode 0600),
   parsed at startup by the keypool sidecar (`herd-keypool.py`, :25109).
   The keypool injects keys per-call; `herd.yaml` carries no hardcoded keys.
-- `~/sovereign/.secrets` is only a secret-scanner fingerprint baseline.
+- `~/Estate/.secrets` is only a secret-scanner fingerprint baseline.
 
 ## Per-provider verdicts
 

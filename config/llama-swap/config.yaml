@@ -20,6 +20,6 @@ models:
     aliases:
       - nemotron-lightning
     checkEndpoint: /health
-  # RETIRED 2026-10-02: sovereign-router merged into flock :25193. The :25104
+  # RETIRED 2026-10-02: estate-router merged into flock :25193. The :25104
   # daemon is gone and its binary is deleted, so this entry could never start.
 

@@ -150,13 +150,13 @@ timer suspects read line-by-line, live PIDs + CPU verified)
    L139–154. GETs poller `/health` + stale-`last_poll` check; SIGKILLs wedged
    poller. Same circuit-breaker rationale. (Caveat: if paper-poller converts to
    inotify, this watchdog's staleness check must be reworked — see Ambiguous.)
-8. **sovereign-router warm standby — every 30s** —
-   `tools/sovereign-router/sovereign-router-ts/router.ts` L608–633:
+8. **Estate-router warm standby — every 30s** —
+   `tools/Estate-router/Estate-router-ts/router.ts` L608–633:
    `setInterval(..., 30000)` pings `/models` on 3 **local-only** providers
    (llama-swap, kimi-auto, nim-local), feeding circuit-strike records + warm TCP.
    Circuit-breaker input; zero cloud spend.
-9. **sovereign-router live discovery — every 30m** —
-   `tools/sovereign-router/sovereign-router-ts/router_live_models.ts` L158–167
+9. **Estate-router live discovery — every 30m** —
+   `tools/Estate-router/Estate-router-ts/router_live_models.ts` L158–167
    (`REFRESH_MS = 30*60*1000`, L29). External provider APIs offer no push;
    30min cadence is cheap.
 10. **squawk-ws ping keepalive — every 30s** —

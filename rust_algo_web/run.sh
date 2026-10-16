@@ -2,7 +2,7 @@ cd /home/toxic/estate/rust_algo_web
 
 cat > Cargo.toml <<'CT'
 [package]
-name = "sovereign_web"
+name = "estate_web"
 version = "0.1.0"
 edition = "2021"
 
