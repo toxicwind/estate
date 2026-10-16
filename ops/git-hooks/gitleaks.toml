@@ -14,6 +14,9 @@ paths = [
   '''(?i)extracted/.*\.java$''',
   # Vendored upstream trees keep their own test fixtures and examples.
   '''(?i)(vendor|vendored|node_modules|testdata|fixtures)/''',
+  # Conformance template artifacts: upstream skill-doc dumps full of example
+  # UUIDs (davila7 llms.md corpora). Docs, not credentials.
+  '''(?i)tests/ext_conformance/artifacts/''',
   # Bundled / minified distribution artifacts in projects and extensions
   '''(?i)(dist|build|\.build|out)/''',
   '''(?i)\.(min\.js|bundle\.js|map|pak|wasm)$''',
