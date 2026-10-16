@@ -1,5 +1,5 @@
 import { test, describe, expect } from "bun:test";
-import { localZeroShot, rankModel, sortByRank } from "../src/hf";
+import { localZeroShot, rankModel, sortByRank, pickLabel, completionsClassify } from "../src/hf";
 
 describe("hf module — pure-Bun, no network", () => {
   test("localZeroShot ranks relevant label first", () => {
@@ -37,5 +37,14 @@ describe("hf module — pure-Bun, no network", () => {
       { id: "a", downloads: 1_000_000, likes: 100, trending: 50, modifiedAt: new Date().toISOString() },
     ]);
     expect(arr[0].id).toBe("a");
+  });
+
+  test("pickLabel parses LLM completions output to a label (punct/case/prefix tolerant)", () => {
+    const labels = ["website", "mcp", "database"];
+    expect(pickLabel("website", labels)).toBe("website");
+    expect(pickLabel("  Database.  ", labels)).toBe("database");
+    expect(pickLabel("website neither...", labels)).toBe("website");
+    expect(pickLabel("weird output", labels)).toBe("");
+    expect(pickLabel("", ["a", "b"])).toBe("");
   });
 });

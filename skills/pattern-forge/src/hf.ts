@@ -1,4 +1,4 @@
-import { HF_TOKEN, resolveMaybe } from "./hf-lib";
+import { HF_TOKEN, resolveMaybe, FREEINF_BASE, FREEINF_KEY } from "./hf-lib";
 
 export const HF_HUB = "https://huggingface.co/api/models";
 export const HF_TASKS = "https://huggingface.co/api/tasks";
@@ -190,6 +190,82 @@ export async function classifyRace(input: ZeroShotInput, models: string[], concu
   }
   const winner = ok.find((r) => r.verdict!.label === winnerLabel)?.model ?? "";
   return { winner, candidates: results, agreed };
+}
+
+/** Completion-based classifier via FreeInference (free, OpenAI-compatible, no HF
+ *  credit gate). Strict single-token system prompt enumerates the label set and
+ *  the LLM replies verbatim; we pick the emitted label. BEST-match label
+ *  normalizes punctuation/case. Returns the FreeInference model used. */
+export interface CompletionsResult {
+  ok: boolean;
+  winner: string;
+  score: number;
+  model: string;
+  raw: string;
+  error?: string;
+  ms: number;
+}
+export async function completionsClassify(text: string, labels: string[], opts: { model?: string; timeoutMs?: number } = {}): Promise<CompletionsResult> {
+  if (!FREEINF_KEY) return { ok: false, winner: "", score: 0, model: "", raw: "", error: "no FREEINFERENCE_API_KEY", ms: 0 };
+  const model = opts.model ?? "glm-5.3-flash";
+  const started = Date.now();
+  const list = labels.join("\n");
+  const system = "You are a precise classifier. Read the user's input and answer with EXACTLY one of the allowed labels, verbatim, with no punctuation, quotes, markdown, or explanation.";
+  const body = {
+    model,
+    messages: [
+      { role: "system", content: system },
+      { role: "user", content: `Allowed labels:\n${list}\n\nClassify this:\n${text}\n\nAnswer with exactly one label:` },
+    ],
+    max_tokens: 8,
+  };
+  try {
+    const ac = new AbortController();
+    const timer = setTimeout(() => ac.abort(), opts.timeoutMs ?? 25_000);
+    const res = await fetch(`${FREEINF_BASE}/chat/completions`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${FREEINF_KEY}` },
+      body: JSON.stringify(body),
+      signal: ac.signal,
+    });
+    clearTimeout(timer);
+    if (!res.ok) return { ok: false, winner: "", score: 0, model, raw: "", error: `HTTP ${res.status}`, ms: Date.now() - started };
+    const data = await res.json();
+    const raw = (data?.choices?.[0]?.message?.content ?? "").toString();
+    const winner = pickLabel(raw, labels);
+    return { ok: !!winner, winner, score: winner ? 1 : 0, model, raw: raw.slice(0, 40), ms: Date.now() - started };
+  } catch (e: any) {
+    return { ok: false, winner: "", score: 0, model, raw: "", error: e?.message ?? "timeout", ms: Date.now() - started };
+  }
+}
+
+/** Parse the LLM's reply into one of the allowed labels (case/punct-insensitive, prefix-tolerant for multi-word labels). */
+export function pickLabel(raw: string, labels: string[]): string {
+  const clean = raw.trim().replace(/^["'`\s]+|["'`\s.,;:!?]+$/g, "");
+  const lower = clean.toLowerCase();
+  for (const l of labels) {
+    const ll = l.toLowerCase();
+    if (lower.startsWith(ll)) return l;         // exact or prefix (handles trailing noise)
+    if (ll.split(/\s+/).some((w) => w.length > 3 && lower.includes(w))) return l; // distinctive word
+  }
+  // fuzzy: any label token appearing anywhere
+  for (const l of labels) {
+    if (l.split(/\s+/).some((w) => w.length >= 3 && lower.includes(w.toLowerCase()))) return l;
+  }
+  return "";
+}
+
+/** List models available on FreeInference (/v1/models). */
+export async function freeinfModels(): Promise<string[]> {
+  if (!FREEINF_KEY) return [];
+  try {
+    const res = await fetch(`${FREEINF_BASE}/models`, { headers: { "Authorization": `Bearer ${FREEINF_KEY}` } });
+    if (!res.ok) return [];
+    const d = await res.json();
+    return (d.data ?? []).map((m: any) => m.id);
+  } catch {
+    return [];
+  }
 }
 
 /** Resolve classifier model ids: explicit list wins; else curated 2026 default. */

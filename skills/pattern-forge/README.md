@@ -70,6 +70,9 @@ forge hf search "zero-shot" --task zero-shot --limit 8
 # Classify text against your own labels — serverless race, then pure-Bun offline
 forge hf classify "self-hosted agent tooling" --labels tool,infra,vendor,mcp
 
+# Completion-based classifier via FreeInference (free, no credits, OpenAI-compatible)
+forge hf classify "self-hosted agent tooling" --labels tool,infra,vendor --engine freeinference --model glm-5.3-flash
+
 # Find the model that SHOULD be your classifier, then verify it on real input
 forge hf find-classifier "self-hosted agent tooling" --labels tool,infra,vendor --probe "..."
 

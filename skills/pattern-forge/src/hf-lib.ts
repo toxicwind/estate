@@ -23,3 +23,10 @@ export function resolveMaybe(envKeys: string[], vaultPaths: string[]): { key: st
 }
 
 export const HF_TOKEN = resolveMaybe(TOKEN_KEYS, [join(homedir(), ".secrets"), join(homedir(), ".bashrc.env")]).key;
+
+// FreeInference — free, OpenAI-compatible completions (no HF credit gate).
+// Base + key verified live 2026-10: models = glm-5.3-flash, minimax-m3,
+// qwen3.6-35b, deepseek-v4-flash, bge-m3 (see /v1/models).
+export const FREEINF_BASE = process.env.FREEINFERENCE_BASE_URL ?? "https://freeinference.org/v1";
+export const FREEINF_KEY = resolveMaybe(["FREEINFERENCE_API_KEY"], [join(homedir(), ".secrets"), join(homedir(), ".bashrc.env")]).key;
+export const FREEINF_MODELS = ["glm-5.3-flash", "minimax-m3", "qwen3.6-35b", "deepseek-v4-flash", "bge-m3"];

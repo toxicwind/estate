@@ -13,7 +13,8 @@
  *   doctor    verify every leg still runs
  *   hf        HuggingFace model finder + zero-shot classifier
  *             (search/models | classify | find-classifier) — raw Bun, pure-Bun
- *             offline fallback when HF serverless is 402-gated
+ *             offline fallback when HF serverless is 402-gated; FreeInference
+ *             completion-based classifier (--engine freeinference) is credit-free
  */
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -424,8 +425,19 @@ async function cmdHf(args: Args): Promise<number> {
   const sub = args._[0] ?? "search";
   const REST = args._.slice(1);
 
-  // search <query> | models [--sort downloads] [--task zero-shot]
+  // search <query> | models [--sort downloads] [--task zero-shot] | models --provider freeinference
   if (sub === "search" || sub === "models") {
+    const provider = String(args.flags.get("provider") ?? "hub");
+    if (sub === "models" && provider === "freeinference") {
+      const models = await hf.freeinfModels();
+      if (args.flags.get("json") === true) {
+        process.stdout.write(JSON.stringify({ provider: "freeinference", models }) + "\n");
+        return models.length ? 0 : 1;
+      }
+      process.stdout.write(`FreeInference models:\n`);
+      for (const m of models) process.stdout.write(`  ${m}\n`);
+      return models.length ? 0 : 1;
+    }
     const query = REST.join(" ");
     const sort = String(args.flags.get("sort") ?? "downloads");
     const dir = String(args.flags.get("direction") ?? "-1");
@@ -456,14 +468,38 @@ async function cmdHf(args: Args): Promise<number> {
     }
   }
 
-  // classify <text> --labels a,b,c [--models m1,m2,m3]
-  if (sub === "classify") {
+  // classify <text> --labels a,b,c [--models m1,m2,m3] [--engine local|freeinference|hf]
+  if (sub === "classify" || sub === "completions") {
     const text = REST.join(" ");
     const labels = String(args.flags.get("labels") ?? "").split(",").filter(Boolean);
     const explicit = String(args.flags.get("models") ?? "").split(",").filter(Boolean);
     if (!text || !labels.length) {
-      process.stdout.write(`usage: forge hf classify "<text>" --labels repo,tool,mcp,vendor --models id1,id2\n`);
+      process.stdout.write(`usage: forge hf classify "<text>" --labels repo,tool,mcp,vendor [--engine local|freeinference|hf] [--model glm-5.3-flash]\n`);
       return 2;
+    }
+    const engine = String(args.flags.get("engine") ?? (sub === "completions" ? "freeinference" : "local"));
+    if (engine === "freeinference" || sub === "completions") {
+      const model = String(args.flags.get("model") ?? "glm-5.3-flash");
+      const r = await hf.completionsClassify(text, labels, { model });
+      if (args.flags.get("json") === true) {
+        process.stdout.write(JSON.stringify({ text, engine: "freeinference", model: r.model, ok: r.ok, winner: r.winner, raw: r.raw, error: r.error, ms: r.ms }) + "\n");
+        return r.ok ? 0 : 2;
+      }
+      process.stdout.write(`HF classify "${text.slice(0, 50)}" [freeinference/${r.model}]\n`);
+      if (r.ok) process.stdout.write(`  ✓ ${r.winner}\n`);
+      else process.stdout.write(`  ✗ ${r.error ?? "no label"}\n`);
+      return r.ok ? 0 : 2;
+    }
+    if (engine === "local") {
+      const local = hf.localZeroShot(text, labels);
+      if (args.flags.get("json") === true) {
+        process.stdout.write(JSON.stringify({ text, engine: "local", confident: local.confident, winner: local.winner, score: local.score, margin: local.margin, ranked: local.ranked }) + "\n");
+        return local.confident ? 0 : 2;
+      }
+      process.stdout.write(`HF classify "${text.slice(0, 60)}" [pure-Bun local]\n`);
+      for (const l of local.ranked) process.stdout.write(`  ${l.label === local.winner ? "→" : " "} ${l.label.padEnd(60)} ${l.score.toFixed(3)}\n`);
+      process.stdout.write(`\n  ${local.confident ? `winner: ${local.winner} (${local.score.toFixed(3)}, +${local.margin.toFixed(3)})` : `ABSTAIN: best ${local.winner || "none"} @ ${local.score.toFixed(3)}, margin ${local.margin.toFixed(3)} too thin`}\n`);
+      return local.confident ? 0 : 2;
     }
     const winners = await hf.bestClassifyModels(explicit, labels);
     let { winner, candidates, agreed } = await hf.classifyRace({ text, labels }, winners, 3);
@@ -542,7 +578,8 @@ const HELP = `forge — pattern-forge: retrieve, race, borrow, search. Pure Bun.
   forge mcts (--candidates a,b,c | --candidates-file <c.json>) [--depth N] [--timeout S] [--real]
   forge subgraph --root <dir> --trace <file> [--depth N]
   forge hf search <query> [--sort downloads|likes|trendingScore] [--task zero-shot|embed|gen] [--limit N]
-  forge hf classify <text> --labels a,b,c [--models m1,m2,m3]
+  forge hf models --provider freeinference
+  forge hf classify <text> --labels a,b,c [--engine local|freeinference|hf] [--model glm-5.3-flash]
   forge hf find-classifier <text> --labels a,b,c [--task zero-shot] [--limit N]
   forge audit --root <dir> --claim "<claim>" [--globs a,b] [--top N]
   forge audit --root <dir> --pattern '<ast-grep pattern>' [--lang ts] [--globs a,b]
