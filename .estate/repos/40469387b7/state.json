@@ -1,0 +1,44 @@
+{
+ "repo_hash": "40469387b7",
+ "cycle": 2,
+ "head": "6a1d473d054636921d003ed12a522bf327ee951f",
+ "dirty": "clean(guarded smoke OK)",
+ "actions": [
+  {
+   "cycle": 0,
+   "step": "SNAPSHOT",
+   "note": "initial snapshot; repo not a git repo",
+   "head": "",
+   "dirty": "NOT_A_GIT_REPO"
+  },
+  {
+   "cycle": 1,
+   "cluster": "A",
+   "changed": [
+    "README.md",
+    ".gitignore",
+    "tests/smoke_test.sh",
+    "git:baseline+cluster-a",
+    "tag pre-cluster"
+   ],
+   "proof_cmd": "git status -sb",
+   "proof_pe": "pe_db0898a9fa7c9266",
+   "head": "24fe5bbfb4f1200ad282b4ecee5d9079256f4450",
+   "utc": "2026-10-16T03:13:26.313283+00:00"
+  },
+  {
+   "cycle": 2,
+   "cluster": "A_guardrail",
+   "changed": [
+    "tests/smoke_test.sh"
+   ],
+   "proof_cmd": "bash tests/smoke_test.sh",
+   "proof_pe": "pe_e6fbef7b89c4e769",
+   "rc": 0,
+   "head": "6a1d473d054636921d003ed12a522bf327ee951f",
+   "utc": "2026-10-16T03:23:52.484753+00:00"
+  }
+ ],
+ "next": "run MOE_CYCLE again; start at BOOTSTRAP",
+ "done": false
+}

@@ -1,0 +1,9 @@
+[daemons.sovereign-stream-broker]
+dir = "/home/toxic/estate/ranch/stream-broker"
+run = "exec bun run src/index.ts"
+port = 25215
+ready_port = 25215
+
+# ---- project: ranch/windmill (1 daemon) ----
+# ranch/windmill — project-owned daemon manifest. Source of truth for 'windmill'.
+# Owned by the ranch/windmill project; the parent only composes it.

@@ -1,0 +1,171 @@
+# ============================================================================
+# .gitignore — Sovereign Stack (Bun-primary)
+# ============================================================================
+
+# ─── Secrets & Credentials ──────────────────────────────────────────────────
+# Environment files
+.env
+.env*
+!.env.example
+!.env.template
+.envrc.local
+.secrets
+.secrets*
+*.token
+
+# Certificates and Keys
+*.key
+*.pem
+*.cert
+*.crt
+*.pfx
+*.p12
+*.pkcs12
+*.der
+
+# Credentials, Tokens, Secrets
+*credentials*
+*secret*
+*token*
+auth.json
+tokens.json
+storageState.json
+
+# Session data, cookies, browser profiles
+*cookie*
+*session*
+browser_profile/
+browser_profiles/
+browser-profile/
+browser-profiles/
+.browser-data/
+chrome-profile/
+firefox-profile/
+playwright/.auth/
+# ─── Runtime / State ──────────────────────────────────────────────────────────
+.state/
+.prometheus/
+logs/
+*.log
+*.qslog
+*.jsonl
+/tmp/
+tmp/
+pids/
+session-export*
+*.session
+*.sqlite
+.wezterm.sock*
+
+# ─── Build Artifacts ──────────────────────────────────────────────────────────
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+node_modules/
+.bun/
+target/
+dist/
+build/
+*.tsbuildinfo
+.turbo/
+Cargo.lock.bak
+bun.lock
+
+# ─── Binaries (built/copied, not tracked in git) ─────────────────────────────
+bin/sovereign_web
+bin/llama-swap
+tools/llama-swap/llama-swap
+tools/llama-swap/ollama-proxy
+tools/llama-swap/*.db
+tools/llama-swap/*.db-journal
+
+# ─── Models (GGUFs live outside this tree) ────────────────────────────────────
+models/
+*.gguf
+data/
+
+# ─── Scratch / Ephemeral ─────────────────────────────────────────────────────
+scratch/
+~/
+.agents/
+.grok/
+*.local.md
+*.local.toml
+
+# ─── Backup (never stage) ────────────────────────────────────────────────────
+backup/
+**/reorg_*/
+**/cleanup_*/
+hw_dump*
+hardware_audit*
+
+# ─── Non-production (legacy, kept in backup/) ────────────────────────────────
+yote/
+tools/legacy/
+tools/ollama-proxy-rs/
+
+# ─── Retired env managers ─────────────────────────────────────────────────────
+.direnv/
+.devenv/
+.devbox/
+
+## ─── Test / Coverage (local-only, never stage) ─────────────────────────────
+coverage/
+coverage.lcov
+*.lcov
+.bun-test/
+
+# ─── IDE / tests ────────────────────────────────────────────────────────────────
+.idea/
+.vscode/
+.playwright-mcp/
+
+# ─── Misc noise ───────────────────────────────────────────────────────────────
+dashboard/
+ports.env
+
+# Local runtime / plugin noise (do not ship)
+grafana/plugins/
+grafana/data/
+grafana/logs/
+tools/ast-matrix/ultimate_extract/
+tools/ast-matrix/weird_*.json
+*.map
+usr/
+
+# Agent orchestration runtime state
+.agent-orchestration/
+*.db
+*.db-shm
+*.db-wal
+_probe*.sh
+
+# Audit / scratch scripts
+audit_*.py
+nohup.out
+output/
+MCP_AUDIT.md
+
+# Qdrant local state
+.qdrant-initialized
+.qdrant/
+qdrant-config.yaml
+.scout-cache/
+.project_map.json
+
+# Security boundaries (git-mutator)
+*.env
+!config/ports.env
+.env.*
+credentials.json
+.bak.
+skills/402md/
+skills/microsoft/
+skills/openai/
+skills/skillmdcreator/
+skills/somasays/
+
+# token-scrub 2026-09-14: never commit secrets
+*.pat
+github_*_pat.json
