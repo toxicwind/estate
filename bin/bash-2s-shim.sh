@@ -1,32 +1,53 @@
 #!/usr/bin/env bash
-# bash-2s-shim.sh — auto-shim the 2-second rule into agent shells.
-# Sourced by ~/.bashrc (and on demand in live sessions). Wraps the
-# known-slow commands agents run through run-fast (2.0s hard deadline).
-# Bypass any single call with: command git push … (builtin bypass).
-# shellcheck shell=bash
+# bash-2s-shim.sh — AUTO-shim the 2-second rule into agent shells.
+# Sourced by ~/.bashrc (and on demand in live sessions).
+#
+# How it works: wraps the common CLIs agents run as bash FUNCTIONS.
+# Fast subcommands (status/diff/log/ls…) exec DIRECTLY — zero overhead.
+# Known-slow subcommands (push/pull/fetch/clone/test/install/build…)
+# exec through run-fast (2.0s hard deadline): breach = FAILED, race a
+# faster alternative instead of waiting.
+#
+# Bypass any single call: `command git push …` (bypasses the function).
 
-RF=/home/toxic/estate/bin/run-fast
+RF="${ESTATE_RUN_FAST:-/home/toxic/estate/bin/run-fast}"
 [ -x "$RF" ] || return 0
+export ESTATE_RUN_FAST="$RF"
 
-# Known-slow subcommands → run-fast. Aliases only expand at command
-# position, so `git status` (fast) still runs bare when unaliased.
-for sub in push pull fetch clone; do
-  alias "git-$sub"="$RF git $sub"
-done
-for c in bun-install bun-build bun-test cargo-build go-build npm-install pnpm-install pip-install uv-sync make; do
-  continue
-done
-alias bun-install="$RF bun install"
-alias bun-build="$RF bun run build"
-alias bun-test="$RF bun test"
-alias npm-install="$RF npm install"
-alias pip-install="$RF pip install"
-alias go-build="$RF go build ./..."
-alias cargo-check="$RF cargo check"
-alias codebase-memory="$RF codebase-memory"
-alias gitleaks="$RF gitleaks"
-alias gh-repo="$RF gh repo"
+# Subcommands that routinely exceed 2s → always run-fast.
+_SLOW_GIT="push pull fetch clone merge rebase submodule"
+_SLOW_BUN="install add remove update test build publish link"
+_SLOW_NPM="install ci update build test publish"
+_SLOW_GH="repo pr release"
 
-# Auto-route on source: nothing runs at source time — the aliases take
-# effect when the agent uses them. Export so subshells inherit.
-export RF BASH_2S_SHIM=1
+_shim_route() {
+  # $1 = binary, $2 = subcommand ("" = route slow by default for unknown)
+  local bin="$1" sub="${2:-}"
+  case "$bin:$sub" in
+    git:push|git:pull|git:fetch|git:clone|git:merge|git:rebase|git:submodule) return 0 ;;
+    bun:install|bun:add|bun:remove|bun:update|bun:test|bun:build|bun:publish|bun:link) return 0 ;;
+    npm:install|npm:ci|npm:update|npm:build|npm:test|npm:publish) return 0 ;;
+    pip:install|pip3:install|uv:sync|uv:add) return 0 ;;
+    gh:repo|gh:pr|gh:release) return 0 ;;
+    gitleaks:git|gitleaks:detect) return 0 ;;
+    codebase-memory:*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+# Install WRAPPERS NAMED LIKE THE BINARY (functions shadow binaries in both
+# interactive and non-interactive shells; aliases do not expand non-interactively).
+for _bin in git bun npm pip pip3 uv gh gitleaks codebase-memory; do
+  eval "${_bin}() {
+    local sub=\"\$1\"; shift || true
+    if _shim_route \"${_bin}\" \"\$sub\"; then
+      \"\$RF\" \"${_bin}\" \"\$sub\" \"\$\@\"   # slow path: 2s cap, live streaming
+    else
+      command \"${_bin}\" \"\$sub\" \"\$\@\"      # fast path: direct exec
+    fi
+  }"
+done
+export -f _shim_route git bun npm pip pip3 uv gh gitleaks codebase-memory 2>/dev/null
+unset _bin
+
+export BASH_2S_SHIM=1

@@ -64,7 +64,7 @@
   "herd provider is defined in ~/.tau/agent/models.yml (baseUrl http://127.0.0.1:25100/v1, auth none, openai-models-list discovery); mirrors tree config/models.yml providers.herd",
   "bench selectors re-evaluated against tau catalog models.json: google-antigravity/{claude-opus-4-6,claude-sonnet-4-6,gemini-2.5-flash,gemini-3.1-flash-image} are catalog-valid (provider+model both exist) but require Google OAuth credentials which are NOT stored on this box (no auth db in ~/.tau); kept as alternates only",
   "groq/openai/gpt-oss-20b resolves per parseModelString (provider=groq, id=openai/gpt-oss-20b) but groq needs an API key, none configured; alternate only",
-  "nvidia/openai/gpt-oss-20b is catalog-valid; tau nvidia provider targets https://integrate.api.nvidia.com/v1 (API key required); local nim-proxy 127.0.0.1:8000 returns 401 without Bearer key",
+  "nvidia/openai/gpt-oss-20b is catalog-valid; tau nvidia provider targets https://integrate.api.nvidia.com/v1 (API key required); local nim-proxy 127.0.0.1:8000 returns 401 without ******",
   "original bench file preserved at model-router.json.bak-20260914-bench",
   "2026-09-20 tau-config: quality/reasoning repointed herd/moonshotai/kimi-* (100% 401, model ids absent from :25100) -> estate/free (live, 0% errors). Added backup=herd/pollinations-free/openai (keyless, herd-side). fast/cheap/balanced selectors verified present in :25100 /v1/models same day."
  ]
