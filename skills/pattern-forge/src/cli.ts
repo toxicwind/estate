@@ -11,6 +11,9 @@
  *   audit     verify claims against the AST          (ast-grep; merged 2026-10-02)
  *   paths     what this build resolves to          (non-hardcoded path proof)
  *   doctor    verify every leg still runs
+ *   hf        HuggingFace model finder + zero-shot classifier
+ *             (search/models | classify | find-classifier) — raw Bun, pure-Bun
+ *             offline fallback when HF serverless is 402-gated
  */
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -27,6 +30,7 @@ import { audit, renderAudit, resolveAstGrep, type AuditOptions } from "./audit";
 import { leadWithWinner, loadStrategies, logWinners, runRace, setEmitter, type Strategy } from "./concurrent";
 import { CodeItem, PaperItem } from "./providers";
 import * as P from "./paths";
+import * as hf from "./hf";
 
 type Args = { _: string[]; flags: Map<string, string | boolean> };
 
@@ -416,6 +420,101 @@ async function cmdDoctor(args: Args): Promise<number> {
   return checks.every((c) => c.ok) ? 0 : 1;
 }
 
+async function cmdHf(args: Args): Promise<number> {
+  const sub = args._[0] ?? "search";
+  const REST = args._.slice(1);
+
+  // search <query> | models [--sort downloads] [--task zero-shot]
+  if (sub === "search" || sub === "models") {
+    const query = REST.join(" ");
+    const sort = String(args.flags.get("sort") ?? "downloads");
+    const dir = String(args.flags.get("direction") ?? "-1");
+    const limit = Number(args.flags.get("limit") ?? 12);
+    const task = String(args.flags.get("task") ?? "");
+    const lib = String(args.flags.get("library") ?? "");
+    try {
+      const rows = await hf.hfSearch(query, { sort, direction: dir, limit, task, library: lib });
+      if (!rows.length) {
+        process.stdout.write(`HF: no models for '${query}'\n`);
+        return 1;
+      }
+      const ranked = hf.sortByRank(rows);
+      process.stdout.write(`HF search '${query}' (sort=${sort}) -> top ${rows.length} by rank:\n`);
+      for (const m of ranked) {
+        const score = hf.rankModel(m).toFixed(1);
+        process.stdout.write(`  ${score.padStart(5)}  ${String((m.downloads ?? 0)).padStart(10)}dl ${String(m.likes ?? 0).padStart(4)}♡ ${(m.task ?? "?").padEnd(20)} ${m.id}\n`);
+      }
+      return 0;
+    } catch (e: any) {
+      process.stdout.write(`HF search failed: ${e?.message ?? e}\n`);
+      return 1;
+    }
+  }
+
+  // classify <text> --labels a,b,c [--models m1,m2,m3]
+  if (sub === "classify") {
+    const text = REST.join(" ");
+    const labels = String(args.flags.get("labels") ?? "").split(",").filter(Boolean);
+    const explicit = String(args.flags.get("models") ?? "").split(",").filter(Boolean);
+    if (!text || !labels.length) {
+      process.stdout.write(`usage: forge hf classify "<text>" --labels repo,tool,mcp,vendor --models id1,id2\n`);
+      return 2;
+    }
+    const winners = await hf.bestClassifyModels(explicit, labels);
+    let { winner, candidates, agreed } = await hf.classifyRace({ text, labels }, winners, 3);
+    const okCount = candidates.filter((c) => c.verdict?.ok).length;
+    if (!winner || okCount === 0) {
+      const local = hf.localZeroShot(text, labels);
+      process.stdout.write(`HF classify "${text.slice(0, 60)}"\n`);
+      process.stdout.write(`  (serverless zero-shot 402-gated/offline — using pure-Bun local fallback; set --models to a free-inference id)\n`);
+      for (const l of local) {
+        process.stdout.write(`  ✓ ${l.label.padEnd(60)} ${l.score.toFixed(3)}\n`);
+      }
+      return local.length ? 0 : 1;
+    }
+    process.stdout.write(`HF classify "${text.slice(0, 60)}"\n`);
+    for (const c of candidates) {
+      const short = c.model.slice(0, 60);
+      process.stdout.write(`  ${c.verdict?.ok ? "✓" : "✗"} ${short.padEnd(62)} ${c.verdict?.label ?? "err"}=${c.verdict?.score?.toFixed(3) ?? "―"} ${c.verdict?.ms ?? 0}ms${c.verdict?.error ? ` [${c.verdict.error}]` : ""}\n`);
+    }
+    process.stdout.write(`\n  consensus: ${winner || "none"} (${agreed}/${candidates.filter((c) => c.verdict?.ok).length} agree)\n`);
+    return winner ? 0 : 1;
+  }
+
+  // find-classifier <text> --labels a,b [--probe "<real input>" --task zero-shot]
+  if (sub === "find-classifier" || sub === "find") {
+    const text = REST.join(" ");
+    const labels = String(args.flags.get("labels") ?? "").split(",").filter(Boolean);
+    const probe = String(args.flags.get("probe") ?? text);
+    const task = String(args.flags.get("task") ?? "zero-shot");
+    const pool = await hf.findClassifierCandidates(probe, labels, task, Number(args.flags.get("limit") ?? 8));
+    if (!pool.length) {
+      process.stdout.write("find-classifier: no candidate classifiers from HF Hub\n");
+      return 1;
+    }
+    const winners = pool.map((m) => m.model);
+    const race = await hf.classifyRace({ text: probe, labels }, winners, 3);
+    let winner = race.winner;
+    if (!winner) {
+      const local = hf.localZeroShot(probe, labels);
+      winner = local[0]?.label ?? "";
+      process.stdout.write(`find-classifier: ${pool.length} candidates all 402-gated; pure-Bun fallback selects '${winner}' (score ${local[0]?.score?.toFixed(3) ?? "―"})\n`);
+      for (const l of local) process.stdout.write(`  ✓ ${l.label.padEnd(12)} ${l.score.toFixed(3)}\n`);
+      return winner ? 0 : 1;
+    }
+    process.stdout.write(`find-classifier: raced ${pool.length} candidate zero-shot models on '${probe.slice(0, 50)}'\n`);
+    for (const c of race.candidates.sort((a, b) => (b.verdict?.score ?? 0) - (a.verdict?.score ?? 0))) {
+      const rank = pool.find((m) => m.model === c.model)?.rank ?? 0;
+      process.stdout.write(`  ${c.verdict?.ok ? "✓" : "✗"} rank${rank.toFixed(0).padStart(2)} ${c.verdict?.label?.padEnd(12)} ${(c.verdict?.score ?? 0).toFixed(3)} ${c.model}${c.verdict?.error ? ` [${c.verdict.error}]` : ""}\n`);
+    }
+    process.stdout.write(`\n  recommended: ${winner}\n`);
+    return winner ? 0 : 1;
+  }
+
+  process.stdout.write(`forge hf subcommands: search | classify | find-classifier\n`);
+  return 2;
+}
+
 const HELP = `forge — pattern-forge: retrieve, race, borrow, search. Pure Bun.
 
   forge retrieve --root <dir> --query <q> [--top N] [--max-files N]
@@ -425,6 +524,9 @@ const HELP = `forge — pattern-forge: retrieve, race, borrow, search. Pure Bun.
   forge borrow <query> [--per-source N] [--skip a,b] [--top N] [--exa-key K] [--skip a,b]
   forge mcts (--candidates a,b,c | --candidates-file <c.json>) [--depth N] [--timeout S] [--real]
   forge subgraph --root <dir> --trace <file> [--depth N]
+  forge hf search <query> [--sort downloads|likes|trendingScore] [--task zero-shot|embed|gen] [--limit N]
+  forge hf classify <text> --labels a,b,c [--models m1,m2,m3]
+  forge hf find-classifier <text> --labels a,b,c [--task zero-shot] [--limit N]
   forge audit --root <dir> --claim "<claim>" [--globs a,b] [--top N]
   forge audit --root <dir> --pattern '<ast-grep pattern>' [--lang ts] [--globs a,b]
   forge audit --root <dir> --rule <rule.yml>
@@ -465,6 +567,7 @@ async function main(argv: readonly string[]): Promise<number> {
     case "audit": return cmdAudit(args);
     case "paths": return cmdPaths(args);
     case "doctor": return cmdDoctor(args);
+    case "hf": return cmdHf(args);
     case "help":
     default:
       process.stdout.write(`${HELP}\n`);
