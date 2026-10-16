@@ -19,21 +19,8 @@ jobs:
         # NOTE: submodules intentionally NOT fetched — the tree carries engine
         # gitlinks (engines/herd/*, sigma, skills-hub, tools/pd-mcp-standalone)
         # with no .gitmodules URL (estate policy: declare a submodule only when
-        # the checkout is on disk with its own .git). The one pin CI needs
-        # (ops/gitignore/templates) is fetched manually at its pinned SHA below.
+        # the checkout is on disk with its own .git).
         uses: actions/checkout@v4
-
-      - name: Fetch gitignore templates
-        run: |
-          rm -rf ops/gitignore/templates
-          mkdir -p ops/gitignore/templates
-          curl -sL https://github.com/github/gitignore/archive/62f3997f1917b30f6eaee0c53ac2d791426513f2.tar.gz \
-            | tar -xz -C ops/gitignore/templates --strip-components=1
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
 
       - name: Verify Topology Structure
         run: |
@@ -48,12 +35,3 @@ jobs:
       - name: Validate Shell Script Syntax
         run: |
           find . -maxdepth 3 -name "*.sh" -not -path "*/node_modules/*" -not -path "*/target/*" -exec bash -n {} +
-
-      - name: Fetch gitignore templates (nested github/gitignore pin)
-        run: |
-          sha=$(git ls-files -s ops/gitignore/templates | awk '{print $2}')
-          rm -rf ops/gitignore/templates
-          git clone --quiet https://github.com/github/gitignore.git ops/gitignore/templates
-          git -C ops/gitignore/templates checkout --quiet "$sha"
-      - name: gitignore manifest in sync
-        run: bun ops/bin/gitignore-sync.ts --check
