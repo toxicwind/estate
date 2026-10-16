@@ -44,3 +44,6 @@
 [submodule "plugins/agentpluginzoo"]
 	path = plugins/agentpluginzoo
 	url = /home/toxic/estate/plugins/agentpluginzoo
+[submodule "ranch"]
+	path = ranch
+	url = ./ranch
