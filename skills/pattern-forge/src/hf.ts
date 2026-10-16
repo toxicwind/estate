@@ -205,14 +205,43 @@ export async function bestClassifyModels(explicit: string[], labels: string[]): 
 }
 
 /** Pure-Bun, zero-dep, offline zero-shot scorer. Deterministic, free, no 402 gate.
- *  Scores each label via normalized character n-gram overlap + word Jaccard against
- *  the probe text. Returns labels sorted desc; used when HF serverless is 402-gated
- *  or unreachable so `forge hf classify` NEVER fails bare. */
-export function localZeroShot(text: string, labels: string[]): { label: string; score: number }[] {
+ *  Scores each label via idf-weighted word overlap + normalized character n-gram
+ *  similarity against the probe text. Returns labels sorted desc; used when HF
+ *  serverless is 402-gated (no inference credits) or unreachable so that
+ *  `forge hf classify` NEVER fails bare.
+ *  BORROWED (2026-10, pattern-borrow — github lodestone/MaggieAppleton + freenary):
+ *   - classifies against the label's RICH DESCRIPTION, not the short id  (lodestone)
+ *   - gates with an explicit ACCEPT-CONFIDENCE threshold, and refuses to emit a
+ *     winner below it instead of inventing a best label                  (freenary)
+ *  NOTE (2026-10): the HF token has zero Inference-Provider credits — the free
+ *  router returns HTTP 402 for every model. localZeroShot is the PRIMARY engine,
+ *  not a fallback. */
+export interface LabelConfig { id: string; desc: string }
+export interface LocalVerdict {
+  winner: string;
+  score: number;
+  margin: number;
+  ranked: { label: string; score: number }[];
+  confident: boolean;
+}
+// Lexical scorers don't hit high absolute values — confidence is a RELATIVE
+// margin (top vs runner-up), mirroring freenary's concentration (the decision,
+// not an absolute). Scores are normalized idf-weighted Jaccard + char-ngram.
+const MIN_SCORE = 0.05;      // a winner must at least have SOME signal
+const MIN_MARGIN = 0.08;     // and must beat the runner-up by this much
+
+export function localZeroShot(text: string, labels:string[]|LabelConfig[], opts: { minScore?: number; minMargin?: number } = {}): LocalVerdict {
+  const minScore = opts.minScore ?? MIN_SCORE;
+  const minMargin = opts.minMargin ?? MIN_MARGIN;
+  const configs: { id: string; desc: string }[] = labels.map((l) => typeof l === "string" ? { id: l, desc: l } : l);
   const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
   const t = norm(text);
-  const words = (s: string) => new Set(norm(s).split(/\s+/).filter(Boolean));
-  const tw = words(t);
+  const textWords = t.split(/\s+/).filter(Boolean);
+
+  const STOP = new Set(["a","an","the","for","of","and","or","to","in","on","with","this","that","your","our","from","as","is","are","be","by","it","at","its"]);
+  const df = new Map<string, number>();
+  for (const w of textWords) if (!STOP.has(w)) df.set(w, (df.get(w) ?? 0) + 1);
+
   const charGrams = (s: string, n: number) => {
     const out = new Set<string>();
     const normed = norm(s);
@@ -222,14 +251,23 @@ export function localZeroShot(text: string, labels: string[]): { label: string; 
   const tBigrams = charGrams(t, 2);
   const tTrigrams = charGrams(t, 3);
 
-  const scored = labels.map((label) => {
-    const lw = words(label);
-    let overlap = 0;
-    for (const w of lw) if (tw.has(w)) overlap++;
-    const jaccard = tw.size + lw.size === 0 ? 0 : overlap / (tw.size + lw.size - overlap);
+  const scored: { label: string; score: number }[] = configs.map((c) => {
+    // class against id + description, but down-weight the description so
+    // filler words don't dilute the short-id signal (borrowed bidirectionally)
+    const idTokens = norm(c.id).split(/\s+/).filter(Boolean);
+    const lSet = new Set(idTokens);
+    for (const w of norm(c.desc).split(/\s+/)) if (!STOP.has(w)) lSet.add(w);
+    let idfOverlap = 0;
+    let idfUnion = 0;
+    for (const w of lSet) {
+      const wIdf = STOP.has(w) ? 0 : Math.log2(1 + (textWords.length + 1) / ((df.get(w) ?? 0) + 1));
+      idfUnion += wIdf || (STOP.has(w) ? 0.15 : 1);
+      if (textWords.includes(w)) idfOverlap += wIdf || (STOP.has(w) ? 0.15 : 1);
+    }
+    const jaccard = idfUnion === 0 ? 0 : idfOverlap / idfUnion;
 
-    const lb = charGrams(label, 2);
-    const lt = charGrams(label, 3);
+    const lb = charGrams(c.desc, 2);
+    const lt = charGrams(c.desc, 3);
     let bCommon = 0;
     for (const g of lb) if (tBigrams.has(g)) bCommon++;
     let tCommon = 0;
@@ -237,10 +275,17 @@ export function localZeroShot(text: string, labels: string[]): { label: string; 
     const bigramSim = lb.size ? bCommon / lb.size : 0;
     const trigramSim = lt.size ? tCommon / lt.size : 0;
 
-    const score = jaccard * 0.6 + bigramSim * 0.3 + trigramSim * 0.1;
-    return { label, score };
+    // id-token Jaccard is the strongest lexical signal for short labels; the
+    // char-ngram on description adds fuzzy-catch. Weigh id tokens up.
+    const score = jaccard * 0.7 + bigramSim * 0.25 + trigramSim * 0.05;
+    return { label: c.id, score };
   });
-  return scored.sort((a, b) => b.score - a.score);
+  scored.sort((a, b) => b.score - a.score);
+  const top = scored[0];
+  const second = scored[1];
+  const margin = (top?.score ?? 0) - (second?.score ?? 0);
+  const confident = (top?.score ?? 0) >= minScore && margin >= minMargin;
+  return { winner: confident ? top.label : "", score: top?.score ?? 0, margin, ranked: scored, confident };
 }
 
 /** Top candidate zero-shot/text-classification models from HF Hub by rank. */

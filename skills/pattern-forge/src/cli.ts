@@ -434,6 +434,11 @@ async function cmdHf(args: Args): Promise<number> {
     const lib = String(args.flags.get("library") ?? "");
     try {
       const rows = await hf.hfSearch(query, { sort, direction: dir, limit, task, library: lib });
+      if (args.flags.get("json") === true) {
+        const ranked = hf.sortByRank(rows).map((m) => ({ id: m.id, task: m.task, downloads: m.downloads, likes: m.likes, trending: m.trending, modifiedAt: m.modifiedAt, rank: Number(hf.rankModel(m).toFixed(1)) }));
+        process.stdout.write(JSON.stringify({ query, sort, results: ranked }) + "\n");
+        return 0;
+      }
       if (!rows.length) {
         process.stdout.write(`HF: no models for '${query}'\n`);
         return 1;
@@ -465,12 +470,17 @@ async function cmdHf(args: Args): Promise<number> {
     const okCount = candidates.filter((c) => c.verdict?.ok).length;
     if (!winner || okCount === 0) {
       const local = hf.localZeroShot(text, labels);
+      if (args.flags.get("json") === true) {
+        process.stdout.write(JSON.stringify({ text, engine: "local", confident: local.confident, winner: local.winner, score: Number(local.score.toFixed(4)), margin: Number(local.margin.toFixed(4)), ranked: local.ranked.map((r) => ({ label: r.label, score: Number(r.score.toFixed(4)) })), server: { ok: okCount, candidates: candidates.map((c) => ({ model: c.model, ok: c.verdict?.ok ?? false, error: c.verdict?.error })) } }) + "\n");
+        return local.confident ? 0 : 2;
+      }
       process.stdout.write(`HF classify "${text.slice(0, 60)}"\n`);
       process.stdout.write(`  (serverless zero-shot 402-gated/offline — using pure-Bun local fallback; set --models to a free-inference id)\n`);
-      for (const l of local) {
-        process.stdout.write(`  ✓ ${l.label.padEnd(60)} ${l.score.toFixed(3)}\n`);
+      for (const l of local.ranked) {
+        process.stdout.write(`  ${l.label === local.winner ? "→" : " "} ${l.label.padEnd(60)} ${l.score.toFixed(3)}\n`);
       }
-      return local.length ? 0 : 1;
+      process.stdout.write(`\n  ${local.confident ? `winner: ${local.winner} (${local.score.toFixed(3)}, +${local.margin.toFixed(3)} vs runner-up)` : `ABSTAIN: best ${local.winner || "none"} @ ${local.score.toFixed(3)}, margin ${local.margin.toFixed(3)} too thin`}\n`);
+      return local.confident ? 0 : 2;
     }
     process.stdout.write(`HF classify "${text.slice(0, 60)}"\n`);
     for (const c of candidates) {
@@ -478,6 +488,9 @@ async function cmdHf(args: Args): Promise<number> {
       process.stdout.write(`  ${c.verdict?.ok ? "✓" : "✗"} ${short.padEnd(62)} ${c.verdict?.label ?? "err"}=${c.verdict?.score?.toFixed(3) ?? "―"} ${c.verdict?.ms ?? 0}ms${c.verdict?.error ? ` [${c.verdict.error}]` : ""}\n`);
     }
     process.stdout.write(`\n  consensus: ${winner || "none"} (${agreed}/${candidates.filter((c) => c.verdict?.ok).length} agree)\n`);
+    if (args.flags.get("json") === true) {
+      process.stdout.write(JSON.stringify({ text, engine: "server", winner, agreed, candidates: candidates.map((c) => ({ model: c.model, label: c.verdict?.label, score: c.verdict?.score, ok: c.verdict?.ok, ms: c.verdict?.ms, error: c.verdict?.error })) }) + "\n");
+    }
     return winner ? 0 : 1;
   }
 
@@ -497,10 +510,14 @@ async function cmdHf(args: Args): Promise<number> {
     let winner = race.winner;
     if (!winner) {
       const local = hf.localZeroShot(probe, labels);
-      winner = local[0]?.label ?? "";
-      process.stdout.write(`find-classifier: ${pool.length} candidates all 402-gated; pure-Bun fallback selects '${winner}' (score ${local[0]?.score?.toFixed(3) ?? "―"})\n`);
-      for (const l of local) process.stdout.write(`  ✓ ${l.label.padEnd(12)} ${l.score.toFixed(3)}\n`);
-      return winner ? 0 : 1;
+      winner = local.confident ? local.winner : "";
+      if (args.flags.get("json") === true) {
+        process.stdout.write(JSON.stringify({ text: probe, engine: "local", confident: local.confident, winner: local.winner, score: Number(local.score.toFixed(4)), margin: Number(local.margin.toFixed(4)), ranked: local.ranked.map((r) => ({ label: r.label, score: Number(r.score.toFixed(4)) })), candidates: pool.map((m) => m.id) }) + "\n");
+        return winner ? 0 : 2;
+      }
+      process.stdout.write(`find-classifier: ${pool.length} candidates all 402-gated; pure-Bun fallback ${local.confident ? `selects '${local.winner}' (${local.score.toFixed(3)}, +${local.margin.toFixed(3)})` : `ABSTAINS (best ${local.winner || "none"} @ ${local.score.toFixed(3)}, margin ${local.margin.toFixed(3)} too thin)`}\n`);
+      for (const l of local.ranked) process.stdout.write(`  ${l.label === local.winner ? "→" : " "} ${l.label.padEnd(12)} ${l.score.toFixed(3)}\n`);
+      return winner ? 0 : 2;
     }
     process.stdout.write(`find-classifier: raced ${pool.length} candidate zero-shot models on '${probe.slice(0, 50)}'\n`);
     for (const c of race.candidates.sort((a, b) => (b.verdict?.score ?? 0) - (a.verdict?.score ?? 0))) {

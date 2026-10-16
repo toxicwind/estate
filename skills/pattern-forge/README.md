@@ -1,4 +1,4 @@
-# pattern-forge \| retrieve • race • bench • borrow • mcts • subgraph
+# pattern-forge \| retrieve • race • bench • borrow • mcts • subgraph • hf
 
 [![for-the-badge](https://img.shields.io/badge/Bun-000000?style=for-the-badge&logo=bun&logoColor=white)](https://bun.sh) [![for-the-badge](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org) [![for-the-badge](https://img.shields.io/badge/AST--BM25-Retrieval-FF6F61?style=for-the-badge)](https://github.com/toxic/internals)
 
@@ -16,6 +16,7 @@ Retrieve, race, and borrow. One tool for finding code in our own tree (AST-BM25 
 | `borrow` | `emergent-enrich/bin/route.py`, `race-borrow.ts` | 7 sources in parallel, ranked |
 | `mcts` | `mcts_engine.py` | Pick a patch by verifying it |
 | `subgraph` | `dynamic_subgraph_inducer.py` | Traceback → relevant files |
+| `hf` | `huggingface_hub`, `@huggingface/inference` | Model finder + zero-shot classifier (pure Bun) |
 | (shared) | `circuit_breaker.py` | Per-attempt deadline + rollback |
 
 ### Feature bullets
@@ -26,6 +27,7 @@ Retrieve, race, and borrow. One tool for finding code in our own tree (AST-BM25 
 - **borrow** — Seven sources in parallel (arXiv, OpenAlex, Semantic Scholar, DBLP, HuggingFace papers, GitHub, exa); wall time is slowest leg, not sum; cost/audit logged per source
 - **mcts** — Choose a patch by verifying candidates; passing returns +1, failing returns −1; `--real` exercises tree mechanics, without it uses toy reward
 - **subgraph** — Traceback tells where it broke; import graph tells why; marks traceback frames with `*`, walks imports to depth N, reports fan-in
+- **hf** — HuggingFace model finder + zero-shot classifier; rank-normalizes "best 2026" models; races candidate models → consensus; pure-Bun offline `localZeroShot` (idf + n-gram, margin-gated ABSTAIN) means it never 401/402-bails; `--json` for agents/CI
 - **doctor** — Self-check every leg
 
 ### Install
@@ -55,6 +57,41 @@ forge race --strategies '{"strategies":[{"name":"primary","cmd":["bun","run","a.
 # Bench candidates (file: {"candidates":[{"name","code"}]})
 forge bench --candidates cands.json
 ```
+
+### `forge hf` — GitHub stars start here
+
+`forge hf` is the **HuggingFace model finder + zero-shot classifier** built into
+forge. One pure-Bun CLI with zero dependencies and no API-key gate:
+
+```bash
+# Find the best 2026 model for a task (ranked by downloads/likes/trending/recency)
+forge hf search "zero-shot" --task zero-shot --limit 8
+
+# Classify text against your own labels — serverless race, then pure-Bun offline
+forge hf classify "self-hosted agent tooling" --labels tool,infra,vendor,mcp
+
+# Find the model that SHOULD be your classifier, then verify it on real input
+forge hf find-classifier "self-hosted agent tooling" --labels tool,infra,vendor --probe "..."
+
+# Machine output for agents/CI — every subcommand takes --json
+forge hf classify "self-hosted agent tooling" --labels tool,infra,vendor --json
+```
+
+**Why it's different** (vs `huggingface_hub` / `@huggingface/inference` / `hub.py`):
+
+| | `forge hf` | huggingface_hub | @huggingface/inference |
+|---|---|---|---|
+| Runtime | **pure Bun, zero deps** | Python | Node |
+| Offline verdict | **yes — built-in local scorer** | no | no |
+| No API credits needed | **works bare (fallback engine)** | yes (downloads) | no (402 without PRO) |
+| Model racing | **races N models, consensus** | no | no |
+| `--json` agents/CI | **yes** | no | no |
+| Model finder ("best 2026") | **rank-normalized** | list only | no |
+
+The killer behaviors: it **never bails** (when HF serverless is 402-gated it
+switches to a deterministic pure-Bun idf-weighted + n-gram scorer and reports an
+ABSTAIN instead of a false-best), and it **races** candidate models the same way
+`forge race` races implementations — pattern-borrow applied to models.
 
 ### Architecture
 
