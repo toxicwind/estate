@@ -17,8 +17,8 @@
  *             completion-based classifier (--engine freeinference) is credit-free
  */
 
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
+import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync, statSync } from "node:fs";
+import { dirname, resolve, join } from "node:path";
 import { Bm25Index } from "./bm25";
 import { buildIndex, collectFiles } from "./repo-index";
 import { CODE_EXTS, PY_EXTS, extract } from "./extract";
@@ -421,6 +421,26 @@ async function cmdDoctor(args: Args): Promise<number> {
   return checks.every((c) => c.ok) ? 0 : 1;
 }
 
+// build a compact text signature from a repo dir's README/SKILL/AGENTS/package.json
+function repoSignature(dir: string, name: string): string | null {
+  const candidateFiles = ["README.md", "SKILL.md", "AGENTS.md", "readme.md"];
+  for (const f of candidateFiles) {
+    const p = join(dir, f);
+    if (existsSync(p) && statSync(p).size > 0 && statSync(p).size < 120_000) {
+      try { return readFileSync(p, "utf8").slice(0, 2000); } catch { continue; }
+    }
+  }
+  const pkg = join(dir, "package.json");
+  if (existsSync(pkg)) {
+    try {
+      const pj = JSON.parse(readFileSync(pkg, "utf8"));
+      const desc = pj?.description || "";
+      if (desc) return desc.slice(0, 1200);
+    } catch { /* ignore */ }
+  }
+  return null;
+}
+
 async function cmdHf(args: Args): Promise<number> {
   const sub = args._[0] ?? "search";
   const REST = args._.slice(1);
@@ -576,7 +596,65 @@ async function cmdHf(args: Args): Promise<number> {
     return winner ? 0 : 1;
   }
 
-  process.stdout.write(`forge hf subcommands: search | classify | find-classifier\n`);
+  // categorize --root <dir> --labels a,b,c [--write out.json] [--margin M] [--min-score S]
+  if (sub === "categorize" || sub === "categorize-repos") {
+    const rootArg = String(args.flags.get("root") ?? "");
+    const defaultLabels = [
+      { id: "infra", desc: "infrastructure, deployment, and system daemon repository: services, ports, supervisors, docker, nginx, telemetry, CI/CD" },
+      { id: "tool", desc: "command-line tool or utility program: a CLI, script, or developer-facing utility" },
+      { id: "mcp", desc: "MCP server: exposes agent tools and resources over the Model Context Protocol for AI coding agents" },
+      { id: "agent", desc: "autonomous agent or agent fleet runtime: orchestrates agents, tasks, fleets, swarms, or multi-agent workflows" },
+      { id: "vendor", desc: "third-party upstream project: a fork, vendored copy, or reference clone of an external open-source codebase" },
+      { id: "tau", desc: "tau ecosystem: part of the tau coding-agent engine, its extensions, or its plugin marketplace" },
+      { id: "ml", desc: "machine learning and model tooling: model serving, embeddings, LLM orchestration, fine-tuning, or inference infrastructure" },
+      { id: "research", desc: "research, analysis, experiment, or audit repository: benchmark, probe, recon, or investigation scripts" },
+      { id: "runtime", desc: "long-running daemon or runtime service: a background process, broker, watchdog, or distributed service" },
+      { id: "website", desc: "website source or content repository: a public site, static site, storefront, or web application frontend" },
+    ];
+    const labels = String(args.flags.get("labels") ?? "infra,tool,mcp,agent,vendor,tau,ml,research,runtime,website").split(",").filter(Boolean);
+    const labelDescs = defaultLabels.filter((l) => labels.includes(l.id)).map((l) => l.desc);
+    const writePath = String(args.flags.get("write") ?? "");
+    if (!rootArg || !resolve(rootArg).startsWith("/")) {
+      process.stdout.write(`usage: forge hf categorize --root <dir> --labels a,b,c [--write out.json]\n`);
+      return 2;
+    }
+    const root = resolve(rootArg);
+    if (!existsSync(root)) { process.stdout.write(`categorize: root not found: ${root}\n`); return 1; }
+    const entries = readdirSync(root, { withFileTypes: true }).filter((e) => e.isDirectory());
+    // build a text signature per repo: prefer README/SKILL/AGENTS/package.json desc
+    const signatures: { repo: string; text: string }[] = [];
+    for (const e of entries) {
+      const dir = join(root, e.name);
+      const sig = repoSignature(dir, e.name);
+      if (sig) signatures.push({ repo: e.name, text: sig });
+    }
+    if (!signatures.length) { process.stdout.write(`categorize: no repos with a readable signature under ${root}\n`); return 1; }
+    process.stderr.write(`categorize: ${signatures.length} repos × ${labels.length} labels (bge-m3, batch embed)\n`);
+    const res = await hf.categorizeRepos(signatures, labels, { labelDesc: labelDescs, sourceRepo: root });
+    if (!res.ok) { process.stdout.write(`categorize: embed failed — ${res.error}\n`); return 1; }
+    if (args.flags.get("json") === true || writePath) {
+      const payload = {
+        schema: "estate.categorize@1",
+        model: res.model,
+        labels: res.labels,
+        thresholds: res.thresholds,
+        scope: res.scope,
+        generatedAt: res.generatedAt,
+        assignments: res.assignments.map((a) => ({ repo: a.repo, label: a.label || null, confident: a.confident, score: Number(a.score.toFixed(4)), margin: Number(a.margin.toFixed(4)), runnerUp: a.runnerUp || null, signature: a.signature, top3: a.rank.slice(0, 3).map((r) => ({ label: r.label, score: Number(r.score.toFixed(4)) })) })),
+      };
+      if (writePath) writeFileSync(resolve(writePath), JSON.stringify(payload, null, 2) + "\n");
+      if (args.flags.get("json") === true) process.stdout.write(JSON.stringify(payload) + "\n");
+    } else {
+      process.stdout.write(`model=${res.model.id} dims=${res.model.dims} repos=${res.scope.repoCount} labels=${res.labels.length}\n`);
+      for (const a of res.assignments) {
+        process.stdout.write(`  ${a.confident ? "✓" : "?"} ${(a.label || "—").padEnd(14)} ${a.repo.padEnd(40)} ${a.score.toFixed(3)} +${a.margin.toFixed(3)}${a.confident ? `  (vs ${a.runnerUp})` : ""}\n`);
+      }
+      if (writePath) process.stdout.write(`\nwrote ${resolve(writePath)} (schema estate.categorize@1)\n`);
+    }
+    return 0;
+  }
+
+  process.stdout.write(`forge hf subcommands: search | models | classify | embed | completions | find-classifier | categorize\n`);
   return 2;
 }
 

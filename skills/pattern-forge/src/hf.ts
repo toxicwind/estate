@@ -323,6 +323,83 @@ export async function embedClassify(text: string, labels: string[], opts: { mode
   }
 }
 
+/** Batch-embed many texts in ONE /v1/embeddings call (bge-m3). Returns vectors aligned with inputs. */
+export async function embedMany(texts: string[], opts: { model?: string; timeoutMs?: number } = {}): Promise<{ ok: boolean; vectors: number[][]; model: string; dims: number; error?: string }> {
+  if (!FREEINF_KEY) return { ok: false, vectors: [], model: opts.model ?? "bge-m3", dims: 0, error: "no FREEINFERENCE_API_KEY" };
+  const model = opts.model ?? "bge-m3";
+  try {
+    const ac = new AbortController();
+    const timer = setTimeout(() => ac.abort(), opts.timeoutMs ?? 60_000);
+    const res = await fetch(`${FREEINF_BASE}/embeddings`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${FREEINF_KEY}` },
+      body: JSON.stringify({ model, input: texts }),
+      signal: ac.signal,
+    });
+    clearTimeout(timer);
+    if (!res.ok) return { ok: false, vectors: [], model, dims: 0, error: `HTTP ${res.status}` };
+    const d = await res.json();
+    const vectors: number[][] = (d.data ?? []).map((x: any) => x.embedding);
+    return { ok: true, vectors, model, dims: vectors[0]?.length ?? 0 };
+  } catch (e: any) {
+    return { ok: false, vectors: [], model, dims: 0, error: e?.message ?? "timeout" };
+  }
+}
+
+/** Categorize many repos against a fixed label set in 2 embed calls (all repo
+ *  signatures + all labels), returning nearest-label per repo with margin gating. */
+export interface RepoAssignment {
+  repo: string;
+  label: string;
+  confident: boolean;
+  score: number;   // cosine to winner label
+  margin: number;  // winner minus runner-up
+  runnerUp: string;
+  signature: { file: string; bytes: number };
+  rank: { label: string; score: number }[];
+}
+export interface CategorizeLabelMeta {
+  id: string;
+  desc: string;
+}
+export interface CategorizeModelMeta {
+  id: string;
+  dims: number;
+  engine: "freeinference";
+  servedAt: string;
+  releasedHint?: string;
+}
+export interface CategorizeResult {
+  ok: boolean;
+  model: CategorizeModelMeta;
+  labels: CategorizeLabelMeta[];
+  thresholds: { minScore: number; minMargin: number };
+  scope: { sourceRepo: string; repoCount: number; signatureBytes: number };
+  generatedAt: string;
+  assignments: RepoAssignment[];
+  error?: string;
+}
+export async function categorizeRepos(signatures: { repo: string; text: string }[], labels: string[], opts: { model?: string; labelDesc?: string[]; margin?: number; minScore?: number; sourceRepo?: string } = {}): Promise<CategorizeResult> {
+  const labelTexts = opts.labelDesc && opts.labelDesc.length === labels.length ? opts.labelDesc : labels;
+  const all = [...signatures.map((s) => s.text), ...labelTexts];
+  const emb = await embedMany(all, { model: opts.model ?? "bge-m3" });
+  const ms = opts.minScore ?? 0.20;
+  const mm = opts.margin ?? 0.02;
+  if (!emb.ok) return { ok: false, model: { id: emb.model, dims: 0, engine: "freeinference", servedAt: new Date().toISOString() }, labels: labels.map((id, i) => ({ id, desc: labelTexts[i] })), thresholds: { minScore: ms, minMargin: mm }, scope: { sourceRepo: opts.sourceRepo ?? "", repoCount: signatures.length, signatureBytes: signatures.reduce((a, s) => a + s.text.length, 0) }, generatedAt: new Date().toISOString(), assignments: [], error: emb.error };
+  const nRepos = signatures.length;
+  const labelVectors = emb.vectors.slice(nRepos);
+  const assignments: RepoAssignment[] = signatures.map((s, i) => {
+    const probe = emb.vectors[i];
+    const rank = labels.map((l, j) => ({ label: l, score: labelVectors[j] ? cosine(probe, labelVectors[j]) : 0 })).sort((a, b) => b.score - a.score);
+    const top = rank[0];
+    const runnerUp = rank[1];
+    const m = (top?.score ?? 0) - (runnerUp?.score ?? 0);
+    const confident = (top?.score ?? 0) >= ms && m >= mm;
+    return { repo: s.repo, label: confident ? top.label : "", confident, score: top?.score ?? 0, margin: m, runnerUp: runnerUp?.label ?? "", signature: { file: "README.md|SKILL.md|package.json", bytes: s.text.length }, rank };
+  });
+  return { ok: true, model: { id: emb.model, dims: emb.dims, engine: "freeinference", servedAt: new Date().toISOString() }, labels: labels.map((id, i) => ({ id, desc: labelTexts[i] })), thresholds: { minScore: ms, minMargin: mm }, scope: { sourceRepo: opts.sourceRepo ?? "", repoCount: signatures.length, signatureBytes: signatures.reduce((a, s) => a + s.text.length, 0) }, generatedAt: new Date().toISOString(), assignments };
+}
+
 /** Resolve classifier model ids: explicit list wins; else curated 2026 default. */
 export async function bestClassifyModels(explicit: string[], labels: string[]): Promise<string[]> {
   if (explicit.length) return explicit;
