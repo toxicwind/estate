@@ -89,7 +89,7 @@ curl -s http://127.0.0.1:25148/api/jobs -X POST -d '{}' | head -c 200
 
 The answer, as committed here:
 
-- **A model-routing layer** that treats local and cloud inference as one fabric. `herd` (:25100) fronts the on-box GGUFs through llama.cpp engines — 52 models served; anything it can't serve overflows to `flock` (:25193), a Rust proxy that routes across cloud providers with key pools, 429 rotation, circuit breakers, and health/Elo scoring. herd currently serves 52 models on-box. The legacy `sovereign-router-ts` (:25104) was retired — nothing listens there anymore.
+- **A model-routing layer** that treats local and cloud inference as one fabric. `herd` (:25100) fronts the on-box GGUFs through llama.cpp engines — 52 models served; anything it can't serve overflows to `flock` (:25193), a Rust proxy that routes across cloud providers with key pools, 429 rotation, circuit breakers, and health/Elo scoring. herd currently serves 52 models on-box. The legacy `estate-router-ts` (:25104) was retired — nothing listens there anymore.
 - **A fleet, not a script.** [squawk](https://github.com/toxicwind/ranch/tree/main/squawk) is a real multi-agent chat plane — signed, sequenced message files over a websocket (:25147) and feed (:25135). Named agents with actual personas join it, argue, bid on work, and narrate what they're doing. The fleet channel is the live operations log.
 - **A decision engine.** The oracle runs prediction-market work loops: biddable tasks, evidence-backed yes/no verdicts, a tamper-evident ledger. When a call needs User's authority and he's not around, the oracle's verdict *is* his approval.
 - **Supervision as a first-class citizen.** 86 daemons live in `pitchfork.toml`, each health-checked, each restartable through its owning project's manifest. "Works until restart" is not a fix here — every fix lands in real files, in the owning repo, and survives a full restart.
@@ -149,7 +149,7 @@ Every row below was verified against the live box on 2026-10-15 (port probed + l
 |---|---|---|
 | 🚂 **herd** | `25100` | Local model front door. `/v1/models` serves the on-box GGUF catalog (llama-swap engines on `:25001+`); cloud traffic overflows to flock. Launched via `stack/services/herd.sh`, depends on gatehouse. |
 | 🦅 **flock** | `25193` | External provider router (Rust). Strategies, key pools, 429 rotation, circuit breakers, health/Elo. Auth-gated — bring a `Bearer` key. |
-| 🧭 ~~**sovereign-router-ts**~~ | ~~`25104`~~ | **RETIRED** — no listener, no daemon definition (verified 2026-10-15). The fleet default moved to `estate/free` via flock/herd. |
+| 🧭 ~~**estate-router-ts**~~ | ~~`25104`~~ | **RETIRED** — no listener, no daemon definition (verified 2026-10-15). The fleet default moved to `estate/free` via flock/herd. |
 | 🏠 **gatehouse** | `25127` | MCP gateway — tool serving, a peer of the routers, not their parent. Has a `/ui/`. |
 | 📱 ~~**phone-sentinel**~~ | ~~`25178`~~ | **DOWN** — no listener (verified 2026-10-15). |
 | 🔑 **keypool** | `25109` | Provider key pool sidecar. `/health` → `{"ok":true,"service":"keypool"}`. |
@@ -215,8 +215,8 @@ curl -s http://127.0.0.1:25155/status
 - [x] Estate repo public, ranch public, hatch private — visibility policy set 2026-10-02
 - [x] hatch split — `hatch/` split out to [toxicwind/hatch](https://github.com/toxicwind/hatch) (final split `d050f680`, 171 commits, 593 files)
 - [x] 93 daemons under pitchfork supervision with health checks
-- [x] herd/flock two-layer model routing, live (legacy sovereign-router :25104 retired)
-- [x] **Legacy router retirement**: `:25104` (sovereign-router-ts) retired — nothing listens, no daemon definition (verified 2026-10-15)
+- [x] herd/flock two-layer model routing, live (legacy estate-router :25104 retired)
+- [x] **Legacy router retirement**: `:25104` (estate-router-ts) retired — nothing listens, no daemon definition (verified 2026-10-15)
 - [ ] **Squawk-ws revival or removal**: :25147 has no listener — either revive the websocket lane or drop it from the surface
 - [ ] **Oracle proof**: real dated yes/no verdict before autonomy leans on it
 - [ ] **Per-lane pollers**: one cheap heartbeat poller per agent lane
