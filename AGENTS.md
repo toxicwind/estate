@@ -10,6 +10,12 @@
 
 ## Non-negotiable (do NOT repeat the root — these are estate-only)
 
+0. **The 2-second rule applies here** (root AGENTS.md, Tooling): every command
+   runs under `run-fast` (2.0s hard deadline); inherently long work goes to
+   `background_process` or a pitchfork daemon, never a blocking tool call.
+   `ranch/estate/bin/bash-2s-shim.sh` (sourced via `~/.bashrc`) auto-wraps
+   known-slow commands. Deadline breach = race a faster alternative.
+
 1. **Secrets live in the keyring** — `ranch/secretsmith` (freedesktop Secret
    Service) FIRST; `~/.secrets` is the fallback, never the source of truth. The
    Bun drop-in is `ranch/secretsmith/bun/` (`import "secretsmith"`). Never
