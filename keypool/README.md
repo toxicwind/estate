@@ -16,6 +16,29 @@ protocol (`/v1beta/interactions`, `tool_search`, `defer_loading`,
 `mcp_server`) by translating OpenAI-shaped bodies in and Interactions-
 shaped bodies out.
 
+## Secrets backend — secretsmith (pure integration)
+
+`keypool.secrets.load()` is now backed by **secretsmith**. Files stay the
+transport per ENV_OWNERSHIP.md; when
+`KEYPOOL_SECRETS_BACKEND=secretsmith`, items stored in the freedesktop
+Secret Service under the attribute `keypool=1` are overlaid on top —
+store wins, files stay the transport.
+
+The overlay degrades to a no-op whenever the secretsmith CLI is absent or
+its session bus is unreachable: keypool never fails to boot because of the
+optional store.
+
+**os_crypt key refusal is structural.** `secret_is_key` schema items
+(Chromium os_crypt keys) are refused by secretsmith *before* they are
+fetched, so they can never enter keypool's key dict through this loader.
+That refusal is not a convention — it is enforced at the D-Bus display
+layer.
+
+| Env var | What |
+|---|---|
+| `KEYPOOL_SECRETS_BACKEND` | Set to `secretsmith` to enable the store overlay |
+| `KEYPOOL_SECRETSMITH_PATH` | Directory containing `secretsmith.py` (default: `../../projects/mesh/secretsmith` relative to `keypool/secrets.py`) |
+
 ## Patterns
 
 Each lives in its own file and is imported where used.
@@ -52,7 +75,7 @@ Each lives in its own file and is imported where used.
     ├── backoff.py        pattern 8
     ├── persist.py        pattern 10
     ├── alerts.py         pattern 13
-    ├── secrets.py        file/dir secrets loader
+    ├── secrets.py        secrets loader — files + secretsmith store overlay
     ├── yamlparse.py      PyYAML with a tiny fallback
     ├── translate.py      OpenAI ↔ Interactions wire
     ├── state.py          KeyState
@@ -102,9 +125,10 @@ Reload after editing `keypools.yaml` (no restart, no dropped requests):
         affinity: {ttl: 3600}              # pattern 5
         cascade:  [other-pool, ...]        # pattern 12
 
-Key **values** live only in `~/.secrets`. The config references them by
-name. Adding a key is a one-line append to `.secrets` plus a name in the
-`keys:` list; `kill -HUP` picks it up.
+Key **values** live in `~/.secrets` (file transport) and/or the secretsmith
+store (when `KEYPOOL_SECRETS_BACKEND=secretsmith`). The config references
+them by name. Adding a key is a one-line append to `.secrets` plus a name
+in the `keys:` list; `kill -HUP` picks it up.
 
 ## Calling
 
