@@ -14,11 +14,11 @@ import {
   swapBaseUrl,
   swapModelsSseUrl,
   swapV1Url,
-} from "../lib/llama_swap_ssot.ts";
+} from "../lib/herd_ssot.ts";
 import { loadEstatePorts, requireEnv } from "../lib/ports.ts";
 
 loadEstatePorts();
-const PORT = requireEnv("LLAMA_SWAP_PORT");
+const PORT = requireEnv("HERD_PORT");
 const BASE = swapV1Url();
 const _CHAT = `${BASE}/chat/completions`;
 const SSE = swapModelsSseUrl();
@@ -163,7 +163,7 @@ const out = {
   models_sse: SSE,
   default_model: defaultModel,
   list_ok: ok,
-  llama_swap_models: models.length,
+  herd_models: models.length,
   "oaicopilot.baseUrl": settings["oaicopilot.baseUrl"],
   "oaicopilot.models": (settings["oaicopilot.models"] || []).length,
   "estate.llamaSwap.modelsSse": settings["estate.llamaSwap.modelsSse"],

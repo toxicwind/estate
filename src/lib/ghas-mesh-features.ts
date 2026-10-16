@@ -87,7 +87,7 @@ export function serviceCatalog(): ServiceMeta[] {
   return [
     {
       id: "herd",
-      portEnv: "LLAMA_SWAP_PORT",
+      portEnv: "HERD_PORT",
       healthPath: "/health",
       role: "llm-front-door",
       ghas_borrow: "openai-compat + models/sse keep-alive",

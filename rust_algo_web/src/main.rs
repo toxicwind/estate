@@ -84,7 +84,7 @@ struct IntegrationProbe {
 
 #[derive(Serialize)]
 struct IntegrationsResponse {
-    llama_swap: IntegrationProbe,
+    herd: IntegrationProbe,
     chat_ui: String,
     hf_downloader: IntegrationProbe,
     fleet_last: Option<serde_json::Value>,
@@ -114,8 +114,8 @@ async fn probe_url(name: &str, url: &str, path_hint: &str) -> IntegrationProbe {
 }
 
 fn swap_base_url() -> String {
-    // Prefer explicit swap port (LLAMA_SWAP_PORT / 25100).
-    if let Ok(p) = std::env::var("LLAMA_SWAP_PORT") {
+    // Prefer explicit swap port (HERD_PORT / 25100).
+    if let Ok(p) = std::env::var("HERD_PORT") {
         return format!("http://127.0.0.1:{p}");
     }
     if let Ok(u) = std::env::var("LLM_PROXY_URL") {
@@ -132,7 +132,7 @@ async fn get_integrations() -> Json<IntegrationsResponse> {
     let hf_url = format!("http://127.0.0.1:{hf_port}/api/health");
     let swap_health = format!("{}/health", swap_base.trim_end_matches('/'));
 
-    let llama_swap = probe_url("llama-swap", &swap_health, "/health").await;
+    let herd = probe_url("llama-swap", &swap_health, "/health").await;
     let hf_downloader = probe_url("hf-downloader", &hf_url, "/api/health").await;
 
     let fleet_last = std::fs::read_to_string(
@@ -146,7 +146,7 @@ async fn get_integrations() -> Json<IntegrationsResponse> {
         .and_then(|s| serde_json::from_str(&s).ok());
 
     Json(IntegrationsResponse {
-        llama_swap,
+        herd,
         chat_ui: format!("{}/ui/", swap_base.trim_end_matches('/')),
         hf_downloader,
         fleet_last,

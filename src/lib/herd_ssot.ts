@@ -3,7 +3,7 @@
  *
  * Sources of truth (in order):
  *   1. tools/llama-swap/config.yaml  (what can run)
- *   2. GET http://127.0.0.1:${LLAMA_SWAP_PORT}/v1/models  (live IDs + status)
+ *   2. GET http://127.0.0.1:${HERD_PORT}/v1/models  (live IDs + status)
  *   3. GET /models/sse  (load/unload events — same contract Zed llama.cpp uses)
  *
  * Clients must NOT hardcode full GGUF inventories. Point base_url at :25100 and
@@ -21,7 +21,7 @@ export type SwapModel = {
 };
 
 export function swapBaseUrl(): string {
-  const port = requirePort("LLAMA_SWAP_PORT");
+  const port = requirePort("HERD_PORT");
   return `http://127.0.0.1:${port}`;
 }
 
@@ -60,7 +60,7 @@ export async function listSwapModels(
 
 /** Prefer a loaded model, else primary, else first id. */
 export async function pickDefaultModel(
-  preferred = process.env.LLAMA_SWAP_MODEL || "beellama/qwen-flash-64k",
+  preferred = process.env.HERD_MODEL || "beellama/qwen-flash-64k",
 ): Promise<string> {
   const { models } = await listSwapModels();
   if (!models.length) return preferred;
@@ -197,7 +197,7 @@ export function openaiCompatClientConfig(defaultModel?: string) {
     base_url: swapV1Url(),
     api_key: process.env.OPENAI_API_KEY || "not-required-for-local",
     default_model:
-      defaultModel || process.env.LLAMA_SWAP_MODEL || "beellama/qwen-flash-64k",
+      defaultModel || process.env.HERD_MODEL || "beellama/qwen-flash-64k",
     models_url: `${swapV1Url()}/models`,
     models_sse_url: swapModelsSseUrl(),
     note: "Catalog is live from llama-swap; do not ship static model inventories. Prefer SSE auto_discover when the client supports it (Zed llama.cpp).",
@@ -210,19 +210,19 @@ export function clientEnvExports(defaultModel?: string): string {
   const v1 = swapV1Url();
   const sse = swapModelsSseUrl();
   const dm =
-    defaultModel || process.env.LLAMA_SWAP_MODEL || "beellama/qwen-flash-64k";
+    defaultModel || process.env.HERD_MODEL || "beellama/qwen-flash-64k";
   return `# Generated from llama-swap SSOT — do not hand-edit model lists
 export OPENAI_BASE_URL=${v1}
 export OPENAI_API_BASE=${v1}
 export LLM_BASE_URL=${v1}
-export LLAMA_SWAP_URL=${base}
-export LLAMA_SWAP_BASE=${base}
-export LLAMA_SWAP_V1=${v1}
-export LLAMA_SWAP_MODELS_URL=${v1}/models
-export LLAMA_SWAP_MODELS_SSE=${sse}
+export HERD_URL=${base}
+export HERD_BASE=${base}
+export HERD_V1=${v1}
+export HERD_MODELS_URL=${v1}/models
+export HERD_MODELS_SSE=${sse}
 export LLAMA_MODELS_SSE_URL=${sse}
 export LLAMA_CHAT_URL=${v1}/chat/completions
-export LLAMA_SWAP_MODEL=${dm}
+export HERD_MODEL=${dm}
 export ESTATE_LLM=${v1}
 `;
 }

@@ -6,13 +6,13 @@ export PATH="${HOME}/.cargo/bin:/usr/bin:/bin:${PATH}"
 source "$SOV/stack/lib-ports.sh"
 require_port RUST_WEB_PORT
 require_port WATCHDOG_PORT
-require_port LLAMA_SWAP_PORT
+require_port HERD_PORT
 PUBLIC="${RUST_WEB_PORT}"
 BACKEND="${RUST_WEB_BACKEND_PORT:-25201}"
 require_port BACKEND
 export RUST_WEB_PORT="${BACKEND}"
 export WATCHDOG_PORT ESTATE_ROOT="$SOV"
-export LLM_PROXY_URL="${LLM_PROXY_URL:-http://127.0.0.1:${LLAMA_SWAP_PORT}}"
+export LLM_PROXY_URL="${LLM_PROXY_URL:-http://127.0.0.1:${HERD_PORT}}"
 
 cd "$SOV/rust_algo_web"
 if ! command -v cargo-watch >/dev/null 2>&1; then

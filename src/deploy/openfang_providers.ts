@@ -23,7 +23,7 @@ const BACKUP = join(
   HOME,
   "estate/backup/reorg_2026-07-11_bun/openfang_pre_llama_provider",
 );
-const SWAP = `http://127.0.0.1:${requireEnv("LLAMA_SWAP_PORT")}/v1`;
+const SWAP = `http://127.0.0.1:${requireEnv("HERD_PORT")}/v1`;
 
 function walkToml(dir: string, acc: string[] = []): string[] {
   for (const name of readdirSync(dir)) {

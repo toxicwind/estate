@@ -1,5 +1,5 @@
 /**
- * llama_swap_ssot.ts unit tests — covers utility functions, URL builders,
+ * herd_ssot.ts unit tests — covers utility functions, URL builders,
  * pickDefaultModel logic, and oaicopilotModelsFromSwap without live service.
  */
 import { afterEach, beforeEach, describe, expect, test, vi } from "bun:test";
@@ -26,11 +26,11 @@ import {
   swapModelsSseUrl,
   swapV1Url,
   watchSwapModelsSseRefresh,
-} from "../src/lib/llama_swap_ssot.ts";
+} from "../src/lib/herd_ssot.ts";
 
 // ── URL builders ─────────────────────────────────────────────────────────────
 
-describe("llama_swap_ssot URL builders", () => {
+describe("herd_ssot URL builders", () => {
   test("swapBaseUrl returns http://127.0.0.1:${port}", () => {
     const url = swapBaseUrl();
     expect(url).toMatch(/^http:\/\/127\.0\.0\.1:\d+$/);
@@ -191,17 +191,17 @@ describe("pickDefaultModel", () => {
     expect(result).toBe("actual-model");
   });
 
-  test("uses LLAMA_SWAP_MODEL env as preferred (line 63)", async () => {
-    const orig = process.env.LLAMA_SWAP_MODEL;
-    process.env.LLAMA_SWAP_MODEL = "env-model";
+  test("uses HERD_MODEL env as preferred (line 63)", async () => {
+    const orig = process.env.HERD_MODEL;
+    process.env.HERD_MODEL = "env-model";
     mockFetch.mockResolvedValueOnce({
       ok: true,
       json: () => Promise.resolve({ data: [{ id: "env-model" }] }),
     });
     const result = await pickDefaultModel();
     expect(result).toBe("env-model");
-    if (orig !== undefined) process.env.LLAMA_SWAP_MODEL = orig;
-    else delete process.env.LLAMA_SWAP_MODEL;
+    if (orig !== undefined) process.env.HERD_MODEL = orig;
+    else delete process.env.HERD_MODEL;
   });
 });
 
@@ -278,15 +278,15 @@ describe("clientEnvExports", () => {
   test("returns shell exports with all env vars", () => {
     const output = clientEnvExports();
     expect(output).toContain("export OPENAI_BASE_URL=");
-    expect(output).toContain("export LLAMA_SWAP_URL=");
+    expect(output).toContain("export HERD_URL=");
     expect(output).toContain("export LLAMA_CHAT_URL=");
     expect(output).toContain("export ESTATE_LLM=");
     expect(output).toContain("export LLAMA_MODELS_SSE_URL=");
   });
 
-  test("uses custom default model in LLAMA_SWAP_MODEL", () => {
+  test("uses custom default model in HERD_MODEL", () => {
     const output = clientEnvExports("custom-model");
-    expect(output).toContain("export LLAMA_SWAP_MODEL=custom-model");
+    expect(output).toContain("export HERD_MODEL=custom-model");
   });
 
   test("contains do-not-edit comment", () => {
@@ -339,7 +339,7 @@ describe("watchSwapModelsSse — SSE reader loop", () => {
     const received: any[] = [];
     // Import watchSwapModelsSse directly
     const { watchSwapModelsSse } = await import(
-      "../src/lib/llama_swap_ssot.ts"
+      "../src/lib/herd_ssot.ts"
     );
     const h = watchSwapModelsSse((ev) => received.push(ev));
 
@@ -359,7 +359,7 @@ describe("watchSwapModelsSse — SSE reader loop", () => {
     });
     let errorCaught: any = null;
     const { watchSwapModelsSse } = await import(
-      "../src/lib/llama_swap_ssot.ts"
+      "../src/lib/herd_ssot.ts"
     );
     watchSwapModelsSse(
       () => {},
@@ -376,7 +376,7 @@ describe("watchSwapModelsSse — SSE reader loop", () => {
     mockFetch.mockRejectedValueOnce(new Error("network fail"));
     let errorCaught: any = null;
     const { watchSwapModelsSse } = await import(
-      "../src/lib/llama_swap_ssot.ts"
+      "../src/lib/herd_ssot.ts"
     );
     watchSwapModelsSse(
       () => {},
@@ -407,7 +407,7 @@ describe("watchSwapModelsSse — SSE reader loop", () => {
 
     const received: any[] = [];
     const { watchSwapModelsSse } = await import(
-      "../src/lib/llama_swap_ssot.ts"
+      "../src/lib/herd_ssot.ts"
     );
     const h = watchSwapModelsSse((ev) => received.push(ev));
     await new Promise((r) => setTimeout(r, 100));
@@ -432,7 +432,7 @@ describe("watchSwapModelsSse — SSE reader loop", () => {
 
     const received: any[] = [];
     const { watchSwapModelsSse } = await import(
-      "../src/lib/llama_swap_ssot.ts"
+      "../src/lib/herd_ssot.ts"
     );
     const h = watchSwapModelsSse((ev) => received.push(ev));
     await new Promise((r) => setTimeout(r, 100));

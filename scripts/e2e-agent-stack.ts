@@ -20,7 +20,7 @@ const KEY =
   process.env.LLM_API_KEY ||
   "estate-local-matrix";
 
-const SWAP = requirePort("LLAMA_SWAP_PORT");
+const SWAP = requirePort("HERD_PORT");
 const MATRIX = requirePort("ESTATE_ROUTER_PORT");
 const GHAS = requirePort("GHAS_API_PORT");
 
@@ -52,7 +52,7 @@ function add(step: string, ok: boolean, detail: string) {
 
 // D1
 {
-  const r = await curlJson(localUrl("LLAMA_SWAP_PORT", "/v1/models"));
+  const r = await curlJson(localUrl("HERD_PORT", "/v1/models"));
   const n = (r.body as any)?.data?.length ?? 0;
   add("D1 llama-swap models", r.status === 200 && n > 0, `port=${SWAP} n=${n}`);
 }
@@ -98,10 +98,10 @@ function add(step: string, ok: boolean, detail: string) {
 
 // D4
 {
-  const models = await curlJson(localUrl("LLAMA_SWAP_PORT", "/v1/models"));
+  const models = await curlJson(localUrl("HERD_PORT", "/v1/models"));
   const id = (models.body as any)?.data?.[0]?.id || "default";
   const r = await curlJson(
-    localUrl("LLAMA_SWAP_PORT", "/v1/chat/completions"),
+    localUrl("HERD_PORT", "/v1/chat/completions"),
     {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -176,9 +176,9 @@ function add(step: string, ok: boolean, detail: string) {
 
 // D9
 {
-  const script = resolve(HOME, "estate/src/mcp/llama_swap.ts");
+  const script = resolve(HOME, "estate/src/mcp/herd.ts");
   const exists = await Bun.file(script).exists();
-  const m = await curlJson(localUrl("LLAMA_SWAP_PORT", "/v1/models"));
+  const m = await curlJson(localUrl("HERD_PORT", "/v1/models"));
   add("D9 llama-swap mcp path", exists && m.status === 200, `exists=${exists}`);
 }
 

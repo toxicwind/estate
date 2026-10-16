@@ -1,22 +1,22 @@
 #!/usr/bin/env bash
 # mise run test-llm — prove the herd (llama-swap) serving path.
 # 2026-09-20: was calling subcommands settings/chat/stream which do not exist
-# in src/mcp/llama_swap.ts (they fell through to the MCP stdio server and hung).
+# in src/mcp/herd.ts (they fell through to the MCP stdio server and hung).
 # Only real CLI subcommands remain: health, models, e2e.
 set -euo pipefail
 
 # Resolve the repo from this script's own location. ESTATE_ROOT is unset in
 # practice, and its $HOME/Estate fallback is a stale duplicate with no
-# src/mcp/, so every subcommand died on "Module not found src/mcp/llama_swap.ts".
+# src/mcp/, so every subcommand died on "Module not found src/mcp/herd.ts".
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$ROOT"
 
 source "$ROOT/stack/lib-ports.sh"
-export LLAMA_SWAP_BASE="${LLAMA_SWAP_BASE:-http://127.0.0.1:${LLAMA_SWAP_PORT:?}}"
+export HERD_BASE="${HERD_BASE:-http://127.0.0.1:${HERD_PORT:?}}"
 
-echo "=== llama_swap_health ==="
-bun src/mcp/llama_swap.ts health
-echo "=== llama_swap_models ==="
-bun src/mcp/llama_swap.ts models
-echo "=== llama_swap_e2e ==="
-bun src/mcp/llama_swap.ts e2e
+echo "=== herd_health ==="
+bun src/mcp/herd.ts health
+echo "=== herd_models ==="
+bun src/mcp/herd.ts models
+echo "=== herd_e2e ==="
+bun src/mcp/herd.ts e2e

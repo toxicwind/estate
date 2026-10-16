@@ -30,7 +30,7 @@ checker is `config/naming-audit.py` — run it after any config change.
 These look wrong but are deliberate or bridge-critical — do not "clean"
 them without reading this first:
 
-- `LLAMA_SWAP_PORT=25100` vs `HERD_PORT=25100`: two names, one listener.
+- `HERD_PORT=25100` vs `HERD_PORT=25100`: two names, one listener.
   `llama-swap.sh`/`rust-web*.sh` use the first, `herd.sh` and the herd
   health scripts use the second. Unifying is a semantic change for the
   daemon-repair lane, not a rename.

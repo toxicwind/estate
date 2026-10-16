@@ -320,9 +320,9 @@ app.post("/v1/chat/completions", async (c) => {
   );
 
   // Local llama-swap fallback when Antigravity is down OR model looks like a estate GGUF id
-  const LLAMA_SWAP_V1 =
+  const HERD_V1 =
     process.env.LLM_BASE_URL ||
-    process.env.LLAMA_SWAP_V1 ||
+    process.env.HERD_V1 ||
     "http://127.0.0.1:25100/v1";
   const looksLocal =
     /^(beellama|mradermacher|jackrong|turboquant|ik_llama|ik_turboquant|holo|qwen\/|gemma-4|exaone|fast|quality|longctx|local-)/i.test(
@@ -332,17 +332,17 @@ app.post("/v1/chat/completions", async (c) => {
   const proxyToLlamaSwap = async (): Promise<Response> => {
     const upstreamModel =
       requestedModel === "fast" || requestedModel === "local-fast"
-        ? process.env.LLAMA_SWAP_FAST_MODEL || "beellama/exaone-4-0-1-2b-iq4xs"
+        ? process.env.HERD_FAST_MODEL || "beellama/exaone-4-0-1-2b-iq4xs"
         : requestedModel === "quality" || requestedModel === "local-quality"
-          ? process.env.LLAMA_SWAP_QUALITY_MODEL || "beellama/qwen-flash-64k"
+          ? process.env.HERD_QUALITY_MODEL || "beellama/qwen-flash-64k"
           : requestedModel === "longctx" || requestedModel === "local-longctx"
-            ? process.env.LLAMA_SWAP_LONGCTX_MODEL || "beellama/qwen-flash-256k"
+            ? process.env.HERD_LONGCTX_MODEL || "beellama/qwen-flash-256k"
             : String(requestedModel);
     process.stderr.write(
-      `[proxy] llama-swap fallback model=${upstreamModel} via ${LLAMA_SWAP_V1}\n`,
+      `[proxy] llama-swap fallback model=${upstreamModel} via ${HERD_V1}\n`,
     );
     const res = await fetch(
-      `${LLAMA_SWAP_V1.replace(/\/$/, "")}/chat/completions`,
+      `${HERD_V1.replace(/\/$/, "")}/chat/completions`,
       {
         method: "POST",
         headers: {

@@ -33,7 +33,7 @@ so drift is a build failure rather than a dead tab.
 Five keys share a port with another key. All five are documented alias groups
 that `bin/port-audit.py` already recognises:
 
-`:25100` HERD_PORT / LLAMA_SWAP_PORT (rename), `:25107` NULL_G_PROXY_PORT /
+`:25100` HERD_PORT / HERD_PORT (rename), `:25107` NULL_G_PROXY_PORT /
 NULL_G_PORT (canonical / deprecated), `:25133` QDRANT_PORT / QDRANT_HTTP_PORT,
 `:25201` RUST_WEB_PORT / RUST_WEB_BACKEND_PORT (former rust-web), `:25204`
 EXEC_WS_PORT / WS_EXEC_PORT.

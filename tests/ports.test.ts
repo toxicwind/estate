@@ -11,7 +11,7 @@ const origEnv: Record<string, string | undefined> = {};
 
 beforeEach(() => {
   // Save relevant env vars
-  for (const k of ["ESTATE_ROOT", "LLAMA_SWAP_PORT", "SOME_PORT"]) {
+  for (const k of ["ESTATE_ROOT", "HERD_PORT", "SOME_PORT"]) {
     origEnv[k] = process.env[k];
   }
 });
@@ -62,53 +62,53 @@ describe("ports.ts", () => {
   });
 
   test("requirePort returns valid number (line 48-53)", () => {
-    process.env.LLAMA_SWAP_PORT = "25100";
-    const port = requirePort("LLAMA_SWAP_PORT");
+    process.env.HERD_PORT = "25100";
+    const port = requirePort("HERD_PORT");
     expect(port).toBe(25100);
     expect(typeof port).toBe("number");
   });
 
   test("requirePort throws for non-numeric (line 50)", () => {
-    process.env.LLAMA_SWAP_PORT = "not-a-number";
-    expect(() => requirePort("LLAMA_SWAP_PORT")).toThrow("valid TCP port");
+    process.env.HERD_PORT = "not-a-number";
+    expect(() => requirePort("HERD_PORT")).toThrow("valid TCP port");
   });
 
   test("requirePort throws for zero (line 50)", () => {
-    process.env.LLAMA_SWAP_PORT = "0";
-    expect(() => requirePort("LLAMA_SWAP_PORT")).toThrow("valid TCP port");
+    process.env.HERD_PORT = "0";
+    expect(() => requirePort("HERD_PORT")).toThrow("valid TCP port");
   });
 
   test("requirePort throws for >65535 (line 50)", () => {
-    process.env.LLAMA_SWAP_PORT = "99999";
-    expect(() => requirePort("LLAMA_SWAP_PORT")).toThrow("valid TCP port");
+    process.env.HERD_PORT = "99999";
+    expect(() => requirePort("HERD_PORT")).toThrow("valid TCP port");
   });
 
   test("requirePort throws for negative (line 50)", () => {
-    process.env.LLAMA_SWAP_PORT = "-1";
-    expect(() => requirePort("LLAMA_SWAP_PORT")).toThrow("valid TCP port");
+    process.env.HERD_PORT = "-1";
+    expect(() => requirePort("HERD_PORT")).toThrow("valid TCP port");
   });
 
   test("localUrl builds correct URL (line 57-61)", () => {
-    process.env.LLAMA_SWAP_PORT = "25100";
-    const url = localUrl("LLAMA_SWAP_PORT");
+    process.env.HERD_PORT = "25100";
+    const url = localUrl("HERD_PORT");
     expect(url).toBe("http://127.0.0.1:25100");
   });
 
   test("localUrl appends path with leading slash", () => {
-    process.env.LLAMA_SWAP_PORT = "25100";
-    const url = localUrl("LLAMA_SWAP_PORT", "/v1/models");
+    process.env.HERD_PORT = "25100";
+    const url = localUrl("HERD_PORT", "/v1/models");
     expect(url).toBe("http://127.0.0.1:25100/v1/models");
   });
 
   test("localUrl adds slash before non-empty path", () => {
-    process.env.LLAMA_SWAP_PORT = "25100";
-    const url = localUrl("LLAMA_SWAP_PORT", "v1/models");
+    process.env.HERD_PORT = "25100";
+    const url = localUrl("HERD_PORT", "v1/models");
     expect(url).toBe("http://127.0.0.1:25100/v1/models");
   });
 
   test("localUrl with empty path", () => {
-    process.env.LLAMA_SWAP_PORT = "25100";
-    const url = localUrl("LLAMA_SWAP_PORT", "");
+    process.env.HERD_PORT = "25100";
+    const url = localUrl("HERD_PORT", "");
     expect(url).toBe("http://127.0.0.1:25100");
   });
 });

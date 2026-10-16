@@ -76,7 +76,7 @@ async function get(
 }
 
 async function chatVisible(): Promise<Row> {
-  const port = requirePort("LLAMA_SWAP_PORT");
+  const port = requirePort("HERD_PORT");
   const url = `http://127.0.0.1:${port}/v1/chat/completions`;
   const body = {
     model: process.env.E2E_CHAT_MODEL || "beellama/qwen-flash-64k",
@@ -145,7 +145,7 @@ async function chatVisible(): Promise<Row> {
 }
 
 async function modelsSse(): Promise<Row> {
-  const port = requirePort("LLAMA_SWAP_PORT");
+  const port = requirePort("HERD_PORT");
   const url = `http://127.0.0.1:${port}/models/sse`;
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), 5000);
@@ -205,7 +205,7 @@ async function modelsSse(): Promise<Row> {
   }
 }
 
-const SWAP = requirePort("LLAMA_SWAP_PORT");
+const SWAP = requirePort("HERD_PORT");
 const RUST = requirePort("RUST_WEB_PORT");
 const YOTE = requirePort("YOTE_PORT");
 const OF = requirePort("OPENFANG_PORT");

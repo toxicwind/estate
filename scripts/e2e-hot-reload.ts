@@ -99,7 +99,7 @@ function touchHtml(path: string, marker: string) {
 }
 
 const MARKER = `t${Date.now()}`;
-const SWAP = requirePort("LLAMA_SWAP_PORT");
+const SWAP = requirePort("HERD_PORT");
 const RUST = requirePort("RUST_WEB_PORT");
 const YOTE = requirePort("YOTE_PORT");
 const OF = requirePort("OPENFANG_PORT");

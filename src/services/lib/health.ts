@@ -34,7 +34,7 @@ const RT = 2;
 const RD = 500;
 // Estate 25xxx map: llama-swap :25100, openfang :25103
 const LP = Number(
-  process.env.LLAMA_SWAP_PORT ?? process.env.LLAMA_PORT ?? "25100",
+  process.env.HERD_PORT ?? process.env.LLAMA_PORT ?? "25100",
 );
 const OP = Number(process.env.OPENFANG_PORT ?? "25103");
 function env(n: string, f: string) {

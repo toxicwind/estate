@@ -22,7 +22,7 @@ model = "meta/llama-3.2-11b-vision-instruct"
 max_tokens = 4096
 temperature = 0.7
 system_prompt = "You are a helpful AI agent."
-api_key_env = "LLAMA_SWAP_API_KEY"
+api_key_env = "HERD_API_KEY"
 
 [resources]
 max_memory_bytes = 268435456

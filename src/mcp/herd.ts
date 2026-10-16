@@ -12,12 +12,12 @@ loadEstatePorts();
 
 // ENV ONLY - no homedir reads
 const DEFAULT_BASE = (
-  process.env.LLAMA_SWAP_BASE ||
+  process.env.HERD_BASE ||
   (process.env.LLM_BASE_URL || "").replace(/\/v1\/?$/, "") ||
-  `http://127.0.0.1:${requireEnv("LLAMA_SWAP_PORT")}`
+  `http://127.0.0.1:${requireEnv("HERD_PORT")}`
 ).replace(/\/$/, "");
 
-const DEFAULT_MODEL = process.env.LLAMA_SWAP_MODEL || "beellama/qwen-flash-64k";
+const DEFAULT_MODEL = process.env.HERD_MODEL || "beellama/qwen-flash-64k";
 
 function j(obj: unknown): string {
   return JSON.stringify(obj, null, 2);
@@ -216,7 +216,7 @@ async function mcpMain() {
   });
 
   server.tool(
-    "llama_swap_health",
+    "herd_health",
     "GET {base}/health",
     { base_url: z.string().optional() },
     async ({ base_url }) => ({
@@ -230,7 +230,7 @@ async function mcpMain() {
   );
 
   server.tool(
-    "llama_swap_models",
+    "herd_models",
     "GET {base}/v1/models",
     { base_url: z.string().optional() },
     async ({ base_url }) => ({
@@ -244,7 +244,7 @@ async function mcpMain() {
   );
 
   server.tool(
-    "llama_swap_chat",
+    "herd_chat",
     "POST chat/completions",
     {
       prompt: z.string().optional(),
@@ -259,7 +259,7 @@ async function mcpMain() {
   );
 
   server.tool(
-    "llama_swap_chat_stream",
+    "herd_chat_stream",
     "POST streaming",
     {
       prompt: z.string().optional(),

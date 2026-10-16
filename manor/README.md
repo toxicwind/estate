@@ -107,9 +107,9 @@ window.__HERD_API__ = "http://127.0.0.1:25100";
 Everything goes through the exported `api(path)` helper, so this one value
 redirects the whole app.
 
-**Do not confuse it with `LLAMA_SWAP_URL`.** That is dev-server plumbing: Vite
+**Do not confuse it with `HERD_URL`.** That is dev-server plumbing: Vite
 proxies `/api`, `/logs`, `/upstream`, `/unload`, `/v1` and `/sdapi` to
-`LLAMA_SWAP_URL` (default `http://localhost:8080`), which is what lets the dev
+`HERD_URL` (default `http://localhost:8080`), which is what lets the dev
 server work with no `VITE_HERD_API` build. It has no effect on a production
 bundle; `VITE_HERD_API` / `__HERD_API__` is what the bundle actually calls.
 
@@ -201,7 +201,7 @@ bun run src/cli/docsAgent.ts ask "how do I configure a model?"
 Its default case and results directories resolve to
 `ranch/evals/docs-agent/{cases,runs}` — **that directory does not exist in this
 tree**, so `eval` and `judge` have no defaults to work from until it is
-restored. It reads `LLAMA_SWAP_URL`, `DOCS_AGENT_MODEL` and
+restored. It reads `HERD_URL`, `DOCS_AGENT_MODEL` and
 `DOCS_AGENT_JUDGE_MODEL`.
 
 ---

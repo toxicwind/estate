@@ -8,8 +8,8 @@ import { loadEstatePorts } from "../lib/ports.ts";
 
 loadEstatePorts();
 
-const LLAMA_SWAP_BASE = `http://127.0.0.1:${process.env.HERD_PORT || process.env.LLAMA_SWAP_PORT || "25100"}`;
-const _HERD_BASE = LLAMA_SWAP_BASE; // alias for project-wide herd naming (tau: any pi/omp -> tau)
+const HERD_BASE = `http://127.0.0.1:${process.env.HERD_PORT || process.env.HERD_PORT || "25100"}`;
+const _HERD_BASE = HERD_BASE; // alias for project-wide herd naming (tau: any pi/omp -> tau)
 // ──────────────────────────────────────────────────────────────
 // REASONING EFFORT → BACKEND MAPPING
 // Based on llama-swap.yaml routing matrix
@@ -326,7 +326,7 @@ const server = Bun.serve({
         // Also check llama-swap for model availability
         let available = true;
         try {
-          const modelsRes = await fetch(`${LLAMA_SWAP_BASE}/v1/models`, {
+          const modelsRes = await fetch(`${HERD_BASE}/v1/models`, {
             signal: AbortSignal.timeout(2000),
           });
           if (modelsRes.ok) {
@@ -374,7 +374,7 @@ const server = Bun.serve({
         delete (forwardBody as any).chat_template_kwargs?.reasoning_effort;
         delete (forwardBody as any).reasoning_effort;
 
-        const response = await fetch(`${LLAMA_SWAP_BASE}/v1/chat/completions`, {
+        const response = await fetch(`${HERD_BASE}/v1/chat/completions`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -433,7 +433,7 @@ const server = Bun.serve({
 });
 
 console.log(
-  `[reasoning-router] listening :${server.port} → llama-swap=${LLAMA_SWAP_BASE}`,
+  `[reasoning-router] listening :${server.port} → llama-swap=${HERD_BASE}`,
 );
 console.log(
   `[reasoning-router] Routing tiers: ${Object.keys(REASONING_ROUTES).join(", ")}`,

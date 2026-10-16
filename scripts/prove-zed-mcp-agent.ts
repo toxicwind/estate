@@ -18,7 +18,7 @@ const SCRATCH =
   process.env.SCRATCH || "/tmp/grok-goal-c30f990945a1/implementer/zed-agent";
 mkdirSync(SCRATCH, { recursive: true });
 
-const LLM = `http://127.0.0.1:${requirePort("LLAMA_SWAP_PORT")}`;
+const LLM = `http://127.0.0.1:${requirePort("HERD_PORT")}`;
 const MODEL_A = "beellama/qwen-flash-64k";
 const MODEL_B = "beellama/exaone-4-0-1-2b-iq4xs";
 
@@ -253,21 +253,21 @@ const llamaMcp = await runMcp(
   [
     "/home/toxic/.bun/bin/bun",
     "run",
-    "/home/toxic/estate/src/mcp/llama_swap.ts",
+    "/home/toxic/estate/src/mcp/herd.ts",
   ],
-  "llama_swap_health",
+  "herd_health",
   {},
 );
 
-// Also call llama_swap_models as second tool use evidence
+// Also call herd_models as second tool use evidence
 const llamaModels = await runMcp(
   "llama-swap-models",
   [
     "/home/toxic/.bun/bin/bun",
     "run",
-    "/home/toxic/estate/src/mcp/llama_swap.ts",
+    "/home/toxic/estate/src/mcp/herd.ts",
   ],
-  "llama_swap_models",
+  "herd_models",
   {},
 );
 
@@ -318,7 +318,7 @@ const settingsRaw = readFileSync(
 const settingsProof = {
   ghas_enabled: settingsRaw.includes("ghas-mcp-stdio"),
   llama_cpp_25100: settingsRaw.includes("127.0.0.1:25100"),
-  estate_llama_swap: settingsRaw.includes("estate-llama-swap"),
+  estate_herd: settingsRaw.includes("estate-llama-swap"),
   model_a: settingsRaw.includes(MODEL_A),
   model_b: settingsRaw.includes(MODEL_B),
   enable_all_context_servers: settingsRaw.includes(
@@ -345,8 +345,8 @@ const report = {
   zed_pid: zedPid,
   zed_mcp_children: children,
   mcp_ghas: ghasMcp,
-  mcp_llama_swap: llamaMcp,
-  mcp_llama_swap_models: llamaModels,
+  mcp_herd: llamaMcp,
+  mcp_herd_models: llamaModels,
   settings: settingsProof,
   ui,
   model_a: turnA,
@@ -367,8 +367,8 @@ writeFileSync(
   JSON.stringify(
     {
       ghas_health: ghasMcp.tool_result_preview,
-      llama_swap_health: llamaMcp.tool_result_preview,
-      llama_swap_models: llamaModels.tool_result_preview,
+      herd_health: llamaMcp.tool_result_preview,
+      herd_models: llamaModels.tool_result_preview,
     },
     null,
     2,

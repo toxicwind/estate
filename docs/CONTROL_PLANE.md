@@ -30,7 +30,7 @@ Aesthetic map of live dashboards, APIs, and MCP surfaces (25xxx SSOT).
 | Server | How |
 |--------|-----|
 | **ghas** | `ghas-mcp-stdio.sh` · HTTP health `:25113` |
-| **llama-swap** | `bun run src/mcp/llama_swap.ts` |
+| **llama-swap** | `bun run src/mcp/herd.ts` |
 | **ast-grep** | structural search |
 | **filesystem / markitdown / prometheus / browserless** | see `~/.grok/config.toml` |
 
@@ -58,7 +58,7 @@ Zed: `context_servers` in `~/.config/zed/settings.json` (same commands).
 | **Zed** | `llama.cpp` + `auto_discover: true` → native `GET /models/sse` (no model list in settings) |
 | **OpenFang** | `provider_urls.llama = http://127.0.0.1:25100/v1` only; agent model ids are request-time |
 | **VS Code oaicopilot** | No native SSE; `code_insiders.ts` mirrors **live** `/v1/models` (optional `--watch` re-syncs on SSE) |
-| **Antigravity / shells** | `.state/client-llm.env` exports `LLAMA_SWAP_MODELS_SSE` + base URLs |
+| **Antigravity / shells** | `.state/client-llm.env` exports `HERD_MODELS_SSE` + base URLs |
 
 ```bash
 bun run sync:ssot          # status JSON + OF + Zed guard
@@ -66,4 +66,4 @@ bun run sync:ssot:ides     # + VS Code / ide-test / antigravity env
 bun run deploy:insiders -- --watch   # SSE→oaicopilot refresh loop
 ```
 
-Helpers: `src/lib/llama_swap_ssot.ts`, `src/deploy/sync_clients_from_swap.ts`.
+Helpers: `src/lib/herd_ssot.ts`, `src/deploy/sync_clients_from_swap.ts`.

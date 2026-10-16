@@ -6,8 +6,8 @@ export const CORE_SERVICES: ServiceDef[] = [
   {
     id: "herd",
     name: "herd",
-    portKey: "LLAMA_SWAP_PORT",
-    run: "exec ./stack/services/herd.sh --host 127.0.0.1 --port ${LLAMA_SWAP_PORT}",
+    portKey: "HERD_PORT",
+    run: "exec ./stack/services/herd.sh --host 127.0.0.1 --port ${HERD_PORT}",
     dir: "/home/toxic/estate",
     readyHttp: "/health",
     group: "core",

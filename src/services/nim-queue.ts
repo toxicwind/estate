@@ -34,12 +34,12 @@ const PORT = parseInt(
 );
 const UPSTREAM_BASE =
   process.env.NIM_QUEUE_UPSTREAM ??
-  `http://127.0.0.1:${process.env.HERD_PORT || process.env.LLAMA_SWAP_PORT || "25100"}`;
+  `http://127.0.0.1:${process.env.HERD_PORT || process.env.HERD_PORT || "25100"}`;
 const UPSTREAM_HAS_V1 = UPSTREAM_BASE.endsWith("/v1");
 const UPSTREAM = UPSTREAM_BASE; // alias for compatibility
 const ADMIN =
   process.env.NIM_QUEUE_LLAMA_ADMIN ??
-  `http://127.0.0.1:${process.env.HERD_PORT || process.env.LLAMA_SWAP_PORT || "25100"}`;
+  `http://127.0.0.1:${process.env.HERD_PORT || process.env.HERD_PORT || "25100"}`;
 const MAX_BACKOFF_MS = parseInt(
   process.env.NIM_QUEUE_MAX_BACKOFF_MS ?? "120000",
   10,

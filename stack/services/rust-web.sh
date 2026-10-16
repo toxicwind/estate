@@ -8,9 +8,9 @@ source "$SOV/stack/lib-ports.sh"
 RUST_WEB_PORT="${RUST_WEB_BACKEND_PORT:-25201}"
 require_port RUST_WEB_PORT
 require_port WATCHDOG_PORT
-require_port LLAMA_SWAP_PORT
+require_port HERD_PORT
 export RUST_WEB_PORT WATCHDOG_PORT ESTATE_ROOT="$SOV"
-export LLM_PROXY_URL="${LLM_PROXY_URL:-http://127.0.0.1:${LLAMA_SWAP_PORT}}"
+export LLM_PROXY_URL="${LLM_PROXY_URL:-http://127.0.0.1:${HERD_PORT}}"
 
 BIN=""
 for cand in \

@@ -16,7 +16,7 @@ const SCRATCH =
   "/tmp/grok-goal-c30f990945a1/implementer/zed-agent";
 mkdirSync(SCRATCH, { recursive: true });
 
-const LLM = `http://127.0.0.1:${requirePort("LLAMA_SWAP_PORT")}`;
+const LLM = `http://127.0.0.1:${requirePort("HERD_PORT")}`;
 const GHAS = `http://127.0.0.1:${requirePort("GHAS_API_PORT")}`;
 const GHAS_MCP = `http://127.0.0.1:${requirePort("GHAS_MCP_PORT")}`;
 

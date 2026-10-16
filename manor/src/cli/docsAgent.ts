@@ -38,7 +38,7 @@ const REPO_ROOT = path.resolve(HERE, "../../..");
 const DEFAULT_CASES = path.join(REPO_ROOT, "evals/docs-agent/cases");
 const DEFAULT_RUNS = path.join(REPO_ROOT, "evals/docs-agent/runs");
 
-const DEFAULT_BASE_URL = process.env.LLAMA_SWAP_URL ?? "http://localhost:8080";
+const DEFAULT_BASE_URL = process.env.HERD_URL ?? "http://localhost:8080";
 const DEFAULT_MODEL = process.env.DOCS_AGENT_MODEL ?? "sippy/gemma-4-12B";
 const DEFAULT_JUDGE_MODEL =
   process.env.DOCS_AGENT_JUDGE_MODEL ?? "sippy/gptoss-120B";

@@ -228,7 +228,7 @@ export class ServiceTester {
 
 export function getServiceTests(): ServiceTestConfig[] {
   const ports = {
-    LLAMA_SWAP_PORT: parseInt(process.env.LLAMA_SWAP_PORT || "25100"),
+    HERD_PORT: parseInt(process.env.HERD_PORT || "25100"),
     // loadEstatePorts() above already read config/ports.env, so MCPPROXY_GO_PORT
     // is populated. The old MCPPROXY_PORT fallback was 25109 -- KEYPOOL_PORT -- so
     // this tested keypool while claiming to test mcpproxy.
@@ -255,7 +255,7 @@ export function getServiceTests(): ServiceTestConfig[] {
   return [
     {
       name: "llama-swap",
-      port: ports.LLAMA_SWAP_PORT,
+      port: ports.HERD_PORT,
       healthEndpoints: ["/health", "/v1/models"],
       expectedResponse: (body) =>
         body.includes("OK") || body.includes("models"),

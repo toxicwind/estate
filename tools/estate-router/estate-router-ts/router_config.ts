@@ -91,11 +91,11 @@ export const STRATEGY = process.env.ESTATE_STRATEGY || "hybrid";
 export const UA = "Mozilla/5.0 (compatible; Estate-Flock/3.1)";
 
 // ---------------------------------------------------------------------------
-// LLAMA_SWAP_V1 (must come before PROVIDERS that uses it)
+// HERD_V1 (must come before PROVIDERS that uses it)
 // ---------------------------------------------------------------------------
-export const LLAMA_SWAP_V1 =
+export const HERD_V1 =
   process.env.LLM_BASE_URL ||
-  process.env.LLAMA_SWAP_V1 ||
+  process.env.HERD_V1 ||
   "http://127.0.0.1:25100/v1";
 
 export function loadLocalRoleModels(): {
@@ -139,8 +139,8 @@ export const PROVIDERS: Record<
 > = {
   // Local SSOT — always first-class for estate GPU path
   "llama-swap": {
-    base: LLAMA_SWAP_V1,
-    key_env: "LLAMA_SWAP_API_KEY",
+    base: HERD_V1,
+    key_env: "HERD_API_KEY",
     no_auth: true,
   },
   // Local NIM proxy (:8000, nim-consolidation track). Key via
