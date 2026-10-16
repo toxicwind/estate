@@ -286,6 +286,95 @@ export function cosine(a: number[], b: number[]): number {
   return dot / (Math.sqrt(an) * Math.sqrt(bn) || 1);
 }
 
+/** Model-family member classification, mirroring the HF docs tree UI. */
+export type ModelMemberType = "base" | "parent" | "finetune" | "quantization" | "conversion" | "unknown";
+
+export interface ModelMember {
+  repo: string;
+  type: ModelMemberType;
+  format: string;       // gguf | mlx | vllm(quant) | transformers | exl3 | none
+  params?: string;      // ~1.1B etc from id/config
+  downloads: number;
+  likes: number;
+  base?: string;        // cardData.base_model when present
+  isOfficial: boolean;  // author === parent author (LiquidAI)
+}
+
+/** Determine member type + format from an HF model row in a family. */
+export function classifyMember(id: string, author: string, parentAuthor: string, base?: string, pipelineTag?: string, library?: string): Omit<ModelMember, "repo" | "downloads" | "likes"> {
+  const lid = id.toLowerCase();
+  const short = id.split("/").pop() ?? "";
+  const isOfficial = author === parentAuthor;
+  let format = library ?? "";
+  if (lid.includes("-gguf")) format = "gguf";
+  else if (lid.includes("-mlx")) format = "mlx";
+  else if (lid.includes("-exl3") || lid.includes("-exl2")) format = "exl3";
+  else if (lid.includes("nvfp4") || lid.includes("-fp8") || lid.includes("-ap-")) format = "gguf-quant";
+  else if (library === "transformers") format = "transformers";
+
+  let type: ModelMemberType;
+  if (short.endsWith("-base") || short.endsWith("-base-256") || base === id) type = "base";
+  else if (format === "gguf") type = "quantization";
+  else if (format === "mlx") type = "conversion";
+  else if (format === "exl3") type = "conversion";
+  else if (String(base ?? "").startsWith(id) || String(base ?? "").includes(short.replace(/-gguf.*/i, "")) && !isOfficial) type = "quantization";
+  else if (base && !isOfficial) type = "finetune";
+  else type = "parent";
+
+  const params = short.match(/(\d+(?:\.\d+)?[bBmM]|-\d+b-)/i)?.[1] ?? "";
+  return { type, format, params, isOfficial };
+}
+
+/** Build a model family TREE from HF Hub — base + parent + finetunes + quantizations,
+ *  mirroring the docs UI's nested view (substring search on the short id). */
+export interface ModelTree {
+  root: string;
+  base?: string;
+  parent: ModelMember;           // the requested repo itself
+  finetunes: ModelMember[];
+  quantizations: ModelMember[];
+  conversions: ModelMember[];
+  total: number;
+  error?: string;
+}
+export async function modelTree(repo: string, opts: { limit?: number } = {}): Promise<ModelTree> {
+  const short = repo.split("/").pop() ?? repo;
+  const parentAuthor = repo.split("/")[0] ?? "";
+  const limit = opts.limit ?? 40;
+  try {
+    const baseUrl = new URL(HF_HUB);
+    baseUrl.searchParams.set("search", short);
+    baseUrl.searchParams.set("sort", "downloads");
+    baseUrl.searchParams.set("direction", "-1");
+    baseUrl.searchParams.set("limit", String(limit * 3));
+    const res = await fetch(baseUrl.toString(), { headers: { "User-Agent": USER_AGENT, "Authorization": `Bearer ${HF_TOKEN}` } });
+    if (!res.ok) return { root: repo, parent: { repo, type: "parent", format: "", isOfficial: true }, finetunes: [], quantizations: [], conversions: [], total: 0, error: `HTTP ${res.status}` };
+    const rows: any[] = await res.json();
+    const parentRow = rows.find((r) => r.id === repo);
+    const parentBase = parentRow?.cardData?.base_model;
+    const members: ModelMember[] = rows.map((r) => {
+      const author = r.author ?? "";
+      const cl = classifyMember(r.id, author, parentAuthor, r.cardData?.base_model, r.pipeline_tag, r.library_name);
+      return { repo: r.id, downloads: r.downloads ?? 0, likes: r.likes ?? 0, ...cl };
+    });
+    const isBase = parentRow?.cardData?.base_model?.toString().toLowerCase() !== repo.toLowerCase() && (parentRow?.cardData?.base_model || "");
+    const base = String(parentBase ?? parentRow?.tags?.find((t: string) => t.startsWith("base_model:") && !t.includes("finetune"))?.split(":")[1] ?? "");
+    const self = members.find((m) => m.repo === repo) ?? { repo, type: "parent", format: "", params: "", isOfficial: true, downloads: parentRow?.downloads ?? 0, likes: parentRow?.likes ?? 0 };
+    const others = members.filter((m) => m.repo !== repo);
+    return {
+      root: repo,
+      base: base || undefined,
+      parent: self,
+      finetunes: others.filter((m) => m.type === "finetune").sort((a, b) => b.downloads - a.downloads),
+      quantizations: others.filter((m) => m.type === "quantization").sort((a, b) => b.downloads - a.downloads),
+      conversions: others.filter((m) => m.type === "conversion").sort((a, b) => b.downloads - a.downloads),
+      total: members.length,
+    };
+  } catch (e: any) {
+    return { root: repo, parent: { repo, type: "parent", format: "", isOfficial: true }, finetunes: [], quantizations: [], conversions: [], total: 0, error: e?.message ?? "error" };
+  }
+}
+
 /** Embedding-based classifier via FreeInference bge-m3. Embed the probe text and
  *  each candidate label, pick the nearest by cosine. Deterministic, fast, and
  *  credit-free — the "actual bge-m3" path, not an LLM. Margin-gated. */

@@ -422,6 +422,10 @@ async function cmdDoctor(args: Args): Promise<number> {
 }
 
 // build a compact text signature from a repo dir's README/SKILL/AGENTS/package.json
+function formatTag(m: { format: string; params?: string; type: string }): string {
+  return [m.format, m.params].filter(Boolean).join(" ").toUpperCase() || m.type;
+}
+
 function repoSignature(dir: string, name: string): string | null {
   const candidateFiles = ["README.md", "SKILL.md", "AGENTS.md", "readme.md"];
   for (const f of candidateFiles) {
@@ -654,7 +658,41 @@ async function cmdHf(args: Args): Promise<number> {
     return 0;
   }
 
-  process.stdout.write(`forge hf subcommands: search | models | classify | embed | completions | find-classifier | categorize\n`);
+  // tree <model> [--limit N]
+  if (sub === "tree") {
+    const repo = REST.join(" ").trim().replace(/\/$/, "");
+    if (!/^[^/]+\/[^/]+$/.test(repo)) {
+      process.stdout.write(`usage: forge hf tree <author/model> [--limit N]   e.g. forge hf tree LiquidAI/LFM2.5-24B-A2B\n`);
+      return 2;
+    }
+    const tree = await hf.modelTree(repo, { limit: Number(args.flags.get("limit") ?? 40) });
+    if (tree.error) { process.stdout.write(`tree: failed — ${tree.error}\n`); return 1; }
+    if (args.flags.get("json") === true) {
+      process.stdout.write(JSON.stringify(tree) + "\n");
+      return 0;
+    }
+    process.stdout.write(`Model tree for ${tree.root}\n`);
+    if (tree.base) process.stdout.write(`\nBase model\n  ${tree.base}\n`);
+    process.stdout.write(`\nThis model\n  ${tree.parent.repo}  (${formatTag(tree.parent)}${tree.parent.downloads ? ` · ${tree.parent.downloads.toLocaleString()} dl · ${tree.parent.likes}♥` : ""})\n`);
+    if (tree.finetunes.length) {
+      process.stdout.write(`\nFinetunes (${tree.finetunes.length}):\n`);
+      for (const m of tree.finetunes.slice(0, 20)) process.stdout.write(`  ${m.repo}  [${formatTag(m)}] · ${m.downloads.toLocaleString()} dl\n`);
+      if (tree.finetunes.length > 20) process.stdout.write(`  … and ${tree.finetunes.length - 20} more\n`);
+    }
+    if (tree.quantizations.length) {
+      process.stdout.write(`\nQuantizations (${tree.quantizations.length}):\n`);
+      for (const m of tree.quantizations.slice(0, 25)) process.stdout.write(`  ${m.repo}  [${formatTag(m)}] · ${m.downloads.toLocaleString()} dl${m.isOfficial ? " (official)" : ""}\n`);
+      if (tree.quantizations.length > 25) process.stdout.write(`  … and ${tree.quantizations.length - 25} more\n`);
+    }
+    if (tree.conversions.length) {
+      process.stdout.write(`\nConversions (${tree.conversions.length}):\n`);
+      for (const m of tree.conversions.slice(0, 15)) process.stdout.write(`  ${m.repo}  [${formatTag(m)}] · ${m.downloads.toLocaleString()} dl\n`);
+    }
+    if (tree.total === 0) process.stdout.write(`  (no family members found — check the author/model spelling)\n`);
+    return 0;
+  }
+
+  process.stdout.write(`forge hf subcommands: search | models | classify | embed | completions | find-classifier | categorize | tree\n`);
   return 2;
 }
 
