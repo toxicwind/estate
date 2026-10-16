@@ -1,0 +1,72 @@
+#!/usr/bin/env python3
+"""run-fast — run a command under a hard wall-clock deadline (default 2.0s).
+
+the architect's mandate (2026-10-13): every command background-async with a strict
+<2s deadline per individual execution; a command that exceeds the deadline
+is considered FAILED, and the breach is the trigger to race a FASTER
+alternative (better code, new libs, pattern-borrow) — never to just wait
+longer.
+
+Behavior:
+  - Streams the child's stdout/stderr live.
+  - Finishes in time  -> exits with the child's exit code, one measured
+    timing line on stderr.
+  - Exceeds deadline -> kills the child's whole process group, prints a
+    BREACH line on stderr, exits 75.
+  - Long work belongs detached (setsid nohup ... &), not under run-fast;
+    run-fast is the discipline for the quick synchronous probe.
+
+Usage:
+  run-fast [--deadline SECONDS] <cmd> [args...]
+
+Vocabulary: this tool speaks of deadlines and cutoffs only (estate rule:
+the overloaded word for this concept is banned in code and docs).
+"""
+import os
+import signal
+import subprocess
+import sys
+import time
+
+BREACH_EXIT = 75
+DEFAULT_DEADLINE = 2.0
+
+
+def main(argv):
+    deadline = DEFAULT_DEADLINE
+    args = list(argv)
+    if args[:1] == ["--deadline"]:
+        if len(args) < 3:
+            print("usage: run-fast [--deadline SECONDS] <cmd> [args...]",
+                  file=sys.stderr)
+            return 2
+        deadline = float(args[1])
+        args = args[2:]
+    if not args:
+        print("usage: run-fast [--deadline SECONDS] <cmd> [args...]",
+              file=sys.stderr)
+        return 2
+
+    start = time.monotonic()
+    proc = subprocess.Popen(args, start_new_session=True)
+    try:
+        rc = proc.wait(timeout=deadline)
+        elapsed = time.monotonic() - start
+        print(f"[run-fast] ok {elapsed:.3f}s (deadline {deadline:.1f}s) "
+              f"exit={rc}", file=sys.stderr)
+        return rc
+    except subprocess.TimeoutExpired:
+        elapsed = time.monotonic() - start
+        try:
+            os.killpg(proc.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+        proc.wait()
+        print(f"[run-fast] BREACH {elapsed:.3f}s > deadline {deadline:.1f}s "
+              f"— command considered failed; race a faster alternative",
+              file=sys.stderr)
+        return BREACH_EXIT
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))
