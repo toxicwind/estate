@@ -70,3 +70,24 @@
 
 `/home/toxic/sovereign/` does not exist (renamed to `estate`, commit `6af2094`).
 UUID-prefixed scratch under `/home/toxic/` only; nothing precious in `/tmp`.
+
+## Agent customizations + skills hub (2026-10-16)
+
+- **Skills hub = grasp-hub** (`/home/toxic/estate/grasp-hub`; supersedes the old
+  skills-hub MCP naming). Register a new skill by dropping it in
+  `/home/toxic/estate/skills/<name>/` (SKILL.md frontmatter required), symlinking
+  into `grasp-hub/skills/<cluster>/<name>`, then proving pickup:
+  `node bin/grasp-hub.js list | grep <name>` and `node bin/grasp-hub.js validate`
+  must be green. The MCP server (`grasp-hub/mcp/server.ts`) wraps this CLI.
+- **Guide convention is REQUIRED** for every `*-guide` project: flat R-NNN rule
+  ids (renumbering forbidden; commits cite ids), a Why paragraph naming the
+  failure mode per rule, Correct/Avoid pairs, at least one machine gate, and the
+  SDD prompt trio (`.github/prompts/spec|task|verifySpec.prompt.md`; SpecFirst
+  arXiv 2607.27167 / SDAD arXiv 2608.20341). Scaffold new guides with the
+  `guide-project-creator` skill; never hand-roll the structure.
+- **Agent-file rules live in `ranch/agent-customization-style-guide`**
+  (github: toxicwind/agent-customization-style-guide): R-1xx AGENTS.md, R-2xx
+  .prompt.md, R-3xx .agent.md (quote YAML values containing colons; no body
+  prose in frontmatter; no spec duplication in handoffs), R-501 LF+ASCII on the
+  Arch host, R-503 reference sibling repos by local path, never hardcoded
+  github.com URLs -- resolve with `git -C <path> remote get-url origin`.
