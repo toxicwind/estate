@@ -1,4 +1,6 @@
 import { HF_TOKEN, resolveMaybe, FREEINF_BASE, FREEINF_KEY } from "./hf-lib";
+import { listModels } from "@huggingface/hub";
+import OpenAI from "openai";
 
 export const HF_HUB = "https://huggingface.co/api/models";
 export const HF_TASKS = "https://huggingface.co/api/tasks";
@@ -52,13 +54,38 @@ export function buildSearchParams(query: string, opts: { sort?: string; directio
   return p;
 }
 
-export async function hfSearch(query: string, opts: { sort?: string; direction?: string; limit?: number; task?: string; library?: string } = {}): Promise<HfModel[]> {
-  const params = buildSearchParams(query, opts);
-  const url = `${HF_HUB}?${params.toString()}`;
-  const res = await fetch(url, { headers: { "User-Agent": USER_AGENT, "Authorization": `Bearer ${HF_TOKEN}` } });
-  if (!res.ok) throw new Error(`HF models API ${res.status}: ${await res.text().catch(() => "")}`);
-  const rows = await res.json() as any[];
-  return rows.map(mapRow);
+/** Search HF Hub via the maintained @huggingface/hub SDK (not raw fetch).
+ *  Supports num_parameters / trendingScore / likes30d sorts that raw fetch missed. */
+export async function hfSearch(query: string, opts: { sort?: string; direction?: string; limit?: number; task?: string; library?: string; includeParams?: boolean } = {}): Promise<HfModel[]> {
+  const sort = (opts.sort ?? "downloads") as "downloads" | "createdAt" | "likes" | "lastModified" | "likes30d" | "trendingScore" | "num_parameters" | "mainSize" | "id";
+  const limit = opts.limit ?? 12;
+  const rows: any[] = [];
+  const tasks = resolveTask(opts.task);
+  const gen = listModels({
+    search: { query: query || undefined, task: (tasks[0] as any) || undefined },
+    sort,
+    limit,
+    hubUrl: "https://huggingface.co",
+    credentials: {
+      accessToken: HF_TOKEN || undefined,
+      provider: "hf" as any,
+      type: "header" as any,
+    },
+    additionalFields: opts.includeParams ? (["safetensors"] as any) : undefined,
+  });
+  try {
+    for await (const m of gen) {
+      rows.push(mapRow(m as any));
+      if (rows.length >= limit) break;
+    }
+  } catch (e: any) {
+    if (e?.message?.includes("401") || (e?.status && e.status !== 200)) {
+      // fall back to anonymous (public models still list)
+      const gen2 = listModels({ search: { query: query || undefined, task: (tasks[0] as any) || undefined }, sort, limit, additionalFields: opts.includeParams ? (["safetensors"] as any) : undefined });
+      try { for await (const m of gen2) { rows.push(mapRow(m as any)); if (rows.length >= limit) break; } } catch { /* keep partial */ }
+    }
+  }
+  return rows;
 }
 
 function mapRow(r: any): HfModel {

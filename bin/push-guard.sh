@@ -31,8 +31,8 @@
 #   PUSH_GUARD_IGNORE=/path/to/file ...         # override the ignore memory file
 #   PUSH_GUARD_SKIP=1 ...                         # emergency bypass (loud, never silent)
 #
-# Adopted 2026-09-18, debate d867e8f6. Ignore-memory + placeholder auto-clear 2026-09-21 (User: approval is durable).
-# Canonical source: toxicwind/estate-projects:bin/push-guard.sh (mirrored at tools/push-guard.sh).
+# Adopted 2026-09-18, debate d867e8f6. Ignore-memory + placeholder auto-clear 2026-09-21 (Chris: approval is durable).
+# Canonical source: toxicwind/sovereign-projects:bin/push-guard.sh (mirrored at tools/push-guard.sh).
 # Live fleet copy: /home/toxic/bin/push-guard.sh -- refresh with: install -Dm755 <repo-copy> /home/toxic/bin/push-guard.sh
 # Pre-push install one-liner:
 #   install -Dm755 /home/toxic/bin/pre-push "$(git rev-parse --git-dir)/hooks/pre-push"
@@ -68,7 +68,7 @@ RANGES="$TMPD/ranges"; FILES="$TMPD/files"; GOFILES="$TMPD/gofiles"; PKGS="$TMPD
 # matches a changed file exactly, or as a trailing path suffix ("/<entry>"),
 # so entries survive repo-root renames. `push-guard.sh ignore <path>...`
 # remembers paths by hand; the gitleaks secret scan skips remembered paths.
-# User 2026-09-21: approval is durable, the guard remembers -- it survives
+# Chris 2026-09-21: approval is durable, the guard remembers -- it survives
 # reboots because it lives in a real file.
 IGNORE_FILE="${PUSH_GUARD_IGNORE:-$HOME/.config/push-guard/ignore}"
 mkdir -p "$(dirname "$IGNORE_FILE")" 2>/dev/null || true

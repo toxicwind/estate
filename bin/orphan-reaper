@@ -6,6 +6,10 @@
 # Kills: rg/grep/find processes whose PPID is 1 (orphaned) AND whose
 # command line touches ~/workspace. Dry-run by default; --kill to act.
 #
+# Tool match is against the executable name (comm), NOT the full command
+# line: matching args caused false positives on daemons whose working
+# directory merely contains "grep" (e.g. .../ast-grep-napi-fix/...).
+#
 # Usage: orphan-reaper [--kill] [--max-age SECONDS]
 #   Default max-age: 300 (5 min). Anything orphaned longer than that dies.
 
@@ -25,18 +29,18 @@ done
 NOW=$(date +%s)
 KILLED=0
 
-# ps: pid, ppid, etimes (elapsed seconds), full command
-while read -r pid ppid etimes cmd; do
+# ps: pid, ppid, etimes (elapsed seconds), executable name, full command
+while read -r pid ppid etimes comm args; do
   [[ "$pid" == "PID" ]] && continue
   # Only orphans (PPID 1)
   [[ "$ppid" != "1" ]] && continue
-  # Only forensics tools
-  case "$cmd" in
-    *rg*|*grep*|*find*) ;;
+  # Only forensics tools, matched on executable name (comm) — never on args
+  case "$comm" in
+    rg|grep|egrep|fgrep|find) ;;
     *) continue ;;
   esac
   # Only ones touching the user's workspace (HOME-aware)
-  case "$cmd" in
+  case "$args" in
     *"$HOME/workspace"*|*~/workspace*) ;;
     *) continue ;;
   esac
@@ -45,13 +49,13 @@ while read -r pid ppid etimes cmd; do
 
   if [[ $KILL -eq 1 ]]; then
     kill -9 "$pid" 2>/dev/null && {
-      echo "orphan-reaper: KILLED pid=$pid age=${etimes}s cmd=$cmd"
+      echo "orphan-reaper: KILLED pid=$pid age=${etimes}s cmd=$comm $args"
       KILLED=$((KILLED + 1))
     } || echo "orphan-reaper: failed to kill pid=$pid" >&2
   else
-    echo "orphan-reaper: WOULD KILL pid=$pid ppid=$ppid age=${etimes}s cmd=$cmd"
+    echo "orphan-reaper: WOULD KILL pid=$pid ppid=$ppid age=${etimes}s cmd=$comm $args"
   fi
-done < <(ps -eo pid,ppid,etimes,args 2>/dev/null)
+done < <(ps -eo pid,ppid,etimes,comm,args 2>/dev/null)
 
 if [[ $KILL -eq 1 ]]; then
   echo "orphan-reaper: killed $KILLED orphan(s)"

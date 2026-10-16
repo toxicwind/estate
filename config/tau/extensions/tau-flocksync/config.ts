@@ -34,7 +34,7 @@ export interface FlockSettings {
 
 /**
  * Default gateway URL. The host port is owned by the estate SSOT
- * (config/ports.env OMNIROUTE_PORT) and is deliberately NOT VansRouter's :20128;
+ * (config/ports.env; retired 2026-10-16 — flock/cuttinggate :25200 is canonical) and is deliberately NOT VansRouter's :20128;
  * reading it here keeps the extension from hardcoding another service's port.
  */
 function defaultServerUrl(): string {
@@ -43,7 +43,6 @@ function defaultServerUrl(): string {
 }
 
 export const EXTENSION_STATE_DIR = "tau-flocksync";
-export const LEGACY_EXTENSION_STATE_DIR = "pi-omniroute-sync";
 const DEFAULT_SETTINGS: FlockSettings = {
 	serverUrl: defaultServerUrl(),
 	providerName: "flock",
@@ -73,11 +72,7 @@ export function modelsJsonPath(agentHome: string): string {
 }
 
 export function settingsPath(agentHome: string): string {
-	const primary = join(agentHome, "extensions", EXTENSION_STATE_DIR, "settings.json");
-	if (existsSync(primary)) return primary;
-	const legacy = join(agentHome, "extensions", LEGACY_EXTENSION_STATE_DIR, "settings.json");
-	if (existsSync(legacy)) return legacy;
-	return primary;
+	return join(agentHome, "extensions", EXTENSION_STATE_DIR, "settings.json");
 }
 
 export function sanitizeSettings(input: Partial<FlockSettings>): FlockSettings {
@@ -127,12 +122,12 @@ function normalizeServerUrl(value: string): string {
 
 /**
  * Probe the URL saved by /omni setup when a settings file exists.
- * OMNIROUTE_URL is used only when the extension has not been configured yet.
+ * The server URL comes from stored settings (no legacy env fallback).
  */
 export function resolveConfiguredServerUrl(agentHome: string): string {
 	const settings = loadSettings(agentHome);
 	if (isConfigured(agentHome)) return settings.serverUrl;
-	return normalizeServerUrl(process.env.OMNIROUTE_URL ?? settings.serverUrl);
+	return normalizeServerUrl(settings.serverUrl);
 }
 
 export function loadProbeConfig(agentHome: string): FlockConfig {
@@ -142,8 +137,8 @@ export function loadProbeConfig(agentHome: string): FlockConfig {
 
 export function loadHopSettings(agentHome: string): Pick<FlockSettings, "onUnreachable" | "fallbackModel"> {
 	const settings = loadSettings(agentHome);
-	const onUnreachable = process.env.FLOCKSYNC_ON_UNREACHABLE ?? process.env.OMNIROUTE_ON_UNREACHABLE;
-	const fallbackModel = process.env.FLOCKSYNC_FALLBACK_MODEL ?? process.env.OMNIROUTE_FALLBACK_MODEL;
+	const onUnreachable = process.env.FLOCKSYNC_ON_UNREACHABLE;
+	const fallbackModel = process.env.FLOCKSYNC_FALLBACK_MODEL;
 	return {
 		onUnreachable: ON_UNREACHABLE_VALUES.includes(onUnreachable as OnUnreachable)
 			? (onUnreachable as OnUnreachable)
@@ -163,7 +158,7 @@ export function loadConfig(agentHome: string): FlockConfig {
 		...settings,
 		serverUrl: process.env.FLOCKSYNC_URL ?? settings.serverUrl,
 		// Only FLOCKSYNC_API_KEY can override the stored key. The legacy
-		// OMNIROUTE_API_KEY is deliberately NOT consulted: it is a different
+		// Legacy OMNIROUTE_API_KEY is not consulted (provider retired 2026-10-16): it was a different
 		// system's management token (OmniRoute on :20130), it cannot
 		// authenticate against flock's client-key gate, and a stale export
 		// of it in ~/.env silently broke every auto-sync with 401s.

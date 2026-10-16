@@ -155,7 +155,6 @@ dev:
     endpoint: https://qa.omp.sh/v1/grievances
 disabledExtensions:
   - airspeak
-  - pi-omniroute-sync
 disabledProviders: []
 display:
   cacheMissMarker: true

@@ -26,12 +26,6 @@ providers:
     apiKey: MOONSHOT_API_KEY
     discovery:
       type: openai-models-list
-  omniroute:
-    baseUrl: http://127.0.0.1:20130/v1
-    api: openai-completions
-    apiKey: OMNIROUTE_GATEWAY_KEY
-    discovery:
-      type: openai-models-list
   nvidia:
     baseUrl: https://integrate.api.nvidia.com/v1
     api: openai-completions
