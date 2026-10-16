@@ -1,7 +1,22 @@
 # TODO.md — master workqueue (post-compact handoff)
 
 > **Read this first after /compact.** Ordered by execution. Context block at the
-> bottom has every path/decision needed. Updated 2026-10-16 ~21:00.
+> bottom has every path/decision needed. Updated 2026-10-16 ~23:20.
+
+## Session log 2026-10-16 (late) — DONE, keep for reference
+
+- [x] estate commits + pushes (consolidation, flicker→forge, architect sweep, gitleaks gate fixes)
+- [x] ranch: 54+64 dirty submodules forward-committed; VansRouter/mcpproxy-go/flocksync/pi_agent_rust/drover snapped; runtime configs untracked (mesh_config had real keys)
+- [x] gitleaks SSOT allowlists: Edge TTS public token, anthropic beta strings, sk-machine test fixtures, conformance template artifacts
+- [x] pattern-forge: github_repos leg (repo finder), S2 secretsmith keychain, dblp retry
+- [x] corral: toxicwind naming, bun install fix, library import proven (SuperRalph/AgentRegistry)
+- [x] 2-second rule: run-fast documented MANDATORY in root+estate AGENTS.md; bash-2s-shim.sh live (aliases in agent shells, ~/.bashrc source)
+- [x] 6 MCP forks as own repos: fleet-bus-mcp, hatch-mcp, huggingface-mcp-server, mcp-gateway (gateway.ts implemented), tmux-mcp (framing fix documented), websearch-mcp — all toxicwind/* with aesthetic READMEs
+- [x] estate-shell: NEW SSOT repo (toxicwind/estate-shell) — dots, environment.d doctrine (105 vars emitted to systemd), TS deploy engine (dotbot replacement), env doctor (caught real AQ_DRM_DEVICES conflict), 16 cutting-edge deps verified on bun 1.4.3-canary
+- [x] mcpproxy-go: gateway.ts fan-out implemented; flocksync unshallowed (was depth-1) from upstream OmniRoute
+- [ ] ranch weave land --onto origin/main RUNNING in background (bgp_1470104bc001WoddEe0e2tYoVg)
+- [ ] flocksync release/v3.8.52 push RUNNING in background (bgp_14700c49c001EU10hPq4CadZDp)
+
 
 ## 0. In-flight state (uncommitted — commit FIRST)
 
