@@ -75,6 +75,12 @@ the reset) that holds this estate's whole doctrine mid-task:
 - **grasp-hub router**: `node /home/toxic/estate/grasp-hub/bin/grasp-hub.js
   route "<query>"` picks orthogonal sub-skills (GraSP DAG). Use it when a task
   spans >1 skill.
+- **meta (multi-repo manifest)**: the ranch's 214 component repos are peers,
+  coordinated by `meta` (`.meta.yaml` from `.gitmodules`; AI-native MCP server).
+  Sync all with `meta git update`, inspect with `meta git status`, batch-run with
+  `meta exec '<cmd>'`. Prefer meta over raw per-submodule churn. Regenerate the
+  manifest with `bun toolkit/gen-meta-manifest.ts`. The repository is
+  `gitkb/meta`.
 - **Git push everything** (root rule, restated for estate): commit after every
   unit of work, no local-only work. Never force-push `main` without a
   `backup/main-<date>` on origin. Never push to `evmts`/`super-ralph`.
