@@ -5,7 +5,7 @@
 # Source resolves via TWO_SEC_DIR override (default: ranch/two-sec).
 # No prebuilt artifacts — every invocation runs the current two-sec code.
 #
-# Usage: run-fast [<two-sec-args>...] -- <cmd…>
+# Usage: run-fast [-- <two-sec-args>...] [-- <cmd…>]
 
 set -uo pipefail
 
@@ -17,14 +17,15 @@ if [ ! -f "$CLI" ]; then
   exit 2
 fi
 
-# Canarry bun (bf42a525d).
+# Canary bun (bf42a525d).
 BUN_BIN="${BUN_BIN:-$HOME/.bun/bin/bun}"
 
-# Strip leading '--' delimiter so two-sec doesn't see it.
-set -- "${@#"--"}"
+# Strip only the FIRST -- delimiter (not all -- flags)
+shift
+args=("$@")
 
 if [ "$#" -eq 0 ]; then
   exec "$BUN_BIN" run "$CLI" run "true"
 fi
 
-exec "$BUN_BIN" run "$CLI" run "$@"
+exec "$BUN_BIN" run "$CLI" run "${args[@]}"
