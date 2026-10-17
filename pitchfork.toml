@@ -749,7 +749,7 @@ health_http = { url = "http://127.0.0.1:25115/health", interval = "30s", timeout
 depends = ["gatehouse"]
 auto = ["start"]
 
-# estate — project-owned daemon manifest. Source of truth for 'model-guard'.
+# estate — project-owned daemon manifest. Source of truth for 'mesh-landing'. (model-guard retired 2026-10-17: de-herd completion.)
 # Owned by the estate project; the parent only composes it.
 
 [daemons.mesh-landing]
@@ -782,17 +782,6 @@ auto = ["start"]
 # ---- project: tools/null-g-proxy (1 daemon) ----
 # tools/null-g-proxy — project-owned daemon manifest. Source of truth for 'null-g-proxy'.
 # Owned by the tools/null-g-proxy project; the parent only composes it.
-
-[daemons.model-guard]
-health_http = { url = "http://127.0.0.1:25101/v1/models", interval = "30s", timeout = "5s", retries = 3 }
-port = 25101
-run = "exec python3 /home/toxic/estate/bin/herd-model-guard.py"
-dir = "/home/toxic/estate"
-mise = false
-retry = true
-boot_start = true
-ready_http = "http://127.0.0.1:25101/v1/models"
-auto = ["start"]
 
 # NativeLink — Bazel-compatible remote cache + remote execution backend.
 # Serves the RE API that Bazel (and any RE-speaking client) dials. Coexists
