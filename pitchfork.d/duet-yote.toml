@@ -1,6 +1,6 @@
 [daemons.duet-yote]
-run = "exec /home/toxic/.local/share/mise/shims/bun /home/toxic/duet/src/yote.ts"
-dir = "/home/toxic/duet"
+run = "exec /home/toxic/.local/share/mise/shims/bun /home/toxic/estate/ranch/duet/src/yote.ts"
+dir = "/home/toxic/estate/ranch/duet"
 retry = true
 auto = ["start"]
 
