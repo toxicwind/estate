@@ -405,8 +405,26 @@ async function cmdDoctor(args: Args): Promise<number> {
 
     if (args.flags.get("borrow") === true) {
       const borrowed = await borrow("mcts planning", { perSource: 1, skip: new Set(["exa"]) });
-      const okCount = Object.values(borrowed.sources).filter((s) => s?.ok).length;
-      checks.push({ name: "borrow (network)", ok: okCount > 0, detail: `${okCount} sources ok in ${borrowed.timingMs.toFixed(0)}ms` });
+      const allSources = Object.values(borrowed.sources);
+      const okSources = allSources.filter((s) => s?.ok);
+      // Edge case: a source can report ok:true yet return ZERO items (silent
+      // degradation). Count only sources that actually yielded ranks.
+      const okWithItems = allSources.filter((s) => s?.ok && Array.isArray(s.items) && s.items.length > 0);
+      checks.push({
+        name: "borrow (network)",
+        ok: okWithItems.length > 0,
+        detail: `${okWithItems.length} sources with items / ${okSources.length} ok / ${allSources.length} total in ${borrowed.timingMs.toFixed(0)}ms`,
+      });
+      // Edge case: the GitHub code leg must yield real items when it claims ok.
+      // borrow marks it ok even on a dead token (degrades, not fails) — flag it.
+      const gh = borrowed.sources["github"];
+      checks.push({
+        name: "borrow github leg",
+        ok: gh?.ok === true && (Array.isArray(gh.items) ? gh.items.length > 0 : false),
+        detail: gh?.ok === true
+          ? `${Array.isArray(gh.items) ? gh.items.length : 0} github item(s)`
+          : `github degraded: ${gh?.error ?? "leg disabled"}`,
+      });
     }
   } finally {
     setEmitter((line) => process.stderr.write(`${line}\n`));
