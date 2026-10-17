@@ -17,8 +17,9 @@ const mlDict = new MLDictionary();
 import { emit } from "./concurrent";
 import { measure } from "./measure";
 import * as P from "./providers";
+import { MLDictionary } from "./ml-dictionary";
 
-export type SourceName = "local" | "github" | "github_repos" | "arxiv" | "openalex" | "semanticscholar" | "dblp" | "hf_papers" | "exa";
+export type SourceName = "local" | "github" | "github_repos" | "npm" | "stackoverflow" | "arxiv" | "openalex" | "semanticscholar" | "dblp" | "hf_papers" | "exa";
 
 export type BorrowOptions = {
   perSource?: number;
@@ -80,15 +81,28 @@ export function rankItems(
   const ranked = items.map(({ source, item }) => {
     const reasons: string[] = [];
 
-    // Distinct ranking logic for code vs papers
+    // Distinct ranking logic for code vs papers. Code sources get their own
+    // signal set (stars, bm25, npm score) so they compete with papers fairly —
+    // a global paper-biased scale (citations/doi) buried every code result.
     if (source === "local" || source === "github" || "repo" in item) {
       const asCode = item as P.CodeItem;
       let score = (asCode.score ?? 5) * 1.5;
       if (source === "local") {
         score += 8.0;
         reasons.push("local codebase in-tree match");
+      } else if (source === "github_repos") {
+        // stars dominate: log10(1+stars)*3 keeps 100-star repos above 0-star noise
+        const stars = (asCode as unknown as { stars?: number }).stars ?? 0;
+        score += Math.log10(stars + 1) * 3.0 + ((asCode as unknown as { bm25?: number }).bm25 ?? 0) * 4.0;
+        reasons.push(`repo ${stars}★`);
+      } else if (source === "npm") {
+        score += ((asCode as unknown as { bm25?: number }).bm25 ?? 0) * 4.0 + 2.0;
+        reasons.push("npm package");
+      } else if (source === "stackoverflow") {
+        score += 3.0;
+        reasons.push("developer Q&A");
       } else {
-        reasons.push("github repository");
+        reasons.push("github code");
       }
       if (asCode.repo) reasons.push(asCode.repo);
       return { source, item, score, reasons };
@@ -152,6 +166,8 @@ export function resolveExaKey(explicit = ""): { key: string; from: string } {
 export async function borrow(query: string, opts: BorrowOptions = {}): Promise<BorrowResult> {
   const { perSource = 5, skip = new Set() } = opts;
   const exa = resolveExaKey(opts.exaApiKey ?? "");
+  const dict = new MLDictionary();
+  const expanded = dict.expand(query);
   const gh = P.resolveGithubToken();
   const notes: string[] = [];
   const t0 = performance.now();
@@ -160,11 +176,13 @@ export async function borrow(query: string, opts: BorrowOptions = {}): Promise<B
     { name: "local", enabled: !skip.has("local"), run: () => P.localTreeSearch(query, perSource) },
     { name: "github", enabled: !skip.has("github") && gh.key.length > 0, run: () => P.githubCodeSearch(query, perSource) },
     { name: "github_repos", enabled: !skip.has("github_repos"), run: () => P.githubRepoSearch(query, perSource) },
-    { name: "arxiv", enabled: !skip.has("arxiv"), run: () => P.arxivSearch(query, perSource) },
+    { name: "npm", enabled: !skip.has("npm"), run: () => P.npmSearch(query, perSource) },
+    { name: "stackoverflow", enabled: !skip.has("stackoverflow"), run: () => P.stackoverflowSearch(query, perSource) },
+    { name: "arxiv", enabled: !skip.has("arxiv"), run: () => P.arxivSearch(expanded, perSource) },
     { name: "openalex", enabled: !skip.has("openalex"), run: () => P.openAlexSearch(query, perSource) },
-    { name: "semanticscholar", enabled: !skip.has("semanticscholar"), run: () => P.s2Search(query, perSource) },
-    { name: "dblp", enabled: !skip.has("dblp"), run: () => P.dblpSearch(query, perSource) },
-    { name: "hf_papers", enabled: !skip.has("hf_papers"), run: () => P.hfPapersSearch(query, perSource) },
+    { name: "semanticscholar", enabled: !skip.has("semanticscholar"), run: () => P.s2Search(expanded, perSource) },
+    { name: "dblp", enabled: !skip.has("dblp"), run: () => P.dblpSearch(expanded, perSource) },
+    { name: "hf_papers", enabled: !skip.has("hf_papers"), run: () => P.hfPapersSearch(expanded, perSource) },
     { name: "exa", enabled: !skip.has("exa") && exa.key.length > 0, run: () => P.exaSearch(query, perSource, exa.key) },
   ];
 

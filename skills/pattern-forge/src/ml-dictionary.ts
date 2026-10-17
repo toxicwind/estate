@@ -28,6 +28,13 @@ export class MLDictionary {
       ["embedding", "nlp", ["vector", "representation", "latent"]],
       ["token", "nlp", ["subword", "bpe", "wordpiece", "tiktoken"]],
       ["vocabulary", "nlp", ["lexicon", "dictionary", "tokens"]],
+      ["sandboxing", "systems", ["isolation", "seccomp", "namespaces", "container"]],
+      ["deadline", "systems", ["timeout", "budget", "wall-clock", "expiration"]],
+      ["guardrail", "ml", ["policy", "sanitizer", "firewall", "moderation"]],
+      ["hook", "tooling", ["interception", "callback", "trap", "instrumentation"]],
+      ["observability", "systems", ["telemetry", "tracing", "profiling", "metrics"]],
+      ["shell", "tooling", ["bash", "zsh", "repl", "command-line"]],
+      ["injection", "systems", ["sanitization", "escaping", "validation"]],
       ["fine-tuning", "ml", ["lora", "qlora", "sft", "rlhf", "dpo"]],
       ["inference", "systems", ["generation", "forward-pass", "latency", "throughput"]],
       ["quantization", "systems", ["gguf", "awq", "gptq", "bitsandbytes"]],
@@ -119,5 +126,18 @@ export class MLDictionary {
    */
   public get size(): number {
     return this.vocab.size;
+  }
+
+  /** Query expansion: for each known term in the query, add 1-2 synonyms. */
+  expand(query: string, maxTerms = 4): string {
+    const words = query.toLowerCase().split(/[^a-z0-9.-]+/).filter(Boolean);
+    const extras = new Set<string>();
+    for (const [term, _cat, syns] of this.seedDefaultMLTerms === undefined ? [] : []) void [term, _cat, syns];
+    for (const w of words) {
+      const entry = this.vocab.get(w) ?? this.vocab.get(w.replace(/s$/, ""));
+      if (entry) for (const s of entry.synonyms.slice(0, 2)) extras.add(s);
+      if (extras.size >= maxTerms) break;
+    }
+    return extras.size ? `${query} ${[...extras].join(" ")}` : query;
   }
 }

@@ -248,6 +248,51 @@ function bm25DocScore(doc: string, query: string): number {
   return hits / q.length;
 }
 
+
+/** npm registry search — package/CLI prior art (free, no auth). */
+export async function npmSearch(query: string, perPage = 5): Promise<SourceResult> {
+  const { data, ms } = await fetchJson(
+    `https://registry.npmjs.org/-/v1/search?${new URLSearchParams({ text: query, size: String(perPage) })}`,
+    { headers: { "User-Agent": USER_AGENT }, timeoutMs: 15_000 },
+  );
+  const body = data as { objects?: { package: Record<string, unknown> }[]; total?: number };
+  const items: CodeItem[] = (body.objects ?? []).map((o) => {
+    const p = o.package ?? {};
+    return {
+      name: (p.name as string) ?? null,
+      path: null,
+      repo: (p.links as { repository?: string })?.repository ?? null,
+      html_url: (p.links as { npm?: string })?.npm ?? null,
+      score: (p.score as unknown as number) ?? null,
+      description: (p.description as string) ?? "",
+      language: "javascript",
+      stars: ((p.publisher ? 1 : 0), (p.version as string) ? undefined : undefined),
+      bm25: bm25DocScore(`${(p.name as string) ?? ""} ${(p.description as string) ?? ""} ${((p.keywords as string[]) ?? []).join(" ")}`, query),
+    } as unknown as CodeItem;
+  });
+  return { ok: true, items, cost: "free", totalCount: body.total ?? null, timingMs: ms, ranking: "npm search score" };
+}
+
+/** StackExchange API — developer Q&A prior art (free, no auth, 300 req/day). */
+export async function stackoverflowSearch(query: string, perPage = 5): Promise<SourceResult> {
+  const { data, ms } = await fetchJson(
+    `https://api.stackexchange.com/2.3/search/advanced?${new URLSearchParams({
+      q: query, order: "desc", sort: "relevance", site: "stackoverflow", pagesize: String(perPage), filter: "withbody",
+    })}`,
+    { headers: { "User-Agent": USER_AGENT }, timeoutMs: 15_000 },
+  );
+  const body = data as { items?: Record<string, unknown>[]; total?: number };
+  const items: PaperItem[] = (body.items ?? []).map((it) => ({
+    title: (it.title as string) ?? null,
+    authors: [(it.owner as { display_name?: string })?.display_name ?? ""].filter(Boolean),
+    venue: "stackoverflow",
+    year: it.creation_date ? new Date((it.creation_date as number) * 1000).getFullYear() : null,
+    url: (it.link as string) ?? null,
+    summary: String((it.body_markdown as string) ?? (it.body as string) ?? "").slice(0, 500),
+  }));
+  return { ok: true, items, cost: "free", totalCount: body.total ?? null, timingMs: ms, ranking: "relevance+score" };
+}
+
 /** arXiv Atom, parsed without an XML dependency. Entries only — that is all we use. */
 function parseAtom(xml: string): PaperItem[] {
   const entries = xml.split("<entry>").slice(1);
