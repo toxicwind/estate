@@ -1,31 +1,25 @@
 #!/usr/bin/env bash
-# run-fast — 2-second rule: attaches directly to the canary bun version.
+# run-fast — Bun-native 2-second deadline wrapper.
 #
-# Picks the box's bun (canary) and execs it with the two-sec deadline runner.
-# Source resolves via TWO_SEC_DIR override (default: ranch/two-sec).
-# No prebuilt artifacts — every invocation runs the current two-sec code.
+# Every command gets a 2.0s hard deadline. Exceeded → URGENT notice + cancel.
+# No shell parsing bugs: passes all args verbatim (env vars, --flags, shell cmds).
 #
-# Usage: run-fast [-- <two-sec-args>...] [-- <cmd…>]
+# Usage: run-fast <cmd…>
+#   - env vars work: FOO=bar ls
+#   - flags work: bun run build --watch
+#   - shell via bash -c: /bin/bash -c 'echo hi'
+#
+# Source: ranch/kairos (was ranch/two-sec; always runs latest code, never prebuilt).
 
 set -uo pipefail
 
-TWO_SEC_SRC="${TWO_SEC_DIR:-/home/toxic/estate/ranch/two-sec}"
-CLI="$TWO_SEC_SRC/src/cli.ts"
+KAIROS_SRC="${KAIROS_DIR:-/home/toxic/estate/ranch/kairos}"
+CLI="$KAIROS_SRC/src/cli.ts"
 
 if [ ! -f "$CLI" ]; then
-  echo "run-fast: two-sec source not found at $CLI (set TWO_SEC_DIR)" >&2
+  echo "run-fast: kairos source not found at $CLI (set KAIROS_DIR)" >&2
   exit 2
 fi
 
-# Canary bun (bf42a525d).
 BUN_BIN="${BUN_BIN:-$HOME/.bun/bin/bun}"
-
-# Strip only the FIRST -- delimiter (not all -- flags)
-shift
-args=("$@")
-
-if [ "$#" -eq 0 ]; then
-  exec "$BUN_BIN" run "$CLI" run "true"
-fi
-
-exec "$BUN_BIN" run "$CLI" run "${args[@]}"
+exec "$BUN_BIN" run "$CLI" run "$@"
