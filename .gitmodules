@@ -74,3 +74,6 @@
 [submodule "submodules.phone-sentinel"]
 	path = submodules/phone-sentinel
 	url = /home/toxic/phone-sentinel
+[submodule "engines.herd.beellama.cpp"]
+	path = engines/herd/beellama.cpp
+	url = https://github.com/Anbeeld/beellama.cpp.git
