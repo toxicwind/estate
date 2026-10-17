@@ -623,7 +623,7 @@ auto = ["start"]
 
 [daemons.toolcall-llm]
 port = 25152
-run = "exec /home/toxic/estate/engines/llama.cpp-b11059/llama-b11059/llama-server -m /home/toxic/models/qwen3.5-9b-dflash-Q5_K_M.gguf --host 127.0.0.1 --port 25152 -ngl 99 -c 32768 --alias qwen3.5-9b-tool"
+run = "exec /home/toxic/estate/engines/llama.cpp-b11059/llama-b11059/llama-server -m /home/toxic/estate/ranch/models/qwen3.5-9b-dflash-Q5_K_M.gguf --host 127.0.0.1 --port 25152 -ngl 99 -c 32768 --alias qwen3.5-9b-tool"
 env = { TOOLCALL_PORT = "25152" }
 dir = "/home/toxic/estate/engines/llama.cpp-b11059/llama-b11059"
 mise = false
@@ -664,8 +664,8 @@ auto = ["start"]
 
 [daemons.phone-sentinel]
 description = "Network-reactive ADB sentinel for Pixel 9 Pro XL"
-run = "bun run /home/toxic/phone-sentinel/src/index.ts"
-dir = "/home/toxic/phone-sentinel"
+run = "bun run /home/toxic/estate/ranch/phone-sentinel/src/index.ts"
+dir = "/home/toxic/estate/ranch/phone-sentinel"
 port = 25178
 ready_http = "http://127.0.0.1:25178/health"
 health_http = { url = "http://127.0.0.1:25178/health", interval = "15s", timeout = "3s" }
@@ -1396,8 +1396,8 @@ env = { WHATSAPP_MCP_PORT = "25146" }
 # source fragment; a recompose would have dropped it. Now properly owned.)
 
 [daemons.duet-yote]
-run = "exec /home/toxic/.local/share/mise/shims/bun /home/toxic/duet/src/yote.ts"
-dir = "/home/toxic/duet"
+run = "exec /home/toxic/.local/share/mise/shims/bun /home/toxic/estate/ranch/duet/src/yote.ts"
+dir = "/home/toxic/estate/ranch/duet"
 retry = true
 auto = ["start"]
 
