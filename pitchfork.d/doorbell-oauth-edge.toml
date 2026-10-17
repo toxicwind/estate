@@ -1,0 +1,11 @@
+[daemons.doorbell-oauth-edge]
+port = 25217
+run = "/home/toxic/.local/share/mise/installs/bun/1.4.2/bin/bun run ./src/oauth-edge.ts"
+dir = "/home/toxic/estate/ranch/doorbell"
+mise = false
+retry = true
+ready_http = "http://127.0.0.1:25217/health"
+env = { OAUTH_EDGE_PORT = "25217", DOORBELL_UPSTREAM = "http://127.0.0.1:25202", PUBLIC_ISSUER = "https://estate.tailc9ac71.ts.net" }
+
+# estate — project-owned daemon manifest. Source of truth for 'estate-reconcile-watch'.
+# Owned by the estate project; the parent only composes it.

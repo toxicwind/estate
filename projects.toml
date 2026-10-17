@@ -27,13 +27,6 @@ manifest = "ranch/squawk/oracle/pitchfork.d"
 kind = "dir"
 
 [[project]]
-key = "ranch/mesh/proxy/cuttinggate"
-manifest = "ranch/mesh/proxy/cuttinggate/pitchfork.d"
-kind = "dir"
-
-
-
-[[project]]
 key = "ranch/stream-broker"
 manifest = "ranch/stream-broker/pitchfork.d"
 kind = "dir"
