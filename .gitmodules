@@ -50,3 +50,27 @@
 [submodule "grasp-hub"]
 	path = grasp-hub
 	url = https://github.com/toxicwind/grasp-hub.git
+[submodule "config.tau.agent.extensions.hashline-pi"]
+	path = config/tau/agent/extensions/hashline-pi
+	url = https://github.com/acoyfellow/hashline-pi.git
+[submodule "engines.herd.ik_llama.cpp"]
+	path = engines/herd/ik_llama.cpp
+	url = https://github.com/ikawrakow/ik_llama.cpp.git
+[submodule "engines.herd.llama-cpp-turboquant"]
+	path = engines/herd/llama-cpp-turboquant
+	url = https://github.com/TheTom/llama-cpp-turboquant.git
+[submodule "ops.gitignore.templates"]
+	path = ops/gitignore/templates
+	url = https://github.com/github/gitignore.git
+[submodule "plugins.agentpluginzoo"]
+	path = plugins/agentpluginzoo
+	url = https://github.com/tezansahu/agentpluginzoo.git
+[submodule "work.airspeak"]
+	path = work/airspeak
+	url = https://github.com/toxicwind/airspeak.git
+[submodule "work.tau-extensions"]
+	path = work/tau-extensions
+	url = https://github.com/toxicwind/tau-extensions.git
+[submodule "submodules.phone-sentinel"]
+	path = submodules/phone-sentinel
+	url = /home/toxic/phone-sentinel
