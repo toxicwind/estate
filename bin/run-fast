@@ -1,17 +1,14 @@
 #!/usr/bin/env bash
-# run-fast — the 2-second rule, LIVE shim (first-class impl: ranch/two-sec).
+# run-fast — 2-second rule: attaches directly to the canary bun version.
 #
-# This IS the live WIP shim: it resolves the two-sec source (override with
-# TWO_SEC_DIR to point `run-fast` at a fork/checkout under iteration), picks a
-# bun consistent with the box, and execs the deadline runner. Source is never
-# prebuilt — every invocation runs the current two-sec code, so iterating on
-# `ranch/two-sec/src` takes effect on the next call. No staleness.
+# Picks the box's bun (canary) and execs it with the two-sec deadline runner.
+# Source resolves via TWO_SEC_DIR override (default: ranch/two-sec).
+# No prebuilt artifacts — every invocation runs the current two-sec code.
 #
-# Usage: run-fast <cmd…>
+# Usage: run-fast [<two-sec-args>...] -- <cmd…>
 
 set -uo pipefail
 
-# Allow pointing at another two-sec checkout during iteration.
 TWO_SEC_SRC="${TWO_SEC_DIR:-/home/toxic/estate/ranch/two-sec}"
 CLI="$TWO_SEC_SRC/src/cli.ts"
 
@@ -20,12 +17,12 @@ if [ ! -f "$CLI" ]; then
   exit 2
 fi
 
-# Consistent bun (project uses ~/.bun/bin, but honor PATH if it's the same).
-BUN_BIN="$(command -v bun || true)"
-if [ -z "$BUN_BIN" ]; then BUN_BIN="$HOME/.bun/bin/bun"; fi
+# Canarry bun (bf42a525d).
+BUN_BIN="${BUN_BIN:-$HOME/.bun/bin/bun}"
 
-# Route through the deadline runner. No args → no-op (still print the deadline
-# header the runner emits, harmlessly).
+# Strip leading '--' delimiter so two-sec doesn't see it.
+set -- "${@#"--"}"
+
 if [ "$#" -eq 0 ]; then
   exec "$BUN_BIN" run "$CLI" run "true"
 fi
