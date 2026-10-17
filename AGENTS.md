@@ -36,6 +36,28 @@
    Tie-breaker: **one supervisor per service** — check `docker ps -a` before adding
    a pitchfork daemon, and vice versa.
 
+## The vibe meta-todo (first-class, resets every task)
+
+Every `todowrite` list here ENDS with a final **vibe meta-todo** (always last,
+the reset) that holds this estate's whole doctrine mid-task:
+
+- **Free-will / MAXIMAL / first-class / future-usable / cutting-edge.** Never
+  "report-only" — always *fix-forward*. Slow, blocked, or basic = race the
+  fastest available path, not a stop.
+- **Race faster with borrow + papers DURING the task**, not just at planning:
+  on any slow/blocked step route ast-grep → bm25 → paper-finder → forge borrow →
+  background-process, in that order, before any workaround. Never retry the same
+  slow command; a breach without a raced fix is a defect.
+- **After research, spawn the next 6 complex todos** capturing the directions
+  found and execute them in sequence — don't let the research evaporate.
+- **2s breach = opportunity, not failure.** Every breach triggers finding the
+  faster pattern or paper via the AST tools.
+- **Verbosity stays ON.** MAXIMAL: go fully or don't go.
+- **Additive-only** (never remove/disable a peer/daemon/model without order).
+  **Secrets never committed.** **One writer per subtree.** **Everything
+  pushed.** Docs lie, code is absolute.
+- **End every task** by re-visiting this vibe todo as the reset.
+
 ## Scope split (deeper nested files)
 
 | Path | Owns |
