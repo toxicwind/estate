@@ -225,7 +225,7 @@ Ported from TypeScript (`tools/llama-swap:25100/llama-swap:25100-ts/router.ts`) 
 
 ## 7. Estate MCP Gateway (`:25120`)
 
-Trust boundary + resource allocator in front of upstream MCP servers (e.g. `byte-vision-mcp` on `:25121`).
+Trust boundary + resource allocator in front of upstream MCP servers (e.g. `feedlot-mcp` on `:25121`).
 
 | Feature                          | Implementation                                                                      |
 | -------------------------------- | ----------------------------------------------------------------------------------- |
@@ -274,8 +274,8 @@ Each catch block has its own nested try/catch — **no single point of failure**
 | **ghas-api**         | 25112       | Bun                 | GitHub Advanced Search API                           |
 | **ghas-mcp**         | 25113       | Bun                 | GHAS MCP (HTTP, depends on ghas-api)                 |
 | **mesh-hub**         | 25115       | Bun                 | 20 GHAS features × every service                     |
-| **byte-vision**      | 25121       | Go binary           | Vision MCP (OCR / screenshot analysis)               |
-| **byte-vision-p**    | 25120       | Bun                 | **Estate MCP Gateway**                            |
+| **feedlot**      | 25121       | Go binary           | Vision MCP (OCR / screenshot analysis)               |
+| **feedlot-p**    | 25120       | Bun                 | **Estate MCP Gateway**                            |
 | **tailscale-funnel** | —           | Bash                | Tailscale Funnel → rust-web only                     |
 | **redis**            | 25203       | Redis               | Session cache, telemetry (moved 2026-10-14 off :25199) |
 | **qdrant**           | 25133       | Qdrant              | Vector DB (0.0.0.0)                                  |

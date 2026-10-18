@@ -19,5 +19,8 @@
     "ui:build": "bun run --cwd ranch/range/ui build"
   },
   "packageManager": "bun@1.4.2",
-  "version": "18.1.14"
+  "version": "18.1.14",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.1"
+  }
 }

@@ -168,14 +168,14 @@ env = {
 }
 auto = ["start"]
 
-[daemons.byte-vision]
-run = "exec ./stack/services/byte-vision.sh"
+[daemons.feedlot]
+run = "exec ./stack/services/feedlot.sh"
 dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25121/health"
 env = {
-  BYTE_VISION_PORT = "25121",
+  FEEDLOT_PORT = "25121",
 }
 auto = ["start"]
 
@@ -256,7 +256,7 @@ auto = ["start"]
 daemons = ["herd", "qdrant", "redis", "search-api", "mesh-hub", "prometheus", "grafana", "mesh"]
 
 [groups.main]
-daemons = ["qdrant", "redis", "kafka", "hal-substrate", "yote", "search-api", "search-ui", "mesh-hub", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "hindsight", "prometheus", "grafana", "tau", "tau-code", "mesh"]
+daemons = ["qdrant", "redis", "kafka", "hal-substrate", "yote", "search-api", "search-ui", "mesh-hub", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "feedlot", "hindsight", "prometheus", "grafana", "tau", "tau-code", "mesh"]
 
 [groups.agents]
 daemons = ["axiom", "tau", "tau-code"]
@@ -271,9 +271,9 @@ daemons = ["mcp-gateway", "mesh"]
 daemons = ["prometheus", "grafana"]
 
 [groups.all]
-daemons = ["herd", "qdrant", "redis", "kafka", "hal-substrate", "yote", "search-api", "search-ui", "mesh-hub", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "hindsight", "prometheus", "grafana", "tau", "tau-code", "mesh", "build-server"]
+daemons = ["herd", "qdrant", "redis", "kafka", "hal-substrate", "yote", "search-api", "search-ui", "mesh-hub", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "feedlot", "hindsight", "prometheus", "grafana", "tau", "tau-code", "mesh", "build-server"]
 
 [groups.estate-core]
-daemons = ["herd", "qdrant", "redis", "kafka", "hal-substrate", "yote", "search-api", "search-ui", "mesh-hub", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "hindsight", "prometheus", "grafana", "tau", "tau-code", "mesh", "build-server"]
+daemons = ["herd", "qdrant", "redis", "kafka", "hal-substrate", "yote", "search-api", "search-ui", "mesh-hub", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "feedlot", "hindsight", "prometheus", "grafana", "tau", "tau-code", "mesh", "build-server"]
 
 

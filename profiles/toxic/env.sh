@@ -35,7 +35,7 @@ export HINDSIGHT_CP_PORT="25118"
 # daemon MCPPROXY_GO_PORT names. :25120 belongs to ESTATE_CHAT_PORT; it was
 # never this gateway. See config/ports.env.
 export MCP_GATEWAY_PORT="25127"
-export BYTE_VISION_PORT="25121"
+export FEEDLOT_PORT="25121"
 export BEELLAMA_PORT="25122"
 export IK_LLAMA_PORT="25123"
 export KIMI_CODE_PORT="25126"

@@ -107,8 +107,17 @@ def call_tool(name, args):
 
 
 def read_message():
-    """Read one Content-Length-framed JSON-RPC message from stdin."""
+    """Read one Content-Length-framed or newline-delimited JSON-RPC message."""
+    line = sys.stdin.buffer.readline().decode("latin1")
+    if not line:
+        return None
+    line = line.strip()
+    if line.startswith("{"):
+        return json.loads(line)
     headers = {}
+    if ":" in line:
+        k, v = line.split(":", 1)
+        headers[k.strip().lower()] = v.strip()
     while True:
         line = sys.stdin.buffer.readline().decode("latin1")
         if not line:
@@ -126,9 +135,9 @@ def read_message():
 
 
 def send_message(obj):
-    body = json.dumps(obj).encode("utf-8")
-    sys.stdout.buffer.write(b"Content-Length: %d\r\n\r\n" % len(body) + body)
-    sys.stdout.buffer.flush()
+    # mcp-go client reads newline-delimited JSON from server stdout (ReadString('\n')).
+    sys.stdout.write(json.dumps(obj) + "\n")
+    sys.stdout.flush()
 
 
 def main():

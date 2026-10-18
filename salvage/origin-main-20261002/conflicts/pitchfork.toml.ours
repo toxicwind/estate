@@ -17,7 +17,7 @@ env_file = "config/ports.env"
 
 
 [groups.mesh]
-daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "kimi-code", "nginx"]
+daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "feedlot", "hindsight", "kimi-code", "nginx"]
 
 
 [groups.core]
@@ -30,7 +30,7 @@ daemons = []
 
 
 [groups.all]
-daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "squawk-feed", "squawk-ws", "fleet-ui", "flicker", "flicker-agent", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash"]
+daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "feedlot", "hindsight", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "squawk-feed", "squawk-ws", "fleet-ui", "flicker", "flicker-agent", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash"]
 
 # ---- project: Estate (37 daemons) ----
 # Estate — project-owned daemon manifest. Source of truth for 'agent-display'.
@@ -123,13 +123,13 @@ auto = ["start"]
 # To rotate: generate a new token into the secrets file, update the dashboard,
 # then: pitchfork restart whatsapp-mcp
 
-# Estate — project-owned daemon manifest. Source of truth for 'byte-vision'.
+# Estate — project-owned daemon manifest. Source of truth for 'feedlot'.
 # Owned by the Estate project; the parent only composes it.
 
 
-[daemons.byte-vision]
+[daemons.feedlot]
 port = 25121
-run = "exec ./stack/services/byte-vision.sh"
+run = "exec ./stack/services/feedlot.sh"
 dir = "."
 mise = true
 retry = true

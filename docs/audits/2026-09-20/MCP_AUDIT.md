@@ -7,7 +7,7 @@
 
 ## Executive Summary
 
-The Estate MCP stack has **two layers**: **mcpproxy** (`:25109`) handles all upstream MCP server connections for the Zed agent, and **estate-mcp-gateway** (`:25120`) sits as a trust boundary in front of upstream servers (currently only byte-vision). The infrastructure exposes **256+ tools** across **26 healthy MCP servers**. However, several backend services are down or misconfigured, and there are pending tool approvals blocking some capabilities.
+The Estate MCP stack has **two layers**: **mcpproxy** (`:25109`) handles all upstream MCP server connections for the Zed agent, and **estate-mcp-gateway** (`:25120`) sits as a trust boundary in front of upstream servers (currently only feedlot). The infrastructure exposes **256+ tools** across **26 healthy MCP servers**. However, several backend services are down or misconfigured, and there are pending tool approvals blocking some capabilities.
 
 ---
 
@@ -18,7 +18,7 @@ Zed Agent
   │
   ├── mcpproxy (:25109) ─── orchestrates 29 MCP servers
   │     ├── agent-mcp-gateway (:25120)
-  │     │     └── byte-vision-mcp (:25121)  [1 tool]
+  │     │     └── feedlot-mcp (:25121)  [1 tool]
   │     ├── desktop-commander [26 tools]
   │     ├── ast-grep-nnunley [21 tools]
   │     ├── ghas [25 tools]
@@ -68,7 +68,7 @@ Zed Agent
 | 25112 | GHAS API | **LISTEN** | |
 | 25115 | mesh-hub | **LISTEN** | |
 | 25120 | estate-mcp-gateway | **LISTEN** | Trust boundary |
-| 25121 | byte-vision-mcp | **LISTEN** | HTTP server up, but MCP stdio bridge broken |
+| 25121 | feedlot-mcp | **LISTEN** | HTTP server up, but MCP stdio bridge broken |
 | 25133 | qdrant | **DOWN** | qdrant-mcp configured but not listening |
 | 6379 | redis | **LISTEN** | `redis-cli ping` → PONG |
 | 3000 | Unknown (MainThread) | **LISTEN** | pid=2407 |
@@ -132,9 +132,9 @@ Zed Agent
 
 | Server | Error | Retries |
 |--------|-------|---------|
-| byte-vision-llamacpp | `Module not found "/home/toxic/byte-vision-mcp/src/server.ts"` | 129 |
+| feedlot-llamacpp | `Module not found "/home/toxic/feedlot-mcp/src/server.ts"` | 129 |
 
-The byte-vision-mcp HTTP server IS listening on `:25121` but the MCP stdio bridge from mcpproxy is broken — the bun process can't find the module. The gateway (`:25120`) shows it as healthy because it caches from its last successful probe.
+The feedlot-mcp HTTP server IS listening on `:25121` but the MCP stdio bridge from mcpproxy is broken — the bun process can't find the module. The gateway (`:25120`) shows it as healthy because it caches from its last successful probe.
 
 ---
 
@@ -166,7 +166,7 @@ The byte-vision-mcp HTTP server IS listening on `:25121` but the MCP stdio bridg
 
 ### Critical
 
-1. **byte-vision-llamacpp MCP bridge broken** — The stdio transport can't find `/home/toxic/byte-vision-mcp/src/server.ts`. The HTTP server on `:25121` responds but the MCP proxy chain is broken. 129 retries logged. The gateway still shows it as healthy (stale cache).
+1. **feedlot-llamacpp MCP bridge broken** — The stdio transport can't find `/home/toxic/feedlot-mcp/src/server.ts`. The HTTP server on `:25121` responds but the MCP proxy chain is broken. 129 retries logged. The gateway still shows it as healthy (stale cache).
 
 ### High
 
@@ -184,7 +184,7 @@ The byte-vision-mcp HTTP server IS listening on `:25121` but the MCP stdio bridg
 
 7. **Duplicate context7** — Configured both in mcpproxy (via upstream_servers) and in `~/.config/agent-mcp-gateway/.mcp.json`.
 
-8. **Estate-mcp-gateway underutilized** — Only proxies 1 upstream (byte-vision) for 1 tool. The gateway's circuit breaker + sticky affinity architecture is designed for multiple upstreams but only has one, and that one is broken.
+8. **Estate-mcp-gateway underutilized** — Only proxies 1 upstream (feedlot) for 1 tool. The gateway's circuit breaker + sticky affinity architecture is designed for multiple upstreams but only has one, and that one is broken.
 
 ### Low
 
@@ -198,10 +198,10 @@ The byte-vision-mcp HTTP server IS listening on `:25121` but the MCP stdio bridg
 
 ### Immediate Fixes
 
-1. **Fix byte-vision-mcp** — Either:
-   - Restore `/home/toxic/byte-vision-mcp/src/server.ts` (check if the repo was moved/deleted)
+1. **Fix feedlot-mcp** — Either:
+   - Restore `/home/toxic/feedlot-mcp/src/server.ts` (check if the repo was moved/deleted)
    - Update the mcpproxy server command to point to the correct path
-   - Or remove the broken entry if byte-vision is no longer needed
+   - Or remove the broken entry if feedlot is no longer needed
 
 2. **Start Prometheus** — `pitchfork start prometheus` or ensure it's in the pitchfork config
 
@@ -211,7 +211,7 @@ The byte-vision-mcp HTTP server IS listening on `:25121` but the MCP stdio bridg
 
 ### Architecture Improvements
 
-5. **Expand estate-mcp-gateway upstreams** — Instead of only proxying byte-vision, consider routing more sensitive MCP servers through the gateway for circuit breaking + audit. Currently mcpproxy handles all the real connections.
+5. **Expand estate-mcp-gateway upstreams** — Instead of only proxying feedlot, consider routing more sensitive MCP servers through the gateway for circuit breaking + audit. Currently mcpproxy handles all the real connections.
 
 6. **Remove duplicate servers** — Consolidate the duplicate context7 and filesystem configs. The agent-mcp-gateway `.mcp.json` seems to be a separate config layer that may conflict with mcpproxy.
 
@@ -241,7 +241,7 @@ The byte-vision-mcp HTTP server IS listening on `:25121` but the MCP stdio bridg
 | Total MCP servers configured | 29 |
 | Healthy/enabled | 26 |
 | Disabled | 3 |
-| Unhealthy | 1 (byte-vision) |
+| Unhealthy | 1 (feedlot) |
 | Total tools discovered | ~256 |
 | Pending tool approvals | 10+ |
 | Estate ports listening | 11 of 16 defined |

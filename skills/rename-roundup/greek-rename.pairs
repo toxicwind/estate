@@ -1,0 +1,9 @@
+# Greek ranch rename pairs: fur/ling/duel -> agon/antilogos
+substr:  furlong => agon
+substr:  Furlong => Agon
+substr:  FURLONG => AGON
+
+# antilogos: the debate-oracle / duel component
+substr:  duel => antilogos
+substr:  Duel => Antilogos
+substr:  DUEL => ANTILOGOS

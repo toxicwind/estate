@@ -78,7 +78,7 @@ The patcher topologically orders execution and refuses incompatible targets.
 
 Bytecode patches insert tiny hooks (`if-eqz v0, :show`) that delegate to a bundled
 "extension" class written in normal Java/Kotlin. **Patch minimally at the anchor, put
-real logic in a clean shim.** (This is exactly our mcpproxy / byte-vision-proxy pattern.)
+real logic in a clean shim.** (This is exactly our mcpproxy / feedlot-proxy pattern.)
 
 ---
 
@@ -98,7 +98,7 @@ real logic in a clean shim.** (This is exactly our mcpproxy / byte-vision-proxy 
 | index-relative mutation (`matches.last().index + 1`) | Anchor ± context lines in `new_string` |
 | `compatibleWith(pkg, versions)` | Check file state/version/health endpoint before patching |
 | `dependsOn` ordering | Multi-file edit ordering (contracts → envelope → adapters → server) |
-| Extension class shim | Sidecar proxies (mcpproxy, byte-vision-proxy), not invasive rewrites |
+| Extension class shim | Sidecar proxies (mcpproxy, feedlot-proxy), not invasive rewrites |
 | dexlib2 mutable proxies | `/proc`, `sysctl`, `kallsyms` — resolve kernel symbols by name, never by address |
 | Patcher flow (load → resolve → execute → finalize → write) | Our loop: read → match → edit → `kimi doctor`/typecheck → reload service |
 

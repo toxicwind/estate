@@ -69,7 +69,7 @@
   - [x] Remove: `yote` (25102) — missing `yote/src/index.ts`
   - [x] Remove: `mesh-hub` (25115) — missing `src/services/mesh-hub.ts`
   - [x] Remove: `kimi-audit-dash` (25116) — missing `/home/toxic/kimi-token-audit/dashboard/server.ts`
-  - [x] Remove: `byte-vision-proxy` (25121) — script exists but mock
+  - [x] Remove: `feedlot-proxy` (25121) — script exists but mock
   - [x] Remove: `zellij`, `ttyd`, `sshx` — not core services
 - [x] Ensure `groups.core` only has working daemons (13):
   - `llama-swap`, `mcpproxy`, `openfang`, `rust-web`, `ghas-api`, `ghas-mcp`, `ghas-frontend`, `prometheus`, `grafana`, `hf-downloader`, `qdrant`, `redis`, `pi-web-dashboard`

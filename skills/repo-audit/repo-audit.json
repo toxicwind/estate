@@ -340,8 +340,8 @@
     "has_ci":false
   },
   {
-    "name":"byte-vision-mcp",
-    "full_name":"toxicwind\/byte-vision-mcp",
+    "name":"feedlot-mcp",
+    "full_name":"toxicwind\/feedlot-mcp",
     "private":false,
     "visibility":"public",
     "fork":true,

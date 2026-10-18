@@ -1,12 +1,12 @@
 [daemons.flock]
 health_http = { url = "http://127.0.0.1:25193/health", interval = "30s", timeout = "5s", retries = 3 }
 port = 25193
-run = "exec /home/toxic/estate/ranch/flock/bin/flock-run.sh"
-dir = "/home/toxic/estate/ranch/flock"
+run = "exec /home/toxic/estate/ranch/forge/router/flock-proxy/target/release/flock"
+dir = "/home/toxic/estate/ranch/forge/router/flock-proxy"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25193/health"
-env = { FLOCK_PORT = "25193", FLOCK_DATA_DIR = "/home/toxic/.flock-data", FLOCK_BASE_URL = "http://127.0.0.1:25193", FLOCK_MODEL = "nvidia/nemotron-3-ultra-550b-a55b" }
+env = { PORT = "25193", DATA_DIR = "/home/toxic/.flock-data", HOST = "127.0.0.1" }
 auto = ["start"]
 
 # estate — project-owned daemon manifest. Source of truth for 'grafana'.

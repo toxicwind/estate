@@ -94,7 +94,7 @@ mise run down
 | **ghas-api**          | 25112     | Bun                 | GitHub Advanced Search API                                                                                      |
 | **ghas-mcp**          | 25113     | Bun                 | GHAS MCP (HTTP mode, depends on ghas-api)                                                                       |
 | **mesh-hub**          | 25115     | Bun                 | 20 GHAS-inspired features × every service                                                                       |
-| **byte-vision**       | 25121     | Go binary           | Vision MCP (OCR / screenshot analysis)                                                                          |
+| **feedlot**       | 25121     | Go binary           | Vision MCP (OCR / screenshot analysis)                                                                          |
 | **tailscale-funnel**  | —         | Bash                | Tailscale Funnel exposure (public HTTPS endpoint)                                                               |
 | **redis**             | 25199     | Redis               | Session cache, telemetry backing store                                                                          |
 
@@ -202,7 +202,7 @@ Access services **directly** on their ports (LAN or Tailscale MagicDNS). Optiona
                     ├─ mcpproxy      :25127  (43 MCPs federated)
                     ├─ ghas-api      :25112  (GitHub search)
                     ├─ mesh-hub      :25115  (service mesh)
-                    └─ byte-vision   :25121  (vision MCP)
+                    └─ feedlot   :25121  (vision MCP)
 
  optional: Tailscale Funnel → rust-web :25101 only (not multipath)
 ```

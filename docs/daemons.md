@@ -120,7 +120,7 @@ Everything a browser can reach. These are the tabs in the master UI.
 | `toolcall-llm` | 25152 | Tool-calling model (qwen3.5-9b), OpenAI-compatible. |
 | `kimi-auto-shim` | 25153 | Alias forwarder for the kimi-auto stack. Model selection lives in `herd.d/kimi-auto.yaml`, never in tool code. |
 | `nim-kimi-sidecar` | 25163 | NVIDIA NIM sidecar. |
-| `byte-vision` | 25121 | Vision inference. |
+| `feedlot` | 25121 | Vision inference. |
 | `hf-downloader` | 25106 | HuggingFace model fetches. |
 | `hindsight` | 25117 | Agent memory. |
 | `kimi-code` | 25126 | Kimi coding agent. Guarded by `bin/claim-port` — explicit port, fails fast, never walks. |

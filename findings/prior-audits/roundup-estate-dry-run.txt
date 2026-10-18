@@ -1346,7 +1346,7 @@ would rewrite 1445 files in /home/toxic/estate
   M stack/services/_consolidated_herd_20260924/coyote.sh
   M stack/services/_consolidated_herd_20260924/download-models.sh
   M stack/services/_consolidated_herd_20260924/openfang.sh
-  M stack/services/byte-vision.sh
+  M stack/services/feedlot.sh
   M stack/services/code-insiders-deploy.sh
   M stack/services/dnsmasq.sh
   M stack/services/fix-hindsight.sh

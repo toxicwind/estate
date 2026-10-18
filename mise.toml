@@ -14,9 +14,34 @@
 #
 # Keep mise tasks as hand-authored project workflows. Pitchfork owns daemon
 # lifecycle directly; do not mirror its start/stop/restart/health subcommands.
+#
+# 2026-10-18 severe cutover: kappa everywhere. The kilo-build task and every
+# kilo-named reference are gone — kappa-build is the one canonical build task.
+# Also: mise 2026.10.12 renamed task `cmd` to `run` and dropped
+# [task_config.cache] `ttl` (valid fields: enabled, audit, env, command_inputs);
+# remote cache TTL is now owned by the server side (flicker :25148).
 # ============================================================================
 
 [env]
 # Ports are injected estate-wide. See mise/conf.d/10-env.toml for why nothing
 # else declares a *_PORT. route.env carries the flock model and base URL.
 _.file = ["config/ports.env", "config/flock-ssot/route.env"]
+
+# Forge remote build cache — first-class nativelink-backed cache at :25148
+# (:25148 is flicker, the ranch build daemon — estate map, NOT mbx-cache).
+MISE_CACHE_REMOTE_URL = "http://127.0.0.1:25148"
+BUN_BUILD_REMOTE_CACHE = "http://127.0.0.1:25148"
+
+[task_config.cache]
+# Remote build cache via the flicker/forge daemon (nativelink RE API).
+# `ttl` was removed 2026-10-18: mise 2026.10.12 no longer accepts it.
+enabled = true
+
+# Forge build tasks — first-class build pipeline
+[tasks.kappa-build]
+run = """
+bun run --cwd /home/toxic/estate/ranch/kappa/kappa-code make --single --skip-install
+"""
+description = "Build kappa binary via forge remote cache"
+sources = ["package.json", "bun.lock", "packages/opencode/script/build.ts"]
+outputs = ["packages/opencode/dist/@kappacode/cli-linux-x64/bin/kappa"]

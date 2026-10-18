@@ -661,9 +661,9 @@
     },
     {
       "port": 25121,
-      "ssot": "BYTE_VISION_PORT",
+      "ssot": "FEEDLOT_PORT",
       "daemons": [
-        "byte-vision"
+        "feedlot"
       ],
       "live": false,
       "addr": null,
@@ -672,9 +672,9 @@
     },
     {
       "port": 25121,
-      "ssot": "BYTE_VISION_PORT",
+      "ssot": "FEEDLOT_PORT",
       "daemons": [
-        "byte-vision"
+        "feedlot"
       ],
       "live": false,
       "addr": null,
