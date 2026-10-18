@@ -295,8 +295,8 @@ auto = ["start"]
 # 2026-10-15: run via serve wrapper — client keys come from the vault
 # (CUTTINGGATE_CLIENT_KEY); the bare def had zero client keys configured, so
 # every Bearer token was rejected with auth_missing.
-run = "exec /home/toxic/estate/ranch/mesh/proxy/cuttinggate/cuttinggate-serve.sh"
-dir = "/home/toxic/estate/ranch/mesh/proxy/cuttinggate"
+run = "exec /home/toxic/estate/ranch/forge/router/cuttinggate/cuttinggate-serve.sh"
+dir = "/home/toxic/estate/ranch/forge/router/cuttinggate"
 retry = true
 ready_http = "http://127.0.0.1:25200/health"
 health_http = { url = "http://127.0.0.1:25200/health", interval = "30s", timeout = "5s", retries = 3 }
@@ -454,19 +454,24 @@ auto = ["start"]
 # ranch/squawk — project-owned daemon manifest. Source of truth for 'nats-tail'.
 # Owned by the ranch/squawk project; the parent only composes it.
 
+# owner: hodos flock (ranch/hodos/proxy) — the merged maximal router.
+# 2026-10-17: the hodos tree (github toxicwind/hodos) absorbed the nim-proxy
+# core (FEATURE_PARITY zero-loss merge) and now serves every lane natively:
+# OpenAI /v1/chat/completions across the provider registry AND the Anthropic
+# /v1/messages surface for Claude Code. Replaces BOTH the pre-merge ranch/flock
+# daemon (served zero models) and the dockerized miztertea/nim-proxy container
+# (stopped 2026-10-17; Lane A doctrine: estate services run under pitchfork,
+# never docker). Data: ~/.flock/nim-data (config.json + history.jsonl).
 [daemons.flock]
 health_http = { url = "http://127.0.0.1:25193/health", interval = "30s", timeout = "5s", retries = 3 }
 port = 25193
-run = "exec /home/toxic/estate/ranch/flock/bin/flock-run.sh"
-dir = "/home/toxic/estate/ranch/flock"
+run = "exec /home/toxic/estate/ranch/hodos/proxy/serve.sh"
+dir = "/home/toxic/estate/ranch/hodos/proxy"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25193/health"
-env = { FLOCK_PORT = "25193", FLOCK_DATA_DIR = "/home/toxic/.flock-data", FLOCK_BASE_URL = "http://127.0.0.1:25193", FLOCK_MODEL = "nvidia/nemotron-3-ultra-550b-a55b" }
+env = { PORT = "25193", DATA_DIR = "/home/toxic/.flock/nim-data", HOST = "127.0.0.1" }
 auto = ["start"]
-
-# estate — project-owned daemon manifest. Source of truth for 'grafana'.
-# Owned by the estate project; the parent only composes it.
 
 [daemons.forge-agent]
 run = "exec /home/toxic/estate/var/reconciliation/flicker/bin/flicker-agent"
@@ -1243,3 +1248,4 @@ dir = "/home/toxic/estate/ranch/stream-broker"
 run = "exec bun run src/index.ts"
 port = 25215
 ready_port = 25215
+

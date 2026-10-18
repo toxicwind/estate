@@ -34,6 +34,7 @@ export HERD_DASHBOARD_URL="${HERD_DASHBOARD_URL:-http://127.0.0.1:25218/}"
 for BIN in \
   "$SOV/ranch/mesh/router/herd/herd" \
   "$SOV/ranch/herd/herd" \
+  "$SOV/ranch/herd/llama-swap" \
   "$SOV/var/herd-backups/herd/herd"
 do
   [[ -x "$BIN" ]] && break

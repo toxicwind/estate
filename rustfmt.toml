@@ -47,7 +47,10 @@ use_small_heuristics = "Max"
 # Macros & Strings
 format_macro_bodies = true
 format_macro_matchers = true
-format_strings = true
+# format_strings rewraps string literals and corrupts escape-heavy content
+# (demonstrated 2026-10-17: mangled JSONL fixtures in history.rs and e2e.rs
+# into non-compiling token soup). Keep string content author-owned.
+format_strings = false
 
 # Code Structure
 brace_style = "SameLineWhere"
@@ -71,4 +74,4 @@ blank_lines_upper_bound = 1
 force_explicit_abi = true
 hex_literal_case = "Lower"
 newline_style = "Unix"
-ignore = ["crates/vendor/brush-core/**", "crates/pi-builtins/**"]
+ignore = ["crates/vendor/brush-core/**", "crates/pi-builtins/**", "ranch/hodos/proxy/src/roost_providers.rs", "ranch/pinax/generated/**"]
