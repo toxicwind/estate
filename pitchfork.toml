@@ -470,7 +470,7 @@ dir = "/home/toxic/estate/ranch/hodos/proxy"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25193/health"
-env = { PORT = "25193", DATA_DIR = "/home/toxic/.hodos/nim-data", HOST = "127.0.0.1" }
+env = { PORT = "25193", DATA_DIR = "/home/toxic/.hodos-data", HOST = "127.0.0.1" }
 auto = ["start"]
 
 [daemons.forge-agent]
