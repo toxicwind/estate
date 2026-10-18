@@ -35,7 +35,7 @@ type Verdict = { name: string; ok: boolean; detail?: string };
 const SSOT_TRACKED = [
   ".env",
   "config/ports.env",
-  "config/flock-ssot/route.env",
+  "config/hodos-ssot/route.env",
   "config/tau/agent/config.yml",
   "pitchfork.toml",
 ];

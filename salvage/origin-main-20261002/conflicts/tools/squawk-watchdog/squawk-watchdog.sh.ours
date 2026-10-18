@@ -16,7 +16,7 @@ LOG=$STATE_DIR/watchdog.log
 LOCK=$STATE_DIR/watchdog.lock
 mkdir -p "$STATE_DIR"
 exec 9>"$LOCK"
-flock -n 9 || exit 0  # another run in flight; skip quietly
+hodos -n 9 || exit 0  # another run in flight; skip quietly
 
 cd /home/toxic/estate
 

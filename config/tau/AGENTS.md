@@ -43,7 +43,7 @@ multi-op patch, any earlier op that adds or removes lines shifts every later
 op, and hashline applies the drift SILENTLY — it deletes lines the patch never
 mentioned and exits 0. Cost three shredded files on 2026-10-02
 (`config/keypools.yaml`, `services/keypool/src/server.ts`,
-`ranch/flock/proxy/src/providers.rs`).
+`ranch/hodos/proxy/src/providers.rs`).
 
 - **ALWAYS** carry the anchor from `hashline read`: `SWAP 641:3f2a..674:9b1c:`.
 - **NEVER** mix a bare op after a line-count-changing op in the same patch.

@@ -261,15 +261,15 @@ ready_http = "http://127.0.0.1:25110/api/health"
 health_http = { url = "http://127.0.0.1:25110/health", interval = "30s", timeout = "5s", retries = 3 }
 auto = ["start"]
 
-[daemons.flock]
+[daemons.hodos]
 health_http = { url = "http://127.0.0.1:25193/health", interval = "30s", timeout = "5s", retries = 3 }
 port = 25193
-run = "exec /home/toxic/estate/projects/range/ranch/flock/bin/flock-run.sh"
+run = "exec /home/toxic/estate/projects/range/ranch/hodos/bin/hodos-run.sh"
 dir = "."
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25193/health"
-env = { VANSROUTER_API_KEY = "local-Estate", FLOCK_PORT = "25193" }
+env = { VANSROUTER_API_KEY = "local-Estate", HODOS_PORT = "25193" }
 auto = ["start"]
 
 [daemons.vansrouter]
@@ -358,13 +358,13 @@ auto = ["start"]
 daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "feedlot", "hindsight", "kimi-code", "nginx"]
 
 [groups.core]
-daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server"]
+daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "hodos", "matter-server"]
 
 [groups.agents]
 daemons = []
 
 [groups.all]
-daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "feedlot", "hindsight", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "squawk-feed", "squawk-ws", "fleet-ui", "buildsrv", "buildsrv-watchdog", "flicker", "flicker-agent", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash", "Estate-router"]
+daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "feedlot", "hindsight", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "hodos", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "squawk-feed", "squawk-ws", "fleet-ui", "buildsrv", "buildsrv-watchdog", "flicker", "flicker-agent", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash", "Estate-router"]
 
 
 [daemons.kimi-auto-shim]

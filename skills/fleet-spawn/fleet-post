@@ -11,7 +11,7 @@
  *            on yote. Deleted (best-effort) on any confirmed delivery; if the
  *            race fails but the journal landed, the yote mirror-flusher
  *            completes the post (uuid-checked, idempotent).
- *   Path A: `squawk send` — full-featured (seq_alloc, flock, write-verify).
+ *   Path A: `squawk send` — full-featured (seq_alloc, hodos, write-verify).
  *   Path B: raw bridge exec, direct file write, timestamp filename —
  *           survives seq_alloc.py missing/renamed (different failure mode).
  * If both delivery paths land, the loser is deleted (dedupe by shared UUID).
@@ -113,7 +113,7 @@ async function stampUuid(channel: string, fname: string, theUuid: string): Promi
   } catch { /* worst case the flusher posts a reader-deduped duplicate */ }
 }
 
-// Path A: squawk CLI (seq_alloc + flock + verify)
+// Path A: squawk CLI (seq_alloc + hodos + verify)
 async function pathA(): Promise<string> {
   const out = await $`${SQUAWK} send ${channel} ${message}`.env({ ...process.env, SQUAWK_SENDER: sender }).text();
   if (!out.includes("published")) throw new Error("pathA: no 'published' in output: " + out.slice(0, 200));

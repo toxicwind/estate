@@ -41,7 +41,7 @@
 Two things live in one tree:
 
 1. **The control plane** — [`pitchfork.toml`](pitchfork.toml) (service definitions, pitchfork supervisor), [`mise.toml`](mise.toml) (tooling + tasks), [`config/`](config/) (port assignments, the inference routing matrix). This is the ops layer that keeps the box running.
-2. **The workspaces** — [`projects/`](projects/) holds the actual projects: the ranch monorepo under [`projects/range/ranch/`](projects/range/ranch/) (herd, flock, squawk, squawk-ws, lasso, flicker, gatehouse, oracle, rig, corral, roundup, stream-broker, … — one directory per component, fully flattened 2026-09-30), the range MCP gateway, the ranch tool-federation layer, plus the agent runtimes (yote, openfang), the editor substrate (qed), the quickshell home (shell), and research and audit probes.
+2. **The workspaces** — [`projects/`](projects/) holds the actual projects: the ranch monorepo under [`projects/range/ranch/`](projects/range/ranch/) (herd, hodos, squawk, squawk-ws, lasso, flicker, gatehouse, oracle, rig, corral, roundup, stream-broker, … — one directory per component, fully flattened 2026-09-30), the range MCP gateway, the ranch tool-federation layer, plus the agent runtimes (yote, openfang), the editor substrate (qed), the quickshell home (shell), and research and audit probes.
 
 Plus the agent layer: [`hatch/agents/ember`](hatch/agents/ember) (Ember's operational home, with the squawk agent-to-agent chat), [`agents/`](agents/) (oracle-market, coyote, …), [`bridge/`](bridge/) (the live hatch↔yote exec bridge), and [`scratch/`](scratch/) (explicitly non-production staging).
 
@@ -166,13 +166,13 @@ flowchart TB
         SIG[sigma<br/>context folding proxy]
     end
     subgraph frontdoor["Inference front door"]
-        HERD[herd :25100<br/>llama-swap fork + flock router]
+        HERD[herd :25100<br/>llama-swap fork + hodos router]
         MG[model-guard :25101<br/>request-contract proxy]
         KP[keypool :25109<br/>provider key pool]
     end
     subgraph backends["Backends"]
         LOCAL[local :25001+<br/>llama-server forks<br/>RTX 3090]
-        CLOUD[cloud via flock :25193<br/>openrouter · nvidia · moonshot]
+        CLOUD[cloud via hodos :25193<br/>openrouter · nvidia · moonshot]
     end
     ZED --> SIG
     AG --> SIG
@@ -222,14 +222,14 @@ Daemon definitions live in [`pitchfork.toml`](pitchfork.toml) (the generator is 
 
 | Port | Daemon | Role |
 | ---- | ------ | ---- |
-| `:25100` | `herd` | Inference front door — OpenAI-compatible `/v1` (llama-swap fork + flock router) |
+| `:25100` | `herd` | Inference front door — OpenAI-compatible `/v1` (llama-swap fork + hodos router) |
 | `:25101` | `model-guard` | Request-contract enforcement proxy in front of herd (rewrites `chat/completions` per [`config/model_constraints.yaml`](config/model_constraints.yaml)) |
 | `:25109` | `keypool` | Provider key pool for herd cloud routing ([`bin/herd-keypool.py`](bin/herd-keypool.py)) |
 | `:25111` | `tau` | Tau agent engine, exposed as a TCP daemon by `chute` (stdio→TCP ACP) |
 | `:25102` | `yote` | Lightweight agent runtime and chat/bot plane |
 | `:25103` | `openfang-front` | OpenFang public proxy (renamed from `axiom` 2026-09-21) → kernel `:25196` |
 | `:25143` | `coyote` | Autonomous agent inference engine |
-| `:25193` | `flock` | Cloud-provider routing daemon backing herd |
+| `:25193` | `hodos` | Cloud-provider routing daemon backing herd |
 | `:25127` | `gatehouse` | MCP federation (was `shep`) |
 | `:25115` | `mesh-hub` | Service discovery + health ([`src/services/mesh-hub.ts`](src/services/mesh-hub.ts)) |
 | `:25120` | `Estate-chat` | Fleet chat web plane ([`tools/Estate-chat/`](tools/Estate-chat/)) |
@@ -353,7 +353,7 @@ Two upstream inputs make it maintainable: [`bin/upstream-pull.sh`](projects/sigm
 
 ### Inference — herd
 
-[`projects/herd/`](projects/herd) — the **toxicwind fork of llama-swap** (Go): the stack's single OpenAI-compatible endpoint on `:25100`. Cloud-provider routing is delegated to the `flock` daemon on `:25193`. Live service: pitchfork `herd` → `stack/services/herd.sh` with [`config/herd.yaml`](config/herd.yaml).
+[`projects/herd/`](projects/herd) — the **toxicwind fork of llama-swap** (Go): the stack's single OpenAI-compatible endpoint on `:25100`. Cloud-provider routing is delegated to the `hodos` daemon on `:25193`. Live service: pitchfork `herd` → `stack/services/herd.sh` with [`config/herd.yaml`](config/herd.yaml).
 
 Self-healing peers (2026-09-20): event-driven dead-peer detection (healthy/degraded/circuit-open FSM, single-flight half-open recovery on real traffic) with `GET /peer-health` observability.
 
@@ -384,7 +384,7 @@ These daemons are **protected**: `bin/claim-port` refuses 25147 and 25135 outrig
 
 ### Tool federation — range
 
-[`projects/range/`](projects/range) — the ranch monorepo and MCP gateway source, flattened 2026-09-30 to one directory per component: herd, flock, squawk, squawk-ws, lasso, flicker, gatehouse, oracle, rig, corral, roundup, stream-broker, chute, … Daemons: `gatehouse` (`:25127`, MCP federation), `mesh-hub` (`:25115`, service discovery + health, [`src/services/mesh-hub.ts`](src/services/mesh-hub.ts)), `mesh-landing` (`:25207`).
+[`projects/range/`](projects/range) — the ranch monorepo and MCP gateway source, flattened 2026-09-30 to one directory per component: herd, hodos, squawk, squawk-ws, lasso, flicker, gatehouse, oracle, rig, corral, roundup, stream-broker, chute, … Daemons: `gatehouse` (`:25127`, MCP federation), `mesh-hub` (`:25115`, service discovery + health, [`src/services/mesh-hub.ts`](src/services/mesh-hub.ts)), `mesh-landing` (`:25207`).
 
 ### Skills — Estate + gear
 

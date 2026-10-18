@@ -5,7 +5,7 @@
 #   0. secret scan        -- gitleaks (official 222-rule config) over each push
 #                            range (merge-base..head), staged diff in worktree
 #                            mode, worktree scan for new branches. Backstop for
-#                            the 2026-09-17 flock key-pool leak (29 GitHub
+#                            the 2026-09-17 hodos key-pool leak (29 GitHub
 #                            secret-scanning alerts from committed API keys).
 #                            Prints only the file name, never the match
 #                            (gitleaks --redact). Reviewed paths stay approved
@@ -157,7 +157,7 @@ fi
 # Real secret detection via gitleaks with the official 222-rule config
 # ($GITLEAKS_CONFIG, default ~/.config/gitleaks/gitleaks.toml). Replaces the
 # old hand-rolled regex, which false-positived on test fixtures and missed
-# whole secret families. Backstop for the 2026-09-17 flock key-pool leak
+# whole secret families. Backstop for the 2026-09-17 hodos key-pool leak
 # (29 GitHub secret-scanning alerts from committed API keys).
 # Runs per push range as merge-base..head via `detect --log-opts`; worktree
 # mode scans the staged diff via `protect --staged`. New-branch pushes

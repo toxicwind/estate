@@ -47,7 +47,7 @@ them without reading this first:
   `profiles/default.yml`, or a documented secret name (values live in
   `/home/toxic/.secrets`, never in the repo). Secret names the tree uses:
   `HF_TOKEN`, `MISTRAL_API_KEY`, `MOONSHOT_API_KEY`, `OPENROUTER_API_KEY`,
-  `OPENROUTER_API_KEY_1`, `OPENROUTER_API_KEY_FREE`, `FLOCK_API_KEY`,
+  `OPENROUTER_API_KEY_1`, `OPENROUTER_API_KEY_FREE`, `HODOS_API_KEY`,
   `GEMINI_API_KEY`, `NVIDIA_API_KEY`, `GITHUB_TOKEN`.
 
 ## 4. herd.yaml naming

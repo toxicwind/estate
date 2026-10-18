@@ -5,8 +5,8 @@ plugins:
       - ./projects/ranch/herd/vendor/llama-swap
     merged: Estate-swap
     privileged: true
-  - name: flock
-    source: ./projects/ranch/flock
+  - name: hodos
+    source: ./projects/ranch/hodos
     privileged: true
   - name: shep
     source: ./projects/ranch/barn/shep
@@ -14,7 +14,7 @@ plugins:
     role: "MCP federation gateway"
   - name: router
     source: ./projects/ranch/router
-    merged: [router-legacy, stockyard-flock-router, Estate-router]
+    merged: [router-legacy, stockyard-hodos-router, Estate-router]
     privileged: true
   - name: barn-browser
     source: ./projects/ranch/barn/browserless

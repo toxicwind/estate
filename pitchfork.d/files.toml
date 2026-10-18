@@ -13,7 +13,7 @@ health_http = { url = "http://127.0.0.1:34567/health", interval = "30s", timeout
 auto = ["start"]
 
 # ranch-ui — the consolidated ranch dashboard (ranch/range/ui). Serves the
-# built SPA from dist and proxies /api/herd + /api/flock same-origin, so the
+# built SPA from dist and proxies /api/herd + /api/hodos same-origin, so the
 # dashboard's apiBase shim resolves to this host. Built 2026-10-14 by merging
 # the 368bdf6 master back into range/ui (see range/ui/CONSOLIDATION.md).
 # Tailnet-only: tailscale serve fronts it; nothing binds 0.0.0.0.

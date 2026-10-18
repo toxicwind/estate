@@ -3,8 +3,8 @@ plugins:
   source: ./projects/range/ranch/stockyard/herd
   merged: estate-swap
   privileged: true
-- name: flock
-  source: ./projects/range/ranch/stockyard/flock
+- name: hodos
+  source: ./projects/range/ranch/stockyard/hodos
   privileged: true
 - name: gatehouse
   source: ./projects/range/ranch/barn/gatehouse
@@ -14,7 +14,7 @@ plugins:
   source: ./projects/range/ranch/stockyard/router-legacy
   merged:
   - router-legacy
-  - stockyard-flock-router
+  - stockyard-hodos-router
   - estate-router
   privileged: true
 - name: barn-browser

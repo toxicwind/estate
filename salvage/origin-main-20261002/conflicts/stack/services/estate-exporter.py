@@ -29,7 +29,7 @@ KNOWN_PORTS = {
     25109: "keypool", 25110: "grafana", 25127: "mesh-mcp",
     25135: "squawk-feed", 25146: "whatsapp-webhook", 25147: "squawk-ws",
     25148: "brand",
-    25193: "flock", 25198: "mcp", 25201: "serve-root", 25202: "gemini-mcp",
+    25193: "hodos", 25198: "mcp", 25201: "serve-root", 25202: "gemini-mcp",
     25204: "exec-ws", 25205: "prom-backend", 25207: "status",
     25208: "nginx", 25209: "matter", 25210: "grafana-backend",
     25211: "node-exporter", 25213: "Estate-exporter",

@@ -28,31 +28,31 @@ hooks:
   on_model_unloaded:
     exec: 'echo "[$(date)] MODEL_UNLOADED: $MODEL" >> /home/toxic/estate/data/herd-events.log'
 
-# RETIRED 2026-09-17: astMatrix in-process router replaced by Flock delegation.
-# Flock (:8000) is the unified multi-provider remote-API/completions subsystem.
-# DISABLED 2026-09-20 (provider-surgeon): flock :25193 cloud upstream is dead -
-# NVIDIA account returns 404/410/502 on every probed chat model; the flock daemon
-# itself runs with zero upstream env keys. Re-enable when flock upstream is healthy.
-# (flock daemon keeps running under pitchfork for the TAU flock extension.)
-# RE-ENABLED 2026-09-20 ~03:10 MDT (provider-surgeon): flock upstream completions
-# verified live via 127.0.0.1:25193 with FLOCK_API_KEY. Only the 3 model IDs
-# below returned real completions in the probe; the other 100 flock-advertised
+# RETIRED 2026-09-17: astMatrix in-process router replaced by Hodos delegation.
+# Hodos (:8000) is the unified multi-provider remote-API/completions subsystem.
+# DISABLED 2026-09-20 (provider-surgeon): hodos :25193 cloud upstream is dead -
+# NVIDIA account returns 404/410/502 on every probed chat model; the hodos daemon
+# itself runs with zero upstream env keys. Re-enable when hodos upstream is healthy.
+# (hodos daemon keeps running under pitchfork for the TAU hodos extension.)
+# RE-ENABLED 2026-09-20 ~03:10 MDT (provider-surgeon): hodos upstream completions
+# verified live via 127.0.0.1:25193 with HODOS_API_KEY. Only the 3 model IDs
+# below returned real completions in the probe; the other 100 hodos-advertised
 # IDs 404 upstream (stale) and are deliberately NOT mapped. Re-probe before adding more.
-# DISABLED 2026-09-20 ~03:20 MDT (provider-surgeon): the flock delegation advertises
+# DISABLED 2026-09-20 ~03:20 MDT (provider-surgeon): the hodos delegation advertises
 # ALL 103 upstream model IDs (discovery cannot be restricted to modelMap), and ~100
-# of them 404 upstream (stale). Use the flock-direct peer below instead, which
+# of them 404 upstream (stale). Use the hodos-direct peer below instead, which
 # exposes only the 3 probe-verified live models.
-flock:
+hodos:
   enabled: false
   baseUrl: http://127.0.0.1:25193
-  keyEnv: FLOCK_API_KEY
+  keyEnv: HODOS_API_KEY
   modelMap:
-    flock-deepseek-v4-flash: deepseek-ai/deepseek-v4-flash-0731
-    flock-nemotron-35-lightning: nvidia/nemotron-3.5-lightning-30b-a3b
-    flock-glm-53-flash: z-ai/glm-5.3-flash
+    hodos-deepseek-v4-flash: deepseek-ai/deepseek-v4-flash-0731
+    hodos-nemotron-35-lightning: nvidia/nemotron-3.5-lightning-30b-a3b
+    hodos-glm-53-flash: z-ai/glm-5.3-flash
     # 2026-09-21 (eclipse): moonshot/* stood down (billing-suspended, no
     # top-up per Chris). Re-pointed at the free-Kimi OpenRouter IDs the
-    # maximal free-Kimi chains chase; section dormant (flock disabled) --
+    # maximal free-Kimi chains chase; section dormant (hodos disabled) --
     # fails loudly with genuine upstream status when the chain is dry.
     kimi-k2: moonshotai/kimi-k2.6:free
     kimi-k3-nim: moonshotai/kimi-k3:free
@@ -662,7 +662,7 @@ models:
 #   moonshot/kimi-k2.6, kimi-k2.7-code -- 429 on 2026-09-20 ~09:00 (rate-limit,
 #     transient; key verified live via /v1/models 200). Kimi is NOT dead.
 # LOCAL (fallback only): beellama/*, toolcall-local/qwen3.5-9b-tool.
-# DEAD/HANGING (do not route): flock-direct (25s hangs, disabled above).
+# DEAD/HANGING (do not route): hodos-direct (25s hangs, disabled above).
 # Google Antigravity is the comparison baseline for agent/model quality when usable.
 # =============================================================================
 # Local size-tier aliases (committed 2026-09-21 modelmap-r2): these were
@@ -700,7 +700,7 @@ peers:
   # RE-ENABLED 2026-09-20 ~01:50 MDT (ember): surgeon 401 claim re-probed live --
   # no-auth and dummy-bearer both return HTTP 200 with real completions
   # (kimi-k3 @ 0.24-0.53s, openai @ 0.28s). Free-Kimi route is live;
-  # re-probe before disabling. (openrouter-kimi/hf-free/flock disables verified dead.)
+  # re-probe before disabling. (openrouter-kimi/hf-free/hodos disables verified dead.)
   # RE-ENABLED 2026-09-21 (forge): herd rebuilt from sovereign-swap branch
   # herd-fqn-fix commit 7fc25280816f -- the Sep-18 dummy-Bearer workaround is gone:
   # empty apiKey now sends NO auth headers (peer.go strips client auth too).
@@ -1177,23 +1177,23 @@ peers:
 #       idleConn: 90
   # DISABLED 2026-09-20 ~03:55 MDT (provider-surgeon): the 3 models probed UP at ~03:30
   # (deepseek-v4-flash-0731, nemotron-3.5-lightning-30b-a3b, glm-5.3-flash) began timing out
-  # upstream (~40-60s, empty/502) at ~03:50. Flock's upstream is unstable; the daemon itself
+  # upstream (~40-60s, empty/502) at ~03:50. Hodos's upstream is unstable; the daemon itself
   # responds (auth errors are fast) but inference hangs. Re-probe before re-enabling.
-  # --- flock-direct: Flock daemon via plain peer (added 2026-09-20) ---
+  # --- hodos-direct: Hodos daemon via plain peer (added 2026-09-20) ---
   # PROBE-GATED 2026-09-20 ~02:00 MDT (kimiclaw-builder): only the model IDs
   # below returned real completions in live probes against 127.0.0.1:25193
-  # (nemotron HTTP 200 ~13s; glm-5.3-flash real completion). The flock:
+  # (nemotron HTTP 200 ~13s; glm-5.3-flash real completion). The hodos:
   # delegation stays disabled (it advertises all 103 upstream IDs, ~100 404).
   # deepseek-ai/deepseek-v4-flash-0731 EXCLUDED: hangs, 60s timeout, no
-  # response as of 2026-09-20. Auth: FLOCK_API_KEY as Bearer.
+  # response as of 2026-09-20. Auth: HODOS_API_KEY as Bearer.
   # Re-probe before adding more models.
   # DISABLED 2026-09-20 ~09:05 MDT (ember): re-probed live through herd :25100 --
   # both models hang 25s+ (TimeoutError) on every attempt. Comment said DISABLED
   # since 03:55 but the block was still live; now actually commented out.
   # Re-probe before re-enabling.
-#   flock-direct:
+#   hodos-direct:
 #     proxy: http://127.0.0.1:25193
-#     apiKey: ${env.FLOCK_API_KEY}
+#     apiKey: ${env.HODOS_API_KEY}
 #     models:
 #       - nvidia/nemotron-3.5-lightning-30b-a3b
 #       - z-ai/glm-5.3-flash

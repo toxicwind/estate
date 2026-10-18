@@ -745,7 +745,7 @@ section_10_secrets() {
     set -a; . "$SECRETS" 2>/dev/null; set +a
     ok "sourced $SECRETS"
     sub "key presence (first 12 chars)"
-    for k in NVIDIA_API_KEY FLOCK_API_KEY VERCEL_AI_GATEWAY_API_KEY AI_GATEWAY_API_KEY OPENROUTER_API_KEY ANTHROPIC_API_KEY; do
+    for k in NVIDIA_API_KEY HODOS_API_KEY VERCEL_AI_GATEWAY_API_KEY AI_GATEWAY_API_KEY OPENROUTER_API_KEY ANTHROPIC_API_KEY; do
       local v; v="${!k:-}"
       if [ -n "$v" ]; then
         printf "    %-30s %s… (len %d)\n" "$k" "${v:0:12}" "${#v}"
@@ -760,42 +760,42 @@ section_10_secrets() {
 SECTION 10-secrets section_10_secrets
 
 # ════════════════════════════════════════════════════════════════════════════
-# §11  FLOCK / NIM PROXY HEALTH
+# §11  HODOS / NIM PROXY HEALTH
 # ════════════════════════════════════════════════════════════════════════════
 section_11_flock() {
-  hdr "11. Flock / nim-proxy health"
+  hdr "11. Hodos / nim-proxy health"
 
   sub "listening ports"
   ss -tlnp 2>/dev/null | grep -E ':(25193|25204|25104|8000)\s' | sed 's/^/    /' || info "none of 25193/25204/25104/8000 listening"
 
-  sub "flock process"
-  ps -o pid,ppid,etime,cmd -p "$(pgrep -f '/home/toxic/.flock/flock' | head -1)" 2>/dev/null | sed 's/^/    /' || info "flock not running"
+  sub "hodos process"
+  ps -o pid,ppid,etime,cmd -p "$(pgrep -f '/home/toxic/.hodos/hodos' | head -1)" 2>/dev/null | sed 's/^/    /' || info "hodos not running"
 
   if curl -s --max-time 5 "http://127.0.0.1:25193/health" -o /dev/null; then
-    sub "flock /health"
+    sub "hodos /health"
     curl -s --max-time 5 "http://127.0.0.1:25193/health" | head -c 300; echo
   fi
 
-  sub "flock /v1/models with FLOCK_API_KEY"
-  if [ -n "${FLOCK_API_KEY:-}" ]; then
-    local C; C=$(curl -s -o /tmp/flock-models.json -w "%{http_code}" --max-time 10 \
-      "http://127.0.0.1:25193/v1/models" -H "Authorization: Bearer $FLOCK_API_KEY")
-    local N; N=$(jq -r '.data | length' /tmp/flock-models.json 2>/dev/null || echo "?")
+  sub "hodos /v1/models with HODOS_API_KEY"
+  if [ -n "${HODOS_API_KEY:-}" ]; then
+    local C; C=$(curl -s -o /tmp/hodos-models.json -w "%{http_code}" --max-time 10 \
+      "http://127.0.0.1:25193/v1/models" -H "Authorization: Bearer $HODOS_API_KEY")
+    local N; N=$(jq -r '.data | length' /tmp/hodos-models.json 2>/dev/null || echo "?")
     printf '    HTTP %s  models=%s\n' "$C" "$N"
   else
-    warn "FLOCK_API_KEY unset"
+    warn "HODOS_API_KEY unset"
   fi
 
-  sub "flock /v1/chat/completions (one model)"
-  if [ -n "${FLOCK_API_KEY:-}" ]; then
-    local C; C=$(curl -s -o /tmp/flock-chat.json -w "%{http_code}" --max-time 30 \
+  sub "hodos /v1/chat/completions (one model)"
+  if [ -n "${HODOS_API_KEY:-}" ]; then
+    local C; C=$(curl -s -o /tmp/hodos-chat.json -w "%{http_code}" --max-time 30 \
       "http://127.0.0.1:25193/v1/chat/completions" \
-      -H "Authorization: Bearer $FLOCK_API_KEY" -H "Content-Type: application/json" \
+      -H "Authorization: Bearer $HODOS_API_KEY" -H "Content-Type: application/json" \
       -d '{"model":"nvidia/nemotron-3.5-lightning-30b-a3b","messages":[{"role":"user","content":"hi"}],"max_tokens":4}')
-    printf '    HTTP %s  %s\n' "$C" "$(jq -r '.choices[0].message.content // .error.message // "-"' /tmp/flock-chat.json 2>/dev/null | head -c 60)"
+    printf '    HTTP %s  %s\n' "$C" "$(jq -r '.choices[0].message.content // .error.message // "-"' /tmp/hodos-chat.json 2>/dev/null | head -c 60)"
   fi
 }
-SECTION 11-flock section_11_flock
+SECTION 11-hodos section_11_flock
 
 # ════════════════════════════════════════════════════════════════════════════
 # §12  FINAL SUMMARY

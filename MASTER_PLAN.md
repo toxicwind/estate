@@ -22,7 +22,7 @@ User runs "pi"
 | Domain                        | Status                                                    | Owner              |
 | ----------------------------- | --------------------------------------------------------- | ------------------ |
 | **Pi fork** (`toxicwind/pi`)  | 4/9 critical PRs cherry-picked, 2 blocked on conflicts    | Current            |
-| **llama-swap flock router**      | Rate limiter rewritten (Go, full jitter)                  | Need to build+test |
+| **llama-swap hodos router**      | Rate limiter rewritten (Go, full jitter)                  | Need to build+test |
 | **GHAS MCP**                  | REFACTORED — needs full integration                       | In Progress        |
 | **estate-router**          | STOPPED (:25104)                                          | Need restart       |
 | **NIM e2e**                   | Config via estate-router, tested via llama-swap health | ✅                 |
@@ -76,7 +76,7 @@ cd /home/toxic/projects/github-advanced-search-mcp
 # Single server.ts handles both stdio (mcpproxy) and HTTP (pitchfork)
 ```
 
-## 📋 PHASE 3: Pi-Agent Fork flock MCPproxy Awareness
+## 📋 PHASE 3: Pi-Agent Fork hodos MCPproxy Awareness
 
 ```bash
 cd /home/toxic/projects/pi-agent
@@ -104,12 +104,12 @@ curl -s -m 30 -X POST http://127.0.0.1:25100/v1/chat/completions \
 
 Expected: `content` response
 
-## 📋 PHASE 6: llama-swap flock router Build + Verify
+## 📋 PHASE 6: llama-swap hodos router Build + Verify
 
 ```bash
 cd /home/toxic/projects/llama-swap-main
 go build -o llama-swap .
-go test ./internal/flock/...
+go test ./internal/hodos/...
 cd /home/toxic/estate && mise run restart llama-swap
 ```
 

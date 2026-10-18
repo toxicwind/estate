@@ -18,7 +18,7 @@ file	events	title	model	cwd	intent	completed	anomalyScore	phantom_todos	pattern_
 -tmp/2026-10-12T20-10-25-973Z_01a131bc-e735-7425-8e74-ada6cd464cbb.jsonl	1813	"<todo>"	google-antigravity/gemini-3.8-flash	/home/toxic/tmp	General agent work	false	156.0	8	4	0
 -tmp/2026-10-14T06-13-07-677Z_01a1390b-0bdd-7334-a4e5-cc5231cf24a1.jsonl	1801	""	vercel-ai-gateway/inclusionai/ling-3.1-flash-free	/home/toxic/tmp	General agent work	true	102.0	5	5	0
 -tmp/2026-10-14T05-13-31-334Z_01a138d4-79c6-73db-b5ff-022c21753d81.jsonl	1730	"Diagnose and restore estate service on port 25103"	vercel-ai-gateway/inclusionai/ling-3.1-flash	/home/toxic/tmp	Estate project work	false	167.0	13	5	0
--tmp/2026-10-14T20-56-04-696Z_01a13c33-6958-7264-8d8a-4e015fdaac0b.jsonl	1637	""	flock/z-ai/glm-5.3-flash	/home/toxic/tmp	General agent work	false	186.0	15	12	0
+-tmp/2026-10-14T20-56-04-696Z_01a13c33-6958-7264-8d8a-4e015fdaac0b.jsonl	1637	""	hodos/z-ai/glm-5.3-flash	/home/toxic/tmp	General agent work	false	186.0	15	12	0
 -/2026-10-11T06-54-05-694Z_01a129bd-797e-72fb-b64d-a21aa0fecde4.jsonl	1632	"Request NVIDIA NIM API Access for Account"	openrouter/nvidia/nemotron-3.5-lightning:free	/home/toxic	NVIDIA config / model setup	true	41.0	3	3	0
 -tmp/2026-10-14T06-00-54-104Z_01a138ff-da58-7746-9c03-165eeda99720.jsonl	1506	""	nvidia/mistralai/mistral-7b-instruct-v03	/home/toxic/tmp	NVIDIA config / model setup	false	130.0	17	5	0
 -tmp/2026-10-04T20-25-45-269Z_01a10898-0e35-73d2-a548-2c5b911b345b.jsonl	1482	""	google-antigravity/gemini-3.5-flash-lite	/home/toxic/tmp	General agent work	true	47.0	0	2	0
@@ -71,7 +71,7 @@ file	events	title	model	cwd	intent	completed	anomalyScore	phantom_todos	pattern_
 -tmp/2026-10-09T08-57-21-430Z_01a11fe1-9b16-7679-8d27-708e0091b919/SentinelCompat.jsonl	290	""	zen/space-bunny-free	/home/toxic/tmp	General agent work	true	24.0	0	1	0
 -tmp/2026-10-14T05-09-11-489Z_01a138d0-82c1-74a7-bb06-9478dddbb64a.jsonl	282	"Use upstream-pull.ts and verify state"	nvidia/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	true	56.0	0	3	0
 -tmp/2026-10-04T20-25-45-269Z_01a10898-0e35-73d2-a548-2c5b911b345b/__advisor.jsonl	277	""		/home/toxic/tmp	General agent work	false	15.0	0	1	0
--tmp/2026-10-14T04-11-45-553Z_01a1389b-ee11-710a-ac04-830e95dbe289.jsonl	277	"<todo>"	flock/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	60.0	10	3	0
+-tmp/2026-10-14T04-11-45-553Z_01a1389b-ee11-710a-ac04-830e95dbe289.jsonl	277	"<todo>"	hodos/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	60.0	10	3	0
 -tmp/2026-10-15T00-30-05-725Z_01a13cf7-599d-77b7-a91c-9f2bd4c235a3.jsonl	274	""	nvidia/minimaxai/minimax-m3	/home/toxic/tmp	NVIDIA config / model setup	true	42.0	0	2	0
 -tmp/2026-10-03T03-43-46-193Z_01a0ffdc-5a11-7799-9388-3bd28faf68ad/FixStrategyRouter.jsonl	272	""	openrouter/stealth/space-bunny-alpha	/home/toxic/tmp	General agent work	true	8.0	0	1	0
 -tmp/2026-10-04T08-53-55-326Z_01a1061e-a9fe-7549-8ef2-1ee91f81fc1f.jsonl	267	""	google-antigravity/gemini-3.5-flash-lite	/home/toxic/tmp	General agent work	true	21.0	0	1	0
@@ -83,7 +83,7 @@ file	events	title	model	cwd	intent	completed	anomalyScore	phantom_todos	pattern_
 -tmp/2026-10-08T22-01-55-627Z_01a11d89-8aab-73fe-b7e8-5e94b5148d19/__advisor.jsonl	204	""		/home/toxic/tmp	General agent work	false	0.0	0	0	0
 -tmp/2026-10-03T03-43-46-193Z_01a0ffdc-5a11-7799-9388-3bd28faf68ad/SweepMesh.jsonl	197	""	openrouter/stealth/space-bunny-alpha	/home/toxic/tmp	General agent work	true	8.0	0	1	0
 -tmp/2026-10-08T23-12-08-990Z_01a11dc9-d51e-7490-8e5c-4bdcf9276645.jsonl	197	"Fix Omniroute Overthink"	vercel-ai-gateway/moonshotai/kimi-k3	/home/toxic/tmp	General agent work	true	39.0	0	2	0
--tmp/2026-10-14T04-38-31-852Z_01a138b4-70ac-77ba-bb1c-ea93faa198db.jsonl	196	"Validate and run script"	flock/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	true	46.0	7	4	0
+-tmp/2026-10-14T04-38-31-852Z_01a138b4-70ac-77ba-bb1c-ea93faa198db.jsonl	196	"Validate and run script"	hodos/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	true	46.0	7	4	0
 -tmp/2026-10-14T04-38-31-852Z_01a138b4-70ac-77ba-bb1c-ea93faa198db/__advisor.jsonl	191	""		/home/toxic/tmp	General agent work	false	15.0	0	1	0
 -tmp/2026-10-03T18-31-07-171Z_01a10308-bea3-74eb-9957-37542fed721a.jsonl	182	""	vercel-ai-gateway/zai/glm-4.6v-flash	/home/toxic/tmp	General agent work	false	32.0	0	2	0
 -/2026-10-10T07-53-42-582Z_01a124cd-b1b6-75aa-900c-c18f061e1a55.jsonl	181	""		/home/toxic	General agent work	true	31.0	7	3	0
@@ -119,7 +119,7 @@ file	events	title	model	cwd	intent	completed	anomalyScore	phantom_todos	pattern_
 -tmp/2026-10-03T03-43-46-193Z_01a0ffdc-5a11-7799-9388-3bd28faf68ad/FixLiveModels.jsonl	101	""	openrouter/stealth/space-bunny-alpha	/home/toxic/tmp	General agent work	true	0.0	0	0	0
 -tmp/2026-10-15T00-13-05-120Z_01a13ce7-c6e0-7274-a655-d3d4657e98cb/__advisor.jsonl	98	""		/home/toxic/tmp	General agent work	false	15.0	0	1	0
 -tmp/2026-10-13T08-56-52-195Z_01a1347a-98e3-70d1-b367-976ddb3d4b47.jsonl	96	""	google-antigravity/claude-opus-4-5	/home/toxic/tmp	General agent work	true	11.0	0	1	0
--/2026-10-10T01-49-04-321Z_01a1237f-dbc1-726c-8641-ebae55d4cc5d.jsonl	86	"figure out this additionally as a new related task"	flock/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic	NVIDIA config / model setup	true	30.0	0	2	0
+-/2026-10-10T01-49-04-321Z_01a1237f-dbc1-726c-8641-ebae55d4cc5d.jsonl	86	"figure out this additionally as a new related task"	hodos/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic	NVIDIA config / model setup	true	30.0	0	2	0
 -tmp/2026-10-09T06-58-31-488Z_01a11f74-cfc0-7706-8e40-1fd700aaef66/__advisor.jsonl	83	""		/home/toxic/tmp	General agent work	false	0.0	0	0	0
 -tmp/2026-10-04T08-18-56-412Z_01a105fe-a31c-71d7-896f-27aa0a3f4b64.jsonl	78	""	google-antigravity/gemini-3.5-flash-lite	/home/toxic/tmp	General agent work	false	18.0	0	1	0
 -/2026-10-10T00-28-47-386Z_01a12336-5b9a-7474-b162-06cee6e3df07/SplendidJay.jsonl	76	""	openrouter/nvidia/nemotron-3.5-lightning:free	/home/toxic	NVIDIA config / model setup	true	8.0	0	1	0
@@ -179,11 +179,11 @@ file	events	title	model	cwd	intent	completed	anomalyScore	phantom_todos	pattern_
 -/2026-10-11T06-49-47-519Z_01a129b9-88ff-71ca-a2ba-0c23d4c9f8be.jsonl	14	""	openrouter/nvidia/nemotron-3.5-lightning:free	/home/toxic	NVIDIA config / model setup	false	0.0	0	0	0
 -tmp-pintest/2026-10-04T22-02-31-077Z_01a108f0-a525-7539-acb9-c64279d04fff.jsonl	14	""	vercel-ai-gateway/poolside/laguna-s-2.1-free	/tmp/pintest	General agent work	false	0.0	0	0	0
 -tmp/2026-10-03T18-16-27-899Z_01a102fb-53fb-7723-a111-7499188ad36e.jsonl	13	""	vercel-ai-gateway/inclusionai/ling-3.0-flash-sante-free	/home/toxic/tmp	General agent work	false	0.0	0	0	0
--tmp/2026-10-04T21-50-29-772Z_01a108e5-a38c-7288-b520-fd017828e33d.jsonl	13	""	flock/stealth/space-bunny-alpha	/home/toxic/tmp	General agent work	false	0.0	0	0	0
+-tmp/2026-10-04T21-50-29-772Z_01a108e5-a38c-7288-b520-fd017828e33d.jsonl	13	""	hodos/stealth/space-bunny-alpha	/home/toxic/tmp	General agent work	false	0.0	0	0	0
 -tmp/2026-10-04T22-03-13-864Z_01a108f1-4c48-7202-9ad0-ffeaff6ff58e.jsonl	13	""	vercel-ai-gateway/poolside/laguna-s-2.1-free	/tmp	General agent work	false	0.0	0	0	0
 -tmp/2026-10-08T22-01-55-627Z_01a11d89-8aab-73fe-b7e8-5e94b5148d19/run_tests-2.jsonl	13	""	vercel-ai-gateway/inclusionai/ling-3.1-flash-free	/home/toxic/tmp	General agent work	false	3.0	0	0	0
 -tmp/2026-10-14T05-00-48-339Z_01a138c8-d553-759c-813a-637e2ce03f91.jsonl	13	""	nvidia/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
--tmp-taupin-test2/2026-10-04T21-50-09-472Z_01a108e5-5440-73b7-ba89-f78dac432c50.jsonl	13	""	flock/stealth/space-bunny-alpha	/tmp/taupin-test2	Tau project work	false	0.0	0	0	0
+-tmp-taupin-test2/2026-10-04T21-50-09-472Z_01a108e5-5440-73b7-ba89-f78dac432c50.jsonl	13	""	hodos/stealth/space-bunny-alpha	/tmp/taupin-test2	Tau project work	false	0.0	0	0	0
 -tmp/2026-10-03T03-43-46-193Z_01a0ffdc-5a11-7799-9388-3bd28faf68ad/AuditContracts.jsonl	12	""	github-copilot/gpt-5.1-codex	/home/toxic/tmp	General agent work	false	0.0	0	0	0
 -tmp/2026-10-03T22-27-47-797Z_01a103e1-6dd5-77da-9e5b-60d5e2685036/__advisor.jsonl	12	""		/home/toxic/tmp	General agent work	false	0.0	0	0	0
 -tmp/2026-10-09T06-58-31-488Z_01a11f74-cfc0-7706-8e40-1fd700aaef66/RoostCatalogScout.jsonl	12	""	cerebras/zai-glm-4.6	/home/toxic/tmp	General agent work	false	0.0	0	0	0
@@ -191,7 +191,7 @@ file	events	title	model	cwd	intent	completed	anomalyScore	phantom_todos	pattern_
 -tmp/2026-10-09T06-58-31-488Z_01a11f74-cfc0-7706-8e40-1fd700aaef66/EstateSupervisionScout.jsonl	12	""	cerebras/zai-glm-4.6	/home/toxic/tmp	General agent work	false	0.0	0	0	0
 -tmp/2026-10-09T06-58-31-488Z_01a11f74-cfc0-7706-8e40-1fd700aaef66/OmniRebrandScout.jsonl	12	""	cerebras/zai-glm-4.6	/home/toxic/tmp	General agent work	false	0.0	0	0	0
 -tmp/2026-10-11T09-25-03-775Z_01a12a47-b09f-77d4-84de-2dbf18282090.jsonl	12	""	anthropic/claude-opus-5-5	/home/toxic/tmp	General agent work	false	0.0	0	0	0
--tmp/2026-10-13T21-44-19-717Z_01a13739-3a05-7538-be29-3e01bb142a08.jsonl	12	""	flock/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
+-tmp/2026-10-13T21-44-19-717Z_01a13739-3a05-7538-be29-3e01bb142a08.jsonl	12	""	hodos/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
 -/2026-10-04T22-02-31-623Z_01a108f0-a747-7773-9054-d520d34448c5.jsonl	12	""	vercel-ai-gateway/poolside/laguna-s-2.1-free	/home/toxic	General agent work	false	0.0	0	0	0
 -/2026-10-04T22-03-14-591Z_01a108f1-4f1f-71d5-9c54-41f721c58be1.jsonl	12	""	vercel-ai-gateway/poolside/laguna-s-2.1-free	/home/toxic	General agent work	false	0.0	0	0	0
 -/2026-10-10T01-48-02-455Z_01a1237e-ea17-72d6-bd0e-c376411af619.jsonl	12	""	vercel-ai-gateway/spacexai/grok-4.1-fast-reasoning	/home/toxic	General agent work	false	0.0	0	0	0
@@ -207,7 +207,7 @@ file	events	title	model	cwd	intent	completed	anomalyScore	phantom_todos	pattern_
 -tmp/2026-10-13T17-18-34-251Z_01a13645-eb0b-7257-93e4-c803b6dd0479.jsonl	11	""	openrouter/dots-studio/dots-3-note-preview:free	/home/toxic/tmp	General agent work	false	0.0	0	0	0
 -tmp/2026-10-13T17-44-55-643Z_01a1365e-0c5b-71b2-bfce-130b5e17b7d8.jsonl	11	""	openrouter/dots-studio/dots-3-note-preview:free	/home/toxic/tmp	General agent work	false	0.0	0	0	0
 -tmp/2026-10-13T17-45-27-081Z_01a1365e-8729-70cd-925e-1ce279f909c7.jsonl	11	""	openrouter/dots-studio/dots-3-note-preview:free	/tmp	General agent work	false	0.0	0	0	0
--tmp/2026-10-13T21-47-43-528Z_01a1373c-5628-75e8-94b8-b3311c2ea589.jsonl	11	""	flock/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
+-tmp/2026-10-13T21-47-43-528Z_01a1373c-5628-75e8-94b8-b3311c2ea589.jsonl	11	""	hodos/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
 -tmp/2026-10-14T00-24-53-555Z_01a137cc-3a33-7358-86df-2b5468f55f6d.jsonl	11	""	anthropic/claude-opus-5-5	/home/toxic/tmp	General agent work	false	0.0	0	0	0
 -tmp/2026-10-14T00-25-53-577Z_01a137cd-24a9-71d7-9e37-752921a8ac8d.jsonl	11	""	openrouter/liquid/lfm-2.5-2.6b:free	/home/toxic/tmp	General agent work	false	0.0	0	0	0
 -tmp/2026-10-14T04-59-52-360Z_01a138c7-faa8-771e-8988-a2bce075c80a.jsonl	11	""	nvidia/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
@@ -253,32 +253,32 @@ file	events	title	model	cwd	intent	completed	anomalyScore	phantom_todos	pattern_
 -estate-ranch-barn-gatehouse/2026-10-10T06-39-50-454Z_01a1248a-10b6-70ba-a8a7-d545927908d1.jsonl	9	""	nvidia/z-ai/glm-5.3-flash	/home/toxic/estate/ranch/barn/gatehouse	NVIDIA config / model setup	false	0.0	0	0	0
 -tmp/2026-10-03T03-43-46-193Z_01a0ffdc-5a11-7799-9388-3bd28faf68ad/MeshDupAudit.jsonl	8	""	github-copilot/gpt-5.1-codex	/home/toxic/tmp	General agent work	false	0.0	0	0	0
 -tmp/2026-10-13T21-44-19-717Z_01a13739-3a05-7538-be29-3e01bb142a08/__advisor.jsonl	8	""		/home/toxic/tmp	General agent work	false	0.0	0	0	0
--tmp/2026-10-13T21-47-04-798Z_01a1373b-bede-7635-ad8a-4f6ee3cc4f0e.jsonl	8	""	flock/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
+-tmp/2026-10-13T21-47-04-798Z_01a1373b-bede-7635-ad8a-4f6ee3cc4f0e.jsonl	8	""	hodos/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
 -tmp/2026-10-13T21-47-04-798Z_01a1373b-bede-7635-ad8a-4f6ee3cc4f0e/__advisor.jsonl	8	""		/home/toxic/tmp	General agent work	false	0.0	0	0	0
 -tmp/2026-10-13T21-47-43-528Z_01a1373c-5628-75e8-94b8-b3311c2ea589/__advisor.jsonl	8	""		/home/toxic/tmp	General agent work	false	0.0	0	0	0
--tmp/2026-10-13T21-48-17-239Z_01a1373c-d9d7-7242-85cb-cfa310850541.jsonl	8	""	flock/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
+-tmp/2026-10-13T21-48-17-239Z_01a1373c-d9d7-7242-85cb-cfa310850541.jsonl	8	""	hodos/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
 -tmp/2026-10-13T21-48-17-239Z_01a1373c-d9d7-7242-85cb-cfa310850541/__advisor.jsonl	8	""		/home/toxic/tmp	General agent work	false	0.0	0	0	0
--tmp/2026-10-14T00-12-22-756Z_01a137c0-c564-7359-b356-5974af0c5af7.jsonl	8	""	flock/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
--tmp/2026-10-14T00-17-07-611Z_01a137c5-1e1b-7561-aaee-ac97bb002d38.jsonl	8	""	flock/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
--tmp/2026-10-14T00-21-23-862Z_01a137c9-0716-7606-9b2e-8309c89cca2b.jsonl	8	""	flock/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
--tmp/2026-10-14T00-23-02-408Z_01a137ca-8808-727f-84c5-43a0b9b55bb0.jsonl	8	""	flock/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
--tmp/2026-10-14T00-23-21-739Z_01a137ca-d38b-748b-9adf-a1d7a2d1fb0a.jsonl	8	""	flock/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
--tmp/2026-10-14T00-26-57-127Z_01a137ce-1ce7-7422-82df-11033efa1c4e.jsonl	8	""	flock/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
--tmp/2026-10-14T00-32-52-556Z_01a137d3-894c-76bf-9093-78e700258cd1.jsonl	8	""	flock/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
--tmp/2026-10-14T00-33-09-049Z_01a137d3-c9b9-76f7-937f-bbfae3347710.jsonl	8	""	flock/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
--tmp/2026-10-14T00-39-19-273Z_01a137d9-6fe9-7128-81c3-7493022bcb23.jsonl	8	""	flock/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
--tmp/2026-10-14T00-39-46-850Z_01a137d9-dba2-7183-b9fb-473cf8b099e1.jsonl	8	""	flock/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
--tmp/2026-10-14T00-41-13-124Z_01a137db-2ca4-77f3-bf26-74ecb36888da.jsonl	8	""	flock/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
--tmp/2026-10-14T00-42-01-951Z_01a137db-eb5f-7365-996c-4f0b4a5c82a2.jsonl	8	""	flock/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
--tmp/2026-10-14T04-53-57-466Z_01a138c2-905a-7618-994b-e959c4b54fbf.jsonl	8	""	flock/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
--tmp/2026-10-14T04-54-55-986Z_01a138c3-74f2-7083-9834-def889843584.jsonl	8	""	flock/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
--tmp/2026-10-14T04-55-03-696Z_01a138c3-9310-715d-8b78-1d54ba89460c.jsonl	8	""	flock/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
--tmp/2026-10-14T04-55-15-031Z_01a138c3-bf57-7456-9d6f-161159975578.jsonl	8	""	flock/~z-ai/glm-latest	/home/toxic/tmp	General agent work	false	0.0	0	0	0
--tmp/2026-10-14T04-55-55-919Z_01a138c4-5f0f-71fd-b2e4-b81833bcfbfd.jsonl	8	""	flock/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
--tmp/2026-10-14T04-56-38-948Z_01a138c5-0724-71d1-bc5f-27abe43db4fd.jsonl	8	""	flock/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
--tmp/2026-10-14T04-56-56-324Z_01a138c5-4b04-7600-a5ba-a45d009cf78d.jsonl	8	""	flock/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
--tmp/2026-10-14T04-58-57-008Z_01a138c7-2270-74f8-aef6-effccc4896af.jsonl	8	""	flock/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
--tmp/2026-10-14T04-59-12-529Z_01a138c7-5f11-75b6-bfc6-a2285544bc8a.jsonl	8	""	flock/~z-ai/glm-latest	/home/toxic/tmp	General agent work	false	0.0	0	0	0
+-tmp/2026-10-14T00-12-22-756Z_01a137c0-c564-7359-b356-5974af0c5af7.jsonl	8	""	hodos/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
+-tmp/2026-10-14T00-17-07-611Z_01a137c5-1e1b-7561-aaee-ac97bb002d38.jsonl	8	""	hodos/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
+-tmp/2026-10-14T00-21-23-862Z_01a137c9-0716-7606-9b2e-8309c89cca2b.jsonl	8	""	hodos/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
+-tmp/2026-10-14T00-23-02-408Z_01a137ca-8808-727f-84c5-43a0b9b55bb0.jsonl	8	""	hodos/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
+-tmp/2026-10-14T00-23-21-739Z_01a137ca-d38b-748b-9adf-a1d7a2d1fb0a.jsonl	8	""	hodos/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
+-tmp/2026-10-14T00-26-57-127Z_01a137ce-1ce7-7422-82df-11033efa1c4e.jsonl	8	""	hodos/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
+-tmp/2026-10-14T00-32-52-556Z_01a137d3-894c-76bf-9093-78e700258cd1.jsonl	8	""	hodos/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
+-tmp/2026-10-14T00-33-09-049Z_01a137d3-c9b9-76f7-937f-bbfae3347710.jsonl	8	""	hodos/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
+-tmp/2026-10-14T00-39-19-273Z_01a137d9-6fe9-7128-81c3-7493022bcb23.jsonl	8	""	hodos/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
+-tmp/2026-10-14T00-39-46-850Z_01a137d9-dba2-7183-b9fb-473cf8b099e1.jsonl	8	""	hodos/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
+-tmp/2026-10-14T00-41-13-124Z_01a137db-2ca4-77f3-bf26-74ecb36888da.jsonl	8	""	hodos/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
+-tmp/2026-10-14T00-42-01-951Z_01a137db-eb5f-7365-996c-4f0b4a5c82a2.jsonl	8	""	hodos/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
+-tmp/2026-10-14T04-53-57-466Z_01a138c2-905a-7618-994b-e959c4b54fbf.jsonl	8	""	hodos/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
+-tmp/2026-10-14T04-54-55-986Z_01a138c3-74f2-7083-9834-def889843584.jsonl	8	""	hodos/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
+-tmp/2026-10-14T04-55-03-696Z_01a138c3-9310-715d-8b78-1d54ba89460c.jsonl	8	""	hodos/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
+-tmp/2026-10-14T04-55-15-031Z_01a138c3-bf57-7456-9d6f-161159975578.jsonl	8	""	hodos/~z-ai/glm-latest	/home/toxic/tmp	General agent work	false	0.0	0	0	0
+-tmp/2026-10-14T04-55-55-919Z_01a138c4-5f0f-71fd-b2e4-b81833bcfbfd.jsonl	8	""	hodos/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
+-tmp/2026-10-14T04-56-38-948Z_01a138c5-0724-71d1-bc5f-27abe43db4fd.jsonl	8	""	hodos/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
+-tmp/2026-10-14T04-56-56-324Z_01a138c5-4b04-7600-a5ba-a45d009cf78d.jsonl	8	""	hodos/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
+-tmp/2026-10-14T04-58-57-008Z_01a138c7-2270-74f8-aef6-effccc4896af.jsonl	8	""	hodos/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning	/home/toxic/tmp	NVIDIA config / model setup	false	0.0	0	0	0
+-tmp/2026-10-14T04-59-12-529Z_01a138c7-5f11-75b6-bfc6-a2285544bc8a.jsonl	8	""	hodos/~z-ai/glm-latest	/home/toxic/tmp	General agent work	false	0.0	0	0	0
 -Downloads/2026-10-08T07-08-22-270Z_01a11a57-777e-744b-9b76-7a9af0ff585b.jsonl	8	"Firefox Nightly Lost Default Profile"	vercel-ai-gateway/inclusionai/ling-3.1-flash	/home/toxic/Downloads	Profile synthesis	false	0.0	0	0	0
 -tmp/2026-10-03T19-44-04-117Z_01a1034b-8815-70d7-ac3a-35c7f10d497d.jsonl	7	""	vercel-ai-gateway/alibaba/qwen3.8-27b	/home/toxic/tmp	General agent work	false	0.0	0	0	0
 -tmp/2026-10-04T02-16-44-065Z_01a104b3-0721-70ed-86aa-88cdf0de12b4.jsonl	7	""	vercel-ai-gateway/poolside/laguna-s-2.1-free	/home/toxic/tmp	General agent work	false	0.0	0	0	0

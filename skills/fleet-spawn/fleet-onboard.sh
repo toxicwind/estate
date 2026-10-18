@@ -146,7 +146,7 @@ fi
 # §2 Active Crews is a GENERATED rollup (Alternative A, User 2026-09-29).
 # Source of truth: fleet/crews/<crew>.md — one file per crew, frontmatter
 # (crew/scope/owner/status). kb-rollup.ts writes the file and regenerates §2
-# under flock, so concurrent registrations can't clobber each other.
+# under hodos, so concurrent registrations can't clobber each other.
 # Never hand-edit the §2 table.
 kb_is_local=0
 case "$KB_FILE" in /tmp/fleet-kb.*) kb_is_local=0;; *) kb_is_local=1;; esac

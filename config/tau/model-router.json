@@ -1,7 +1,7 @@
 {
  "profiles": {
   "cheap": {
-   "selector": "flock/openai/gpt-oss-20b",
+   "selector": "hodos/openai/gpt-oss-20b",
    "profile": "cheap",
    "tier": "low",
    "thinking": "low",
@@ -10,7 +10,7 @@
    "note": "1.2B ultralight, no auth, local"
   },
   "fast": {
-   "selector": "flock/openai/gpt-oss-20b",
+   "selector": "hodos/openai/gpt-oss-20b",
    "profile": "fast",
    "tier": "low",
    "thinking": "low",
@@ -19,7 +19,7 @@
    "note": "low-latency local flash model, no auth"
   },
   "balanced": {
-   "selector": "flock/openai/gpt-oss-20b",
+   "selector": "hodos/openai/gpt-oss-20b",
    "profile": "balanced",
    "tier": "medium",
    "thinking": "medium",
@@ -34,7 +34,7 @@
    "thinking": "high",
    "auth": "none",
    "verified": "2026-09-20T00:45MDT live POST /v1/chat/completions on 127.0.0.1:25104 (estate router free race), 0% errors, winner nvidia/nemotron-3-super-120b-a55b",
-   "note": "Retired 2026-10-02: estate-router merged into flock :25193. Nothing listens on :25104.",
+   "note": "Retired 2026-10-02: estate-router merged into hodos :25193. Nothing listens on :25104.",
    "disabled": true
   },
   "reasoning": {
@@ -44,11 +44,11 @@
    "thinking": "high",
    "auth": "none",
    "verified": "2026-09-20T00:45MDT live on 127.0.0.1:25104; nemotron-3 class (GPQA 87.0) is reasoning-capable",
-   "note": "Retired 2026-10-02: estate-router merged into flock :25193. Nothing listens on :25104.",
+   "note": "Retired 2026-10-02: estate-router merged into hodos :25193. Nothing listens on :25104.",
    "disabled": true
   },
   "backup": {
-   "selector": "flock/openai/gpt-oss-20b",
+   "selector": "hodos/openai/gpt-oss-20b",
    "profile": "backup",
    "tier": "low",
    "thinking": "low",

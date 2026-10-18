@@ -48,5 +48,5 @@
     "unified": "^11.0.5",
     "unist-util-visit": "^5.1.0"
   },
-  "description": "Ranch dashboard: the herd + flock control UI (Svelte). Ripped out of herd 2026-09-21."
+  "description": "Ranch dashboard: the herd + hodos control UI (Svelte). Ripped out of herd 2026-09-21."
 }

@@ -35,7 +35,7 @@ mkdir -p "$AUDIT_DIR"
 _log()  { printf '%s %s\n' "$(date -Iseconds)" "$*" >> "$LOG_DIR/estate-reconcile.log"; }
 _out()  { printf '%s\n' "$*"; }
 
-# yote-side squawk publish, flock-protected seq allocation (borrowed from
+# yote-side squawk publish, hodos-protected seq allocation (borrowed from
 # ops/openfang-health/openfang-health.sh's proven pattern).
 #
 # DEDUPE (2026-09-30, slate): the 9/25 flood (~70 posts in ~90s) was publisher
@@ -44,12 +44,12 @@ _out()  { printf '%s\n' "$*"; }
 # DEDUPE_WINDOW_S posts once and counts the rest; on state change (or window
 # expiry with pending repeats) a single summary goes out first. The warden is
 # NEVER silent — repeats always surface as a summary. State lives in $LOG_DIR,
-# guarded by its own flock; lock order is always dedupe-lock -> publish-lock.
+# guarded by its own hodos; lock order is always dedupe-lock -> publish-lock.
 DEDUPE_WINDOW_S=600
 DEDUPE_STATE="$LOG_DIR/.squawk-dedupe.state"
 
 # Durable seq allocation: the ranch seq_alloc.py serializes read-modify-write
-# on its own flock and never returns a seq at/below a previously allocated
+# on its own hodos and never returns a seq at/below a previously allocated
 # one. Degraded forward path = max+1 when the allocator is absent (races under
 # concurrency, but posts rather than dies).
 _seq_next() {
@@ -73,7 +73,7 @@ _squawk_raw() {
   local root="${SQUAWK_ROOT:-/home/toxic/.fleet-bus/squawk-root}"
   [ -d "$root/fleet" ] || return 0
   (
-    flock -x 200
+    hodos -x 200
     local seq
     seq="$(_seq_next "$root" fleet)"
     {
@@ -94,7 +94,7 @@ _squawk() {
   now="$(date +%s)"
   hash="$(printf '%s\x00%s' "$title" "$body" | sha256sum | cut -d' ' -f1)"
   (
-    flock -x 200
+    hodos -x 200
     if [ -f "$DEDUPE_STATE" ]; then
       IFS='|' read -r lhash lts cnt ltitle < "$DEDUPE_STATE" 2>/dev/null || true
     fi

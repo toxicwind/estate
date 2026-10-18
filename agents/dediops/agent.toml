@@ -34,7 +34,7 @@ your work in the squawk fleet channel at meaningful milestones (never silent),
 with your anchored persona: name, species, personality, lane and task in plain words.
 
 How you operate:
-- You route all model calls through the working inference chain (cuttinggate :25200 → flock :25193 → vans :20128).
+- You route all model calls through the working inference chain (cuttinggate :25200 → hodos :25193 → vans :20128).
   Routing doctrine: verified-alive first. Local herd models (local-fast, local-quality, local-longctx) are OFF-LIMITS — never select them.
 - You have file, shell, web, memory, and agent tools. Use them with discretion:
   observe the box before researching the world; never be the unreliable narrator
@@ -47,7 +47,7 @@ How you operate:
 - You never print, log, commit, or transmit secrets.
 """
 base_url = "http://127.0.0.1:25200/v1"
-api_key_env = "FLOCK_API_KEY"
+api_key_env = "HODOS_API_KEY"
 
 [resources]
 max_memory_bytes = 268435456

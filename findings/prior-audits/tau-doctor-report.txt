@@ -1,19 +1,19 @@
 
 == 1. services
   [OK] cuttinggate up (0ms)
-  [OK] flock up (0ms)
+  [OK] hodos up (0ms)
   [OK] vansrouter up (2ms)
   [WARN] omniroute http://127.0.0.1:20130/api/health → 0 ECONNREFUSED
   cuttinggate /status: 200 {"providers":[{"provider":"nvidia","state":"closed","failures":0,"successes":0},{"provider":"nim-local","state":"closed","failures":0,"successes":0},{"provider":"openrouter","state":"closed","failures":0,"successes":0}],"quarantined":0,"leaders":[{"model":"beellama/exaone-4-0-1-2b-iq4xs","provider":
 
-== 2. flock key sources (fingerprints)
+== 2. hodos key sources (fingerprints)
   ~/estate/config/tau/.env: sove…ee#86aee5
   shell env: npk_…57#eca3df
 
 == 3. ~/.tau/agent/models.yml providers (live /models + tiny tool-call chat)
-  ── flock  http://127.0.0.1:25193/v1  key=(none/dynamic)
+  ── hodos  http://127.0.0.1:25193/v1  key=(none/dynamic)
      GET /models → 401 252ms, live=0 configured=0
-  [BAD] flock: key rejected on /models (401)
+  [BAD] hodos: key rejected on /models (401)
   ── moonshot  https://api.moonshot.ai/v1  key=sk-J…CY#352904 (env ref MOONSHOT_API_KEY)
      GET /models → 200 320ms, live=2 configured=0
   [BAD] moonshot/kimi-k2.7-code: http=429 240ms fin=- tool_calls=0 {"message":"Your account org-7043edfabec741f5961e4cdaac95fc44 <ak-fcqse4qmcnpi11cj7bt1> is suspended due to insufficient balance, please recharge your account o
@@ -59,7 +59,7 @@
   [WARN] custom/dots via cuttinggate → 401 0ms {"error":{"code":"auth_missing","message":"missing bearer token"}}
   [OK] exists cuttinggate/src/dots.ts
   [OK] exists cuttinggate/tests/dots.test.ts
-  [OK] exists flock-proxy/src/dots.rs
+  [OK] exists hodos-proxy/src/dots.rs
   [BAD] cuttinggate bun test exit=1
      (pass) pauser lifecycle > manual pause and resume [0.03ms]
      (pass) pauser lifecycle > provider cascade: high failure rate -> provider pause [0.10ms]
@@ -76,7 +76,7 @@
       4 fail
       220 expect() calls
      Ran 91 tests across 8 files. [118.00ms]
-  [OK] flock-proxy cargo check exit=0
+  [OK] hodos-proxy cargo check exit=0
      ...
      29 |     pub header_name: &'static str,
         |         ^^^^^^^^^^^
@@ -112,7 +112,7 @@
   tau.2026-10-13.1162706.log
        9×  warn ZAI usage response invalid 当前用户不存在coding plan 
        4×  warn Hindsight: auto-retain failed 
-       1×  warn agent turn ended with provider error flock
+       1×  warn agent turn ended with provider error hodos
        1×  warn agent turn ended with provider error google-antigravity
 
   tau processes (pid, age s, rss KB):
@@ -126,7 +126,7 @@
     3986727   26861 350452 tau
 
 == VERDICT
-  BAD  flock: key rejected on /models (401)
+  BAD  hodos: key rejected on /models (401)
   BAD  moonshot/kimi-k2.7-code: http=429 240ms fin=- tool_calls=0 {"message":"Your account org-7043edfabec741f5961e4cdaac95fc44 <ak-fcqse4qmcnpi11cj7bt1> is suspended due to insufficient balance, please recharge your account o
   BAD  moonshot/kimi-k2.6: http=429 250ms fin=- tool_calls=0 {"message":"Your account org-7043edfabec741f5961e4cdaac95fc44 <ak-fcqse4qmcnpi11cj7bt1> is suspended due to insufficient balance, please recharge your account o
   BAD  omniroute: /models → 0 ECONNREFUSED

@@ -168,7 +168,7 @@ def save_state(state):
     os.rename(tmp, STATE)
 
 
-# ---------------- publishing (flock + atomic seq, same as squawk CLI) --------
+# ---------------- publishing (hodos + atomic seq, same as squawk CLI) --------
 def publish(channel, text, title=""):
     ts = datetime.now(timezone.utc).isoformat()
     slug = "".join(c if c.isalnum() else "-" for c in title[:30].lower()).strip("-") or "msg"
@@ -188,14 +188,14 @@ def publish(channel, text, title=""):
     chdir.mkdir(parents=True, exist_ok=True)
     lockpath = SQUAWK_ROOT / (".seq-%s.lock" % channel)
     with open(lockpath, "w") as lockf:
-        fcntl.flock(lockf, fcntl.LOCK_EX)
+        fcntl.hodos(lockf, fcntl.LOCK_EX)
         try:
             seq = current_max_seq(channel) + 1
             fname = "%d-oracle-%s.md" % (seq, slug)
             (chdir / fname).write_text(content.replace("@SEQ@", str(seq)),
                                        encoding="utf-8")
         finally:
-            fcntl.flock(lockf, fcntl.LOCK_UN)
+            fcntl.hodos(lockf, fcntl.LOCK_UN)
     return seq
 
 

@@ -13,7 +13,7 @@ parseable into these layers. If it isn't, it's a bug — run the validator.
 | # | Layer | What it is | Examples |
 |---|-------|-----------|----------|
 | 1 | **Lane** (execution source) | WHERE it runs. Tau provider name. Closed set: `herd`, `estate` | `herd/…`, `estate/free` |
-| 2 | **Source** (who serves it) | Local: the fork/builder. Cloud: the API provider (peer name) | `beellama`, `mradermacher`, `jackrong`, `mistral`, `moonshot`, `gemini`, `openrouter-free`, `flock-direct`, `toolcall-local` |
+| 2 | **Source** (who serves it) | Local: the fork/builder. Cloud: the API provider (peer name) | `beellama`, `mradermacher`, `jackrong`, `mistral`, `moonshot`, `gemini`, `openrouter-free`, `hodos-direct`, `toolcall-local` |
 | 3 | **Identity** (upstream model) | The model family, no provider prefix | `exaone-4.0-1.2b`, `qwen3.5-9b-deepseek-v4-flash`, `gemma-4-12b`, `qwen-flash`, `ministral-8b-latest`, `kimi-k2.6` |
 | 4 | **Variant** (quant+ctx+build) | Quantization, context window, build flags | `iq4xs-32k`, `q4km-64k`, `da-128k`, `uncensored`, `i1` |
 | 5 | **Policy alias** (DEPRECATED) | Generic words kept ONLY as compat aliases | `fast`, `tiny`, `small`, `medium`, `code`, `long`, `uncensored` |
@@ -30,7 +30,7 @@ parseable into these layers. If it isn't, it's a bug — run the validator.
 - `exaone-1.2b-iq4xs-32k` → `beellama/exaone-4-0-1-2b-iq4xs`
 
 **Peer (cloud) model:** `{peer}/{upstream-id-verbatim}`
-- `mistral/ministral-8b-latest`, `moonshot/kimi-k2.6`, `flock-direct/nvidia/nemotron-3.5-lightning-30b-a3b`
+- `mistral/ministral-8b-latest`, `moonshot/kimi-k2.6`, `hodos-direct/nvidia/nemotron-3.5-lightning-30b-a3b`
 - The upstream ID is sent VERBATIM to the provider proxy — never shortened.
 
 **Tau client ref:** `{lane}/{model-or-alias}`

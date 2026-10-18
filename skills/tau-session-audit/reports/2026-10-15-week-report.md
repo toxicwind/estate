@@ -37,7 +37,7 @@ Models repeatedly demonstrated the following failure mode:
 | [`-tmp/2026-10-12T18-26-28-597Z_01a1315d-ba75-7440-a3e7-279c47f61fbe.jsonl`](https://github.com/toxicwind/estate/blob/main/config/tau/agent/sessions/-tmp/2026-10-12T18-26-28-597Z_01a1315d-ba75-7440-a3e7-279c47f61fbe.jsonl) | `omni/oc/longcat-2.5-preview-free` | **18** | 1356 | Intent: *General agent work* |
 | [`-tmp/2026-10-14T21-23-50-703Z_01a13c4c-d52f-72d3-bdf1-8ff0ed355e55.jsonl`](https://github.com/toxicwind/estate/blob/main/config/tau/agent/sessions/-tmp/2026-10-14T21-23-50-703Z_01a13c4c-d52f-72d3-bdf1-8ff0ed355e55.jsonl) | `nvidia/minimaxai/minimax-m3` | **18** | 413 | Intent: *NVIDIA config / model setup* |
 | [`-tmp/2026-10-14T06-00-54-104Z_01a138ff-da58-7746-9c03-165eeda99720.jsonl`](https://github.com/toxicwind/estate/blob/main/config/tau/agent/sessions/-tmp/2026-10-14T06-00-54-104Z_01a138ff-da58-7746-9c03-165eeda99720.jsonl) | `nvidia/mistralai/mistral-7b-instruct-v03` | **17** | 1506 | Intent: *NVIDIA config / model setup* |
-| [`-tmp/2026-10-14T20-56-04-696Z_01a13c33-6958-7264-8d8a-4e015fdaac0b.jsonl`](https://github.com/toxicwind/estate/blob/main/config/tau/agent/sessions/-tmp/2026-10-14T20-56-04-696Z_01a13c33-6958-7264-8d8a-4e015fdaac0b.jsonl) | `flock/z-ai/glm-5.3-flash` | **15** | 1637 | Intent: *General agent work* |
+| [`-tmp/2026-10-14T20-56-04-696Z_01a13c33-6958-7264-8d8a-4e015fdaac0b.jsonl`](https://github.com/toxicwind/estate/blob/main/config/tau/agent/sessions/-tmp/2026-10-14T20-56-04-696Z_01a13c33-6958-7264-8d8a-4e015fdaac0b.jsonl) | `hodos/z-ai/glm-5.3-flash` | **15** | 1637 | Intent: *General agent work* |
 | [`-tmp/2026-10-03T03-43-46-193Z_01a0ffdc-5a11-7799-9388-3bd28faf68ad.jsonl`](https://github.com/toxicwind/estate/blob/main/config/tau/agent/sessions/-tmp/2026-10-03T03-43-46-193Z_01a0ffdc-5a11-7799-9388-3bd28faf68ad.jsonl) | `github-copilot/gpt-5.1-codex` | **14** | 5742 | Intent: *General agent work* |
 | [`-Downloads/2026-10-05T20-26-22-371Z_01a10dbe-fb23-77a9-9e8f-fbe36d87ea4c.jsonl`](https://github.com/toxicwind/estate/blob/main/config/tau/agent/sessions/-Downloads/2026-10-05T20-26-22-371Z_01a10dbe-fb23-77a9-9e8f-fbe36d87ea4c.jsonl) | `openrouter/nvidia/nemotron-3-ultra-550b-a55b:free` | **14** | 1437 | Intent: *NVIDIA config / model setup* |
 | [`-tmp/2026-10-11T11-12-08-484Z_01a12aa9-b924-72e1-b303-20076b66d14e.jsonl`](https://github.com/toxicwind/estate/blob/main/config/tau/agent/sessions/-tmp/2026-10-11T11-12-08-484Z_01a12aa9-b924-72e1-b303-20076b66d14e.jsonl) | `openrouter/stealth/space-bunny-alpha` | **14** | 442 | Intent: *General agent work* |
@@ -61,7 +61,7 @@ Which models were most prone to phantom completions and syntax leaks:
 | `openrouter/stealth/space-bunny-alpha` | 27 | **3** | 3 | 🔴 High Hallucination Risk |
 | `google-antigravity/gemini-3.5-flash-lite` | 8 | **3** | 0 | 🟡 Moderate Risk |
 | `cerebras/zai-glm-4.6` | 5 | **3** | 0 | 🟡 Moderate Risk |
-| `flock/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning` | 26 | **3** | 0 | 🟡 Moderate Risk |
+| `hodos/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning` | 26 | **3** | 0 | 🟡 Moderate Risk |
 | `vercel-ai-gateway/moonshotai/kimi-k3` | 5 | **2** | 0 | 🟡 Moderate Risk |
 | `unknown` | 55 | **2** | 0 | 🟡 Moderate Risk |
 | `vercel-ai-gateway/poolside/laguna-s-2.1-free` | 11 | **2** | 0 | 🟡 Moderate Risk |
@@ -80,12 +80,12 @@ Which models were most prone to phantom completions and syntax leaks:
 | `vercel-ai-gateway/spacexai/grok-4.1-fast-reasoning` | 2 | **0** | 0 | 🟢 Reliable |
 | `vercel-ai-gateway/inclusionai/ling-3.0-flash-sante-free` | 3 | **0** | 0 | 🟢 Reliable |
 | `zenmux/z-ai/glm-5.3-free` | 2 | **0** | 0 | 🟢 Reliable |
-| `flock/stealth/space-bunny-alpha` | 2 | **0** | 0 | 🟢 Reliable |
+| `hodos/stealth/space-bunny-alpha` | 2 | **0** | 0 | 🟢 Reliable |
 | `nvidia/nvidia/nemotron-3-super-120b-a12b` | 7 | **0** | 0 | 🟢 Reliable |
 | `nvidia/nvidia/nemotron-3.5-lightning-30b-a3b` | 6 | **0** | 0 | 🟢 Reliable |
 | `nvidia/nvidia/nemotron-parse-2.0` | 4 | **0** | 0 | 🟢 Reliable |
 | `nvidia/z-ai/glm-5.3-flash` | 6 | **0** | 0 | 🟢 Reliable |
-| `flock/~z-ai/glm-latest` | 2 | **0** | 0 | 🟢 Reliable |
+| `hodos/~z-ai/glm-latest` | 2 | **0** | 0 | 🟢 Reliable |
 | `anthropic/claude-opus-4-8` | 2 | **0** | 0 | 🟢 Reliable |
 
 ---

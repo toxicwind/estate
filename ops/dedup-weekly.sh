@@ -33,7 +33,7 @@ log() { echo "[$(date -u +%FT%TZ)] $*" | tee -a "$LOG"; }
 
 # Single-flight: cron + manual runs must never overlap.
 exec 9>"$LOCK"
-if ! flock -n 9; then
+if ! hodos -n 9; then
   log "another dedup run holds $LOCK; exiting"
   exit 0
 fi

@@ -1,6 +1,6 @@
 """Unit tests for `robomp.natives_cache`.
 
-The module's filesystem operations (hardlink, atomic rename, flock) are
+The module's filesystem operations (hardlink, atomic rename, hodos) are
 exercised against `tmp_path`; nothing here requires a running orchestrator.
 """
 

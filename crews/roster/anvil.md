@@ -1,6 +1,6 @@
 ---
 crew: 'anvil'
-scope: 'ASTMatrix Go->TypeScript live conversion: flock/ts/astmatrix Bun sidecar (strategies, racing, ELO, circuits, rate limiting, health DB, UI), imports @ranch/roost directly'
+scope: 'ASTMatrix Go->TypeScript live conversion: hodos/ts/astmatrix Bun sidecar (strategies, racing, ELO, circuits, rate limiting, health DB, UI), imports @ranch/roost directly'
 owner: 'Ember'
 status: 'DONE (2026-09-30) -- commits d7201ad4840c + db9118fac806'
 order: 37
@@ -16,8 +16,8 @@ docs/fleet-knowledgebase.md is generated from these files -- do not edit it by h
 ## 2026-09-30 -- ASTMatrix TS port (DONE)
 
 - Live-converted herd/internal/astmatrix (3,912 lines Go) to Bun/TypeScript at
-  flock/ts/astmatrix/ -- @flock/astmatrix.
-- Provider data comes live from @ranch/roost (flock/roost); the generated Go
+  hodos/ts/astmatrix/ -- @hodos/astmatrix.
+- Provider data comes live from @ranch/roost (hodos/roost); the generated Go
   artifact providers_generated.go was NOT ported (direct import instead).
 - Live-catalog contract: ranch-roost/live-catalog/v1 (file reader + serve-404 reporting).
 - Sidecar default port 25214 (25194 taken by ralph-dashboard); env-overridable.

@@ -41,23 +41,23 @@ def load_reg(b=None):
     if not os.path.exists(p):
         return {"tasks": {}}
     with open(p) as f:
-        fcntl.flock(f, fcntl.LOCK_SH)
+        fcntl.hodos(f, fcntl.LOCK_SH)
         try:
             return json.load(f)
         finally:
-            fcntl.flock(f, fcntl.LOCK_UN)
+            fcntl.hodos(f, fcntl.LOCK_UN)
 
 
 def save_reg(reg, b=None):
     p = reg_path(b)
     tmp = p + ".tmp.%d" % os.getpid()
     with open(tmp, "w") as f:
-        fcntl.flock(f, fcntl.LOCK_EX)
+        fcntl.hodos(f, fcntl.LOCK_EX)
         json.dump(reg, f, indent=1, sort_keys=True)
         f.write("\n")
         f.flush()
         os.fsync(f.fileno())
-        fcntl.flock(f, fcntl.LOCK_UN)
+        fcntl.hodos(f, fcntl.LOCK_UN)
     os.replace(tmp, p)
 
 
@@ -66,10 +66,10 @@ def log_event(ev):
     ev["ts"] = time.time()
     ev["box"] = box()
     with open(events_path(), "a") as f:
-        fcntl.flock(f, fcntl.LOCK_EX)
+        fcntl.hodos(f, fcntl.LOCK_EX)
         f.write(json.dumps(ev, sort_keys=True) + "\n")
         f.flush()
-        fcntl.flock(f, fcntl.LOCK_UN)
+        fcntl.hodos(f, fcntl.LOCK_UN)
 
 
 def ps_all():

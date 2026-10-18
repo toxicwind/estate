@@ -44,7 +44,7 @@ Every 60s (user systemd timer, survives machine restarts):
 2. For each daemon: TCP-connects the port AND checks `pitchfork status`.
    If either fails, runs `pitchfork start <name>` and re-verifies.
 
-It never stops or restarts anything healthy, and takes a flock so
+It never stops or restarts anything healthy, and takes a hodos so
 overlapping runs are impossible. The pitchfork binary is resolved from the
 live supervisor process (`/proc/<pid>/exe`) so CLI/supervisor versions
 cannot skew (2.16.0 vs 2.25.0 hazard, 2026-09-14).
@@ -79,7 +79,7 @@ survives machine restarts via the architect manager.
 
 ## Dev / contributing
 
-Keep the flock, keep the never-touch-healthy rule, keep the
+Keep the hodos, keep the never-touch-healthy rule, keep the
 `/proc/<pid>/exe` binary resolution. The watchdog must stay dumber than
 the thing it watches.
 

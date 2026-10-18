@@ -15,7 +15,7 @@ describe("Estate Core Stack Verification", () => {
     expect(text.trim()).toBe("OK");
   });
 
-  test("Flock (:25193) engine endpoint", async () => {
+  test("Hodos (:25193) engine endpoint", async () => {
     const res = await fetch("http://127.0.0.1:25193/health");
     expect(res.status).toBe(200);
     const text = await res.text();

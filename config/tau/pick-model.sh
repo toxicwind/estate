@@ -13,10 +13,10 @@ CONCURRENCY="${PICK_CONCURRENCY:-8}"
 : > "$LOG"; rm -f "$WIN"; rm -rf "$LOCK"
 
 ENDPOINT='http://127.0.0.1:25193'
-KEY="${FLOCK_API_KEY:-}"; [[ -z "$KEY" && -f ~/.tau/flock.key ]] && KEY=$(<~/.tau/flock.key)
-[[ -z "$KEY" ]] && { echo "NO FLOCK KEY" >&2; exit 3; }
+KEY="${HODOS_API_KEY:-}"; [[ -z "$KEY" && -f ~/.tau/hodos.key ]] && KEY=$(<~/.tau/hodos.key)
+[[ -z "$KEY" ]] && { echo "NO HODOS KEY" >&2; exit 3; }
 
-# Only exclude non-flock aliases. Everything else gets a fair shot.
+# Only exclude non-hodos aliases. Everything else gets a fair shot.
 BLACKLIST='^local/|^herd/'
 
 # ---------- discovery: pure ID list, no health filter ----------

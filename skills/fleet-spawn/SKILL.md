@@ -100,7 +100,7 @@ What it does (permanent script, not guidance):
 3. **Registers you** (`--register`; needs `--owner`): creates your
    per-crew file `fleet/crews/<you>.md` (the source of truth for your
    row) and regenerates the §2 rollup via `bun projects/ops/bin/kb-rollup.ts`
-   under flock. Refuses to double-register. `--done <sha>` later marks your
+   under hodos. Refuses to double-register. `--done <sha>` later marks your
    per-crew file DONE with the final commit SHA and regenerates §2.
    §2 Active Crews is a GENERATED rollup (Alternative A, User 2026-09-29):
    never hand-edit the table — edit your per-crew file instead. A pre-commit

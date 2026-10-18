@@ -23,7 +23,7 @@
 #
 # SAFETY:
 #   - only *.lock / *.lck paths are ever deleted; database files etc. are
-#     never touched (flock on a DB releases itself when the holder dies).
+#     never touched (hodos on a DB releases itself when the holder dies).
 #   - only daemons named on the command line are affected.
 #   - the estate `pitchfork` wrapper's sovereign/ guard applies (we call it).
 set -uo pipefail

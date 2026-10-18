@@ -4,7 +4,7 @@
 # Four checks, in order; the first failure wins and prints the exact error:
 #   0. secret scan        -- high-confidence secret patterns (API keys, tokens,
 #                            private-key headers) in ADDED diff lines. Backstop
-#                            for the 2026-09-17 flock key-pool leak (29 GitHub
+#                            for the 2026-09-17 hodos key-pool leak (29 GitHub
 #                            secret-scanning alerts from committed API keys).
 #                            Prints only the file name, never the match.
 #                            Reviewed paths are remembered in the ignore memory

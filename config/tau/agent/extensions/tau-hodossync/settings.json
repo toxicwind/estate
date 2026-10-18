@@ -1,0 +1,16 @@
+{
+  "serverUrl": "http://127.0.0.1:25193",
+  "providerName": "hodos",
+  "onlyShowUsableModels": true,
+  "showGlobalRoutingModels": true,
+  "includeModels": [],
+  "excludeModels": [],
+  "syncOnStartup": true,
+  "modelCacheTtlMinutes": 60,
+  "autoSyncIntervalSeconds": 120,
+  "showGatewayTokensPerSecond": true,
+  "lastSuccessfulSyncAt": 1792170441650,
+  "onUnreachable": "none",
+  "fallbackModel": "openai/gpt-oss-20b",
+  "apiKey": "eyJhbGciOiAibm9uZSIsICJ0eXAiOiAiSldUIn0.eyJzdWIiOiAiZmxvY2stY2xpZW50IiwgIm5hbWUiOiAiY29ycmFsLWp3dGZtdCIsICJpYXQiOiAxNzkxOTAwMDAwfQ.d0391d5d684102b1ef80140f9920381b08aa43b417976ed1528618c7b76b60df"
+}

@@ -26,7 +26,7 @@ Bonus: connector.py bind-race hardening (retry-with-backoff on EADDRINUSE)
 after the cell connector flapped during a restart dance.
 
 Track 2 -- ripline (projects/bridge/ripline/, commit 9e09edaf0): Bun
-forward fork of yote-conn, same CLI surface (health/exec/multi/bg*/herd/flock).
+forward fork of yote-conn, same CLI surface (health/exec/multi/bg*/herd/hodos).
 Lane order: unix socket -> connector-HTTP :18301 -> mainline yote-conn
 fallover (original argv, exit code preserved). No-double-exec contract
 (pre-dispatch failures may re-dispatch; post-dispatch failures report and

@@ -21,7 +21,7 @@
   "dnsmasq": "estate",
   "prometheus": "estate",
   "grafana": "estate",
-  "flock": "estate",
+  "hodos": "estate",
   "vansrouter": "estate",
   "matter-server": "estate",
   "openfang": "standalone/rig-work",

@@ -31,7 +31,7 @@
 
 ## Explicitly NOT renamed (decision points)
 
-- **Peer names** (`openrouter-ling` vs `openrouter-free`, `flock-direct`, `toolcall-local`): renaming a peer changes live model IDs (`{peer}/{upstream}`) with no alias mechanism — unsafe. Documented in grammar instead.
+- **Peer names** (`openrouter-ling` vs `openrouter-free`, `hodos-direct`, `toolcall-local`): renaming a peer changes live model IDs (`{peer}/{upstream}`) with no alias mechanism — unsafe. Documented in grammar instead.
 - **Tau provider/lane names** (`herd`, `Estate`): established across tau engine configs; renaming breaks the provider map. Documented as canonical lane names.
 - **Tau role names** (`tiny`, `smol`, `fast` profile): separate namespace from herd aliases; the `fast` profile → `herd/beellama/qwen-flash-64k` vs `fast` alias → exaone is documented as a known meaning-collision, not a technical one.
 - **Generic aliases** (`fast`, `tiny`, `small`, `medium`, `code`, `long`, `uncensored`): live consumers exist (`null-g-proxy`, `fast_race.py` use `fast`). Kept working, marked deprecated, validator bans NEW ones.

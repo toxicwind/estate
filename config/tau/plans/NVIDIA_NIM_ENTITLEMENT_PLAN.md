@@ -29,7 +29,7 @@ Test navigation and screenshots.
 
 ## Critical files & anchors
 - /home/toxic/.local/bin/secretsmith
-- /home/toxic/.tau/flock.key
+- /home/toxic/.tau/hodos.key
 - /home/toxic/.tau/agent/config.yml
 - xd://mcp__browserless_*
 

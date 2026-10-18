@@ -118,11 +118,11 @@ export const extendedTests: ExtendedServiceTest[] = [
     ],
   },
   {
-    service: "flock",
-    portKey: "FLOCK_PORT",
+    service: "hodos",
+    portKey: "HODOS_PORT",
     tests: [
       {
-        name: "flock-api",
+        name: "hodos-api",
         port: 8000,
         healthEndpoints: ["/health", "/v1/models"],
         skipHttpCheck: false,
@@ -130,12 +130,12 @@ export const extendedTests: ExtendedServiceTest[] = [
     ],
     specialChecks: [
       async () => {
-        // Check flock binary presence
+        // Check hodos binary presence
         const proc = Bun.spawn({
           cmd: [
             "bash",
             "-c",
-            "test -x /home/toxic/.flock/flock && echo FOUND || echo MISSING",
+            "test -x /home/toxic/.hodos/hodos && echo FOUND || echo MISSING",
           ],
           stdout: "pipe",
           stderr: "pipe",
@@ -143,18 +143,18 @@ export const extendedTests: ExtendedServiceTest[] = [
         const stdout = await new Response(proc.stdout).text();
         await proc.exited;
         return {
-          name: "flock-binary-present",
+          name: "hodos-binary-present",
           passed: stdout.trim() === "FOUND",
           details: { stdout: stdout.trim(), exitCode: proc.exitCode ?? null },
         };
       },
       async () => {
-        // Check flock delegation config in herd config
+        // Check hodos delegation config in herd config
         const proc = Bun.spawn({
           cmd: [
             "bash",
             "-c",
-            "grep -q '^flock:' /home/toxic/estate/config/herd.yaml && echo FOUND || echo MISSING",
+            "grep -q '^hodos:' /home/toxic/estate/config/herd.yaml && echo FOUND || echo MISSING",
           ],
           stdout: "pipe",
           stderr: "pipe",
@@ -162,13 +162,13 @@ export const extendedTests: ExtendedServiceTest[] = [
         const stdout = await new Response(proc.stdout).text();
         await proc.exited;
         return {
-          name: "flock-config-present",
+          name: "hodos-config-present",
           passed: stdout.trim() === "FOUND",
           details: { stdout: stdout.trim(), exitCode: proc.exitCode ?? null },
         };
       },
       async () => {
-        // Check herd delegates cloud models to flock (flockCloud in source)
+        // Check herd delegates cloud models to hodos (flockCloud in source)
         const proc = Bun.spawn({
           cmd: [
             "grep",
@@ -183,7 +183,7 @@ export const extendedTests: ExtendedServiceTest[] = [
         const stdout = await new Response(proc.stdout).text();
         await proc.exited;
         return {
-          name: "flock-delegation-code",
+          name: "hodos-delegation-code",
           passed: stdout.trim().includes("flockCloud"),
           details: { stdout: stdout.trim() },
         };

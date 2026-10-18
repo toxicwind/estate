@@ -48,7 +48,7 @@ Repairs landed this session are marked [FIXED]; open items marked [OPEN].
 
 - Runtime/config fusion: `~/.tau → estate/config/tau` = **28 GiB inside the
   control-plane repo** (sessions 22G, agent/cache 3.6G, plugins 1.8G,
-  natives 176M, logs 240M, reports 112M). Secrets (auth.json, flock.key,
+  natives 176M, logs 240M, reports 112M). Secrets (auth.json, hodos.key,
   kimi-device-id) gitignored but physically co-located — one `git clean -xd`
   in estate destroys all credentials + runtime state. [OPEN — highest-risk item]
 - **Root defect found: uncapped bash tool logs.** Sessions hold per-call
@@ -126,7 +126,7 @@ Repairs landed this session are marked [FIXED]; open items marked [OPEN].
   authoritative /home/toxic/AGENTS.md.
 - **Mesh truth**: `ranch/mesh/README.md` is the live-verified routing doc
   (cuttinggate :25200 canonical, estate-router :25104 LIVE, herd :25100,
-  flock :25193 retired, keypool :25109, gatehouse :25127 fronts MCP).
+  hodos :25193 retired, keypool :25109, gatehouse :25127 fronts MCP).
   Estate-level docs contradict it: CONTROL_PLANE.md + MASTER_PLAN.md still
   cite "estate-router :25104 stopped"/"mcpproxy :25109 as MCP federation
   gateway" (wrong service), MASTER_PLAN.md:8 "herd DOWN" vs mesh README's

@@ -6,7 +6,7 @@ description: How to register tau user extensions and resolve tau config layering
 # Tau Extension & Config Rules (learned 2026-10-09)
 
 ## Registering user extensions in config.yml
-- The `extensions:` array resolves entries **against cwd** at load time. tau-pin pins `--cwd=$PWD`, so bare names like `tau-flocksync` fail from any other directory.
+- The `extensions:` array resolves entries **against cwd** at load time. tau-pin pins `--cwd=$PWD`, so bare names like `tau-hodossync` fail from any other directory.
 - ALWAYS use absolute paths, and point at a single `.ts` module with a default factory export. Pointing at a directory makes the loader try every `.ts` inside as a separate extension (config.ts, types.ts etc. all fail "does not export a valid factory function").
 - Convention for multi-module extensions: directory `~/.tau/extensions/<name>/` containing modules, plus a top-level shim `<name>.ts` that does `export { default } from "./<name>/extension.ts";` — the shim is the config entry.
 - A directory entry needs a manifest (gemini-extension.json) OR use the shim approach.

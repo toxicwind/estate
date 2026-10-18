@@ -132,7 +132,7 @@ would rewrite 1445 files in /home/toxic/estate
   M bridge/awrawr_ws_exec.py
   M config/deprecated/openfang-4200.toml
   M config/env/tau-env.sh
-  M config/flock-ssot/env-shim.sh
+  M config/hodos-ssot/env-shim.sh
   M config/herd.yaml
   M config/herd.yaml.bak-20260929
   M config/herd.yaml.bak.20261001-quill
@@ -178,8 +178,8 @@ would rewrite 1445 files in /home/toxic/estate
   M config/tau/extensions/nemotron/skills/nemotron-policy-generator/references/policy_patterns.md
   M config/tau/mcp.json
   M config/tau/model-router.json
-  M config/tau/plans/FLOCK_401_AUTHENTICATION_FIX_PLAN.md
-  M config/tau/plans/FLOCK_401_AUTH_FIX_PLAN.md
+  M config/tau/plans/HODOS_401_AUTHENTICATION_FIX_PLAN.md
+  M config/tau/plans/HODOS_401_AUTH_FIX_PLAN.md
   M config/tau/plans/HERD_MAXIMAL_MERGE_PLAN.md
   M config/tau/plans/MESH_RANCH_RECONSTITUTION_PLAN.md
   M config/tau/plans/README_REVITALIZATION_PLAN_SHREW_PLAN.md
@@ -533,8 +533,8 @@ would rewrite 1445 files in /home/toxic/estate
   M projects/mesh/gateway/specs/README.md
   M projects/mesh/gemini-mcp/README.md
   M projects/mesh/router/README.md
-  M projects/mesh/router/flock-py/README.md
-  M projects/mesh/router/flock-router/README.md
+  M projects/mesh/router/hodos-py/README.md
+  M projects/mesh/router/hodos-router/README.md
   M projects/mesh/router/free_zed_gateway/README.md
   M projects/mesh/secretsmith/README.md
   M projects/mesh/squawk/README.md
@@ -762,10 +762,10 @@ would rewrite 1445 files in /home/toxic/estate
   M salvage/origin-main-20261002/conflicts/config/tau/model-router.json.ours
   M salvage/origin-main-20261002/conflicts/config/tau/models.yml
   M salvage/origin-main-20261002/conflicts/config/tau/models.yml.ours
-  M salvage/origin-main-20261002/conflicts/config/tau/plans/FLOCK_401_AUTHENTICATION_FIX_PLAN.md
-  M salvage/origin-main-20261002/conflicts/config/tau/plans/FLOCK_401_AUTHENTICATION_FIX_PLAN.md.ours
-  M salvage/origin-main-20261002/conflicts/config/tau/plans/FLOCK_401_AUTH_FIX_PLAN.md
-  M salvage/origin-main-20261002/conflicts/config/tau/plans/FLOCK_401_AUTH_FIX_PLAN.md.ours
+  M salvage/origin-main-20261002/conflicts/config/tau/plans/HODOS_401_AUTHENTICATION_FIX_PLAN.md
+  M salvage/origin-main-20261002/conflicts/config/tau/plans/HODOS_401_AUTHENTICATION_FIX_PLAN.md.ours
+  M salvage/origin-main-20261002/conflicts/config/tau/plans/HODOS_401_AUTH_FIX_PLAN.md
+  M salvage/origin-main-20261002/conflicts/config/tau/plans/HODOS_401_AUTH_FIX_PLAN.md.ours
   M salvage/origin-main-20261002/conflicts/config/tau/plans/HERD_MAXIMAL_MERGE_PLAN.md
   M salvage/origin-main-20261002/conflicts/config/tau/plans/HERD_MAXIMAL_MERGE_PLAN.md.ours
   M salvage/origin-main-20261002/conflicts/config/tau/plans/MESH_RANCH_RECONSTITUTION_PLAN.md
@@ -796,8 +796,8 @@ would rewrite 1445 files in /home/toxic/estate
   M salvage/origin-main-20261002/conflicts/pitchfork.d/estate-reconcile-watch.toml.ours
   M salvage/origin-main-20261002/conflicts/pitchfork.d/files.toml
   M salvage/origin-main-20261002/conflicts/pitchfork.d/files.toml.ours
-  M salvage/origin-main-20261002/conflicts/pitchfork.d/flock.toml
-  M salvage/origin-main-20261002/conflicts/pitchfork.d/flock.toml.ours
+  M salvage/origin-main-20261002/conflicts/pitchfork.d/hodos.toml
+  M salvage/origin-main-20261002/conflicts/pitchfork.d/hodos.toml.ours
   M salvage/origin-main-20261002/conflicts/pitchfork.d/herd.toml
   M salvage/origin-main-20261002/conflicts/pitchfork.d/herd.toml.ours
   M salvage/origin-main-20261002/conflicts/pitchfork.d/keypool.toml

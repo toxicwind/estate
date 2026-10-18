@@ -1,0 +1,13 @@
+[daemons.hodos]
+health_http = { url = "http://127.0.0.1:25193/health", interval = "30s", timeout = "5s", retries = 3 }
+port = 25193
+run = "exec /home/toxic/estate/ranch/forge/router/hodos-proxy/target/release/hodos"
+dir = "/home/toxic/estate/ranch/forge/router/hodos-proxy"
+mise = false
+retry = true
+ready_http = "http://127.0.0.1:25193/health"
+env = { PORT = "25193", DATA_DIR = "/home/toxic/.hodos-data", HOST = "127.0.0.1" }
+auto = ["start"]
+
+# estate — project-owned daemon manifest. Source of truth for 'grafana'.
+# Owned by the estate project; the parent only composes it.

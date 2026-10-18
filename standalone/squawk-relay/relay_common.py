@@ -28,7 +28,7 @@ CONTROL = RELAY_DIR / "control.json"
 LOCK_FILE = RELAY_DIR / ".relay.lock"  # legacy; per-daemon locks below
 
 # Process-lifetime lock handles. acquire_lock() stores the fh here so GC
-# can never close it early: the flock must be held until process exit,
+# can never close it early: the hodos must be held until process exit,
 # otherwise two daemons race (and double-post). Callers must still keep
 # using distinct names per daemon.
 _HELD_LOCKS = {}
@@ -119,14 +119,14 @@ def acquire_lock(name):
     Per-daemon lock file (.sink.lock / .forward.lock) so the two relay
     halves never block each other. The handle is pinned in _HELD_LOCKS
     for the process lifetime: without this, CPython GC closes the fh
-    immediately and the flock is silently released (this caused a real
+    immediately and the hodos is silently released (this caused a real
     double-post: two forwarders racing the same outbox entry).
     """
     path = RELAY_DIR / (".%s.lock" % name)
     path.parent.mkdir(parents=True, exist_ok=True)
     fh = open(path, "a+")
     try:
-        fcntl.flock(fh, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        fcntl.hodos(fh, fcntl.LOCK_EX | fcntl.LOCK_NB)
     except OSError:
         log("%s: another instance holds the lock, exiting" % name)
         sys.exit(0)  # lock held by healthy instance: clean exit, pitchfork must NOT retry

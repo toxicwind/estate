@@ -417,15 +417,15 @@
       "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
     },
     {
-      "origin_path": "config/tau/plans/FLOCK_401_AUTHENTICATION_FIX_PLAN.md",
+      "origin_path": "config/tau/plans/HODOS_401_AUTHENTICATION_FIX_PLAN.md",
       "blob": "b76f6efc93359d1acb3789ec2e361ebffa3ad91e",
-      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/plans/FLOCK_401_AUTHENTICATION_FIX_PLAN.md",
+      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/plans/HODOS_401_AUTHENTICATION_FIX_PLAN.md",
       "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
     },
     {
-      "origin_path": "config/tau/plans/FLOCK_401_AUTH_FIX_PLAN.md",
+      "origin_path": "config/tau/plans/HODOS_401_AUTH_FIX_PLAN.md",
       "blob": "b76f6efc93359d1acb3789ec2e361ebffa3ad91e",
-      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/plans/FLOCK_401_AUTH_FIX_PLAN.md",
+      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/plans/HODOS_401_AUTH_FIX_PLAN.md",
       "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
     },
     {
@@ -603,9 +603,9 @@
       "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
     },
     {
-      "origin_path": "pitchfork.d/flock.toml",
+      "origin_path": "pitchfork.d/hodos.toml",
       "blob": "7e284ab2b3d442831c480990591a2a0dc27918cd",
-      "new_path": "salvage/origin-main-20261002/conflicts/pitchfork.d/flock.toml",
+      "new_path": "salvage/origin-main-20261002/conflicts/pitchfork.d/hodos.toml",
       "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
     },
     {

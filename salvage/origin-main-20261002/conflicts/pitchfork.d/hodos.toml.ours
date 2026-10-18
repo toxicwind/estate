@@ -1,0 +1,14 @@
+# Estate — project-owned daemon manifest. Source of truth for 'hodos'.
+# Owned by the Estate project; the parent only composes it.
+
+
+[daemons.hodos]
+health_http = { url = "http://127.0.0.1:25193/health", interval = "30s", timeout = "5s", retries = 3 }
+port = 25193
+run = "exec /home/toxic/estate/ranch/hodos/bin/hodos-run.sh"
+dir = "."
+mise = false
+retry = true
+ready_http = "http://127.0.0.1:25193/health"
+env = { VANSROUTER_API_KEY = "local-Estate", HODOS_PORT = "25193" }
+auto = ["start"]

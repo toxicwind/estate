@@ -35,7 +35,7 @@ oracle-authored channel history and NEVER re-publishes history. Only
 auctions that are genuinely still open are resumed; assigned-but-unsettled
 ones get their timers restored without re-publishing the assign; expired
 historical auctions are marked closed in memory with a replay_closed log.
-A single-instance flock guarantees no two loops ever run at once, which
+A single-instance hodos guarantees no two loops ever run at once, which
 is the root-cause fix for duplicate seq allocation.
 """
 import ctypes
@@ -180,7 +180,7 @@ class Poster:
     Refreshes seq from the directory on every post and bumps past
     collisions, so the oracle and bidders can share a channel safely.
     (Seq races were previously caused by duplicate loop instances; the
-    single-instance flock is the root-cause fix, this is belt-and-braces.)
+    single-instance hodos is the root-cause fix, this is belt-and-braces.)
     """
 
     def __init__(self, channel_dir, channel_name):
@@ -248,7 +248,7 @@ def acquire_lock():
     LOCKFILE.parent.mkdir(parents=True, exist_ok=True)
     fh = open(LOCKFILE, "w")
     try:
-        fcntl.flock(fh, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        fcntl.hodos(fh, fcntl.LOCK_EX | fcntl.LOCK_NB)
     except OSError:
         sys.stderr.write("oracle-market: another instance holds the lock; exiting\n")
         sys.exit(2)

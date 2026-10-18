@@ -6,27 +6,27 @@
 ## Session log 2026-10-16 (late) — DONE, keep for reference
 
 - [x] estate commits + pushes (consolidation, flicker→forge, architect sweep, gitleaks gate fixes)
-- [x] ranch: 54+64 dirty submodules forward-committed; VansRouter/mcpproxy-go/flocksync/pi_agent_rust/drover snapped; runtime configs untracked (mesh_config had real keys)
+- [x] ranch: 54+64 dirty submodules forward-committed; VansRouter/mcpproxy-go/hodossync/pi_agent_rust/drover snapped; runtime configs untracked (mesh_config had real keys)
 - [x] gitleaks SSOT allowlists: Edge TTS public token, anthropic beta strings, sk-machine test fixtures, conformance template artifacts
 - [x] pattern-forge: github_repos leg (repo finder), S2 secretsmith keychain, dblp retry
 - [x] corral: toxicwind naming, bun install fix, library import proven (SuperRalph/AgentRegistry)
 - [x] 2-second rule: run-fast documented MANDATORY in root+estate AGENTS.md; bash-2s-shim.sh live (aliases in agent shells, ~/.bashrc source)
 - [x] 6 MCP forks as own repos: fleet-bus-mcp, hatch-mcp, huggingface-mcp-server, mcp-gateway (gateway.ts implemented), tmux-mcp (framing fix documented), websearch-mcp — all toxicwind/* with aesthetic READMEs
 - [x] estate-shell: NEW SSOT repo (toxicwind/estate-shell) — dots, environment.d doctrine (105 vars emitted to systemd), TS deploy engine (dotbot replacement), env doctor (caught real AQ_DRM_DEVICES conflict), 16 cutting-edge deps verified on bun 1.4.3-canary
-- [x] mcpproxy-go: gateway.ts fan-out implemented; flocksync unshallowed (was depth-1) from upstream OmniRoute
+- [x] mcpproxy-go: gateway.ts fan-out implemented; hodossync unshallowed (was depth-1) from upstream OmniRoute
 - [ ] ranch weave land --onto origin/main RUNNING in background (bgp_1470104bc001WoddEe0e2tYoVg)
-- [ ] flocksync release/v3.8.52 push RUNNING in background (bgp_14700c49c001EU10hPq4CadZDp)
+- [ ] hodossync release/v3.8.52 push RUNNING in background (bgp_14700c49c001EU10hPq4CadZDp)
 
 
 ## 0. In-flight state (uncommitted — commit FIRST)
 
 - [ ] **estate repo dirty (~20 files)**: omniroute takeover (models.yml, ports.env,
-      pitchfork.toml, flocksync config.ts/dialog, agent/config.yml), AGENTS.md
+      pitchfork.toml, hodossync config.ts/dialog, agent/config.yml), AGENTS.md
       (root is outside git; estate mirror tracked), docker-inventory doc,
       deleted `stack/services/omniroute.sh`, grasp-hub gitlink bump,
       skills/pattern-forge/{bun.lock,package.json,src/hf.ts},
       skills/guide-project-creator/ (new). Commit message ready:
-      "omniroute → flock takeover + docker lane policy + forge hf".
+      "omniroute → hodos takeover + docker lane policy + forge hf".
       Pre-existing drift NOT mine (leave): engines/herd/*, pi-skills, sigma,
       work/tau-extensions, plugins/agentpluginzoo, bash-style-guide,
       projects/OmniRoute gitlink.
@@ -122,7 +122,7 @@
 ## 5. Smaller queued items
 
 - [ ] omniroute-gateway row in `findings/prior-audits/docker-inventory-20261016.md`
-      → mark RETIRED (merged into flock).
+      → mark RETIRED (merged into hodos).
 - [ ] estate/skills/flicker + grasp-hub flicker skill → fold/rename (item 1).
 - [ ] `ranch/projects/estate-core` oddity → consolidate (move to ranch/<name> or
       estate/projects — pick the non-weird one).
@@ -130,7 +130,7 @@
       under ranch/websites/effusionlabs or keep as the compose runtime dir with a
       documented pointer (running container references its compose path).
 - [ ] docker-inventory: hindsight container owner/origin still unknown.
-- [ ] omniroute-gateway container: Lane-A borderline → being retired via flock
+- [ ] omniroute-gateway container: Lane-A borderline → being retired via hodos
       takeover (see §0); migrate any unique omniroute provider config before
       final `docker rm` if the 402-free path ever needs its upstreams.
 
@@ -147,10 +147,10 @@
   (~/.secrets). HF router (router.huggingface.co) = separate, 402 credit-gated.
 - ffs: refresh stale index with `ffs index --root <dir>` (a stale index caused
   missed files once). Full guide: `ffs guide` (288 lines).
-- flock = first-class native router: pitchfork `estate/flock`, :25193,
-  `~/.flock/flock` binary; canonical router per models.yml is cuttinggate
-  :25200 (flock :25193 marked RETIRED there but daemon still serves).
-- ranch/mesh/flocksync: ANOTHER WORKER has staged WIP (circuitBreaker/
+- hodos = first-class native router: pitchfork `estate/hodos`, :25193,
+  `~/.hodos/hodos` binary; canonical router per models.yml is cuttinggate
+  :25200 (hodos :25193 marked RETIRED there but daemon still serves).
+- ranch/mesh/hodossync: ANOTHER WORKER has staged WIP (circuitBreaker/
   upstreamGuard, release/v3.8.52) — do not touch that repo.
 - rustdesk: fixed 2026-10-16. Native pitchfork hbbs/hbbr on 25220-25224, key at
   `ranch/rustdesk-server/id_ed25519.pub`; docker containers + stale REDIRECT

@@ -250,7 +250,7 @@ index 0d095e8909..8ffecfc9d6 100755
 + * Estate Router v3.2 (Bun/TypeScript)
   * Port of estate-router/router.py — same strategies, HealthDB WAL, circuit breakers.
   *
-  * Strategies: fifo_matrix (alias fifo_flock) | ast_race (alias flock_race) | sticky_affinity | weighted_elo | circuit_chain | hybrid
+  * Strategies: fifo_matrix (alias fifo_flock) | ast_race (alias hodos_race) | sticky_affinity | weighted_elo | circuit_chain | hybrid
 @@ -11,13 +11,14 @@
   */
  

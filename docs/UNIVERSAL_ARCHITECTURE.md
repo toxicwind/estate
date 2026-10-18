@@ -22,7 +22,7 @@
 
 ```typescript
 // TypeScript: spawn Go binary with structured JSON over stdin/stdout
-// Use for: llama-swap, flock, estate-router
+// Use for: llama-swap, hodos, estate-router
 import { $ } from "bun";
 
 const result = await $`/home/toxic/bin/llama-swap --json`.json();
@@ -79,7 +79,7 @@ pub extern "C" fn encode(ptr: *const u8, len: i32) -> *mut u8 { ... }
 /home/toxic/estate/
 ├── config/                 # TOML configs (ports.env, mise.toml, pitchfork.toml)
 ├── src/
-│   ├── go/                 # Go services (llama-swap, flock, router)
+│   ├── go/                 # Go services (llama-swap, hodos, router)
 │   │   ├── cmd/            # Main packages
 │   │   ├── internal/       # Private packages
 │   │   └── go.mod
@@ -178,7 +178,7 @@ Every service (Go/Rust/TS) exposes:
 
 **Metrics naming**: `estate_<service>_<operation>_<unit>`
 - `estate_llama_swap_requests_total`
-- `flock_request_latency_seconds`
+- `hodos_request_latency_seconds`
 - `estate_mcp_tool_calls_total`
 
 ---

@@ -39,7 +39,7 @@ Kept live. Act on these; never locked into one approach.
    on 2026-09-20 was a surprise — track it.)
 8. **Stale-cache TTL policy for race winner.** Currently the cached winner
    never expires. Add max_stale (e.g. 24h) after which NO-WINNER is honest.
-9. **flock around squawk sequence allocation** in loop.sh's transition post
+9. **hodos around squawk sequence allocation** in loop.sh's transition post
    (concurrent writers could collide on filename).
 10. **coyote :25143.** Estate/coyote is configured but absent from the live
     pitchfork set. Recon only — do not start without checking with the

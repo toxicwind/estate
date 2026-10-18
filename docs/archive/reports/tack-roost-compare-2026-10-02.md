@@ -1,24 +1,24 @@
 # tack vs roost — compare + merge recommendation (2026-10-02)
 
 Author: Quill (Ember's crew) — read-only analysis, no merge executed.
-Question from User: "Compare and merge tack and roost into flock?"
+Question from User: "Compare and merge tack and roost into hodos?"
 
 ## Verdict: YES — merge, and it's mostly a deletion
 
-**roost is already inside flock** (`flock/roost/`). The merge is: **delete the
+**roost is already inside hodos** (`hodos/roost/`). The merge is: **delete the
 duplicate `ranch/tack/` and repoint tau's one consumer at `@ranch/roost`.**
-No code needs to move into flock — it's already there.
+No code needs to move into hodos — it's already there.
 
 The rename User is asking about **already happened once**: on 2026-09-30,
-commit `5d75050 "flock: rename Tack to Roost, nest as flock/roost/"` renamed
-Tack → Roost and nested it under flock. The next day (2026-10-01), commit
+commit `5d75050 "hodos: rename Tack to Roost, nest as hodos/roost/"` renamed
+Tack → Roost and nested it under hodos. The next day (2026-10-01), commit
 `79a7a78 "feat(tack): Estate provider wire-data authority (36 providers)"`
 re-created `ranch/tack/` as a fresh duplicate. That directory is the entire
 problem. Everything below is the evidence.
 
 ## The numbers
 
-| | tack (`ranch/tack/`) | roost (`flock/roost/`) |
+| | tack (`ranch/tack/`) | roost (`hodos/roost/`) |
 |---|---|---|
 | providers | **36** | **75** |
 | schema fields | 5 (`name, keyEnv, keyEnvAlt?, auth?, baseUrl?`) | 16 (`name, displayName?, baseUrl, keyEnv, keyEnvAlt?, adapter, modelsPath?, auth?, headerName?, queryParam?, extraHeaders?, staticModels?, noModelsReason?, seeds, enabled?, routerLocal?, contextLengths?`) |
@@ -36,15 +36,15 @@ problem. Everything below is the evidence.
 - **Consumers of tack: exactly 1** — `/home/toxic/tau/packages/catalog/src/compat/tack.ts`
   (plus its ignored duplicate under `estate/ranch/tau/`; scratch-dir hits under
   `estate/var/scratch/` are junk).
-- **Consumers of roost:** flock proxy (`proxy/src/roost_providers.rs` ← generated
-  `providers.rs`), herd (generated `providers.go`), `flock/ts/astmatrix`,
-  `flock/ts/strategy`, `flock/ts/bench`, `flock/ts/live-models`, Python tooling
+- **Consumers of roost:** hodos proxy (`proxy/src/roost_providers.rs` ← generated
+  `providers.rs`), herd (generated `providers.go`), `hodos/ts/astmatrix`,
+  `hodos/ts/strategy`, `hodos/ts/bench`, `hodos/ts/live-models`, Python tooling
   (generated `providers.json`).
 
 ## tack is not just duplicated — it's stale
 
 tack's schema is a strict subset of roost's, and where they disagree, **roost
-is the corrected one** (verified line-by-line in `flock/roost/src/data.ts`):
+is the corrected one** (verified line-by-line in `hodos/roost/src/data.ts`):
 
 - `google`: tack says `keyEnv: GEMINI_API_KEY`. roost routes google through the
   local EAP keypool (`http://127.0.0.1:25109/gemini-eap-interactions`,
@@ -64,15 +64,15 @@ is the corrected one** (verified line-by-line in `flock/roost/src/data.ts`):
 Both files claim to be the "single source of truth" in their header comments.
 Only one of them is maintained. It's roost.
 
-## What "merge into flock" concretely means
+## What "merge into hodos" concretely means
 
-1. **Fix the nanogpt gap** in `flock/roost/src/data.ts`: add
+1. **Fix the nanogpt gap** in `hodos/roost/src/data.ts`: add
    `keyEnvAlt: "NANOGPT_API_KEY"`. One line.
-2. **Regenerate roost artifacts**: `bun run build` in `flock/roost/` (deterministic
+2. **Regenerate roost artifacts**: `bun run build` in `hodos/roost/` (deterministic
    codegen; sync test diffs byte-for-byte).
 3. **Repoint tau's consumer**: in `/home/toxic/tau/packages/catalog/src/compat/tack.ts`
    (rename file to `roost.ts` when convenient):
-   - resolver candidates: `ROOST_PATH` env → `$HOME/estate/ranch/flock/roost/src/index.ts`
+   - resolver candidates: `ROOST_PATH` env → `$HOME/estate/ranch/hodos/roost/src/index.ts`
      via `os.homedir()` (relocatable — replaces the hardcoded `/home/toxic/…`
      path) → `@ranch/roost` package → relative dev path;
    - map roost `ProviderDef` → tau's view (`name/keyEnv/keyEnvAlt/auth/baseUrl`),
@@ -85,7 +85,7 @@ Only one of them is maintained. It's roost.
      dropped in favor of `ROOST_PATH`.
 4. **Delete `ranch/tack/`**: `git rm -r tack/` in the ranch repo, commit, push.
    It's 2 files, 57 lines, 1 day old, zero live consumers.
-5. **Fix the stale comment** in `flock/ts/astmatrix/src/providers.ts`
+5. **Fix the stale comment** in `hodos/ts/astmatrix/src/providers.ts`
    ("providers carry Tack's seeds" — terminology left over from the rename).
 6. **Rebuild + verify**: rebuild tau `dist/omp`, run `tau models`, confirm the
    36 policy providers resolve; commit + push `toxicwind/tau`; commit + push
@@ -97,10 +97,10 @@ Almost nothing — the full consumer list that must change:
 
 - `/home/toxic/tau/packages/catalog/src/compat/tack.ts` — the only real tack
   consumer (resolver rewrite + roost field mapping + `routerLocal`/`enabled` filter).
-- `flock/ts/astmatrix/src/providers.ts` — comment-only fix.
+- `hodos/ts/astmatrix/src/providers.ts` — comment-only fix.
 - `ranch/tack/` itself — deleted.
 
-Not affected: flock proxy, herd, flock/ts/*, Python consumers (all already on
+Not affected: hodos proxy, herd, hodos/ts/*, Python consumers (all already on
 roost); tau's `TAU_PROVIDER_POLICY` (all 36 IDs covered by roost); tau's
 embedded-snapshot mechanism (just re-sourced).
 
@@ -118,7 +118,7 @@ embedded-snapshot mechanism (just re-sourced).
 ## Bottom line
 
 tack/ is a 1-day-old, 36-provider, unmaintained, not-even-workspaced subset of
-the 75-provider roost that already lives in flock and already feeds the proxy,
+the 75-provider roost that already lives in hodos and already feeds the proxy,
 herd, and the TS routers. The 2026-09-30 rename was correct; the 2026-10-01
 re-creation was the mistake. Merge = delete tack/, repoint tau at roost, fix
 one nanogpt alt-var line first.

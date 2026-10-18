@@ -10,7 +10,7 @@
 #   mise/conf.d/*.toml fragments, loaded alphabetically (mise's own convention)
 #   mise/tasks/<name>  one executable file per task
 #   config/ports.env   the numeric port SSOT, injected from [env] below
-#   config/flock-ssot/route.env  non-secret flock route (port, model, base URL)
+#   config/hodos-ssot/route.env  non-secret hodos route (port, model, base URL)
 #
 # Keep mise tasks as hand-authored project workflows. Pitchfork owns daemon
 # lifecycle directly; do not mirror its start/stop/restart/health subcommands.
@@ -24,8 +24,8 @@
 
 [env]
 # Ports are injected estate-wide. See mise/conf.d/10-env.toml for why nothing
-# else declares a *_PORT. route.env carries the flock model and base URL.
-_.file = ["config/ports.env", "config/flock-ssot/route.env"]
+# else declares a *_PORT. route.env carries the hodos model and base URL.
+_.file = ["config/ports.env", "config/hodos-ssot/route.env"]
 
 # Forge remote build cache — first-class nativelink-backed cache at :25148
 # (:25148 is flicker, the ranch build daemon — estate map, NOT mbx-cache).

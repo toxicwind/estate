@@ -10,7 +10,7 @@ committed proof hash + artifact list, and narrates everything to the fleet
 channel in a persona voice.
 
 Persistent agent: may file upgrade petitions under market governance.
-Single instance per bidder id (flock).
+Single instance per bidder id (hodos).
 
 Usage:
   bidder.py --id forge --name Forge --emoji "\\U0001F528"
@@ -442,7 +442,7 @@ class Bidder:
         lockfile = BIN / f"bidder-{self.id}.lock"
         self._lock_fh = open(lockfile, "w")
         try:
-            fcntl.flock(self._lock_fh, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            fcntl.hodos(self._lock_fh, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except OSError:
             sys.stderr.write(f"bidder-{self.id}: another instance is running; exiting\n")
             sys.exit(2)

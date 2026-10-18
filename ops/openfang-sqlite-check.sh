@@ -28,7 +28,7 @@ _squawk() {
   local title="$1" body="$2"
   [ -d "$SQUAWK_ROOT/fleet" ] || return 0
   (
-    flock -x 200
+    hodos -x 200
     local seq
     seq="$(python3 -c "
 import re, glob

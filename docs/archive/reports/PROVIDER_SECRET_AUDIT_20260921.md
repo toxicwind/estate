@@ -28,7 +28,7 @@ modified.
 | NVIDIA_API_KEY | nim-kimi-sidecar.py | yes | LIVE (200) |
 | DEEPSEEK_API_KEY | (standby, no live ref) | yes | LIVE (200) |
 | HF_TOKEN | hf tooling | yes | LIVE (200 via whoami-v2 — the correct endpoint; v1 401s even for valid tokens) |
-| FLOCK_API_KEY | herd.yaml (flock peer, currently disabled) | yes | defined; peer disabled, not probed |
+| HODOS_API_KEY | herd.yaml (hodos peer, currently disabled) | yes | defined; peer disabled, not probed |
 | ANTHROPIC_API_KEY | openfang-25196.toml | yes | **DEAD — 401** |
 | GROQ_API_KEY | openfang-25196.toml | yes | **DEAD — 403** |
 | CEREBRAS_API_KEY | (standby, no live ref) | yes | DEAD — 403 |

@@ -8,7 +8,7 @@
 # script never prints, logs, or writes key material.
 #
 # The gateway's env is what every smithers-spawned agent inherits, so the
-# model/routing keys (FLOCK_API_KEY, NIM_PROXY_API_KEY, ANTHROPIC_API_KEY,
+# model/routing keys (HODOS_API_KEY, NIM_PROXY_API_KEY, ANTHROPIC_API_KEY,
 # NVIDIA_API_KEY) must be present HERE, at gateway boot — not in whatever
 # interactive shell happened to launch a run.
 set -euo pipefail
@@ -30,7 +30,7 @@ spec_of() { # VAR  keyring-attr-pairs  -> append only if the item exists
     ENVS+=(--env "${1}=${2}")
   fi
 }
-spec_of FLOCK_API_KEY      "service=flock"
+spec_of HODOS_API_KEY      "service=hodos"
 spec_of NIM_PROXY_API_KEY  "service=nim,provider=nvidia"
 spec_of NVIDIA_API_KEY     "service=nim,provider=nvidia"
 spec_of ANTHROPIC_API_KEY  "service=anthropic"

@@ -97,7 +97,7 @@ for name in ("config/ports.env", ".secrets.example", "profiles/default.yml",
 # documented secret names (values live in /home/toxic/.secrets, never here)
 DOCUMENTED_SECRETS = {"HF_TOKEN", "MISTRAL_API_KEY", "MOONSHOT_API_KEY",
                       "OPENROUTER_API_KEY", "OPENROUTER_API_KEY_1",
-                      "OPENROUTER_API_KEY_FREE", "FLOCK_API_KEY",
+                      "OPENROUTER_API_KEY_FREE", "HODOS_API_KEY",
                       "GEMINI_API_KEY", "NVIDIA_API_KEY", "GITHUB_TOKEN"}
 
 for v, locs in sorted(env_refs.items()):

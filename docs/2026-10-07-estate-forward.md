@@ -11,7 +11,7 @@ This consolidates Spark’s Funnel + hardcore-cleanup brief with the Grok Bot hy
 
 | Keep from Spark | Reject / correct |
 |---|---|
-| Funnel root cause: CLI parsed `on` as target → tailnet-only | Wrong ports in Spark READMEs (`herd :25104`, flock as sole cloud door) |
+| Funnel root cause: CLI parsed `on` as target → tailnet-only | Wrong ports in Spark READMEs (`herd :25104`, hodos as sole cloud door) |
 | Archive-then-purge scratch / tack | Aggressive `.gitmodules` wipe to one github/gitignore entry |
 | Roost sole provider authority; delete `ranch/tack/` | Four-pillar “toxicwind/herd” as separate GitHub face (herd lives in ranch) |
 | Abolish rotting submodules; prefer independent checkouts + sync | Spark README omission of gatehouse, doorbell, cuttinggate, squawk, **arroyo** |
@@ -92,7 +92,7 @@ Do **not** `tar` absolute paths without `-C` (Spark’s script did). Prefer `tar
 - Do **not** blindly replace entire `.gitmodules` with a single github/gitignore submodule unless audit shows that’s the only live one
 - Prefer: no new submodules; research one-offs as plain dirs or archived repos
 
-### 2.4 Deploy docs (plane map — not Spark flock-centric fiction)
+### 2.4 Deploy docs (plane map — not Spark hodos-centric fiction)
 
 **estate/README.md** — one page:
 
@@ -103,7 +103,7 @@ Do **not** `tar` absolute paths without `-C` (Spark’s script did). Prefer `tar
 
 **ranch/README.md** — animals by plane:
 
-- Inference: herd · flock · cuttinggate · roost · keypool  
+- Inference: herd · hodos · cuttinggate · roost · keypool  
 - MCP: gatehouse · doorbell · switchboard · lasso  
 - Fleet: squawk · campfire · corral  
 - **Bot: arroyo** (overlord · coyote · discord)  

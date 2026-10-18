@@ -84,7 +84,7 @@ through the keypool except where noted.
 ## Routing
 
 ```
-tau/omp  ──flock :25193──▶  provider "google" (keyless, auth none)
+tau/omp  ──hodos :25193──▶  provider "google" (keyless, auth none)
                              │  base_url http://127.0.0.1:25109/gemini-eap-interactions
                              ▼
                         keypool :25109
@@ -99,7 +99,7 @@ generates, in order:
 
 1. `roost/generated/providers.{json,go,rs}`
 2. `proxy/src/roost_providers.rs` — via `bun scripts/sync-roost-providers.ts --write`
-   (**easy to forget; flock will serve the previous catalog until you do**)
+   (**easy to forget; hodos will serve the previous catalog until you do**)
 3. `~/.tau/models.yml` and `estate/config/tau/models.yml` — both written directly by
    `roost/scripts/build.ts`. Never hand-edit `config/tau/models.yml`; the next build
    overwrites it.
@@ -108,9 +108,9 @@ Rebuild order after touching `roost/src/data.ts`:
 
 ```bash
 cd ranch/mesh/catalog && bun run build            # regen + sync to tau
-cd ../../flock && bun scripts/sync-roost-providers.ts --write
+cd ../../hodos && bun scripts/sync-roost-providers.ts --write
 cd proxy             && cargo build --release
-cp target/release/flock /home/toxic/.flock/flock   # daemon runs this copy
+cp target/release/hodos /home/toxic/.hodos/hodos   # daemon runs this copy
 ```
 
 ## Secrets hygiene
@@ -122,6 +122,6 @@ cp target/release/flock /home/toxic/.flock/flock   # daemon runs this copy
 - `@google/genai` reads `GOOGLE_API_KEY` / `GEMINI_API_KEY` from the environment and
   **ignores an explicit `apiKey` constructor argument** when either is set. For probes use
   `env -u GOOGLE_API_KEY -u GEMINI_API_KEY`.
-- `FLOCK_API_KEY` shares a value with `NVIDIA_API_KEY` in `.secrets`. flock clients must
-  send `Authorization: Bearer $FLOCK_API_KEY`; the literal `local-estate` in
+- `HODOS_API_KEY` shares a value with `NVIDIA_API_KEY` in `.secrets`. hodos clients must
+  send `Authorization: Bearer $HODOS_API_KEY`; the literal `local-estate` in
   `pitchfork.toml` is rejected by the proxy.

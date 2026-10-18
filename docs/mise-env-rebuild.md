@@ -91,7 +91,7 @@ and exit 1 on findings.
 
 ## What this does NOT fix
 
-- flock still loads one key per provider at boot and 502s with no diagnosis.
+- hodos still loads one key per provider at boot and 502s with no diagnosis.
   That is `cuttinggate`'s credential plane, not a config problem.
 - The ~700 dangling `~/.local/state/mise/{tracked,trusted}-configs` symlinks
   from deleted worktrees are bookkeeping, not config.

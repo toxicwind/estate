@@ -82,7 +82,7 @@ const VOCABULARY = [
   "these", "they", "this", "time", "under", "used", "want", "well", "were",
   "will", "with", "would", "write",
   // Estate estate, agents & infrastructure
-  "estate", "estate", "ranch", "stockyard", "barn", "flock", "herd",
+  "estate", "estate", "ranch", "stockyard", "barn", "hodos", "herd",
   "yote", "openfang", "tau", "omp", "kimi", "pitchfork", "mise", "cell",
   "bridge", "hatch", "quill", "shrew", "trailboss", "effusion", "oracle",
   "market", "btrfs", "fclones", "flicker", "telemetry", "runtime", "harness",

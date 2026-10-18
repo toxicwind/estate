@@ -7,7 +7,7 @@
 # with 60s of margin — immune to agent-dispatch jitter and bridge 502s.
 #
 # Supervised by the 2m platform cron (supervise.sh restarts this if it dies
-# or wedges). Single instance via flock on $VARDIR/sweepd.lock.
+# or wedges). Single instance via hodos on $VARDIR/sweepd.lock.
 # Logs: /home/toxic/var/fleet-watchdog/sweepd.log
 #
 # No `sleep` binary (standing rule): pacing uses isleep (interruptible,
@@ -21,7 +21,7 @@ ISLEEP=/home/toxic/bin/isleep
 INTERVAL=60
 mkdir -p "$VARDIR"
 exec 9>"$LOCK"
-if ! flock -n 9; then
+if ! hodos -n 9; then
   echo "sweepd: another instance holds $LOCK, exiting" >&2
   exit 0
 fi

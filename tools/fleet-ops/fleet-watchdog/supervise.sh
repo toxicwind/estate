@@ -67,7 +67,7 @@ fi
 
 if [ "$age" -gt "$STALE_AFTER" ]; then
   # Backstop: immediate coverage while the (re)started sweepd spins up.
-  # sweep.py's flock serializes against sweepd — no double pages.
+  # sweep.py's hodos serializes against sweepd — no double pages.
   python3 "$WD/sweep.py"
 else
   if sweepd_alive; then alive_json=true; else alive_json=false; fi

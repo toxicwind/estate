@@ -1,7 +1,7 @@
 # ranch dashboard (`ui/`)
 
 The ranch control UI: one Svelte single-page app over **herd** (local models)
-and **flock** (cloud providers). Pure client — no backend, no database, no
+and **hodos** (cloud providers). Pure client — no backend, no database, no
 server of its own. It talks to a llama-swap-shaped HTTP API over a single
 configurable base URL.
 
@@ -41,9 +41,9 @@ than assuming a version.
 The ranch-specific delta is genuinely small and concentrated in two files:
 `src/lib/apiBase.ts` (detach the API base from the origin) and `vite.config.ts`
 (`base: "/ui/"`, `outDir: dist`). Everything else is upstream. In particular the
-roadmap the earlier README listed — a flock panel, a unified local+cloud model
+roadmap the earlier README listed — a hodos panel, a unified local+cloud model
 view — is **not implemented**; `/models` and `/playground` are llama-swap's and
-know nothing about flock. Treat those as open, not pending.
+know nothing about hodos. Treat those as open, not pending.
 
 ---
 
@@ -209,4 +209,4 @@ restored. It reads `HERD_URL`, `DOCS_AGENT_MODEL` and
 ## See also
 
 - [`../herd/`](../herd/) — where this UI came from
-- [`../flock/`](../flock/) — the cloud side it does not yet reach
+- [`../hodos/`](../hodos/) — the cloud side it does not yet reach

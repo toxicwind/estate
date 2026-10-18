@@ -195,16 +195,16 @@ diff --git a/docs/daemons.md b/docs/daemons.md
 index de185d95ad..aac448e31e 100644
 --- a/docs/daemons.md
 +++ b/docs/daemons.md
-@@ -51 +51 @@ herd → flock`.
--| `cuttinggate` | — | The guard plane in front of herd and flock: quarantine, circuit breaker, credential rotation, winner ledger. Not in `groups.*` because it fronts everything else. |
-+| `cuttinggate` | 25200 | The guard plane in front of herd and flock: quarantine, circuit breaker, credential rotation, winner ledger. Its project overlay (`ranch/mesh/proxy/cuttinggate/pitchfork.d/cuttinggate.toml`) supplies `CUTTINGGATE_PORT=25200` and the readiness URL, so the top-level daemon object has no `port =` field. Not in `groups.*` because it fronts everything else. |
+@@ -51 +51 @@ herd → hodos`.
+-| `cuttinggate` | — | The guard plane in front of herd and hodos: quarantine, circuit breaker, credential rotation, winner ledger. Not in `groups.*` because it fronts everything else. |
++| `cuttinggate` | 25200 | The guard plane in front of herd and hodos: quarantine, circuit breaker, credential rotation, winner ledger. Its project overlay (`ranch/mesh/proxy/cuttinggate/pitchfork.d/cuttinggate.toml`) supplies `CUTTINGGATE_PORT=25200` and the readiness URL, so the top-level daemon object has no `port =` field. Not in `groups.*` because it fronts everything else. |
 @@ -149 +149 @@ services the estate runs for itself, they are the bidding machinery.
 -| `flicker`, `flicker-agent` | 25148 | CI build server and its agent. Was filed as `BRAND_PORT`/`brand`; the daemon was renamed, not retired. |
 +| `mbx-cache` | 25148 | Mise-compatible remote task cache. A direct Rust binary built through mise from `vendored/mr-boxington-cache`; stores immutable task artifacts in `var/runtime/mbx-cache`. Replaces the flicker/woodpecker server and agent. |
 @@ -162,2 +162,3 @@ project owns the code: `gatehouse`, `cuttinggate`, `fleet-ui`, `fleet-feed`,
--`windmill`, `task-launch`, `yote`, `flock`, `mesh-landing`, `flicker`,
+-`windmill`, `task-launch`, `yote`, `hodos`, `mesh-landing`, `flicker`,
 -`flicker-agent`, `squawk-relay-*`, `keypool`.
-+`windmill`, `task-launch`, `yote`, `flock`, `mesh-landing`,
++`windmill`, `task-launch`, `yote`, `hodos`, `mesh-landing`,
 +`squawk-relay-*`, `keypool`. `mbx-cache` is estate-owned under `ops/`, not a
 +ranch project.
 diff --git a/docs/estate-map.json b/docs/estate-map.json
@@ -227,8 +227,8 @@ index 54109ae357..1b0ddf99e1 100644
 +      "committedAt": "2026-10-03T00:11:06-06:00",
 +      "dirtyPaths": 43
 @@ -25 +25 @@
--      "role": "the inference estate monorepo: herd, flock, gatehouse, squawk, oracle, flicker, roost",
-+      "role": "the inference estate monorepo: herd, flock, gatehouse, squawk, oracle, and the mesh provider catalog",
+-      "role": "the inference estate monorepo: herd, hodos, gatehouse, squawk, oracle, flicker, roost",
++      "role": "the inference estate monorepo: herd, hodos, gatehouse, squawk, oracle, and the mesh provider catalog",
 @@ -30,3 +30,3 @@
 -      "head": "6a4640f",
 -      "committedAt": "2026-10-02T06:33:45-06:00",
@@ -1125,7 +1125,7 @@ index 54109ae357..1b0ddf99e1 100644
 @@ -1393,4 +1298,4 @@
 -      "live": true,
 -      "addr": "127.0.0.1",
--      "process": "flock",
+-      "process": "hodos",
 -      "pid": 3789941
 +      "live": false,
 +      "addr": null,
@@ -1134,7 +1134,7 @@ index 54109ae357..1b0ddf99e1 100644
 @@ -1404,4 +1309,4 @@
 -      "live": true,
 -      "addr": "127.0.0.1",
--      "process": "flock",
+-      "process": "hodos",
 -      "pid": 3789941
 +      "live": false,
 +      "addr": null,
@@ -1561,9 +1561,9 @@ index 54109ae357..1b0ddf99e1 100644
 -        "exists": true
 -      },
 -      {
--        "name": "flock",
--        "source": "./estate/ranch/flock",
--        "resolved": "/home/toxic/estate/ranch/flock",
+-        "name": "hodos",
+-        "source": "./estate/ranch/hodos",
+-        "resolved": "/home/toxic/estate/ranch/hodos",
 -        "exists": true
 -      },
 -      {
@@ -1749,8 +1749,8 @@ index 069008e603..936abcc266 100644
 +| 🟢 **ranch** | `/home/toxic/ranch` | https://github.com/toxicwind/ranch | 3c1a4a5 | 2026-10-02T23:57:58 | 1716 | nested |
 +| 🟢 **tau-config** | `.tau` | — | — | — | 0 | none |
 @@ -22 +22 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
--- **ranch** (`/home/toxic/estate/ranch`) — the inference estate monorepo: herd, flock, gatehouse, squawk, oracle, flicker, roost
-+- **ranch** (`/home/toxic/estate/ranch`) — the inference estate monorepo: herd, flock, gatehouse, squawk, oracle, and the mesh provider catalog
+-- **ranch** (`/home/toxic/estate/ranch`) — the inference estate monorepo: herd, hodos, gatehouse, squawk, oracle, flicker, roost
++- **ranch** (`/home/toxic/estate/ranch`) — the inference estate monorepo: herd, hodos, gatehouse, squawk, oracle, and the mesh provider catalog
 @@ -24 +24 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
 -- **tau-config** (`/home/toxic/.tau`) — coding-agent engine config (config.yml, models.yml, model-router.json, mcp.json)
 +- **tau-config** (`.tau`) — coding-agent engine config (config.yml, models.yml, model-router.json, mcp.json)
@@ -1929,11 +1929,11 @@ index 069008e603..936abcc266 100644
 +| 25180 | ML_SERVE_PORT | ml-serve | ⚪️ | — |
 @@ -160,3 +149,3 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
 -| 25192 | CUTTINGGATE_PORT | — | ⚪️ | — |
--| 25193 | FLOCK_PORT | flock | 🟢 | flock |
--| 25193 | FLOCK_PORT | flock | 🟢 | flock |
+-| 25193 | HODOS_PORT | hodos | 🟢 | hodos |
+-| 25193 | HODOS_PORT | hodos | 🟢 | hodos |
 +| 25192 | PI_WEB_DASHBOARD_PORT | — | ⚪️ | — |
-+| 25193 | FLOCK_PORT | flock | ⚪️ | — |
-+| 25193 | FLOCK_PORT | flock | ⚪️ | — |
++| 25193 | HODOS_PORT | hodos | ⚪️ | — |
++| 25193 | HODOS_PORT | hodos | ⚪️ | — |
 @@ -167,2 +156,2 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
 -| 25196 | OPENFANG_KERNEL_PORT | openfang | 🟢 | openfang |
 -| 25196 | OPENFANG_KERNEL_PORT | openfang | 🟢 | openfang |
@@ -2010,7 +2010,7 @@ index 069008e603..936abcc266 100644
 +Config dir: `.tau`
 @@ -227,7 +212,0 @@ Config dir: `/home/toxic/.tau`
 -| herd | `./estate/ranch/herd` | `/home/toxic/estate/ranch/herd` | 🟢 |
--| flock | `./estate/ranch/flock` | `/home/toxic/estate/ranch/flock` | 🟢 |
+-| hodos | `./estate/ranch/hodos` | `/home/toxic/estate/ranch/hodos` | 🟢 |
 -| gatehouse | `./estate/ranch/barn/gatehouse` | `/home/toxic/estate/ranch/barn/gatehouse` | 🟢 |
 -| router | `./estate/tools/estate-router` | `/home/toxic/estate/tools/estate-router` | 🟢 |
 -| barn-browser | `./estate/ranch/barn/browserless` | `/home/toxic/estate/ranch/barn/browserless` | 🟢 |
@@ -2021,10 +2021,10 @@ index 069008e603..936abcc266 100644
 @@ -239,3 +217,3 @@ Config dir: `/home/toxic/.tau`
 -- **Model-router selectors use:** `herd`, `estate`
 -- **MCP servers:** `mesh-gateway` → http://127.0.0.1:25127/mcp · `estate-tools` → bun /home/toxic/estate/helpers/estate-mcp-server.ts · `browserless` → node /home/toxic/estate/ranch/barn/browserless/dist/index.js
--- **Credentials present:** flock client key: yes
+-- **Credentials present:** hodos client key: yes
 +- **Model-router selectors use:** none
 +- **MCP servers:** none
-+- **Credentials present:** flock client key: no
++- **Credentials present:** hodos client key: no
 @@ -245 +223 @@ Config dir: `/home/toxic/.tau`
 -22 finding(s) — **2 high.** These are silent defects: each one is
 +35 finding(s) — **2 high.** These are silent defects: each one is
@@ -2284,8 +2284,8 @@ index b4f1192635..27a51d52ea 100644
 --- a/pitchfork.toml
 +++ b/pitchfork.toml
 @@ -38 +38 @@ daemons = []
--daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "fleet-feed", "hf-downloader", "null-g-proxy", "feedlot", "hindsight", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "fleet-ui", "flicker", "flicker-agent", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash"]
-+daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "fleet-feed", "hf-downloader", "null-g-proxy", "feedlot", "hindsight", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "fleet-ui", "mbx-cache", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash"]
+-daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "fleet-feed", "hf-downloader", "null-g-proxy", "feedlot", "hindsight", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "hodos", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "fleet-ui", "flicker", "flicker-agent", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash"]
++daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "fleet-feed", "hf-downloader", "null-g-proxy", "feedlot", "hindsight", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "hodos", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "fleet-ui", "mbx-cache", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash"]
 @@ -664 +664 @@ auto = ["start"]
 -# ---- project: ranch/flicker (2 daemons) ----
 +# ---- project: estate/ops/mbx-cache (1 daemon) ----

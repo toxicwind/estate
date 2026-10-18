@@ -82,7 +82,7 @@ Fixed:
   (oracle-core), `AWR_MCP_PORT=25198` (MCP bridge).
 
 Left unregistered (non-estate / third-party, reported not fixed):
-`:25193` flock, `:25194` ralph-dashboard, `:25195` codebase-memory-mcp
+`:25193` hodos, `:25194` ralph-dashboard, `:25195` codebase-memory-mcp
 (transient), `:25197` boundless.
 
 Known stale public routes (tailscale serve, out of SSOT scope — flagged

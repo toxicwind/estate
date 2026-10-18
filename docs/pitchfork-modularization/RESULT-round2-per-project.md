@@ -37,7 +37,7 @@ beellama-fast 12h stale-definition incident, gatehouse self-heal notes,
 (reproduces the committed `=======`/`>>>>>>>` incident); A with different-daemon
 files → no conflict; same-daemon → conflict (honest limit).
 
-**Phase 3 (hot-reload granularity):** one port change → exactly `["flock"]`
+**Phase 3 (hot-reload granularity):** one port change → exactly `["hodos"]`
 re-registers under all three (supervisord two-phase: parse+validate all, diff
 per-daemon, restart only changed).
 

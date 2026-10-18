@@ -1,16 +1,16 @@
 schema_version: 2
 model: nvidia/nemotron-3.5-lightning-30b-a3b
-smol_model: flock/openai/gpt-oss-20b
+smol_model: hodos/openai/gpt-oss-20b
 slow_model: deepseek-ai/deepseek-v4-flash-0731
 plan_model: nvidia/nemotron-3.5-lightning-30b-a3b
-models: ["nvidia/nemotron-3.5-lightning-30b-a3b","deepseek-ai/deepseek-v4-flash-0731","z-ai/glm-5.3-flash","flock/openai/gpt-oss-20b"]
+models: ["nvidia/nemotron-3.5-lightning-30b-a3b","deepseek-ai/deepseek-v4-flash-0731","z-ai/glm-5.3-flash","hodos/openai/gpt-oss-20b"]
 provider:
   herd:
     base_url: http://127.0.0.1:25193/v1
     # local llama-swap key — remote keys live in config/.secrets, never here
     api_key: llama-swap-local-key
     timeout_ms: 15000
-  flock:
+  hodos:
     base_url: http://127.0.0.1:25193/v1
     api_key: estate-free
     timeout_ms: 30000

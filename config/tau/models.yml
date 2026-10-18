@@ -11,10 +11,10 @@ discovery:
   llama.cpp: true
 
 providers:
-  flock:
+  hodos:
     baseUrl: http://127.0.0.1:25193/v1
     api: openai-completions
-    apiKey: "!cat /home/toxic/.tau/flock.key"
+    apiKey: "!cat /home/toxic/.tau/hodos.key"
     discovery:
       type: openai-models-list
   moonshot:

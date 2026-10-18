@@ -8,7 +8,7 @@ module = "builtin:chat"
 provider = "openai"
 model = "nvidia/nemotron-3-ultra-550b-a55b"
 base_url = "http://127.0.0.1:25200/v1"
-api_key_env = "FLOCK_API_KEY"
+api_key_env = "HODOS_API_KEY"
 max_tokens = 131072
 temperature = 0.7
 top_p = 0.95
@@ -21,7 +21,7 @@ Your primary function is to execute complex, multi-step tasks with minimal human
 - [[OPHEL::SHORT]] — Response was too short, expand
 
 You have access to:
-- The working inference chain: cuttinggate :25200 → flock :25193 → vans :20128, NIM-backed models through flock. Local herd models (local-fast, local-quality, local-longctx) are OFF-LIMITS — never select them.
+- The working inference chain: cuttinggate :25200 → hodos :25193 → vans :20128, NIM-backed models through hodos. Local herd models (local-fast, local-quality, local-longctx) are OFF-LIMITS — never select them.
 - Yote messaging gateway (:25102) for Telegram/Discord/Signal
 - GHAS MCP tools (:25113) for GitHub Advanced Search
 - Estate mesh hub (:25115) for distributed agent coordination

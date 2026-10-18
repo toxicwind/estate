@@ -2,13 +2,13 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync, existsSync } from "node:fs";
 
 describe("OpenFang / Rig Gemini EAP Completions & Oracle Agent Pipeline", () => {
-  test("OpenFang canonical config (openfang-25196.toml) points default_model to cuttinggate (:25200) -> flock", () => {
+  test("OpenFang canonical config (openfang-25196.toml) points default_model to cuttinggate (:25200) -> hodos", () => {
     const configPath = "/home/toxic/estate/config/openfang-25196.toml";
     expect(existsSync(configPath)).toBe(true);
     const content = readFileSync(configPath, "utf8");
     expect(content).toContain('model = "google/gemini-3.8-flash"');
     expect(content).toContain('base_url = "http://127.0.0.1:25200/v1"');
-    expect(content).toContain('api_key_env = "FLOCK_API_KEY"');
+    expect(content).toContain('api_key_env = "HODOS_API_KEY"');
     expect(content).not.toContain("25100");
   });
 
@@ -26,7 +26,7 @@ describe("OpenFang / Rig Gemini EAP Completions & Oracle Agent Pipeline", () => 
     expect(ranchContent).toContain('"market_settle"');
   });
 
-  test("All estate agent manifests are cleansed of obsolete :25100 and point to cuttinggate (:25200) -> flock", () => {
+  test("All estate agent manifests are cleansed of obsolete :25100 and point to cuttinggate (:25200) -> hodos", () => {
     const manifests = [
       "/home/toxic/estate/agents/coyote/agent.toml",
       "/home/toxic/estate/agents/assistant/agent.toml",

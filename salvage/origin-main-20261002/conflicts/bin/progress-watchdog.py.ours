@@ -348,7 +348,7 @@ def snapshot(chan_dir, ledger_events):
     # --- bidders ---
     # pgrep is process ground truth: pitchfork status can desync (2026-09-29:
     # the no-op idempotent launcher exits 0 while a live bidder from an
-    # older generation still holds the flock, leaving pitchfork at
+    # older generation still holds the hodos, leaving pitchfork at
     # "stopped" with a healthy bidder running). Report both; the hatch
     # watchdog restarts only when neither is alive.
     bidders = []

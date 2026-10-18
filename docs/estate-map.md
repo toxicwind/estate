@@ -19,7 +19,7 @@ Generated 2026-10-03T07:22:51.621Z on `awrawr-pc`. Estate root `/home/toxic/esta
 | 🟢 **tau-config** | `.tau` | — | — | — | 0 | none |
 
 - **estate** (`/home/toxic/estate`) — control plane: pitchfork.toml, config/, bin/, bridge/, agents/, docs/, projects/
-- **ranch** (`/home/toxic/estate/ranch`) — the inference estate monorepo: herd, flock, gatehouse, squawk, oracle, and the mesh provider catalog
+- **ranch** (`/home/toxic/estate/ranch`) — the inference estate monorepo: herd, hodos, gatehouse, squawk, oracle, and the mesh provider catalog
 - **ranch** (`/home/toxic/ranch`) — SECOND checkout of toxicwind/ranch — duplicate, not the daemon target
 - **tau-config** (`.tau`) — coding-agent engine config (config.yml, models.yml, model-router.json, mcp.json)
 
@@ -147,8 +147,8 @@ Generated 2026-10-03T07:22:51.621Z on `awrawr-pc`. Estate root `/home/toxic/esta
 | 25190 | REASONING_ROUTER_PORT | — | ⚪️ | — |
 | 25191 | NIM_VALIDATION_PORT | — | ⚪️ | — |
 | 25192 | PI_WEB_DASHBOARD_PORT | — | ⚪️ | — |
-| 25193 | FLOCK_PORT | flock | ⚪️ | — |
-| 25193 | FLOCK_PORT | flock | ⚪️ | — |
+| 25193 | HODOS_PORT | hodos | ⚪️ | — |
+| 25193 | HODOS_PORT | hodos | ⚪️ | — |
 | 25194 | RALPH_DASH_PORT | ralph-dashboard | 🟢 | uvicorn |
 | 25194 | RALPH_DASH_PORT | ralph-dashboard | 🟢 | uvicorn |
 | 25195 | CODEBASE_MEMORY_PORT | codebase-memory | 🟢 | codebase-memory |
@@ -215,7 +215,7 @@ Config dir: `.tau`
 
 - **Model-router selectors use:** none
 - **MCP servers:** none
-- **Credentials present:** flock client key: no
+- **Credentials present:** hodos client key: no
 
 ## Drift
 

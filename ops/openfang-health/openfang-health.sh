@@ -273,9 +273,9 @@ if [ "$DO_SQUAWK" -eq 1 ]; then
   [ "$OVERALL" != "$PREV" ] && SHOULD_POST=1
   [ $(( NOW_TS - LAST )) -gt "$DIGEST_INTERVAL" ] && SHOULD_POST=1
   if [ "$SHOULD_POST" -eq 1 ] && [ -d "$SQUAWK_ROOT/fleet" ]; then
-    # flock: seq allocation + write must be atomic vs concurrent writers (opp #9)
+    # hodos: seq allocation + write must be atomic vs concurrent writers (opp #9)
     (
-      flock -x 200
+      hodos -x 200
       NEXT_SEQ="$(python3 -c "
 import re, glob
 ms=[re.match(r'(\d+)-', f.split('/')[-1]) for f in glob.glob('$SQUAWK_ROOT/fleet/*.md')]

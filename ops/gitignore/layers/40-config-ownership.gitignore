@@ -40,8 +40,8 @@ credentials.json
 *.pem
 .bak.
 
-# non-secret flock route; secrets remain in ignored flock.env
-!config/flock-ssot/route.env
+# non-secret hodos route; secrets remain in ignored hodos.env
+!config/hodos-ssot/route.env
 
 # config/environment.d/ — purged stale configs (2026-10-12); directory is
 # managed outside git, ignore it to prevent accidental tracking.

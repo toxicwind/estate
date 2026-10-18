@@ -32,7 +32,7 @@ executed consolidation into `ranch/mesh/`.
 - **Home:** `ranch/mesh/router/herd/` (moved via `git mv`, 1097 files, history preserved).
   `go build ./cmd/herd-plane` OK; `go test -short ./internal/...` — 26 packages OK.
 
-### 1.2 flock proxy (Rust) — preserved, NOT live
+### 1.2 hodos proxy (Rust) — preserved, NOT live
 
 - **Language:** Rust (axum/tokio), edition 2021, v0.6.6 (nim-proxy fork).
 - **What it does (AST evidence):** rate-limit-aware OpenAI-compatible cloud-provider proxy
@@ -43,9 +43,9 @@ executed consolidation into `ranch/mesh/`.
   references it. `cargo check` passes; 8 pre-existing `cargo check --tests` errors (test code
   drifted from the lib API before the move — test-rot, for the proxy lane).
 - **Port verdict:** `ranch/cuttinggate/CONTRACT.md` declares cuttinggate the TypeScript port of
-  this proxy ("flock TS router — port contract"). Operationally the TS port has won:
+  this proxy ("hodos TS router — port contract"). Operationally the TS port has won:
   cuttinggate is live on `:25200`, the Rust proxy runs nowhere. The Rust tree is preserved
-  in `ranch/mesh/proxy/flock-proxy/` — per User, not junk, not scrapped.
+  in `ranch/mesh/proxy/hodos-proxy/` — per User, not junk, not scrapped.
 
 ### 1.3 cuttinggate — TypeScript canonical router — `:25200` LIVE
 
@@ -58,7 +58,7 @@ executed consolidation into `ranch/mesh/`.
   (Sovereign-router-ts)".
 - **Live state:** HEALTHY on `:25200`, pitchfork-supervised, restarted from the new path
   after the move (PID 80415, `/health` → `{"ok":true}`, `/v1/models` serving live data).
-  With flock `:25193` down, cuttinggate has effectively absorbed the cloud-router role
+  With hodos `:25193` down, cuttinggate has effectively absorbed the cloud-router role
   (`config/upstreams.yaml` moved cloud routes out of `herd.yaml` into cuttinggate).
 - **Tests:** `bun test` 46/46 pass. `bun run build` (`tsc --noEmit`) fails with **74
   pre-existing type errors** (missing `src/shared.ts` that CONTRACT.md declares, `src/auth/`
@@ -74,7 +74,7 @@ executed consolidation into `ranch/mesh/`.
   priors, `/mesh*` federation via `handleMeshRequest`. `Bun.serve({ port: PORT, hostname:
   "127.0.0.1" })` at `router.ts:182-184`; port from `SOVEREIGN_ROUTER_PORT || SOVEREIGN_PORT`
   (required — `router_config.ts:51-59` throws if unset). Docs say `:25104`;
-  `estate/config/ports.env:80` says `:25104` retired ("merged into flock (:25193)") — the
+  `estate/config/ports.env:80` says `:25104` retired ("merged into hodos (:25193)") — the
   ports.env claim matches reality, and the router docs now carry a retired banner.
 - **Live state:** DOWN. Nothing on `:25104`; its pitchfork manifest is `retired-20261002`.
 - **Tests:** `bun run check` bundles 19 modules; `bun test` 114/114 pass (3 relative imports
@@ -103,20 +103,20 @@ executed consolidation into `ranch/mesh/`.
   `/models` discovery adapters, alias map, curated seeds, auto-quarantine. `src/index.ts`
   exports `ModelCatalog`, `ADAPTERS`/`adapterFor`, `discover`, and codegen
   (`buildProvidersGo/Json/Rust/TauYaml`, `emitAll`).
-- **Readers (AST evidence):** `flock/ts/src/providers/catalog.ts:20` imports
-  `{ PROVIDER_DEFs } from "@ranch/roost"`; `flock/ts/astmatrix/src/providers.ts:16-21`
+- **Readers (AST evidence):** `hodos/ts/src/providers/catalog.ts:20` imports
+  `{ PROVIDER_DEFs } from "@ranch/roost"`; `hodos/ts/astmatrix/src/providers.ts:16-21`
   imports `DEAD_MODEL_IDS, MODEL_ALIASES, PROVIDER_DEFS`; Go/Rust consumers use the
   generated artifacts (`generated/providers.go/.json/.rs`, `tau-models.yml`).
 - **Live state:** no server — it's a library + generated artifacts. No pitchfork stanza,
   no port.
 - **Tests:** `bun run build` exit 0; `bun test` 70/70 pass.
-- **Home:** `ranch/mesh/catalog/` (moved via `git mv` from `flock/roost`, 25 files R100).
+- **Home:** `ranch/mesh/catalog/` (moved via `git mv` from `hodos/roost`, 25 files R100).
 
 ### 1.7 tack — VERIFIED merged into roost
 
 The "Tack/Roost consolidation — complete" claim (ranch commit `84eb701`) checks out: no
 separate tack tree exists anywhere (`ffs` + `git ls-files`); `git log --follow` on the
-catalog traces back through `5d75050 flock: rename Tack to Roost`. Tack survives as
+catalog traces back through `5d75050 hodos: rename Tack to Roost`. Tack survives as
 roost's provider-seed lineage inside `mesh/catalog/`.
 
 ### 1.8 Preserved router variants (were nested under `herd/mesh/`, now first-class)
@@ -127,11 +127,11 @@ several router attempts. All preserved — nothing of value left behind:
 | Variant | What it is | Home |
 |---|---|---|
 | `Sovereign-mcp-gateway` | Whole MCP trust-boundary service (`:25120`); 23/23 bun tests pass | `mesh/router/Sovereign-mcp-gateway/` |
-| `Sovereign-ast-router` | TS/Bun port of the AST router (9Router/ULTIMATE_JULY_2026 lineage) | `mesh/router/flock-router/` |
-| `flock-py` extras | v2 Python reference router (`router.py`, `router_config.py`, `router_strategy.py`, …) | `mesh/router/flock-py/` |
+| `Sovereign-ast-router` | TS/Bun port of the AST router (9Router/ULTIMATE_JULY_2026 lineage) | `mesh/router/hodos-router/` |
+| `hodos-py` extras | v2 Python reference router (`router.py`, `router_config.py`, `router_strategy.py`, …) | `mesh/router/hodos-py/` |
 | `free_zed_gateway` extras | free-provider gateway (3-source lineage) | `mesh/router/free_zed_gateway/` |
-| estate CloudRouter (`package flock`) | circuit breakers, Elo selection, health DB, token-bucket rate limit (Go) | `mesh/gateway/` |
-| `flock-pkg` v1 | v1 synthesis + `i.py` command auto-fixer | `mesh/research/Sovereign-ast-router-v1/` |
+| estate CloudRouter (`package hodos`) | circuit breakers, Elo selection, health DB, token-bucket rate limit (Go) | `mesh/gateway/` |
+| `hodos-pkg` v1 | v1 synthesis + `i.py` command auto-fixer | `mesh/research/Sovereign-ast-router-v1/` |
 
 505 redundant snapshot files were dropped only after per-file verification (byte-identical
 twins elsewhere in the ranch, or older upstream revisions). Husk deletion was justified by
@@ -144,14 +144,14 @@ ast-grep over Go files → 0 matches.
 
 | Pair | Relationship | Verdict |
 |---|---|---|
-| cuttinggate ↔ flock-proxy (Rust) | TS port per CONTRACT.md | Port won operationally (live :25200); Rust preserved, not live |
+| cuttinggate ↔ hodos-proxy (Rust) | TS port per CONTRACT.md | Port won operationally (live :25200); Rust preserved, not live |
 | cuttinggate ↔ Sovereign-router | Successor | cuttinggate replaced `:25104` ("Replacing :25104"); old router retired, preserved |
 | cuttinggate ↔ herd | Edge router ↔ inference backplane | Complementary layers, not duplicates |
-| cuttinggate ↔ flock `:25193` | Cloud-router role | flock down; cuttinggate absorbed the role |
+| cuttinggate ↔ hodos `:25193` | Cloud-router role | hodos down; cuttinggate absorbed the role |
 | keypool ↔ cuttinggate in-process keypool | Standalone service vs folded module | Distinct generations; standalone preserved |
 | keypool ↔ `herd-keypool.py` | Bun port of Python predecessor | Distinct generations; both kept |
 | catalog ↔ everything | Data layer (SSOT library) | No overlap — consumed by routers, duplicates nothing |
-| Variants (flock-py, flock-router, free_zed_gateway, Sovereign-mcp-gateway, ast-router) | Distinct attempts | Each unique; preserved in own homes |
+| Variants (hodos-py, hodos-router, free_zed_gateway, Sovereign-mcp-gateway, ast-router) | Distinct attempts | Each unique; preserved in own homes |
 
 **No true duplication requiring a merge was found** — every component does a distinct job or
 is a distinct generation. Per User ("this is NOT a scrap operation"), everything was kept
@@ -168,11 +168,11 @@ ranch/mesh/
     herd/              # Go inference backplane :25100 (DOWN — needs pitchfork restart)
     Sovereign-router/  # TS router :25104 (retired, preserved)
     Sovereign-mcp-gateway/ # MCP trust boundary :25120
-    flock-py/          # v2 Python reference router
-    flock-router/      # TS/Bun AST router
+    hodos-py/          # v2 Python reference router
+    hodos-router/      # TS/Bun AST router
     free_zed_gateway/  # free-provider gateway variant
   proxy/
-    flock-proxy/       # Rust cloud proxy (preserved, not live)
+    hodos-proxy/       # Rust cloud proxy (preserved, not live)
     cuttinggate/       # TS canonical router :25200 (LIVE)
   catalog/             # roost provider SSOT (TS library, no port)
   keypool/             # key sidecar :25109 (down)
@@ -190,13 +190,13 @@ its own in-process pool).
 ## 4. Migration record (all pushed, remote-verified)
 
 **ranch** (`toxicwind/ranch`, origin/main `7b4d536`):
-- `57ac1b8` mesh: move flock/proxy → mesh/proxy/flock-proxy
-- `9a9a55d` mesh: move flock/roost → mesh/catalog
+- `57ac1b8` mesh: move hodos/proxy → mesh/proxy/hodos-proxy
+- `9a9a55d` mesh: move hodos/roost → mesh/catalog
 - `f6410f9` mesh: import Sovereign-router from estate/tools (+ cuttinggate renames)
 - `5a46db0` mesh: import keypool from estate/services
 - `2738644` mesh: move herd → mesh/router/herd
 - `283f32f` / `b9de0c5` / `aff7d72` / `6c9e7dd` variant preservation + snapshot removal
-- `14b6fef` / `38c2892` / `401acad` ref fixes (catalog consumers, flock scripts, READMEs)
+- `14b6fef` / `38c2892` / `401acad` ref fixes (catalog consumers, hodos scripts, READMEs)
 - `7b4d536` mesh README one-pager
 
 **estate** (`toxicwind/estate`, origin/main `55cb68c764`):
@@ -214,8 +214,8 @@ KEPT + documented: `/home/toxic/ranch`, `/home/toxic/projects`, `/home/toxic/wor
 dots. `/home/toxic/Sovereign → estate` deliberately KEPT — 188 live refs in the skills-hub
 submodule resolve through it; removing it breaks them (separate job).
 
-**Notable catches during ref-fix:** flock-proxy `include_str!` pointed at the old catalog
-path (was a compile break — fixed); `flock/ts/astmatrix` `@ranch/roost` dep repointed;
+**Notable catches during ref-fix:** hodos-proxy `include_str!` pointed at the old catalog
+path (was a compile break — fixed); `hodos/ts/astmatrix` `@ranch/roost` dep repointed;
 astmatrix serve-404 default moved off retired `:25104` → `:25200`.
 
 ---
@@ -226,7 +226,7 @@ astmatrix serve-404 default moved off retired `:25104` → `:25200`.
    intact at `mesh/router/herd/herd`). Ops follow-up.
 2. **cuttinggate 74 pre-existing tsc errors** — port-lane backlog (missing `src/shared.ts`
    that CONTRACT.md declares).
-3. **flock-proxy test-rot** — 8 pre-existing `cargo check --tests` errors.
+3. **hodos-proxy test-rot** — 8 pre-existing `cargo check --tests` errors.
 4. **`docs/estate-map.*` regen** — Sable's lane (generated file, stale router rows).
 5. **`Sovereign/pitchfork.toml` `[daemons.mcp-gateway]`** — points at a path that never
    existed; code now lives at `ranch/mesh/router/Sovereign-mcp-gateway/`. Repoint or retire

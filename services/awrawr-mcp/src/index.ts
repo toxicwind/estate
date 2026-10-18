@@ -83,7 +83,7 @@ const AUDIT_MAX_BYTES = 5 * 1024 * 1024;
 const FUNNEL_HOST = (process.env["MCP_FUNNEL_HOST"] ?? "github-mcp-host.tailc9ac71.ts.net").trim();
 
 // ---------------------------------------------------------------------------
-// Singleton: flock + prebind + PID file
+// Singleton: hodos + prebind + PID file
 // A duplicate process must NEVER steal the port or clobber the PID file.
 // ---------------------------------------------------------------------------
 
@@ -95,9 +95,9 @@ try {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { dlopen, FFIType } = require("bun:ffi") as typeof import("bun:ffi");
   const libc = dlopen("libc.so.6", {
-    flock: { args: [FFIType.i32, FFIType.i32], returns: FFIType.i32 },
+    hodos: { args: [FFIType.i32, FFIType.i32], returns: FFIType.i32 },
   });
-  ffiFlock = (fd, op) => (libc.symbols.flock as (fd: number, op: number) => number)(fd, op);
+  ffiFlock = (fd, op) => (libc.symbols.hodos as (fd: number, op: number) => number)(fd, op);
 } catch {
   ffiFlock = null; // best-effort; the prebind check below is the hard guard
 }

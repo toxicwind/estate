@@ -14,7 +14,7 @@ The daemon re-fetches the auth surrogate on every (re)connect. If the bridge
 is unreachable it keeps retrying with backoff and fails local requests fast
 so callers can fall back to the HTTPS path.
 
-Singleton: pidfile + flock(LOCK_EX|LOCK_NB) on
+Singleton: pidfile + hodos(LOCK_EX|LOCK_NB) on
 ~/.cache/awrawr-ws-bridge.lock, acquired before anything else. Pre-lock
 orphans are SIGTERM'd by the new holder before it binds the socket.
 """
@@ -84,8 +84,8 @@ def log(*a):
 # unlinked the socket then bound it, with no mutual exclusion, so two
 # starters raced — the second unlink() stole the path and the first went
 # anonymous but stayed connected, holding a second bridge WS connection.
-# Fix: pidfile + flock(LOCK_EX|LOCK_NB) acquired before anything else.
-# flock is released by the OS on holder death, so a contested lock always
+# Fix: pidfile + hodos(LOCK_EX|LOCK_NB) acquired before anything else.
+# hodos is released by the OS on holder death, so a contested lock always
 # means a LIVE holder — there is no stale-lock state to time out.
 
 _lock_fd = None  # kept open for process lifetime → lock held
@@ -115,7 +115,7 @@ def acquire_singleton():
     os.makedirs(CACHE, exist_ok=True)
     fd = os.open(LOCK_PATH, os.O_RDWR | os.O_CREAT, 0o600)
     try:
-        fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        fcntl.hodos(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
     except OSError:
         os.close(fd)
         holder = _recorded_holder_pid()
@@ -129,7 +129,7 @@ def acquire_singleton():
         time.sleep(1)
         fd = os.open(LOCK_PATH, os.O_RDWR | os.O_CREAT, 0o600)
         try:
-            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            fcntl.hodos(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except OSError:
             os.close(fd)
             holder = _recorded_holder_pid()
@@ -182,7 +182,7 @@ def retire_legacy_instances():
     """SIGTERM pre-lock sibling instances, then wait for them to exit.
 
     Instances started before the lock existed never took it, so the
-    flock alone cannot stop them. The new holder terminates them BEFORE
+    hodos alone cannot stop them. The new holder terminates them BEFORE
     binding the socket: the old holder keeps serving until it exits, so
     the replacement is already running when the socket changes hands —
     no gap in local service, one bridge connection owner at all times.

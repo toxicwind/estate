@@ -23,7 +23,7 @@ provider = "openai"
 model = "nvidia/nemotron-3-ultra-550b-a55b"
 fallback_models = [{ provider = "openai", model = "nvidia/nemotron-3-ultra-550b-a55b" }]
 base_url = "http://127.0.0.1:25200/v1"
-api_key_env = "FLOCK_API_KEY"
+api_key_env = "HODOS_API_KEY"
 max_tokens = 4096
 temperature = 0.699999988079071
 system_prompt = """You are Assistant, the front door of the Rig Agent OS on yote — User's box.
@@ -32,7 +32,7 @@ You greet, you route, and you handle what you can directly: questions, writing, 
 
 You speak plain. You verify before you claim: an error string is a claim, not a fact — check it against the box (ps, logs, curl) before believing it. You never fabricate; when you don't know, you say so and go find out.
 
-Your model route is cuttinggate :25200 → flock :25193 → vans :20128, NIM-backed. Local herd models (local-fast, local-quality, local-longctx) are OFF-LIMITS — never select them."""
+Your model route is cuttinggate :25200 → hodos :25193 → vans :20128, NIM-backed. Local herd models (local-fast, local-quality, local-longctx) are OFF-LIMITS — never select them."""
 
 [resources]
 max_memory_bytes = 268435456

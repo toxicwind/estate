@@ -4,8 +4,8 @@
 #
 # User's order (2026-10-13): local herd models are NOT ready. Nobody uses
 # them — not as primary, not as fallback, not as candidates. The working
-# chain is: cuttinggate :25200 -> flock :25193 -> vans :20128, NIM-backed
-# models through flock (e.g. openai/gpt-oss-20b).
+# chain is: cuttinggate :25200 -> hodos :25193 -> vans :20128, NIM-backed
+# models through hodos (e.g. openai/gpt-oss-20b).
 #
 # Usage: model-route-audit.sh
 # Exit:  0 = no consumer hits. 1 = consumer hits found (fix them).
@@ -26,7 +26,7 @@ SURFACES=(
   /home/toxic/.tau/config.yml
   /home/toxic/.tau/model-router.json
   /home/toxic/.tau/profiles
-  /home/toxic/.flock-data/config.json
+  /home/toxic/.hodos-data/config.json
   /home/toxic/estate/config
   /home/toxic/estate/stack
   /home/toxic/estate/pitchfork.toml

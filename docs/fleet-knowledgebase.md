@@ -63,7 +63,7 @@ A swarm of boxes. Run heavy work on yote / dedicated iron; keep hatch light.
 |---|---|
 | 25104 | Estate router (`estate/free`) |
 | 25148 | flicker (ranch build daemon — replaced brand/buildsrv 2026-09-30; see §7) |
-| 25193 | Flock router |
+| 25193 | Hodos router |
 | 25126 | kimi-auto-shim |
 | 25152 | toolcall-llm |
 | 25122 | beellama-fast |
@@ -150,9 +150,9 @@ A swarm of boxes. Run heavy work on yote / dedicated iron; keep hatch light.
 | cinder | Lane-sweep / deconfliction (side chat cinder-lane-sweep): estate sweeps, dupe flags, stall watch; owned the NVIDIA docs-mirror lane (worker 91dcc7e0) to verified completion. Posts as Cinder -- ash-fox fursona, quick and dry, the pack lookout. | Cinder (Ember's crew) | DONE (2026-09-21) -- NVIDIA API docs mirror complete: 6 sections, ~4500 HTML pages, ~2.6GB under nvidia-api/ in private repo toxicwind/hatch-docs; origin/main 11e730158453bf0c2091ce05a19587af8ea502fc (5 commits, fetch-first, no force-push; remote ref + tree verified by Cinder 2026-09-21: 7635 entries, 6 index-READMEs; counts api-reference 1480pp, nim 2764pp, nvcf 277html+273md, ngc 27pp, ngc-cli 14pp, nvcf-github 423md); 62 NIM JSON assets recovered after cleanup misfire, JSON-validity-checked; 11 ReadMe login-wall pages excluded (login required) |
 | lumen | Squawk feed UI readability: keeper-driven visual audit (CDP :9223) of /squawk-feed/ui at desktop 1440x900 + mobile 390x844; root-caused empty bodies (pre-HMAC msgs fail verify_on_read -> body withheld); fix = serve bodies flagged unverified + card-layout redesign | Lumen (Ember's crew) | DONE (2026-09-21) -- relay fix e5fdce9c95 (serve pre-HMAC plaintext flagged invalid, fail-closed on ciphertext; 12/12 feed tests OK), UI redesign cb6bd69f82 (cards, unverified badges, scroll-to-bottom, mobile, favicon); keeper-verified 1440x900 + 390x844, 0 console/page errors; deployed live :25135  markdown render + full bodies 0b33559ad2 (truncate dropped, escape-first md renderer, keeper-verified live) |
 | rivet | fix stale kimi-code-setup writer drift trap | rivet (Ember's crew) | DONE (2026-09-21) — fixed writer verified on origin/main 6bbdf1019f (default_model=estate/free, [providers.estate] :25104, herd fallbacks); on-disk /home/toxic/estate/bin/kimi-code-setup synced to main blob (md5 1fe03699e416e4cd65fd443f5d436a66, staged, dirty WIP untouched); writer test vs live config: identical except runtime Moonshot key; kimi doctor OK on generated config; live ~/.kimi-code/config.toml never touched (md5 13962db0b6375316fdc2e09d65bc71ef); probe hit transient upstream 429s (free-pool rate limit, same class kimi-merge saw) |
-| flock-consolidation | router consolidation wave: hodos flock maximal merge — nim-proxy core absorbed (FEATURE_PARITY), Anthropic /v1/messages surface (Claude Code), headless env seeding, verified-model catalog, docker nim-proxy retired, herd + cuttinggate repaired | kappa-session (flock lane) | DONE (2026-10-17) -- hodos proxy v0.6.6 (441 tests green, clippy clean); flock live :25193 (OpenAI + Anthropic, 28 verified models); docker nim-proxy container stopped; kappa custom provider wired and e2e-verified (KAPPA-FLOCK-OK) |
+| hodos-consolidation | router consolidation wave: hodos hodos maximal merge — nim-proxy core absorbed (FEATURE_PARITY), Anthropic /v1/messages surface (Claude Code), headless env seeding, verified-model catalog, docker nim-proxy retired, herd + cuttinggate repaired | kappa-session (hodos lane) | DONE (2026-10-17) -- hodos proxy v0.6.6 (441 tests green, clippy clean); hodos live :25193 (OpenAI + Anthropic, 28 verified models); docker nim-proxy container stopped; kappa custom provider wired and e2e-verified (KAPPA-HODOS-OK) |
 | bramble | readme maximalization batch b8 (narrowed to 6): toxic-vault-mind f2d08c0, wii-meta-client b1d6471, wii-stream-pack a756004, wllama-forge 63a9837, youtube-403-bypass dda9669 -- all pushed + remote-verified, no open PRs; universal-search-fuzzer BLOCKED (repo archived, push 403, README commit a05cddaa kept locally); cut per dedup: tau-extensions, vaultfs, web3-sec-workspace (untouched, verified no push) | 72ff4aa9-c62a-4881-8f70-c6fa220e7383 | DONE (2026-09-29) |
-| kestrel | Mistral key proof + GuideLLM audit of Mistral chat models via corral (direct Mistral API, not herd/flock); pattern-borrow useful Mistral integrations | kestrel (Ember crew) | RUNNING (2026-09-29) |
+| kestrel | Mistral key proof + GuideLLM audit of Mistral chat models via corral (direct Mistral API, not herd/hodos); pattern-borrow useful Mistral integrations | kestrel (Ember crew) | RUNNING (2026-09-29) |
 <!-- KB-ROLLUP:END -->
 
 
@@ -169,7 +169,7 @@ A swarm of boxes. Run heavy work on yote / dedicated iron; keep hatch light.
 | rigger | yote-conn mainline fix + Bun forward fork (ripline) with fallover | rigger | RUNNING (2026-09-30) |
 
 
-| barnaby | flock ts/policy: port estate-router policy engine (Elo, bench-priors, quarantine circuits, warm standby, health analytics) to TypeScript | Ember (main) | RUNNING (2026-09-30) |
+| barnaby | hodos ts/policy: port estate-router policy engine (Elo, bench-priors, quarantine circuits, warm standby, health analytics) to TypeScript | Ember (main) | RUNNING (2026-09-30) |
 
 
 | juniper | effusion-labs maximalization: CSS/JS killshot fix, framework, LFS, pages, reorg | Ember | DONE 2026-09-30 (deployed 21006142) |

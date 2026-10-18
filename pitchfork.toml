@@ -21,7 +21,7 @@ daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "sea
 
 
 [groups.core]
-daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server"]
+daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "hodos", "matter-server"]
 
 
 [groups.agents]
@@ -30,7 +30,7 @@ daemons = []
 
 
 [groups.all]
-daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "feedlot", "hindsight", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "squawk-feed", "squawk-ws", "squawk-ui", "forge", "forge-agent", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash"]
+daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "feedlot", "hindsight", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "hodos", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "squawk-feed", "squawk-ws", "squawk-ui", "forge", "forge-agent", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash"]
 
 # ---- project: estate (84 daemons) ----
 [daemons.agent-display]
@@ -419,7 +419,7 @@ health_http = { url = "http://127.0.0.1:34567/health", interval = "30s", timeout
 auto = ["start"]
 
 # ranch-ui — the consolidated ranch dashboard (ranch/range/ui). Serves the
-# built SPA from dist and proxies /api/herd + /api/flock same-origin, so the
+# built SPA from dist and proxies /api/herd + /api/hodos same-origin, so the
 # dashboard's apiBase shim resolves to this host. Built 2026-10-14 by merging
 # the 368bdf6 master back into range/ui (see range/ui/CONSOLIDATION.md).
 # Tailnet-only: tailscale serve fronts it; nothing binds 0.0.0.0.
@@ -454,15 +454,15 @@ auto = ["start"]
 # ranch/squawk — project-owned daemon manifest. Source of truth for 'nats-tail'.
 # Owned by the ranch/squawk project; the parent only composes it.
 
-# owner: hodos flock (ranch/hodos/proxy) — the merged maximal router.
+# owner: hodos hodos (ranch/hodos/proxy) — the merged maximal router.
 # 2026-10-17: the hodos tree (github toxicwind/hodos) absorbed the nim-proxy
 # core (FEATURE_PARITY zero-loss merge) and now serves every lane natively:
 # OpenAI /v1/chat/completions across the provider registry AND the Anthropic
-# /v1/messages surface for Claude Code. Replaces BOTH the pre-merge ranch/flock
+# /v1/messages surface for Claude Code. Replaces BOTH the pre-merge ranch/hodos
 # daemon (served zero models) and the dockerized miztertea/nim-proxy container
 # (stopped 2026-10-17; Lane A doctrine: estate services run under pitchfork,
-# never docker). Data: ~/.flock/nim-data (config.json + history.jsonl).
-[daemons.flock]
+# never docker). Data: ~/.hodos/nim-data (config.json + history.jsonl).
+[daemons.hodos]
 health_http = { url = "http://127.0.0.1:25193/health", interval = "30s", timeout = "5s", retries = 3 }
 port = 25193
 run = "exec /home/toxic/estate/ranch/hodos/proxy/serve.sh"
@@ -470,7 +470,7 @@ dir = "/home/toxic/estate/ranch/hodos/proxy"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25193/health"
-env = { PORT = "25193", DATA_DIR = "/home/toxic/.flock/nim-data", HOST = "127.0.0.1" }
+env = { PORT = "25193", DATA_DIR = "/home/toxic/.hodos/nim-data", HOST = "127.0.0.1" }
 auto = ["start"]
 
 [daemons.forge-agent]
@@ -1040,14 +1040,14 @@ run = "exec /home/toxic/.bun/bin/bun run /home/toxic/estate/stack/services/ranch
 dir = "/home/toxic/estate"
 mise = false
 retry = true
-env = { RANCH_UI_PORT = "25218", RANCH_UI_DIST = "/home/toxic/estate/ranch/range/ui/dist", HERD_ORIGIN = "http://127.0.0.1:25100", FLOCK_ORIGIN = "http://127.0.0.1:25193" }
+env = { RANCH_UI_PORT = "25218", RANCH_UI_DIST = "/home/toxic/estate/ranch/range/ui/dist", HERD_ORIGIN = "http://127.0.0.1:25100", HODOS_ORIGIN = "http://127.0.0.1:25193" }
 ready_http = "http://127.0.0.1:25218/health"
 health_http = { url = "http://127.0.0.1:25218/health", interval = "30s", timeout = "5s", retries = 3 }
 auto = ["start"]
 
-# estate/ranch/flock -- project-owned daemon manifest. Source of truth for the flock daemon.
-# Owned by the flock project; the parent only composes it.
-# Route values are non-secret. Client key is synced by bin/flock-run.sh from estate SSOT.
+# estate/ranch/hodos -- project-owned daemon manifest. Source of truth for the hodos daemon.
+# Owned by the hodos project; the parent only composes it.
+# Route values are non-secret. Client key is synced by bin/hodos-run.sh from estate SSOT.
 
 [daemons.redis]
 run = "exec valkey-server --port 25203 --bind 127.0.0.1 --protected-mode no --save '' --appendonly no" # 25203 == $REDIS_PORT (SSOT); literal: ${} not expanded in run lines. Moved 2026-10-14 off :25199 (squatted by hatch/shim_mcp.py).

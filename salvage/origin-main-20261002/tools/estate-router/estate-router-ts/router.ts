@@ -3,7 +3,7 @@
  * Estate Router v3.2 (Bun/TypeScript)
  * Port of estate-router/router.py — same strategies, HealthDB WAL, circuit breakers.
  *
- * Strategies: fifo_matrix (alias fifo_flock) | ast_race (alias flock_race) | sticky_affinity | weighted_elo | circuit_chain | hybrid
+ * Strategies: fifo_matrix (alias fifo_flock) | ast_race (alias hodos_race) | sticky_affinity | weighted_elo | circuit_chain | hybrid
  * Default hybrid: sticky → ast_race → circuit_chain; explicit CODING aliases go direct.
  *
  * Env SSOT: estate/config/ports.env (mise _.file) + ~/.secrets
@@ -46,7 +46,7 @@ function clientAuthorized(req: Request): boolean {
 }
 
 // ---------------------------------------------------------------------------
-// Optional operator auth (flock auth.rs role/session semantics port).
+// Optional operator auth (hodos auth.rs role/session semantics port).
 // Active only when users are configured via ESTATE_AUTH_USERS_FILE or
 // ESTATE_AUTH_USERS. /v1/* keeps the client-key gate above untouched;
 // /health stays open. Operator surface (/ui, /metrics, /debug/*) then
@@ -208,7 +208,7 @@ const server = Bun.serve({
       return handleLogout(AUTH.admin, req);
     }
 
-    // Operator-surface gate (flock auth.rs port). /v1/* keeps the client-key
+    // Operator-surface gate (hodos auth.rs port). /v1/* keeps the client-key
     // gate above untouched; /health stays open.
     if (AUTH && isOperatorPath(path)) {
       const id = await identifyRequest(req, AUTH.admin, AUTH.store);
@@ -344,7 +344,7 @@ strategy_detail: STRATEGY === "auto" ? "auto: ast_race (code-shaped) -> free rac
           `estate_router_model_empty_strikes{provider="${p}",model="${rest.join("/").replace(/"/g, "")}"} ${v.n}`,
         );
       }
-      // Model-pressure governor (flock governor.rs AIMD port). Only models
+      // Model-pressure governor (hodos governor.rs AIMD port). Only models
       // that have engaged the governor appear — bounded label cardinality.
       for (const [k, s] of state.governor.entries()) {
         if (s.limit <= 0 && s.exhaustedTotal <= 0) continue;

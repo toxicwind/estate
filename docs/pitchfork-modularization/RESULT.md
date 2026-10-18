@@ -135,7 +135,7 @@ Reading the table:
   not the differentiator — anyone claiming "generation is slow" is wrong by 3
   orders of magnitude.
 - **M3**: disjoint line-edits merge cleanly even in the monolith. The monolith's
-  merge pain was never edit-edit — it was committed conflict markers (the flock
+  merge pain was never edit-edit — it was committed conflict markers (the hodos
   incident) and add-add collisions.
 - **M3b is the money metric**: the fleet's most common change is *adding* a daemon.
   Two writers appending to the monolith collide (1 file, 1 hunk). Design B never

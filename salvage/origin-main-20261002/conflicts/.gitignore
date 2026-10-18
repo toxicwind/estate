@@ -382,7 +382,7 @@ projects/herd/mesh/gateway/mcp_config.json
 # repo. Untracked here.
 projects/herd/mesh/gateway/index.bleve/
 
-# kb-rollup.ts flock target (runtime lock, never commit)
+# kb-rollup.ts hodos target (runtime lock, never commit)
 docs/fleet-knowledgebase.md.lock
 !bin/openfang-join
 

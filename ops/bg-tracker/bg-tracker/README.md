@@ -21,7 +21,7 @@
 
 ```mermaid
 flowchart TB
-    LAUNCH[bg-launch --name --purpose --ttl] --> REG[registry: <box>.json<br/>flock-guarded]
+    LAUNCH[bg-launch --name --purpose --ttl] --> REG[registry: <box>.json<br/>hodos-guarded]
     TASK[daemon] -->|bg-heartbeat| REG
     REG --> AUDIT[bg-audit<br/>live ps vs registry]
     AUDIT -->|REGISTERED-STALE/DEAD| FLAG[⚠ needs attention<br/>exit 1]
@@ -36,7 +36,7 @@ flowchart TB
 - `../bin/bg-heartbeat` — push a liveness heartbeat for a registry id.
 - `../bin/bg-audit` — read-only audit: live `ps` vs registry. Classifies every detached proc (KNOWN-SYSTEM / SUPERVISED / REGISTERED-OK / REGISTERED-STALE / REGISTERED-DEAD / UNREGISTERED / AMP-VICTIM). Exit 1 when anything needs attention. Never kills.
 - `../bin/bg-kill` — terminate by registry id only, with PID-reuse guard (refuses when the live cmdline no longer matches), SIGTERM → `--force` SIGKILL, marks retired, logs the event. No bulk kills.
-- `lib/bgcommon.py` — shared: flock-guarded registry I/O, box detection, ps scan, append-only event log.
+- `lib/bgcommon.py` — shared: hodos-guarded registry I/O, box detection, ps scan, append-only event log.
 - `state/` — **gitignored runtime state**: `<box>.json` registry, `<box>.events.jsonl` log, `<name>.log` daemon logs. Survives restart because it is a real file on disk, not because it is committed.
 
 ## Quick start

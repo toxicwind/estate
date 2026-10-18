@@ -1,7 +1,7 @@
 # Plan: Reconstitute and Rename Mesh/Ranch Tree
 
 ## Context
-Reconstitute and rename the `mesh/ranch` tree according to the structural topology where `stockyard/` holds herd and flock, `barn/` holds shep, and mechanism folders are renamed appropriately. All references, symlinks, and retired names must be purged with verified builds, zero symlinks, zero retired names, and zero conflict markers.
+Reconstitute and rename the `mesh/ranch` tree according to the structural topology where `stockyard/` holds herd and hodos, `barn/` holds shep, and mechanism folders are renamed appropriately. All references, symlinks, and retired names must be purged with verified builds, zero symlinks, zero retired names, and zero conflict markers.
 
 ## Approach
 1. **Inventory & Map Modules**
@@ -12,7 +12,7 @@ Reconstitute and rename the `mesh/ranch` tree according to the structural topolo
 3. **Rename & Move Folders**
    - Rename `ranch/routers` to `ranch/stockyard/`.
    - Rename `ranch/mcp` to `ranch/barn/`.
-   - Move child components into their respective monorepos (`stockyard/herd`, `stockyard/flock`, `barn/shep`).
+   - Move child components into their respective monorepos (`stockyard/herd`, `stockyard/hodos`, `barn/shep`).
 4. **Rewrite Configs**
    - Update all references in `pitchfork.toml`, `mise.toml`, `stack/services/*.sh`, systemd units, environment files, and launchers to eliminate retired names (`super-ralph`, `llama-swap`, `estate-swap`, `ranch/routers`, `ranch/mcp`).
 5. **Purge Symlinks**

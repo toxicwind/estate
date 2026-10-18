@@ -28,19 +28,19 @@ hooks:
   on_model_unloaded:
     exec: 'echo "[$(date)] MODEL_UNLOADED: $MODEL" >> /home/toxic/estate/var/data/herd-events.log'
 
-# RETIRED 2026-09-17: astMatrix in-process router replaced by Flock delegation.
-# Flock (:8000) is the unified multi-provider remote-API/completions subsystem.
-# DISABLED 2026-09-20 (provider-surgeon): flock :25193 cloud upstream is dead -
-# NVIDIA account returns 404/410/502 on every probed chat model; the flock daemon
-# itself runs with zero upstream env keys. Re-enable when flock upstream is healthy.
-# (flock daemon keeps running under pitchfork for the TAU flock extension.)
-# RE-ENABLED 2026-09-20 ~03:10 MDT (provider-surgeon): flock upstream completions
-# verified live via 127.0.0.1:25193 with FLOCK_API_KEY. Only the 3 model IDs
-# below returned real completions in the probe; the other 100 flock-advertised
+# RETIRED 2026-09-17: astMatrix in-process router replaced by Hodos delegation.
+# Hodos (:8000) is the unified multi-provider remote-API/completions subsystem.
+# DISABLED 2026-09-20 (provider-surgeon): hodos :25193 cloud upstream is dead -
+# NVIDIA account returns 404/410/502 on every probed chat model; the hodos daemon
+# itself runs with zero upstream env keys. Re-enable when hodos upstream is healthy.
+# (hodos daemon keeps running under pitchfork for the TAU hodos extension.)
+# RE-ENABLED 2026-09-20 ~03:10 MDT (provider-surgeon): hodos upstream completions
+# verified live via 127.0.0.1:25193 with HODOS_API_KEY. Only the 3 model IDs
+# below returned real completions in the probe; the other 100 hodos-advertised
 # IDs 404 upstream (stale) and are deliberately NOT mapped. Re-probe before adding more.
-# DISABLED 2026-09-20 ~03:20 MDT (provider-surgeon): the flock delegation advertises
+# DISABLED 2026-09-20 ~03:20 MDT (provider-surgeon): the hodos delegation advertises
 # ALL 103 upstream model IDs (discovery cannot be restricted to modelMap), and ~100
-# of them 404 upstream (stale). Use the flock-direct peer below instead, which
+# of them 404 upstream (stale). Use the hodos-direct peer below instead, which
 # exposes only the 3 probe-verified live models.
 routing:
   scheduler:
@@ -994,7 +994,7 @@ models:
 #   moonshot/kimi-k2.6, kimi-k2.7-code -- 429 on 2026-09-20 ~09:00 (rate-limit,
 #     transient; key verified live via /v1/models 200). Kimi is NOT dead.
 # LOCAL (fallback only): beellama/*, toolcall-local/qwen3.5-9b-tool.
-# DEAD/HANGING (do not route): flock-direct (25s hangs, disabled above).
+# DEAD/HANGING (do not route): hodos-direct (25s hangs, disabled above).
 # Google Antigravity is the comparison baseline for agent/model quality when usable.
 # =============================================================================
 # Local size-tier aliases (committed 2026-09-21 modelmap-r2): these were

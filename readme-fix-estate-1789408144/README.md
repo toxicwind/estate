@@ -82,7 +82,7 @@ mise run down
 
 | Process               | Port      | Runtime             | Role                                                                                                            |
 | --------------------- | --------- | ------------------- | --------------------------------------------------------------------------------------------------------------- |
-| **llama-swap**        | **25100** | Go (toxicwind fork) | Inference router + flock Go router + `/ui` + `/v1`                                                         |
+| **llama-swap**        | **25100** | Go (toxicwind fork) | Inference router + hodos Go router + `/ui` + `/v1`                                                         |
 | **rust-web**          | **25101** | Rust                | Ops dashboard + embedded watchdog                                                                               |
 | **yote**              | 25102     | Bun                 | Telegram / status                                                                                               |
 | **openfang**          | **25103** | Rust (binary)       | Agent kernel — OpenFang OS, 206 models, 61 skills, Discord bridge                                               |
@@ -116,14 +116,14 @@ The launcher (`llama-swap.sh`) is the primary service entry. The MCP wrapper (`l
 ```text
 clients (Zed / OpenFang / Grok / IDEs)
    └─► llama-swap :25100   (toxicwind fork)
-          │  internal/flock/ — ELO scoring, circuit breakers, 6 strategies
+          │  internal/hodos/ — ELO scoring, circuit breakers, 6 strategies
           │  SQLite WAL health DB (modernc.org/sqlite)
           └─► beellama :25122 | ik_llama :25123 | turboquant :25124
 ```
 
-### flock Go port (in llama-swap fork)
+### hodos Go port (in llama-swap fork)
 
-The TypeScript flock router (`tools/estate-router/estate-router-ts/router.ts`) has been ported to Go inside the llama-swap fork at `~/projects/llama-swap-main/internal/flock/`. This gives llama-swap native multi-provider routing with:
+The TypeScript hodos router (`tools/estate-router/estate-router-ts/router.ts`) has been ported to Go inside the llama-swap fork at `~/projects/llama-swap-main/internal/hodos/`. This gives llama-swap native multi-provider routing with:
 
 - **6 strategies:** hybrid, ast_race, sticky_affinity, weighted_elo, circuit_chain, fifo_matrix
 - **ELO scoring** with circuit breaker (closed/open/half)
@@ -195,7 +195,7 @@ Access services **directly** on their ports (LAN or Tailscale MagicDNS). Optiona
 ## Architecture (direct ports)
 
 ```text
-                    ┌─ llama-swap    :25100  (/ui, /v1, /models/sse + flock Go)
+                    ┌─ llama-swap    :25100  (/ui, /v1, /models/sse + hodos Go)
  clients ──────────┼─ rust-web      :25101  (/, /ops/api/*, /health)
  (local/tailnet)   ├─ openfang      :25103  (agent kernel)
                     ├─ yote          :25102  (Telegram)
@@ -337,7 +337,7 @@ Free/keyless endpoints configured under `language_models.openai_compatible` (via
 
 | Project        | Path                                   | README focus                                                                                                       |
 | -------------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| **llama-swap** | `/home/toxic/projects/llama-swap-main` | **Fork additions**: flock Go port (`internal/flock/`), `/models/sse`, `normalize_sse`, IPv4, port reclaim |
+| **llama-swap** | `/home/toxic/projects/llama-swap-main` | **Fork additions**: hodos Go port (`internal/hodos/`), `/models/sse`, `normalize_sse`, IPv4, port reclaim |
 
 ---
 

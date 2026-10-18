@@ -294,7 +294,7 @@ Monorepo under `~/estate/ranch` (`toxicwind/ranch`). Host ops stay in **estate**
 
 ## Inference
 
-- herd · flock · cuttinggate · roost · keypool
+- herd · hodos · cuttinggate · roost · keypool
 
 ## MCP
 
@@ -326,7 +326,7 @@ Env: introduce `ARROYO_*`, keep `YOTE_*` aliases until cutover. See `arroyo/MOVE
 ## Do not
 
 - Resurrect `tack/` (superseded by roost)
-- Treat flock as sole cloud door / invent wrong ports
+- Treat hodos as sole cloud door / invent wrong ports
 - Blind-wipe `.gitmodules` — audit dead entries only
 EOF
 

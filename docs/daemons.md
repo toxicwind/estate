@@ -19,7 +19,7 @@ daemon names that are kept because renaming them breaks live state:
 
 | daemon | reality |
 |---|---|
-| `estate-router` `:25104` | live and healthy (`estate-router-ts v3.2`). **Not** merged into flock — `ports.env` claimed that and it was wrong; flock `:25193` is stopped. Two different routers. Owned by `ranch/mesh/router/`, so it is ranch, not estate. |
+| `estate-router` `:25104` | live and healthy (`estate-router-ts v3.2`). **Not** merged into hodos — `ports.env` claimed that and it was wrong; hodos `:25193` is stopped. Two different routers. Owned by `ranch/mesh/router/`, so it is ranch, not estate. |
 | `estate-exporter` `:25213` | a prometheus textfile collector. estate-owned. |
 | `estate-chat` `:25120` | `tools/estate-chat`, a real tool directory. |
 | `estate-stream-broker` `:25215` | `ranch/stream-broker`. ranch-owned. |
@@ -41,14 +41,14 @@ EXEC_WS_PORT / WS_EXEC_PORT.
 ## 1. Estate — core services (19)
 
 The request path. A chat request goes `null-g-proxy → gatehouse → mesh-hub →
-herd → flock`.
+herd → hodos`.
 
 | daemon | port | why it exists |
 |---|---|---|
 | `herd` | 25100 | The local model router. ELO-ranks providers, enforces the circuit breaker, owns the 25xxx model path. |
 | `estate-router` | 25104 | The older TS router, still serving. Runs *beside* herd, not behind it. Superseded but not retired — killing it is a separate decision. |
-| `flock` | 25193 | The cloud/paid provider router. Holds the `VANSROUTER_API_KEY` namespace vansrouter used to own. |
-| `cuttinggate` | 25200 | The guard plane in front of herd and flock: quarantine, circuit breaker, credential rotation, winner ledger. Its project overlay (`ranch/mesh/proxy/cuttinggate/pitchfork.d/cuttinggate.toml`) supplies `CUTTINGGATE_PORT=25200` and the readiness URL, so the top-level daemon object has no `port =` field. Not in `groups.*` because it fronts everything else. |
+| `hodos` | 25193 | The cloud/paid provider router. Holds the `VANSROUTER_API_KEY` namespace vansrouter used to own. |
+| `cuttinggate` | 25200 | The guard plane in front of herd and hodos: quarantine, circuit breaker, credential rotation, winner ledger. Its project overlay (`ranch/mesh/proxy/cuttinggate/pitchfork.d/cuttinggate.toml`) supplies `CUTTINGGATE_PORT=25200` and the readiness URL, so the top-level daemon object has no `port =` field. Not in `groups.*` because it fronts everything else. |
 | `mesh-hub` | 25115 | MCP registry. Answers "which MCPs exist". |
 | `gatehouse` | 25127 | MCP meta-tool layer — the gatehouse MCP endpoint itself. The SSOT still names this port `MCPPROXY_GO_PORT`. |
 | `null-g-proxy` | 25107 | Edge proxy that returns null for blocked traffic. |
@@ -160,7 +160,7 @@ services the estate runs for itself, they are the bidding machinery.
 `ranch/` is its own git repo. These are composed into the parent config but the
 project owns the code: `gatehouse`, `cuttinggate`, `fleet-ui`, `fleet-feed`,
 `nats`, `nats-tail`, the six oracle daemons, `estate-stream-broker`,
-`windmill`, `task-launch`, `yote`, `flock`, `mesh-landing`,
+`windmill`, `task-launch`, `yote`, `hodos`, `mesh-landing`,
 `squawk-relay-*`, `keypool`. `mbx-cache` is estate-owned under `ops/`, not a
 ranch project.
 
@@ -168,7 +168,7 @@ ranch project.
 
 | daemon | port | status |
 |---|---|---|
-| `vansrouter` | 20128 | **Dead.** `projects/range/ranch/stockyard/vansrouter/` is gone; `stack/services/vansrouter.sh:41` resolves to that missing path and prints `VansRouter source build missing`. Nothing listens on 20128. The migration to flock already happened — flock holds the `VANSROUTER_API_KEY` namespace. Kept in `pitchfork.toml` rather than deleted because the launcher is the evidence; retiring it is a one-line change once someone confirms flock is the replacement. |
+| `vansrouter` | 20128 | **Dead.** `projects/range/ranch/stockyard/vansrouter/` is gone; `stack/services/vansrouter.sh:41` resolves to that missing path and prints `VansRouter source build missing`. Nothing listens on 20128. The migration to hodos already happened — hodos holds the `VANSROUTER_API_KEY` namespace. Kept in `pitchfork.toml` rather than deleted because the launcher is the evidence; retiring it is a one-line change once someone confirms hodos is the replacement. |
 
 ## Rules this catalog encodes
 
