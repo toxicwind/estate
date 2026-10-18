@@ -1249,3 +1249,17 @@ run = "exec bun run src/index.ts"
 port = 25215
 ready_port = 25215
 
+
+# ─── Smithers Gateway (:7331) ────────────────────────────────────────────
+# Permanent estate singleton for Smithers/smthrs runs (corral, oneshot,
+# workflows). 2026-10-18: moved from ad-hoc shells to pitchfork. Secrets
+# load at boot: secretsmith keyring first, ~/.secrets fallback — agent
+# seats inherit this env, which is why they were 401ing before.
+[daemons.smithers-gateway]
+port = 7331
+run = "exec /home/toxic/estate/stack/services/smithers-gateway.sh"
+dir = "/home/toxic/estate"
+mise = false
+retry = true
+ready_cmd = "curl -sf http://127.0.0.1:7331/health >/dev/null 2>&1 || ss -ltn 'sport = :7331' | grep -q LISTEN"
+auto = ["start"]
