@@ -43,5 +43,5 @@ run = """
 bun run --cwd /home/toxic/estate/ranch/kappa/kappa-code make --single --skip-install
 """
 description = "Build kappa binary via forge remote cache"
-sources = ["package.json", "bun.lock", "packages/opencode/script/build.ts"]
-outputs = ["packages/opencode/dist/@kappacode/cli-linux-x64/bin/kappa"]
+sources = ["package.json", "bun.lock", "packages/cli/script/build.ts"]
+outputs = ["packages/cli/dist/@kappacode/cli-linux-x64/bin/kappa"]
