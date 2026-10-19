@@ -840,6 +840,19 @@ boot_start = true
 ready_cmd = "ss -ltn 'sport = :4222' | grep -q LISTEN"
 auto = ["start"]
 
+# ---- project: ranch/ops (1 daemon) ----
+# ranch/ops -- project-owned daemon manifest. Source of truth for shim-drift-watch.
+# Event-driven (inotify on the shim files); the sentinel runs only when a
+# canonical sidechat-shim copy actually changes. No polling.
+
+[daemons.shim-drift-watch]
+run = "exec /usr/bin/bash /home/toxic/estate/ranch/ops/bin/shim-drift-watch.sh"
+dir = "/home/toxic/estate/ranch/ops/bin"
+mise = false
+retry = true
+boot_start = true
+auto = ["start"]
+
 # ---- project: ranch/squawk-ws (1 daemon) ----
 # ranch/squawk-ws -- project-owned daemon manifest. Source of truth for 'squawk-ws'.
 # Owned by the ranch/squawk-ws project; the parent only composes it.
