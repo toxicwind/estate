@@ -229,13 +229,6 @@ auto = ["start"]
 # estate — project-owned daemon manifest. Source of truth for 'browserless'.
 # Owned by the estate project; the parent only composes it.
 
-[daemons.browserless]
-dir = "."
-run = "exec /home/toxic/estate/ranch/stable/server/run.sh"
-env = { PORT = "25130" }
-ready_port = 25130
-depends = ["gatehouse"]
-auto = ["start"]
 
 # WhatsApp Cloud API MCP server + inbound webhook (2026-09-14).
 # Secrets live ONLY in /home/toxic/.config/pitchfork-secrets/whatsapp-mcp.env
@@ -952,14 +945,6 @@ auto = ["start"]
 # ranch/estate-chat — project-owned daemon manifest. Source of truth for 'estate-chat'.
 # Owned by the ranch/estate-chat project; the parent only composes it.
 
-[daemons.omniroute]
-port = 20130
-run = "exec /home/toxic/estate/stack/services/omniroute.sh"
-dir = "/home/toxic/estate"
-mise = false
-retry = true
-ready_cmd = "ss -ltn 'sport = :20130' | grep -q LISTEN"
-auto = ["start"]
 
 # ---- project: ranch/barn/gatehouse (1 daemon) ----
 # ranch/barn/gatehouse — project-owned daemon manifest. Source of truth for 'gatehouse'.
