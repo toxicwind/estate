@@ -51,10 +51,12 @@ function sardonic(diagnostic: string, severity: "low" | "medium" | "high"): stri
 // Core autofix logic — mirrors estate src/maximal-sovereign-agentic-audit/src/modules/autofix.ts
 // ════════════════════════════════════════════════════════════════
 
+import { homedir } from "node:os";
+import { unlinkSync } from "node:fs";
+
 function checkBrokenSymlinks(): Array<{path: string; fix: string}> {
   const fixes: Array<{path: string; fix: string}> = [];
   try {
-    const { homedir } = await import("node:os");
     const estateDir = "/home/toxic/estate";
     // Walk common paths for broken symlinks
     const walkDir = (dir: string) => {
@@ -182,7 +184,6 @@ export default function estateAutofixerPlugin() {
             if (fix) {
               linkFixes.forEach((f) => {
                 try {
-                  const { unlinkSync } = await import("node:fs");
                   unlinkSync(f.path);
                   results.push(`   ✓ Removed: ${f.path}`);
                 } catch (e) {

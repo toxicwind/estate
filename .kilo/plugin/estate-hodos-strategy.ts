@@ -65,7 +65,7 @@ export default function flockStrategyPlugin() {
 export const metadata = {
   name: "estate/hodos-strategy",
   version: "1.0.0",
-  category": "providers",
+  category: "providers",
   targets: ["server"],
   conformsTo: "Agent Plugins v1.0.0",
 };
