@@ -14,21 +14,23 @@
 #   git add <files>
 #   ranch-commit -m "message"        (extra args pass to git commit)
 #
-# Flow: fetch -> rebase onto origin/main -> commit -> push HEAD:main.
-# On a non-fast-forward rejection (origin moved mid-push) it rebases and
-# retries exactly once, then reports. It never forces.
+# Flow: commit -> fetch -> rebase onto origin/main -> push HEAD:main.
+# (Commit first: rebase refuses a dirty index, and staging first is the
+# caller's whole point.) On a non-fast-forward rejection (origin moved
+# mid-push) it rebases and retries exactly once, then reports.
+# It never forces.
 set -e
 top=$(git rev-parse --show-toplevel)
 case "$top" in
     */kite/worktrees/ranch-*) ;;
     *) echo "ranch-commit: run inside a lane worktree (/home/toxic/kite/worktrees/ranch-<lane>), not $top" >&2; exit 2 ;;
 esac
+git commit "$@"
 git fetch origin
 if ! git rebase origin/main; then
-    echo "ranch-commit: rebase conflict — resolve it in this worktree, then re-run ranch-commit" >&2
+    echo "ranch-commit: rebase conflict — resolve it in this worktree (git rebase --continue), then: git push origin HEAD:main" >&2
     exit 1
 fi
-git commit "$@"
 if ! git push origin HEAD:main; then
     echo "ranch-commit: origin moved — rebasing and retrying once" >&2
     git fetch origin
