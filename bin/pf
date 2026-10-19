@@ -299,10 +299,13 @@ async function cmdCheck(): Promise<void> {
     const extra = pnames.filter((n) => !names.includes(n));
     if (missing.length) issues.push(`in pitchfork.d/ but not pitchfork.toml: ${missing.join(", ")} (run pf build)`);
     if (extra.length) issues.push(`in pitchfork.toml but no fragment: ${extra.join(", ")}`);
-    // groups.all drift (informational)
-    const all = new Set<string>((doc.groups?.all?.daemons ?? []) as string[]);
-    const unlisted = pnames.filter((n) => !all.has(n));
-    if (unlisted.length) console.log(JSON.stringify({ note: `groups.all lists ${all.size}/${pnames.length} daemons; unlisted: ${unlisted.length}`, unlisted }));
+    // groups.all removed 2026-10-18 (redundant with `pitchfork start -a`);
+    // legacy drift check kept only if the group still exists
+    if (doc.groups?.all?.daemons) {
+      const all = new Set<string>(doc.groups.all.daemons as string[]);
+      const unlisted = pnames.filter((n) => !all.has(n));
+      if (unlisted.length) console.log(JSON.stringify({ note: `groups.all lists ${all.size}/${pnames.length} daemons; unlisted: ${unlisted.length}`, unlisted }));
+    }
   } catch (e: any) { issues.push(`pitchfork.toml: invalid TOML: ${e.message}`); }
   if (issues.length) { console.error("check FAILED:\n- " + issues.join("\n- ")); process.exit(1); }
   console.log(JSON.stringify({ check: "ok", daemons: names.length }));

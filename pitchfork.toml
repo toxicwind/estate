@@ -25,14 +25,14 @@ daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "hodo
 
 
 [groups.agents]
-daemons = []
+daemons = ["rig"]
 
+# groups.all REMOVED 2026-10-18: redundant with `pitchfork start -a` (starts every
+# daemon in this file). It was a hand-maintained duplicate of 41 daemon names that
+# drifted every time a daemon was added. Use `pitchfork start -a` for everything,
+# `pitchfork start --group <name>` for a subset.
 
-
-[groups.all]
-daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "feedlot", "hindsight", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "hodos", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "squawk-feed", "squawk-ws", "squawk-ui", "forge", "forge-agent", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash"]
-
-# ---- project: estate (84 daemons) ----
+# ---- project: estate (85 daemons) ----
 [daemons.agent-display]
 # Forge 2026-09-21: isolated virtual display for the agent browser.
 port = 5900
@@ -248,20 +248,6 @@ auto = ["start"]
 # estate — project-owned daemon manifest. Source of truth for 'feedlot'.
 # Owned by the estate project; the parent only composes it.
 
-[daemons.feedlot]
-port = 25121
-run = "exec ./stack/services/feedlot.sh"
-dir = "."
-mise = true
-retry = true
-ready_http = "http://127.0.0.1:25121/health"
-health_http = { url = "http://127.0.0.1:25121/health", interval = "30s", timeout = "5s", retries = 3 }
-depends = ["gatehouse"]
-auto = ["start"]
-
-# estate — project-owned daemon manifest. Source of truth for 'coyote'.
-# Owned by the estate project; the parent only composes it.
-
 [daemons.codebase-memory]
 run = "exec /home/toxic/estate/tools/codebase-memory/run.sh"
 dir = "/home/toxic"
@@ -404,6 +390,20 @@ ready_port = 25215
 # ranch/windmill — project-owned daemon manifest. Source of truth for 'windmill'.
 # Owned by the ranch/windmill project; the parent only composes it.
 
+[daemons.feedlot]
+port = 25121
+run = "exec /home/toxic/estate/stack/services/feedlot.sh"
+dir = "."
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25121/health"
+health_http = { url = "http://127.0.0.1:25121/health", interval = "30s", timeout = "5s", retries = 3 }
+depends = ["gatehouse"]
+auto = ["start"]
+
+# estate — project-owned daemon manifest. Source of truth for 'feedlot'.
+# Owned by the estate project; the parent only composes it.
+
 [daemons.files]
 # /files backend (tailnet-only): tailscale serve maps /files -> 127.0.0.1:34567.
 # Static file share rooted at /home/toxic/files. Built 2026-09-20 (files-medic):
@@ -453,25 +453,6 @@ auto = ["start"]
 
 # ranch/squawk — project-owned daemon manifest. Source of truth for 'nats-tail'.
 # Owned by the ranch/squawk project; the parent only composes it.
-
-# owner: hodos hodos (ranch/hodos/proxy) — the merged maximal router.
-# 2026-10-17: the hodos tree (github toxicwind/hodos) absorbed the nim-proxy
-# core (FEATURE_PARITY zero-loss merge) and now serves every lane natively:
-# OpenAI /v1/chat/completions across the provider registry AND the Anthropic
-# /v1/messages surface for Claude Code. Replaces BOTH the pre-merge ranch/hodos
-# daemon (served zero models) and the dockerized miztertea/nim-proxy container
-# (stopped 2026-10-17; Lane A doctrine: estate services run under pitchfork,
-# never docker). Data: ~/.hodos/nim-data (config.json + history.jsonl).
-[daemons.hodos]
-health_http = { url = "http://127.0.0.1:25193/health", interval = "30s", timeout = "5s", retries = 3 }
-port = 25193
-run = "exec /home/toxic/estate/ranch/hodos/proxy/serve.sh"
-dir = "/home/toxic/estate/ranch/hodos/proxy"
-mise = false
-retry = true
-ready_http = "http://127.0.0.1:25193/health"
-env = { PORT = "25193", DATA_DIR = "/home/toxic/.hodos-data", HOST = "127.0.0.1" }
-auto = ["start"]
 
 [daemons.forge-agent]
 run = "exec /home/toxic/estate/var/reconciliation/flicker/bin/flicker-agent"
@@ -589,6 +570,23 @@ auto = ["start"]
 
 # estate — project-owned daemon manifest. Source of truth for 'kafka'.
 # Owned by the estate project; the parent only composes it.
+
+[daemons.hodos]
+health_http = { url = "http://127.0.0.1:25193/health", interval = "30s", timeout = "5s", retries = 3 }
+port = 25193
+run = "exec /home/toxic/estate/ranch/hodos/proxy/serve.sh"
+dir = "/home/toxic/estate/ranch/hodos/proxy"
+mise = false
+retry = true
+ready_http = "http://127.0.0.1:25193/health"
+env = { PORT = "25193", DATA_DIR = "/home/toxic/.hodos-data", HOST = "127.0.0.1" }
+auto = ["start"]
+
+# estate — project-owned daemon manifest. Source of truth for 'hodos'.
+# Owned by the ranch/hodos project; the parent only composes it.
+# 2026-10-18: flock -> hodos full rebrand. Single definition reconciled to
+# ranch/hodos/proxy (the hodos repo); the forge copy (ranch/forge/router/
+# hodos-proxy) is superseded. Live store: ~/.hodos-data (v2, superuser + keys).
 
 [daemons.kafka]
 run = "exec ./stack/services/kafka.sh"
@@ -754,7 +752,7 @@ health_http = { url = "http://127.0.0.1:25115/health", interval = "30s", timeout
 depends = ["gatehouse"]
 auto = ["start"]
 
-# estate — project-owned daemon manifest. Source of truth for 'mesh-landing'. (model-guard retired 2026-10-17: de-herd completion.)
+# estate — project-owned daemon manifest. Source of truth for 'model-guard'.
 # Owned by the estate project; the parent only composes it.
 
 [daemons.mesh-landing]
@@ -787,6 +785,17 @@ auto = ["start"]
 # ---- project: tools/null-g-proxy (1 daemon) ----
 # tools/null-g-proxy — project-owned daemon manifest. Source of truth for 'null-g-proxy'.
 # Owned by the tools/null-g-proxy project; the parent only composes it.
+
+[daemons.model-guard]
+health_http = { url = "http://127.0.0.1:25101/v1/models", interval = "30s", timeout = "5s", retries = 3 }
+port = 25101
+run = "exec python3 /home/toxic/estate/bin/herd-model-guard.py"
+dir = "/home/toxic/estate"
+mise = false
+retry = true
+boot_start = true
+ready_http = "http://127.0.0.1:25101/v1/models"
+auto = ["start"]
 
 # NativeLink — Bazel-compatible remote cache + remote execution backend.
 # Serves the RE API that Bazel (and any RE-speaking client) dials. Coexists
@@ -1071,6 +1080,22 @@ auto = ["start"]
 # standalone/refusal-hunt — project-owned daemon manifest. Source of truth for 'sorry-watchdog'.
 # Owned by the standalone/refusal-hunt project; the parent only composes it.
 
+# estate — project-owned daemon manifest. Source of truth for 'rig'.
+# Owned by the estate project; the parent only composes it.
+
+[daemons.rig]
+# Rig Agent OS kernel daemon (API server + kernel)
+port = 25196
+run = "exec /home/toxic/.local/bin/rig start"
+dir = "/home/toxic"
+mise = false
+retry = true
+ready_cmd = "ss -ltn 'sport = :25196' | grep -q LISTEN"
+health_port = { port = 25196, interval = "30s", timeout = "5s", retries = 3 }
+env = { RIG_CONFIG = "/home/toxic/.rig/config.toml" }
+boot_start = true
+auto = ["start"]
+
 [daemons.rust-web]
 port = 25201
 run = "exec ./stack/services/rust-web.sh"
@@ -1248,18 +1273,3 @@ dir = "/home/toxic/estate/ranch/stream-broker"
 run = "exec bun run src/index.ts"
 port = 25215
 ready_port = 25215
-
-
-# ─── Smithers Gateway (:7331) ────────────────────────────────────────────
-# Permanent estate singleton for Smithers/smthrs runs (corral, oneshot,
-# workflows). 2026-10-18: moved from ad-hoc shells to pitchfork. Secrets
-# load at boot: secretsmith keyring first, ~/.secrets fallback — agent
-# seats inherit this env, which is why they were 401ing before.
-[daemons.smithers-gateway]
-port = 7331
-run = "exec /home/toxic/estate/stack/services/smithers-gateway.sh"
-dir = "/home/toxic/estate"
-mise = false
-retry = true
-ready_cmd = "curl -sf http://127.0.0.1:7331/health >/dev/null 2>&1 || ss -ltn 'sport = :7331' | grep -q LISTEN"
-auto = ["start"]

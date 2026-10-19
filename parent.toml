@@ -22,9 +22,9 @@ daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "hodo
 
 
 [groups.agents]
-daemons = []
+daemons = ["rig"]
 
-
-
-[groups.all]
-daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "feedlot", "hindsight", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "hodos", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "squawk-feed", "squawk-ws", "squawk-ui", "forge", "forge-agent", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash"]
+# groups.all REMOVED 2026-10-18: redundant with `pitchfork start -a` (starts every
+# daemon in this file). It was a hand-maintained duplicate of 41 daemon names that
+# drifted every time a daemon was added. Use `pitchfork start -a` for everything,
+# `pitchfork start --group <name>` for a subset.
