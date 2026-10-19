@@ -16,6 +16,16 @@
 # Bypass any wrapper for one call: `command <bin> …`.
 # Environment: RF_QUIET=1 silences ok-verdicts (breach/fail always print).
 
+# 2026-10-19: VS Code / human-IDE surfaces load NOTHING here. The doctrine
+# wrappers (head/tail→ffs, run-fast routing) and the DEBUG guard are for the
+# agent harness; in VS Code shells they corrupted shell integration (OSC 633)
+# and rewrote human commands. Detection covers Remote-SSH server shells,
+# injected-integration shells, and VS Code-spawned terminals.
+case "${TERM_PROGRAM:-}${VSCODE_INJECTION:-}${VSCODE_GIT_ASKPASS_NODE:-}${VSCODE_SHELL_INTEGRATION:-}" in
+  *vscode*|*code*) return 0 2>/dev/null || exit 0 ;;
+esac
+[ -n "${VSCODE_INJECTION:-}" ] && return 0 2>/dev/null || true
+
 RF="${ESTATE_RUN_FAST:-/home/toxic/estate/bin/run-fast}"
 [ -x "$RF" ] || return 0
 export ESTATE_RUN_FAST="$RF"
@@ -82,30 +92,44 @@ print_doctrine_hint() {
 # DEBUG-trap guard: inspects every command line for truncation/swallowing
 # patterns and prints an URGENT agent-visible notice on stdout. Traps cannot
 # cancel the command, but the notice is the must-do signal.
+#
+# 2026-10-19 FIX (VS Code SI breakage): the previous version armed
+# `shopt -s extdebug` + this DEBUG trap in EVERY shell — including VS Code's
+# shell-integration init shell (bashrc → shim) and atuin's bash-preexec shell.
+# Three owners fought over the DEBUG trap, and extdebug made the trap fire on
+# every function invocation, desyncing VS Code's OSC 633 state machine
+# ("Shell integration failed to add capabilities within 10 seconds" → tool
+# terminals fell back to the `none` strategy and captured nothing).
+# Rules now:
+#   1. VS Code / human-IDE surfaces load NOTHING from this shim (return below).
+#   2. extdebug is NEVER set — the trap is notice-only (non-zero DEBUG-trap
+#      return is harmless without extdebug).
+#   3. If another DEBUG trap already exists (bash-preexec, VS Code SI), leave
+#      it alone — do not clobber.
+_2s_urgent() {
+  echo "════ [2s-shim GUARD — URGENT] $1 ════"
+  echo "  MUST DO: rewrite the command per estate doctrine, then re-run."
+}
 _2s_guard() {
   local c="$1"
   case "$c" in
     _2s_*|*print_doctrine_hint*|*"2s-shim"*) return 0 ;;
     *">/dev/null"*|*"&>/dev/null"*|*"2>/dev/null"*|*"1>/dev/null"*)
-      _2s_urgent "output discarded to /dev/null — agents MUST see full output; drop the redirect"; return 1 ;;
+      _2s_urgent "output discarded to /dev/null — agents MUST see full output; drop the redirect"; return 0 ;;
     *"| true"*|*"|true"*)
-      _2s_urgent "'| true' swallows the exit code — handle the failure explicitly"; return 1 ;;
+      _2s_urgent "'| true' swallows the exit code — handle the failure explicitly"; return 0 ;;
     *"2>&1"*)
-      _2s_urgent "'2>&1' merges stderr into stdout — keep streams separate (no &2 merges)"; return 1 ;;
+      _2s_urgent "'2>&1' merges stderr into stdout — keep streams separate (no &2 merges)"; return 0 ;;
     *"| head"*|*"|head"*|*"| tail"*|*"|tail"*|*"| wc -l"*|*"|wc -l"*)
-      _2s_urgent "pipeline truncation (head/tail/wc) — show or persist FULL output instead"; return 1 ;;
+      _2s_urgent "pipeline truncation (head/tail/wc) — show or persist FULL output instead"; return 0 ;;
   esac
   return 0
 }
-_2s_urgent() {
-  echo "════ [2s-shim GUARD — URGENT, CANCELLED] $1 ════"
-  echo "  MUST DO: rewrite the command per estate doctrine, then re-run."
-}
-# Only arm the trap once per shell; skip our own internals to avoid recursion.
-if [ -z "${_2S_GUARD_ARMED:-}" ]; then
+# Only arm the trap once per shell, only in agent harnesses, and never over an
+# existing DEBUG trap (bash-preexec / VS Code SI own theirs).
+if [ -z "${_2S_GUARD_ARMED:-}" ] && [ -z "$(trap -p DEBUG 2>/dev/null)" ]; then
   export _2S_GUARD_ARMED=1
   set -o pipefail
-  shopt -s extdebug   # non-zero DEBUG-trap return CANCELS the next command
   trap '_2s_guard "$BASH_COMMAND"' DEBUG
 fi
 
