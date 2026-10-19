@@ -2,7 +2,7 @@
   "mcpServers": {
     "mesh-gateway": {
       "url": "http://127.0.0.1:25127/mcp",
-      "transport": "http",
+      "transport": "sse",
       "enabled": true
     }
     ,
