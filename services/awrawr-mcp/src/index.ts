@@ -320,23 +320,29 @@ async function runArgv(
   return result;
 }
 
-function capOut(prefix: string, out: string): { text: string; truncated: boolean } {
+export function capOut(prefix: string, out: string): { text: string; truncated: boolean } {
   const truncated = out.length > OUT_CAP;
   if (!truncated) {
     const text = out ? prefix + out.slice(0, OUT_CAP) : prefix + "(no output)";
     return { text, truncated: false };
   }
-  // First-class truncated output: save full version to tmp for retrieval
-  const tmpDir = "/tmp/awrawr-mcp";
+  // First-class truncated output: persist the COMPLETE output for retrieval.
+  // Durable dir under HOME, not /tmp: tmpfs + janitor sweeps made /tmp-saved
+  // outputs vanish before anyone could read them back. Override with
+  // AWR_MCP_OUTPUT_DIR. Files older than 7 days are pruned.
+  const outDir = process.env.AWR_MCP_OUTPUT_DIR || `${HOME}/.awrawr-mcp/outputs`;
+  try { mkdirSync(outDir, { recursive: true }); } catch {}
+  const outFile = `${outDir}/out-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.txt`;
+  try { writeFileSync(outFile, out, "utf8"); } catch {}
   try {
-    require("node:fs").mkdirSync(tmpDir, { recursive: true });
-  } catch {}
-  const tmpFile = `${tmpDir}/out-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.txt`;
-  try {
-    require("node:fs").writeFileSync(tmpFile, out, "utf8");
+    const cutoff = Date.now() - 7 * 24 * 3600 * 1000;
+    for (const f of readdirSync(outDir)) {
+      const p = `${outDir}/${f}`;
+      try { if (statSync(p).mtimeMs < cutoff) unlinkSync(p); } catch {}
+    }
   } catch {}
   const text = prefix + out.slice(0, OUT_CAP) + `
-...[TRUNCATED ${out.length} chars total, full output saved to ${tmpFile}]`;
+...[TRUNCATED ${out.length} chars total, full output saved to ${outFile}]`;
   return { text, truncated: true };
 }
 
@@ -2326,7 +2332,10 @@ async function main(): Promise<void> {
   process.on("SIGINT", () => shutdown("SIGINT"));
 }
 
-main().catch((e) => {
-  console.error(`FATAL ${SERVICE}:`, e);
-  process.exit(1);
-});
+// Guarded so tests can import capOut without booting the server.
+if (import.meta.main) {
+  main().catch((e) => {
+    console.error(`FATAL ${SERVICE}:`, e);
+    process.exit(1);
+  });
+}
