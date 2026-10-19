@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# mise run submodules — autonomous submodule synchronizer for estate & ranch
+#
+# Inspects registered submodules, pulls latest remote heads without merge conflicts,
+# updates catalog reports, and synchronizes the parent pointers cleanly.
+set -euo pipefail
+
+ESTATE_DIR="${ESTATE_ROOT:-/home/toxic/estate}"
+RANCH_DIR="$ESTATE_DIR/ranch"
+
+echo "⚡ [submodules-sync] Synchronizing ranch submodules..."
+cd "$RANCH_DIR"
+
+UPDATED=0
+# Update all submodules tracking origin/main or designated branch
+git submodule update --init --recursive --remote --merge 2>&1 | while IFS= read -r line; do
+  echo "  $line"
+done
+
+# If any gitlinks changed, regenerate the fork catalog and README
+if [[ -n "$(git status --porcelain .gitmodules $(git submodule foreach --quiet 'echo $sm_path'))" ]]; then
+  echo "📦 [submodules-sync] Submodule changes detected. Running audit & readme generators..."
+  bun toolkit/audit-forks.ts
+  bun toolkit/generate-readme.ts --update
+  
+  git add .gitmodules README.md FORKS-report.json FORKS-report.md $(git submodule foreach --quiet 'echo $sm_path')
+  git commit -m "chore(submodules): auto-sync submodule pointers and update catalog"
+  git push origin main
+  UPDATED=1
+else
+  echo "✅ [submodules-sync] All ranch submodules are up to date."
+fi
+
+# Synchronize ranch pointer inside estate root
+cd "$ESTATE_DIR"
+if [[ -n "$(git status --porcelain ranch)" ]]; then
+  echo "🚜 [submodules-sync] Advancing ranch pointer in estate root..."
+  git add ranch
+  git commit -m "chore(ranch): auto-advance ranch submodule pointer"
+  git push origin main
+  echo "✅ [submodules-sync] Estate root pointer synchronized."
+else
+  echo "✅ [submodules-sync] Estate root pointer is up to date."
+fi
