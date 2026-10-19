@@ -836,6 +836,25 @@ boot_start = true
 ready_cmd = "ss -ltn 'sport = :4222' | grep -q LISTEN"
 auto = ["start"]
 
+# ---- project: ranch/squawk-ws (1 daemon) ----
+# ranch/squawk-ws -- project-owned daemon manifest. Source of truth for 'squawk-ws'.
+# Owned by the ranch/squawk-ws project; the parent only composes it.
+# Restored 2026-10-19 (Pry, squawk UI takeover): the composed block was lost in
+# the estate/projects/range/ranch -> estate/ranch move; the daemon survived only
+# in supervisor state, so :25147 -- the squawk UI's live-push backend -- was down
+# and the UI could not go live. Mirrors ranch/squawk-ws/pitchfork.d/squawk-ws.toml.
+
+[daemons.squawk-ws]
+port = 25147
+run = "exec /usr/bin/python3 /home/toxic/estate/ranch/squawk-ws/squawk_ws_server.py"
+dir = "/home/toxic/estate/ranch/squawk-ws"
+mise = false
+retry = true
+boot_start = true
+ready_http = "http://127.0.0.1:25147/ping"
+env = { SQUAWK_WS_PORT = "25147", SQUAWK_CHAT_ROOT = "/home/toxic/.fleet-bus/squawk-root" }
+auto = ["start"]
+
 # ---- project: ranch/squawk/oracle (7 daemons) ----
 
 [daemons.nginx]
