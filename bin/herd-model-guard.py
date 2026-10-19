@@ -33,6 +33,7 @@ import os
 import re
 import sys
 import time
+import urllib.error
 import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
@@ -467,6 +468,24 @@ class Handler(BaseHTTPRequestHandler):
     server_version = "ModelGuard/1.0"
 
     def _proxy(self):
+        if self.command == "GET" and self.path.split("?")[0].rstrip("/") == "/healthz":
+            # Local liveness: measures THIS process, never the upstream.
+            # A proxied health check can never pass here (upstream
+            # /v1/models is auth-gated -> 401 -> pitchfork restarts a
+            # healthy guard; that was the ~100s flap cycle, 2026-10-19).
+            payload = json.dumps({
+                "ok": True,
+                "service": "model-guard",
+                "upstream": UPSTREAM,
+                "config_bad": bool(_constraints.get("config_bad")),
+                "constraints_loaded": len(_constraints.get("entries") or []),
+            }).encode()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(payload)))
+            self.end_headers()
+            self.wfile.write(payload)
+            return
         try:
             raw = _read_request_body(self)
             ctype = self.headers.get("Content-Type", "")
@@ -506,6 +525,12 @@ class Handler(BaseHTTPRequestHandler):
                     req.add_header(k, v)
             try:
                 resp = urllib.request.urlopen(req, timeout=600)
+            except urllib.error.HTTPError as e:
+                # Upstream ANSWERED with an error status (401/404/5xx):
+                # HTTPError IS the response -- forward it verbatim
+                # (status, headers, body) instead of masking it as a
+                # 502 "upstream unreachable".
+                resp = e
             except Exception as e:
                 self.send_response(502)
                 self.send_header("Content-Type", "application/json")
