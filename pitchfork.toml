@@ -231,7 +231,7 @@ auto = ["start"]
 
 [daemons.browserless]
 dir = "."
-run = "exec /home/toxic/estate/ranch/barn/browserless/server/run.sh"
+run = "exec /home/toxic/estate/ranch/stable/server/run.sh"
 env = { PORT = "25130" }
 ready_port = 25130
 depends = ["gatehouse"]
