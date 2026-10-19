@@ -865,6 +865,15 @@ mise = false
 retry = true
 boot_start = true
 ready_http = "http://127.0.0.1:25135/squawk-feed/seq"
+
+[daemons.squawk-history]
+port = 25152
+run = "exec /home/toxic/estate/ranch/squawk/nats/run-history.sh"
+dir = "/home/toxic/estate/ranch/squawk/nats"
+mise = false
+retry = true
+boot_start = true
+ready_http = "http://127.0.0.1:25152/health"
 env = { SQUAWK_WS_PORT = "25147", SQUAWK_CHAT_ROOT = "/home/toxic/.fleet-bus/squawk-root" }
 auto = ["start"]
 
@@ -1320,3 +1329,16 @@ mise = false
 retry = true
 boot_start = true
 ready_cmd = "test -S /home/toxic/.config/kite-cli/daemon.sock"
+
+[daemons.kitty-mcp]
+# Contract instance for the Gatehouse kitty MCP server (Pry, 2026-10-19).
+# Source of truth: pitchfork.d/kitty-mcp.toml. The MCP server reaches
+# kitty at tcp:127.0.0.1:25211 (KITTY_MCP_SOCKET in the Gatehouse config);
+# this daemon guarantees a kitty is listening there.
+run = "exec /home/toxic/estate/bin/kitty-mcp-instance.sh"
+dir = "/home/toxic/estate"
+port = 25211
+mise = false
+retry = true
+boot_start = true
+auto = ["start"]
