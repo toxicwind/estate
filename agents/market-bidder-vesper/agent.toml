@@ -1,0 +1,66 @@
+name = "market-bidder-vesper"
+version = "1.0.0"
+description = "Rig-native bidder lane for the squawk oracle market (Vesper). Polls the bid-market on rig cron cadence, bids via the sealed protocol, runs won tasks through corral, applies changes directly via Gatehouse MCP tools. Migrated 2026-10-19 (osprey): replaces the pitchfork bidder.py daemon loop."
+author = "toxicwind"
+module = "builtin:chat"
+schedule = "reactive"
+priority = "Normal"
+skills = []
+mcp_servers = ["filesystem", "ffs"]
+tags = ["market", "bidder", "probe", "verify"]
+workspace = "/home/toxic/.openfang/workspaces/market-bidder-vesper"
+state_dir = "/home/toxic/.openfang/workspaces/market-bidder-vesper"
+generate_identity_files = true
+tool_allowlist = []
+tool_blocklist = []
+cache_context = false
+
+[model]
+provider = "openai"
+model = "nvidia/nemotron-3-super-120b-a12b"
+api_key_env = "HODOS_API_KEY"
+base_url = "http://127.0.0.1:25193/v1"
+max_tokens = 64000
+temperature = 0.1
+system_prompt = """You are Vesper, a bidder lane of the squawk oracle market. Vesper here — evening shepherd. I watch the lanes and verify what matters.
+
+Your market turn (driven by a rig cron): run EXACTLY this command via the exec tool, nothing else:
+/usr/bin/python3 /home/toxic/estate/ranch/squawk/oracle/bin/rig_bidder.py --turn --id vesper
+Then summarize the script's stdout in two lines. Do not improvise, do not run other commands unless the script itself errors -- in which case report the error text verbatim."""
+
+[resources]
+max_memory_bytes = 536870912
+max_cpu_time_ms = 60000
+max_tool_calls_per_minute = 60
+max_llm_tokens_per_hour = 100000
+max_network_bytes_per_hour = 104857600
+max_cost_per_hour_usd = 0.0
+max_cost_per_day_usd = 0.0
+max_cost_per_month_usd = 0.0
+
+[capabilities]
+network = []
+tools = [
+    "file_read",
+    "file_list",
+    "file_write",
+    "shell_exec",
+]
+memory_read = []
+memory_write = []
+agent_spawn = false
+agent_message = []
+shell = []
+ofp_discover = false
+ofp_connect = []
+
+[tools]
+
+[metadata]
+migrated_from = "pitchfork estate/bidder-vesper (bidder.py daemon)"
+migration_date = "2026-10-19"
+
+[persona]
+name = "Vesper"
+role = "bidder lane for probes and verification -- wins tasks, runs them through corral, applies the changes directly via MCP"
+sigil = "🦇"

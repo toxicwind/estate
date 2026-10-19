@@ -787,14 +787,14 @@ auto = ["start"]
 # Owned by the tools/null-g-proxy project; the parent only composes it.
 
 [daemons.model-guard]
-health_http = { url = "http://127.0.0.1:25101/v1/models", interval = "30s", timeout = "5s", retries = 3 }
+health_http = { url = "http://127.0.0.1:25101/healthz", interval = "30s", timeout = "5s", retries = 3 }
 port = 25101
 run = "exec python3 /home/toxic/estate/bin/herd-model-guard.py"
 dir = "/home/toxic/estate"
 mise = false
 retry = true
 boot_start = true
-ready_http = "http://127.0.0.1:25101/v1/models"
+ready_http = "http://127.0.0.1:25101/healthz"
 auto = ["start"]
 
 # NativeLink — Bazel-compatible remote cache + remote execution backend.
@@ -1105,13 +1105,16 @@ auto = ["start"]
 [daemons.rig]
 # Rig Agent OS kernel daemon (API server + kernel)
 port = 25196
-run = "exec /home/toxic/.local/bin/rig start"
+run = "exec /home/toxic/.local/bin/rig-env-start.sh"
 dir = "/home/toxic"
 mise = false
 retry = true
 ready_cmd = "ss -ltn 'sport = :25196' | grep -q LISTEN"
 health_port = { port = 25196, interval = "30s", timeout = "5s", retries = 3 }
 env = { RIG_CONFIG = "/home/toxic/.rig/config.toml" }
+# 2026-10-19 (osprey): rig-env-start.sh sources ~/.rig/.env (mode 600,
+# outside the repo) so agents get HODOS_API_KEY. Daemon-level env_file
+# did not inject (pitchfork quirk); the wrapper is deterministic.
 boot_start = true
 auto = ["start"]
 
