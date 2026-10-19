@@ -856,6 +856,15 @@ mise = false
 retry = true
 boot_start = true
 ready_http = "http://127.0.0.1:25147/ping"
+
+[daemons.squawk-feed]
+port = 25135
+run = "exec /usr/bin/python3 /home/toxic/estate/ranch/squawk/relay/feed.py"
+dir = "/home/toxic/estate/ranch/squawk/relay"
+mise = false
+retry = true
+boot_start = true
+ready_http = "http://127.0.0.1:25135/squawk-feed/seq"
 env = { SQUAWK_WS_PORT = "25147", SQUAWK_CHAT_ROOT = "/home/toxic/.fleet-bus/squawk-root" }
 auto = ["start"]
 
