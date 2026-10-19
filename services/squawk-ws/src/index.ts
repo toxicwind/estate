@@ -106,7 +106,7 @@ const MSG_FILE_RE = /^\d+-.*\.md$/;
 const ALIAS_RE = /^(fleet|leads)\/(\d+)$/;
 
 // directories under the chat root that are NOT message channels
-const RESERVED_DIRS = new Set(["keys"]);
+const RESERVED_DIRS = new Set(["keys", "presence"]);
 
 // ---------------------------------------------------------------- types
 
