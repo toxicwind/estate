@@ -1,3 +1,4 @@
 {
-    "copilot-amplify.CA-omniroute.baseUrl": "http://localhost:20128/v1"
+    "copilot-amplify.CA-omniroute.baseUrl": "http://localhost:20128/v1",
+    "git.ignoreLimitWarning": true
 }
