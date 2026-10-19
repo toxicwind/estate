@@ -1,7 +1,7 @@
 // model-guard — card-derived per-model request enforcement for herd.
 //
 // Listens on 127.0.0.1:${MODEL_GUARD_PORT} (required), reverse-proxies to herd
-// (MODEL_GUARD_UPSTREAM, default http://127.0.0.1:25100).
+// (MODEL_GUARD_UPSTREAM, required -- no default; see requiredUpstream).
 // For POST <any>/v1/chat/completions with a constrained model ID, rewrites
 // the request body per config/model_constraints.yaml BEFORE it reaches herd:
 //
@@ -50,7 +50,18 @@ function requiredPort(): number {
   return port;
 }
 
-const UPSTREAM = process.env.MODEL_GUARD_UPSTREAM || "http://127.0.0.1:25100";
+function requiredUpstream(): string {
+  const raw = process.env.MODEL_GUARD_UPSTREAM;
+  if (!raw) {
+    console.error(
+      `FATAL ${SERVICE}: MODEL_GUARD_UPSTREAM is not set (upstreams come from pitchfork config, never hardcoded)`,
+    );
+    process.exit(1);
+  }
+  return raw;
+}
+
+const UPSTREAM = requiredUpstream();
 let CONSTRAINTS_PATH =
   process.env.MODEL_CONSTRAINTS || "/home/toxic/estate/config/model_constraints.yaml";
 const AUDIT_PATH =
