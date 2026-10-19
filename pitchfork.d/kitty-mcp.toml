@@ -1,0 +1,15 @@
+[daemons.kitty-mcp]
+# Contract instance for the Gatehouse kitty MCP server (Pry, 2026-10-19).
+# The MCP server reaches kitty at tcp:127.0.0.1:25211 (KITTY_MCP_SOCKET in
+# the Gatehouse config + .dist template); this daemon guarantees a kitty
+# is listening there. Launcher sets the desktop session env and passes
+# --listen-on explicitly (kitty.conf listen_on is not honored by kitty
+# 0.48.2 here; unix listen_on paths get -<pid> appended — see
+# bin/kitty-mcp-instance.sh).
+run = "exec /home/toxic/estate/bin/kitty-mcp-instance.sh"
+dir = "/home/toxic/estate"
+port = 25211
+mise = false
+retry = true
+boot_start = true
+auto = ["start"]
