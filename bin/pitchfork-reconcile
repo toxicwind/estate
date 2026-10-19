@@ -46,13 +46,13 @@ WRAPPER = os.path.join(REPO, "bin", "pitchfork-restart")
 LOGDIR = os.path.join(REPO, "logs")
 LEDGER = os.path.join(LOGDIR, "reconcile-ledger.jsonl")
 LOCKFILE = "/tmp/pitchfork-reconcile.lock"
-NAMESPACE = "sovereign"
+NAMESPACE = "estate"
 SYSTEMD_USER_DIR = "/home/toxic/.config/systemd/user"
 
 # --- protection: NEVER touch these, in either mode -------------------------
 PROTECTED_NAME_RE = re.compile(r"squawk", re.IGNORECASE)  # any squawk process
 PROTECTED_PORTS = {25147, 25135, 25204}  # squawk-ws, squawk-feed, bridge
-PROTECTED_IDS = {"sovereign/awrawr-ws-exec"}  # live bridge daemon
+PROTECTED_IDS = {"estate/awrawr-ws-exec"}  # live bridge daemon
 
 # Orphan registrations (in the supervisor, no [daemons.*] toml section) that
 # must NOT be evicted. Empty by default: add "sovereign/<name>" with a reason
