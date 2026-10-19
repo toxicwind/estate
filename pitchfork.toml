@@ -270,6 +270,8 @@ auto = ["start"]
 # estate — project-owned daemon manifest. Source of truth for 'dnsmasq'.
 # Owned by the estate project; the parent only composes it.
 
+# cuttinggate: single daemon; pitchfork.d/cuttinggate.toml is its source
+# fragment, NOT a duplicate (audited 2026-10-19, osprey).
 [daemons.cuttinggate]
 # 2026-10-15: run via serve wrapper — client keys come from the vault
 # (CUTTINGGATE_CLIENT_KEY); the bare def had zero client keys configured, so

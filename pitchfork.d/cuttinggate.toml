@@ -1,3 +1,6 @@
+# SOURCE FRAGMENT for [daemons.cuttinggate] in estate/pitchfork.toml.
+# NOT a second daemon - audited 2026-10-19 (osprey): single live instance
+# on :25200. Keep this fragment and the composed stanza in sync.
 [daemons.cuttinggate]
 # 2026-10-15: run via serve wrapper — client keys come from the vault
 # (CUTTINGGATE_CLIENT_KEY); the bare def had zero client keys configured, so
