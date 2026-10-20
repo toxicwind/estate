@@ -11,11 +11,11 @@ export PI_CONFIG_DIR=.tau
 export PI_DISABLE_UUTILS_BUILTINS=1
 
 # Secrets resolve from the secretsmith keyring (SSOT since 2026-10-18).
-# `secretsmith get --label X --json` returns JSON with a "secret" field;
-# plain `get --show` prints a "label: ..." banner, so parse JSON instead.
+# NOTE: plain `get --json` REDACTS the secret ("<redacted: N bytes>").
+# `get --show --json` returns pure JSON with the real secret value.
 kf() {
   command -v secretsmith >/dev/null 2>&1 || return 1
-  secretsmith get --label "$1" --json 2>/dev/null |
+  secretsmith get --label "$1" --show --json 2>/dev/null |
     python3 -c 'import json,sys; d=json.load(sys.stdin); print(d.get("secret",""))' 2>/dev/null
 }
 if [ -z "${GITHUB_TOKEN:-}" ]; then GITHUB_TOKEN=$(kf GITHUB_TOKEN); export GITHUB_TOKEN; fi
