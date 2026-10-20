@@ -18,7 +18,7 @@
  * 0 = close immediately after the house round) — no polling loops, no
  * setInterval daemons.
  *
- * Market library: /home/toxic/projects/trading-post/src/market (toxicwind/trading-post).
+ * Market library: /home/toxic/estate/ranch/trading-post/src/market (toxicwind/trading-post).
  * Ledger: /home/toxic/.openfang/workspaces/weaver/market/ledger.jsonl (append-only, shared).
  * Reputation: .../market/reputation.json (behavior-anchored, (tag x task-class)).
  *
@@ -64,8 +64,8 @@ import {
   verifyResult,
   analyze,
   narrate,
-} from '/home/toxic/projects/trading-post/src/market/index.ts';
-import { slugify } from '/home/toxic/projects/trading-post/src/market/oracle.ts';
+} from '/home/toxic/estate/ranch/trading-post/src/market/index.ts';
+import { slugify } from '/home/toxic/estate/ranch/trading-post/src/market/oracle.ts';
 import type {
   Bid,
   CriterionCheck,
@@ -76,8 +76,8 @@ import type {
   TaskContract,
   TaskPriority,
   TaskResult,
-} from '/home/toxic/projects/trading-post/src/market/index.ts';
-import type { ContractBuilder } from '/home/toxic/projects/trading-post/src/market/oracle.ts';
+} from '/home/toxic/estate/ranch/trading-post/src/market/index.ts';
+import type { ContractBuilder } from '/home/toxic/estate/ranch/trading-post/src/market/oracle.ts';
 
 /**
  * Execution ops the in-process bidder backend understands, supplied via a

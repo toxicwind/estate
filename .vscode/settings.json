@@ -1,4 +1,13 @@
 {
-    "copilot-amplify.CA-omniroute.baseUrl": "http://localhost:20128/v1",
-    "git.ignoreLimitWarning": true
+  // Silence python language-server scan spam (estate is not a python project root)
+  "python.analysis.exclude": ["**", "!**/*.py"],
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportMissingImports": "none"
+  },
+  "basedpyright.analysis.exclude": ["**/node_modules/**", "**/vendored/**", "**/archive/**"],
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/vendored": true,
+    "**/var": true
+  }
 }

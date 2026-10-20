@@ -1,4 +1,4 @@
-$[daemons.estate-exporter]
+[daemons.estate-exporter]
 mise = true
 port = 25213
 run = "exec python3 ./stack/services/estate-exporter.py"

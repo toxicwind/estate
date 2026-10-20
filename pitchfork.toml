@@ -349,9 +349,9 @@ auto = ["start"]
 # ranch/yote — project-owned daemon manifest. Source of truth for 'yote'.
 # Owned by the ranch/yote project; the parent only composes it.
 
-[daemons.Estate-exporter]
+[daemons.estate-exporter]
 port = 25213
-run = "exec python3 ./stack/services/Estate-exporter.py"
+run = "exec python3 ./stack/services/estate-exporter.py"
 dir = "."
 retry = true
 ready_http = "http://127.0.0.1:25213/metrics"
@@ -375,7 +375,7 @@ auto = ["start"]
 # estate — project-owned daemon manifest. Source of truth for 'files'.
 # Owned by the estate project; the parent only composes it.
 
-[daemons.Estate-stream-broker]
+[daemons.estate-stream-broker]
 dir = "/home/toxic/estate/ranch/stream-broker"
 run = "exec bun run src/index.ts"
 port = 25215
@@ -891,7 +891,7 @@ auto = ["start"]
 
 [daemons.nginx]
 port = 25208
-run = "exec /usr/bin/nginx -c /home/toxic/estate/ops/nginx/nginx.conf -g 'daemon off; pid /tmp/nginx-pitchfork.pid;'"
+run = "exec /usr/bin/nginx -c /home/toxic/estate/ranch/forge/ops/nginx/nginx.conf -g 'daemon off; pid /tmp/nginx-pitchfork.pid;'"
 dir = "."
 mise = false
 retry = true

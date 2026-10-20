@@ -1,4 +1,4 @@
-$[daemons.estate-stream-broker]
+[daemons.estate-stream-broker]
 mise = true
 dir = "/home/toxic/estate/ranch/stream-broker"
 run = "exec bun run src/index.ts"
