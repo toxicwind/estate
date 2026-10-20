@@ -20,3 +20,17 @@ Resulting Commit: `60c4b98491` (tagged as `refs/recovery/maximal-merge`)
 - **theirs**: Present in orphaned tree / working copy.
 - **decision**: `union`
 - **reason**: All 426 valid code, skill, and documentation files staged and committed. 59 secret/token files matching `.gitignore` patterns explicitly preserved un-tracked for security boundaries.
+
+## 2026-10-20 — duplicate-tree consolidation (whole-repo simhash/Jaccard sweep)
+
+- plugins/agentpluginzoo: canonical = `ranch/plugin-ecosystem/agentpluginzoo` (has origin remote).
+  `estate/plugins/` was an untracked stale copy -> removed. Data CSVs kept from ranch copy.
+- scripts: canonical = `estate/scripts` (tracked control-plane); `ranch/estate-scripts` was a
+  local component mirror without a remote -> cherry-picked its README/package.json/.envrc into
+  `estate/scripts`, then `ranch/estate-scripts` is a symlink to `../scripts`.
+- gear: canonical = `ranch/gear` (active: annas-router, newer awrawr-mcp). Cherry-picked
+  `vendor/dynamic_credentials.py` into `ranch/gear`, then removed tracked `estate/gear`.
+- rig-ciwatch: duplicate checkout of `toxicwind/rig` (same origin); only delta is a kernel.rs
+  formatting wrap + Cargo.lock -> recorded as `ci-watch-kernel.patch` in `rig` (commit b60d814),
+  `ranch/rig-ciwatch` now a symlink to `rig`.
+- oh-my-pi/tau-verify, fanout/openfang-join: distinct repos with different origins - NOT dupes.
