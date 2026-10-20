@@ -34,3 +34,14 @@ Resulting Commit: `60c4b98491` (tagged as `refs/recovery/maximal-merge`)
   formatting wrap + Cargo.lock -> recorded as `ci-watch-kernel.patch` in `rig` (commit b60d814),
   `ranch/rig-ciwatch` now a symlink to `rig`.
 - oh-my-pi/tau-verify, fanout/openfang-join: distinct repos with different origins - NOT dupes.
+
+## 2026-10-20 — push-completeness follow-up (unpushed state, not force-fought)
+
+- rig (`b60d814` ci-watch-kernel.patch): committed locally but NOT pushed —
+  origin is behind-1/ahead-1 with active drift. Do NOT force/rebase rig blindly;
+  rides the next owner-sync (delta is a trivial formatting patch, low risk).
+- gear (`1aa4a80` vendor cherry-pick): committed but `ranch/gear` has NO origin
+  remote — local-only by pre-existing state. Add a remote + push when gear is
+  wired to an upstream.
+- Everything else touched this session (estate, ranch, ffs-diff, corral moon.yml)
+  is pushed and in sync.
