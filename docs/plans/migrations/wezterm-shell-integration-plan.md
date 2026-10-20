@@ -50,12 +50,13 @@ Implement a WezTerm-compatible shell configuration that enables proper terminal 
 ### 6. Verification
 - Run `wezterm cli list --format json | jq .` to verify terminal
 - Run `cd /tmp && echo $PWD` to test cd functionality
-- Run `git submodule status` to verify submodule initialization
-- Confirm all submodules are initialized and working
+- Run `meta git status` or `meta context` to verify the ranch is in sync
+- Confirm all ranch component repos are tracked by meta (no gitlinks — submodule
+  mechanism is banned per docs/REPO_TOPOLOGY.md)
 
 ## Verification
-- All submodules show as initialized (`-` prefix)
-- `git submodule status` shows no errors
+- All ranch component repos show as clean/synced via `meta context`
+- `meta git status` shows no errors
 - `cd` and `__zsh_like_cd` both work in all shell contexts
 - `wezterm cli list` returns valid output
 - All READMEs are up-to-date and accurate

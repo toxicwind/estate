@@ -17,7 +17,6 @@
 - [ ] ranch weave land --onto origin/main RUNNING in background (bgp_1470104bc001WoddEe0e2tYoVg)
 - [ ] hodossync release/v3.8.52 push RUNNING in background (bgp_14700c49c001EU10hPq4CadZDp)
 
-
 ## 0. In-flight state (uncommitted — commit FIRST)
 
 - [ ] **estate repo dirty (~20 files)**: omniroute takeover (models.yml, ports.env,
@@ -28,15 +27,15 @@
       skills/guide-project-creator/ (new). Commit message ready:
       "omniroute → hodos takeover + docker lane policy + forge hf".
       Pre-existing drift NOT mine (leave): engines/herd/*, pi-skills, sigma,
-      work/tau-extensions, plugins/agentpluginzoo, bash-style-guide,
-      projects/OmniRoute gitlink.
+      work/tau-extensions, plugins/agentpluginzoo — independent checkouts
+      coordinated by gitkb/meta (gitlinks swept 2026-10-20, see REPO_TOPOLOGY).
 - [ ] **estate/projects consolidation half-done**: 135 estate-only files already
       union-merged into ranch/, 33 whole dirs moved (VansRouter, oh-my-pi,
       tau-extensions, mcpproxy-go, loom, openfang, …), divergent variants archived
       at `estate/var/archive/projects-pre-consolidation-20261016/`.
       REMAINING: (a) OmniRoute gitlink → ranch (.gitmodules entry + 160000
       gitlink, url github.com/toxicwind/OmniRoute), (b) `git rm -r --cached
-      projects/` in estate + delete leftovers on disk, (c) commit estate + ranch,
+    projects/` in estate + delete leftovers on disk, (c) commit estate + ranch,
       push both.
 - [ ] **secretsmith Bun drop-in unfinished**: full module at
       `ranch/secretsmith/bun/` (dropin.ts, index.ts, bin/secretsmith-bun.ts,
@@ -52,7 +51,7 @@
 - [ ] Compose list (pitchfork.toml line 33) still `"flicker","flicker-agent"` →
       rename to forge/forge-agent.
 - [ ] Binaries: `estate/var/reconciliation/flicker/bin/{flicker,flicker-server,
-      flicker-agent}` (41MB/69MB/21MB, real running processes :25148/:25240/:3000)
+    flicker-agent}` (41MB/69MB/21MB, real running processes :25148/:25240/:3000)
       → rename to forge/forge-server/forge-agent; update pitchfork `run=` lines.
 - [ ] `FLICKER_ROOT=/home/toxic/flicker` env (pitchfork line 724) points at a
       MISSING dir — fix to real root; rename var FLICKER_ROOT→FORGE_ROOT.
