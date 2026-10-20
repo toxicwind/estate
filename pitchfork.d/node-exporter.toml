@@ -1,4 +1,5 @@
-[daemons.node-exporter]
+$[daemons.node-exporter]
+mise = true
 port = 25211
 run = "exec /usr/local/bin/node_exporter --web.listen-address=127.0.0.1:25211"
 dir = "."

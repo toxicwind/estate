@@ -539,13 +539,15 @@ auto = ["start"]
 # Owned by the estate project; the parent only composes it.
 
 [daemons.hf-downloader]
-port = 25106
+# 2026-10-19: 25106 -> 25226 (25106 now owned by adopted-orphan gibber-mcp).
+port = 25226
 run = "exec ./stack/services/hf-downloader-mesh.sh"
 dir = "."
 mise = true
 retry = true
-ready_http = "http://127.0.0.1:25106/api/health"
-health_http = { url = "http://127.0.0.1:25106/health", interval = "30s", timeout = "5s", retries = 3 }
+env_file = "config/ports.env"
+ready_http = "http://127.0.0.1:25226/api/health"
+health_http = { url = "http://127.0.0.1:25226/health", interval = "30s", timeout = "5s", retries = 3 }
 depends = ["gatehouse"]
 auto = ["start"]
 
@@ -1312,11 +1314,8 @@ auto = ["start"]
 # ranch/stream-broker — project-owned daemon manifest. Source of truth for 'estate-scripts-stream-broker'.
 # Owned by the ranch/stream-broker project; the parent only composes it.
 
-[daemons.estate-scripts-stream-broker]
-dir = "/home/toxic/estate/ranch/stream-broker"
-run = "exec bun run src/index.ts"
-port = 25215
-ready_port = 25215
+# DEDUPLICATED 2026-10-19: this registration duplicated pitchfork.d/estate-stream-broker.toml
+# (same dir/src/index.ts, same :25215). Canonical: the .d file.
 
 # ranch/hatch/kite-cli — project-owned daemon manifest. Source of truth for 'kite-daemon'.
 # Owned by the kite-cli project; the parent only composes it.
