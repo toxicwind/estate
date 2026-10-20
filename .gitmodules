@@ -1,67 +1,10 @@
-# Submodules are declared by live path only.
+# Submodules are declared by live path only — and by the one-entry rule
+# (docs/REPO_TOPOLOGY.md §Rules): only the github/gitignore entry is allowed.
 #
-# The two entries that were here pointed at projects/shell/ii and tau/vendors.
-# Both died in the 2026-10-01 restructure (projects/ was dissolved, tau moved
-# to ranch/tau) but the declarations survived, so every `git rev-list` died with
-#   fatal: exec 'rev-list': cd to 'projects/shell/ii' failed: No such file or directory
-# which made ahead/behind counts meaningless and blocked the push.
-#
-# Re-add an entry only when the checkout is actually on disk and has its own .git.
+# Nested checkouts (engines/herd/*, sigma, pi-skills, work/*, plugins/*, etc.)
+# are independent repos coordinated by gitkb/meta — NOT gitlinks. They remain
+# on disk as separate checkouts; the estate simply does not index them.
+# Re-adding any gitlink here is a top-level defect to undo (see REPO_TOPOLOGY.md).
 [submodule "ops/gitignore/templates"]
 	path = ops/gitignore/templates
 	url = https://github.com/github/gitignore.git
-[submodule "bash-style-guide"]
-	path = bash-style-guide
-	url = https://github.com/toxicwind/bash-style-guide.git
-
-[submodule "config/tau/agent/extensions/hashline-pi"]
-	path = config/tau/agent/extensions/hashline-pi
-	url = https://github.com/acoyfellow/hashline-pi.git
-[submodule "pdfshield"]
-	path = pdfshield
-	url = https://github.com/purvalsingh/pdfshield.git
-[submodule "pi-skills"]
-	path = pi-skills
-	url = https://github.com/fonnesbeck/pi-skills.git
-[submodule "sigma"]
-	path = sigma
-	url = https://github.com/toxicwind/sigma.git
-[submodule "skills-hub"]
-	path = skills-hub
-	url = https://github.com/toxicwind/estate-skills-hub.git
-[submodule "skills/softpaw/guard-suite/purple-llama"]
-	path = skills/softpaw/guard-suite/purple-llama
-	url = https://github.com/meta-llama/PurpleLlama.git
-[submodule "tools/pd-mcp-standalone"]
-	path = tools/pd-mcp-standalone
-	url = https://github.com/toxicwind/pd-mcp.git
-[submodule "work/tau-extensions"]
-	path = work/tau-extensions
-	url = https://github.com/toxicwind/tau-extensions.git
-[submodule "plugins/agentpluginzoo"]
-	path = plugins/agentpluginzoo
-	url = /home/toxic/estate/plugins/agentpluginzoo
-[submodule "config.tau.agent.extensions.hashline-pi"]
-	path = config/tau/agent/extensions/hashline-pi
-	url = https://github.com/acoyfellow/hashline-pi.git
-[submodule "engines.herd.ik_llama.cpp"]
-	path = engines/herd/ik_llama.cpp
-	url = https://github.com/ikawrakow/ik_llama.cpp.git
-[submodule "engines.herd.llama-cpp-turboquant"]
-	path = engines/herd/llama-cpp-turboquant
-	url = https://github.com/TheTom/llama-cpp-turboquant.git
-[submodule "plugins.agentpluginzoo"]
-	path = plugins/agentpluginzoo
-	url = https://github.com/tezansahu/agentpluginzoo.git
-[submodule "work.airspeak"]
-	path = work/airspeak
-	url = https://github.com/toxicwind/airspeak.git
-[submodule "work.tau-extensions"]
-	path = work/tau-extensions
-	url = https://github.com/toxicwind/tau-extensions.git
-[submodule "submodules.phone-sentinel"]
-	path = submodules/phone-sentinel
-	url = /home/toxic/phone-sentinel
-[submodule "engines.herd.beellama.cpp"]
-	path = engines/herd/beellama.cpp
-	url = https://github.com/Anbeeld/beellama.cpp.git
