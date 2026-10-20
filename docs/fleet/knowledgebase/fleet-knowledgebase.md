@@ -247,7 +247,7 @@ Full protocol: `agents/oracle-market/SPEC.md` § oracle-as-approval.
 
 ## 5. Docs index (deep links)
 
-- Master README: [/home/toxic/estate/README.md](../README.md) — every sub-README links back here.
+- Master README: [/home/toxic/estate/README.md](../../README.md) — every sub-README links back here.
 - This knowledgebase: `docs/fleet-knowledgebase.md` (this file)
 - Spawn brief template: `docs/spawn-brief-template.md` — canonical template every brief is generated from; autonomy doctrine in its header (removing it is a visible diff)
 - Paper-search skill: `/home/toxic/estate/skills/paper-search/SKILL.md`

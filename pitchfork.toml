@@ -873,12 +873,16 @@ auto = ["start"]
 
 [daemons.squawk-ws]
 port = 25147
-run = "exec /usr/bin/python3 /home/toxic/estate/ranch/squawk-ws/squawk_ws_server.py"
+# 2026-10-20 TS cutover (Forge) - bun port of squawk-ws.
+# Rollback: comment the bun run line, uncomment the python run line below.
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/services/squawk-ws/src/index.ts"
+# run = "exec /usr/bin/python3 /home/toxic/estate/ranch/squawk-ws/squawk_ws_server.py"
 dir = "/home/toxic/estate/ranch/squawk-ws"
 mise = false
 retry = true
 boot_start = true
 ready_http = "http://127.0.0.1:25147/ping"
+env = { SQUAWK_WS_PORT = "25147", SQUAWK_CHAT_ROOT = "/home/toxic/.fleet-bus/squawk-root" }
 
 [daemons.squawk-feed]
 port = 25135

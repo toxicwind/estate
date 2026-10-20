@@ -73,7 +73,7 @@ result in the pull request:
 
 “`bun check` passes” by itself is not sufficient verification. For coding-agent
 development commands and repository structure, see
-[`packages/coding-agent/DEVELOPMENT.md`](packages/coding-agent/DEVELOPMENT.md).
+[`ranch/tau/packages/coding-agent/DEVELOPMENT.md`](ranch/tau/packages/coding-agent/DEVELOPMENT.md).
 
 Keep each pull request to one logical change. Avoid unrelated cleanup,
 drive-by refactors, generated noise, or features that were not part of the

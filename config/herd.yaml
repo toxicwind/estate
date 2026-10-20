@@ -588,14 +588,10 @@ models:
   # what /v1/models advertises and it routes directly to the peer
   # (moonshot/kimi-k2.6 -> 429, moonshot/kimi-k2.7-code -> 429). Bare IDs
   # hit the dedup'd global map and are unreliable (kimi-k2.7-code -> 404).
-  # 2026-09-21 (ember-kimi-route): Kimi routes are NEVER defaults;
-  # their sole purpose is routing Kimi FREE models maximally.
-  # Ordered free-Kimi chain; shim advances on 5xx/conn/429/402/404;
-  # 401 never advances. Paid Kimi excluded (free only).
-  # 2026-09-21 (ember-kimi-route): Kimi routes are NEVER defaults;
-  # their sole purpose is routing Kimi FREE models maximally.
-  # Ordered free-Kimi chain; shim advances on 5xx/conn/429/402/404;
-  # 401 never advances. Paid Kimi excluded (free only).
+  # custom-auto (2026-10-19): generic alias forwarder; the free-Kimi chain
+  # below is one chain it can serve. DECOUPLED from the retired
+  # "Kimi-only" doctrine of 2026-09-21 — selection never hard-codes a family.
+  # Ordered chain; shim advances on 5xx/conn/429/402/404; 401 never advances.
   # 2026-09-21 (ember-kimi-route): Kimi routes are NEVER defaults;
   # their sole purpose is routing Kimi FREE models maximally.
   # Ordered free-Kimi chain; shim advances on 5xx/conn/429/402/404;

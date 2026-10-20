@@ -103,7 +103,7 @@ All READMEs in this repo, deeplinked: [README-INDEX.md](README-INDEX.md).
 
 ## Contributing docs
 
-New docs go in [`plans/`](plans/) (proposals) or [`audits/`](audits/) (verdicts); bridge/cell docs live in [`hatch/docs/`](../hatch/docs/). Every claim carries its evidence and a verdict — observed behavior beats documentation. Cross-link from this README and from [README-INDEX.md](README-INDEX.md) so the doc is discoverable.
+New docs go in [`plans/`](plans/) (proposals) or [`audits/`](audits/) (verdicts); control-cell (kite/hatch) docs live in the private `toxicwind/hatch` repo (live at `/home/toxic/hatch`), not in this tree. Every claim carries its evidence and a verdict — observed behavior beats documentation. Cross-link from this README and from [README-INDEX.md](README-INDEX.md) so the doc is discoverable.
 
 ## License & Security
 

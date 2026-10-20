@@ -7,24 +7,23 @@ RANCH_DIR="${ESTATE_DIR}/ranch"
 
 echo "⚡ [submodules-sync] Synchronizing registered estate submodules..."
 
-# Update registered submodules whose remote upstream has advanced,
-# using checkout (fast-forward/detached HEAD update) to safely track pinned heads
-# without dirtying submodules that have divergent fork histories (like OmniRoute).
-git -C "$RANCH_DIR" submodule update --init --recursive estate-kappa-plugin kappa 2>/dev/null || true
+# Update registered submodules whose remote upstream has advanced
+git -C "$RANCH_DIR" submodule update --init --recursive estate-kappa-plugin bash-style-guide pdfshield
 
-# Audit and update the catalog
+# Audit and update the catalog with live output
 if [[ -f "$RANCH_DIR/toolkit/audit-forks.ts" ]]; then
-  echo "📊 [submodules-sync] Running audit-forks and generating catalog..."
-  bun --cwd "$RANCH_DIR" toolkit/audit-forks.ts >/dev/null 2>&1 || true
-  bun --cwd "$RANCH_DIR" toolkit/generate-readme.ts --update >/dev/null 2>&1 || true
+  echo "📊 [submodules-sync] Running audit-forks..."
+  bun --cwd "$RANCH_DIR" toolkit/audit-forks.ts
+  echo "📖 [submodules-sync] Generating README catalog..."
+  bun --cwd "$RANCH_DIR" toolkit/generate-readme.ts --update
 fi
 
 # Check for staged or unstaged submodule changes in ranch
-if [[ -n "$(git -C "$RANCH_DIR" status --porcelain .gitmodules estate-kappa-plugin README.md FORKS-report.json FORKS-report.md 2>/dev/null)" ]]; then
+if [[ -n "$(git -C "$RANCH_DIR" status --porcelain .gitmodules estate-kappa-plugin bash-style-guide pdfshield README.md FORKS-report.json FORKS-report.md 2>/dev/null)" ]]; then
   echo "💾 [submodules-sync] Committing updated submodule state in ranch..."
-  git -C "$RANCH_DIR" add .gitmodules estate-kappa-plugin README.md FORKS-report.json FORKS-report.md 2>/dev/null || true
-  git -C "$RANCH_DIR" commit -m "bot: autonomous submodule catalog update" 2>/dev/null || true
-  git -C "$RANCH_DIR" push origin main 2>/dev/null || true
+  git -C "$RANCH_DIR" add .gitmodules estate-kappa-plugin bash-style-guide pdfshield README.md FORKS-report.json FORKS-report.md
+  git -C "$RANCH_DIR" commit -m "bot: autonomous submodule catalog update"
+  git -C "$RANCH_DIR" push origin main
   echo "🚀 [submodules-sync] Ranch submodules pushed to origin."
 else
   echo "✅ [submodules-sync] Ranch submodules are up to date."

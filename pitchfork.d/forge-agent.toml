@@ -1,6 +1,6 @@
 [daemons.forge-agent]
-run = "exec /home/toxic/estate/var/reconciliation/flicker/bin/flicker-agent"
-dir = "/home/toxic/estate/var/reconciliation/flicker"
+run = "exec /home/toxic/estate/ranch/forge/flicker/bin/forge-agent"
+dir = "/home/toxic/estate/ranch/forge/flicker"
 mise = false
 retry = true
 boot_start = true
