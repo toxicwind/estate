@@ -1,6 +1,11 @@
 # Estate Documentation Knowledge Graph (11ty-Style Collections Index)
 
-> **Automated Relational Knowledge Graph** generated on `2026-09-27T09:22:52.066Z` across **244 modular documents** in `estate/docs/`.
+> **STALE** — last generated `2026-09-27T09:22:52Z` by an external 11ty tool not
+> in this tree. The referenced tree has since moved (cinder personas lost
+> IDENTITY/SOUL.md; `projects/`, `hatch/`, `tau-extensions/` sub-trees removed).
+> Prefer the live [`docs/README-INDEX.md`](README-INDEX.md) and
+> [`docs/REPO_TOPOLOGY.md`](REPO_TOPOLOGY.md); regenerate this only if the 11ty
+> generator is re-added. Links below may be stale.
 
 ## Tagged Collections Index
 
