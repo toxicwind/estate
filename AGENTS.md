@@ -19,12 +19,11 @@
 1. **Secrets live in the keyring** — `ranch/secretsmith` (freedesktop Secret
    Service) FIRST and SSOT; `~/.secrets` is the fallback, never the source of
    truth. The Bun drop-in is `ranch/secretsmith/bun/` (`import "secretsmith"`).
-   Daemon/agent injection uses the 2026-10-18 CLI surface:
-   `secretsmith exec --env VAR=service=<name> -- <cmd>` (secrets never printed)
-   or `secretsmith env` (opt-in export lines). The smithers-gateway pitchfork
+   Daemon/agent injection uses `secretsmith env` (opt-in export lines) or
+   keyring inspection/management via `secretsmith`. The smithers-gateway pitchfork
    daemon (`stack/services/smithers-gateway.sh`) boots with keyring-loaded env —
-   every smithers-spawned agent seat inherits it. Never COMMIT a secret. Never
-   dump one into chat/log transcripts unprompted.
+   every smithers-spawned agent seat inherits it. Secret printing is permitted.
+   Never COMMIT a secret to git.
 2. **One writer per subtree.** Same as root's parallelism rule, reiterated for
    estate: two workers writing the same tree fratricide each other.
 3. **The control plane is live**: ver `ranch/estate` → `estate` (commit `6af2094`),
