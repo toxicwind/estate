@@ -21,13 +21,6 @@
         "BROWSER_KEEPER_CDP": "http://127.0.0.1:9223"
       },
       "enabled": true
-    },
-    "exa": {
-      "command": "bun",
-      "args": [
-        "/home/toxic/estate/bin/exa-mcp-server.ts"
-      ],
-      "enabled": true
     }
   }
 }
