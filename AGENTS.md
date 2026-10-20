@@ -42,7 +42,7 @@ Every `todowrite` list here ENDS with a final **vibe meta-todo** (always last,
 the reset) that holds this estate's whole doctrine mid-task:
 
 - **Free-will / MAXIMAL / first-class / future-usable / cutting-edge.** Never
-  "report-only" — always *fix-forward*. Slow, blocked, or basic = race the
+  "report-only" — always _fix-forward_. Slow, blocked, or basic = race the
   fastest available path, not a stop.
 - **Race faster with borrow + papers DURING the task**, not just at planning:
   on any slow/blocked step route ast-grep → bm25 → paper-finder → forge borrow →
@@ -60,12 +60,12 @@ the reset) that holds this estate's whole doctrine mid-task:
 
 ## Scope split (deeper nested files)
 
-| Path | Owns |
-|---|---|
-| `/home/toxic/estate/ranch/<component>/AGENTS.md` | each ranch component repo's contract |
-| `/home/toxic/estate/skills/<skill>/AGENTS.md` (if present) | that skill's own contract |
-| `/home/toxic/estate/ranch/secretsmith/bun/` | the Bun secretsmith drop-in |
-| `/home/toxic/estate/grasp-hub/` | skills registry + DAG router |
+| Path                                                       | Owns                                 |
+| ---------------------------------------------------------- | ------------------------------------ |
+| `/home/toxic/estate/ranch/<component>/AGENTS.md`           | each ranch component repo's contract |
+| `/home/toxic/estate/skills/<skill>/AGENTS.md` (if present) | that skill's own contract            |
+| `/home/toxic/estate/ranch/secretsmith/bun/`                | the Bun secretsmith drop-in          |
+| `/home/toxic/estate/grasp-hub/`                            | skills registry + DAG router         |
 
 ## Estate tooling canon (the boxes' ffs is the universal rule; estate-specific)
 
@@ -73,7 +73,7 @@ the reset) that holds this estate's whole doctrine mid-task:
   a competing search tool. When an estate subcommand's semantics are unclear,
   `ffs guide` before guessing.
 - **grasp-hub router**: `node /home/toxic/estate/grasp-hub/bin/grasp-hub.js
-  route "<query>"` picks orthogonal sub-skills (GraSP DAG). Use it when a task
+route "<query>"` picks orthogonal sub-skills (GraSP DAG). Use it when a task
   spans >1 skill.
 - **meta (multi-repo manifest)**: the ranch's 214 component repos are peers,
   coordinated by `meta` (`.meta.yaml` from `.gitmodules`; AI-native MCP server).
@@ -87,26 +87,24 @@ the reset) that holds this estate's whole doctrine mid-task:
 
 ## Verified ecosystem map (2026-10-14, spot-checked 2026-10-16)
 
-| Thing | Path / port | Notes |
-|---|---|---|
-| Control plane repo | `/home/toxic/estate` | git repo on `main`; 90+ pitchfork daemons |
-| Ranch (252 entries) | `/home/toxic/estate/ranch` | ferret-den at `ranch/ferret-den` |
-| Tau engine (5.1G) | `/home/toxic/estate/ranch/tau` | own git repo, bazel+rust+bun |
-| Tau agent config | `$HOME/.tau` → `estate/config/tau` | agent dir `$HOME/.tau/agent` |
-| Skills | `/home/toxic/estate/skills` | pattern-forge, tau-session-audit, … |
-| Secrets keyring | `ranch/secretsmith` | freedesktop Secret Service via D-Bus |
-| Secrets vault (fallback) | `/home/toxic/.secrets` | record of last resort |
-| Pitchfork defs | `/home/toxic/estate/pitchfork.toml` | SSOT, daemons |
-| Mise defs | `/home/toxic/estate/mise.toml` | hand-edited; ports from `config/ports.env` |
-| Port SSOT | `/home/toxic/estate/config/ports.env` | all 25xxx, never invent |
-| Pitchfork CLI | `/home/toxic/estate/bin/pitchfork` | `pf check` reports real drift |
-| Qdrant | `127.0.0.1:25133`/`:25134` | HTTP/gRPC |
-| Redis (valkey) | `127.0.0.1:25203` | migrated off :25199 |
-| Flicker build daemon | `127.0.0.1:25148` | ranch build daemon, NOT mbx-cache |
-| awrawr-mcp | `127.0.0.1:25198` | live + auth-gated (stale-definition bug) |
-| deep-paper-reader | `/home/toxic/src/local/deep-paper-reader` | paper-poller :25149/:25150 |
-
-
+| Thing                    | Path / port                               | Notes                                      |
+| ------------------------ | ----------------------------------------- | ------------------------------------------ |
+| Control plane repo       | `/home/toxic/estate`                      | git repo on `main`; 90+ pitchfork daemons  |
+| Ranch (252 entries)      | `/home/toxic/estate/ranch`                | ferret-den at `ranch/ferret-den`           |
+| Tau engine (5.1G)        | `/home/toxic/estate/ranch/tau`            | own git repo, bazel+rust+bun               |
+| Tau agent config         | `$HOME/.tau` → `estate/config/tau`        | agent dir `$HOME/.tau/agent`               |
+| Skills                   | `/home/toxic/estate/skills`               | pattern-forge, tau-session-audit, …        |
+| Secrets keyring          | `ranch/secretsmith`                       | freedesktop Secret Service via D-Bus       |
+| Secrets vault (fallback) | `/home/toxic/.secrets`                    | record of last resort                      |
+| Pitchfork defs           | `/home/toxic/estate/pitchfork.toml`       | SSOT, daemons                              |
+| Mise defs                | `/home/toxic/estate/mise.toml`            | hand-edited; ports from `config/ports.env` |
+| Port SSOT                | `/home/toxic/estate/config/ports.env`     | all 25xxx, never invent                    |
+| Pitchfork CLI            | `/home/toxic/estate/bin/pitchfork`        | `pf check` reports real drift              |
+| Qdrant                   | `127.0.0.1:25133`/`:25134`                | HTTP/gRPC                                  |
+| Redis (valkey)           | `127.0.0.1:25203`                         | migrated off :25199                        |
+| Flicker build daemon     | `127.0.0.1:25148`                         | ranch build daemon, NOT mbx-cache          |
+| awrawr-mcp               | `127.0.0.1:25198`                         | live + auth-gated (stale-definition bug)   |
+| deep-paper-reader        | `/home/toxic/src/local/deep-paper-reader` | paper-poller :25149/:25150                 |
 
 ## MCP servers + doorbell (2026-10-16)
 
@@ -125,17 +123,25 @@ the reset) that holds this estate's whole doctrine mid-task:
   `github.com/<owner>/<repo>` URLs in ts/py/sh/json/yaml — reference repos by
   local path, resolve via `git -C <path> remote get-url origin`.
 
-/home/toxic/sovereign/` does not exist (renamed to `estate`, commit `6af2094`).
-UUID-prefixed scratch under `/home/toxic/` only; nothing precious in `/tmp`.
+/home/toxic/sovereign/`does not exist (renamed to`estate`, commit `6af2094`).
+UUID-prefixed scratch under `/home/toxic/`only; nothing precious in`/tmp`.
 
 ## Agent customizations + skills hub (2026-10-16)
 
-- **Skills hub = grasp-hub** (`/home/toxic/estate/grasp-hub`; supersedes the old
-  skills-hub MCP naming). Register a new skill by dropping it in
-  `/home/toxic/estate/skills/<name>/` (SKILL.md frontmatter required), symlinking
-  into `grasp-hub/skills/<cluster>/<name>`, then proving pickup:
-  `node bin/grasp-hub.js list | grep <name>` and `node bin/grasp-hub.js validate`
-  must be green. The MCP server (`grasp-hub/mcp/server.ts`) wraps this CLI.
+- **Skills hub = grasp-hub — SSOT for BOTH kappa and tau** (`/home/toxic/estate/grasp-hub`;
+  supersedes the old skills-hub MCP naming). Every estate coding agent loads
+  skills from this one tree, never per-agent copies:
+  - **kappa**: global `skills.paths` → `grasp-hub/skills` (`~/.config/kappa/kappa.jsonc`,
+    dots-managed under `ranch/shell/ii`) + project `.agents/skills/` →
+    `../grasp-hub/skills` symlink (native discovery).
+  - **tau**: `config/tau/skills` → `grasp-hub/skills` symlink.
+    Register a new skill by dropping it in `/home/toxic/estate/skills/<name>/`
+    (SKILL.md frontmatter required), symlinking into
+    `grasp-hub/skills/<cluster>/<name>`, then proving pickup:
+    `node bin/grasp-hub.js list | grep <name>` and `node bin/grasp-hub.js validate`
+    must be green. The MCP server (`grasp-hub/mcp/server.ts`) wraps this CLI.
+    Frontmatter must parse for gray-matter/js-yaml: plain string or `description: >`
+    folded block; never an unquoted scalar containing `: ` (drops the skill silently).
 - **Guide convention is REQUIRED** for every `*-guide` project: flat R-NNN rule
   ids (renumbering forbidden; commits cite ids), a Why paragraph naming the
   failure mode per rule, Correct/Avoid pairs, at least one machine gate, and the

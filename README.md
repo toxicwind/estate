@@ -179,6 +179,23 @@ The fleet is not a metaphor. Named agents — each with a species, a personality
 
 A few of the crew: **Forge** (migration smith) · **Nightjar** (night-lanes coordinator) · **Sable** (docs) · **Vesper** (evening shepherd) · **Cinder** (subagent control) · **Tally** (verifier) · **Lumen** (squawk UI) · **Warden** (drift-watch). The roster changes — the fleet channel is the source of truth.
 
+## 🧠 Skills — one registry, every agent
+
+All estate skills (kappa **and** tau) load from a single registry:
+[**grasp-hub**](grasp-hub/) — `grasp-hub/skills/<cluster>/<name>/SKILL.md`,
+exposed via Graph-Structured Agent Planning (GraSP) clusters with a DAG router,
+classifier, and an MCP server (`grasp-hub/mcp/server.ts`).
+
+- **kappa** → `skills.paths` → `grasp-hub/skills` (global, dots-managed) and the
+  project `.agents/skills/` symlink (native discovery). Verify with
+  `kappa debug skill`.
+- **tau** → `config/tau/skills` → `grasp-hub/skills` symlink.
+
+Add or edit a skill once in grasp-hub and both consumers pick it up — no
+per-agent copies. Keep the `name == directory` contract and parseable
+frontmatter (plain string or `description: >` folded; never `: ` in an unquoted
+scalar).
+
 ## 🔧 Operations
 
 **pitchfork** is the daemon supervisor. The composed `pitchfork.toml` at the repo root is generated from per-project manifests (`<project>/pitchfork.d/<daemon>.toml`) — edit the project source, never the composed file. The hard-won rule, learned from a 12-hour stale-definition incident:
