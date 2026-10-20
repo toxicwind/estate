@@ -1,0 +1,24 @@
+{
+  "$comment": "Reconstructed 2026-10-19 — original lost with /tmp/kimiclaw-repair staging (see RECONCILIATION.md). Minimal valid config; routing defaults to openfang :25196 + herd :25100.",
+  "instanceId": "kimiclaw-b",
+  "bridge": { "outboundTransport": "im_rpc" },
+  "gateway": {
+    "url": "http://127.0.0.1:25103",
+    "clientId": "kimiclaw-b",
+    "clientMode": "agent",
+    "agentId": "kimiclaw-b",
+    "protocol": 1
+  },
+  "session": {
+    "agentSessionSegment": "kimiclaw-b",
+    "channelSegment": "kimi-claw",
+    "accountId": "main"
+  },
+  "routing": {
+    "openfangUrl": "http://127.0.0.1:25196",
+    "herdUrl": "http://127.0.0.1:25100/v1"
+  },
+  "deliveryContext": { "channel": "im", "to": "kimiclaw-b", "accountId": "main" },
+  "sessionKey": "kimiclaw-b:main",
+  "terminalWs": { "enabled": false }
+}
