@@ -1,2 +1,0 @@
-#!/usr/bin/env bash
-exec /home/toxic/estate/ops/git-hooks/dispatch pre-push "$@"

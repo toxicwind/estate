@@ -59,9 +59,6 @@
 [submodule "engines.herd.llama-cpp-turboquant"]
 	path = engines/herd/llama-cpp-turboquant
 	url = https://github.com/TheTom/llama-cpp-turboquant.git
-[submodule "ops.gitignore.templates"]
-	path = ops/gitignore/templates
-	url = https://github.com/github/gitignore.git
 [submodule "plugins.agentpluginzoo"]
 	path = plugins/agentpluginzoo
 	url = https://github.com/tezansahu/agentpluginzoo.git
