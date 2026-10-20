@@ -57,7 +57,10 @@ gitleaks()     { if _2s_slow gitleaks "$1";     then "$RF" gitleaks "$@";   else
 codebase-memory(){ if _2s_slow codebase-memory "$1"; then "$RF" codebase-memory "$@"; else command codebase-memory "$@"; fi; }
 cargo()        { if _2s_slow cargo "$1";        then "$RF" cargo "$@";      else command cargo "$@"; fi; }
 go()           { if _2s_slow go "$1";           then "$RF" go "$@";         else command go "$@"; fi; }
-timeout()      { shift 2>/dev/null; "$RF" "$@"; }   # the timeout habit → run-fast
+# `timeout N cmd` is a REAL wall-clock bound: route it to the genuine /usr/bin/timeout,
+# never through run-fast (which kills at the 2s base and destroys long work). Slow
+# commands are handled by the runner's auto-detach, not by corrupting `timeout`.
+timeout() { command /usr/bin/timeout "$@"; }
 
 # --------------------------------------------------- doctrine: kill tail/head
 # `tail`/`head` on FILES: translate to the ffs equivalent.
