@@ -1375,7 +1375,7 @@ auto = ["start"]
 # `git pull` in /home/toxic/estate/ranch must `rm -rf barn/archguard` first or
 # the pull will refuse on the untracked files; after the pull they resolve clean.
 [daemons.archguard-falkordb]
-run = "exec docker run --rm --name archguard-falkordb -p 127.0.0.1:6379:6379 -p 127.0.0.1:13000:3000 -v archguard_falkordb_data:/data falkordb/falkordb:latest"
+run = "exec docker run --rm --name archguard-falkordb -p 127.0.0.1:6379:6379 -p 127.0.0.1:13000:3000 -v archguard_falkordb_data:/var/lib/falkordb/data falkordb/falkordb:latest"
 dir = "/home/toxic/estate/ranch/barn/archguard"
 mise = false
 retry = true
