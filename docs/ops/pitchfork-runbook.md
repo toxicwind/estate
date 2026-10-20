@@ -95,3 +95,12 @@ systemctl --user status pitchfork.service --no-pager | grep -c "log-sink"  # exp
 pitchfork list | awk '{print $2}' | sort | uniq -c   # expect: mostly running, 0 unexpected errored
 for p in 25100 25121 25127 25148 25155 25193; do curl -s -o /dev/null -w "$p:%{http_code} " http://127.0.0.1:$p/health; done; echo
 ```
+## 6. kitty is NOT a daemon (2026-10-19)
+
+`estate/kitty-mcp` was a contract instance giving the gatehouse kitty MCP
+server a stable `KITTY_MCP_SOCKET=tcp:127.0.0.1:25211`. Problem: kitty is a
+**user terminal**, not a service — every supervisor cycle respawned it and it
+popped terminal windows on the desktop. Decommissioned 2026-10-19:
+`pitchfork disable estate/kitty-mcp`; the socket binding is only needed while
+an MCP client actively drives kitty, and the kitty-mcp-server bun instances
+self-heal.
