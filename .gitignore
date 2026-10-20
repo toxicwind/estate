@@ -36,8 +36,7 @@ nohup.out
 __MACOSX/
 .AppleDouble
 .LSOverride
-Icon[
-]
+Icon[]
 
 # Resource forks
 ._*
@@ -58,8 +57,7 @@ Icon[
 .file
 .disk_label*
 lost+found
-.HFS+ Private Directory Data[
-]
+.HFS+ Private Directory Data[]
 
 # Directories potentially created on remote AFP share
 .AppleDB
@@ -1330,6 +1328,19 @@ doorbell.*.crt
 doorbell.*.key
 config/tau/agent/extensions/*/settings.json
 
+# ── NativeLink runtime state (2026-10-19) ───────────────────────────────
+# NativeLink CAS/AC content stores and worker scratch live under var/runtime
+# (already covered by `var/` in 10-layout-tiers). What's new: bazel symlinks
+# and local rc fragments that any REAPI-connected project materializes.
+# Content-addressed cache output, never source of truth. Root-anchored:
+# the tau repo tracks its own bazel/ rules dir (no dash), and nested repos
+# carry their own .gitignore for these.
+/bazel-bin
+/bazel-out
+/bazel-testlogs
+/bazel-*
+/user.bazelrc
+
 # ── Standing audit artifacts (2026-10-15) ───────────────────────────────
 # Skills may keep versioned reports. The template layers' unanchored
 # `*.log` (Node/bun/Django/VS — 4 occurrences) silently swallows raw audit
@@ -1341,7 +1352,7 @@ config/tau/agent/extensions/*/settings.json
 # ── Estate workspace packages (2026-10-15) ──────────────────────────────
 # Root package.json declares workspaces: packages/*, but the VisualStudio
 # template layer ships **/[Pp]ackages/* which swallowed the whole tree —
-# 14 files in packages/sovereign-utils were silently unstaged. Re-include,
+# 14 files in packages/Estate-utils were silently unstaged. Re-include,
 # then re-ignore the build artifacts the negation would otherwise
 # resurrect (these negations come after the template layers).
 !/packages/**
@@ -1408,6 +1419,11 @@ config/environment.d/
 .env.*
 !.env.example
 *.env
+!.env
+!.envrc
+# re-ignore credential envs the !.env negation would resurrect at depth:
+config/tau/.env
+config/**/.env
 !config/ports.env
 !config/hodos-ssot/route.env
 .secrets
@@ -1438,7 +1454,3 @@ estate/ranch/rustdesk-server/id_ed25519
 estate/ranch/rustdesk-server/id_ed25519.pub
 ranch/rustdesk-server/id_ed25519
 ranch/rustdesk-server/id_ed25519.pub
-
-# ── Un-swallow estate source directories ──────────────────────────────
-!/bin/**
-!/scripts/**
