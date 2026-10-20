@@ -10,8 +10,13 @@ export PI_CODING_AGENT_DIR=$HOME/.tau/agent
 export PI_CONFIG_DIR=.tau
 export PI_DISABLE_UUTILS_BUILTINS=1
 
-# GITHUB_TOKEN injected via secretsmith keyring / ~/.secrets
-if command -v secretsmith >/dev/null 2>&1; then
-  export GITHUB_TOKEN="${GITHUB_TOKEN:-$(secretsmith get github/token 2>/dev/null || true)}"
-  export GH_TOKEN="$GITHUB_TOKEN"
-fi
+# Secrets resolve from the secretsmith keyring (SSOT since 2026-10-18).
+# `secretsmith get --label X --json` returns JSON with a "secret" field;
+# plain `get --show` prints a "label: ..." banner, so parse JSON instead.
+kf() {
+  command -v secretsmith >/dev/null 2>&1 || return 1
+  secretsmith get --label "$1" --json 2>/dev/null |
+    python3 -c 'import json,sys; d=json.load(sys.stdin); print(d.get("secret",""))' 2>/dev/null
+}
+if [ -z "${GITHUB_TOKEN:-}" ]; then GITHUB_TOKEN=$(kf GITHUB_TOKEN); export GITHUB_TOKEN; fi
+if [ -z "${GH_TOKEN:-}" ]; then GH_TOKEN="$GITHUB_TOKEN"; export GH_TOKEN; fi
