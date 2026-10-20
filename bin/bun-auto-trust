@@ -1,22 +1,34 @@
 #!/usr/bin/env bash
-# bun-auto-trust — auto-trust lifecycle scripts across monorepos and workspaces
+# bun-auto-trust — high-performance bun project truster powered by bun-project-detect
 set -euo pipefail
 
-TARGET_DIR="${1:-$PWD}"
+ROOT_DIR="${1:-$PWD}"
+MAX_DEPTH="${2:-3}"
 
-cd "$TARGET_DIR"
+echo "⚡ [bun-auto-trust] Detecting Bun projects under $ROOT_DIR..."
 
-if [[ ! -f "package.json" ]]; then
-  exit 0
-fi
+PROJECTS=$(bun-project-detect "$ROOT_DIR" --depth "$MAX_DEPTH" --json)
 
-# Run dry-run to see if any untrusted scripts would run
-DRY_RUN=$(bun pm trust --all --dry-run 2>&1 || true)
+COUNT=$(echo "$PROJECTS" | jq '. | length')
+TRUSTED_COUNT=0
 
-if echo "$DRY_RUN" | grep -qv "0 scripts ran" && echo "$DRY_RUN" | grep -q "Would run"; then
-  echo "⚡ [bun-auto-trust] Trusting lifecycle scripts in $TARGET_DIR..."
-  bun pm trust --all 2>&1 || true
-  echo "✅ [bun-auto-trust] Trusted dependencies in $TARGET_DIR."
-else
-  echo "✅ [bun-auto-trust] All dependencies in $TARGET_DIR are already trusted."
-fi
+for row in $(echo "$PROJECTS" | jq -r '.[] | @base64'); do
+  _jq() {
+    echo "${row}" | base64 --decode | jq -r "${1}"
+  }
+  
+  dir=$(_jq '.path')
+  type=$(_jq '.type')
+  
+  # Only run bun pm trust on workspace roots and standalone bun projects
+  if [[ "$type" == "workspace-root" || "$type" == "standalone-bun" ]]; then
+    DRY_RUN=$(bun pm trust --all --dry-run --cwd "$dir" 2>&1 || true)
+    if echo "$DRY_RUN" | grep -qv "0 scripts ran" && echo "$DRY_RUN" | grep -q "Would run"; then
+      echo "🛡️ [bun-auto-trust] Trusting dependencies in $dir..."
+      bun pm trust --all --cwd "$dir" >/dev/null 2>&1 || true
+      TRUSTED_COUNT=$((TRUSTED_COUNT + 1))
+    fi
+  fi
+done
+
+echo "✅ [bun-auto-trust] Audited $COUNT projects across $ROOT_DIR. Auto-trusted lifecycle scripts in $TRUSTED_COUNT projects."
