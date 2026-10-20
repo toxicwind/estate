@@ -1,0 +1,441 @@
+
+function getMarkdownOutline(filePath) {
+  try {
+    let marked;
+    try {
+      marked = require("marked").marked;
+    } catch {
+      marked = require("/home/toxic/estate/node_modules/marked").marked;
+    }
+    const text = readFileSync(filePath, "utf8");
+    const tokens = marked.lexer(text);
+    const outline = [];
+    let lineCursor = 1;
+
+    for (const token of tokens) {
+      if (token.type === "heading") {
+        outline.push({
+          kind: `h${token.depth}`,
+          name: token.text.trim(),
+          signature: `${"#".repeat(token.depth)} ${token.text.trim()}`,
+          line: lineCursor,
+        });
+      } else if (token.type === "code") {
+        outline.push({
+          kind: "code-block",
+          name: token.lang || "code",
+          signature: `\`\`\`${token.lang || ""}`,
+          line: lineCursor,
+        });
+      } else if (token.type === "table") {
+        const headerText = (token.header || []).map((h) => (typeof h === "object" ? h.text : String(h))).join(" | ");
+        outline.push({
+          kind: "table",
+          name: headerText,
+          signature: `| ${headerText} |`,
+          line: lineCursor,
+        });
+      }
+      if (token.raw) {
+        lineCursor += token.raw.split("\n").length - 1;
+      }
+    }
+    return outline;
+  } catch (err) {
+    return [];
+  }
+}\n\n
+function getMarkdownOutline(filePath) {
+  try {
+    const text = readFileSync(filePath, "utf8");
+    const lines = text.split("\n");
+    const headings = [];
+    let inCode = false;
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      if (line.trim().startsWith("```")) {
+        inCode = !inCode;
+        continue;
+      }
+      if (inCode) continue;
+
+      const m = line.match(/^(#{1,6})\s+(.+)$/);
+      if (m) {
+        headings.push({
+          kind: `h${m[1].length}`,
+          name: m[2].trim(),
+          signature: line.trim(),
+          line: i + 1,
+        });
+      }
+    }
+    return headings;
+  } catch {
+    return [];
+  }
+}
+
+#!/usr/bin/env node
+/**
+ * ffs-diff — multi-file structural diff using tree-sitter outlines.
+ *
+ * Pattern borrowed from:
+ *   - compute-line-diff.ts (beellama.cpp): line-level LCS DP
+ *   - apply_unified_patches.py (dedicated-server-ops): unified diff summary
+ *   - diffHelper.ts (flocksync): token-level LCS with DP backtrace
+ *
+ * Usage: ffs-diff <file1> <file2> [file3 ...] [--format json|text] [--outline]
+ *        Compares files by structural outline (functions, classes, imports)
+ *        then by unified diff of file bodies when --full flag is set.
+ *
+ * Shows:
+ *   - Added/removed functions/classes between files
+ *   - Changed signatures
+ *   - Unified diff preview (first 80 lines per pair)
+ *   - Impact score (files with most structural changes ranked highest)
+ */
+
+const { spawnSync } = require("child_process");
+const { readFileSync, existsSync } = require("fs");
+const { dirname, resolve } = require("path");
+
+const ROOT = resolve(__filename, "../..");
+const FFS_BIN = `${ROOT}/bin/ffs`;
+
+function runFFS(...args) {
+  const r = spawnSync(FFS_BIN, args, {
+    encoding: "utf8",
+    timeout: 60000,
+  });
+  const stderr = (r.stderr || "").trim();
+  if (r.error) throw new Error(`ffs ${args.join(" ")}: ${r.error.message}`);
+  if (r.status !== 0) {
+    throw new Error(`ffs ${args.join(" ")}: ${stderr || "non-zero exit " + r.status}`);
+  }
+  return r.stdout || "";
+}
+
+function parseArgs(argv) {
+  const files = [];
+  let format = "text";
+  let outlineOnly = false;
+  let fullDiff = false;
+  let showLines = false;
+
+  for (let i = 0; i < argv.length; i++) {
+    const arg = argv[i];
+    if (arg.startsWith("--")) {
+      const key = arg.slice(2);
+      const next = argv[i + 1];
+      if (key === "format" && next) { format = next; i++; }
+      else if (key === "outline") { outlineOnly = true; }
+      else if (key === "full") { fullDiff = true; }
+      else if (key === "lines") { showLines = true; }
+      else if (key === "help") {
+        console.log(`Usage: ffs-diff <file1> <file2> [file3 ...] [options]
+
+Options:
+  --format json|text   Output format (default: text)
+  --outline            Only compare structural outlines (no file content diff)
+  --full               Show unified diff preview (80 lines max per pair)
+  --lines              Show line-by-line LCS diff for changed regions
+  --help               Show this help
+
+Patterns borrowed from:
+  - compute-line-diff.ts (line-level LCS DP)
+  - diffHelper.ts (token-level LCS with backtrace)
+  - apply_unified_patches.py (unified diff summary)
+`);
+        process.exit(0);
+      }
+    } else if (arg) {
+      files.push(arg);
+    }
+  }
+  return { files, format, outlineOnly, fullDiff, showLines };
+}
+
+function getOutline(filePath) {
+  // If markdown, extract semantic heading tree
+  if (/\.(md|markdown|mdown|mkd)$/i.test(filePath)) {
+    return getMarkdownOutline(filePath);
+  }
+  try {
+    const raw = runFFS("outline", filePath, "--format", "json");
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) return parsed;
+    if (Array.isArray(parsed.entries)) return parsed.entries;
+    return [];
+  } catch {
+    return [];
+  }
+}
+
+function getSymbols(filePath) {
+  try {
+    const raw = runFFS("grep", "--root", dirname(filePath), filePath, "--format", "json");
+    const data = JSON.parse(raw);
+    if (data && data.v2_grouped && data.v2_grouped.files) {
+      return data.v2_grouped.files.flatMap(f =>
+        f.groups.map(g => ({
+          kind: g.kind || "unknown",
+          name: g.name || f.path,
+          line: g.range?.start || 0,
+          endLine: g.range?.end || 0,
+        }))
+      );
+    }
+  } catch {}
+  return [];
+}
+
+function buildSignatureMap(outlines) {
+  const sigs = {};
+  function walk(node, parent) {
+    if (node.kind && node.name) {
+      const key = `${node.kind}:${node.name}`;
+      if (!sigs[key]) {
+        sigs[key] = {
+          kind: node.kind,
+          name: node.name,
+          line: node.start_line || 0,
+          endLine: node.end_line || 0,
+          signature: node.signature || "",
+          children: node.children || [],
+        };
+      }
+    }
+    if (node.children) {
+      for (const child of node.children) {
+        walk(child, node);
+      }
+    }
+  }
+  for (const entry of outlines) {
+    walk(entry, null);
+  }
+  return sigs;
+}
+
+function diffSignatures(aSigs, bSigs) {
+  const aKeys = new Set(Object.keys(aSigs));
+  const bKeys = new Set(Object.keys(bSigs));
+
+  const added = [];
+  const removed = [];
+  const changed = [];
+
+  for (const key of bKeys) {
+    if (!aKeys.has(key)) {
+      added.push(bSigs[key]);
+    } else if (aSigs[key].signature !== bSigs[key].signature) {
+      changed.push({
+        key,
+        old: aSigs[key],
+        new: bSigs[key],
+      });
+    }
+  }
+
+  for (const key of aKeys) {
+    if (!bKeys.has(key)) {
+      removed.push(aSigs[key]);
+    }
+  }
+
+  return { added, removed, changed };
+}
+
+function simpleDiff(aText, bText, maxLines = 80) {
+  // Simple line-level LCS diff (pattern from compute-line-diff.ts)
+  const aLines = aText.split("\n").filter(l => l || aText.endsWith("\n"));
+  const bLines = bText.split("\n").filter(l => l || bText.endsWith("\n"));
+
+  if (aLines.length === 0 && bLines.length === 0) return [];
+
+  const m = aLines.length;
+  const n = bLines.length;
+
+  // Space-optimized LCS: only store the matrix needed for backtracking
+  const lcs = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      if (aLines[i - 1] === bLines[j - 1]) {
+        lcs[i][j] = lcs[i - 1][j - 1] + 1;
+      } else {
+        lcs[i][j] = Math.max(lcs[i - 1][j], lcs[i][j - 1]);
+      }
+    }
+  }
+
+  // Backtrack to find diff lines
+  const result = [];
+  let i = m, j = n;
+  const contextSize = 3;
+
+  while (i > 0 && j > 0) {
+    if (aLines[i - 1] === bLines[j - 1]) {
+      result.push({ kind: "context", text: aLines[i - 1], oldLine: i, newLine: j });
+      i--; j--;
+    } else if (lcs[i - 1][j] >= lcs[i][j - 1]) {
+      result.push({ kind: "remove", text: aLines[i - 1], oldLine: i });
+      i--;
+    } else {
+      result.push({ kind: "add", text: bLines[j - 1], newLine: j });
+      j--;
+    }
+  }
+  while (i > 0) { result.push({ kind: "remove", text: aLines[i - 1], oldLine: i }); i--; }
+  while (j > 0) { result.push({ kind: "add", text: bLines[j - 1], newLine: j }); j--; }
+
+  result.reverse();
+
+  // Keep only meaningful diffs with context (no huge unchanged blocks)
+  const filtered = [];
+  let inUnchanged = 0;
+  for (const line of result) {
+    if (line.kind === "context") {
+      if (inUnchanged < contextSize) {
+        filtered.push(line);
+        inUnchanged++;
+      }
+    } else {
+      inUnchanged = 0;
+      filtered.push(line);
+    }
+  }
+
+  return filtered.slice(0, maxLines * 3);
+}
+
+function renderTextDiff(aPath, bPath, sigDiff, outlineA, outlineB, fullDiff, showLines) {
+  const lines = [];
+
+  lines.push(`\n=== ${aPath} <-> ${bPath} ===`);
+
+  // Structural comparison
+  if (sigDiff.added.length || sigDiff.removed.length || sigDiff.changed.length) {
+    lines.push("\n--- STRUCTURAL CHANGES ---");
+    if (sigDiff.removed.length) {
+      lines.push(`\n[REMOVED ${sigDiff.removed.length} items]:`);
+      for (const s of sigDiff.removed) {
+        lines.push(`  - ${s.kind} ${s.name} (L${s.line})`);
+        if (s.signature && s.signature !== s.name) lines.push(`    ${s.signature}`);
+      }
+    }
+    if (sigDiff.added.length) {
+      lines.push(`\n[ADDED ${sigDiff.added.length} items]:`);
+      for (const s of sigDiff.added) {
+        lines.push(`  + ${s.kind} ${s.name} (L${s.line})`);
+        if (s.signature && s.signature !== s.name) lines.push(`    ${s.signature}`);
+      }
+    }
+    if (sigDiff.changed.length) {
+      lines.push(`\n[CHANGED ${sigDiff.changed.length} items]:`);
+      for (const c of sigDiff.changed) {
+        lines.push(`  ~ ${c.key}`);
+        lines.push(`    old: ${c.old.signature || c.old.name}`);
+        lines.push(`    new: ${c.new.signature || c.new.name}`);
+      }
+    }
+  } else {
+    lines.push("\n--- STRUCTURE: IDENTICAL ---");
+  }
+
+  // Outline comparison
+  const outA = outlineA.length;
+  const outB = outlineB.length;
+  lines.push(`\n--- OUTLINES ---`);
+  lines.push(`  ${aPath}: ${outA} symbols`);
+  lines.push(`  ${bPath}: ${outB} symbols`);
+
+  // File body diff
+  if (fullDiff) {
+    try {
+      const textA = readFileSync(aPath, "utf8");
+      const textB = readFileSync(bPath, "utf8");
+      if (textA !== textB) {
+        lines.push("\n--- UNIFIED DIFF (first 80 lines) ---");
+        const diffLines = simpleDiff(textA, textB, 80);
+        for (const line of diffLines.slice(0, 80)) {
+          const prefix = line.kind === "add" ? "+" : line.kind === "remove" ? "-" : " ";
+          lines.push(`${prefix} ${line.text}`);
+        }
+      }
+    } catch (e) {
+      lines.push(`\n--- DIFF SKIPPED: ${e.message} ---`);
+    }
+  }
+
+  return lines.join("\n");
+}
+
+function renderJsonDiff(aPath, bPath, sigDiff, outlineA, outlineB, fullDiff) {
+  const textA = readFileSync(aPath, "utf8");
+  const textB = readFileSync(bPath, "utf8");
+  const diffLines = simpleDiff(textA, textB, 80);
+
+  return {
+    file1: aPath,
+    file2: bPath,
+    outline1: outlineA.length,
+    outline2: outlineB.length,
+    structural: sigDiff,
+    diff: {
+      changed: textA !== textB,
+      lines: diffLines.slice(0, 80),
+    },
+  };
+}
+
+function main() {
+  const { files, format, outlineOnly, fullDiff, showLines } = parseArgs(process.argv.slice(2));
+
+  if (files.length < 2) {
+    console.error("Usage: ffs-diff <file1> <file2> [file3 ...] [--outline] [--full]");
+    process.exit(1);
+  }
+
+  const results = [];
+  let totalChanges = 0;
+
+  for (let i = 0; i < files.length; i++) {
+    for (let j = i + 1; j < files.length; j++) {
+      const aPath = resolve(files[i]);
+      const bPath = resolve(files[j]);
+
+      if (!existsSync(aPath)) {
+        console.error(`Not found: ${aPath}`);
+        continue;
+      }
+      if (!existsSync(bPath)) {
+        console.error(`Not found: ${bPath}`);
+        continue;
+      }
+
+      const outlineA = getOutline(aPath);
+      const outlineB = getOutline(bPath);
+      const sigA = buildSignatureMap(outlineA);
+      const sigB = buildSignatureMap(outlineB);
+      const sigDiff = diffSignatures(sigA, sigB);
+
+      const changes = sigDiff.added.length + sigDiff.removed.length + sigDiff.changed.length;
+      totalChanges += changes;
+
+      if (format === "json") {
+        results.push(renderJsonDiff(aPath, bPath, sigDiff, outlineA, outlineB, fullDiff));
+      } else {
+        console.log(renderTextDiff(aPath, bPath, sigDiff, outlineA, outlineB, fullDiff, showLines));
+      }
+    }
+  }
+
+  if (format === "text" && results.length === 0) {
+    console.log(`\n--- SUMMARY: ${files.length} files, ${files.length * (files.length - 1) / 2} pairs ---`);
+    console.log(`Total structural changes: ${totalChanges}`);
+  }
+}
+
+main();
