@@ -1,0 +1,38 @@
+# .moon/mise.tasks.toml — estate control plane tasks, first-class (maximal).
+# Moon owns the task graph across the whole estate (control plane here, the
+# ranch multi-repo below it through the same tasks). Mise/README task parity:
+# the ranch variants in ranch/.moon/mise.tasks.toml stay authoritative for
+# per-component work; these delegate so `moon run ranch-sync` works from the
+# estate root too (docs/REPO_TOPOLOGY.md §Sync).
+
+[tasks.ranch-status]
+description = "Per-repo state across all ranch components (meta)"
+run = "meta exec -- git status --short"
+
+[tasks.ranch-sync]
+description = "Clone missing + pull all ranch repos (meta; tilt to rebase)"
+run = "meta exec -- 'git pull --rebase --quiet'"
+
+[tasks.ranch-exec]
+description = "Run a command across every ranch component repo"
+run = "meta exec -- $CMD"
+
+[tasks.ranch-list]
+description = "List the full component map (path, repo, state)"
+run = "meta exec -- meta context"
+
+[tasks.ranch-manifest]
+description = "Regenerate ranch/.meta.yaml from ranch/.gitmodules"
+run = "bun ranch/toolkit/gen-meta-manifest.ts"
+
+[tasks.daemons]
+description = "List supervised daemons (pitchfork)"
+run = "pitchfork list"
+
+[tasks.daemons-status]
+description = "Status of a supervised daemon"
+run = "pitchfork status"
+
+[tasks.pull-self]
+description = "Pull the estate control-plane repo"
+run = "git pull --rebase --quiet origin main"
