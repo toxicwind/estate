@@ -26,6 +26,25 @@ case "${TERM_PROGRAM:-}${VSCODE_INJECTION:-}${VSCODE_GIT_ASKPASS_NODE:-}${VSCODE
 esac
 [ -n "${VSCODE_INJECTION:-}" ] && return 0 2>/dev/null || true
 
+# Always disable broken pi/kappa/tau shell builtins (e.g. ps 0.2.0 without -L, silent top)
+# in every non-interactive BASH_ENV tool shell before defining wrappers.
+export PI_DISABLE_UUTILS_BUILTINS=1
+for _b in \
+  grep find sed cat cut diff head tail ls ln mv rm cp mkdir mktemp \
+  stat dirname basename touch tr sort uniq wc which whoami uname seq \
+  date timeout nohup ps top pgrep pkill pidwait printenv realpath \
+  readlink md5sum sha1sum sha256sum sha512sum b2sum cksum jq xargs rg fd
+do
+  enable -n "$_b" 2>/dev/null || true
+done
+unset _b
+ps()      { /usr/bin/ps "$@"; }
+top()     { /usr/bin/top "$@"; }
+pgrep()   { /usr/bin/pgrep "$@"; }
+pkill()   { /usr/bin/pkill "$@"; }
+pidwait() { /usr/bin/pidwait "$@"; }
+export -f ps top pgrep pkill pidwait 2>/dev/null || true
+
 RF="${ESTATE_RUN_FAST:-/home/toxic/estate/bin/run-fast}"
 [ -x "$RF" ] || return 0
 export ESTATE_RUN_FAST="$RF"
@@ -46,17 +65,17 @@ _2s_slow() { case "$1:$2" in
   *) return 1 ;;
 esac }
 
-git()          { if _2s_slow git "$1";          then "$RF" git "$@";        else command git "$@"; fi; }
-bun()          { if _2s_slow bun "$1";          then "$RF" bun "$@";        else command bun "$@"; fi; }
-npm()          { if _2s_slow npm "$1";          then "$RF" npm "$@";        else command npm "$@"; fi; }
-pip()          { if _2s_slow pip "$1";          then "$RF" pip "$@";        else command pip "$@"; fi; }
-pip3()         { if _2s_slow pip3 "$1";         then "$RF" pip3 "$@";       else command pip3 "$@"; fi; }
-uv()           { if _2s_slow uv "$1";           then "$RF" uv "$@";         else command uv "$@"; fi; }
-gh()           { if _2s_slow gh "$1";           then "$RF" gh "$@";         else command gh "$@"; fi; }
-gitleaks()     { if _2s_slow gitleaks "$1";     then "$RF" gitleaks "$@";   else command gitleaks "$@"; fi; }
-codebase-memory(){ if _2s_slow codebase-memory "$1"; then "$RF" codebase-memory "$@"; else command codebase-memory "$@"; fi; }
-cargo()        { if _2s_slow cargo "$1";        then "$RF" cargo "$@";      else command cargo "$@"; fi; }
-go()           { if _2s_slow go "$1";           then "$RF" go "$@";         else command go "$@"; fi; }
+git()          { if [ "$RUN_FAST_ACTIVE" = "1" ]; then command git "$@"; elif _2s_slow git "$1"; then "$RF" git "$@"; else command git "$@"; fi; }
+bun()          { if [ "$RUN_FAST_ACTIVE" = "1" ]; then command bun "$@"; elif _2s_slow bun "$1"; then "$RF" bun "$@"; else command bun "$@"; fi; }
+npm()          { if [ "$RUN_FAST_ACTIVE" = "1" ]; then command npm "$@";       elif _2s_slow npm "$1";          then "$RF" npm "$@";        else command npm "$@"; fi; }
+pip()          { if [ "$RUN_FAST_ACTIVE" = "1" ]; then command pip "$@";       elif _2s_slow pip "$1";          then "$RF" pip "$@";        else command pip "$@"; fi; }
+pip3()         { if [ "$RUN_FAST_ACTIVE" = "1" ]; then command pip3 "$@";      elif _2s_slow pip3 "$1";         then "$RF" pip3 "$@";       else command pip3 "$@"; fi; }
+uv()           { if [ "$RUN_FAST_ACTIVE" = "1" ]; then command uv "$@";        elif _2s_slow uv "$1";           then "$RF" uv "$@";         else command uv "$@"; fi; }
+gh()           { if [ "$RUN_FAST_ACTIVE" = "1" ]; then command gh "$@";        elif _2s_slow gh "$1";           then "$RF" gh "$@";         else command gh "$@"; fi; }
+gitleaks()     { if [ "$RUN_FAST_ACTIVE" = "1" ]; then command gitleaks "$@";  elif _2s_slow gitleaks "$1";     then "$RF" gitleaks "$@";   else command gitleaks "$@"; fi; }
+codebase-memory(){ if [ "$RUN_FAST_ACTIVE" = "1" ]; then command codebase-memory "$@"; elif _2s_slow codebase-memory "$1"; then "$RF" codebase-memory "$@"; else command codebase-memory "$@"; fi; }
+cargo()        { if [ "$RUN_FAST_ACTIVE" = "1" ]; then command cargo "$@";     elif _2s_slow cargo "$1";        then "$RF" cargo "$@";      else command cargo "$@"; fi; }
+go()           { if [ "$RUN_FAST_ACTIVE" = "1" ]; then command go "$@";        elif _2s_slow go "$1";           then "$RF" go "$@";         else command go "$@"; fi; }
 # `timeout N cmd` is a REAL wall-clock bound: route it to the genuine /usr/bin/timeout,
 # never through run-fast (which kills at the 2s base and destroys long work). Slow
 # commands are handled by the runner's auto-detach, not by corrupting `timeout`.
