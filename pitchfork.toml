@@ -425,7 +425,8 @@ dir = "/home/toxic/estate/ranch/squawk"
 mise = false
 retry = true
 boot_start = true
-ready_cmd = "ss -ltn 'sport = :25201' | grep -q LISTEN"
+env = { FLEET_FEED_PORT = "25158" }
+ready_cmd = "ss -ltn 'sport = :25158' | grep -q LISTEN"
 auto = ["start"]
 
 # ranch/squawk — project-owned daemon manifest. Source of truth for 'fleet-ui'.
@@ -613,7 +614,7 @@ auto = ["start"]
 # Proxies 127.0.0.1:25101 -> herd :25100; rewrites chat/completions bodies per
 # config/model_constraints.yaml (K3: top_p=0.95, reasoning_effort clamp, thinking on).
 
-# estate — project-owned daemon manifest. Source of truth for 'kimi-auto-shim'.
+# estate — project-owned daemon manifest. Source of truth for 'custom-auto-shim'.
 # Owned by the estate project; the parent only composes it.
 
 [daemons.kimi-audit-dash]
@@ -630,24 +631,24 @@ auto = ["start"]
 # standalone/paper-poller — project-owned daemon manifest. Source of truth for 'paper-poller-watchdog'.
 # Owned by the standalone/paper-poller project; the parent only composes it.
 
-[daemons.kimi-auto-shim]
+[daemons.custom-auto-shim]
 health_http = { url = "http://127.0.0.1:25153/health", interval = "30s", timeout = "5s", retries = 3 }
 port = 25153
 # Router-configured alias forwarder: same routing as the herd
-# kimi-auto entry (--config-dir fragment). --target/--standby/--advance-on
-# MUST match /home/toxic/estate/config/herd.d/kimi-auto.yaml. Selection lives
+# custom-auto entry (--config-dir fragment). --target/--standby/--advance-on
+# MUST match /home/toxic/estate/config/herd.d/custom-auto.yaml. Selection lives
 # in router config; this shim never selects models.
 # 2026-09-21 (ember-kimi-route): maximal free-Kimi chain per User doctrine
 # -- Kimi routes are never defaults; they route Kimi FREE models maximally.
 # Chain: openrouter-free kimi :free IDs -> hf-free Kimi-K3; advance on
 # 5xx/conn/429/402/404; 401 never advances. Paid Kimi excluded (free only).
-run = "exec python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${KIMI_AUTO_SHIM_PORT} --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --standby nim-kimi/moonshotai/kimi-k3 --advance-on 5xx,conn,429,402,404 --name kimi-auto"
+run = "exec python3 /home/toxic/estate/config/herd.d/alias-shim.py --port 25153 --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --standby nim-kimi/moonshotai/kimi-k3 --advance-on 5xx,conn,429,402,404 --name custom-auto"
 dir = "/home/toxic/estate/config/herd.d"
 mise = false
 retry = true
 boot_start = true
-ready_http = "http://127.0.0.1:25153/health" # 2026-09-20: literal, was ${KIMI_AUTO_SHIM_PORT}=25105
-env = { KIMI_AUTO_SHIM_PORT = "25153", SHIM_CONNECT_TIMEOUT = "240" }
+ready_http = "http://127.0.0.1:25153/health" # 2026-09-20: literal, was ${CUSTOM_AUTO_SHIM_PORT}=25105
+env = { CUSTOM_AUTO_SHIM_PORT = "25153", SHIM_CONNECT_TIMEOUT = "240" }
 auto = ["start"]
 
 # estate — project-owned daemon manifest. Source of truth for 'market-loop'.
@@ -877,14 +878,15 @@ boot_start = true
 ready_http = "http://127.0.0.1:25135/squawk-feed/seq"
 
 [daemons.squawk-history]
-port = 25152
+# 2026-10-19: 25152 -> 25229 (toolcall-llm owns 25152 per SSOT; collision froze both).
+port = 25229
 run = "exec /home/toxic/estate/ranch/squawk/nats/run-history.sh"
 dir = "/home/toxic/estate/ranch/squawk/nats"
 mise = false
 retry = true
 boot_start = true
-ready_http = "http://127.0.0.1:25152/health"
-env = { SQUAWK_WS_PORT = "25147", SQUAWK_CHAT_ROOT = "/home/toxic/.fleet-bus/squawk-root" }
+env = { SQUAWK_HISTORY_PORT = "25229", SQUAWK_WS_PORT = "25147", SQUAWK_CHAT_ROOT = "/home/toxic/.fleet-bus/squawk-root" }
+ready_http = "http://127.0.0.1:25229/health"
 auto = ["start"]
 
 # ---- project: ranch/squawk/oracle (7 daemons) ----
