@@ -23,8 +23,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Verify Topology Structure
+        # NOTE: ops intentionally removed 2026-10-19 (a10527625) — moved to
+        # ranch/forge/ops (ranch repo). Do not re-add; estate root is being
+        # deliberately pruned (see also: purge estate/skills, drop symlinks).
         run: |
-          for dir in config docs engines ops scripts tests tools; do
+          for dir in config docs engines scripts tests tools; do
             if [ ! -d "$dir" ]; then
               echo "❌ Missing core workspace directory: $dir"
               exit 1
