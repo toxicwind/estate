@@ -1360,3 +1360,39 @@ mise = false
 retry = true
 boot_start = true
 auto = ["start"]
+
+# toxicwind/archguard integration (Forge, 2026-10-20). Deterministic pre-merge
+# audit: FalkorDB graph engine + LLM-free auditor. Ranch code: barn/archguard
+# (in-tree import of toxicwind/archguard @ 9f925e6; provenance in
+# barn/archguard/SOURCE.md). Estate seed graph: archguard_estate
+# (barn/archguard/src/scripts/seedEstate.ts, npm run seed:estate).
+# Source of truth for these two daemons is THIS block — the owning layer is the
+# composed estate pitchfork.toml (verified 2026-10-20; same lesson as the
+# model-guard and squawk-ws legs: pitchfork.d fragments are inert for daemons
+# owned here).
+# NOTE (2026-10-20): barn/archguard is currently materialized in the shared
+# ranch checkout via `git archive origin/main` (untracked files). The next
+# `git pull` in /home/toxic/estate/ranch must `rm -rf barn/archguard` first or
+# the pull will refuse on the untracked files; after the pull they resolve clean.
+[daemons.archguard-falkordb]
+run = "exec docker run --rm --name archguard-falkordb -p 127.0.0.1:6379:6379 -p 127.0.0.1:13000:3000 -v archguard_falkordb_data:/data falkordb/falkordb:latest"
+dir = "/home/toxic/estate/ranch/barn/archguard"
+mise = false
+retry = true
+boot_start = true
+auto = ["start"]
+ready_cmd = "redis-cli -h 127.0.0.1 -p 6379 ping | grep -q PONG"
+
+# Deterministic audit API (Express, :4000). LLM-free by default: no provider
+# keys are set here — extractor/advisor fall back to deterministic synthesizers
+# and the Auditor agent is Cypher-only by construction (Phase-1 proof:
+# /home/toxic/kite/forge-archguard-p1/EVIDENCE.md).
+[daemons.archguard-api]
+run = "exec /home/toxic/estate/ranch/barn/archguard/node_modules/.bin/tsx src/server.ts"
+dir = "/home/toxic/estate/ranch/barn/archguard"
+mise = false
+retry = true
+boot_start = true
+auto = ["start"]
+env = { PORT = "4000", FALKORDB_HOST = "127.0.0.1", FALKORDB_PORT = "6379", FALKORDB_GRAPH_NAME = "archguard_estate" }
+ready_http = "/api/health"
