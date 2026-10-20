@@ -55,12 +55,11 @@ providers:
   openrouterVariant: default
   fetch: auto
 modelRoles:
-  default: google-antigravity/gemini-3.8-flash:minimal
   dots: custom/dots
   bodybuilder: custom/bodybuilder
   smol: openrouter/liquid/lfm-2.5-2.6b:free
   slow: openrouter/nvidia/nemotron-3-ultra-550b-a55b:free
-  vision: openrouter/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free
+  vision: freeinference/glm-5.3-flash:off
   plan: openrouter/nvidia/nemotron-3-super-120b-a12b:free
   advisor: openrouter/nvidia/nemotron-3-super-120b-a12b:free
   judge: openrouter/nvidia/nemotron-3-super-120b-a12b:free
@@ -71,6 +70,7 @@ modelRoles:
   verification: openrouter/nvidia/nemotron-3.5-lightning:free
   fallback: openrouter/inclusionai/ling-3.0-flash-fin:free
   web: web/exa
+  default: google-antigravity/claude-opus-5-5-high
 subagents:
   can_spawn_subagents: true
   whitelist:
@@ -160,6 +160,9 @@ statusLine:
   transparent: false
   compactThinkingLevel: true
   showHookStatus: true
+shell:
+  env:
+    PI_DISABLE_UUTILS_BUILTINS: "1"
 terminal:
   showImages: true
   showProgress: true
