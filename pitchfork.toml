@@ -838,13 +838,25 @@ boot_start = true
 ready_cmd = "ss -ltn 'sport = :4222' | grep -q LISTEN"
 auto = ["start"]
 
-# ---- project: ranch/ops (1 daemon) ----
+# ---- project: ranch/ops (2 daemons) ----
 # ranch/ops -- project-owned daemon manifest. Source of truth for shim-drift-watch.
 # Event-driven (inotify on the shim files); the sentinel runs only when a
 # canonical sidechat-shim copy actually changes. No polling.
 
 [daemons.shim-drift-watch]
 run = "exec /usr/bin/bash /home/toxic/estate/ranch/ops/bin/shim-drift-watch.sh"
+dir = "/home/toxic/estate/ranch/ops/bin"
+mise = false
+retry = true
+boot_start = true
+auto = ["start"]
+
+# ranch/ops -- project-owned daemon manifest. Source of truth for pitchfork-binding-watch.
+# Event-driven (inotify on the pitchfork state file); the sentinel runs
+# only when the supervisor rewrites its state. No polling.
+
+[daemons.pitchfork-binding-watch]
+run = "exec /usr/bin/bash /home/toxic/estate/ranch/ops/bin/pitchfork-binding-watch.sh"
 dir = "/home/toxic/estate/ranch/ops/bin"
 mise = false
 retry = true
