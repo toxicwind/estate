@@ -1,0 +1,14 @@
+# estate — project-owned daemon manifest. Source of truth for 'delendai-control-api'.
+# Control-plane API (Bun server.ts in ranch/range/apps/delendai-control-plane).
+# Port is DELENDAI_CONTROL_API_PORT from config/ports.env (SSOT). Running it as a
+# supervised daemon (not a session process) so /chats, /surfaces, /providers and
+# all control-plane routes survive restarts. One writer: estate parent composes.
+[daemons.delendai-control-api]
+port = 25162
+dir = "/home/toxic/estate/ranch/range/apps/delendai-control-plane"
+run = "exec /home/toxic/.bun/bin/bun server.ts"
+env = { DELENDAI_CONTROL_API_PORT = "25162" }
+ready_http = "http://127.0.0.1:25162/health"
+mise = false
+retry = true
+auto = ["start"]

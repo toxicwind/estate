@@ -32,7 +32,7 @@ daemons = ["rig"]
 # drifted every time a daemon was added. Use `pitchfork start -a` for everything,
 # `pitchfork start --group <name>` for a subset.
 
-# ---- project: estate (92 daemons) ----
+# ---- project: estate (94 daemons) ----
 [daemons.agent-display]
 # Forge 2026-09-21: isolated virtual display for the agent browser.
 port = 5900
@@ -208,7 +208,7 @@ auto = ["start"]
 # Owned by the standalone/codebase-memory project; the parent only composes it.
 
 [daemons.browser-keeper]
-port = 9223
+port = 25154
 # The keeper launches a HEADED chromium on DISPLAY :99, so it cannot come up
 # without agent-display (Xvnc :99). Undeclared, the keeper started anyway and
 # relaunch-looped on "Missing X server or $DISPLAY" every 5s. That left the
@@ -220,14 +220,22 @@ run = "exec /home/toxic/.bun/bin/bun run /home/toxic/estate/ranch/keeper/bin/kee
 dir = "."
 mise = false
 retry = true
-ready_http = "http://127.0.0.1:9223/"
-health_http = { url = "http://127.0.0.1:9223/", interval = "30s", timeout = "5s", retries = 3 }
+ready_http = "http://127.0.0.1:25154/"
+health_http = { url = "http://127.0.0.1:25154/", interval = "30s", timeout = "5s", retries = 3 }
 boot_start = true
-env = { DISPLAY = ":99", XDG_RUNTIME_DIR = "/run/user/1000" }
+env = { DISPLAY = ":99", XDG_RUNTIME_DIR = "/run/user/1000", BROWSER_KEEPER_CDP_PORT = "25154", BROWSER_KEEPER_CDP = "http://127.0.0.1:25154", KEEPER_CHROMIUM_EXECUTABLE = "/home/toxic/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome" }
 auto = ["start"]
 
 # estate — project-owned daemon manifest. Source of truth for 'browserless'.
 # Owned by the estate project; the parent only composes it.
+
+[daemons.browserless]
+dir = "."
+run = "exec /home/toxic/estate/ranch/stable/server/run.sh"
+env = { BROWSERLESS_PORT = "25130", HOST = "127.0.0.1" }
+ready_http = "http://127.0.0.1:25130/"
+depends = ["gatehouse"]
+auto = ["start"]
 
 [daemons.codebase-memory]
 run = "exec /home/toxic/estate/tools/codebase-memory/run.sh"
@@ -276,6 +284,21 @@ auto = ["start"]
 # ---- project: ranch/stream-broker (1 daemon) ----
 # ranch/stream-broker — project-owned daemon manifest. Source of truth for 'Estate-stream-broker'.
 # Owned by the ranch/stream-broker project; the parent only composes it.
+
+# estate — project-owned daemon manifest. Source of truth for 'delendai-control-api'.
+# Control-plane API (Bun server.ts in ranch/range/apps/delendai-control-plane).
+# Port is DELENDAI_CONTROL_API_PORT from config/ports.env (SSOT). Running it as a
+# supervised daemon (not a session process) so /chats, /surfaces, /providers and
+# all control-plane routes survive restarts. One writer: estate parent composes.
+[daemons.delendai-control-api]
+port = 25162
+dir = "/home/toxic/estate/ranch/range/apps/delendai-control-plane"
+run = "exec /home/toxic/.bun/bin/bun server.ts"
+env = { DELENDAI_CONTROL_API_PORT = "25162" }
+ready_http = "http://127.0.0.1:25162/health"
+mise = false
+retry = true
+auto = ["start"]
 
 # delendai-web — DelendAI Astro dashboard (apps/web), first-class service.
 # Port SSOT: config/ports.env DELENDAI_WEB_PORT=25197.
