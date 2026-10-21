@@ -1443,3 +1443,28 @@ retry = true
 boot_start = true
 ready_http = "http://127.0.0.1:25156/"
 auto = ["start"]
+
+# delendai-control-api (2026-10-21): DelendAI control-plane API backend (Bun
+# native, same SPA repo server.ts). Serves REAL estate data ONLY (/services
+# /providers /channels /router), no fixture fallbacks.
+# DELENDAI_CONTROL_API_PORT=25162 (Port SSOT, free verified in 25158-25170).
+# VITE_CONTROL_API in the SPA points at this backend.
+[daemons.delendai-control-api]
+run = "exec env DELENDAI_CONTROL_API_PORT=25162 bun server.ts"
+dir = "/home/toxic/estate/ranch/agent-dashboard/apps/delendai-control-plane"
+mise = false
+retry = true
+boot_start = true
+ready_http = "http://127.0.0.1:25162/health"
+auto = ["start"]
+
+# kappa-acp (2026-10-21): kappa Agent Client Protocol server — first-class
+# control surface (drives/cancels kappa agents). Port SSOT KAPPA_ACP_PORT.
+[daemons.kappa-acp]
+run = "exec /home/toxic/estate/bin/kappa-serve.sh"
+dir = "."
+mise = false
+retry = true
+boot_start = true
+auto = ["start"]
+ready_http = "http://127.0.0.1:25159/"
