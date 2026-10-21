@@ -14,7 +14,7 @@ pools:
       429: 60
       default: 120
     keys:
-      - {name: OPENROUTER_API_KEY_FREE, free_only: true}
+      - { name: OPENROUTER_API_KEY_FREE, free_only: true }
       - OPENROUTER_API_KEY_1
 
   openrouter-paid:
@@ -43,6 +43,13 @@ pools:
     protocol: gemini-interactions
     interactions_path: /v1beta/interactions
     upstream: https://generativelanguage.googleapis.com
+    # Gemini rejects `Authorization: Bearer` with 403 "unregistered callers":
+    # it needs x-goog-api-key AND x-goog-user-project (<quota project>) to
+    # establish caller identity. Without both, every key probes down. See
+    # estate/docs/gemini-key-conventions.md.
+    auth_headers:
+      x-goog-api-key: "{key}"
+      x-goog-user-project: "654595778272"
     health:
       method: GET
       path: /v1beta/models
@@ -74,6 +81,9 @@ pools:
       - GEMINI_EAP_KEY_6
   gemini:
     upstream: https://generativelanguage.googleapis.com/v1beta/openai
+    auth_headers:
+      x-goog-api-key: "{key}"
+      x-goog-user-project: "654595778272"
     health:
       method: GET
       path: /v1/models
@@ -99,6 +109,9 @@ pools:
       - GEMINI_EAP_KEY_6
   gemini-eap:
     upstream: https://generativelanguage.googleapis.com
+    auth_headers:
+      x-goog-api-key: "{key}"
+      x-goog-user-project: "654595778272"
     health:
       method: GET
       path: /v1beta/models
@@ -127,6 +140,9 @@ pools:
 
   gemini-eap-openai:
     upstream: https://generativelanguage.googleapis.com/v1beta/openai
+    auth_headers:
+      x-goog-api-key: "{key}"
+      x-goog-user-project: "654595778272"
     health:
       method: GET
       path: /v1/models

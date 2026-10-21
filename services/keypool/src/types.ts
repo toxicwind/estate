@@ -34,6 +34,28 @@ export interface PoolConfig {
   cooldown_default?: number;
   probe_timeout?: number;
   request_timeout?: number;
+  /**
+   * The HTTP headers that carry the key to THIS upstream. Map values may
+   * contain the literal `{key}` which is replaced with the secret.
+   *
+   * Most OpenAI-compatible hosts accept `Authorization: Bearer <key>`, but
+   * Gemini's generativelanguage.googleapis.com rejects Bearer with 403
+   * "unregistered callers": it requires `x-goog-api-key:<key>` AND
+   * `x-goog-user-project:<project>` (quota project) to establish caller
+   * identity. See estate/docs/gemini-key-conventions.md.
+   *
+   * Defaults to `{ Authorization: 'Bearer {key}' }`.
+   */
+  auth_headers?: Record<string, string>;
+  /**
+   * Wire protocol adapter. `gemini-interactions` rewrites OpenAI
+   * chat-completions bodies to the Gemini EAP Interactions body
+   * ({ model, input, tools }) and routes to `interactions_path`, then
+   * translates EAP steps back into OpenAI tool_calls. See translate.ts.
+   */
+  protocol?: string;
+  /** Only used with protocol=gemini-interactions. Defaults to /v1beta/interactions. */
+  interactions_path?: string;
 }
 
 export interface PoolsFile {

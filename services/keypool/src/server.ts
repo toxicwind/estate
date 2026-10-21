@@ -5,6 +5,7 @@
 import { Pool, raceFirstValid, extractModel } from "./pool.js";
 import type { KeyState } from "./types.js";
 import { Auditor } from "./audit.js";
+import { openaiToInteractions, interactionsToOpenai } from "./translate.js";
 
 const HOP_HEADERS = new Set([
   "connection",
@@ -25,14 +26,21 @@ const STRIP_AUTH = new Set(["authorization", "x-api-key", "api-key"]);
 const REASONING_MODELS = ["o1", "o3", "gpt-5", "deepseek-r", "qwq", "r1"];
 const TOKEN_FLOOR = 512;
 
-function adaptBody(poolName: string, model: string | null, raw: Uint8Array): Uint8Array {
+function adaptBody(
+  poolName: string,
+  model: string | null,
+  raw: Uint8Array,
+): Uint8Array {
   if (!raw.length || !model) return raw;
   try {
     const body = JSON.parse(Buffer.from(raw).toString("utf8"));
     const m = model.toLowerCase();
     // reasoning-first: ensure token floor
     if (REASONING_MODELS.some((s) => m.includes(s))) {
-      if (typeof body.max_tokens === "number" && body.max_tokens < TOKEN_FLOOR) {
+      if (
+        typeof body.max_tokens === "number" &&
+        body.max_tokens < TOKEN_FLOOR
+      ) {
         body.max_tokens = TOKEN_FLOOR;
       }
     }
@@ -47,6 +55,46 @@ function adaptBody(poolName: string, model: string | null, raw: Uint8Array): Uin
   } catch {
     return raw;
   }
+}
+
+/** Rewrite an OpenAI chat-completions body into the Gemini EAP Interactions body. */
+function geminiBody(raw: Uint8Array): Uint8Array {
+  try {
+    const doc = JSON.parse(Buffer.from(raw).toString("utf8")) as Record<
+      string,
+      unknown
+    >;
+    return Buffer.from(JSON.stringify(openaiToInteractions(doc)));
+  } catch {
+    return raw;
+  }
+}
+
+/**
+ * Translate an upstream Gemini Interactions response into OpenAI
+ * chat-completions shape. Non-Gemini pools and non-2xx responses pass through.
+ */
+async function transduce(
+  pool: Pool,
+  resp: Response,
+  model: string | null,
+): Promise<Response> {
+  if (!pool.isGeminiInteractions() || !resp.ok) return resp;
+  const text = await resp.text();
+  let doc: Record<string, unknown>;
+  try {
+    doc = JSON.parse(text) as Record<string, unknown>;
+  } catch {
+    return resp;
+  }
+  const openai = interactionsToOpenai(
+    doc,
+    model ?? "gemini-flash-tool-retrieval",
+  );
+  return Response.json(openai, {
+    status: resp.status,
+    headers: { "content-type": "application/json" },
+  });
 }
 
 export interface ServerDeps {
@@ -80,7 +128,9 @@ export function createHandler(deps: ServerDeps) {
             state: k.state,
             latency_ms: Math.round(k.latencyMs),
             down_until:
-              k.downUntil > Date.now() ? new Date(k.downUntil).toISOString() : null,
+              k.downUntil > Date.now()
+                ? new Date(k.downUntil).toISOString()
+                : null,
             free_only: k.freeOnly,
           })),
           race_stats: pool.raceStats,
@@ -91,7 +141,8 @@ export function createHandler(deps: ServerDeps) {
 
     // /<pool>/... routing
     const m = path.match(/^\/([^/]+)(\/.*)?$/);
-    if (!m) return Response.json({ error: "unknown keypool route" }, { status: 404 });
+    if (!m)
+      return Response.json({ error: "unknown keypool route" }, { status: 404 });
     const poolName = m[1];
     const rest = m[2] || "/";
     const pool = pools.get(poolName);
@@ -99,9 +150,16 @@ export function createHandler(deps: ServerDeps) {
       return Response.json({ error: "unknown keypool route" }, { status: 404 });
     }
 
+    // Gemini EAP Interactions pools route to their own path (/v1beta/interactions)
+    // and translate the OpenAI body<->steps on the way through.
+    const isGemini = pool.isGeminiInteractions();
+    const restPath = isGemini ? pool.interactionsPath : rest;
+
     const raw = new Uint8Array(await req.arrayBuffer());
     const model = extractModel(raw);
-    const adapted = adaptBody(poolName, model, raw);
+    const adapted = isGemini
+      ? geminiBody(raw)
+      : adaptBody(poolName, model, raw);
 
     const t0 = Date.now();
     let keyName = "none";
@@ -122,7 +180,7 @@ export function createHandler(deps: ServerDeps) {
         }
         const kind = await raceFirstValid(
           pool,
-          (ks) => forward(pool, rest, url.search, req, adapted, ks),
+          (ks) => forward(pool, restPath, url.search, req, adapted, ks),
           candidates,
         );
         pool.recordRace(kind.kind === "winner");
@@ -135,12 +193,12 @@ export function createHandler(deps: ServerDeps) {
             key_fp: keyFp(pool, keyName),
             model,
             method: req.method,
-            path: rest,
+            path: restPath,
             status,
             ms: Date.now() - t0,
             race: true,
           });
-          return kind.payload;
+          return transduce(pool, kind.payload, model);
         }
         if (kind.kind === "error" && typeof kind.payload === "number") {
           return Response.json(
@@ -181,7 +239,14 @@ export function createHandler(deps: ServerDeps) {
         tried.push(ks.name);
         keyName = ks.name;
         try {
-          const resp = await forward(pool, rest, url.search, req, adapted, ks);
+          const resp = await forward(
+            pool,
+            restPath,
+            url.search,
+            req,
+            adapted,
+            ks,
+          );
           status = resp.status;
           auditor.log({
             ts: new Date().toISOString(),
@@ -189,12 +254,12 @@ export function createHandler(deps: ServerDeps) {
             key_fp: ks.fp,
             model,
             method: req.method,
-            path: rest,
+            path: restPath,
             status,
             ms: Date.now() - t0,
             race: false,
           });
-          return resp;
+          return transduce(pool, resp, model);
         } catch (e) {
           const st = (e as { status?: number }).status ?? 0;
           if (st !== 0 && pool.failStatus.has(st)) {
@@ -238,7 +303,9 @@ async function forward(
     if (HOP_HEADERS.has(lk) || STRIP_AUTH.has(lk)) continue;
     headers.set(k, v);
   }
-  headers.set("Authorization", `Bearer ${pool.secretFor(ks.name)}`);
+  for (const [k, v] of Object.entries(pool.authHeadersFor(ks.name))) {
+    headers.set(k, v);
+  }
 
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), pool.requestTimeoutMs);

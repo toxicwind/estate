@@ -39,6 +39,9 @@ export class Pool {
   readonly requestTimeoutMs: number;
   readonly cooldown: Map<number, number>;
   readonly cooldownDefault: number;
+  private readonly authTemplate: Record<string, string>;
+  readonly protocol: string | undefined;
+  readonly interactionsPath: string;
   keys: KeyState[];
   private secrets: Map<string, string>;
   raceStats = { races: 0, wins: 0, failed: 0 };
@@ -58,6 +61,9 @@ export class Pool {
       ),
     );
     this.cooldownDefault = cfg.cooldown_default ?? 120;
+    this.authTemplate = cfg.auth_headers ?? { Authorization: "Bearer {key}" };
+    this.protocol = cfg.protocol;
+    this.interactionsPath = cfg.interactions_path ?? "/v1beta/interactions";
     this.secrets = secrets;
     this.keys = cfg.keys.map((k) => {
       const entry = typeof k === "string" ? { name: k } : k;
@@ -85,6 +91,30 @@ export class Pool {
     return v;
   }
 
+  /** True when this pool speaks the Gemini EAP Interactions protocol. */
+  isGeminiInteractions(): boolean {
+    return this.protocol === "gemini-interactions";
+  }
+
+  /**
+   * The headers that carry a key to THIS pool's upstream.
+   *
+   * The per-pool `auth_headers` map (config/keypools.yaml) owns the choice;
+   * any `{key}` placeholder is substituted with the secret. Most OpenAI-
+   * compatible hosts default to `Authorization: Bearer <key>`, but Gemini's
+   * generativelanguage.googleapis.com rejects Bearer with 403 "unregistered
+   * callers" and needs `x-goog-api-key:<key>` plus `x-goog-user-project:<id>`
+   * — the regression that left every gemini-eap pool with zero healthy keys.
+   */
+  authHeadersFor(name: string): Record<string, string> {
+    const secret = this.secretFor(name);
+    const out: Record<string, string> = {};
+    for (const [k, v] of Object.entries(this.authTemplate)) {
+      out[k] = v.replace("{key}", secret);
+    }
+    return out;
+  }
+
   async probe(ks: KeyState): Promise<boolean> {
     const url = this.upstream + this.healthPath;
     const ctrl = new AbortController();
@@ -93,7 +123,7 @@ export class Pool {
     try {
       const resp = await fetch(url, {
         method: this.healthMethod,
-        headers: { Authorization: `Bearer ${this.secretFor(ks.name)}` },
+        headers: this.authHeadersFor(ks.name),
         signal: ctrl.signal,
       });
       const ms = Date.now() - t0;
@@ -130,7 +160,8 @@ export class Pool {
       return true;
     });
     out.sort((a, b) => {
-      const rank = (s: string) => (s === "healthy" ? 0 : s === "unknown" ? 1 : 2);
+      const rank = (s: string) =>
+        s === "healthy" ? 0 : s === "unknown" ? 1 : 2;
       const r = rank(a.state) - rank(b.state);
       return r !== 0 ? r : a.latencyMs - b.latencyMs;
     });
