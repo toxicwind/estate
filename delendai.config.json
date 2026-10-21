@@ -234,5 +234,24 @@
       ],
       "weaknesses": []
     }
-  ]
+  ],
+  "featureFlags": {
+    "agent-controls.desktop": true,
+    "agent-controls.browser": true,
+    "agent-controls.stoplight": true,
+    "agent-controls.swarm-10": true,
+    "agent-controls.computer-use-linux": true,
+    "agent-controls.ax-snapshot-imagefree": true,
+    "agent-controls.never-steal-mouse": true,
+    "agent-controls.external-models-only": true,
+    "agent-controls.single-freeinference-owner": true,
+    "agent-controls.generate-next-six-on-every-unit": true
+  },
+  "plugins": {
+    "agent-controls": {
+      "enabled": true,
+      "origin": "bundled",
+      "prefix": "ac"
+    }
+  }
 }

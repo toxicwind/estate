@@ -32,7 +32,7 @@ daemons = ["rig"]
 # drifted every time a daemon was added. Use `pitchfork start -a` for everything,
 # `pitchfork start --group <name>` for a subset.
 
-# ---- project: estate (94 daemons) ----
+# ---- project: estate (96 daemons) ----
 [daemons.agent-display]
 # Forge 2026-09-21: isolated virtual display for the agent browser.
 port = 5900
@@ -644,6 +644,25 @@ retry = true
 boot_start = true
 auto = ["start"]
 ready_http = "http://127.0.0.1:25159/"
+
+# keeper-floaty — supervised combined agent floaty stack.
+# Why: the estate's combined browser/agent control surface (ego + signalhead +
+# browserless + keeper) needs an always-on floaty that a) gives the agent a
+# full monitor/control surface via ego-browser, b) keeps the human-visible
+# signal lamp (signalhead) hidden when idle and floating-red when the agent
+# needs the user, c) never steals the user's mouse (agent drives a parallel
+# CDP page + AX-snapshot-as-text). Depends on agent-display (Xvnc :99) for the
+# overlay and on the estate browser lanes.
+[daemons.keeper-floaty]
+port = 4747
+run = "exec /home/toxic/estate/bin/keeper-floaty.sh"
+dir = "/home/toxic/estate"
+mise = false
+retry = true
+depends = ["agent-display"]
+ready_http = "http://127.0.0.1:4747/"
+health_http = { url = "http://127.0.0.1:4747/", interval = "30s", timeout = "5s", retries = 3 }
+auto = ["start"]
 
 [daemons.keypool]
 health_http = { url = "http://127.0.0.1:25109/health", interval = "30s", timeout = "5s", retries = 3 }
@@ -1320,6 +1339,21 @@ mise = true
 retry = true
 ready_port = 25111
 env = { CHUTE_PORT = "25111" }
+auto = ["start"]
+
+# tmp-reaper — supervised recurring reaper for the /tmp tmpfs.
+# Why: build/backup scratch (weave-pull-*, pip-unpack-*, pinax-hodos-target,
+# kilo, ranch-push-*, ciw-fix-*, tau-reports-*, resolve-grep.txt) repeatedly
+# filled the 32G /tmp tmpfs to 25G/32G, which silently starved chromium /
+# browserless (no tmp space -> renderer exits) and bloated logs. This daemon
+# prunes only KNOWN stale (>24h) scratch-name patterns, nothing blanket, and
+# reports in-use items. First live run already freed 6.6G (13G -> 5.4G).
+# One-lane, durable, additive-only by construction.
+[daemons.tmp-reaper]
+run = "exec /home/toxic/estate/bin/tmp-reaper/reap-loop.sh 3600"
+dir = "/home/toxic/estate"
+mise = false
+retry = true
 auto = ["start"]
 
 [daemons.toolcall-llm]

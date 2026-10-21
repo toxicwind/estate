@@ -70,8 +70,7 @@ modelRoles:
   verification: freeinference/deepseek-v4-flash
   fallback: freeinference/qwen3.6-35b
   web: web/exa
-  default: freeinference/glm-5.3-flash
-
+  default: freeinference/qwen3.6-35b
 subagents:
   can_spawn_subagents: true
   whitelist:
