@@ -1482,6 +1482,16 @@ ranch/
 readme-fix-estate-*/
 session-ses_*.md
 .agent/tmp/*.bak.*
+# ── Cookie-vault, browserless, secretsmith runtime data ──
+*vault*.json
+cookies-*.json
+vncpasswd
+*.sqlite*
+*.db*
+*.cache
+.secretsmith/
+.browserless/
+
 # rig/recall-agent per-workspace scaffolding (unreferenced runtime state)
 AGENT.json
 BOOTSTRAP.md
