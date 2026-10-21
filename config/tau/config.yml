@@ -63,14 +63,14 @@ modelRoles:
   plan: freeinference/glm-5.3-flash
   advisor: freeinference/glm-5.3-flash
   judge: freeinference/glm-5.3-flash
-  task: freeinference/deepseek-v4-flash
+  task: freeinference/qwen3.6-35b
   commit: freeinference/qwen3.6-35b
   tiny: freeinference/qwen3.6-35b
   memory: freeinference/qwen3.6-35b
-  verification: freeinference/deepseek-v4-flash
-  fallback: freeinference/deepseek-v4-flash
+  verification: freeinference/qwen3.6-35b
+  fallback: freeinference/qwen3.6-35b
   web: web/exa
-  default: freeinference/deepseek-v4-flash
+  default: freeinference/qwen3.6-35b
 subagents:
   can_spawn_subagents: true
   whitelist:
@@ -245,10 +245,10 @@ retry:
   usageReservePolicy: confirm
   fallbackChains:
     openrouter/*:
-      - freeinference/deepseek-v4-flash
+      - freeinference/qwen3.6-35b
       - freeinference/glm-5.3-flash
     google-antigravity/*:
-      - freeinference/deepseek-v4-flash
+      - freeinference/qwen3.6-35b
       - freeinference/glm-5.3-flash
     freeinference/*:
       - freeinference/glm-5.3-flash
