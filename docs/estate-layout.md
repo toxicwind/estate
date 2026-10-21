@@ -45,7 +45,7 @@ directory with thousands of untracked files is scratch, whatever its size.
 | entry | kind | git | tracked | untracked | daemon-referenced | note |
 |---|---|---|---|---|---|---|
 | `bin` | dir | tracked | 64 | 0 | — | Executable entry points. Daemon-referenced; do not move. |
-| `mise` | dir | tracked | 29 | 1 | — | Mise task definitions (tooling side). |
+| `mise` | dir | tracked | 30 | 0 | — | Mise task definitions (tooling side). |
 | `scripts` | dir | tracked | 122 | 0 | — | Repo maintenance + CI scripts. |
 | `tools` | dir | tracked | 123 | 0 | `pitchfork.d/bench-radar.toml`, `pitchfork.d/kimiclaw-a.toml`, `pitchfork.d/kimiclaw-b.toml`, `pitchfork.d/ml-serve.toml`, `pitchfork.d/null-g-proxy.toml`, `pitchfork.toml` | CLI tools and MCP servers. Daemon-referenced. |
 
