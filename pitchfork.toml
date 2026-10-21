@@ -1418,3 +1418,15 @@ mise = false
 retry = true
 boot_start = true
 auto = ["start"]
+
+# delendai-web (2026-10-21): DelendAI Astro dashboard, first-class on Port SSOT.
+# DELENDAI_WEB_PORT=25197. Runs `astro dev` (manifests regenerate on boot); a
+# prod `astro preview` after a `bun run build` can replace it later.
+[daemons.delendai-web]
+run = "exec env PORT=25197 PAGES_BASE='' bunx astro dev --host 127.0.0.1 --port 25197"
+dir = "/home/toxic/estate/ranch/borrowed/delendai/apps/web"
+mise = false
+retry = true
+boot_start = true
+ready_http = "http://127.0.0.1:25197/"
+auto = ["start"]
