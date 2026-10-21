@@ -1430,3 +1430,16 @@ retry = true
 boot_start = true
 ready_http = "http://127.0.0.1:25197/"
 auto = ["start"]
+
+# delendai-control-plane (2026-10-21): DelendAI control-plane SPA (Vite React),
+# owned by rancher agent-dashboard. DELENDAI_CONTROL_PORT=25156 (Port SSOT, free
+# verified in 25138-25170). Serves the services grid, provider/router quota
+# surface, and kappa-board chat channels.
+[daemons.delendai-control-plane]
+run = "exec env PORT=25156 bunx vite dev --host 127.0.0.1 --port 25156"
+dir = "/home/toxic/estate/ranch/agent-dashboard/apps/delendai-control-plane"
+mise = false
+retry = true
+boot_start = true
+ready_http = "http://127.0.0.1:25156/"
+auto = ["start"]
