@@ -61,7 +61,7 @@ directory with thousands of untracked files is scratch, whatever its size.
 |---|---|---|---|---|---|---|
 | `deploy` | dir | tracked | 2 | 0 | — | Deployment descriptors. |
 | `infra` | dir | tracked | 12 | 0 | — | Infrastructure definitions (nginx, nativelink, k8s). |
-| `ops` | dir | tracked | 12 | 1 | — | Operational runbooks and deploy helpers. |
+| `ops` | dir | tracked | 13 | 0 | — | Operational runbooks and deploy helpers. |
 
 ## integration
 
@@ -112,10 +112,10 @@ directory with thousands of untracked files is scratch, whatever its size.
 | `.qdrant-initialized` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `.recursive-verified` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `.three-folder-wire.json` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
-| `AGENT.json` | file | untracked | 0 | 1 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
+| `AGENT.json` | file | untracked | 0 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `AGENTS.md` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `AUDIT.md` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
-| `BOOTSTRAP.md` | file | untracked | 0 | 1 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
+| `BOOTSTRAP.md` | file | untracked | 0 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `BUILD.bazel` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `CHANGELOG.md` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `CODE_OF_CONDUCT.md` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
@@ -132,7 +132,7 @@ directory with thousands of untracked files is scratch, whatever its size.
 | `IDENTITY.md` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `LICENSE` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `MASTER_PLAN.md` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
-| `MEMORY.md` | file | untracked | 0 | 1 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
+| `MEMORY.md` | file | untracked | 0 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `MERGE-DECISIONS-ROOT.md` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `MERGE-DECISIONS.md` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `MODULE.bazel` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
@@ -146,8 +146,8 @@ directory with thousands of untracked files is scratch, whatever its size.
 | `TASKS.md` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `THIRD-PARTY-NOTICES.txt` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `TODO.md` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
-| `TOOLS.md` | file | untracked | 0 | 1 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
-| `USER.md` | file | untracked | 0 | 1 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
+| `TOOLS.md` | file | untracked | 0 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
+| `USER.md` | file | untracked | 0 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `about.toml` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `agent` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `appinfo.json` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
