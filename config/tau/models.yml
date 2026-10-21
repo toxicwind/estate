@@ -53,6 +53,21 @@ providers:
     apiKey: FREEINFERENCE_API_KEY
     discovery:
       type: openai-models-list
+    models:
+      - id: glm-5.3-flash
+        contextWindow: 1000000
+      - id: minimax-m3
+        contextWindow: 1000000
+      - id: qwen3.6-35b
+        contextWindow: 262144
+      - id: diffusiongemma
+        contextWindow: 262144
+      - id: deepseek-v4-flash
+        contextWindow: 1000000
+      - id: bge-m3
+        contextWindow: 8192
+        usage: embeddings
+    maxConcurrency: 2
   zen:
     baseUrl: https://opencode.ai/zen/v1
     api: openai-completions

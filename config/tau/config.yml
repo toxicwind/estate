@@ -57,20 +57,20 @@ providers:
 modelRoles:
   dots: custom/dots
   bodybuilder: custom/bodybuilder
-  smol: openrouter/liquid/lfm-2.5-2.6b:free
-  slow: openrouter/nvidia/nemotron-3-ultra-550b-a55b:free
-  vision: freeinference/glm-5.3-flash:off
-  plan: openrouter/nvidia/nemotron-3-super-120b-a12b:free
-  advisor: openrouter/nvidia/nemotron-3-super-120b-a12b:free
-  judge: openrouter/nvidia/nemotron-3-super-120b-a12b:free
-  task: openrouter/nvidia/nemotron-3.5-lightning:free
-  commit: openrouter/liquid/lfm-2.5-2.6b:free
-  tiny: openrouter/liquid/lfm-2.5-2.6b:free
-  memory: openrouter/liquid/lfm-2.5-2.6b:free
-  verification: openrouter/nvidia/nemotron-3.5-lightning:free
-  fallback: openrouter/inclusionai/ling-3.0-flash-fin:free
+  smol: freeinference/qwen3.6-35b
+  slow: freeinference/minimax-m3
+  vision: freeinference/minimax-m3
+  plan: freeinference/glm-5.3-flash
+  advisor: freeinference/glm-5.3-flash
+  judge: freeinference/glm-5.3-flash
+  task: freeinference/deepseek-v4-flash
+  commit: freeinference/qwen3.6-35b
+  tiny: freeinference/qwen3.6-35b
+  memory: freeinference/qwen3.6-35b
+  verification: freeinference/deepseek-v4-flash
+  fallback: freeinference/deepseek-v4-flash
   web: web/exa
-  default: google-antigravity/claude-opus-5-5-high
+  default: freeinference/deepseek-v4-flash
 subagents:
   can_spawn_subagents: true
   whitelist:
@@ -245,12 +245,14 @@ retry:
   usageReservePolicy: confirm
   fallbackChains:
     openrouter/*:
-      - openrouter/liquid/lfm-2.5-2.6b:free
-      - openrouter/nvidia/nemotron-3-super-120b-a12b:free
-      - openrouter/inclusionai/ling-3.0-flash-fin:free
+      - freeinference/deepseek-v4-flash
+      - freeinference/glm-5.3-flash
     google-antigravity/*:
-      - openrouter/inclusionai/ling-3.0-flash-fin:free
-      - openrouter/nvidia/nemotron-3-super-120b-a12b:free
+      - freeinference/deepseek-v4-flash
+      - freeinference/glm-5.3-flash
+    freeinference/*:
+      - freeinference/glm-5.3-flash
+      - freeinference/minimax-m3
     web:
       - web/perplexity
       - web/zai
@@ -389,7 +391,7 @@ mnemopi:
   noEmbeddings: false
   llmMode: smol
 edit:
-  mode: hashline
+  mode: sloppy
   fuzzyMatch: true
   fuzzyThreshold: 0.95
   streamingAbort: true
