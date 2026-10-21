@@ -1,3 +1,10 @@
+# beellama-fast — exaone-4.0-1.2b-iq4xs ("fast" alias) via beellama.cpp fork
+# v0.4.6 CUDA sm_86 build. Permanent supervised OpenAI-compatible endpoint
+# for the fastest local default. Added 2026-09-20 (herd-config-worker track 7).
+# Bench (RTX 3090, 1650-word prompt): pp 15.6k tok/s, gen 311-335 tok/s.
+# Runner-up config: -b 4096 -ub 1024 (pp 10.2k, gen 312.7). threads=16 and
+# flash-attn off both slower. Port from config/ports.env SSOT (BEELLAMA_PORT).
+
 [daemons.beellama-fast]
 port = 25122
 run = "exec /home/toxic/estate/stack/services/_consolidated_herd_20260924/beellama-fast.sh"
@@ -9,9 +16,5 @@ boot_start = true
 # NOTE 2026-09-20: literal port; pitchfork does not expand ${} in ready_http (25122 == $BEELLAMA_PORT SSOT)
 ready_http = "http://127.0.0.1:25122/health"
 auto = ["start"]
-
 # openfang-health — 5-min OpenFang/coyote health loop -> JSON/HTML + squawk on transitions.
 # Added 2026-09-20 (openfang recon track).
-
-# estate — project-owned daemon manifest. Source of truth for 'browser-keeper'.
-# Owned by the estate project; the parent only composes it.

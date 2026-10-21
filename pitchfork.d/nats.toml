@@ -6,5 +6,3 @@ retry = true
 boot_start = true
 ready_cmd = "ss -ltn 'sport = :4222' | grep -q LISTEN"
 auto = ["start"]
-
-# ---- project: ranch/squawk/oracle (7 daemons) ----

@@ -12,6 +12,3 @@ retry = true
 boot_start = true
 ready_http = "http://127.0.0.1:25163/health"
 auto = ["start"]
-
-# estate — project-owned daemon manifest. Source of truth for 'node-exporter'.
-# Owned by the estate project; the parent only composes it.

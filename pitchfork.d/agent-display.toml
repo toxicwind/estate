@@ -8,6 +8,3 @@ retry = true
 ready_cmd = "ss -tln | grep -q 127.0.0.1:5900"
 boot_start = true
 auto = ["start"]
-
-# estate — project-owned daemon manifest. Source of truth for 'agent-viewer'.
-# Owned by the estate project; the parent only composes it.

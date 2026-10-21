@@ -10,6 +10,3 @@ ready_http = "http://127.0.0.1:6080/"
 health_http = { url = "http://127.0.0.1:6080/", interval = "30s", timeout = "5s", retries = 3 }
 boot_start = true
 auto = ["start"]
-
-# estate — project-owned daemon manifest. Source of truth for 'beellama-fast'.
-# Owned by the estate project; the parent only composes it.

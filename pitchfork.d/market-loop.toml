@@ -9,6 +9,3 @@ ready_cmd = "pgrep -f '[m]arket-loop.ts' >/dev/null"
 # User 2026-09-30). Agents edit via the binary; MCP hosts use
 # `hashline mcp --proxy-to-daemon` against this socket. No HTTP surface —
 # readiness is the socket listening.
-
-# estate — project-owned daemon manifest. Source of truth for 'matter-server'.
-# Owned by the estate project; the parent only composes it.

@@ -4,6 +4,3 @@ dir = "/home/toxic/estate"
 port = 25155
 auto = ["start"]
 restart_delay = 5
-
-# estate — project-owned daemon manifest. Source of truth for 'nginx'.
-# Owned by the estate project; the parent only composes it.

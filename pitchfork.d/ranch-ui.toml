@@ -1,3 +1,9 @@
+# ranch-ui — the consolidated ranch dashboard (ranch/range/ui). Serves the
+# built SPA from dist and proxies /api/herd + /api/hodos same-origin, so the
+# dashboard's apiBase shim resolves to this host. Built 2026-10-14 by merging
+# the 368bdf6 master back into range/ui (see range/ui/CONSOLIDATION.md).
+# Tailnet-only: tailscale serve fronts it; nothing binds 0.0.0.0.
+
 [daemons.ranch-ui]
 port = 25218
 run = "exec /home/toxic/.bun/bin/bun run /home/toxic/estate/stack/services/ranch-ui.ts"
@@ -8,7 +14,3 @@ env = { RANCH_UI_PORT = "25218", RANCH_UI_DIST = "/home/toxic/estate/ranch/range
 ready_http = "http://127.0.0.1:25218/health"
 health_http = { url = "http://127.0.0.1:25218/health", interval = "30s", timeout = "5s", retries = 3 }
 auto = ["start"]
-
-# estate/ranch/hodos -- project-owned daemon manifest. Source of truth for the hodos daemon.
-# Owned by the hodos project; the parent only composes it.
-# Route values are non-secret. Client key is synced by bin/hodos-run.sh from estate SSOT.

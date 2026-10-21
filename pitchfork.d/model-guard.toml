@@ -12,7 +12,6 @@ retry = true
 boot_start = true
 ready_http = "http://127.0.0.1:25101/health"
 auto = ["start"]
-
 # NativeLink — Bazel-compatible remote cache + remote execution backend.
 # Serves the RE API that Bazel (and any RE-speaking client) dials. Coexists
 # with mbx-cache on :25148, which remains the mise task cache for bun/cargo.

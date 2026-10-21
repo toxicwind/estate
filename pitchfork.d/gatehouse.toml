@@ -9,5 +9,3 @@ mise = false
 retry = true
 ready_http = "http://127.0.0.1:25127/health"
 auto = ["start"]
-
-# forge-agent — execution agent for the forge build daemon (gRPC :25240; renamed from estate/flicker-agent 2026-10-13).

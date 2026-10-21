@@ -6,7 +6,3 @@ env = { HASHLINE_NO_UPDATE_CHECK = "1" }
 retry = true
 ready_cmd = "ss -lx | grep -q /home/toxic/.hashline/hashline.sock"
 auto = ["start"]
-
-# ---- project: standalone/kimi-code-npm (1 daemon) ----
-# standalone/kimi-code-npm — project-owned daemon manifest. Source of truth for 'kimi-code'.
-# Owned by the standalone/kimi-code-npm project; the parent only composes it.

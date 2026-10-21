@@ -16,6 +16,3 @@ health_http = { url = "http://127.0.0.1:25154/", interval = "30s", timeout = "5s
 boot_start = true
 env = { DISPLAY = ":99", XDG_RUNTIME_DIR = "/run/user/1000", BROWSER_KEEPER_CDP_PORT = "25154", BROWSER_KEEPER_CDP = "http://127.0.0.1:25154", KEEPER_CHROMIUM_EXECUTABLE = "/home/toxic/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome" }
 auto = ["start"]
-
-# estate — project-owned daemon manifest. Source of truth for 'browserless'.
-# Owned by the estate project; the parent only composes it.

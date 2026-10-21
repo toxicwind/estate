@@ -9,7 +9,3 @@ ready_http = "http://127.0.0.1:25180/health"
 health_http = { url = "http://127.0.0.1:25180/health", interval = "30s", timeout = "5s", retries = 3 }
 env = { ML_SERVE_PORT = "25180" }
 auto = ["start"]
-
-# ---- project: tools/null-g-proxy (1 daemon) ----
-# tools/null-g-proxy — project-owned daemon manifest. Source of truth for 'null-g-proxy'.
-# Owned by the tools/null-g-proxy project; the parent only composes it.

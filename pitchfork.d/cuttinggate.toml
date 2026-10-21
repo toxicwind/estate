@@ -12,7 +12,3 @@ ready_http = "http://127.0.0.1:25200/health"
 health_http = { url = "http://127.0.0.1:25200/health", interval = "30s", timeout = "5s", retries = 3 }
 env = { CUTTINGGATE_PORT = "25200", CUTTINGGATE_LOG_LEVEL = "info" }
 auto = ["start"]
-
-# ---- project: ranch/stream-broker (1 daemon) ----
-# ranch/stream-broker — project-owned daemon manifest. Source of truth for 'Estate-stream-broker'.
-# Owned by the ranch/stream-broker project; the parent only composes it.

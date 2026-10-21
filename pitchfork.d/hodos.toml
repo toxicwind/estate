@@ -8,9 +8,3 @@ retry = true
 ready_http = "http://127.0.0.1:25193/health"
 env = { PORT = "25193", DATA_DIR = "/home/toxic/.hodos-data", HOST = "127.0.0.1" }
 auto = ["start"]
-
-# estate — project-owned daemon manifest. Source of truth for 'hodos'.
-# Owned by the ranch/hodos project; the parent only composes it.
-# 2026-10-18: flock -> hodos full rebrand. Single definition reconciled to
-# ranch/hodos/proxy (the hodos repo); the forge copy (ranch/forge/router/
-# hodos-proxy) is superseded. Live store: ~/.hodos-data (v2, superuser + keys).

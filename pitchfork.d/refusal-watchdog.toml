@@ -5,6 +5,3 @@ mise = false
 retry = true
 boot_start = true
 auto = ["start"]
-
-# standalone/refusal-hunt — project-owned daemon manifest. Source of truth for 'sorry-watchdog'.
-# Owned by the standalone/refusal-hunt project; the parent only composes it.

@@ -7,5 +7,4 @@ retry = true
 ready_http = "http://127.0.0.1:20128/api/health"
 health_http = { url = "http://127.0.0.1:20128/api/health", interval = "30s", timeout = "5s", retries = 3 }
 auto = ["start"]
-
 # OmniRoute — upstream image, not a systemd unit. Host :20130 so :20128 stays VansRouter.

@@ -8,7 +8,3 @@ retry = true
 ready_http = "http://127.0.0.1:25102/health"
 depends = ["gatehouse"]
 auto = ["start"]
-
-# ---- project: standalone/awrawr (2 daemons) ----
-# standalone/awrawr — project-owned daemon manifest. Source of truth for 'awrawr-mcp'.
-# Owned by the standalone/awrawr project; the parent only composes it.

@@ -7,7 +7,3 @@ mise = false
 retry = true
 boot_start = true
 auto = ["start"]
-
-# ---- project: standalone/boundless (1 daemon) ----
-# standalone/boundless — project-owned daemon manifest. Source of truth for 'boundless'.
-# Owned by the standalone/boundless project; the parent only composes it.

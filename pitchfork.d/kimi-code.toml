@@ -8,7 +8,3 @@ ready_http = "http://127.0.0.1:25126/health"
 health_http = { url = "http://127.0.0.1:25126/health", interval = "30s", timeout = "5s", retries = 3 }
 depends = ["gatehouse"]
 auto = ["start"]
-
-# ---- project: standalone/kimi-token-audit (1 daemon) ----
-# standalone/kimi-token-audit — project-owned daemon manifest. Source of truth for 'kimi-audit-dash'.
-# Owned by the standalone/kimi-token-audit project; the parent only composes it.

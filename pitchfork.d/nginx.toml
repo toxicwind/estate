@@ -7,6 +7,3 @@ retry = true
 ready_cmd = "ss -ltn 'sport = :25208' | grep -q LISTEN"
 depends = ["gatehouse"]
 auto = ["start"]
-
-# estate — project-owned daemon manifest. Source of truth for 'nim-kimi-sidecar'.
-# Owned by the estate project; the parent only composes it.

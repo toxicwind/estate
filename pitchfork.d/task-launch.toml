@@ -5,7 +5,3 @@ mise = false
 retry = true
 auto = ["start"]
 ready_cmd = "pgrep -f '[t]ask-launch/src/daemon.ts' >/dev/null"
-
-# ---- project: range (1 daemon) ----
-# range — project-owned daemon manifest. Source of truth for 'mesh-landing'.
-# Owned by the range project; the parent only composes it.

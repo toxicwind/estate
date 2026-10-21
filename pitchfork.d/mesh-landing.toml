@@ -8,7 +8,3 @@ mise = false
 retry = true
 ready_http = "http://127.0.0.1:25207/health"
 auto = ["start"]
-
-# ---- project: tools/bench-radar (1 daemon) ----
-# tools/bench-radar — project-owned daemon manifest. Source of truth for 'bench-radar'.
-# Owned by the tools/bench-radar project; the parent only composes it.

@@ -7,6 +7,3 @@ retry = true
 ready_http = "http://127.0.0.1:25213/metrics"
 health_http = { url = "http://127.0.0.1:25213/health", interval = "30s", timeout = "5s", retries = 3 }
 auto = ["start"]
-
-# estate — project-owned daemon manifest. Source of truth for 'stash-guard'.
-# Owned by the estate project; the parent only composes it.

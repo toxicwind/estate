@@ -5,6 +5,3 @@ mise = true
 retry = true
 ready_port = 25144
 auto = ["start"]
-
-# estate — project-owned daemon manifest. Source of truth for 'keypool'.
-# Owned by the estate project; the parent only composes it.

@@ -8,6 +8,3 @@ retry = true
 ready_http = "http://127.0.0.1:25100/health"
 depends = ["gatehouse"]
 auto = ["start"]
-
-# estate — project-owned daemon manifest. Source of truth for 'hf-downloader'.
-# Owned by the estate project; the parent only composes it.

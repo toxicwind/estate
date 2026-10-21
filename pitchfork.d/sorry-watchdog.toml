@@ -5,7 +5,6 @@ mise = false
 retry = true
 boot_start = true
 auto = ["start"]
-
 # forensics-srv REMOVED 2026-09-21 (envhunt): double-supervised. The live
 # process on :25160 is owned by the systemd user unit
 # estate-forensics-srv.service (enabled, active, Restart=always; ppid chain
@@ -23,7 +22,3 @@ auto = ["start"]
 # estate-chat: first-class fleet coordination plane (2026-09-18).
 # Presence, activity, rooms, WebSocket push, MCP. Binds 127.0.0.1 + tailscale.
 # Token lives ONLY in /home/toxic/.config/estate-chat-token (0600).
-
-# ---- project: standalone/rig-work (1 daemon) ----
-# standalone/rig-work — project-owned daemon manifest. Source of truth for 'openfang'.
-# Owned by the standalone/rig-work project; the parent only composes it.

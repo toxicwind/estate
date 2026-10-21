@@ -5,6 +5,3 @@ mise = false
 retry = true
 boot_start = true
 auto = ["start"]
-
-# ranch/squawk — project-owned daemon manifest. Source of truth for 'nats'.
-# Owned by the ranch/squawk project; the parent only composes it.

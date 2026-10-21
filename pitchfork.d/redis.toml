@@ -5,6 +5,3 @@ mise = false
 retry = true
 ready_port = 25203
 auto = ["start"]
-
-# estate — project-owned daemon manifest. Source of truth for 'rust-web'.
-# Owned by the estate project; the parent only composes it.
