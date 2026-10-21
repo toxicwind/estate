@@ -355,6 +355,6 @@ _draw_divider
 printf "  ${C_BOLD}Total files:${C_RESET} %d    ${C_BOLD}Used:${C_RESET} ${C_CYAN}%s${C_RESET}    ${C_BOLD}Free:${C_RESET} ${C_GREEN}%sGB${C_RESET}\n" "$count" "$used" "$(avail_gb)"
 
 log "DONE avail $(avail_gb)GB - $count files, ~$used used"
-log "Next: cp /home/toxic/estate/config/llama-swap/config.yaml /home/toxic/estate/tools/llama-swap/config.yaml && pkill -f llama-swap; /home/toxic/estate/stack/services/llama-herder.sh"
+log "Next: cp /home/toxic/estate/config/herd/config.yaml /home/toxic/estate/tools/herd/config.yaml && pkill -f herd; /home/toxic/estate/stack/services/llama-herder.sh"
 
 printf "\n${C_BOLD}${C_GREEN}✓ Estate model fleet ready.${C_RESET}\n\n"

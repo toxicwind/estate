@@ -351,7 +351,7 @@ export function pickWeighted(n = MAX_PARALLEL): [string, string][] {
   const live: string[] = [];
   const dead: string[] = [];
   for (const p of Object.keys(PROVIDERS)) {
-    if (p === "llama-swap") continue; // bonus lane below — always races healthy
+    if (p === "herd") continue; // bonus lane below — always races healthy
     if (!keyOk(p) || !state.circuitOk(p)) continue;
     (state.laneDead(p) ? dead : live).push(p);
   }
@@ -375,18 +375,18 @@ export function pickWeighted(n = MAX_PARALLEL): [string, string][] {
     out.push([p, mid]);
     if (out.length >= n) break;
   }
-  // llama-swap bonus lane (503-forensics 2026-09-21): the local zero-cost
+  // herd bonus lane (503-forensics 2026-09-21): the local zero-cost
   // lane ALWAYS joins the race when healthy. It is the guaranteed fallback
   // that held client 503s down while nvidia flapped (nvidia 503'd 29x in
-  // 15 min; llama-swap served 98x). Appended AFTER the n-cut so no caller
+  // 15 min; herd served 98x). Appended AFTER the n-cut so no caller
   // can slice it off; hedged losers abort cleanly (499, no strike).
   if (
-    keyOk("llama-swap") &&
-    state.circuitOk("llama-swap") &&
-    !state.laneDead("llama-swap")
+    keyOk("herd") &&
+    state.circuitOk("herd") &&
+    !state.laneDead("herd")
   ) {
-    const mid = firstUsableModelFor("llama-swap");
-    if (mid && !seen.has("llama-swap")) out.push(["llama-swap", mid]);
+    const mid = firstUsableModelFor("herd");
+    if (mid && !seen.has("herd")) out.push(["herd", mid]);
   }
   if (!out.length && keyOk("openrouter")) {
     // 2026-09-21: tencent/hy3:free delisted (404s) — ling is the live default.
@@ -690,7 +690,7 @@ export async function routeCascade(
   body: ChatBody,
   session: string,
 ): Promise<RouteResult> {
-  const localFirst = ["llama-swap", "kimi-auto", "nim-local"];
+  const localFirst = ["herd", "kimi-auto", "nim-local"];
   const order = Object.keys(PROVIDERS).sort((a, b) => {
     const la = localFirst.includes(a) ? 0 : 1;
     const lb = localFirst.includes(b) ? 0 : 1;
@@ -871,7 +871,7 @@ export const ROUTERS: Record<
 // suffix convention, so a failed discovery refresh never empties the pool.
 // Filters: circuit state, flap strikes (empty-output substance failures feed
 // the strike counter, so substance-ineligible models sit out), and the local
-// llama-swap roles are always zero-cost and always join.
+// herd roles are always zero-cost and always join.
 export function freeCandidates(): [string, string][] {
   const out: [string, string][] = [];
   const deadOut: [string, string][] = [];
@@ -888,18 +888,18 @@ export function freeCandidates(): [string, string][] {
       if (modelFree(name, mid)) bucket.push([name, mid]);
     }
   }
-  if (keyOk("llama-swap") && !state.laneDead("llama-swap")) {
-    out.push(["llama-swap", LOCAL_ROLES.fast]);
-    out.push(["llama-swap", LOCAL_ROLES.quality]);
-    out.push(["llama-swap", LOCAL_ROLES.longctx]);
+  if (keyOk("herd") && !state.laneDead("herd")) {
+    out.push(["herd", LOCAL_ROLES.fast]);
+    out.push(["herd", LOCAL_ROLES.quality]);
+    out.push(["herd", LOCAL_ROLES.longctx]);
   }
   // Degraded mode: every lane is dead — race the dead pool anyway rather
   // than serve 503.
   const pool = out.length ? out : deadOut;
-  if (!pool.length && keyOk("llama-swap")) {
-    pool.push(["llama-swap", LOCAL_ROLES.fast]);
-    pool.push(["llama-swap", LOCAL_ROLES.quality]);
-    pool.push(["llama-swap", LOCAL_ROLES.longctx]);
+  if (!pool.length && keyOk("herd")) {
+    pool.push(["herd", LOCAL_ROLES.fast]);
+    pool.push(["herd", LOCAL_ROLES.quality]);
+    pool.push(["herd", LOCAL_ROLES.longctx]);
   }
   // Ling-first default (User 2026-09-17): Ling leads the free pool so the
   // `free` race prefers it. A flap-banned Ling still sits out above; the

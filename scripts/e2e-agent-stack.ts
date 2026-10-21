@@ -54,7 +54,7 @@ function add(step: string, ok: boolean, detail: string) {
 {
   const r = await curlJson(localUrl("HERD_PORT", "/v1/models"));
   const n = (r.body as any)?.data?.length ?? 0;
-  add("D1 llama-swap models", r.status === 200 && n > 0, `port=${SWAP} n=${n}`);
+  add("D1 herd models", r.status === 200 && n > 0, `port=${SWAP} n=${n}`);
 }
 
 // D2
@@ -62,7 +62,7 @@ function add(step: string, ok: boolean, detail: string) {
   const h = await curlJson(localUrl("ESTATE_ROUTER_PORT", "/health"));
   const m = await curlJson(localUrl("ESTATE_ROUTER_PORT", "/v1/models"));
   add(
-    "D2 llama-swap",
+    "D2 herd",
     h.status === 200 && m.status === 200,
     `port=${MATRIX} health=${h.status} models=${m.status}`,
   );
@@ -114,7 +114,7 @@ function add(step: string, ok: boolean, detail: string) {
   );
   const msg = (r.body as any)?.choices?.[0];
   add(
-    "D4 llama-swap chat",
+    "D4 herd chat",
     r.status === 200 && !!msg,
     `model=${id} status=${r.status}`,
   );
@@ -179,7 +179,7 @@ function add(step: string, ok: boolean, detail: string) {
   const script = resolve(HOME, "estate/src/mcp/herd.ts");
   const exists = await Bun.file(script).exists();
   const m = await curlJson(localUrl("HERD_PORT", "/v1/models"));
-  add("D9 llama-swap mcp path", exists && m.status === 200, `exists=${exists}`);
+  add("D9 herd mcp path", exists && m.status === 200, `exists=${exists}`);
 }
 
 // D10 zed
@@ -192,12 +192,12 @@ function add(step: string, ok: boolean, detail: string) {
         `import json5, pathlib, os
 p=pathlib.Path(os.path.expanduser("~/.config/zed/settings.json"))
 o=json5.loads(p.read_text())
-api=(o.get("language_models") or {}).get("openai_compatible",{}).get("llama-swap",{}).get("api_url","")
+api=(o.get("language_models") or {}).get("openai_compatible",{}).get("herd",{}).get("api_url","")
 cs=o.get("context_servers") or {}
 print(api)
 print("ghas", "ghas" in cs)
 print("ast", any(k.startswith("ast-grep") for k in cs))
-print("llama", "llama-swap-test" in cs)
+print("llama", "herd-test" in cs)
 `,
       ],
       { stdout: "pipe", stderr: "pipe" },

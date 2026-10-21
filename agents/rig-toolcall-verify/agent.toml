@@ -17,7 +17,7 @@ tool_blocklist = []
 cache_context = false
 
 [model]
-provider = "llama-swap"
+provider = "herd"
 model = "meta/llama-3.2-11b-vision-instruct"
 max_tokens = 4096
 temperature = 0.7

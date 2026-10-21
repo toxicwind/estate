@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Coyote v3.1 — Autonomous Agent Inference Engine
 # First-class estate service. OpenFang agent with Yote integration.
-# Routes through AST matrix (llama-swap :25100) with 14 providers.
+# Routes through AST matrix (herd :25100) with 14 providers.
 set -euo pipefail
 SOV="${ESTATE_ROOT:-/home/toxic/estate}"
 source "$SOV/stack/lib-ports.sh"
@@ -36,7 +36,7 @@ fuser -k "${PORT}/tcp" 2>/dev/null || true
 sleep 0.3
 
 # Launch: HTTP server on 0.0.0.0:PORT
-# Connects to llama-swap AST matrix, integrates with Yote messaging
+# Connects to herd AST matrix, integrates with Yote messaging
 exec python3 "$BIN" \
   --base-url "http://127.0.0.1:25100" \
   --model "${COYOTE_MODEL}" \

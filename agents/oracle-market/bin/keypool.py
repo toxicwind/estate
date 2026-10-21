@@ -9,7 +9,7 @@ call), and revalidates lazily so recovered keys rejoin automatically.
 Routing doctrine (User): FREE BEATS LOCAL.
   free cloud (OpenRouter free tier, Pollinations, Gemini free tiers)
     > paid cloud
-    > local (llama-swap / beellama / herd-local — fallback only, never default)
+    > local (herd / beellama / herd-local — fallback only, never default)
 
 Pool location (OUTSIDE the repo, dir 700 / files 600):
   /home/toxic/.openfang/key-pool/<provider>.keys   (one key per line, # comments)
@@ -95,7 +95,7 @@ PROVIDERS = {
         "probe": ("GET", "https://api.moonshot.ai/v1/models",
                   "Bearer {key}"),
     },
-    "llama-swap": {
+    "herd": {
         "tier": "local",
         "env": "LLAMA_SWAP_URL",
         "keyless": "http://127.0.0.1:25100",

@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * Align OpenFang providers with llama-swap :25100.
+ * Align OpenFang providers with herd :25100.
  * provider id "llama" is preferred; "vllm" kept only as alias URL → same swap.
  * Never points at real vLLM :8000.
  */

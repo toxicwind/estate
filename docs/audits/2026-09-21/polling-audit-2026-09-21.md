@@ -153,7 +153,7 @@ timer suspects read line-by-line, live PIDs + CPU verified)
 8. **estate-router warm standby — every 30s** —
    `tools/estate-router/estate-router-ts/router.ts` L608–633:
    `setInterval(..., 30000)` pings `/models` on 3 **local-only** providers
-   (llama-swap, kimi-auto, nim-local), feeding circuit-strike records + warm TCP.
+   (herd, kimi-auto, nim-local), feeding circuit-strike records + warm TCP.
    Circuit-breaker input; zero cloud spend.
 9. **estate-router live discovery — every 30m** —
    `tools/estate-router/estate-router-ts/router_live_models.ts` L158–167

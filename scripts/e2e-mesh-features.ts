@@ -18,7 +18,7 @@ writeFileSync(OUT, "");
 const hub = requirePort("MESH_HUB_PORT");
 const nativeMesh = new Set([
   "yote",
-  "llama-swap",
+  "herd",
   "ghas-api",
   "null-g-proxy",
   "mesh-hub",

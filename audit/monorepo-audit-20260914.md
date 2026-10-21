@@ -7,7 +7,7 @@
 - npm workspaces: `herd`, `herd/ui-svelte`, `packages/*`
 - **Submodules**: `shell/ii` (estate-end4), `tau/vendors` (kimi-cli)
 - **Symlinks** (top level):
-  - `config/llama-swap.yaml` → `herd.yaml`
+  - `config/herd.yaml` → `herd.yaml`
   - `helpers` → `/home/toxic/estate/skills`
   - `models` → `/home/toxic/models`
   - `tau-skills` → `/home/toxic/.tau/skills`

@@ -34,7 +34,7 @@ After changing this file, run `bun projects/ops/bin/kb-rollup.ts`.
 - **Daemon cutover** — `[daemons.hodos]` in `pitchfork.toml` now runs the
   hodos binary on :25193 (the registered SSOT port; :8000 was absurd and is
   dead). The docker `nim-proxy` container is stopped (Lane A doctrine).
-- **Router repairs** — herd launcher finds the relocated `llama-swap` binary
+- **Router repairs** — herd launcher finds the relocated `herd` binary
   (52 models live), cuttinggate reads its relocated source dir + the
   regenerated Roost catalog contract (94/94 tests), catalog-audit
   `audit`/`renderReport` implemented, `bin/catalog-sync.ts` quarantines

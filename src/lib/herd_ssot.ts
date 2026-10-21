@@ -1,8 +1,8 @@
 /**
- * llama-swap is the master catalog for local models.
+ * herd is the master catalog for local models.
  *
  * Sources of truth (in order):
- *   1. tools/llama-swap/config.yaml  (what can run)
+ *   1. tools/herd/config.yaml  (what can run)
  *   2. GET http://127.0.0.1:${HERD_PORT}/v1/models  (live IDs + status)
  *   3. GET /models/sse  (load/unload events — same contract Zed llama.cpp uses)
  *
@@ -33,7 +33,7 @@ export function swapModelsSseUrl(): string {
   return `${swapBaseUrl()}/models/sse`;
 }
 
-/** Live catalog from llama-swap (SSOT at runtime). */
+/** Live catalog from herd (SSOT at runtime). */
 export async function listSwapModels(
   timeoutMs = 5000,
 ): Promise<{ ok: boolean; models: SwapModel[]; error?: string }> {
@@ -80,7 +80,7 @@ export type ModelSseEvent = {
 };
 
 /**
- * Subscribe to llama-swap /models/sse (Zed contract).
+ * Subscribe to herd /models/sse (Zed contract).
  * Calls onEvent for each parsed ModelEvent; returns an abort handle.
  */
 export function watchSwapModelsSse(
@@ -130,7 +130,7 @@ export function watchSwapModelsSse(
 /**
  * Debounced SSE → refresh callback. Use for clients that cannot speak SSE
  * natively (e.g. VS Code oaicopilot models array) so they stay aligned with
- * llama-swap load/unload without hand-maintained inventories.
+ * herd load/unload without hand-maintained inventories.
  */
 export function watchSwapModelsSseRefresh(
   onRefresh: () => void | Promise<void>,
@@ -181,7 +181,7 @@ export function oaicopilotModelsFromSwap(
     .map((m) => ({
       id: m.id,
       displayName: `local/${m.id.split("/").pop()}`,
-      owned_by: "llama-swap",
+      owned_by: "herd",
       family: "oai-compatible",
       baseUrl: base,
       context_length: ctxFromId(m.id),
@@ -200,7 +200,7 @@ export function openaiCompatClientConfig(defaultModel?: string) {
       defaultModel || process.env.HERD_MODEL || "beellama/qwen-flash-64k",
     models_url: `${swapV1Url()}/models`,
     models_sse_url: swapModelsSseUrl(),
-    note: "Catalog is live from llama-swap; do not ship static model inventories. Prefer SSE auto_discover when the client supports it (Zed llama.cpp).",
+    note: "Catalog is live from herd; do not ship static model inventories. Prefer SSE auto_discover when the client supports it (Zed llama.cpp).",
   };
 }
 
@@ -211,7 +211,7 @@ export function clientEnvExports(defaultModel?: string): string {
   const sse = swapModelsSseUrl();
   const dm =
     defaultModel || process.env.HERD_MODEL || "beellama/qwen-flash-64k";
-  return `# Generated from llama-swap SSOT — do not hand-edit model lists
+  return `# Generated from herd SSOT — do not hand-edit model lists
 export OPENAI_BASE_URL=${v1}
 export OPENAI_API_BASE=${v1}
 export LLM_BASE_URL=${v1}

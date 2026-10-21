@@ -56,7 +56,7 @@ Commands:
   judge              Score a saved results file with an LLM judge.
 
 Common options:
-  --base-url URL     llama-swap serving both /v1 and /api/mcp (default ${DEFAULT_BASE_URL})
+  --base-url URL     herd serving both /v1 and /api/mcp (default ${DEFAULT_BASE_URL})
   --model NAME       agent model (default ${DEFAULT_MODEL})
   --api-key KEY      bearer token, if the server sets apiKeys
   --system-prompt F  file to use instead of DOCS_AGENT_SYSTEM_PROMPT ("none" for empty)

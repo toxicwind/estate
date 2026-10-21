@@ -20,7 +20,7 @@ executed consolidation into `ranch/mesh/`.
   `./cmd/herd-plane` (never `go build .` at root).
 - **What it does (AST evidence):** `internal/server/server.go:198` `func New(cfg config.Config, …)`,
   `:480` `func (s *Server) ServeHTTP(…)`, `:123` registers `"/v1/chat/completions"` (ast-grep
-  verified). Herd is a Go inference backplane (llama-swap fork): it manages local LLM engine
+  verified). Herd is a Go inference backplane (herd fork): it manages local LLM engine
   processes (llama-server backends on auto-assigned ports from `startPort: 25001`, config
   `herd.yaml`) and fronts them with a single OpenAI-compatible HTTP API, plus auth, model
   profiles, MCP tool aggregation, benchmarking, and peer/fleet features. It is the estate's

@@ -10,7 +10,7 @@ interface ServiceDef {
 
 const SERVICES: ServiceDef[] = [
   {
-    name: "llama-swap",
+    name: "herd",
     port: 25100,
     url: "http://127.0.0.1:25100/health",
     group: "core",

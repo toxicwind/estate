@@ -58,8 +58,8 @@ Findings:
 | EXPECTED BUT DARK | SSOT port with no listener | informational (many daemons optional) |
 
 Intentional multi-name ports live in `ALIAS_GROUPS` in the script
-(e.g. `HERD_PORT`/`HERD_PORT` — herd.sh launches the llama-swap
-binary). Ports 25001–25099 are the llama-swap dynamic backend pool
+(e.g. `HERD_PORT`/`HERD_PORT` — herd.sh launches the herd
+binary). Ports 25001–25099 are the herd dynamic backend pool
 (`herd.yaml` startPort) and are informational.
 
 **Protected (verify-only, never re-point or kill):** squawk ws `25147`,

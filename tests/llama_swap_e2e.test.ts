@@ -3,9 +3,9 @@ import {
   llamaSwapChat,
   llamaSwapHealth,
   llamaSwapModels,
-} from "../src/mcp/llama_swap.ts";
+} from "../src/mcp/herd.ts";
 
-// Skip integration tests if llama-swap is not running (top-level await)
+// Skip integration tests if herd is not running (top-level await)
 let live = false;
 try {
   const r = await llamaSwapHealth();
@@ -14,7 +14,7 @@ try {
   live = false;
 }
 
-describe.skipIf(!live)("llama-swap live front door :25100", () => {
+describe.skipIf(!live)("herd live front door :25100", () => {
   test("health 200", async () => {
     const h = await llamaSwapHealth();
     expect(h.http_status).toBe(200);

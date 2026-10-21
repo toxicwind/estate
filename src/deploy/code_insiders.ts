@@ -1,11 +1,11 @@
 #!/usr/bin/env bun
 /**
- * Sync VS Code Insiders → llama-swap via oaicopilot plugin settings (Bun).
+ * Sync VS Code Insiders → herd via oaicopilot plugin settings (Bun).
  *
  * Catalog SSOT = live GET :25100/v1/models (not a hand-written inventory).
  * oaicopilot has no native /models/sse auto_discover (unlike Zed llama.cpp),
  * so we mirror the live catalog into oaicopilot.models. Optional --watch
- * re-syncs on llama-swap SSE load/unload events.
+ * re-syncs on herd SSE load/unload events.
  */
 import { homedir } from "node:os";
 import { join } from "node:path";
@@ -15,7 +15,7 @@ import {
   pickDefaultModel,
   swapV1Url,
   watchSwapModelsSseRefresh,
-} from "../lib/llama_swap_ssot.ts";
+} from "../lib/herd_ssot.ts";
 
 const settingsPath =
   process.env.VSCODE_INSIDERS_SETTINGS ||
@@ -54,10 +54,7 @@ async function syncOnce(): Promise<{
   // Discovery metadata for tools that can poll / subscribe
   settings["estate.llamaSwap.baseUrl"] = base.replace(/\/v1$/, "");
   settings["estate.llamaSwap.modelsUrl"] = `${base}/models`;
-  settings["estate.llamaSwap.modelsSse"] = base.replace(
-    /\/v1$/,
-    "/models/sse",
-  );
+  settings["estate.llamaSwap.modelsSse"] = base.replace(/\/v1$/, "/models/sse");
   delete settings["oai-compatible-copilot.providers"];
 
   await Bun.write(settingsPath, `${JSON.stringify(settings, null, 2)}\n`);
@@ -83,7 +80,7 @@ console.log(
 console.log(`settings=${settingsPath}`);
 console.log("chatLanguageModels=[]");
 console.log(
-  "note=oaicopilot has no native SSE auto_discover; catalog mirrored from llama-swap live API",
+  "note=oaicopilot has no native SSE auto_discover; catalog mirrored from herd live API",
 );
 
 if (watch) {

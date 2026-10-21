@@ -44,10 +44,10 @@ vm.extfrag_threshold = 500
 
 ---
 
-## Cgroup Overrides (llama-swap)
+## Cgroup Overrides (herd)
 
 ```bash
-systemctl set-property llama-swap.slice \
+systemctl set-property herd.slice \
   MemoryZSwapWriteback=0 \
   MemoryZSwapMax=8G \
   MemoryHigh=48G \

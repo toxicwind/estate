@@ -119,7 +119,7 @@ async function chatVisible(): Promise<Row> {
     const ok =
       res.ok && typeof content === "string" && content.trim().length > 0;
     const row: Row = {
-      name: "llama-swap-chat-visible",
+      name: "herd-chat-visible",
       url,
       ok,
       http_status: res.status,
@@ -131,7 +131,7 @@ async function chatVisible(): Promise<Row> {
     return row;
   } catch (e) {
     const row: Row = {
-      name: "llama-swap-chat-visible",
+      name: "herd-chat-visible",
       url,
       ok: false,
       http_status: 0,
@@ -180,7 +180,7 @@ async function modelsSse(): Promise<Row> {
         buf.includes("keep-alive") ||
         buf.includes(": "));
     const row: Row = {
-      name: "llama-swap-models-sse",
+      name: "herd-models-sse",
       url,
       ok,
       http_status: res.status,
@@ -192,7 +192,7 @@ async function modelsSse(): Promise<Row> {
     return row;
   } catch (e) {
     const row: Row = {
-      name: "llama-swap-models-sse",
+      name: "herd-models-sse",
       url,
       ok: false,
       http_status: 0,
@@ -218,9 +218,9 @@ const PROM = requirePort("PROMETHEUS_PORT");
 const GRAF = requirePort("GRAFANA_PORT");
 
 const rows: Row[] = [];
-rows.push(await get("llama-swap-health", `http://127.0.0.1:${SWAP}/health`));
+rows.push(await get("herd-health", `http://127.0.0.1:${SWAP}/health`));
 rows.push(
-  await get("llama-swap-models", `http://127.0.0.1:${SWAP}/v1/models`, {
+  await get("herd-models", `http://127.0.0.1:${SWAP}/v1/models`, {
     expectOkBody: (t, s) => s === 200 && t.includes("data"),
   }),
 );
@@ -234,7 +234,7 @@ rows.push(
 );
 rows.push(await get("yote-health", `http://127.0.0.1:${YOTE}/health`));
 rows.push(await get("openfang-health", `http://127.0.0.1:${OF}/api/health`));
-rows.push(await get("llama-swap-health", `http://127.0.0.1:${AM}/health`));
+rows.push(await get("herd-health", `http://127.0.0.1:${AM}/health`));
 // readiness for hf: root HTML (binary has no /health)
 rows.push(
   await get("hf-downloader-root", `http://127.0.0.1:${HF}/`, {

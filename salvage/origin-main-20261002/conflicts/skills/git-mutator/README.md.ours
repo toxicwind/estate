@@ -41,7 +41,7 @@ bun helpers/git-mutator/cli.ts commit "feat: add new feature"
 bun helpers/git-mutator/cli.ts commit-push "feat: add thing"
 
 # Diff two config files
-bun helpers/git-mutator/cli.ts diff-configs config/herd.yaml config/llama-swap.yaml
+bun helpers/git-mutator/cli.ts diff-configs config/herd.yaml config/herd.yaml
 ```
 
 ## Configuration

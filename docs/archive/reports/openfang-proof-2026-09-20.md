@@ -24,7 +24,7 @@ service was stopped/started (with liveness checks between).
 
 **Incident found and fixed live during proof:** 5 of the 8 agents had stale model routes
 (`openrouter-free/nex-agi/nex-n2.5-mini:free`, `toolcall-local/qwen3.5-9b-tool`) that
-llama-swap `:25100` no longer serves (`no router for requested model`). Fixed at the
+herd `:25100` no longer serves (`no router for requested model`). Fixed at the
 durable source of truth — the `agents/*/agent.toml` manifests (the kernel re-seeds
 its registry from these TOMLs on every boot; a DB-only edit is overwritten at boot).
 Fixed (5 on yote): `nex-agi/nex-n2.5-mini:free` (coyote, kimiclaw-1/2),

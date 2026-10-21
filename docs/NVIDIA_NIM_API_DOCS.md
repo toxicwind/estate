@@ -333,8 +333,8 @@ curl https://integrate.api.nvidia.com/v1/chat/completions \
 
 ## Estate Infrastructure Integration
 
-**Local Upstreams (via llama-swap :25100):**
-- `llama-swap` :25100 — LLM router + AST Matrix Go port
+**Local Upstreams (via herd :25100):**
+- `herd` :25100 — LLM router + AST Matrix Go port
 - `nim-queue` :25189 — Cache + rate-limit aware queue
 - Direct NVIDIA: `https://integrate.api.nvidia.com/v1`
 

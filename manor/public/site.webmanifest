@@ -1,6 +1,6 @@
 {
-  "name": "llama-swap",
-  "short_name": "llama-swap",
+  "name": "herd",
+  "short_name": "herd",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",

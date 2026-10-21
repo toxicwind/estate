@@ -18,7 +18,7 @@ _.file = "config/ports.env"
 
 # MCP Scout (smarter-faster-better-mcp) - AST code intelligence
 SCOUT_BASE_URL = "http://127.0.0.1:25100/v1"
-SCOUT_API_KEY = "llama-swap"
+SCOUT_API_KEY = "herd"
 SCOUT_MODEL = "local-fast"
 
 

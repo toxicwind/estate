@@ -196,7 +196,7 @@ diff --git a/profiles/toxic/env.sh b/profiles/toxic/env.sh
 index 17cd90f05b..03bf4a1e16 100755
 --- a/profiles/toxic/env.sh
 +++ b/profiles/toxic/env.sh
-@@ -16,7 +16,7 @@ export SCOUT_API_KEY="llama-swap"
+@@ -16,7 +16,7 @@ export SCOUT_API_KEY="herd"
  export NIM_QUEUE_BASE_URL="http://127.0.0.1:8000/v1"
  export LLAMA_SWAP_MODEL="beellama/qwen-flash-64k"
  

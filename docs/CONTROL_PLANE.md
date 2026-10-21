@@ -8,7 +8,7 @@ Aesthetic map of live dashboards, APIs, and MCP surfaces (25xxx SSOT).
 |----|-----|--------|
 | Control Plane portal | http://127.0.0.1:25101/portal.html | Live service grid + API table |
 | Command Center | http://127.0.0.1:25101/ | rust-web YOTE ops |
-| Llama-swap chat | http://127.0.0.1:25100/ui/ | Primary chat UI |
+| Herd chat | http://127.0.0.1:25100/ui/ | Primary chat UI |
 | OpenFang | http://127.0.0.1:25103/ | Agent kernel web UI |
 | Grafana | http://127.0.0.1:25110/ | Prom dashboards |
 | HF Downloader | http://127.0.0.1:25106/ | GGUF fetch |
@@ -30,7 +30,7 @@ Aesthetic map of live dashboards, APIs, and MCP surfaces (25xxx SSOT).
 | Server | How |
 |--------|-----|
 | **ghas** | `ghas-mcp-stdio.sh` · HTTP health `:25113` |
-| **llama-swap** | `bun run src/mcp/herd.ts` |
+| **herd** | `bun run src/mcp/herd.ts` |
 | **ast-grep** | structural search |
 | **filesystem / markitdown / prometheus / browserless** | see `~/.grok/config.toml` |
 
@@ -38,16 +38,16 @@ Zed: `context_servers` in `~/.config/zed/settings.json` (same commands).
 
 ## Runtime notes
 
-- **No vLLM** — llama-swap is the only LLM front door.
+- **No vLLM** — herd is the only LLM front door.
 - **null-g** is Bun-native (`Bun.serve` + Hono).
 - **Yote** talks to OpenFang only via HTTP APIs (not shared OF process env).
 - Orchestration: **mise + pitchfork** (process-compose retired).
 
-## Model catalog SSOT (llama-swap)
+## Model catalog SSOT (herd)
 
 | Source | Role |
 |--------|------|
-| `tools/llama-swap/config.yaml` | Master list of what can run |
+| `tools/herd/config.yaml` | Master list of what can run |
 | `GET :25100/v1/models` | Live IDs + load status |
 | `GET :25100/models/sse` | Load/unload events (Zed `llama.cpp` auto_discover contract) |
 

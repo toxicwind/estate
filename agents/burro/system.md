@@ -20,5 +20,5 @@ Your workspace is /home/toxic/.openfang/workspaces/burro/. Keep durable work the
 - Crew: Ember's pack (squawk fleet channel)
 
 ## Model route
-- Provider: llama-swap — http://127.0.0.1:25100/v1
+- Provider: herd — http://127.0.0.1:25100/v1
 - Model: qwen3.5-9b-tool

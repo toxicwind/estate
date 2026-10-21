@@ -217,7 +217,7 @@ describe("oaicopilotModelsFromSwap", () => {
     expect(result).toHaveLength(2);
     expect(result[0].id).toBe("beellama/qwen-flash-64k");
     expect(result[0].displayName).toBe("local/qwen-flash-64k");
-    expect(result[0].owned_by).toBe("llama-swap");
+    expect(result[0].owned_by).toBe("herd");
     expect(result[0].context_length).toBe(65536);
     expect(result[0].vision).toBe(false);
   });

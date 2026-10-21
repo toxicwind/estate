@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""herd-ranker: sweep every loadable model in the llama-swap herd, rank by latency/validity.
+"""herd-ranker: sweep every loadable model in the herd herd, rank by latency/validity.
 Kimi-auto pattern: thread-local hot persistent connections, fail-fast ceilings,
 sane concurrency (no thundering herd against one GPU), JSONL ledger.
 Event-driven pacing: no artificial sleeps; the swap queue itself paces us.

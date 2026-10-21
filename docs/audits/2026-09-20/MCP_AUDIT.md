@@ -42,7 +42,7 @@ Zed Agent
   │     ├── markitdown [1 tool]
   │     ├── sequential-thinking-thin [1 tool]
   │     ├── tpc-thought-ledger [9 tools]
-  │     └── llama-swap-test [5 tools, 5 pending]
+  │     └── herd-test [5 tools, 5 pending]
   │
   └── Zed built-ins (terminal, read_file, edit_file, write_file, grep, find_path)
 ```
@@ -53,7 +53,7 @@ Zed Agent
 
 | Port | Service | Status | Notes |
 |------|---------|--------|-------|
-| 25100 | llama-swap (mesh-front) | **LISTEN** | LLM proxy |
+| 25100 | herd (mesh-front) | **LISTEN** | LLM proxy |
 | 25101 | rust-web (mesh-front) | **LISTEN** | |
 | 25102 | yote | **LISTEN** | |
 | 25103 | openfang (mesh-front) | **LISTEN** | |
@@ -107,7 +107,7 @@ Zed Agent
 | fetch | 1 | (auto) | URL fetching |
 | ghas | 25 | stdio | GitHub code search |
 | github | 26 | (auto) | GitHub API |
-| llama-swap-test | 5 | stdio | **5 tools pending approval** |
+| herd-test | 5 | stdio | **5 tools pending approval** |
 | markitdown | 1 | stdio | Document conversion |
 | mcp-background-job | 7 | stdio | Background commands |
 | prometheus | 6 | stdio | Points to `:25105` (DOWN) |
@@ -156,7 +156,7 @@ The feedlot-mcp HTTP server IS listening on `:25121` but the MCP stdio bridge fr
 | **AI/Cognition** | sequential-thinking-thin, smarter-ast-mcp | ~9 |
 | **Task Management** | agent-orchestration, tpc-thought-ledger | ~44 |
 | **Document** | markitdown | 1 |
-| **LLM Management** | llama-swap-test | 5 |
+| **LLM Management** | herd-test | 5 |
 
 **Total: ~256 tools across 26 servers**
 
@@ -174,7 +174,7 @@ The feedlot-mcp HTTP server IS listening on `:25121` but the MCP stdio bridge fr
 
 3. **Qdrant backend down** — Port `:25133` not listening. The qdrant-mcp-server is configured to query `http://localhost:25133`. All 4 qdrant tools will fail.
 
-4. **10 pending tool approvals** — 2 arxiv tools + 5 llama-swap-test tools + potentially others are blocked behind approval gates. These tools are discovered but not callable.
+4. **10 pending tool approvals** — 2 arxiv tools + 5 herd-test tools + potentially others are blocked behind approval gates. These tools are discovered but not callable.
 
 ### Medium
 
@@ -207,7 +207,7 @@ The feedlot-mcp HTTP server IS listening on `:25121` but the MCP stdio bridge fr
 
 3. **Start Qdrant** — If vector search is needed, start the qdrant service
 
-4. **Approve pending tools** — Use `quarantine_security` with `operation: "approve_all_tools"` for arxiv and llama-swap-test, or approve individually
+4. **Approve pending tools** — Use `quarantine_security` with `operation: "approve_all_tools"` for arxiv and herd-test, or approve individually
 
 ### Architecture Improvements
 

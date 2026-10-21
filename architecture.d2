@@ -29,11 +29,11 @@ orchestration: {
   }
 }
 
-# ==================== 3. SMART ROUTING (llama-swap) ====================
-llama_swap: tools/llama-swap {
+# ==================== 3. SMART ROUTING (herd) ====================
+herd: tools/herd {
   shape: hexagon
   style.fill: "#c0392b"
-  label: "llama-swap\n(Full Router + All Members)"
+  label: "herd\n(Full Router + All Members)"
 }
 
 # All members from your config
@@ -124,34 +124,34 @@ process_compose -> services.yote
 process_compose -> services.prometheus
 process_compose -> services.rust_web
 process_compose -> services.watchdog
-process_compose -> llama_swap
+process_compose -> herd
 
-# llama-swap routing (all members)
-llama_swap -> members.beellama_qwen
-llama_swap -> members.turbo_qwen
-llama_swap -> members.ik_qwen
-llama_swap -> members.beellama_strange
-llama_swap -> members.turbo_strange
-llama_swap -> members.ik_strange
-llama_swap -> members.beellama_gemma
-llama_swap -> members.turbo_gemma
-llama_swap -> members.ik_gemma
-llama_swap -> members.beellama_heretic
-llama_swap -> members.turbo_heretic
-llama_swap -> members.ik_heretic
-llama_swap -> members.ik_tq_heretic
-llama_swap -> members.beellama_mn
-llama_swap -> members.turbo_mn
-llama_swap -> members.ik_mn
-llama_swap -> members.ik_tq_mn
-llama_swap -> members.beellama_ud
-llama_swap -> members.turbo_ud
-llama_swap -> members.ik_ud
-llama_swap -> members.ik_tq_ud
-llama_swap -> members.beellama_q5
-llama_swap -> members.turbo_q5
-llama_swap -> members.ik_q5
-llama_swap -> members.ik_tq_q5
+# herd routing (all members)
+herd -> members.beellama_qwen
+herd -> members.turbo_qwen
+herd -> members.ik_qwen
+herd -> members.beellama_strange
+herd -> members.turbo_strange
+herd -> members.ik_strange
+herd -> members.beellama_gemma
+herd -> members.turbo_gemma
+herd -> members.ik_gemma
+herd -> members.beellama_heretic
+herd -> members.turbo_heretic
+herd -> members.ik_heretic
+herd -> members.ik_tq_heretic
+herd -> members.beellama_mn
+herd -> members.turbo_mn
+herd -> members.ik_mn
+herd -> members.ik_tq_mn
+herd -> members.beellama_ud
+herd -> members.turbo_ud
+herd -> members.ik_ud
+herd -> members.ik_tq_ud
+herd -> members.beellama_q5
+herd -> members.turbo_q5
+herd -> members.ik_q5
+herd -> members.ik_tq_q5
 
 # Forks
 members.beellama_qwen -> forks.beellama
@@ -184,7 +184,7 @@ members.ik_tq_ud -> forks.ik_tq
 members.ik_tq_q5 -> forks.ik_tq
 
 # OpenFang as central brain
-services.openfang -> llama_swap: decides model + best fork
+services.openfang -> herd: decides model + best fork
 services.openfang -> code.config.openfang
 services.openfang -> code.src
 

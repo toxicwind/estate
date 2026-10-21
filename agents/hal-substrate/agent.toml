@@ -1,6 +1,6 @@
 name = "hal-substrate"
 version = "3.1.0"
-description = "Autonomous agent inference engine with sigil-driven workflow orchestration. First-class estate service that routes through the AST matrix (llama-swap :25100) and integrates with Yote messaging (:25102)."
+description = "Autonomous agent inference engine with sigil-driven workflow orchestration. First-class estate service that routes through the AST matrix (herd :25100) and integrates with Yote messaging (:25102)."
 author = "toxicwind"
 module = "builtin:chat"
 

@@ -45,7 +45,7 @@ const LIVE_AGENTS = `${HOME}/.openfang/agents`;
 const WORKSPACES = `${HOME}/.openfang/workspaces`;
 
 const DEFAULTS = {
-  provider: "llama-swap",
+  provider: "herd",
   // Fully-qualified peer name — the bare peer name does NOT route through herd.
   // Default is the LOCAL qwen tool model: no provider keys, no billing, and it
   // is what the live rig-toolcall agents already run on (verified serving).

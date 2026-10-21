@@ -14,7 +14,7 @@ Reconstitute and rename the `mesh/ranch` tree according to the structural topolo
    - Rename `ranch/mcp` to `ranch/barn/`.
    - Move child components into their respective monorepos (`stockyard/herd`, `stockyard/hodos`, `barn/shep`).
 4. **Rewrite Configs**
-   - Update all references in `pitchfork.toml`, `mise.toml`, `stack/services/*.sh`, systemd units, environment files, and launchers to eliminate retired names (`super-ralph`, `llama-swap`, `estate-swap`, `ranch/routers`, `ranch/mcp`).
+   - Update all references in `pitchfork.toml`, `mise.toml`, `stack/services/*.sh`, systemd units, environment files, and launchers to eliminate retired names (`super-ralph`, `herd`, `estate-swap`, `ranch/routers`, `ranch/mcp`).
 5. **Purge Symlinks**
    - Delete all user-created symlinks under `/home/toxic/estate` and `~/projects` after repointing callers directly to canonical paths.
 6. **Verify**
@@ -28,9 +28,9 @@ Reconstitute and rename the `mesh/ranch` tree according to the structural topolo
 
 ## Verification
 - Run `fd -t l -H . /home/toxic/estate ~/projects | wc -l` (assert 0).
-- Run `rg -c 'super-ralph|llama-swap|estate-swap' /home/toxic/estate ~/projects` (assert 0).
+- Run `rg -c 'super-ralph|herd|estate-swap' /home/toxic/estate ~/projects` (assert 0).
 - Run `rg -c '^<<<<<<<|^=======|^>>>>>>>' /home/toxic/estate ~/projects` (assert 0).
 - Run `go build ./... && go test ./...` in touched modules.
 
 ## Assumptions & Contingencies
-- If binary filename `llama-swap` is required by an external launcher/process argv[0], retain the binary filename while placing source code under canonical `herd` directory.
+- If binary filename `herd` is required by an external launcher/process argv[0], retain the binary filename while placing source code under canonical `herd` directory.

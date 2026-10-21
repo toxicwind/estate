@@ -2,7 +2,7 @@
 
 > **Harness**: Tau Coding Agent (`/home/toxic/estate/agent`)
 > **Memory Backend**: Vectorize Hindsight (`ghcr.io/vectorize-io/hindsight:latest`)
-> **Inference Engine**: Herd (`github.com/mostlygeek/llama-swap` Go binary on port 25100)
+> **Inference Engine**: Herd (`github.com/mostlygeek/herd` Go binary on port 25100)
 > **Model**: `beellama/qwen-flash-64k` (Qwen 3.5 9B DeepSeek-v4 Flash, 64K context, 119 tokens/sec)
 
 ---
@@ -47,7 +47,7 @@
 
 | Port | Service | Protocol | Role |
 |:---:|---|:---:|---|
-| **25100** | **Herd** (`llama-swap`) | HTTP / OpenAI | Local LLM inference endpoint (`/v1/chat/completions`) |
+| **25100** | **Herd** (`herd`) | HTTP / OpenAI | Local LLM inference endpoint (`/v1/chat/completions`) |
 | **25117** | **Hindsight API** | HTTP / REST | Memory ingest, semantic recall, agentic reflection |
 | **25118** | **Hindsight Control Plane** | HTTP / Web | Interactive UI dashboard and bank management |
 
@@ -57,7 +57,7 @@ HINDSIGHT_API_PORT="25117"
 HINDSIGHT_CP_PORT="25118"
 HINDSIGHT_API_LLM_PROVIDER="openai"
 HINDSIGHT_API_LLM_BASE_URL="http://127.0.0.1:25100/v1"
-HINDSIGHT_API_LLM_API_KEY="llama-swap-local-key"
+HINDSIGHT_API_LLM_API_KEY="herd-local-key"
 HINDSIGHT_API_LLM_MODEL="beellama/qwen-flash-64k"
 ```
 

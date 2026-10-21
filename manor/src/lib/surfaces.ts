@@ -57,13 +57,13 @@ export const SURFACES: readonly Surface[] = [
 		id: "herd",
 		label: "Herd",
 		group: "Models",
-		// herd is the llama-swap-shaped API this dashboard already talks to
+		// herd is the herd-shaped API this dashboard already talks to
 		// through apiBase, so it has no separate page to embed.
 		origin: "",
 		kind: "api",
 		daemon: "herd",
 		healthPath: "/health",
-		description: "llama-swap: the local model gateway this dashboard drives.",
+		description: "herd: the local model gateway this dashboard drives.",
 	},
 	{
 		id: "hodos",

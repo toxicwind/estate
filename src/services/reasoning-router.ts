@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
- * reasoning-router.ts — Routes requests to appropriate llama-swap backends based on reasoning_effort
- * Integrates with llama-swap :25100 config matrix
+ * reasoning-router.ts — Routes requests to appropriate herd backends based on reasoning_effort
+ * Integrates with herd :25100 config matrix
  */
 
 import { loadEstatePorts } from "../lib/ports.ts";
@@ -12,7 +12,7 @@ const HERD_BASE = `http://127.0.0.1:${process.env.HERD_PORT || process.env.HERD_
 const _HERD_BASE = HERD_BASE; // alias for project-wide herd naming (tau: any pi/omp -> tau)
 // ──────────────────────────────────────────────────────────────
 // REASONING EFFORT → BACKEND MAPPING
-// Based on llama-swap.yaml routing matrix
+// Based on herd.yaml routing matrix
 // ──────────────────────────────────────────────────────────────
 
 interface BackendSpec {
@@ -323,7 +323,7 @@ const server = Bun.serve({
         // Select backend
         const route = selectBackend(effort, body.model);
 
-        // Also check llama-swap for model availability
+        // Also check herd for model availability
         let available = true;
         try {
           const modelsRes = await fetch(`${HERD_BASE}/v1/models`, {
@@ -364,7 +364,7 @@ const server = Bun.serve({
         const effort = extractReasoningEffort(body);
         const route = selectBackend(effort, body.model);
 
-        // Forward to llama-swap with selected model
+        // Forward to herd with selected model
         const forwardBody = {
           ...body,
           model: route.selected_model,
@@ -433,7 +433,7 @@ const server = Bun.serve({
 });
 
 console.log(
-  `[reasoning-router] listening :${server.port} → llama-swap=${HERD_BASE}`,
+  `[reasoning-router] listening :${server.port} → herd=${HERD_BASE}`,
 );
 console.log(
   `[reasoning-router] Routing tiers: ${Object.keys(REASONING_ROUTES).join(", ")}`,

@@ -136,10 +136,10 @@ would rewrite 1445 files in /home/toxic/estate
   M config/herd.yaml
   M config/herd.yaml.bak-20260929
   M config/herd.yaml.bak.20261001-quill
-  M config/llama-swap.yaml
-  M config/llama-swap.yaml.bak-20260929
-  M config/llama-swap.yaml~HEAD
-  M config/llama-swap/config.yaml
+  M config/herd.yaml
+  M config/herd.yaml.bak-20260929
+  M config/herd.yaml~HEAD
+  M config/herd/config.yaml
   M config/naming-audit.py
   M config/ports.env
   M config/tau/AGENTS.md
@@ -521,7 +521,7 @@ would rewrite 1445 files in /home/toxic/estate
   M projects/gayxxx-estate/README.md
   M projects/hatch-decode/README.md
   M projects/hatch-decode/pass3/README.md
-  M projects/herd/llama-swap
+  M projects/herd/herd
   M projects/kodi-fleet/README.md
   M projects/mesh/README.md
   M projects/mesh/browserless/README.md
@@ -1322,7 +1322,7 @@ would rewrite 1445 files in /home/toxic/estate
   M src/maximal-estate-agentic-audit/tests/audit.test.ts
   M src/maximal-estate-agentic-audit/tests/classify.test.ts
   M src/maximal-estate-agentic-audit/tests/local-audit.test.ts
-  M src/mcp/llama_swap.ts
+  M src/mcp/herd.ts
   M src/openfang/openfang.plugin.json
   M src/services/bun-runtime.ts
   M src/services/core.ts

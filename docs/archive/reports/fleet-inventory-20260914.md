@@ -13,7 +13,7 @@ The stale 15:10 "STOP all new work" channel entry was treated as dead data per U
 | squawk_feed.py (pitchfork `Estate/squawk-feed`) | 127.0.0.1:25135 | **UP (recovered 18:08)** | `GET /squawk-feed/seq` -> `200 {"seq": 10002}` both locally and via funnel (0.32s). Note: the documented `/seq` path is actually `/squawk-feed/seq` (bare `/seq` -> 404) |
 | awrawr-mcp (HTTPS) | :8377 | UP | pid 282976, uptime 15h |
 | awrawr-ws-exec (bridge WS) | :8379 | UP | pid 2315871 |
-| llama-swap / herd | :25100 | UP | pid 2113115 |
+| herd / herd | :25100 | UP | pid 2113115 |
 | coyote | :25143 (0.0.0.0) | UP | pid 2094471 |
 | buildsrv | :25148 | UP | pid 2625628 |
 | shep, herd, nim-proxy, kimi-auto-resolver, Estate-router | — | UP per `pitchfork status` | 9 daemons in `pitchfork list` |

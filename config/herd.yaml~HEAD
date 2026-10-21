@@ -1,7 +1,7 @@
 # =============================================================================
-# LLAMA-SWAP CONFIGURATION — RTX 3090 24GB
+# HERD CONFIGURATION — RTX 3090 24GB
 # =============================================================================
-# Config: /home/toxic/estate/config/llama-swap.yaml
+# Config: /home/toxic/estate/config/herd.yaml
 # =============================================================================
 
 healthCheckTimeout: 300
@@ -14,7 +14,7 @@ includeAliasesInList: true
 sendLoadingState: true
 
 store:
-  path: /home/toxic/.local/share/llama-swap/store.db
+  path: /home/toxic/.local/share/herd/store.db
 
 performance:
   enable: true
@@ -24,9 +24,9 @@ hooks:
   on_startup:
     preload: []
   on_model_loaded:
-    exec: 'echo "[$(date)] MODEL_LOADED: $MODEL" >> /tmp/llama-swap-events.log'
+    exec: 'echo "[$(date)] MODEL_LOADED: $MODEL" >> /tmp/herd-events.log'
   on_model_unloaded:
-    exec: 'echo "[$(date)] MODEL_UNLOADED: $MODEL" >> /tmp/llama-swap-events.log'
+    exec: 'echo "[$(date)] MODEL_UNLOADED: $MODEL" >> /tmp/herd-events.log'
 
 astMatrix:
   enabled: true

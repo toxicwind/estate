@@ -173,11 +173,11 @@ build/
 Cargo.lock.bak
 bun.lock
 bin/sovereign_web
-bin/llama-swap
-tools/llama-swap/llama-swap
-tools/llama-swap/ollama-proxy
-tools/llama-swap/*.db
-tools/llama-swap/*.db-journal
+bin/herd
+tools/herd/herd
+tools/herd/ollama-proxy
+tools/herd/*.db
+tools/herd/*.db-journal
 models/
 *.gguf
 data/

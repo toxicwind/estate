@@ -12,7 +12,7 @@
     "context_window": 1000000
   },
   "services": {
-    "llama_swap": { "port": 25100, "status": "ok" },
+    "herd": { "port": 25100, "status": "ok" },
     "mcpproxy": { "port": 25109, "status": "ok" },
     "ghas_api": { "port": 25112, "status": "ok" },
     "ghas_mcp": { "port": 25113, "status": "ok" },

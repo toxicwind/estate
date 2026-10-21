@@ -71,9 +71,9 @@ if [[ ! -s "$OUT.tmp" && -d /home/toxic/projects/hodos ]]; then
   [[ -n "$k" ]] && { log "found in hodos project"; printf '%s' "$k" > "$OUT.tmp"; }
 fi
 
-# 6) llama-swap default key probe
+# 6) herd default key probe
 if [[ ! -s "$OUT.tmp" ]]; then
-  for guess in 'llama-swap-local-key' 'sk-local' 'local' 'hodos' 'toxicwind' 'changeme' 'dev' 'test' 'admin' 'password'; do
+  for guess in 'herd-local-key' 'sk-local' 'local' 'hodos' 'toxicwind' 'changeme' 'dev' 'test' 'admin' 'password'; do
     code=$("${CURL[@]}" -o /dev/null -w '%{http_code}' -H "Authorization: Bearer $guess" http://127.0.0.1:25193/v1/models)
     [[ "$code" == 200 ]] && { log "default key works: $guess"; printf '%s' "$guess" > "$OUT.tmp"; break; }
   done

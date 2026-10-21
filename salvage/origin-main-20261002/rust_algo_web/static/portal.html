@@ -96,7 +96,7 @@
           </h1>
           <p class="text-gray-400 mt-2 max-w-xl text-sm md:text-base">
             Live map of dashboards, APIs, and MCP surfaces on the 25xxx port
-            grid. Everything local · llama-swap front door · no vLLM.
+            grid. Everything local · herd front door · no vLLM.
           </p>
         </div>
         <div class="flex flex-wrap gap-2 text-xs">
@@ -141,7 +141,7 @@
             <li class="mono text-xs text-gray-500">Loading…</li>
           </ul>
           <p class="text-[11px] text-gray-500 mt-4 leading-relaxed">
-            GHAS stdio · llama-swap MCP · filesystem · prometheus
+            GHAS stdio · herd MCP · filesystem · prometheus
             · browserless. Configure in
             <span class="mono">~/.grok/config.toml</span> and Zed
             <span class="mono">context_servers</span>.
@@ -174,7 +174,7 @@
       </section>
 
       <footer class="text-center text-gray-600 text-xs mono pb-8">
-        pitchfork · mise · llama-swap :25100 · mesh-hub :25115 · openfang
+        pitchfork · mise · herd :25100 · mesh-hub :25115 · openfang
         external HTTP only for yote
       </footer>
     </div>
@@ -182,7 +182,7 @@
     <script>
       const SERVICES = [
         {
-          id: "llama-swap",
+          id: "herd",
           port: 25100,
           path: "/health",
           ui: "/herd-ui/",
@@ -448,7 +448,7 @@
 
       const MCP = [
         { name: "ghas", detail: "stdio ghas-mcp-stdio.sh" },
-        { name: "llama-swap", detail: "src/mcp/llama_swap.ts · chat/models" },
+        { name: "herd", detail: "src/mcp/herd.ts · chat/models" },
         { name: "ast-grep", detail: "structural search MCP" },
         { name: "filesystem", detail: "project FS tools" },
         { name: "prometheus", detail: "metrics MCP → :25105" },

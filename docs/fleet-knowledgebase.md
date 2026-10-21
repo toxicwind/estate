@@ -273,7 +273,7 @@ runtime_paths freely; those paths are EXEMPT from drift detection by constructio
 
 **Machinery** (nim-probe-20260920, ferrous-warden):
 - deploy/manifest.yaml -- pins every deployed binary (path, sha256, immutable copy,
-  source repo + commit). Currently: herd (llama-swap 9305f95663db..), herd-keypool,
+  source repo + commit). Currently: herd (herd 9305f95663db..), herd-keypool,
   herd-model-guard, openfang-kernel (check-only, local debug build).
 - bin/estate-reconcile -- event-driven reconciler (chezmoi status/apply concept,
   qb-manager atomic-deploy mechanics): check (read-only, exit 1 on drift),
@@ -415,7 +415,7 @@ bun /home/toxic/estate/bin/fleet-join --name <name> --species <species> \
 - Fleet identity maps: name -> `name` + `[persona].name`; species +
   personality + lane/task -> `[persona].role` + `description`; lane/task ->
   `tags`. Species has no native OpenFang field — it folds into role/prompt.
-- Model default: herd free-tier via llama-swap :25100
+- Model default: herd free-tier via herd :25100
   (`openrouter-free/inclusionai/ling-3.0-flash-sante:free`, Ling-first per
   User 2026-09-17; verified live). Override with `--model`.
 - Flags: `--dry-run` (render only), `--no-activate` (files only, kernel

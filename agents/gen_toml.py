@@ -109,7 +109,7 @@ def main():
     out["assistant"] = gen_toml(
         manifests["assistant"],
         model_override={
-            "provider": "llama-swap",
+            "provider": "herd",
             "model": "openrouter-free/inclusionai/ling-3.0-flash-sante:free",
             "base_url": "http://127.0.0.1:25100/v1",
         },
@@ -132,7 +132,7 @@ def main():
 
     # sanity: assistant TOML must contain the new route and no anthropic leftovers
     a = out["assistant"]
-    assert 'provider = "llama-swap"' in a and "openrouter-free/inclusionai/ling-3.0-flash-sante:free" in a
+    assert 'provider = "herd"' in a and "openrouter-free/inclusionai/ling-3.0-flash-sante:free" in a
     assert "anthropic" not in a.split("[model]")[1].split("[resources]")[0].replace(
         "ANTHROPIC_API_KEY", "").replace("anthropic/", "")
     print("sanity OK")

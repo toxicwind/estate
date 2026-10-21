@@ -138,7 +138,7 @@ export const PROVIDERS: Record<
   { base: string; key_env: string; key_env_alt?: string; no_auth?: boolean }
 > = {
   // Local SSOT — always first-class for estate GPU path
-  "llama-swap": {
+  "herd": {
     base: HERD_V1,
     key_env: "HERD_API_KEY",
     no_auth: true,
@@ -187,7 +187,7 @@ export const PROVIDERS: Record<
 // Catalog (depends on LOCAL_ROLES, must come after loadLocalRoleModels)
 // ---------------------------------------------------------------------------
 export const PROVIDER_MODELS: Record<string, string[]> = {
-  "llama-swap": [LOCAL_ROLES.fast, LOCAL_ROLES.quality, LOCAL_ROLES.longctx],
+  "herd": [LOCAL_ROLES.fast, LOCAL_ROLES.quality, LOCAL_ROLES.longctx],
   "nim-local": [],
   "kimi-auto": ["kimi-auto"],
   openrouter: [
@@ -348,14 +348,14 @@ export const CODING: Record<string, [string, string] | null> = {
   fcm: null,
   // free: route through the `free` strategy (local + all :free cloud models)
   free: null,
-  // Local-first ranked roles (llama-swap exclusive matrix)
-  fast: ["llama-swap", LOCAL_ROLES.fast],
-  "local-fast": ["llama-swap", LOCAL_ROLES.fast],
-  quality: ["llama-swap", LOCAL_ROLES.quality],
-  "local-quality": ["llama-swap", LOCAL_ROLES.quality],
-  longctx: ["llama-swap", LOCAL_ROLES.longctx],
-  "local-longctx": ["llama-swap", LOCAL_ROLES.longctx],
-  "local-auto": ["llama-swap", LOCAL_ROLES.quality],
+  // Local-first ranked roles (herd exclusive matrix)
+  fast: ["herd", LOCAL_ROLES.fast],
+  "local-fast": ["herd", LOCAL_ROLES.fast],
+  quality: ["herd", LOCAL_ROLES.quality],
+  "local-quality": ["herd", LOCAL_ROLES.quality],
+  longctx: ["herd", LOCAL_ROLES.longctx],
+  "local-longctx": ["herd", LOCAL_ROLES.longctx],
+  "local-auto": ["herd", LOCAL_ROLES.quality],
   // 2026-09-21 sweep: aliases pointing at delisted/410 IDs removed —
   // hy3 (tencent/hy3:free), laguna-m1 (poolside/laguna-m.1:free),
   // qwen3-coder, llama-3.3-70b-free, hermes-3-405b, gpt-oss-20b,
@@ -417,7 +417,7 @@ export function getKey(p: string): string {
 }
 
 export function keyOk(p: string): boolean {
-  if (p === "llama-swap" || PROVIDERS[p]?.no_auth) return true;
+  if (p === "herd" || PROVIDERS[p]?.no_auth) return true;
   if (p === "nvidia") return nvidiaKeys().length > 0;
   const conf = PROVIDERS[p];
   if (!conf) return false;
@@ -428,13 +428,13 @@ export function keyOk(p: string): boolean {
 }
 
 export function firstModelFor(p: string): string {
-  if (p === "llama-swap") return LOCAL_ROLES.quality;
+  if (p === "herd") return LOCAL_ROLES.quality;
   return PROVIDER_MODELS[p]?.[0] || LIVE_MODELS[p]?.[0] || "";
 }
 
 export function isLocalSwapModelId(model: string): boolean {
   if (!model || model === "auto" || model === "fcm") return false;
-  if (model in CODING && CODING[model]?.[0] === "llama-swap") return true;
+  if (model in CODING && CODING[model]?.[0] === "herd") return true;
   if (
     model === LOCAL_ROLES.fast ||
     model === LOCAL_ROLES.quality ||
@@ -515,18 +515,18 @@ export function resolveModel(model: string): [string, string] {
   const norm = normalizeModelSpec(model);
   if (norm.provider) return [norm.provider, norm.model];
   if (model in CODING && CODING[model] != null) return CODING[model]!;
-  // Prefer llama-swap for any local GGUF id so hybrid never sends GPU models to Gemini
-  if (isLocalSwapModelId(model)) return ["llama-swap", model];
+  // Prefer herd for any local GGUF id so hybrid never sends GPU models to Gemini
+  if (isLocalSwapModelId(model)) return ["herd", model];
   if (model === "auto" || model === "fcm") {
     // local-first auto: quality role on swap
-    return ["llama-swap", LOCAL_ROLES.quality];
+    return ["herd", LOCAL_ROLES.quality];
   }
   for (const p of Object.keys(PROVIDERS)) {
     if (catalogModelsFor(p).includes(model)) return [p, model];
   }
   if (keyOk("openrouter")) return ["openrouter", model];
   if (keyOk("nvidia")) return ["nvidia", model];
-  return ["llama-swap", LOCAL_ROLES.quality];
+  return ["herd", LOCAL_ROLES.quality];
 }
 
 export function isAst(text: string): boolean {

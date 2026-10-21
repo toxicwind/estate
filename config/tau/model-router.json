@@ -6,7 +6,7 @@
    "tier": "low",
    "thinking": "low",
    "auth": "none",
-   "verified": "2026-09-14T20:45MDT live /v1/models on 127.0.0.1:25100 (llama-swap), on-demand load",
+   "verified": "2026-09-14T20:45MDT live /v1/models on 127.0.0.1:25100 (herd), on-demand load",
    "note": "1.2B ultralight, no auth, local"
   },
   "fast": {
@@ -15,7 +15,7 @@
    "tier": "low",
    "thinking": "low",
    "auth": "none",
-   "verified": "2026-09-14T20:45MDT live /v1/models on 127.0.0.1:25100 (llama-swap), on-demand load",
+   "verified": "2026-09-14T20:45MDT live /v1/models on 127.0.0.1:25100 (herd), on-demand load",
    "note": "low-latency local flash model, no auth"
   },
   "balanced": {

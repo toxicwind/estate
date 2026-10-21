@@ -1,8 +1,8 @@
 #!/usr/bin/env bun
 /**
- * Point local clients at llama-swap SSOT (:25100) without hand-listing models.
+ * Point local clients at herd SSOT (:25100) without hand-listing models.
  *
- * - Writes .state/llama-swap-ssot.json + client-llm.env (includes MODELS_SSE)
+ * - Writes .state/herd-ssot.json + client-llm.env (includes MODELS_SSE)
  * - Patches OpenFang provider_urls.llama → :25100/v1
  * - Ensures Zed language_models.llama.cpp = { api_url, auto_discover: true }
  *   (strips any available_models under llama.cpp — SSE rediscovery owns the list)
@@ -23,7 +23,7 @@ import {
   swapBaseUrl,
   swapModelsSseUrl,
   swapV1Url,
-} from "../lib/llama_swap_ssot.ts";
+} from "../lib/herd_ssot.ts";
 
 const HOME = homedir();
 const SOV = process.env.ESTATE_ROOT || join(HOME, "estate");
@@ -38,7 +38,7 @@ const cfg = openaiCompatClientConfig(defaultModel);
 
 const report = {
   ts: new Date().toISOString(),
-  ssot: "tools/llama-swap/config.yaml + live /v1/models + /models/sse",
+  ssot: "tools/herd/config.yaml + live /v1/models + /models/sse",
   base: swapBaseUrl(),
   v1: swapV1Url(),
   models_sse: swapModelsSseUrl(),
@@ -60,7 +60,7 @@ const report = {
 };
 
 writeFileSync(
-  join(outDir, "llama-swap-ssot.json"),
+  join(outDir, "herd-ssot.json"),
   `${JSON.stringify(report, null, 2)}\n`,
 );
 writeFileSync(join(outDir, "client-llm.env"), clientEnvExports(defaultModel));
@@ -97,8 +97,8 @@ raw = p.read_text()
 data = json5.loads(raw)
 lm = data.setdefault("language_models", {})
 changed = False
-if "estate-llama-swap" in lm:
-    del lm["estate-llama-swap"]
+if "estate-herd" in lm:
+    del lm["estate-herd"]
     changed = True
 want_url = ${JSON.stringify(swapBaseUrl())}
 cur = lm.get("llama.cpp") or {}

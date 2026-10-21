@@ -179,7 +179,7 @@ ranch project.
    run.
 2. **A daemon port must be in `config/ports.env`.** Verified 0 uncovered.
 3. **A renamed service keeps its port.** `HERD_PORT` exists because herd is the
-   rename of llama-swap and 38 files still read the old name.
+   rename of herd and 38 files still read the old name.
 4. **Do not retire a daemon because its launcher looks wrong.** vansrouter's
    launcher points at a deleted tree, and the daemon behind :25148 turned
    out to be `flicker`, live the whole time (it has since been replaced by

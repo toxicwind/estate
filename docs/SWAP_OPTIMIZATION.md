@@ -2,7 +2,7 @@
 
 > **Hardware**: AMD Ryzen 7 8700F (Zen 4, 8C/16T, AVX-512), 62 GiB DDR5-6000, RTX 3090 24 GB VRAM, WD_BLACK SN850X 1 TB (OS + 138 GB swap), Crucial E100 1 TB (DRAM-less, /home), Samsung 870 QVO 1 TB + Seagate 7.3 TB HDD (cold storage)
 
-> **Actual Workload**: Local LLM inference platform — 49 models across 4 llama.cpp forks, hot-swapped via llama-swap, GPU-offloaded on RTX 3090, MCP tool access, service mesh, Prometheus/Grafana observability.
+> **Actual Workload**: Local LLM inference platform — 49 models across 4 llama.cpp forks, hot-swapped via herd, GPU-offloaded on RTX 3090, MCP tool access, service mesh, Prometheus/Grafana observability.
 
 ---
 
@@ -26,8 +26,8 @@
 
 | Service           | Port        | Role                                                                                            | Memory Profile        |
 | ----------------- | ----------- | ----------------------------------------------------------------------------------------------- | --------------------- |
-| **llama-swap**    | 25100/25200 | Model orchestration — 49 models, 4 forks                                                        | 1-8 GB per model load |
-| **mesh-front**    | 25100-25115 | Service mesh frontends (llama-swap, grafana, openfang, prometheus, hf-downloader, rust-web)     | ~50 MB each           |
+| **herd**    | 25100/25200 | Model orchestration — 49 models, 4 forks                                                        | 1-8 GB per model load |
+| **mesh-front**    | 25100-25115 | Service mesh frontends (herd, grafana, openfang, prometheus, hf-downloader, rust-web)     | ~50 MB each           |
 | **openfang**      | 25196/25103 | Agent kernel web UI                                                                             | ~100 MB               |
 | **mcpproxy**      | 25112/25113 | MCP proxy — 30+ servers (qdrant, fetch, github, sqlite, markitdown, prometheus, context7, etc.) | ~150 MB               |
 | **qdrant**        | 6333        | Vector DB for embeddings                                                                        | ~600 MB               |
@@ -179,15 +179,15 @@ vm.watermark_boost_factor = 0
 ### Cgroup v2 Controls (Per-Workload)
 
 ```bash
-# Disable zswap writeback for latency-critical (llama-swap, GPU inference)
-echo 0 > /sys/fs/cgroup/llama-swap.slice/memory.zswap.writeback
+# Disable zswap writeback for latency-critical (herd, GPU inference)
+echo 0 > /sys/fs/cgroup/herd.slice/memory.zswap.writeback
 
 # Limit zswap usage for heavy containers
 echo 4G > /sys/fs/cgroup/docker.slice/memory.zswap.max
 
 # Monitor
-cat /sys/fs/cgroup/llama-swap.slice/memory.zswap.current
-cat /sys/fs/cgroup/llama-swap.slice/memory.stat | grep zswap
+cat /sys/fs/cgroup/herd.slice/memory.zswap.current
+cat /sys/fs/cgroup/herd.slice/memory.stat | grep zswap
 ```
 
 ---
@@ -261,14 +261,14 @@ fstrim -v /dev/nvme0n1p4
 
 | Workload                | VRAM Pressure | System Swap Behavior                               |
 | ----------------------- | ------------- | -------------------------------------------------- |
-| llama-swap (7-35B GGUF) | 8-24 GB       | Offloads KV cache / layers to system RAM           |
+| herd (7-35B GGUF) | 8-24 GB       | Offloads KV cache / layers to system RAM           |
 | SDXL / Flux             | 12-20 GB      | CPU offload via `mmap` → anonymous pages → zswap   |
 | Training (PyTorch)      | OOM risk      | `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True` |
 
 ### Cgroup Isolation for GPU Workloads
 
 ```bash
-# /etc/systemd/system/llama-swap.slice.d/99-zswap.conf
+# /etc/systemd/system/herd.slice.d/99-zswap.conf
 [Slice]
 MemoryZSwapWriteback=0
 MemoryZSwapMax=8G
@@ -423,9 +423,9 @@ echo guided | sudo tee /sys/devices/system/cpu/amd_pstate/status
 nvme smart-log /dev/nvme0n1
 fstrim -v /dev/nvme0n1p4
 
-# Cgroup for llama-swap
-systemctl set-property llama-swap.slice MemoryZSwapWriteback=0
-systemctl set-property llama-swap.slice MemoryZSwapMax=8G
+# Cgroup for herd
+systemctl set-property herd.slice MemoryZSwapWriteback=0
+systemctl set-property herd.slice MemoryZSwapMax=8G
 ```
 
 ---

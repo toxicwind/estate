@@ -89,7 +89,7 @@ Plus the agent layer: [`hatch/agents/ember`](hatch/agents/ember) (Ember's operat
 | Name | One meaning | The other meaning |
 | ---- | ----------- | ----------------- |
 | `tau` | `tau/` at the root, a **bazel** tree | the Tau agent engine on `:25111` (the old `projects/tau/` → `stockyard/tau` path is gone with the 2026-09-30 ranch flatten) |
-| `herd` | `engines/herd/`, C++ inference **engine** forks | `projects/herd/`, a real directory (FALLBACK.md + llama-swap) — the **Go** router on `:25100` |
+| `herd` | `engines/herd/`, C++ inference **engine** forks | `projects/herd/`, a real directory (FALLBACK.md + herd) — the **Go** router on `:25100` |
 | `squawk` | `projects/range/ranch/squawk/` and `squawk-ws/`, the **servers** | `hatch/agents/ember/chat/`, the **client**, a separate repo |
 
 **Stale leftovers, belonging to no tier — now archived.** These were abandoned worktrees and scratch clones from 2026-09-14 through 2026-09-20 whose `.git` files pointed into `.git/worktrees/`, a directory `git worktree list` no longer registered, so `git` could not resolve them at all. On 2026-09-27 they were moved, not deleted, to `.archive-20260920/orphaned-worktrees-20260927/` and recorded in that directory's `MANIFEST.md`: `bench-wt-tau/`, `merge-main-20260914/`, `mesh-bruteforce-20260914/`, `modelpush-71728/`, `wt-hft-hygiene-20260914/`, `kimi-audit-scratch-20260914/` (a nested clone of this very repo, 141 MB), and `.git.broken-2026-09-24T15-42-58-450Z/` (a partial copy of `.git/hooks`, superseded by the intact one). `mv` back to restore.
@@ -119,7 +119,7 @@ flowchart TB
     SP -->|nested repo| SQ
 ```
 
-`stockyard/` and `remuda/` are gone — the ranch flattened to one directory per component on 2026-09-30. `projects/tau` and `projects/sigma` went with them; `projects/herd` is now a real directory (FALLBACK.md + llama-swap), not a symlink.
+`stockyard/` and `remuda/` are gone — the ranch flattened to one directory per component on 2026-09-30. `projects/tau` and `projects/sigma` went with them; `projects/herd` is now a real directory (FALLBACK.md + herd), not a symlink.
 
 ## Architecture
 
@@ -166,7 +166,7 @@ flowchart TB
         SIG[sigma<br/>context folding proxy]
     end
     subgraph frontdoor["Inference front door"]
-        HERD[herd :25100<br/>llama-swap fork + hodos router]
+        HERD[herd :25100<br/>herd fork + hodos router]
         MG[model-guard :25101<br/>request-contract proxy]
         KP[keypool :25109<br/>provider key pool]
     end
@@ -222,7 +222,7 @@ Daemon definitions live in [`pitchfork.toml`](pitchfork.toml) (the generator is 
 
 | Port | Daemon | Role |
 | ---- | ------ | ---- |
-| `:25100` | `herd` | Inference front door — OpenAI-compatible `/v1` (llama-swap fork + hodos router) |
+| `:25100` | `herd` | Inference front door — OpenAI-compatible `/v1` (herd fork + hodos router) |
 | `:25101` | `model-guard` | Request-contract enforcement proxy in front of herd (rewrites `chat/completions` per [`config/model_constraints.yaml`](config/model_constraints.yaml)) |
 | `:25109` | `keypool` | Provider key pool for herd cloud routing ([`bin/herd-keypool.py`](bin/herd-keypool.py)) |
 | `:25111` | `tau` | Tau agent engine, exposed as a TCP daemon by `chute` (stdio→TCP ACP) |
@@ -274,7 +274,7 @@ The keypool sidecar supports concurrent first-valid-wins racing via `KEYPOOL_RAC
 
 </details>
 
-The routing matrix is [`config/herd.yaml`](config/herd.yaml) — the canonical llama-swap config (RTX 3090 24GB, `startPort: 25001`).
+The routing matrix is [`config/herd.yaml`](config/herd.yaml) — the canonical herd config (RTX 3090 24GB, `startPort: 25001`).
 
 ## Quickstart
 
@@ -319,7 +319,7 @@ Estate-projects/                     # this repo — /home/toxic/estate on yote
 ├── projects/               # the workspaces (see below)
 │   ├── range/ranch/        # the ranch monorepo (stale gitlink in this index — empty on fresh clone; live at toxicwind/ranch)
 │   ├── yote/  qed/  shell/  openfang/  audits/  ops/  tools/
-│   ├── herd                # real dir now: FALLBACK.md + llama-swap
+│   ├── herd                # real dir now: FALLBACK.md + herd
 ├── agents/                 # oracle-market, coyote, kimiclaw, squawk-relay, …
 ├── skills/                 # 29 hand-authored skills — skill root #1, see Key components
 ├── bin/                    # ops scripts: pitchfork-restart, herd-keypool.py, claim-port, …
@@ -353,7 +353,7 @@ Two upstream inputs make it maintainable: [`bin/upstream-pull.sh`](projects/sigm
 
 ### Inference — herd
 
-[`projects/herd/`](projects/herd) — the **toxicwind fork of llama-swap** (Go): the stack's single OpenAI-compatible endpoint on `:25100`. Cloud-provider routing is delegated to the `hodos` daemon on `:25193`. Live service: pitchfork `herd` → `stack/services/herd.sh` with [`config/herd.yaml`](config/herd.yaml).
+[`projects/herd/`](projects/herd) — the **toxicwind fork of herd** (Go): the stack's single OpenAI-compatible endpoint on `:25100`. Cloud-provider routing is delegated to the `hodos` daemon on `:25193`. Live service: pitchfork `herd` → `stack/services/herd.sh` with [`config/herd.yaml`](config/herd.yaml).
 
 Self-healing peers (2026-09-20): event-driven dead-peer detection (healthy/degraded/circuit-open FSM, single-flight half-open recovery on real traffic) with `GET /peer-health` observability.
 
@@ -461,7 +461,7 @@ This is the short list. The full map of every README in the tree is [`docs/READM
 
 ## License
 
-Stack glue: MIT where marked. Upstream binaries and forks keep their licenses (llama-swap, Zed, Grafana, …).
+Stack glue: MIT where marked. Upstream binaries and forks keep their licenses (herd, Zed, Grafana, …).
 
 ---
 

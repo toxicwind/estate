@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 import { mkdirSync } from "node:fs";
 /**
- * Wire VS Code Insiders, Grok, Antigravity, ide-test → llama-swap :25100 (Bun).
+ * Wire VS Code Insiders, Grok, Antigravity, ide-test → herd :25100 (Bun).
  * Defaults come from live catalog; no hand-maintained GGUF inventories.
  * SSE URL is exported for clients that can auto-discover (Zed already does).
  */
@@ -170,7 +170,7 @@ const out = {
   utility: settings["chat.utilitySmallModel"],
   antigravity_env: antEnv,
   runtime: "bun",
-  ssot: "llama-swap live /v1/models + /models/sse",
+  ssot: "herd live /v1/models + /models/sse",
 };
 const evidence = join(SCRATCH, "ide-clients.json");
 await Bun.write(evidence, `${JSON.stringify(out, null, 2)}\n`);

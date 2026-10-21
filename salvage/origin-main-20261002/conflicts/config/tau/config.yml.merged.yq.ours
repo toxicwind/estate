@@ -2,7 +2,7 @@ plugins:
   - name: herd
     source: ./projects/ranch/herd
     vendor:
-      - ./projects/ranch/herd/vendor/llama-swap
+      - ./projects/ranch/herd/vendor/herd
     merged: estate-swap
     privileged: true
   - name: hodos
@@ -37,7 +37,7 @@ providers:
     maxConcurrency: 3
   openai-compatible:
     baseUrl: http://127.0.0.1:25100/v1
-    apiKey: llama-swap
+    apiKey: herd
   webSearchTimeoutSeconds: 60
   antigravityEndpoint: auto
   fireworksTier: standard

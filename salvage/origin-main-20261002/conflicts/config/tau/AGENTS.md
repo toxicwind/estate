@@ -15,7 +15,7 @@
 # - config/ports.env: Port SSOT for all 25xxx services
 # - mise.toml / pitchfork.toml: Service orchestration
 # - src/: hal-substrate, openfang, services, mcp, deploy
-# - tools/: llama-swap, nuvio-webos, Estate-router, etc.
+# - tools/: herd, nuvio-webos, Estate-router, etc.
 #
 # KEY COMMANDS:
 #   bun /home/toxic/estate/helpers/git-mutator.ts status|commit-push|scan-secrets

@@ -253,7 +253,7 @@ Priority for every model call the market makes or enables:
 1. Working free cloud — OpenRouter free tier, Pollinations,
    Gemini free tiers, any no-cost cloud route.
 2. Paid cloud.
-3. Local (herd-local, beellama, llama-swap) — fallback ONLY, never the
+3. Local (herd-local, beellama, herd) — fallback ONLY, never the
    default.
 
 `keypool.best_any()` enforces this order (free → paid → local).

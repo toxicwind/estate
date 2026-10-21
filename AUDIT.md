@@ -13,7 +13,7 @@
 |---|---|---|---|
 | **Tau** | `tau/` | Canonical AI agent engine (TS/Bun/Rust) | Owned; `groq.ts` + `groq.models.ts` deleted; `model-catalog.ts` tracked |
 | **Tau-extensions** | `tau-extensions/` | Plugin/extensions layer | De-submoduled (tracked) |
-| **Herd** | `herd/` | Router / llama-swap | Owned |
+| **Herd** | `herd/` | Router / herd | Owned |
 | **Mesh** | `mesh/` | MCP gateway (`mcpproxy`) | Owned |
 | **Yote** | `yote/` | Minimal agent runtime | Owned |
 | **OpenFang** | `openfang/` | C++ inference engine | Owned |

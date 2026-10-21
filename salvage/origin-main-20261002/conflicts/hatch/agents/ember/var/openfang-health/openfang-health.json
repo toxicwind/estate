@@ -28,7 +28,7 @@
       "detail": "chain integrity NOT verified"
     },
     {
-      "name": "llama_swap",
+      "name": "herd",
       "status": "ok",
       "detail": ":25100/v1/models ok in 23ms, 98 models"
     },

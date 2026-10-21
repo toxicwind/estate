@@ -61,7 +61,7 @@ parseable into these layers. If it isn't, it's a bug — run the validator.
    `backup` router profile pointed at `herd/pollinations-free/openai`, a model
    that no longer exists — caught by this rule.)
 6. **Stale refs are bugs.** Quarantined/removed models MUST NOT appear in
-   matrix vars, evict_costs, scheduler, roles, or profiles. llama-swap
+   matrix vars, evict_costs, scheduler, roles, or profiles. herd
    fail-closes on dangling matrix refs (keeps serving the OLD config).
 7. **Duplicate upstream claims must be explicit variants.** Three builds of
    `qwen3.5-9b-deepseek-v4-flash` exist (`mradermacher` i1 q4_k_m/q4_k_s,

@@ -3,7 +3,7 @@
 import json, re, time, urllib.request
 
 ROUTER = "http://127.0.0.1:25104/v1/chat/completions"
-DIRECT = "http://127.0.0.1:25100/v1/chat/completions"  # llama-swap, same model ids, no router rate limit
+DIRECT = "http://127.0.0.1:25100/v1/chat/completions"  # herd, same model ids, no router rate limit
 # router lane id -> direct model id (same weights, local serve)
 DIRECT_MODEL = {
     "mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_m": "toolcall-local/qwen3.5-9b-tool",
@@ -28,7 +28,7 @@ def _post(url, model, system, user, max_tokens, timeout):
     return text, round(time.time() - t0, 2)
 
 def chat(model, system, user, max_tokens=MAX_TOKENS, timeout=GEN_TIMEOUT_S):
-    """One chat completion. Primary: direct llama-swap (:25100); fallback: router (:25104).
+    """One chat completion. Primary: direct herd (:25100); fallback: router (:25104).
 
     The router 503s with rate_limited when its hedged upstreams throttle; the
     direct path serves the same model ids locally. Lane identity (model id) is

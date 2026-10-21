@@ -57,8 +57,8 @@ PROC_ROOT = "/proc"
 
 # Intentional multi-name ports. A port whose registered names are ALL inside
 # one of these groups is an alias, not a double-book. Verified 2026-09-20:
-#   25100 — one live process (llama-swap, pitchfork-supervised); HERD_PORT and
-#           LLAMA_SWAP_PORT name the same service (herd serves via llama-swap).
+#   25100 — one live process (herd, pitchfork-supervised); HERD_PORT and
+#           LLAMA_SWAP_PORT name the same service (herd serves via herd).
 #   25107 — NULL_G_PORT is the documented deprecated forward-only alias of
 #           NULL_G_PROXY_PORT (see ports.env).
 #   25133 — QDRANT_PORT / QDRANT_HTTP_PORT are qdrant's single HTTP listener.
@@ -88,7 +88,7 @@ SERVICE_RANGE = (25000, 35000)
 # Grandfathered: tailscale-serve backends (8377 /mcp, 8378 /gemini-mcp,
 # 8379 /exec-ws, 8443 /). Still audited, but range violations are not raised.
 LEGACY_RANGES = [(8300, 8399), (8443, 8443)]
-# herd-dynamic pool: llama-swap backends + herd-managed alias shims, allocated
+# herd-dynamic pool: herd backends + herd-managed alias shims, allocated
 # at runtime (config/herd.yaml startPort), never registered in the SSOT.
 DYNAMIC_POOLS = [(25001, 25099)]
 

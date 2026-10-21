@@ -11,7 +11,7 @@ Three separate implementations have carried similar routing DNA:
    strategies, streaming, sticky sessions, ELO, circuits, HealthDB, free
    racing, `/ui` dashboard.
 2. **Go cloud-router module** (`projects/herd/internal/hodos/`) — a
-   llama-swap library module, not a version of #1. 13 providers,
+   herd library module, not a version of #1. 13 providers,
    per-provider rate limits, request coalescing, least-latency and
    round-robin strategies, richer status surface. No live discovery, no
    streaming-first design.
@@ -32,8 +32,8 @@ router.
 | | estate-router-ts (LIVE) | Go module |
 |---|---|---|
 | Location | `tools/estate-router/estate-router-ts/` | `projects/herd/internal/hodos/` |
-| Status | **Production** — pitchfork daemon `:25104` | Library, compiled into herd llama-swap builds |
-| Providers | 7: llama-swap (herd main port `:25100`), openrouter, nvidia (direct multi-key), groq, cerebras, google, mistral | 13: llama-swap, openrouter, nvidia, groq, together, cerebras, fireworks, hyperbolic, github, mistral, openai, perplexity, siliconflow |
+| Status | **Production** — pitchfork daemon `:25104` | Library, compiled into herd herd builds |
+| Providers | 7: herd (herd main port `:25100`), openrouter, nvidia (direct multi-key), groq, cerebras, google, mistral | 13: herd, openrouter, nvidia, groq, together, cerebras, fireworks, hyperbolic, github, mistral, openai, perplexity, siliconflow |
 | Strategies | 7 canonical: fifo_matrix, free, sticky_affinity, weighted_elo, circuit_chain, hybrid, hodos_race (`fifo_flock` / `hodos_race` aliases live; legacy `ast_race` / `fifo_matrix` still accepted) | 8: hybrid, hodos_race (alias `ast_race`), sticky_affinity, weighted_elo, least_latency, round_robin, free, circuit_chain |
 | Model discovery | **Live** — `GET {base}/models` per key at startup + every 30 min; union with curated | YAML-configured static lists |
 | Health | SQLite WAL HealthDB, EMA latency, ELO, circuit breakers, sticky sessions | SQLite health DB, EMA latency, circuit breakers w/ half-open probes, sticky sessions |
@@ -51,7 +51,7 @@ renamed. Archives and frozen snapshots are documented, not renamed.
 |---|---|---|---|---|
 | 1 | estate-router-ts | `tools/estate-router/estate-router-ts/` | Bun/TS multi-provider model router | **LIVE** - pitchfork daemon `estate-router` on `:25104` |
 | 2 | hodos (proxy) | `/home/toxic/projects/hodos`, daemon `/home/toxic/.hodos/hodos` on `:8000` | Rust NVIDIA NIM OpenAI-compatible proxy | **LIVE** - separate repo; NIM-side consolidation owned by main chat |
-| 3 | Go hodos module | `projects/herd/internal/hodos/` | llama-swap library module (13 providers) | Active source; NOT the running `:25100` binary (built 2026-09-12 from an incomplete tree) |
+| 3 | Go hodos module | `projects/herd/internal/hodos/` | herd library module (13 providers) | Active source; NOT the running `:25100` binary (built 2026-09-12 from an incomplete tree) |
 | 4 | mesh gateway router | `projects/range/ranch/barn/shep/hodos.go`, `projects/herd/mesh/gateway/hodos.go` | Go MCP/tool-call router | Reference copies; live `:25115` is the Bun mesh-hub |
 | 5 | hodos-py | `projects/range/ranch/stockyard/router-legacy/hodos-py/`, `projects/herd/mesh/router/hodos-py/` | Python reference router | Frozen reference |
 | 6 | hodos-router | `projects/range/ranch/stockyard/router-legacy/hodos-router/` | TS reference router | Frozen reference |
@@ -75,7 +75,7 @@ Everything else is reference, snapshot, or frozen archive.
 - **Flap tracker**: 3 empty completions in 10 min benches a model from the
   free pool; strikes decay and re-probe. Visible at `/metrics`
   (`estate_router_model_empty_strikes`). Already striking flapping Ling
-  variants on openrouter and llama-swap paths.
+  variants on openrouter and herd paths.
 - **Substance guard on every path**: HTTP 200 with empty content (and no
   tool_calls) is a failure at every routing layer — never served, never
   sticky-pinned. Closed the circuit-chain/free fallback hole that served
@@ -84,7 +84,7 @@ Everything else is reference, snapshot, or frozen archive.
   circuit state, empty-strike count, plus raw provider objects where live.
 - **Operational**: Prometheus `/metrics`, optional `ESTATE_CLIENT_KEYS`
   auth, neutral naming (UA `Estate-Router/3.1`, `[router]` logs).
-- **Local path preserved**: llama-swap provider routes through the herd main
+- **Local path preserved**: herd provider routes through the herd main
   port `:25100`; the router has not bypassed it.
 
 - **Strategy names hodos-aligned** (2026-09-17): `ast_race` -> `hodos_race`,
@@ -101,7 +101,7 @@ Everything else is reference, snapshot, or frozen archive.
   completion priced `"0"` = free), with deterministic fallback to the `:free`
   suffix convention only when a provider exposes no pricing metadata at all.
   Filters: circuit state, flap strikes (substance-guard failures feed the
-  strike counter), local llama-swap roles always join. `/v1/models`
+  strike counter), local herd roles always join. `/v1/models`
   `x-estate.free` is the same function, so the catalog and the router
   agree. 4 live-free models the static list missed (`stealth/union-alpha`,
   `google/lyria-3-pro-preview`, `google/lyria-3-clip-preview`,
@@ -136,7 +136,7 @@ Everything else is reference, snapshot, or frozen archive.
 
 | Provider | Curated | Live | Union served |
 |---|---|---|---|
-| llama-swap | 3 | 102 | 102 |
+| herd | 3 | 102 | 102 |
 | openrouter | 11 | 444 | 451 |
 | nvidia | 12 | 82 | 92 |
 | groq | 6 | 13 | 17 |

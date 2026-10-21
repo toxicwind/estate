@@ -15,10 +15,10 @@
 ## Phase 1: Core Infrastructure
 
 - [x] Start Qdrant on 25133 (config: `/home/toxic/estate/qdrant-config.yaml`)
-- [x] Start llama-swap on 25100
-  - [x] Verify binary exists: `/home/toxic/projects/llama-swap-main/llama-swap`
-  - [x] Verify config: `/home/toxic/estate/config/llama-swap.yaml`
-  - [x] Run: `./stack/services/llama-swap.sh &`
+- [x] Start herd on 25100
+  - [x] Verify binary exists: `/home/toxic/projects/herd-main/herd`
+  - [x] Verify config: `/home/toxic/estate/config/herd.yaml`
+  - [x] Run: `./stack/services/herd.sh &`
   - [x] Health check: `curl -sf http://127.0.0.1:25100/health`
   - [x] **FULL AUDIT**: UI at `/ui/` serves React app with Tailwind, all assets load
   - [x] **FULL AUDIT**: `/v1/models` returns 29 models from toxicwind fork config
@@ -72,7 +72,7 @@
   - [x] Remove: `feedlot-proxy` (25121) — script exists but mock
   - [x] Remove: `zellij`, `ttyd`, `sshx` — not core services
 - [x] Ensure `groups.core` only has working daemons (13):
-  - `llama-swap`, `mcpproxy`, `openfang`, `rust-web`, `ghas-api`, `ghas-mcp`, `ghas-frontend`, `prometheus`, `grafana`, `hf-downloader`, `qdrant`, `redis`, `pi-web-dashboard`
+  - `herd`, `mcpproxy`, `openfang`, `rust-web`, `ghas-api`, `ghas-mcp`, `ghas-frontend`, `prometheus`, `grafana`, `hf-downloader`, `qdrant`, `redis`, `pi-web-dashboard`
 - [x] Verify pitchfork.toml syntax valid
 
 ## Phase 6: Peripheral Services (Optional / Later)
@@ -87,7 +87,7 @@
 - [x] All 251xx core health checks pass
 - [ ] mcpproxy tool discovery works
 - [ ] GHAS tools visible in mcpproxy
-- [x] llama-swap models listed: `curl -s http://127.0.0.1:25100/v1/models`
+- [x] herd models listed: `curl -s http://127.0.0.1:25100/v1/models`
 - [ ] bashrc `svc-check` alias works: `svc-check`
 
 ---
@@ -97,7 +97,7 @@
 ```
 [2026-08-11 15:XX] STARTED FIX.md execution
 [2026-08-11 15:XX] Phase 0: DONE — Redis on 25199, Docker cleared
-[2026-08-11 21:10] Phase 1: DONE — Qdrant, llama-swap (full audit passed)
+[2026-08-11 21:10] Phase 1: DONE — Qdrant, herd (full audit passed)
 [2026-08-11 21:12] Phase 2: DONE — mcpproxy (41 servers)
 [2026-08-11 21:14] Phase 3: DONE — GHAS stack (api, mcp, frontend)
 [2026-08-11 21:18] Phase 4: DONE — Prometheus + Grafana
@@ -112,7 +112,7 @@
 | ---------------- | ----- | ------ | ------ | ----- |
 | redis            | 25199 | 25199  | 25199  | ✅    |
 | qdrant           | 25133 | 25133  | 25133  | ✅    |
-| llama-swap       | 25100 | 25100  | 25100  | ✅    |
+| herd       | 25100 | 25100  | 25100  | ✅    |
 | mcpproxy         | 25109 | 25109  | 25109  | ✅    |
 | ghas-api         | 25112 | 25112  | 25112  | ✅    |
 | ghas-mcp         | 25113 | 25113  | 25113  | ✅    |
@@ -128,10 +128,10 @@
 
 ## Verified Functionality (Complex Audit)
 
-### llama-swap (toxicwind fork)
+### herd (toxicwind fork)
 
-- ✅ Binary: `/home/toxic/projects/llama-swap-main/llama-swap` (Go, built)
-- ✅ Config: `/home/toxic/estate/config/llama-swap.yaml` (matrix router, 29 models)
+- ✅ Binary: `/home/toxic/projects/herd-main/herd` (Go, built)
+- ✅ Config: `/home/toxic/estate/config/herd.yaml` (matrix router, 29 models)
 - ✅ UI: `http://localhost:25100/ui/` — React + Tailwind, all assets load
 - ✅ API: `/v1/models` — 29 models from beellama, gemma, qwen, ik_llama forks
 - ✅ API: `/v1/chat/completions` — EXAONE 1.2B IQ4_XS loaded, responds in ~60ms
@@ -181,11 +181,11 @@ curl -s -X POST http://127.0.0.1:25109/mcp \
 
 - [x] wayland-mcp: Installed evemu-tools (`pacman -S evemu`), rebuilt venv with `fastmcp`, uses stdio transport (`isMcpStdio: true`), `readyCmd` for health check
 - [x] system-monitor-mcp: Rewrote `server.patched.py` with absolute imports, proper `sys.path`, uses `readyCmd`
-- [x] llama-swap rebuilt: `make linux` with `-tags embed_ui` — binary at `/home/toxic/projects/llama-swap-main/llama-swap` serves UI at `/ui/`
-- [x] Cache first-class: `/internal/cache/cache.go` in binary, `store.db` at `~/.local/share/llama-swap/store.db`
+- [x] herd rebuilt: `make linux` with `-tags embed_ui` — binary at `/home/toxic/projects/herd-main/herd` serves UI at `/ui/`
+- [x] Cache first-class: `/internal/cache/cache.go` in binary, `store.db` at `~/.local/share/herd/store.db`
 - [x] UI first-class: React + Tailwind SPA embedded via `embed_ui` tag, all assets served with brotli compression
 - [x] Test framework: `test/services/test-framework.ts` — reusable, non-destructive service health tests using `curl` (handles compression) and `redis-cli`
-- [x] Pitchfork supervisor restarted; llama-swap started via `PITCHFORK_CONFIG_PATH=/home/toxic/estate/pitchfork.toml pitchfork start llama-swap`
+- [x] Pitchfork supervisor restarted; herd started via `PITCHFORK_CONFIG_PATH=/home/toxic/estate/pitchfork.toml pitchfork start herd`
 
 ## Phase 4: HAL Substrate Integration
 
@@ -196,7 +196,7 @@ curl -s -X POST http://127.0.0.1:25109/mcp \
   - [ ] `mise run up-coyote`
   - [ ] Health check: `curl -sf http://127.0.0.1:25143/health` (or check logs)
 - [ ] Verify AST matrix routing
-  - [ ] HAL connects to llama-swap on :25100
+  - [ ] HAL connects to herd on :25100
   - [ ] Default model: `kimi-auto` (→ kimi/k1.5, weight 2.0)
   - [ ] Fallback strategy: `free` (7 zero-cost providers)
 - [ ] **VERIFY Phase 4**: HAL healthy, routes through AST matrix
@@ -207,7 +207,7 @@ curl -s -X POST http://127.0.0.1:25109/mcp \
 - [x] Create system prompt (agents/coyote/system.md)
 - [x] First-class service launcher (stack/services/coyote.sh)
 - [x] HTTP server with /health, /status, POST /task, POST /stop
-- [x] Connects to llama-swap AST matrix (:25100) — 14 providers, kimi primary
+- [x] Connects to herd AST matrix (:25100) — 14 providers, kimi primary
 - [x] Yote messaging integration (:25102) — Telegram/Discord/Signal
 - [x] MCP proxy integration (:25109, :25113) — GHAS + 41 MCP servers
 - [x] Sigil-driven workflow: PROCEED/HALT/ROADMAP/SHORT

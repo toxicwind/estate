@@ -1,5 +1,5 @@
 // Regression tests for the 503-forensics 2026-09-21 dead-ID sweep +
-// entitlement-404 fail-fast bench + llama-swap bonus lane.
+// entitlement-404 fail-fast bench + herd bonus lane.
 //
 //  1. DEAD_MODEL_IDS filters EOL/delisted IDs from every catalog (static
 //     and live) — they can enter neither race sets nor explicit routing.
@@ -8,7 +8,7 @@
 //  3. One 401/402 counts 3x — the dead-key provider's circuit opens
 //     immediately instead of needing 3 separate client requests.
 //  4. callOne refuses a benched model without touching the network.
-//  5. pickWeighted always includes the healthy llama-swap bonus lane and
+//  5. pickWeighted always includes the healthy herd bonus lane and
 //     skips entitlement-benched models in every race set.
 import { describe, test, expect } from "bun:test";
 
@@ -111,10 +111,10 @@ describe("race-set hygiene", () => {
     expect(next).not.toBe(first);
     expect(next).toBe("google/gemma-4-31b-it:free");
   });
-  test("pickWeighted always includes the healthy llama-swap bonus lane", () => {
+  test("pickWeighted always includes the healthy herd bonus lane", () => {
     const cands = pickWeighted(4);
     const providers = cands.map(([p]) => p);
-    expect(providers).toContain("llama-swap");
+    expect(providers).toContain("herd");
     // Bonus lane is appended after the n-cut, never sliced off.
     expect(cands.length).toBeGreaterThan(0);
   });

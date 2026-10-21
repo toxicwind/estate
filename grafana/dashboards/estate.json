@@ -228,7 +228,7 @@
    "targets": [
     {
      "expr": "llamaswap_cpu_util_percent",
-     "legendFormat": "llama-swap CPU %"
+     "legendFormat": "herd CPU %"
     }
    ],
    "fieldConfig": {

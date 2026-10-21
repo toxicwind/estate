@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
  * Prove REAL Zed MCP usage (Content-Length MCP stdio = same transport Zed uses)
- * for ghas + llama-swap, plus agent turns on both models.
+ * for ghas + herd, plus agent turns on both models.
  */
 import {
   appendFileSync,
@@ -214,7 +214,7 @@ async function agentTurn(model: string, prompt: string, maxTokens: number) {
         {
           role: "system",
           content:
-            "You are the Zed agent. GHAS MCP and llama-swap MCP are enabled in context_servers. Be terse.",
+            "You are the Zed agent. GHAS MCP and herd MCP are enabled in context_servers. Be terse.",
         },
         { role: "user", content: prompt },
       ],
@@ -237,7 +237,7 @@ async function agentTurn(model: string, prompt: string, maxTokens: number) {
     content: visible.slice(0, 800),
     content_visible: content.slice(0, 800),
     usage: json?.usage,
-    path: "Zed language_models → http://127.0.0.1:25100 (llama.cpp + estate-llama-swap)",
+    path: "Zed language_models → http://127.0.0.1:25100 (llama.cpp + estate-herd)",
   };
 }
 
@@ -249,7 +249,7 @@ const ghasMcp = await runMcp(
 );
 
 const llamaMcp = await runMcp(
-  "llama-swap",
+  "herd",
   [
     "/home/toxic/.bun/bin/bun",
     "run",
@@ -261,7 +261,7 @@ const llamaMcp = await runMcp(
 
 // Also call herd_models as second tool use evidence
 const llamaModels = await runMcp(
-  "llama-swap-models",
+  "herd-models",
   [
     "/home/toxic/.bun/bin/bun",
     "run",
@@ -318,7 +318,7 @@ const settingsRaw = readFileSync(
 const settingsProof = {
   ghas_enabled: settingsRaw.includes("ghas-mcp-stdio"),
   llama_cpp_25100: settingsRaw.includes("127.0.0.1:25100"),
-  estate_herd: settingsRaw.includes("estate-llama-swap"),
+  estate_herd: settingsRaw.includes("estate-herd"),
   model_a: settingsRaw.includes(MODEL_A),
   model_b: settingsRaw.includes(MODEL_B),
   enable_all_context_servers: settingsRaw.includes(

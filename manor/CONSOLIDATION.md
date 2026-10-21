@@ -10,7 +10,7 @@ An earlier version of this document said to port the dropped capability out of
 `herd/ui` by hand. That was wrong, and acting on it would have re-derived work
 upstream had already done.
 
-The real upstream is **`mostlygeek/llama-swap`** (5.7k stars, pushed daily). Its
+The real upstream is **`mostlygeek/herd`** (5.7k stars, pushed daily). Its
 `ui/` typechecks at **0 errors**; our fork carried **126**. Our fork was not
 "missing capability that `herd/ui` still had" — it had been edited *downward*
 after `d39a6f8` while upstream moved on. `ModelsDash.svelte` went from 297 lines
@@ -49,7 +49,7 @@ passed in 29 files, `bun run build` succeeds.
 were byte-identical, and the first had no consumer at all. `herd/mise.toml`
 wired `ui`/`ui:build` at `ui-svelte`; both now point at `../../ui`.
 
-`stockyard/tau/package.json` had 5 of 102 scripts copy-pasted from llama-swap
+`stockyard/tau/package.json` had 5 of 102 scripts copy-pasted from herd
 referencing a `herd/` Go binary and a `ui-svelte/` that tau never had; they are
 repointed at tau's own `test:ts`/`test:rs`/`test:py` and `lint:ts`/`lint:rs`.
 
@@ -183,7 +183,7 @@ tracked, and both `bun.lock` and `package-lock.json` — pick one.
 ### Adjacent breakage found while doing this
 
 - **`stockyard/tau/package.json` — 5 of 102 scripts are broken.** They are
-  llama-swap copy-paste artifacts that `cd` into directories that do not exist
+  herd copy-paste artifacts that `cd` into directories that do not exist
   inside tau:
   ```
   dev          => cd herd && go run ./cmd/main.go

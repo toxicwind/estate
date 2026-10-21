@@ -22,10 +22,10 @@
 
 ```typescript
 // TypeScript: spawn Go binary with structured JSON over stdin/stdout
-// Use for: llama-swap, hodos, estate-router
+// Use for: herd, hodos, estate-router
 import { $ } from "bun";
 
-const result = await $`/home/toxic/bin/llama-swap --json`.json();
+const result = await $`/home/toxic/bin/herd --json`.json();
 ```
 
 ```go
@@ -79,7 +79,7 @@ pub extern "C" fn encode(ptr: *const u8, len: i32) -> *mut u8 { ... }
 /home/toxic/estate/
 ├── config/                 # TOML configs (ports.env, mise.toml, pitchfork.toml)
 ├── src/
-│   ├── go/                 # Go services (llama-swap, hodos, router)
+│   ├── go/                 # Go services (herd, hodos, router)
 │   │   ├── cmd/            # Main packages
 │   │   ├── internal/       # Private packages
 │   │   └── go.mod
@@ -209,7 +209,7 @@ Every service (Go/Rust/TS) exposes:
 **Integration test pattern**:
 ```typescript
 // Spawn real Go/Rust binaries, test via stdio/HTTP
-const proc = await $`../../bin/llama-swap --stdio`.quiet();
+const proc = await $`../../bin/herd --stdio`.quiet();
 const result = await proc.stdin.write(JSON.stringify({model: "free", messages: [...]}));
 // Verify JSON response
 ```

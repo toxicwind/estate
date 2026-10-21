@@ -62,7 +62,7 @@ _info() {
 }
 
 # Probe the critical ones. Names match the pitchfork daemon that owns the port:
-# :25100 is `herd` (the llama-swap fork) and :25112 is `search-api` (renamed
+# :25100 is `herd` (the herd fork) and :25112 is `search-api` (renamed
 # from ghas-api). A label naming a daemon that no longer exists sends you
 # hunting for a service that was never broken.
 _probe "herd"              "http://127.0.0.1:25100/health"

@@ -36,7 +36,7 @@ async function chat(
       {
         role: "system",
         content:
-          "You are the Zed agent on estate llama-swap. Be terse. No thinking dump.",
+          "You are the Zed agent on estate herd. Be terse. No thinking dump.",
       },
       { role: "user", content },
     ],
@@ -164,7 +164,7 @@ const turnB = await chat(
   "You are Zed agent model B. Reply with exactly one line: ZED_AGENT_EXAONE_OK mesh=ghas",
 );
 
-// 6) Models list from llama-swap (Zed llama.cpp auto_discover)
+// 6) Models list from herd (Zed llama.cpp auto_discover)
 const models = await httpJson(`${LLM}/v1/models`);
 
 const report = {

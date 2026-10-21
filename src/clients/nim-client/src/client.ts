@@ -62,7 +62,7 @@ export class NIMClient {
   }
 
   /**
-   * Create a client for llama-swap (local router)
+   * Create a client for herd (local router)
    */
   static forLlamaSwap(
     apiKey: string,

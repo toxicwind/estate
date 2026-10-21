@@ -38,13 +38,13 @@ intentional: a second declaration is drift, not fallback.
 
 ## 2. Tools
 
-`llama-swap` was **not a mise tool**. It was a 37 MB Go binary at
-`ranch/herd/llama-swap` with no version and no upgrade path. That is why the
+`herd` was **not a mise tool**. It was a 37 MB Go binary at
+`ranch/herd/herd` with no version and no upgrade path. That is why the
 herd outage stayed invisible behind a stale process for hours: nothing owned it.
 
 ```toml
 [tools]
-llama-swap = "github:toxicwind/llama-swap"
+herd = "github:toxicwind/herd"
 ```
 
 The launcher resolves tools through mise and fails loudly if a tool is missing,
@@ -55,7 +55,7 @@ rather than pointing at a path that a directory move can invalidate:
 resolve_tool() { mise which "$1" 2>/dev/null || command -v "$1" || return 1; }
 ```
 
-The old `BIN="$SOV/projects/herd/llama-swap"` died on the 2026-10-01 restructure
+The old `BIN="$SOV/projects/herd/herd"` died on the 2026-10-01 restructure
 and only surfaced when `pitchfork clean` finally stopped the stale process.
 
 ## 3. pitchfork

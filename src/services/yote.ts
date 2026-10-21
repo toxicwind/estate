@@ -238,7 +238,7 @@ async function send(cid: number, t: string, o: any = {}) {
   }
 }
 
-/** Direct herd (llama-swap) chat — fallback when OpenFang is unreachable. */
+/** Direct herd (herd) chat — fallback when OpenFang is unreachable. */
 async function herdChat(
   txt: string,
   maxTokens = 1024,

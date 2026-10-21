@@ -14,7 +14,7 @@
 >
 > **OS**: CachyOS (linux-cachyos-bore), Limine bootloader, Btrfs root (@ subvol), systemd + pitchfork process supervisor
 >
-> **Core Principle**: Local-first LLM inference platform. Every service has a stable 25xxx port. llama-swap is the _only_ LLM front door.
+> **Core Principle**: Local-first LLM inference platform. Every service has a stable 25xxx port. herd is the _only_ LLM front door.
 
 ---
 
@@ -54,10 +54,10 @@ vm.compaction_proactiveness = 0
 vm.extfrag_threshold = 500
 ```
 
-### Cgroup Isolation (llama-swap slice)
+### Cgroup Isolation (herd slice)
 
 ```bash
-systemctl set-property llama-swap.slice \
+systemctl set-property herd.slice \
   MemoryZSwapWriteback=0 \
   MemoryZSwapMax=8G \
   MemoryHigh=48G \
@@ -101,11 +101,11 @@ llama.cpp (upstream)
 **Definition**: Any OpenAI-compatible server on `http://127.0.0.1:8020/v1` is auto-eligible as `"local"` provider in the hodos router.
 
 ```python
-# llama-swap:25100/free_zed_gateway/gateway.py
+# herd:25100/free_zed_gateway/gateway.py
 "base": os.getenv("LOCAL_LLM_URL", "http://127.0.0.1:8020/v1"),  # club3090 style
 ```
 
-**In practice**: llama-swap runs on `:25100` (external) and `:25200` (internal). The hodos router at `:25100` treats any `:8020` endpoint as a local fallback tier. This pattern originated from the `club3090` project (local RTX 3090 inference) and was adopted because:
+**In practice**: herd runs on `:25100` (external) and `:25200` (internal). The hodos router at `:25100` treats any `:8020` endpoint as a local fallback tier. This pattern originated from the `club3090` project (local RTX 3090 inference) and was adopted because:
 
 - **No API keys** for local inference
 - **Same OpenAI schema** — drop-in replacement for cloud providers
@@ -113,8 +113,8 @@ llama.cpp (upstream)
 
 **Current club3090 endpoints in this stack**:
 
-- `llama-swap` on `:25100` (primary, 49 models via 4 forks)
-- `mcp-llama-swap` MCP server pointing to `:25100/v1`
+- `herd` on `:25100` (primary, 49 models via 4 forks)
+- `mcp-herd` MCP server pointing to `:25100/v1`
 - `openfang` agent kernel can route to local via same pattern
 
 ---
@@ -157,7 +157,7 @@ ho64: 1 # Holo MoE, evict first
 
 ---
 
-## 5. llama-swap — The LLM Front Door
+## 5. herd — The LLM Front Door
 
 ### Ports
 
@@ -166,11 +166,11 @@ ho64: 1 # Holo MoE, evict first
 | **25100** | Public OpenAI-compatible API (`/v1`, `/ui`, `/models/sse`) |
 | **25200** | Internal backend (mesh-front proxies here)                 |
 
-### Config (`/home/toxic/estate/config/llama-swap.yaml`)
+### Config (`/home/toxic/estate/config/herd.yaml`)
 
 - **Health checks**: 300s timeout, 600s TTL
 - **Preload**: `beellama/exaone-4-0-1-2b-iq4xs` on startup (3.3 GiB, ~70 tok/s idle)
-- **Hooks**: SQLite event log at `/tmp/llama-swap-events.log`
+- **Hooks**: SQLite event log at `/tmp/herd-events.log`
 - **Metrics**: In-memory 5000 samples, 1m flush
 
 ### Inference Chain
@@ -179,7 +179,7 @@ ho64: 1 # Holo MoE, evict first
 Clients (Zed, OpenFang, IDEs, Grok)
          │
          ▼
-llama-swap :25100 (toxicwind Go fork)
+herd :25100 (toxicwind Go fork)
   │  internal/hodos/  — 6 strategies, ELO, circuit breakers
   │  SQLite WAL health DB — request history, model health, healing events
   ▼
@@ -192,9 +192,9 @@ Fork backends :25001-25099
 
 ---
 
-## 6. hodos Router — 6 Strategies (Go Port inside llama-swap)
+## 6. hodos Router — 6 Strategies (Go Port inside herd)
 
-Ported from TypeScript (`tools/llama-swap:25100/llama-swap:25100-ts/router.ts`) to Go (`llama-swap-main/internal/hodos/`).
+Ported from TypeScript (`tools/herd:25100/herd:25100-ts/router.ts`) to Go (`herd-main/internal/hodos/`).
 
 | Strategy             | Behavior                                                  |
 | -------------------- | --------------------------------------------------------- |
@@ -207,7 +207,7 @@ Ported from TypeScript (`tools/llama-swap:25100/llama-swap:25100-ts/router.ts`) 
 
 ### Providers (7)
 
-1. **llama-swap** (local) — 49 models, 4 forks
+1. **herd** (local) — 49 models, 4 forks
 2. **OpenRouter** — cloud fallback
 3. **NVIDIA NIM** — Nemotron, Llama, Qwen, DeepSeek, Mistral, Phi, Gemma
 4. **Groq** — LPU speed
@@ -261,11 +261,11 @@ Each catch block has its own nested try/catch — **no single point of failure**
 
 | Service              | Port        | Runtime             | Role                                                 |
 | -------------------- | ----------- | ------------------- | ---------------------------------------------------- |
-| **llama-swap**       | 25100/25200 | Go (toxicwind fork) | LLM front door + hodos router                   |
+| **herd**       | 25100/25200 | Go (toxicwind fork) | LLM front door + hodos router                   |
 | **rust-web**         | 25101       | Rust                | Ops dashboard + embedded watchdog                    |
 | **yote**             | 25102       | Bun                 | Telegram / status                                    |
 | **openfang**         | 25196/25103 | Rust                | Agent kernel — 206 models, 61 skills, Discord bridge |
-| **llama-swap:25100** | 25100       | Bun (TS)            | 5-strategy hodos (external tooling)             |
+| **herd:25100** | 25100       | Bun (TS)            | 5-strategy hodos (external tooling)             |
 | **prometheus**       | 25105       | Go                  | Metrics                                              |
 | **hf-downloader**    | 25106       | Bun                 | GGUF download UI                                     |
 | **null-g-proxy**     | 25107       | Bun                 | Extra LLM proxy                                      |
@@ -408,7 +408,7 @@ echo guided | sudo tee /sys/devices/system/cpu/amd_pstate/status
 nvme smart-log /dev/nvme0n1
 fstrim -v /dev/nvme0n1p4
 
-# Cgroup for llama-swap
-systemctl set-property llama-swap.slice MemoryZSwapWriteback=0
-systemctl set-property llama-swap.slice MemoryZSwapMax=8G
+# Cgroup for herd
+systemctl set-property herd.slice MemoryZSwapWriteback=0
+systemctl set-property herd.slice MemoryZSwapMax=8G
 ```

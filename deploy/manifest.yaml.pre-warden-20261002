@@ -30,9 +30,9 @@ version: 1
 
 binaries:
   herd:
-    path: /home/toxic/estate/projects/herd/llama-swap
+    path: /home/toxic/estate/projects/herd/herd
     sha256: "e1d70dd074bf6c1218ce45be5e2cf9ebb609cf7439d279989d2429c2f08e2e4e"
-    immutable_copy: /home/toxic/estate/projects/herd/llama-swap.20260930-052800
+    immutable_copy: /home/toxic/estate/projects/herd/herd.20260930-052800
     source: toxicwind/Estate-swap
     commit: 7fc25280816fa7f98764ac46d1435d55ac9dc3c3
     upstream_base: 7a14664d98f0e66bc68bba08548290ca0b469f98

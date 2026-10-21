@@ -6,7 +6,7 @@ Sources (all real measured data, no guesses):
      instruction-following quality 0-2 + latency p50 per model, all via
      OpenRouter)            -> openrouter provider prior
   2. MODEL-MAX    phase1.json (liveness: 1 real completion per herd model,
-     healthy bool + latency) -> llama-swap provider prior (the herd)
+     healthy bool + latency) -> herd provider prior (the herd)
   3. router-proof router-proof-20260921.json (intelligent vs dumb
      head-to-head)           -> router-level availability note + small
      local-lane bonus (not a per-provider quality signal)
@@ -41,7 +41,7 @@ ROUTERPROOF = os.path.join(REPO, "projects", "openrouter-probe",
                            "router-proof-20260921.json")
 OUT = os.path.join(HERE, "bench-priors.json")
 
-ROUTER_PROVIDERS = ["llama-swap", "nim-local", "kimi-auto", "openrouter",
+ROUTER_PROVIDERS = ["herd", "nim-local", "kimi-auto", "openrouter",
                     "nvidia", "groq", "cerebras", "google", "mistral"]
 
 
@@ -96,8 +96,8 @@ def main():
         "instrument": "deterministic instruction-following (exact=2/contains=1/empty=0), 6 req/model",
     }
 
-    # --- 2. MODEL-MAX -> llama-swap (the herd) -----------------------------
-    # Local lane only: the router's llama-swap provider serves LOCAL_ROLES
+    # --- 2. MODEL-MAX -> herd (the herd) -----------------------------
+    # Local lane only: the router's herd provider serves LOCAL_ROLES
     # (local models). Cloud-lane health says nothing about the local lane,
     # so mixing them would punish local models for cloud outages.
     m = load_json(MODELMAX)
@@ -107,7 +107,7 @@ def main():
     elo = 1000 + (hf - 0.5) * 120
     # router-proof showed the local lane staying up when cloud keypools died
     elo += 10
-    priors["llama-swap"] = {
+    priors["herd"] = {
         "elo": round(elo),
         "healthy_frac": round(hf, 3),
         "healthy_n": len(healthy),

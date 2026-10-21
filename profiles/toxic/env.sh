@@ -12,7 +12,7 @@ export ESTATE_PROFILE="toxic"
 # agent config (config/tau/agent/config.yml), not from the environment.
 export SCOUT_MODEL="local-fast"
 export SCOUT_BASE_URL="http://127.0.0.1:25100/v1"
-export SCOUT_API_KEY="llama-swap"
+export SCOUT_API_KEY="herd"
 export NIM_QUEUE_BASE_URL="http://127.0.0.1:8000/v1"
 export HERD_MODEL="beellama/qwen-flash-64k"
 

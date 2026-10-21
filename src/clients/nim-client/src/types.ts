@@ -230,7 +230,7 @@ export interface NIMErrorResponse {
 // ═══════════════════════════════════════════════════════════════════════════
 
 export interface NIMClientConfig {
-  // Base URL - can be llama-swap :25100 or direct NVIDIA endpoint
+  // Base URL - can be herd :25100 or direct NVIDIA endpoint
   baseURL: string;
   apiKey: string;
 

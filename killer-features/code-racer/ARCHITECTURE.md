@@ -194,7 +194,7 @@ surfaces for single-shot codegen tools.
 
 | source | endpoint | models (code-relevant) | status |
 |---|---|---|---|
-| herd llama-swap | `http://127.0.0.1:25100` | 199 models incl. `bigcode/starcoder2-15b`, `deepseek-ai/deepseek-coder-6.7b-instruct`, `google/codegemma-1.1-7b`, `mistralai/codestral-22b-instruct-v0.1`, `ibm/granite-8b-code-instruct`, `meta/codellama-70b`, `kimi-k2`, `kimi-k3-nim`, `beellama/qwen-flash-*`, `gemma-4-12b` | 200, 0.7ms |
+| herd herd | `http://127.0.0.1:25100` | 199 models incl. `bigcode/starcoder2-15b`, `deepseek-ai/deepseek-coder-6.7b-instruct`, `google/codegemma-1.1-7b`, `mistralai/codestral-22b-instruct-v0.1`, `ibm/granite-8b-code-instruct`, `meta/codellama-70b`, `kimi-k2`, `kimi-k3-nim`, `beellama/qwen-flash-*`, `gemma-4-12b` | 200, 0.7ms |
 | beellama fast | `http://127.0.0.1:25122` | `fast` (exaone-4.0-1.2b, 380–440 tok/s) | 200, 0.3ms |
 | toolcall-llm | `http://127.0.0.1:25152` | `qwen3.5-9b-tool` | 200, 0.2ms |
 | prompt variants | — | plain / cot / fewshot / role-constrained / self-repair | t1-impl-strategies |

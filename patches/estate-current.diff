@@ -405,7 +405,7 @@ index 54109ae357..1b0ddf99e1 100644
 @@ -319,4 +280,4 @@
 -      "live": true,
 -      "addr": "127.0.0.1",
--      "process": "llama-swap",
+-      "process": "herd",
 -      "pid": 1602617
 +      "live": false,
 +      "addr": null,
@@ -414,7 +414,7 @@ index 54109ae357..1b0ddf99e1 100644
 @@ -330,4 +291,4 @@
 -      "live": true,
 -      "addr": "127.0.0.1",
--      "process": "llama-swap",
+-      "process": "herd",
 -      "pid": 1602617
 +      "live": false,
 +      "addr": null,
@@ -1782,8 +1782,8 @@ index 069008e603..936abcc266 100644
 +| 20128 | VANSROUTER_PORT | vansrouter | ⚪️ | — |
 @@ -56,3 +52,2 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
 -| 25017 | — | — | 🟢 | llama-server |
--| 25100 | HERD_PORT | herd | 🟢 | llama-swap |
--| 25100 | HERD_PORT | herd | 🟢 | llama-swap |
+-| 25100 | HERD_PORT | herd | 🟢 | herd |
+-| 25100 | HERD_PORT | herd | 🟢 | herd |
 +| 25100 | HERD_PORT | herd | ⚪️ | — |
 +| 25100 | HERD_PORT | herd | ⚪️ | — |
 @@ -61,22 +56,22 @@ Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/esta
@@ -2174,8 +2174,8 @@ index f8616b8d87..965be232fe 100644
 -| Value | Where it was declared | Why it was dead |
 -|---|---|---|
 -| `estate/free` | `estate/.env` | `estate` was estate-router's provider; the daemon and repo are deleted |
--| `local-fast` | `estate/mise.toml` | the alias exists only in `config/llama-swap/config.yaml`, **which nothing reads** |
--| `nvidia/nemotron-3.5-lightning-30b-a3b` | `config/llama-swap/config.yaml` | a **cloud** NIM model with `cmd: llama-server --model /mnt/8TB/…`; `/mnt/8TB` is a media drive (`$RECYCLE.BIN`, `.rar`, `.mp4`), not a model store |
+-| `local-fast` | `estate/mise.toml` | the alias exists only in `config/herd/config.yaml`, **which nothing reads** |
+-| `nvidia/nemotron-3.5-lightning-30b-a3b` | `config/herd/config.yaml` | a **cloud** NIM model with `cmd: llama-server --model /mnt/8TB/…`; `/mnt/8TB` is a media drive (`$RECYCLE.BIN`, `.rar`, `.mp4`), not a model store |
 -
 -`GET :25100/v1/models/local-fast` → **404**, confirmed against the live gateway.
 -

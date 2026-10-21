@@ -15,7 +15,7 @@ async function integrate() {
   // 1. Link herd engines to estate health-audit ports
   const herdPorts = {
     "herd": 25100,
-    "llama-swap": 25100,
+    "herd": 25100,
     "mesh": 25127,
     "yote": 25102
   };

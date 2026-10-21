@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # model-route-audit.sh — find anything on this box that points agents at the
-# LOCAL herd models (llama-swap on :25100, toolcall-local on :25152).
+# LOCAL herd models (herd on :25100, toolcall-local on :25152).
 #
 # User's order (2026-10-13): local herd models are NOT ready. Nobody uses
 # them — not as primary, not as fallback, not as candidates. The working
@@ -9,7 +9,7 @@
 #
 # Usage: model-route-audit.sh
 # Exit:  0 = no consumer hits. 1 = consumer hits found (fix them).
-# Definition-side files (herd.yaml, herd.d/, llama-swap config, pitchfork
+# Definition-side files (herd.yaml, herd.d/, herd config, pitchfork
 # stanzas for the local services themselves, the port registry) are
 # informational only — the local services existing is not consumption.
 # Session transcripts, caches, logs and databases are history, not config,
@@ -50,7 +50,7 @@ for surface in "${SURFACES[@]}"; do
   | cut -c1-160 \
   | while IFS= read -r line; do
       case "$line" in
-        *"/herd.yaml:"*|*"/herd.d/"*|*"pitchfork.toml:"*|*"llama-swap"*|*"ports.env:"*|*"model_constraints.yaml:"*)
+        *"/herd.yaml:"*|*"/herd.d/"*|*"pitchfork.toml:"*|*"herd"*|*"ports.env:"*|*"model_constraints.yaml:"*)
           echo "$line" >> "$defs_file" ;;
         *) echo "$line" >> "$hits_file" ;;
       esac

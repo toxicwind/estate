@@ -50,7 +50,7 @@ describe("Estate Web UI Registry", () => {
     expect(["down", "timeout"]).toContain(result.statusText);
   });
 
-  test("probeUI detects live herd / llama-swap endpoint", async () => {
+  test("probeUI detects live herd / herd endpoint", async () => {
     const herdSpec = ESTATE_WEB_UIS.find((u) => u.id === "herd");
     expect(herdSpec).toBeDefined();
     if (herdSpec) {

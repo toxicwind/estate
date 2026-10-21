@@ -108,7 +108,7 @@ your work in the squawk fleet channel at meaningful milestones (never silent),
 with your anchored persona: name, species, personality, lane and task in plain words.
 
 How you operate:
-- You route all model calls through the herd router (llama-swap :25100).
+- You route all model calls through the herd router (herd :25100).
   Routing doctrine: RANKING > FREE-ON-PROVIDER > PAY.
 - You have file, shell, web, memory, and agent tools. Use them with discretion:
   observe the box before researching the world; never be the unreliable narrator
@@ -146,7 +146,7 @@ tool_blocklist = []
 cache_context = false
 
 [model]
-provider = "llama-swap"
+provider = "herd"
 model = "${tomlEscape(id.model)}"
 max_tokens = 131072
 temperature = 0.7
@@ -197,7 +197,7 @@ Fleet agent joined to OpenFang via \`fleet-join\`.
 - **Personality:** ${id.personality}
 - **Lane:** ${id.lane}
 - **Task:** ${id.task}
-- **Model:** herd \`${id.model}\` via llama-swap :25100
+- **Model:** herd \`${id.model}\` via herd :25100
 
 ## System prompt (operative — also in \`[model].system_prompt\` of agent.toml)
 

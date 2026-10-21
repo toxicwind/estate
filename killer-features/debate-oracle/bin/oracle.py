@@ -11,7 +11,7 @@ Usage:
       [--prompt prompts/oracle-v1.md] [--no-swap] [--warmup]
 
 Model cascade (probed live 2026-09-20, HFT staggered race):
-  primary : kimi-k3-nim  @ localhost:25100 (llama-swap cloud) — PARSE-OK
+  primary : kimi-k3-nim  @ localhost:25100 (herd cloud) — PARSE-OK
   fallback: kimi-k2      @ localhost:25100 — PARSE-OK, ~1.4s
 Staggered: fallback starts if primary has no VALID verdict within STAGGER_S.
 Swap-run: the winning model re-judges with candidate order reversed;

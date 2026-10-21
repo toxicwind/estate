@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """alias-shim: fixed-target alias forwarder for herd.
 
-Started by herd (llama-swap) as a models.<alias> cmd entry:
+Started by herd (herd) as a models.<alias> cmd entry:
     python3 alias-shim.py --port ${PORT} --target <peer-model-id> [--standby <peer-model-id>]... [--advance-on 5xx,conn,429,402,404] [--name <alias>]
 
 Rewrites incoming `model: "<alias>"` to the fixed target and forwards to
@@ -12,8 +12,8 @@ candidate is down the caller gets the last upstream error verbatim (fail
 loudly, never silently substitute).
 
 CRITICAL CONSTRAINT (learned 2026-09-21, oracle-judge-local incident): a
-shim hosted INSIDE llama-swap as a cmd model MUST NOT target another
-llama-swap cmd model. The swapper cannot swap to the target while the shim
+shim hosted INSIDE herd as a cmd model MUST NOT target another
+herd cmd model. The swapper cannot swap to the target while the shim
 holds the active slot for the in-flight outer request -- re-entrant
 deadlock: /health stays 200 (no swap on GET /v1/models) while completions
 hang until the connect/TTFT timeout fires. Targets must be proxy peers
@@ -43,7 +43,7 @@ Health is honest: /health does one bounded catalog GET to the router's
 /v1/models on every call (event-driven -- no timers, no probes, no
 completions) and ALWAYS returns HTTP 200 (process liveness); the body
 carries "routable": true/false plus a detail string. A non-200 here
-would make supervisors (llama-swap swap scheduler, pitchfork health)
+would make supervisors (herd swap scheduler, pitchfork health)
 treat an unroutable-but-alive alias as dead and wedge dispatch -- the
 process must stay dispatchable so the chain can advance past dead
 candidates. Request failures surface as the upstream status, never a
@@ -140,7 +140,7 @@ class Handler(BaseHTTPRequestHandler):
         if self.path == "/health" or self.path.startswith("/health?"):
             # Process liveness is ALWAYS 200: the shim is up and serving.
             # Route health rides in the body ("routable" bool). A non-200
-            # here makes supervisors (llama-swap swap, pitchfork health)
+            # here makes supervisors (herd swap, pitchfork health)
             # treat an unroutable-but-alive alias as dead and wedge the
             # scheduler -- the process must stay dispatchable so the chain
             # can advance past dead candidates.

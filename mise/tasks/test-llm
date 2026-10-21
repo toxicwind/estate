@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# mise run test-llm — prove the herd (llama-swap) serving path.
+# mise run test-llm — prove the herd (herd) serving path.
 # 2026-09-20: was calling subcommands settings/chat/stream which do not exist
 # in src/mcp/herd.ts (they fell through to the MCP stdio server and hung).
 # Only real CLI subcommands remain: health, models, e2e.

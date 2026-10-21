@@ -1,8 +1,8 @@
 # yote-maximal runbook — herd tuning changes (2026-09-20)
 Live config: /home/toxic/estate/config/herd.yaml
 Snapshot before any change: cp herd.yaml herd.yaml.bak.<date>-<label>
-Validate: source /home/toxic/.secrets && llama-swap -validate -config <file>
-  (binary: /home/toxic/projects/Estate-projects/Estate-swap/build/llama-swap)
+Validate: source /home/toxic/.secrets && herd -validate -config <file>
+  (binary: /home/toxic/projects/Estate-projects/Estate-swap/build/herd)
 Restart (REQUIRED for preload/cmd changes; --watch-config hot-reloads the rest):
   /home/toxic/.local/share/mise/installs/pitchfork/2.25.0/pitchfork restart herd
 Verify after restart (every time, in order):

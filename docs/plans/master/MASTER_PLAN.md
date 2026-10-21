@@ -1,6 +1,6 @@
 # Estate Pi Fork — Master Execution Plan
 
-> **Generated**: 2026-07-28 | **Updated**: 2026-08-06 | **Context**: Full session replay across pi fork, llama-swap, GHAS MCP, mcpproxy, dashboards
+> **Generated**: 2026-07-28 | **Updated**: 2026-08-06 | **Context**: Full session replay across pi fork, herd, GHAS MCP, mcpproxy, dashboards
 
 ---
 
@@ -8,7 +8,7 @@
 
 ```
 User runs "pi"
-    → pi-agent (fork) uses llama-swap :25100 (AST matrix auto-routing)
+    → pi-agent (fork) uses herd :25100 (AST matrix auto-routing)
     → AST matrix understands mcpproxy FIRST CLASS (via our pi-agent fork commits)
     → retrieve_tools shows ALL GitHub Advanced Search MCP endpoints
     → ghas narrow tools (ghas_search_code, ghas_search_repositories, etc.) accessible
@@ -22,10 +22,10 @@ User runs "pi"
 | Domain                        | Status                                                    | Owner              |
 | ----------------------------- | --------------------------------------------------------- | ------------------ |
 | **Pi fork** (`toxicwind/pi`)  | 4/9 critical PRs cherry-picked, 2 blocked on conflicts    | Current            |
-| **llama-swap hodos router**      | Rate limiter rewritten (Go, full jitter)                  | Need to build+test |
+| **herd hodos router**      | Rate limiter rewritten (Go, full jitter)                  | Need to build+test |
 | **GHAS MCP**                  | REFACTORED — needs full integration                       | In Progress        |
 | **estate-router**          | STOPPED (:25104)                                          | Need restart       |
-| **NIM e2e**                   | Config via estate-router, tested via llama-swap health | ✅                 |
+| **NIM e2e**                   | Config via estate-router, tested via herd health | ✅                 |
 | **Dashboard SPA**             | Done (JSON-driven, hash-routed)                           | ✅                 |
 | **AGENTS.md audit**           | 358 files found, need dedup                               | In Progress        |
 | **mcpproxy+ghas integration** | DISCONNECTED — needs unification                          | In Progress        |
@@ -104,13 +104,13 @@ curl -s -m 30 -X POST http://127.0.0.1:25100/v1/chat/completions \
 
 Expected: `content` response
 
-## 📋 PHASE 6: llama-swap hodos router Build + Verify
+## 📋 PHASE 6: herd hodos router Build + Verify
 
 ```bash
-cd /home/toxic/projects/llama-swap-main
-go build -o llama-swap .
+cd /home/toxic/projects/herd-main
+go build -o herd .
 go test ./internal/hodos/...
-cd /home/toxic/estate && mise run restart llama-swap
+cd /home/toxic/estate && mise run restart herd
 ```
 
 ## 📋 PHASE 7: Resume pi Session

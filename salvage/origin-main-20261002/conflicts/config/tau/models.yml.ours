@@ -22,7 +22,7 @@ discovery:
   llama.cpp: true
 providers:
   herd:
-    # llama-swap gateway. Local models (beellama/*, qwen-*, exaone-*, gemma-*)
+    # herd gateway. Local models (beellama/*, qwen-*, exaone-*, gemma-*)
     # plus herd-side upstreams incl. pollinations-free/* and the merged
     # openrouter-free tiers (v3 reliability + reasoning-artifact corrections,
     # 2026-09-20). Keyless pollinations is wired INSIDE herd, never as a

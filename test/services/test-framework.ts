@@ -254,7 +254,7 @@ export function getServiceTests(): ServiceTestConfig[] {
 
   return [
     {
-      name: "llama-swap",
+      name: "herd",
       port: ports.HERD_PORT,
       healthEndpoints: ["/health", "/v1/models"],
       expectedResponse: (body) =>

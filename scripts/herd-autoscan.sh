@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
-# llama-swap Autoscan - Dynamic model discovery and configuration generation
-# Scans for GGUF models in ~/projects/models and HF cache, generates llama-swap config.yaml
+# herd Autoscan - Dynamic model discovery and configuration generation
+# Scans for GGUF models in ~/projects/models and HF cache, generates herd config.yaml
 
 set -euo pipefail
 
 # Configuration
 MODELS_DIR="/home/toxic/projects/models"
 HF_CACHE_DIR="/home/toxic/.cache/huggingface/hub"
-CONFIG_TEMPLATE="/home/toxic/estate/tools/llama-swap/config.yaml"
-CONFIG_OUTPUT="/home/toxic/estate/tools/llama-swap/config.yaml"
-AUTOSCAN_STATE="/home/toxic/.local/share/llama-swap/autoscan-state.json"
+CONFIG_TEMPLATE="/home/toxic/estate/tools/herd/config.yaml"
+CONFIG_OUTPUT="/home/toxic/estate/tools/herd/config.yaml"
+AUTOSCAN_STATE="/home/toxic/.local/share/herd/autoscan-state.json"
 
 # Colors
 RED='\033[0;31m'
@@ -309,7 +309,7 @@ EOY
 
 # Main
 main() {
-    log "Starting llama-swap autoscan..."
+    log "Starting herd autoscan..."
     
     mkdir -p "$(dirname "$AUTOSCAN_STATE")"
     
@@ -379,7 +379,7 @@ print('Config written successfully')
     echo "$models_json" | jq '{timestamp: now | todateiso8601, models: .}' > "$AUTOSCAN_STATE"
     
     log "Autoscan complete! Config written to $CONFIG_OUTPUT"
-    log "Run 'llama-swap -config $CONFIG_OUTPUT -watch-config' to start"
+    log "Run 'herd -config $CONFIG_OUTPUT -watch-config' to start"
 }
 
 main "$@"

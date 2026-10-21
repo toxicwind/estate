@@ -1,8 +1,8 @@
 # Free Pollinations via Herd — Maximal Hotfix Plan (Tester + Live)
 
-**Owner:** toxic / herd (llama-swap)  
+**Owner:** toxic / herd (herd)  
 **Date:** 2026-09-02  
-**Scope:** Tester + live estate home wiring for Cloudflare AI Gateway "bizarre method" — Custom Providers → free no-auth backends. Maximally patch `herd/llama-swap` proxy to actually work on this host, following the generation latch path.
+**Scope:** Tester + live estate home wiring for Cloudflare AI Gateway "bizarre method" — Custom Providers → free no-auth backends. Maximally patch `herd/herd` proxy to actually work on this host, following the generation latch path.
 
 ---
 
@@ -10,9 +10,9 @@
 
 | User signal | Interpretation | Plan impact |
 |---|---|---|
-| `make a tester and then implement live home toxic estate` (attachment: Custom Providers → Pollinations / OVHcloud / OpenRouter) | Build a reproducible tester that proves free backends, then wire live on this estate host. | Two-track plan: **Track A = tester**, **Track B = live wiring**. Tester is runnable without host mutation; live mutates `llama-swap` source + `estate/config/llama-swap.yaml`. |
-| `shouldnt you follow the generstion latj path` | Follow **generation path** — do NOT hand-edit generated outputs (`pitchfork.toml`, `mise.toml`). Those are generated from `config/ports.env` + `src/services/*` via `bun run scripts/generate.ts`. | Any new daemon/port must go through `ports.env` + `src/services/registry.ts` → `generate.ts`. `config/llama-swap.yaml` is **not generated** (no generator owns it), so direct edits there are latch-compliant. Add explicit latch notes to every file change. |
-| `we own herd/llama-swap, maximallt hotfix patch the proxy to actually work` | Maximal hotfix, not minimal one-liner. We own `/home/toxic/projects/llama-swap` source; patch Go directly. | Plan patches `internal/router/peer.go` and `internal/config/peer.go` (if needed) to fix free-backend auth stripping, model passthrough, and observability. Rebuild binary at `/home/toxic/projects/llama-swap/llama-swap` and restart `herd` via `pitchfork`. |
+| `make a tester and then implement live home toxic estate` (attachment: Custom Providers → Pollinations / OVHcloud / OpenRouter) | Build a reproducible tester that proves free backends, then wire live on this estate host. | Two-track plan: **Track A = tester**, **Track B = live wiring**. Tester is runnable without host mutation; live mutates `herd` source + `estate/config/herd.yaml`. |
+| `shouldnt you follow the generstion latj path` | Follow **generation path** — do NOT hand-edit generated outputs (`pitchfork.toml`, `mise.toml`). Those are generated from `config/ports.env` + `src/services/*` via `bun run scripts/generate.ts`. | Any new daemon/port must go through `ports.env` + `src/services/registry.ts` → `generate.ts`. `config/herd.yaml` is **not generated** (no generator owns it), so direct edits there are latch-compliant. Add explicit latch notes to every file change. |
+| `we own herd/herd, maximallt hotfix patch the proxy to actually work` | Maximal hotfix, not minimal one-liner. We own `/home/toxic/projects/herd` source; patch Go directly. | Plan patches `internal/router/peer.go` and `internal/config/peer.go` (if needed) to fix free-backend auth stripping, model passthrough, and observability. Rebuild binary at `/home/toxic/projects/herd/herd` and restart `herd` via `pitchfork`. |
 | `not jwt those were typo, focus` | Ignore spurious JWT noise in logs; stay on Pollinations free tier. | No JWT/auth infra work. |
 | `not minimal, maximal /plan` | Override ponytail minimal. Produce maximal plan. | This artifact: exhaustive research, all edge cases, all verification steps. No code is written in plan phase. |
 
@@ -71,9 +71,9 @@ POST https://openrouter.ai/api/v1/chat/completions  (with .secrets OPENROUTER_AP
   → 404 model is unavailable for free (is_free_tier:false for this key)
 ```
 
-### 2.2 Herd `llama-swap` proxy internals (Go)
+### 2.2 Herd `herd` proxy internals (Go)
 - **Config shape:** `peers: { <peerID>: { proxy:string, apiKey:string, models:[]string, timeouts:{...}, filters:{...} } }` — see `internal/config/peer.go`, `config.example.yaml` `peers.openrouter.proxy=https://openrouter.ai/api`.
-- **Model vs peer:** Peers are remote OpenAI-compatible bases; llama-swap appends the incoming request path to `proxy`. So `peer.proxy=https://gen.pollinations.ai` + request `POST /v1/chat/completions` → upstream `https://gen.pollinations.ai/v1/chat/completions` — correct.
+- **Model vs peer:** Peers are remote OpenAI-compatible bases; herd appends the incoming request path to `proxy`. So `peer.proxy=https://gen.pollinations.ai` + request `POST /v1/chat/completions` → upstream `https://gen.pollinations.ai/v1/chat/completions` — correct.
 - **Routing:** `internal/router/peer.go:NewPeer` builds a `httputil.ReverseProxy` per peer, map `modelID → peerMember`. `ServeHTTP` looks up `data.ModelID` (parsed via `shared.FetchContext`) and proxies.
 - **Auth bug (hotfix target):** `peer.go:171-174`:
   ```go
@@ -82,15 +82,15 @@ POST https://openrouter.ai/api/v1/chat/completions  (with .secrets OPENROUTER_AP
     req.Header.Set("x-api-key", pp.apiKey)
   }
   ```
-  If `apiKey==""` (desired for Pollinations free), it **leaves the client's incoming Authorization untouched**. A client that sends `Authorization: Bearer dummy` or `Bearer llama-swap` will forward that to Pollinations, which then sees an invalid key and returns 401 instead of treating the request as anonymous. Fix: when `apiKey==""`, **strip** both headers.
+  If `apiKey==""` (desired for Pollinations free), it **leaves the client's incoming Authorization untouched**. A client that sends `Authorization: Bearer dummy` or `Bearer herd` will forward that to Pollinations, which then sees an invalid key and returns 401 instead of treating the request as anonymous. Fix: when `apiKey==""`, **strip** both headers.
 
 - **`useModelName` gap:** Local `models.*.useModelName` exists to rewrite the model field sent upstream (e.g., `useModelName: "openai/gpt-oss-120B"`). **Peers have no equivalent.** If we exposed `pollinations/openai` to avoid name collisions, the upstream would receive `pollinations/openai` and fail. Two options: (a) expose exact upstream IDs (`openai`) and accept the global name; (b) add peer-level model remapping. Maximal plan does (a) now and (b) as follow-on (see §4.2 patch).
 
-- **No generation latch for `llama-swap.yaml`:** `src/generators/index.ts` only generates `pitchfork.toml` and `mise.toml`. `config/llama-swap.yaml` is hand-managed, guarded by latch notes in the file header. Direct edits there are compliant. The autoscan variant at `tools/llama-swap/config.yaml` is generated by `scripts/llama-swap-autoscan.sh` from GGUF discovery — do not confuse with `config/llama-swap.yaml` (the runtime config read by `stack/services/llama-swap.sh` → `$BIN --config $SOV/config/llama-swap.yaml`).
+- **No generation latch for `herd.yaml`:** `src/generators/index.ts` only generates `pitchfork.toml` and `mise.toml`. `config/herd.yaml` is hand-managed, guarded by latch notes in the file header. Direct edits there are compliant. The autoscan variant at `tools/herd/config.yaml` is generated by `scripts/herd-autoscan.sh` from GGUF discovery — do not confuse with `config/herd.yaml` (the runtime config read by `stack/services/herd.sh` → `$BIN --config $SOV/config/herd.yaml`).
 
 ### 2.3 Estate orchestration latch
 - **SSOT:** `config/ports.env` (port map) + `src/services/*.ts` (service definitions) → `src/generators/pitchfork.ts` / `mise.ts` → `pitchfork.toml` / `mise.toml` (blocked from hand-edits).
-- **Herd service def:** `src/services/core.ts` / `registry.ts`: `id: herd, portKey: HERD_PORT (25100), run: "exec /home/toxic/estate/stack/services/llama-swap.sh", dir: ".", readyHttp: "/health"`.
+- **Herd service def:** `src/services/core.ts` / `registry.ts`: `id: herd, portKey: HERD_PORT (25100), run: "exec /home/toxic/estate/stack/services/herd.sh", dir: ".", readyHttp: "/health"`.
 - **If we added a new standalone free-proxy daemon**, we would add a port key to `config/ports.env`, a `ServiceDef` to `src/services/peripheral.ts` or `forks.ts`, then `bun run scripts/generate.ts`. For this plan we **do not add a new daemon** — we extend herd in place via `peers:` — so no new port or service def is needed. This keeps the change to one config file + Go patch + binary rebuild, respecting latch.
 
 ---
@@ -100,7 +100,7 @@ POST https://openrouter.ai/api/v1/chat/completions  (with .secrets OPENROUTER_AP
 ```
 Client (omp bench, tau, mesh, curl)
   │
-  ├─► herd (llama-swap :25100) ──local GGUF models──► beellama / turbo / ik_llama (:25001+)
+  ├─► herd (herd :25100) ──local GGUF models──► beellama / turbo / ik_llama (:25001+)
   │         │
   │         └─► peers.pollinations-free (hotfixed) ──► https://gen.pollinations.ai/v1  (free, no auth)
   │                      │
@@ -200,7 +200,7 @@ ApiKey string `yaml:"apiKey"`
 ```
 No new fields in v1. Future `modelAliases` would be added here if we adopt P4.
 
-### 4.4 Estate Config — Track B3: `config/llama-swap.yaml` (latch-compliant direct edit)
+### 4.4 Estate Config — Track B3: `config/herd.yaml` (latch-compliant direct edit)
 
 **Add `peers:` block** (reuses existing peer machinery; no new daemon, no `ports.env` change, no generator run):
 
@@ -237,7 +237,7 @@ peers:
 
 **Why these 8:** `openai` is proven 200; `gemma-4-31b` maps to Gemma 31B mentioned in attachment; others are from live `/v1/models` and cover the "maximal" request while staying under Pollinations' ~1 req/15s anonymous limit for bench batches. We start with `openai` + `gemma-4-31b` behind a feature flag and expand after T8 rate-limit observation.
 
-**Impact on `/v1/models`:** Llama-swap merges peer models into the herd OpenAI listing automatically; no extra wiring needed. Clients see them alongside local GGUF models on `:25100`.
+**Impact on `/v1/models`:** Herd merges peer models into the herd OpenAI listing automatically; no extra wiring needed. Clients see them alongside local GGUF models on `:25100`.
 
 **No `pitchfork.toml`/`mise.toml` change** — herd already runs on `:25100`; no new port. If we later add a Cloudflare-proxied peer, we still use `:25100` and only change `proxy:` URL + add `apiKey: ${env.CLOUDFLARE_AI_GATEWAY_TOKEN}` (env var documented but not required for Pollinations-direct).
 
@@ -269,10 +269,10 @@ Tester T10 covers this. Track C is parked until `GET /tokens/verify` shows `AI G
 | `mise.toml` | **Yes** (`src/generators/mise.ts`) | No hand edit | Do not touch. | Same. |
 | `config/ports.env` | SSOT for ports | Allowed, but not needed this plan (no new daemon) | No change. | `cat config/ports.env` |
 | `src/services/registry.ts` etc. | SSOT for services | Allowed if new daemon, not needed here | No change. | `grep -r herd src/services` |
-| `config/llama-swap.yaml` | **No** (runtime config) | Hand edit allowed | Add `peers:` block. | `llama-swap --config config/llama-swap.yaml --check` (dry-run parse) |
+| `config/herd.yaml` | **No** (runtime config) | Hand edit allowed | Add `peers:` block. | `herd --config config/herd.yaml --check` (dry-run parse) |
 | `internal/router/peer.go`, `internal/config/peer.go` | Source (herd fork) | Owned | Patch P1-P3. | `go vet ./...` |
 | `tools/pollinations-proxy/tester.ts` | New tool | New file | Create as above. | `bun run tools/pollinations-proxy/tester.ts` |
-| `binary` | Build artifact | Build via `make`/`go build` | `make build` or `go build -o llama-swap .` in herd repo | `ls -lh llama-swap; file llama-swap` |
+| `binary` | Build artifact | Build via `make`/`go build` | `make build` or `go build -o herd .` in herd repo | `ls -lh herd; file herd` |
 
 If a future iteration adds a standalone free-proxy daemon, add `FREE_PROXY_PORT=25xxx` to `config/ports.env`, add `ServiceDef` to `src/services/peripheral.ts`, then `bun run scripts/generate.ts` and commit the regenerated `pitchfork.toml`/`mise.toml`.
 
@@ -282,22 +282,22 @@ If a future iteration adds a standalone free-proxy daemon, add `FREE_PROXY_PORT=
 
 ### 6.1 Build herd
 ```bash
-cd /home/toxic/projects/llama-swap
+cd /home/toxic/projects/herd
 go test ./internal/router -run Peer -count=1   # pre-patch baseline
 # apply patches to internal/router/peer.go + internal/config/peer.go
 go vet ./...
 go test ./internal/router -run Peer -count=1    # post-patch
 go test ./... -count=1                           # full, expect green
-make build   # or: go build -o llama-swap .
-ls -lh llama-swap   # fresh binary ~20MB
+make build   # or: go build -o herd .
+ls -lh herd   # fresh binary ~20MB
 ```
 
 ### 6.2 Deploy on estate home
 ```bash
 cd /home/toxic/estate
-# 1. Edit config/llama-swap.yaml — add peers block (track B3)
-# Validate YAML parse via llama-swap dry run before restart
-/home/toxic/projects/llama-swap/llama-swap --config config/llama-swap.yaml --check 2>&1 | head
+# 1. Edit config/herd.yaml — add peers block (track B3)
+# Validate YAML parse via herd dry run before restart
+/home/toxic/projects/herd/herd --config config/herd.yaml --check 2>&1 | head
 
 # 2. Restart herd (pitchfork manages it)
 pitchfork restart herd
@@ -324,8 +324,8 @@ omp bench --model openai --prompt "hi"  # or: mesh/gateway/bench via go run ./be
 ```
 
 ### 6.3 Rollback
-- **Config only:** `git checkout -- config/llama-swap.yaml` + `pitchfork restart herd`.
-- **Code:** `git -C /home/toxic/projects/llama-swap checkout -- internal/router/peer.go internal/config/peer.go` + rebuild + restart.
+- **Config only:** `git checkout -- config/herd.yaml` + `pitchfork restart herd`.
+- **Code:** `git -C /home/toxic/projects/herd checkout -- internal/router/peer.go internal/config/peer.go` + rebuild + restart.
 - **Tester:** no rollback needed; delete `tools/pollinations-proxy/`.
 
 ---
@@ -363,7 +363,7 @@ omp bench --model openai --prompt "hi"  # or: mesh/gateway/bench via go run ./be
 |---|---|---|
 | **A. Tester** | Create `tools/pollinations-proxy/tester.ts` (+ `.sh`) covering T1-T10 | `bun run` green for T1/T4/T5/T9; T2/T8 informational |
 | **B. Hotfix code** | Patch `internal/router/peer.go` P1+P2+P3 + comment in `peer.go` config, add `peer_test.go` cases | `go test ./internal/router -run Peer` passes new cases, full `go test ./...` green |
-| **C. Config** | Add `peers.pollinations-free` to `config/llama-swap.yaml` | `llama-swap --config` dry-run parses, `/v1/models` lists `openai` |
+| **C. Config** | Add `peers.pollinations-free` to `config/herd.yaml` | `herd --config` dry-run parses, `/v1/models` lists `openai` |
 | **D. Build & deploy** | `make build` in herd, `pitchfork restart herd`, health 200 | `curl :25100/health` ok, logs show peer routing |
 | **E. Verify live** | Run tester via herd (T4-T6), bench sample, health check `mise run health:herd` | All probes 200, streaming works, dummy auth stripped |
 | **F. Optional CF gateway** | Create Custom Provider, switch `proxy:` to gateway URL, re-verify T10 | `POST` to custom provider 201, T10 200 with cache hit header |
@@ -389,9 +389,9 @@ omp bench --model openai --prompt "hi"  # or: mesh/gateway/bench via go run ./be
 
 - **This plan:** `docs/plans/free-pollinations-herd-hotfix-plan.md` (estate) — also mirrored to `plans/free-pollinations-hotfix-plan.md` (herd).
 - **Source of truth for method:** attachment (§ Custom Providers → free backends). Corrected per probe: Pollinations model ID is `openai`, not `openai/gpt-oss-20b`; OVH anon tier currently 403.
-- **Patch target:** `/home/toxic/projects/llama-swap/internal/router/peer.go:148-188`, `/home/toxic/projects/llama-swap/internal/config/peer.go`.
-- **Runtime config:** `/home/toxic/estate/config/llama-swap.yaml` (add `peers:`).
-- **Launcher:** `/home/toxic/estate/stack/services/llama-swap.sh` → `$HOME/projects/llama-swap/llama-swap --config $SOV/config/llama-swap.yaml --listen 0.0.0.0:25100`.
+- **Patch target:** `/home/toxic/projects/herd/internal/router/peer.go:148-188`, `/home/toxic/projects/herd/internal/config/peer.go`.
+- **Runtime config:** `/home/toxic/estate/config/herd.yaml` (add `peers:`).
+- **Launcher:** `/home/toxic/estate/stack/services/herd.sh` → `$HOME/projects/herd/herd --config $SOV/config/herd.yaml --listen 0.0.0.0:25100`.
 - **Generated files (DO NOT EDIT):** `pitchfork.toml`, `mise.toml` (`src/generators/*`).
 
 ---

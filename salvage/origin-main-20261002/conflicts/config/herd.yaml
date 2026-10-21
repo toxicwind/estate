@@ -1,7 +1,7 @@
 # =============================================================================
-# LLAMA-SWAP CONFIGURATION — RTX 3090 24GB
+# HERD CONFIGURATION — RTX 3090 24GB
 # =============================================================================
-# Config: /home/toxic/estate/config/herd.yaml (canonical; llama-swap.yaml symlinks here)
+# Config: /home/toxic/estate/config/herd.yaml (canonical; herd.yaml symlinks here)
 # =============================================================================
 
 healthCheckTimeout: 300
@@ -14,7 +14,7 @@ includeAliasesInList: true
 sendLoadingState: true
 
 store:
-  path: /home/toxic/.local/share/llama-swap/store.db
+  path: /home/toxic/.local/share/herd/store.db
 
 performance:
   enable: true
@@ -216,9 +216,9 @@ models:
     metadata:
       alias_of: poolside/laguna-s-2.1:free
       role: oracle-judge
-  # oracle-judge-local: native llama-swap alias of beellama/gemma-96k (2026-09-21).
+  # oracle-judge-local: native herd alias of beellama/gemma-96k (2026-09-21).
   # Was an alias-shim.py cmd entry; REMOVED because a shim hosted INSIDE
-  # llama-swap cannot forward to another llama-swap cmd model -- the swapper
+  # herd cannot forward to another herd cmd model -- the swapper
   # cannot swap to the target while the shim holds the active slot for the
   # in-flight outer request (re-entrant deadlock: health 200, completions
   # hang -> 502). Native aliasing routes the swap directly, no re-entrancy.

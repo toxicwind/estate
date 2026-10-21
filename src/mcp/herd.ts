@@ -1,14 +1,14 @@
 #!/usr/bin/env bun
 /**
- * MCP: llama-swap - env only, no file reads
+ * MCP: herd - env only, no file reads
  * All config via env, no VSCode settings.json reads
  */
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
-import { loadEstatePorts, requireEnv } from "../lib/ports.ts";
+import { loadSovereignPorts, requireEnv } from "../lib/ports.ts";
 
-loadEstatePorts();
+loadSovereignPorts();
 
 // ENV ONLY - no homedir reads
 const DEFAULT_BASE = (
@@ -211,7 +211,7 @@ export async function upstreamServers(opts: {
 
 async function mcpMain() {
   const server = new McpServer({
-    name: "llama-swap-test",
+    name: "herd-test",
     version: "2.0.0-env-only",
   });
 
@@ -274,7 +274,7 @@ async function mcpMain() {
 
   server.tool(
     "upstream_servers",
-    "List/check llama-swap upstreams. REQUIRES operation param.",
+    "List/check herd upstreams. REQUIRES operation param.",
     {
       operation: z
         .enum(["list", "get", "health"])

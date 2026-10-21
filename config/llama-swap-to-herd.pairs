@@ -1,7 +1,10 @@
-# Case-preserving rename-roundup pairs for llama-swap -> herd
-word: llama-swap => herd
-word: llama_swap => herd
-word: LlamaSwap => Herd
-word: LLAMA_SWAP => HERD
-word: llama swap => herd
-word: Llama Swap => Herd
+# Case-preserving rename-roundup pairs for herd -> herd
+word: herd => herd
+word: herd => herd
+word: Herd => Herd
+word: HERD => HERD
+word: herd => herd
+word: Herd => Herd
+
+# Exclude the pairs mapping file itself from renames/rewrites.
+exclude: llama-swap-to-herd.pairs

@@ -5,7 +5,7 @@
 ### Core Stack
 
 - **Pi-agent fork** (toxicwind) — coding agent with full MCP stack
-- **llama-swap** (:25100) — LLM frontend with AST matrix auto-routing
+- **herd** (:25100) — LLM frontend with AST matrix auto-routing
 - **mcpproxy** (:25109) — MCP federation layer (41 servers including GHAS)
 - **GHAS** (:25112/25113/25114) — GitHub Advanced Search (API, MCP, Frontend)
 - **LongCat 2.0** — primary model (free, 131K context)
@@ -14,7 +14,7 @@
 ### Port SSOT (ports.env)
 
 ```
-25100 llama-swap (AST matrix)
+25100 herd (AST matrix)
 25109 mcpproxy (federation)
 25112 ghas-api
 25113 ghas-mcp

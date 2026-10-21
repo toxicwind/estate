@@ -14,5 +14,5 @@ discover:
 provider:
   herd:
     base_url: http://127.0.0.1:25193/v1
-    api_key: llama-swap-local-key
+    api_key: herd-local-key
     timeout_ms: 8000
