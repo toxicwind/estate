@@ -1,0 +1,14 @@
+# tmp-reaper — supervised recurring reaper for the /tmp tmpfs.
+# Why: build/backup scratch (weave-pull-*, pip-unpack-*, pinax-hodos-target,
+# kilo, ranch-push-*, ciw-fix-*, tau-reports-*, resolve-grep.txt) repeatedly
+# filled the 32G /tmp tmpfs to 25G/32G, which silently starved chromium /
+# browserless (no tmp space -> renderer exits) and bloated logs. This daemon
+# prunes only KNOWN stale (>24h) scratch-name patterns, nothing blanket, and
+# reports in-use items. First live run already freed 6.6G (13G -> 5.4G).
+# One-lane, durable, additive-only by construction.
+[daemons.tmp-reaper]
+run = "exec /home/toxic/estate/bin/tmp-reaper/reap-loop.sh 3600"
+dir = "/home/toxic/estate"
+mise = false
+retry = true
+auto = ["start"]
