@@ -30,7 +30,8 @@ providers:
   anthropic:
     serverSideFallback: true
   autoThinkingMaxEffort: xhigh
-  maxInFlightRequests: {}
+  maxInFlightRequests:
+    freeinference: 2
   openai-codex:
     codeMode: "on"
     codeModeDirectTools: []
@@ -71,7 +72,7 @@ modelRoles:
   fallback: freeinference/qwen3.6-35b
   web: web/exa
   image: google-antigravity/gemini-3.1-flash-image:auto
-  default: freeinference/deepseek-v4-flash
+  default: google-antigravity/gemini-3.8-flash:off
 subagents:
   can_spawn_subagents: true
   whitelist:
@@ -104,20 +105,20 @@ tools:
     enabled: true
 task:
   batch: true
-  maxConcurrency: 4
+  maxConcurrency: 2
   enableLsp: true
   showResolvedModelBadge: true
   isolation:
     apply: true
     merge: patch
     commits: generic
-    enabled: false
+    enabled: true
   eager: preferred
   enableEffort: true
-  maxRecursionDepth: 1
-  maxRuntimeMs: 0
+  maxRecursionDepth: 0
+  maxRuntimeMs: 300000
   agentIdleTtlMs: 420000
-  softRequestBudget: 200
+  softRequestBudget: 90
   softRequestBudgetNotice: true
   maxEffort: high
   prewalk: true
@@ -235,7 +236,7 @@ tier:
   openai: auto
   anthropic: priority
   google: flex
-  subagent: auto
+  subagent: inherit
   advisor: flex
 retry:
   maxRetries: 3
@@ -417,6 +418,8 @@ eval:
   jl: true
   autoBackground:
     enabled: true
+  workpool:
+    freshAgents: true
 python:
   kernelMode: session
   interpreter: ""
@@ -543,3 +546,5 @@ disabledProviders: []
 disabledExtensions:
   - airspeak
 skillful: true
+isolation:
+  backend: auto

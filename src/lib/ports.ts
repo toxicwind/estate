@@ -84,6 +84,8 @@ function isPlaceholder(v: string | undefined): boolean {
   return v === undefined || v === "" || v === "<redacted>";
 }
 
+export const loadSovereignPorts = loadEstatePorts;
+
 export function loadEstatePorts(): void {
   const layers = [...ENV_LAYERS].sort((a, b) => a.precedence - b.precedence);
   const fromLayers = new Set<string>();

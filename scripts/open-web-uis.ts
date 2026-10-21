@@ -84,15 +84,6 @@ export const ESTATE_WEB_UIS: WebUISpec[] = [
     authRequired: false,
   },
   {
-    id: "tau-dash",
-    name: "Tau Web Dashboard",
-    portKey: "PI_WEB_DASHBOARD_PORT",
-    defaultPort: 25192,
-    path: "/",
-    description: "Agent execution, run history & session web dashboard",
-    authRequired: false,
-  },
-  {
     id: "kimi-code",
     name: "Kimi Code Web",
     portKey: "KIMI_CODE_PORT",

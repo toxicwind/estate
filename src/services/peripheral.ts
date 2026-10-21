@@ -47,21 +47,6 @@ export const PERIPHERAL_SERVICES: ServiceDef[] = [
     healthPath: "/api/health",
   },
   {
-    id: "pi-web-dashboard",
-    name: "pi-web-dashboard",
-    portKey: "PI_WEB_DASHBOARD_PORT",
-    // The engine moved to /home/toxic/tau; the old
-    // projects/estate-projects/tau/engine/... path no longer exists.
-    run: "exec /home/toxic/.bun/bin/bun run /home/toxic/tau/engine/packages/server/dist/web-server.js",
-    dir: ".",
-    readyHttp: "/api/health",
-    group: "core",
-    autoStart: true,
-    mise: true,
-    env: { PORT: "25192" },
-    healthPath: "/api/health",
-  },
-  {
     id: "nginx",
     name: "nginx",
     portKey: "NGINX_PORT",

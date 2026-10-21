@@ -18,7 +18,6 @@ describe("Estate Web UI Registry", () => {
     expect(ids).toContain("prometheus");
     expect(ids).toContain("grafana");
     expect(ids).toContain("search-ui");
-    expect(ids).toContain("tau-dash");
     expect(ids).toContain("kimi-code");
     expect(ids).toContain("qdrant");
   });

@@ -32,7 +32,7 @@ daemons = ["rig"]
 # drifted every time a daemon was added. Use `pitchfork start -a` for everything,
 # `pitchfork start --group <name>` for a subset.
 
-# ---- project: estate (96 daemons) ----
+# ---- project: estate (97 daemons) ----
 [daemons.agent-display]
 # Forge 2026-09-21: isolated virtual display for the agent browser.
 port = 5900
@@ -741,7 +741,7 @@ auto = ["start"]
 # still logging "Ready".
 
 [daemons.nativelink]
-run = "exec /home/toxic/estate/ranch/forge/ops/nativelink/run.sh"
+run = "exec bun /home/toxic/estate/ranch/forge/ops/nativelink/run.ts"
 dir = "/home/toxic/estate"
 port = 25155
 auto = ["start"]
@@ -1036,6 +1036,32 @@ retry = true
 ready_http = "http://127.0.0.1:25112/health"
 health_http = { url = "http://127.0.0.1:25112/health", interval = "30s", timeout = "5s", retries = 3 }
 depends = ["gatehouse"]
+auto = ["start"]
+
+# smithers-gateway — estate resident control plane (pitchfork-managed).
+#
+# The estate Smithers Gateway singleton. Formerly an ad-hoc `bunx smthrs
+# gateway --port 7331` self-launch scoped to whatever transient workspace it
+# happened to start in (drift, untracked). Now a first-class, supervised daemon:
+#
+#   - Bun-native launcher: stack/services/smithers-gateway.ts
+#     (keyring-first secrets via the secretsmith Bun drop-in; port from SSOT).
+#   - Port SSOT: config/ports.env SMITHERS_GATEWAY_PORT=25280 (25xxx fleet).
+#   - Retired .sh is a thin compatibility shim, never the source of truth.
+#
+# Bound loopback; tailscale fronts it if a network surface is ever needed.
+# The gateway's env is what every smithers-spawned agent inherits, so the
+# model/routing keys are resolved here at boot. (gatehouse/ranch-ui precedent.)
+[daemons.smithers-gateway]
+port = 25280
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/stack/services/smithers-gateway.ts"
+dir = "/home/toxic/estate"
+mise = false
+retry = true
+env = { SMITHERS_GATEWAY_PORT = "25280" }
+ready_http = "http://127.0.0.1:25280/health"
+health_http = { url = "http://127.0.0.1:25280/health", interval = "30s", timeout = "5s", retries = 3 }
+boot_start = true
 auto = ["start"]
 
 [daemons.sorry-watchdog]

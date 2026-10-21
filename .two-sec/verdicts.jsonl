@@ -44,3 +44,4 @@
 {"ts":"2026-10-21T04:57:38.036Z","kind":"breach","elapsedMs":2,"exit":1,"command":"bun test test/kappacode/session-steering.test.ts"}
 {"ts":"2026-10-21T05:04:15.508Z","kind":"breach","elapsedMs":6,"exit":1,"command":"bun test"}
 {"ts":"2026-10-21T05:23:23.548Z","kind":"breach","elapsedMs":6,"exit":1,"command":"bun test"}
+{"ts":"2026-10-21T07:26:43.810Z","kind":"breach","elapsedMs":6,"exit":1,"command":"bun test"}
