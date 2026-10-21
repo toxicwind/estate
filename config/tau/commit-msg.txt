@@ -18,7 +18,7 @@ call site. Models collapse oversized argument payloads (~200 items /
   splits oversized calls into sequential chunked calls and merges results
   (content concatenated; array details concatenated, else last wins).
 
-Also fixes a pre-existing type error: roost loadProviderDefs opts type
+Also fixes a pre-existing type error: pinax loadProviderDefs opts type
 was missing dropIns (ranch auto-loader parity) — repo check:types was red.
 
 Tests: chunk-tool-args (12), reasoning-details-replay (3),

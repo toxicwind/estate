@@ -1,0 +1,347 @@
+{
+  "loadavg_t0": "0.39 2.96 8.83 5/5480 3587239",
+  "psi": {
+    "cpu": "some avg10=0.00 avg60=0.01 avg300=1.07 total=31816047360\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+    "io": "some avg10=0.01 avg60=0.27 avg300=2.13 total=5782657058\nfull avg10=0.01 avg60=0.23 avg300=1.39 total=4484190133",
+    "memory": "some avg10=0.00 avg60=0.01 avg300=0.96 total=1389524440\nfull avg10=0.00 avg60=0.01 avg300=0.87 total=1203868235"
+  },
+  "mem_free_h": "total        used        free      shared  buff/cache   available\nMem:            62Gi        26Gi        26Gi       155Mi        10Gi        35Gi\nSwap:           77Gi        33Gi        44Gi",
+  "thread_state_totals": {
+    "S": 5315,
+    "I": 149,
+    "P": 8,
+    "Z": 7,
+    "R": 1
+  },
+  "total_threads_counted": 5480,
+  "r_threads_by_comm": [
+    [
+      "python3/python3 (pid 3587235)",
+      1
+    ]
+  ],
+  "d_threads_full": [],
+  "top_thread_owners": [
+    {
+      "pid": 2930231,
+      "name": "java",
+      "threads": 121,
+      "cmd": "/usr/lib/jvm/java-25-graalvm/bin/java -Xmx1G -Xms1G -server -XX:+UseG1GC -XX:MaxGCPauseMillis=20 -XX:InitiatingHeapOccup"
+    },
+    {
+      "pid": 2951392,
+      "name": "firefox-bin",
+      "threads": 111,
+      "cmd": "/usr/lib/firefox-nightly/firefox"
+    },
+    {
+      "pid": 2390362,
+      "name": "rustdesk",
+      "threads": 100,
+      "cmd": "/tmp/.mount_rustdenGHdpd/usr/share/rustdesk/rustdesk"
+    },
+    {
+      "pid": 997691,
+      "name": "hindsight-api",
+      "threads": 81,
+      "cmd": "/app/api/.venv/bin/python3 /app/api/.venv/bin/hindsight-api"
+    },
+    {
+      "pid": 6456,
+      "name": "java",
+      "threads": 76,
+      "cmd": "java -Xss256k -Djava.awt.headless=true -Djava.net.preferIPv4Stack=true -Dfile.encoding=UTF-8 -jar /usr/share/bubbleupnps"
+    },
+    {
+      "pid": 3460243,
+      "name": "tau",
+      "threads": 68,
+      "cmd": "tau"
+    },
+    {
+      "pid": 999708,
+      "name": "qdrant-server",
+      "threads": 57,
+      "cmd": "/home/toxic/archive/home-dirs-2026/.cargo/bin/qdrant-server --config-path ./qdrant-config.yaml"
+    },
+    {
+      "pid": 1000447,
+      "name": "hbbs",
+      "threads": 37,
+      "cmd": "./amd64/hbbs -p 25221 -r 100.72.199.93:25222"
+    },
+    {
+      "pid": 2911913,
+      "name": "chrome",
+      "threads": 37,
+      "cmd": "/home/toxic/archive/home-dirs-2026/.browserless/browsers/chromium-1223/chrome-linux64/chrome --disable-field-trial-confi"
+    },
+    {
+      "pid": 3424200,
+      "name": "Isolated Web Co",
+      "threads": 35,
+      "cmd": "/usr/lib/firefox-nightly/firefox-bin -contentproc -isForBrowser -prefsHandle 0:52918 -prefMapHandle 1:306486 -jsInitHand"
+    },
+    {
+      "pid": 3537491,
+      "name": "biome",
+      "threads": 35,
+      "cmd": "/home/toxic/archive/home-dirs-2026/.bun/install/global/node_modules/@biomejs/cli-linux-x64/biome __run_server --watcher-"
+    },
+    {
+      "pid": 3546930,
+      "name": "biome",
+      "threads": 35,
+      "cmd": "/home/toxic/estate/ranch/bun-scaffold/node_modules/@biomejs/cli-linux-x64/biome __run_server --watcher-kind=recommended "
+    },
+    {
+      "pid": 2951710,
+      "name": "Isolated Web Co",
+      "threads": 34,
+      "cmd": "/usr/lib/firefox-nightly/firefox-bin -contentproc -isForBrowser -prefsHandle 0:34393 -prefMapHandle 1:306486 -jsInitHand"
+    },
+    {
+      "pid": 3537458,
+      "name": "biome",
+      "threads": 34,
+      "cmd": "/home/toxic/archive/home-dirs-2026/.bun/install/global/node_modules/@biomejs/cli-linux-x64/biome lsp-proxy --stdio"
+    },
+    {
+      "pid": 3546897,
+      "name": "biome",
+      "threads": 34,
+      "cmd": "/home/toxic/estate/ranch/bun-scaffold/node_modules/@biomejs/cli-linux-x64/biome lsp-proxy --stdio"
+    }
+  ],
+  "top_swap_owners": [
+    {
+      "pid": 2425926,
+      "name": "hodos",
+      "swap_mb": 1075.3,
+      "cmd": "/home/toxic/estate/ranch/hodos/proxy/target/release/hodos"
+    },
+    {
+      "pid": 3263,
+      "name": "quickshell",
+      "swap_mb": 834.2,
+      "cmd": "/usr/bin/quickshell -c ii"
+    },
+    {
+      "pid": 1161,
+      "name": "gnome-keyring-d",
+      "swap_mb": 738.9,
+      "cmd": "/usr/bin/gnome-keyring-daemon --foreground --components=pkcs11,secrets --control-directory=/run/user/1000/keyring"
+    },
+    {
+      "pid": 997691,
+      "name": "hindsight-api",
+      "swap_mb": 704.7,
+      "cmd": "/app/api/.venv/bin/python3 /app/api/.venv/bin/hindsight-api"
+    },
+    {
+      "pid": 1987,
+      "name": "Hyprland",
+      "swap_mb": 599.9,
+      "cmd": "Hyprland --watchdog-fd 4"
+    },
+    {
+      "pid": 2930231,
+      "name": "java",
+      "swap_mb": 550.5,
+      "cmd": "/usr/lib/jvm/java-25-graalvm/bin/java -Xmx1G -Xms1G -server -XX:+UseG1GC -XX:MaxGCPauseMillis=20 -XX:InitiatingHeapOccup"
+    },
+    {
+      "pid": 988933,
+      "name": "llama-server",
+      "swap_mb": 398.5,
+      "cmd": "/home/toxic/estate/engines/herd/beellama.cpp/build-cuda86/bin/llama-server --model /home/toxic/models/EXAONE-4.0-1.2B-IQ"
+    },
+    {
+      "pid": 3460243,
+      "name": "tau",
+      "swap_mb": 381.7,
+      "cmd": "tau"
+    },
+    {
+      "pid": 993326,
+      "name": "llama-server",
+      "swap_mb": 300.9,
+      "cmd": "/home/toxic/estate/engines/llama.cpp-b11059/llama-b11059/llama-server -m /home/toxic/estate/ranch/models/qwen3.5-9b-dfla"
+    },
+    {
+      "pid": 2951710,
+      "name": "Isolated Web Co",
+      "swap_mb": 259.0,
+      "cmd": "/usr/lib/firefox-nightly/firefox-bin -contentproc -isForBrowser -prefsHandle 0:34393 -prefMapHandle 1:306486 -jsInitHand"
+    },
+    {
+      "pid": 2390362,
+      "name": "rustdesk",
+      "swap_mb": 232.3,
+      "cmd": "/tmp/.mount_rustdenGHdpd/usr/share/rustdesk/rustdesk"
+    },
+    {
+      "pid": 2951891,
+      "name": "WebExtensions",
+      "swap_mb": 201.8,
+      "cmd": "/usr/lib/firefox-nightly/firefox-bin -contentproc -isForBrowser -prefsHandle 0:46730 -prefMapHandle 1:306486 -jsInitHand"
+    },
+    {
+      "pid": 2951392,
+      "name": "firefox-bin",
+      "swap_mb": 200.8,
+      "cmd": "/usr/lib/firefox-nightly/firefox"
+    },
+    {
+      "pid": 6456,
+      "name": "java",
+      "swap_mb": 168.1,
+      "cmd": "java -Xss256k -Djava.awt.headless=true -Djava.net.preferIPv4Stack=true -Dfile.encoding=UTF-8 -jar /usr/share/bubbleupnps"
+    },
+    {
+      "pid": 988848,
+      "name": "pitchfork",
+      "swap_mb": 157.4,
+      "cmd": "/home/toxic/.local/share/mise/installs/pitchfork/2.25.0/pitchfork supervisor run --boot"
+    }
+  ],
+  "top_ctxt_switch_owners": [
+    {
+      "pid": 55,
+      "name": "ksoftirqd/4",
+      "total_ctxt": 316539083,
+      "cmd": "ksoftirqd/4"
+    },
+    {
+      "pid": 64,
+      "name": "ksoftirqd/5",
+      "total_ctxt": 136805270,
+      "cmd": "ksoftirqd/5"
+    },
+    {
+      "pid": 1987,
+      "name": "Hyprland",
+      "total_ctxt": 135738049,
+      "cmd": "Hyprland --watchdog-fd 4"
+    },
+    {
+      "pid": 72,
+      "name": "ksoftirqd/6",
+      "total_ctxt": 134406011,
+      "cmd": "ksoftirqd/6"
+    },
+    {
+      "pid": 47,
+      "name": "ksoftirqd/3",
+      "total_ctxt": 130604993,
+      "cmd": "ksoftirqd/3"
+    },
+    {
+      "pid": 130,
+      "name": "ksoftirqd/13",
+      "total_ctxt": 130519520,
+      "cmd": "ksoftirqd/13"
+    },
+    {
+      "pid": 80,
+      "name": "ksoftirqd/7",
+      "total_ctxt": 128253431,
+      "cmd": "ksoftirqd/7"
+    },
+    {
+      "pid": 15,
+      "name": "ksoftirqd/0",
+      "total_ctxt": 126372843,
+      "cmd": "ksoftirqd/0"
+    },
+    {
+      "pid": 363,
+      "name": "nvidia-modeset/kthread_q",
+      "total_ctxt": 126205116,
+      "cmd": "nvidia-modeset/kthread_q"
+    },
+    {
+      "pid": 39,
+      "name": "ksoftirqd/2",
+      "total_ctxt": 124450672,
+      "cmd": "ksoftirqd/2"
+    },
+    {
+      "pid": 138,
+      "name": "ksoftirqd/14",
+      "total_ctxt": 123960019,
+      "cmd": "ksoftirqd/14"
+    },
+    {
+      "pid": 121,
+      "name": "ksoftirqd/12",
+      "total_ctxt": 120234982,
+      "cmd": "ksoftirqd/12"
+    },
+    {
+      "pid": 17,
+      "name": "rcu_preempt",
+      "total_ctxt": 116084365,
+      "cmd": "rcu_preempt"
+    },
+    {
+      "pid": 31,
+      "name": "ksoftirqd/1",
+      "total_ctxt": 115934685,
+      "cmd": "ksoftirqd/1"
+    },
+    {
+      "pid": 88,
+      "name": "ksoftirqd/8",
+      "total_ctxt": 109673364,
+      "cmd": "ksoftirqd/8"
+    }
+  ],
+  "zombies": [
+    {
+      "pid": 3584890,
+      "name": "uv",
+      "ppid": 3554000
+    },
+    {
+      "pid": 3584892,
+      "name": "node",
+      "ppid": 3554000
+    },
+    {
+      "pid": 3584893,
+      "name": "uv",
+      "ppid": 3554000
+    },
+    {
+      "pid": 3584894,
+      "name": "uv",
+      "ppid": 3554000
+    },
+    {
+      "pid": 3584895,
+      "name": "uv",
+      "ppid": 3554000
+    },
+    {
+      "pid": 3584896,
+      "name": "uv",
+      "ppid": 3554000
+    },
+    {
+      "pid": 3584897,
+      "name": "uv",
+      "ppid": 3554000
+    }
+  ],
+  "ip_br_addr": "enp12s0          UP             10.0.0.218/24 metric 100 2601:280:5280:1c00::cc7a/128 2601:280:5280:1c00:da43:aeff:fef9:cef0/64 fe80::da43:aeff:fef9:cef0/64 \nwlan0            DOWN           \nbr-8aabe826d43b  DOWN           172.20.0.1/16 \nbr-f5307473348a  DOWN           172.18.0.1/16 \nbr-05ecbcc300e3  UP             172.19.0.1/16 fe80::a061:b1ff:fe76:9c64/64 \ndocker0          UP             172.17.0.1/16 fe80::8423:20ff:fe87:19fc/64 \nbr-687f22171e13  DOWN           172.21.0.1/16 \nveth660242e@if2  UP             fe80::18f8:4cff:feb1:e637/64 \ntailscale0       UNKNOWN        100.72.199.93/32 fd7a:115c:a1e0::c233:c75d/128 fe80::dcd6:753f:3229:4a0f/64 \nveth51900e4@if2  UP             fe80::94ff:e2ff:fec4:18ac/64 \nbr-2986c9ba4ee0  DOWN           172.22.0.1/16 fe80::45a:97ff:feb2:ec9a/64 \nvethec5f924@if2  UP             fe80::e478:1fff:fe4c:440d/64",
+  "arp_neighbors": "172.17.0.3 dev docker0 lladdr be:94:72:5b:be:ac STALE \n10.0.0.1 dev enp12s0 lladdr 50:bb:9f:5a:8b:0f REACHABLE \n10.0.0.225 dev enp12s0 lladdr 38:64:07:f0:48:56 STALE \n10.0.0.178 dev enp12s0 FAILED \n172.17.0.2 dev docker0 lladdr 46:67:cb:25:95:1e REACHABLE \n172.17.0.4 dev docker0 lladdr a2:36:30:e2:23:4a STALE \n10.0.0.176 dev enp12s0 lladdr 40:2f:86:c9:a2:56 STALE \n172.19.0.2 dev br-05ecbcc300e3 lladdr 1e:af:4d:3d:bf:40 STALE \n10.0.0.97 dev enp12s0 lladdr f0:1d:bc:30:30:82 STALE \n10.0.0.77 dev enp12s0 lladdr ba:c9:dd:db:95:65 REACHABLE \nfe80::1892:116a:e3f2:4abf dev enp12s0 lladdr ee:68:e8:2b:c2:36 STALE \nfe80::829f:9bff:fe85:1a5d dev enp12s0 lladdr 80:9f:9b:85:1a:5d STALE \nfe80::52bb:9fff:fe5a:8b0f dev enp12s0 lladdr 50:bb:9f:5a:8b:0f router REACHABLE",
+  "udp_ports_of_interest": "State  Recv-Q Send-Q                            Local Address:Port  Peer Address:PortProcess\nUNCONN 0      0                                     127.0.0.1:53         0.0.0.0:*   \nUNCONN 0      0                                    10.0.0.218:53         0.0.0.0:*   \nUNCONN 0      0                                    127.0.0.54:53         0.0.0.0:*   \nUNCONN 0      0                                 127.0.0.53%lo:53         0.0.0.0:*   \nUNCONN 0      0                                    172.19.0.1:34274      0.0.0.0:*   \nUNCONN 0      0                                       0.0.0.0:1900       0.0.0.0:*   \nUNCONN 0      0                                       0.0.0.0:1900       0.0.0.0:*   \nUNCONN 0      0                                       0.0.0.0:1900       0.0.0.0:*   \nUNCONN 0      0                                       0.0.0.0:1900       0.0.0.0:*   \nUNCONN 0      0                                       0.0.0.0:5353       0.0.0.0:*    users:((\"MainThread\",pid=2913451,fd=41))\nUNCONN 0      0                                       0.0.0.0:5353       0.0.0.0:*    users:((\"MainThread\",pid=2913451,fd=39))\nUNCONN 0      0                                       0.0.0.0:5353       0.0.0.0:*    users:((\"MainThread\",pid=2913451,fd=37))\nUNCONN 0      0                                       0.0.0.0:5353       0.0.0.0:*    users:((\"MainThread\",pid=2913451,fd=35))\nUNCONN 0      0                                       0.0.0.0:5353       0.0.0.0:*    users:((\"MainThread\",pid=2913451,fd=23))\nUNCONN 0      0                                       0.0.0.0:5353       0.0.0.0:*   \nUNCONN 0      0                                       0.0.0.0:5353       0.0.0.0:*   \nUNCONN 0      0                                       0.0.0.0:5353       0.0.0.0:*   \nUNCONN 0      0                                       0.0.0.0:5353       0.0.0.0:*   \nUNCONN 0      0                                       0.0.0.0:5353       0.0.0.0:*    users:((\"adb\",pid=4009878,fd=22))",
+  "nft_ruleset": "table ip filter { # handle 24\n\tchain DOCKER { # handle 10\n\t\tip daddr 172.17.0.2 iifname != \"docker0\" oifname \"docker0\" tcp dport 6379 counter packets 0 bytes 0 accept # handle 145\n\t\tip daddr 172.17.0.2 iifname != \"docker0\" oifname \"docker0\" tcp dport 3000 counter packets 0 bytes 0 accept # handle 144\n\t\tip daddr 172.19.0.2 iifname != \"br-05ecbcc300e3\" oifname \"br-05ecbcc300e3\" tcp dport 80 counter packets 0 bytes 0 accept # handle 50\n\t\tiifname != \"br-8aabe826d43b\" oifname \"br-8aabe826d43b\" counter packets 0 bytes 0 drop # handle 21\n\t\tiifname != \"br-f5307473348a\" oifname \"br-f5307473348a\" counter packets 0 bytes 0 drop # handle 25\n\t\tiifname != \"br-05ecbcc300e3\" oifname \"br-05ecbcc300e3\" counter packets 0 bytes 0 drop # handle 29\n\t\tiifname != \"br-687f22171e13\" oifname \"br-687f22171e13\" counter packets 0 bytes 0 drop # handle 37\n\t\tiifname != \"docker0\" oifname \"docker0\" counter packets 0 bytes 0 drop # handle 47\n\t\tiifname != \"br-2986c9ba4ee0\" oifname \"br-2986c9ba4ee0\" counter packets 0 bytes 0 drop # handle 135\n\t}\n\n\tchain DOCKER-FORWARD { # handle 11\n\t\tcounter packets 23609 bytes 15951843 jump DOCKER-CT # handle 19\n\t\tcounter packets 11374 bytes 6374734 jump DOCKER-INTERNAL # handle 18\n\t\tcounter packets 11374 bytes 6374734 jump DOCKER-BRIDGE # handle 17\n\t\tiifname \"br-8aabe826d43b\" counter packets 0 bytes 0 accept # handle 20\n\t\tiifname \"br-f5307473348a\" counter packets 0 bytes 0 accept # handle 24\n\t\tiifname \"br-05ecbcc300e3\" counter packets 0 bytes 0 accept # handle 28\n\t\tiifname \"br-687f22171e13\" counter packets 0 bytes 0 accept # handle 36\n\t\tiifname \"docker0\" counter packets 11374 bytes 6374734 accept # handle 46\n\t\tiifname \"br-2986c9ba4ee0\" counter packets 0 bytes 0 accept # handle 134\n\t}\n\n\tchain DOCKER-BRIDGE { # handle 12\n\t\toifname \"br-8aabe826d43b\" counter packets 0 bytes 0 jump DOCKER # handle 23\n\t\toifname \"br-f5307473348a\" counter packets 0 bytes 0 jump DOCKER # handle 27\n\t\toifname \"br-05ecbcc300e3\" counter packets 0 bytes 0 jump DOCKER # handle 31\n\t\toifname \"br-687f22171e13\" counter packets 0 bytes 0 jump DOCKER # handle 39\n\t\toifname \"docker0\" counter packets 0 bytes 0 jump DOCKER # handle 49\n\t\toifname \"br-2986c9ba4ee0\" counter packets 0 bytes 0 jump DOCKER # handle 137\n\t}\n\n\tchain DOCKER-CT { # handle 13\n\t\toifname \"br-8aabe826d43b\" xt match \"conntrack\" counter packets 0 bytes 0 accept # handle 22\n\t\toifname \"br-f5307473348a\" xt match \"conntrack\" counter packets 0 bytes 0 accept # handle 26\n\t\toifname \"br-05ecbcc300e3\" xt match \"conntrack\" counter packets 0 bytes 0 accept # handle 30\n\t\toifname \"br-687f22171e13\" xt match \"conntrack\" counter packets 0 bytes 0 accept # handle 38\n\t\toifname \"docker0\" xt match \"conntrack\" counter packets 12235 bytes 9577109 accept # handle 48\n\t\toifname \"br-2986c9ba4ee0\" xt match \"conntrack\" counter packets 0 bytes 0 accept # handle 136\n\t}\n\n\tchain DOCKER-INTERNAL { # handle 14\n\t}\n\n\tchain FORWARD { # handle 15\n\t\ttype filter hook forward priority filter; policy accept;\n\t\tcounter packets 23609 bytes 15951843 jump DOCKER-USER # handle 45\n\t\tcounter packets 23609 bytes 15951843 jump DOCKER-FORWARD # handle 16\n\t}\n\n\tchain DOCKER-USER { # handle 44\n\t}\n\n\tchain INPUT { # handle 60\n\t\ttype filter hook input priority filter; policy accept;\n\t}\n\n\tchain ts-input { # handle 95\n\t\tip saddr 100.72.199.93 iifname \"lo\" counter packets 0 bytes 0 accept # handle 103\n\t\tiifname \"tailscale0\" counter packets 0 bytes 0 accept # handle 97\n\t\tudp dport 41641 counter packets 0 bytes 0 accept # handle 102\n\t\tip saddr 100.115.92.0/23 iifname != \"tailscale0\" counter packets 0 bytes 0 return # handle 104\n\t\tip saddr 100.64.0.0/10 iifname != \"tailscale0\" counter packets 0 bytes 0 drop # handle 105\n\t}\n\n\tchain ts-forward { # handle 96\n\t\tiifname \"tailscale0\" counter packets 0 bytes 0 xt target \"MARK\" # handle 98\n\t\tmeta mark & 0x00ff0000 == 0x00040000 counter packets 0 bytes 0 accept # handle 99\n\t\tip saddr 100.64.0.0/10 oifname \"tailscale0\" counter packets 0 bytes 0 drop # handle 100\n\t\toifname \"tailscale0\" counter packets 0 bytes 0 accept # handle 101\n\t}\n}\ntable ip nat { # handle 25\n\tchain DOCKER { # handle 3\n\t\ttcp dport 43000 counter packets 2 bytes 120 xt target \"DNAT\" # handle 29\n\t\tip daddr 127.0.0.1 tcp dport 13000 counter packets 0 bytes 0 xt target \"DNAT\" # handle 123\n\t\tip daddr 127.0.0.1 tcp dport 6379 counter packets 14 bytes 840 xt target \"DNAT\" # handle 125\n\t}\n\n\tchain PREROUTING { # handle 4\n\t\ttype nat hook prerouting priority dstnat; policy accept;\n\t\txt match \"addrtype\" counter packets 2117460 bytes 693210222 jump DOCKER # handle 5\n\t}\n\n\tchain OUTPUT { # handle 6\n\t\ttype nat hook output priority dstnat; policy accept;\n\t\txt match \"addrtype\" counter packets 2059881 bytes 123837013 jump DOCKER # handle 7\n\t}\n\n\tchain POSTROUTING { # handle 8\n\t\ttype nat hook postrouting priority srcnat; policy accept;\n\t\toifname \"br-2986c9ba4ee0\" xt match \"addrtype\" counter packets 2394 bytes 1131645 xt target \"MASQUERADE\" # handle 110\n\t\tip saddr 172.22.0.0/16 oifname != \"br-2986c9ba4ee0\" counter packets 0 bytes 0 xt target \"MASQUERADE\" # handle 109\n\t\toifname \"docker0\" xt match \"addrtype\" counter packets 22013 bytes 8995815 xt target \"MASQUERADE\" # handle 28\n\t\tip saddr 172.17.0.0/16 oifname != \"docker0\" counter packets 1195 bytes 73942 xt target \"MASQUERADE\" # handle 27\n\t\toifname \"br-687f22171e13\" xt match \"addrtype\" counter packets 6 bytes 426 xt target \"MASQUERADE\" # handle 18\n\t\tip saddr 172.21.0.0/16 oifname != \"br-687f22171e13\" counter packets 6 bytes 912 xt target \"MASQUERADE\" # handle 17\n\t\toifname \"br-05ecbcc300e3\" xt match \"addrtype\" counter packets 18271 bytes 8788847 xt target \"MASQUERADE\" # handle 14\n\t\tip saddr 172.19.0.0/16 oifname != \"br-05ecbcc300e3\" counter packets 7 bytes 1064 xt target \"MASQUERADE\" # handle 13\n\t\toifname \"br-f5307473348a\" xt match \"addrtype\" counter packets 6 bytes 426 xt target \"MASQUERADE\" # handle 12\n\t\tip saddr 172.18.0.0/16 oifname != \"br-f5307473348a\" counter packets 6 bytes 912 xt target \"MASQUERADE\" # handle 11\n\t\toifname \"br-8aabe826d43b\" xt match \"addrtype\" counter packets 6 bytes 426 xt target \"MASQUERADE\" # handle 10\n\t\tip saddr 172.20.0.0/16 oifname != \"br-8aabe826d43b\" counter packets 6 bytes 912 xt target \"MASQUERADE\" # handle 9\n\t\tip saddr 172.19.0.2 ip daddr 172.19.0.2 tcp dport 80 counter packets 0 bytes 0 xt target \"MASQUERADE\" # handle 30\n\t\tip saddr 172.17.0.2 ip daddr 172.17.0.2 tcp dport 3000 counter packets 0 bytes 0 xt target \"MASQUERADE\" # handle 124\n\t\tip saddr 172.17.0.2 ip daddr 172.17.0.2 tcp dport 6379 counter packets 0 bytes 0 xt target \"MASQUERADE\" # handle 126\n\t}\n\n\tchain ts-postrouting { # handle 45\n\t\tmeta mark & 0x00ff0000 == 0x00040000 counter packets 0 bytes 0 xt target \"MASQUERADE\" # handle 46\n\t}\n}\ntable ip6 filter { # handle 27\n\tchain DOCKER { # handle 9\n\t}\n\n\tchain DOCKER-FORWARD { # handle 10\n\t\tcounter packets 0 bytes 0 jump DOCKER-CT # handle 18\n\t\tcounter packets 0 bytes 0 jump DOCKER-INTERNAL # handle 17\n\t\tcounter packets 0 bytes 0 jump DOCKER-BRIDGE # handle 16\n\t}\n\n\tchain DOCKER-BRIDGE { # handle 11\n\t}\n\n\tchain DOCKER-CT { # handle 12\n\t}\n\n\tchain DOCKER-INTERNAL { # handle 13\n\t}\n\n\tchain FORWARD { # handle 14\n\t\ttype filter hook forward priority filter; policy accept;\n\t\tcounter packets 0 bytes 0 jump DOCKER-USER # handle 20\n\t\tcounter packets 0 bytes 0 jump DOCKER-FORWARD # handle 15\n\t}\n\n\tchain DOCKER-USER { # handle 19\n\t}\n\n\tchain INPUT { # handle 27\n\t\ttype filter hook input priority filter; policy accept;\n\t}\n\n\tchain ts-input { # handle 54\n\t\tip6 saddr fd7a:115c:a1e0::c233:c75d iifname \"lo\" counter packets 0 bytes 0 accept # handle 61\n\t\tiifname \"tailscale0\" counter packets 0 bytes 0 accept # handle 56\n\t\tudp dport 41641 counter packets 0 bytes 0 accept # handle 60\n\t}\n\n\tchain ts-forward { # handle 55\n\t\tiifname \"tailscale0\" counter packets 0 bytes 0 xt target \"MARK\" # handle 57\n\t\tmeta mark & 0x00ff0000 == 0x00040000 counter packets 0 bytes 0 accept # handle 58\n\t\toifname \"tailscale0\" counter packets 0 bytes 0 accept # handle 59\n\t}\n}\ntable ip6 nat { # handle 28\n\tchain DOCKER { # handle 3\n\t}\n\n\tchain PREROUTING { # handle 4\n\t\ttype nat hook prerouting priority dstnat; policy accept;\n\t\txt match \"addrtype\" counter packets 9349 bytes 2296012 jump DOCKER # handle 5\n\t}\n\n\tchain OUTPUT { # handle 6\n\t\ttype nat hook output priority dstnat; policy accept;\n\t\txt match \"addrtype\" counter packets 115150 bytes 9212091 jump DOCKER # handle 7\n\t}\n\n\tchain POSTROUTING { # handle 9\n\t\ttype nat hook postrouting priority srcnat; policy accept;\n\t}\n\n\tchain ts-postrouting { # handle 19\n\t\tmeta mark & 0x00ff0000 == 0x00040000 counter packets 0 bytes 0 xt target \"MASQUERADE\" # handle 20\n\t}\n}\ntable ip raw { # handle 29\n\tchain PREROUTING { # handle 1\n\t\ttype filter hook prerouting priority raw; policy accept;\n\t\tip daddr 172.19.0.2 iifname != \"br-05ecbcc300e3\" counter packets 0 bytes 0 drop # handle 9\n\t\tip daddr 172.17.0.4 iifname != \"docker0\" counter packets 0 bytes 0 drop # handle 72\n\t\tip daddr 172.17.0.2 iifname != \"docker0\" counter packets 0 bytes 0 drop # handle 80\n\t\tip daddr 127.0.0.1 iifname != \"lo\" tcp dport 13000 counter packets 0 bytes 0 drop # handle 81\n\t\tip daddr 127.0.0.1 iifname != \"lo\" tcp dport 6379 counter packets 0 bytes 0 drop # handle 82\n\t}\n}\ntable ip mangle { # handle 30\n\tchain PREROUTING { # handle 1\n\t\ttype filter hook prerouting priority mangle; policy accept;\n\t}\n\n\tchain OUTPUT { # handle 3\n\t\ttype route hook output priority mangle; policy accept;\n\t}\n}\ntable ip6 mangle { # handle 31\n\tchain PREROUTING { # handle 1\n\t\ttype filter hook prerouting priority mangle; policy accept;\n\t}\n\n\tchain OUTPUT { # handle 3\n\t\ttype route hook output priority mangle; policy accept;\n\t}\n}\ntable inet awrawr_filter { # handle 33\n\tchain input { # handle 1\n\t\ttype filter hook input priority filter; policy drop;\n\t\tiifname \"lo\" accept # handle 41\n\t\tct state established,related accept # handle 42\n\t\tct state invalid drop # handle 43\n\t\tip protocol icmp accept # handle 44\n\t\tip6 nexthdr ipv6-icmp accept # handle 45\n\t\tip6 saddr fe80::/10 udp sport 547 udp dport 546 accept # handle 46\n\t\tudp dport 41641 accept # handle 47\n\t\tiifname \"tailscale0\" accept # handle 48\n\t\tiifname \"tsd\" accept # handle 49\n\t\tip saddr 10.0.0.0/24 tcp dport { 22, 3000-3001, 8503, 25100-25107, 25203 } accept # handle 51\n\t\tip saddr 10.0.0.0/24 udp dport { 53, 21027, 22000, 41641 } accept # handle 53\n\t\tip saddr 10.0.0.0/24 tcp dport { 53, 22000 } accept # handle 55\n\t\tip saddr 10.0.0.176 udp sport 50005 drop # handle 56\n\t\tudp dport { 1900, 2021, 5353, 21027, 56700 } drop # handle 58\n\t\tmeta pkttype { broadcast, multicast } drop # handle 60\n\t\tlog prefix \"nft-drop: \" limit rate 5/second burst 5 packets # handle 61\n\t\tdrop # handle 62\n\t}\n\n\tchain forward { # handle 2\n\t\ttype filter hook forward priority filter; policy accept;\n\t}\n\n\tchain output { # handle 3\n\t\ttype filter hook output priority filter; policy accept;\n\t}\n}",
+  "etc_nftables_conf": "#!/usr/sbin/nft -f\n# awrawr-pc baseline firewall \u2014 network audit 2026-10-15 (updated 2026-10-20)\n# NOTE: deliberately NO global `flush ruleset` \u2014 dockerd and tailscaled own their own\n# tables (ip filter/nat with DOCKER-*/ts-* chains). Flushing globally would destroy\n# docker-published ports and tailscale netfilter until restart.\n# Flushing ONLY `table inet awrawr_filter` makes this file idempotent on reload.\n\ntable inet awrawr_filter\nflush table inet awrawr_filter\n\ntable inet awrawr_filter {\n\tchain input {\n\t\ttype filter hook input priority 0; policy drop;\n\n\t\t# Loopback + existing connections\n\t\tiifname \"lo\" accept\n\t\tct state established,related accept\n\t\tct state invalid drop\n\n\t\t# ICMP / ICMPv6 diagnostics (incl. IPv6 neighbor discovery) + DHCPv6 client\n\t\tip protocol icmp accept\n\t\tip6 nexthdr ipv6-icmp accept\n\t\tip6 saddr fe80::/10 udp sport 547 udp dport 546 accept\n\n\t\t# Tailscale data plane: WireGuard UDP (any source, direct connect)\n\t\tudp dport 41641 accept\n\n\t\t# Full access from the tailnet (covers RustDesk 25220-25224, SSH, all 25xxx)\n\t\tiifname \"tailscale0\" accept\n\t\tiifname \"tsd\" accept\n\n\t\t# LAN: SSH, Caddy/UI ports, local DNS (dnsmasq on this host), syncthing (22000 + 21027 discovery)\n\t\tip saddr 10.0.0.0/24 tcp dport { 22, 3000, 3001, 8503, 25100-25107, 25203 } accept\n\t\tip saddr 10.0.0.0/24 udp dport { 53, 21027, 22000, 41641 } accept\n\t\tip saddr 10.0.0.0/24 tcp dport { 53, 22000 } accept\n\n\t\t# Silently drop noisy LAN broadcast/multicast discovery & stale 10.0.0.176 UDP\n\t\t# so harmless LAN background chatter does not trigger a dmesg printk log storm\n\t\tip saddr 10.0.0.176 udp sport 50005 drop\n\t\tudp dport { 1900, 2021, 5353, 21027, 56700 } drop\n\t\tmeta pkttype { broadcast, multicast } drop\n\n\t\t# Everything else (unexpected unicast probes) logs rate-limited and drops\n\t\tlog prefix \"nft-drop: \" limit rate 5/second burst 5 packets\n\t\tdrop\n\t}\n\n\tchain forward {\n\t\ttype filter hook forward priority 0; policy accept;\n\t}\n\n\tchain output {\n\t\ttype filter hook output priority 0; policy accept;\n\t}\n}",
+  "dmesg_nft_drop_sample": "2026-10-20T14:34:55,867769-06:00 nft-drop: IN=enp12s0 OUT= MAC=d8:43:ae:f9:ce:f0:40:2f:86:c9:a2:56:08:00 SRC=10.0.0.176 DST=10.0.0.218 LEN=279 TOS=0x00 PREC=0x00 TTL=64 ID=8079 DF PROTO=UDP SPT=45223 DPT=58031 LEN=259 \n2026-10-20T14:34:55,867771-06:00 nft-drop: IN=enp12s0 OUT= MAC=d8:43:ae:f9:ce:f0:40:2f:86:c9:a2:56:08:00 SRC=10.0.0.176 DST=10.0.0.218 LEN=297 TOS=0x00 PREC=0x00 TTL=64 ID=8080 DF PROTO=UDP SPT=45223 DPT=58031 LEN=277 \n2026-10-20T14:34:55,867773-06:00 nft-drop: IN=enp12s0 OUT= MAC=d8:43:ae:f9:ce:f0:40:2f:86:c9:a2:56:08:00 SRC=10.0.0.176 DST=10.0.0.218 LEN=378 TOS=0x00 PREC=0x00 TTL=64 ID=8073 DF PROTO=UDP SPT=51279 DPT=58031 LEN=358 \n2026-10-20T14:34:55,867775-06:00 nft-drop: IN=enp12s0 OUT= MAC=d8:43:ae:f9:ce:f0:40:2f:86:c9:a2:56:08:00 SRC=10.0.0.176 DST=10.0.0.218 LEN=425 TOS=0x00 PREC=0x00 TTL=64 ID=8074 DF PROTO=UDP SPT=51279 DPT=58031 LEN=405 \n2026-10-20T14:34:55,867777-06:00 nft-drop: IN=enp12s0 OUT= MAC=d8:43:ae:f9:ce:f0:40:2f:86:c9:a2:56:08:00 SRC=10.0.0.176 DST=10.0.0.218 LEN=423 TOS=0x00 PREC=0x00 TTL=64 ID=8075 DF PROTO=UDP SPT=51279 DPT=58031 LEN=403 \n2026-10-20T14:34:55,867779-06:00 nft-drop: IN=enp12s0 OUT= MAC=d8:43:ae:f9:ce:f0:40:2f:86:c9:a2:56:08:00 SRC=10.0.0.176 DST=10.0.0.218 LEN=435 TOS=0x00 PREC=0x00 TTL=64 ID=8076 DF PROTO=UDP SPT=51279 DPT=58031 LEN=415 \n2026-10-20T14:34:55,867782-06:00 nft-drop: IN=enp12s0 OUT= MAC=d8:43:ae:f9:ce:f0:40:2f:86:c9:a2:56:08:00 SRC=10.0.0.176 DST=10.0.0.218 LEN=433 TOS=0x00 PREC=0x00 TTL=64 ID=8078 DF PROTO=UDP SPT=51279 DPT=58031 LEN=413 \n2026-10-20T14:34:55,869574-06:00 nft-drop: IN=enp12s0 OUT= MAC=d8:43:ae:f9:ce:f0:40:2f:86:c9:a2:56:08:00 SRC=10.0.0.176 DST=10.0.0.218 LEN=271 TOS=0x00 PREC=0x00 TTL=64 ID=8081 DF PROTO=UDP SPT=55120 DPT=58031 LEN=251 \n2026-10-20T14:34:55,869602-06:00 nft-drop: IN=enp12s0 OUT= MAC=d8:43:ae:f9:ce:f0:40:2f:86:c9:a2:56:08:00 SRC=10.0.0.176 DST=10.0.0.218 LEN=280 TOS=0x00 PREC=0x00 TTL=64 ID=8082 DF PROTO=UDP SPT=55120 DPT=58031 LEN=260 \n2026-10-20T14:34:55,869604-06:00 nft-drop: IN=enp12s0 OUT= MAC=d8:43:ae:f9:ce:f0:40:2f:86:c9:a2:56:08:00 SRC=10.0.0.176 DST=10.0.0.218 LEN=311 TOS=0x00 PREC=0x00 TTL=64 ID=8083 DF PROTO=UDP SPT=55120 DPT=58031 LEN=291 \n2026-10-20T14:34:55,869606-06:00 nft-drop: IN=enp12s0 OUT= MAC=d8:43:ae:f9:ce:f0:40:2f:86:c9:a2:56:08:00 SRC=10.0.0.176 DST=10.0.0.218 LEN=323 TOS=0x00 PREC=0x00 TTL=64 ID=8084 DF PROTO=UDP SPT=55120 DPT=58031 LEN=303 \n2026-10-20T14:34:56,068130-06:00 nft-drop: IN=enp12s0 OUT= MAC=d8:43:ae:f9:ce:f0:40:2f:86:c9:a2:56:08:00 SRC=10.0.0.176 DST=10.0.0.218 LEN=369 TOS=0x00 PREC=0x00 TTL=64 ID=8095 DF PROTO=UDP SPT=51279 DPT=58031 LEN=349 \n2026-10-20T14:34:56,068165-06:00 nft-drop: IN=enp12s0 OUT= MAC=d8:43:ae:f9:ce:f0:40:2f:86:c9:a2:56:08:00 SRC=10.0.0.176 DST=10.0.0.218 LEN=271 TOS=0x00 PREC=0x00 TTL=64 ID=8096 DF PROTO=UDP SPT=45223 DPT=58031 LEN=251 \n2026-10-20T14:34:56,068167-06:00 nft-drop: IN=enp12s0 OUT= MAC=d8:43:ae:f9:ce:f0:40:2f:86:c9:a2:56:08:00 SRC=10.0.0.176 DST=10.0.0.218 LEN=280 TOS=0x00 PREC=0x00 TTL=64 ID=8097 DF PROTO=UDP SPT=45223 DPT=58031 LEN=260 \n2026-10-20T14:34:56,068170-06:00 nft-drop: IN=enp12s0 OUT= MAC=d8:43:ae:f9:ce:f0:40:2f:86:c9:a2:56:08:00 SRC=10.0.0.176 DST=10.0.0.218 LEN=279 TOS=0x00 PREC=0x00 TTL=64 ID=8099 DF PROTO=UDP SPT=45223 DPT=58031 LEN=259 \n2026-10-20T14:34:56,068172-06:00 nft-drop: IN=enp12s0 OUT= MAC=d8:43:ae:f9:ce:f0:40:2f:86:c9:a2:56:08:00 SRC=10.0.0.176 DST=10.0.0.218 LEN=297 TOS=0x00 PREC=0x00 TTL=64 ID=8102 DF PROTO=UDP SPT=45223 DPT=58031 LEN=277 \n2026-10-20T14:34:56,068174-06:00 nft-drop: IN=enp12s0 OUT= MAC=d8:43:ae:f9:ce:f0:40:2f:86:c9:a2:56:08:00 SRC=10.0.0.176 DST=10.0.0.218 LEN=378 TOS=0x00 PREC=0x00 TTL=64 ID=8098 DF PROTO=UDP SPT=51279 DPT=58031 LEN=358 \n2026-10-20T14:34:56,068176-06:00 nft-drop: IN=enp12s0 OUT= MAC=d8:43:ae:f9:ce:f0:40:2f:86:c9:a2:56:08:00 SRC=10.0.0.176 DST=10.0.0.218 LEN=425 TOS=0x00 PREC=0x00 TTL=64 ID=8100 DF PROTO=UDP SPT=51279 DPT=58031 LEN=405 \n2026-10-20T14:34:56,068201-06:00 nft-drop: IN=enp12s0 OUT= MAC=d8:43:ae:f9:ce:f0:40:2f:86:c9:a2:56:08:00 SRC=10.0.0.176 DST=10.0.0.218 LEN=423 TOS=0x00 PREC=0x00 TTL=64 ID=8101 DF PROTO=UDP SPT=51279 DPT=58031 LEN=403 \n2026-10-20T14:34:56,068203-06:00 nft-drop: IN=enp12s0 OUT= MAC=d8:43:ae:f9:ce:f0:40:2f:86:c9:a2:56:08:00 SRC=10.0.0.176 DST=10.0.0.218 LEN=435 TOS=0x00 PREC=0x00 TTL=64 ID=8103 DF PROTO=UDP SPT=51279 DPT=58031 LEN=415 \n2026-10-20T14:34:56,068205-06:00 nft-drop: IN=enp12s0 OUT= MAC=d8:43:ae:f9:ce:f0:40:2f:86:c9:a2:56:08:00 SRC=10.0.0.176 DST=10.0.0.218 LEN=433 TOS=0x00 PREC=0x00 TTL=64 ID=8104 DF PROTO=UDP SPT=51279 DPT=58031 LEN=413 \n2026-10-20T14:34:56,069843-06:00 nft-drop: IN=enp12s0 OUT= MAC=d8:43:ae:f9:ce:f0:40:2f:86:c9:a2:56:08:00 SRC=10.0.0.176 DST=10.0.0.218 LEN=271 TOS=0x00 PREC=0x00 TTL=64 ID=8105 DF PROTO=UDP SPT=55120 DPT=58031 LEN=251 \n2026-10-20T14:34:56,069869-06:00 nft-drop: IN=enp12s0 OUT= MAC=d8:43:ae:f9:ce:f0:40:2f:86:c9:a2:56:08:00 SRC=10.0.0.176 DST=10.0.0.218 LEN=280 TOS=0x00 PREC=0x00 TTL=64 ID=8106 DF PROTO=UDP SPT=55120 DPT=58031 LEN=260 \n2026-10-20T14:34:56,069871-06:00 nft-drop: IN=enp12s0 OUT= MAC=d8:43:ae:f9:ce:f0:40:2f:86:c9:a2:56:08:00 SRC=10.0.0.176 DST=10.0.0.218 LEN=311 TOS=0x00 PREC=0x00 TTL=64 ID=8107 DF PROTO=UDP SPT=55120 DPT=58031 LEN=291 \n2026-10-20T14:34:56,069873-06:00 nft-drop: IN=enp12s0 OUT= MAC=d8:43:ae:f9:ce:f0:40:2f:86:c9:a2:56:08:00 SRC=10.0.0.176 DST=10.0.0.218 LEN=323 TOS=0x00 PREC=0x00 TTL=64 ID=8108 DF PROTO=UDP SPT=55120 DPT=58031 LEN=303",
+  "dmesg_non_nft_tail": "",
+  "btdu_log_stat": "none",
+  "loadavg_t1": "0.39 2.96 8.83 1/5480 3587270",
+  "elapsed_ms": 202.4
+}
