@@ -1474,3 +1474,12 @@ pi-skills/
 # !ranch/keeper/ exceptions were dead: keeper is a nested repo, so git never
 # descends into it and an un-ignore cannot reach it.
 ranch/
+# 2026-10-21: quarantined by the layout pass — the content lives on disk under
+# var/legacy/quarantine-2026-10-21/, not in the index.
+#   readme-fix-estate-1789408144/  a full copy of this repo inside this repo
+#   session-ses_*.md                session transcripts
+#   .agent/tmp/*.bak.*              agent retry prompt backups
+readme-fix-estate-*/
+session-ses_*.md
+.agent/tmp/*.bak.*
+config/tau/*.bak
