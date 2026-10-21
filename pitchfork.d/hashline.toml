@@ -1,4 +1,4 @@
-$[daemons.hashline]
+[daemons.hashline]
 mise = true
 run = "exec /home/toxic/.local/bin/hashline serve --socket /home/toxic/.hashline/hashline.sock --pid-file /home/toxic/.hashline/hashline.pid"
 dir = "/home/toxic"

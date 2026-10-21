@@ -1,4 +1,4 @@
-$[daemons.phone-sentinel]
+[daemons.phone-sentinel]
 mise = true
 description = "Network-reactive ADB sentinel for Pixel 9 Pro XL"
 run = "bun run /home/toxic/estate/ranch/phone-sentinel/src/index.ts"
