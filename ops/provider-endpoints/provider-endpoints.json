@@ -1,0 +1,1249 @@
+{
+  "generatedAt": "2026-10-21T07:12:03.357Z",
+  "source": "/home/toxic/estate/ranch/pinax/generated/providers.json",
+  "summary": {
+    "total": 46,
+    "ok": 24,
+    "needsAuth": 17,
+    "throttled": 1,
+    "missing": 4,
+    "unreachable": 0,
+    "withQwen": 13
+  },
+  "providers": [
+    {
+      "name": "abliteration",
+      "baseUrl": "https://api.abliteration.ai/v1",
+      "endpoint": "https://api.abliteration.ai/v1/models",
+      "status": 401,
+      "verdict": "needs-auth",
+      "models": 0,
+      "qwenModels": [],
+      "qwenCount": 0,
+      "keyEnv": null,
+      "attempts": [
+        {
+          "url": "https://api.abliteration.ai/v1/models/sse",
+          "status": 404
+        },
+        {
+          "url": "https://api.abliteration.ai/v1/models",
+          "status": 401
+        },
+        {
+          "url": "https://api.abliteration.ai/models",
+          "status": 404
+        }
+      ]
+    },
+    {
+      "name": "aimlapi",
+      "baseUrl": "https://api.aimlapi.com/v1",
+      "endpoint": "https://api.aimlapi.com/v1/models",
+      "status": 200,
+      "verdict": "ok",
+      "models": 943,
+      "qwenModels": [
+        "alibaba/qwen3.8-max-prime",
+        "alibaba/qwen3.8-omni-flash",
+        "alibaba/qwen3.8-flash",
+        "alibaba/qwen3.8-27b",
+        "alibaba/qwen3.8-2.4t-a95b",
+        "alibaba/qwen3.8-max",
+        "alibaba/qwen-image-3",
+        "alibaba/qwen-image-3-edit",
+        "alibaba/qwen3.7-plus",
+        "alibaba/qwen3.7-max",
+        "alibaba/qwen3.5-omni-flash",
+        "alibaba/qwen3.5-omni-plus"
+      ],
+      "qwenCount": 35,
+      "keyEnv": null,
+      "attempts": [
+        {
+          "url": "https://api.aimlapi.com/v1/models/sse",
+          "status": 404
+        },
+        {
+          "url": "https://api.aimlapi.com/v1/models",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "baseten",
+      "baseUrl": "https://inference.baseten.co/v1",
+      "endpoint": "https://inference.baseten.co/v1/models",
+      "status": 401,
+      "verdict": "needs-auth",
+      "models": 0,
+      "qwenModels": [],
+      "qwenCount": 0,
+      "keyEnv": null,
+      "attempts": [
+        {
+          "url": "https://inference.baseten.co/v1/models/sse",
+          "status": 405
+        },
+        {
+          "url": "https://inference.baseten.co/v1/models",
+          "status": 401
+        },
+        {
+          "url": "https://inference.baseten.co/models",
+          "status": 405
+        }
+      ]
+    },
+    {
+      "name": "bedrock-mantle",
+      "baseUrl": "https://bedrock-mantle.{region}.api.aws/openai/v1",
+      "endpoint": "https://bedrock-mantle.us-east-1.api.aws/openai/v1/models/sse",
+      "status": 404,
+      "verdict": "missing",
+      "models": 0,
+      "qwenModels": [],
+      "qwenCount": 0,
+      "keyEnv": null,
+      "attempts": [
+        {
+          "url": "https://bedrock-mantle.us-east-1.api.aws/openai/v1/models/sse",
+          "status": 404
+        },
+        {
+          "url": "https://bedrock-mantle.us-east-1.api.aws/openai/v1/models",
+          "status": 404
+        }
+      ]
+    },
+    {
+      "name": "bitdeer",
+      "baseUrl": "https://api-inference.bitdeer.ai/v1",
+      "endpoint": "https://api-inference.bitdeer.ai/v1/models/sse",
+      "status": 401,
+      "verdict": "needs-auth",
+      "models": 0,
+      "qwenModels": [],
+      "qwenCount": 0,
+      "keyEnv": null,
+      "attempts": [
+        {
+          "url": "https://api-inference.bitdeer.ai/v1/models/sse",
+          "status": 401
+        },
+        {
+          "url": "https://api-inference.bitdeer.ai/v1/models",
+          "status": 401
+        },
+        {
+          "url": "https://api-inference.bitdeer.ai/models",
+          "status": 404
+        }
+      ]
+    },
+    {
+      "name": "cerebras",
+      "baseUrl": "https://api.cerebras.ai/v1",
+      "endpoint": "https://api.cerebras.ai/v1/models",
+      "status": 200,
+      "verdict": "ok",
+      "models": 2,
+      "qwenModels": [
+        "qwen-3.8-27b"
+      ],
+      "qwenCount": 1,
+      "keyEnv": "CEREBRAS_API_KEY",
+      "attempts": [
+        {
+          "url": "https://api.cerebras.ai/v1/models/sse",
+          "status": 404
+        },
+        {
+          "url": "https://api.cerebras.ai/v1/models/sse",
+          "status": 403
+        },
+        {
+          "url": "https://api.cerebras.ai/v1/models",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "chutes",
+      "baseUrl": "https://inference.chutes.ai/v1",
+      "endpoint": "https://inference.chutes.ai/v1/chutes/models",
+      "status": 429,
+      "verdict": "throttled",
+      "models": 0,
+      "qwenModels": [],
+      "qwenCount": 0,
+      "keyEnv": "CHUTES_API_KEY",
+      "attempts": [
+        {
+          "url": "https://inference.chutes.ai/v1/chutes/models",
+          "status": 429
+        },
+        {
+          "url": "https://inference.chutes.ai/v1/chutes/models",
+          "status": 429
+        },
+        {
+          "url": "https://inference.chutes.ai/v1/chutes/models",
+          "status": 429
+        },
+        {
+          "url": "https://inference.chutes.ai/v1/chutes/models/sse",
+          "status": 429
+        },
+        {
+          "url": "https://inference.chutes.ai/v1/chutes/models/sse",
+          "status": 429
+        },
+        {
+          "url": "https://inference.chutes.ai/v1/chutes/models/sse",
+          "status": 429
+        }
+      ]
+    },
+    {
+      "name": "cohere",
+      "baseUrl": "https://api.cohere.com/compatibility/v1",
+      "endpoint": "https://api.cohere.com/compatibility/v1/models",
+      "status": 200,
+      "verdict": "ok",
+      "models": 37,
+      "qwenModels": [],
+      "qwenCount": 0,
+      "keyEnv": "COHERE_API_KEY",
+      "attempts": [
+        {
+          "url": "https://api.cohere.com/compatibility/v1/models/sse",
+          "status": 404
+        },
+        {
+          "url": "https://api.cohere.com/compatibility/v1/models/sse",
+          "status": 401
+        },
+        {
+          "url": "https://api.cohere.com/compatibility/v1/models",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "cometapi",
+      "baseUrl": "https://api.cometapi.com/v1",
+      "endpoint": "https://api.cometapi.com/v1/models/sse",
+      "status": 401,
+      "verdict": "needs-auth",
+      "models": 0,
+      "qwenModels": [],
+      "qwenCount": 0,
+      "keyEnv": null,
+      "attempts": [
+        {
+          "url": "https://api.cometapi.com/v1/models/sse",
+          "status": 401
+        },
+        {
+          "url": "https://api.cometapi.com/v1/models",
+          "status": 401
+        },
+        {
+          "url": "https://api.cometapi.com/models",
+          "status": 404
+        }
+      ]
+    },
+    {
+      "name": "commandcode",
+      "baseUrl": "https://api.commandcode.ai/provider/v1",
+      "endpoint": "https://api.commandcode.ai/provider/v1/models",
+      "status": 200,
+      "verdict": "ok",
+      "models": 96,
+      "qwenModels": [
+        "Qwen/Qwen3.8-Omni-Flash",
+        "Qwen/Qwen3.8-Max-Prime",
+        "Qwen/Qwen3.8-Max-0902",
+        "Qwen/Qwen3.8-Max",
+        "Qwen/Qwen3.8-27B",
+        "Qwen/Qwen3.8-Flash",
+        "Qwen/Qwen3.7-Max",
+        "Qwen/Qwen3.7-Plus",
+        "Qwen/Qwen3.7-Flash",
+        "Qwen/Qwen3.6-Max-Preview",
+        "Qwen/Qwen3.6-Plus"
+      ],
+      "qwenCount": 11,
+      "keyEnv": null,
+      "attempts": [
+        {
+          "url": "https://api.commandcode.ai/provider/v1/models/sse",
+          "status": 404
+        },
+        {
+          "url": "https://api.commandcode.ai/provider/v1/models",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "dashscope",
+      "baseUrl": "https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
+      "endpoint": "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/models/sse",
+      "status": 401,
+      "verdict": "needs-auth",
+      "models": 0,
+      "qwenModels": [],
+      "qwenCount": 0,
+      "keyEnv": null,
+      "attempts": [
+        {
+          "url": "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/models/sse",
+          "status": 401
+        },
+        {
+          "url": "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/models",
+          "status": 401
+        },
+        {
+          "url": "https://dashscope-intl.aliyuncs.com/compatible-mode/models",
+          "status": 404
+        }
+      ]
+    },
+    {
+      "name": "deepinfra",
+      "baseUrl": "https://api.deepinfra.com/v1/openai",
+      "endpoint": "https://api.deepinfra.com/v1/openai/models",
+      "status": 200,
+      "verdict": "ok",
+      "models": 177,
+      "qwenModels": [
+        "Qwen/Qwen3.8-Flash",
+        "Qwen/Qwen3-Next-80B-A3B-Instruct",
+        "Qwen/Qwen3-Embedding-4B",
+        "Qwen/Qwen3.6-35B-A3B",
+        "Qwen/Qwen3.5-9B",
+        "Qwen/Qwen3-VL-235B-A22B-Instruct",
+        "Qwen/Qwen3-30B-A3B",
+        "Qwen/Qwen3-32B",
+        "Qwen/Qwen3-TTS",
+        "Qwen/Qwen3-14B",
+        "Qwen/Qwen3.5-27B",
+        "Qwen/Qwen3-ASR-0.6B"
+      ],
+      "qwenCount": 27,
+      "keyEnv": null,
+      "attempts": [
+        {
+          "url": "https://api.deepinfra.com/v1/openai/v1/models/sse",
+          "status": 404
+        },
+        {
+          "url": "https://api.deepinfra.com/v1/openai/v1/models",
+          "status": 404
+        },
+        {
+          "url": "https://api.deepinfra.com/v1/openai/models/sse",
+          "status": 404
+        },
+        {
+          "url": "https://api.deepinfra.com/v1/openai/models",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "deepseek",
+      "baseUrl": "https://api.deepseek.com",
+      "endpoint": "https://api.deepseek.com/v1/models",
+      "status": 200,
+      "verdict": "ok",
+      "models": 2,
+      "qwenModels": [],
+      "qwenCount": 0,
+      "keyEnv": "DEEPSEEK_API_KEY",
+      "attempts": [
+        {
+          "url": "https://api.deepseek.com/v1/models/sse",
+          "status": 404
+        },
+        {
+          "url": "https://api.deepseek.com/v1/models/sse",
+          "status": 401
+        },
+        {
+          "url": "https://api.deepseek.com/v1/models",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "freeinference",
+      "baseUrl": "https://freeinference.org/v1",
+      "endpoint": "https://freeinference.org/v1/models",
+      "status": 200,
+      "verdict": "ok",
+      "models": 6,
+      "qwenModels": [
+        "qwen3.6-35b"
+      ],
+      "qwenCount": 1,
+      "keyEnv": "FREEINFERENCE_API_KEY",
+      "attempts": [
+        {
+          "url": "https://freeinference.org/v1/models/sse",
+          "status": 404
+        },
+        {
+          "url": "https://freeinference.org/v1/models/sse",
+          "status": 404
+        },
+        {
+          "url": "https://freeinference.org/v1/models",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "github",
+      "baseUrl": "https://models.github.ai/inference",
+      "endpoint": "https://models.github.ai/inference/v1/models/sse",
+      "status": 200,
+      "verdict": "missing",
+      "models": 0,
+      "qwenModels": [],
+      "qwenCount": 0,
+      "keyEnv": "GITHUB_TOKEN",
+      "attempts": [
+        {
+          "url": "https://models.github.ai/inference/v1/models/sse",
+          "status": 200
+        },
+        {
+          "url": "https://models.github.ai/inference/v1/models/sse",
+          "status": 200
+        },
+        {
+          "url": "https://models.github.ai/inference/v1/models",
+          "status": 200
+        },
+        {
+          "url": "https://models.github.ai/inference/v1/models",
+          "status": 200
+        },
+        {
+          "url": "https://models.github.ai/inference/models/sse",
+          "status": 200
+        },
+        {
+          "url": "https://models.github.ai/inference/models/sse",
+          "status": 200
+        },
+        {
+          "url": "https://models.github.ai/inference/models",
+          "status": 200
+        },
+        {
+          "url": "https://models.github.ai/inference/models",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "gmi-cloud",
+      "baseUrl": "https://api.gmi-serving.com/v1",
+      "endpoint": "https://api.gmi-serving.com/v1/models",
+      "status": 401,
+      "verdict": "needs-auth",
+      "models": 0,
+      "qwenModels": [],
+      "qwenCount": 0,
+      "keyEnv": null,
+      "attempts": [
+        {
+          "url": "https://api.gmi-serving.com/v1/models/sse",
+          "status": 405
+        },
+        {
+          "url": "https://api.gmi-serving.com/v1/models",
+          "status": 401
+        },
+        {
+          "url": "https://api.gmi-serving.com/models",
+          "status": 405
+        }
+      ]
+    },
+    {
+      "name": "google",
+      "baseUrl": "http://127.0.0.1:25109/gemini-eap-interactions",
+      "endpoint": "http://127.0.0.1:25109/gemini-eap-interactions/v1/models/sse",
+      "status": 502,
+      "verdict": "missing",
+      "models": 0,
+      "qwenModels": [],
+      "qwenCount": 0,
+      "keyEnv": null,
+      "attempts": [
+        {
+          "url": "http://127.0.0.1:25109/gemini-eap-interactions/v1/models/sse",
+          "status": 502
+        },
+        {
+          "url": "http://127.0.0.1:25109/gemini-eap-interactions/v1/models",
+          "status": 502
+        },
+        {
+          "url": "http://127.0.0.1:25109/gemini-eap-interactions/models/sse",
+          "status": 502
+        },
+        {
+          "url": "http://127.0.0.1:25109/gemini-eap-interactions/models",
+          "status": 502
+        }
+      ]
+    },
+    {
+      "name": "gpuai",
+      "baseUrl": "https://api.gpu.ai/v1",
+      "endpoint": "https://api.gpu.ai/v1/models/sse",
+      "status": 401,
+      "verdict": "needs-auth",
+      "models": 0,
+      "qwenModels": [],
+      "qwenCount": 0,
+      "keyEnv": null,
+      "attempts": [
+        {
+          "url": "https://api.gpu.ai/v1/models/sse",
+          "status": 401
+        },
+        {
+          "url": "https://api.gpu.ai/v1/models",
+          "status": 401
+        },
+        {
+          "url": "https://api.gpu.ai/models",
+          "status": 404
+        }
+      ]
+    },
+    {
+      "name": "groq",
+      "baseUrl": "https://api.groq.com/openai/v1",
+      "endpoint": "https://api.groq.com/openai/v1/models",
+      "status": 200,
+      "verdict": "ok",
+      "models": 11,
+      "qwenModels": [
+        "qwen/qwen3.8-27b"
+      ],
+      "qwenCount": 1,
+      "keyEnv": "GROQ_API_KEY",
+      "attempts": [
+        {
+          "url": "https://api.groq.com/openai/v1/models/sse",
+          "status": 404
+        },
+        {
+          "url": "https://api.groq.com/openai/v1/models/sse",
+          "status": 401
+        },
+        {
+          "url": "https://api.groq.com/openai/v1/models",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "hetzner",
+      "baseUrl": "https://inference.hetzner.com/api/v1",
+      "endpoint": "https://inference.hetzner.com/api/v1/models/sse",
+      "status": 401,
+      "verdict": "needs-auth",
+      "models": 0,
+      "qwenModels": [],
+      "qwenCount": 0,
+      "keyEnv": null,
+      "attempts": [
+        {
+          "url": "https://inference.hetzner.com/api/v1/models/sse",
+          "status": 401
+        },
+        {
+          "url": "https://inference.hetzner.com/api/v1/models",
+          "status": 401
+        },
+        {
+          "url": "https://inference.hetzner.com/api/models",
+          "status": 401
+        }
+      ]
+    },
+    {
+      "name": "inception",
+      "baseUrl": "https://api.inceptionlabs.ai/v1",
+      "endpoint": "https://api.inceptionlabs.ai/v1/models",
+      "status": 200,
+      "verdict": "ok",
+      "models": 4,
+      "qwenModels": [],
+      "qwenCount": 0,
+      "keyEnv": null,
+      "attempts": [
+        {
+          "url": "https://api.inceptionlabs.ai/v1/models/sse",
+          "status": 404
+        },
+        {
+          "url": "https://api.inceptionlabs.ai/v1/models",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "inferbase",
+      "baseUrl": "https://api.inferbase.ai/v1",
+      "endpoint": "https://api.inferbase.ai/v1/models",
+      "status": 200,
+      "verdict": "ok",
+      "models": 127,
+      "qwenModels": [
+        "qwen2-5-72b-instruct",
+        "qwen2-5-72b-instruct:fp8",
+        "qwen3-14b",
+        "qwen3-14b:fp8",
+        "qwen3-30b-a3b",
+        "qwen3-30b-a3b:fp8",
+        "qwen3-32b",
+        "qwen3-32b:fp8",
+        "qwen3-5-122b-a10b",
+        "qwen3-5-27b",
+        "qwen3-5-27b:fp8",
+        "qwen3-5-35b-a3b"
+      ],
+      "qwenCount": 41,
+      "keyEnv": null,
+      "attempts": [
+        {
+          "url": "https://api.inferbase.ai/v1/models/sse",
+          "status": 404
+        },
+        {
+          "url": "https://api.inferbase.ai/v1/models",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "inferen",
+      "baseUrl": "https://inferen.dev/v1",
+      "endpoint": "https://inferen.dev/v1/models",
+      "status": 401,
+      "verdict": "needs-auth",
+      "models": 0,
+      "qwenModels": [],
+      "qwenCount": 0,
+      "keyEnv": null,
+      "attempts": [
+        {
+          "url": "https://inferen.dev/v1/models/sse",
+          "status": 404
+        },
+        {
+          "url": "https://inferen.dev/v1/models",
+          "status": 401
+        },
+        {
+          "url": "https://inferen.dev/models",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "kimi-auto",
+      "baseUrl": "http://127.0.0.1:25153/v1",
+      "endpoint": "http://127.0.0.1:25153/v1/models",
+      "status": 200,
+      "verdict": "ok",
+      "models": 1,
+      "qwenModels": [],
+      "qwenCount": 0,
+      "keyEnv": null,
+      "attempts": [
+        {
+          "url": "http://127.0.0.1:25153/v1/models/sse",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:25153/v1/models",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "minara",
+      "baseUrl": "https://api.minara.ai/v1",
+      "endpoint": "https://api.minara.ai/v1/models",
+      "status": 200,
+      "verdict": "ok",
+      "models": 126,
+      "qwenModels": [],
+      "qwenCount": 0,
+      "keyEnv": null,
+      "attempts": [
+        {
+          "url": "https://api.minara.ai/v1/models/sse",
+          "status": 404
+        },
+        {
+          "url": "https://api.minara.ai/v1/models",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "moonshot",
+      "baseUrl": "https://api.moonshot.ai/v1",
+      "endpoint": "https://api.moonshot.ai/v1/models",
+      "status": 200,
+      "verdict": "ok",
+      "models": 2,
+      "qwenModels": [],
+      "qwenCount": 0,
+      "keyEnv": "MOONSHOT_API_KEY",
+      "attempts": [
+        {
+          "url": "https://api.moonshot.ai/v1/models/sse",
+          "status": 404
+        },
+        {
+          "url": "https://api.moonshot.ai/v1/models/sse",
+          "status": 401
+        },
+        {
+          "url": "https://api.moonshot.ai/v1/models",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "novita",
+      "baseUrl": "https://api.novita.ai/openai/v1",
+      "endpoint": "https://api.novita.ai/openai/v1/models",
+      "status": 200,
+      "verdict": "ok",
+      "models": 96,
+      "qwenModels": [
+        "qwen/qwen3.8-flash",
+        "qwen/qwen3.8-27b",
+        "qwen/qwen3.8-2.4t-a95b",
+        "qwen/qwen3.8-max",
+        "qwen/qwen3.7-max",
+        "qwen/qwen3.6-27b",
+        "qwen/qwen3.5-27b",
+        "qwen/qwen3.5-122b-a10b",
+        "qwen/qwen3.5-35b-a3b",
+        "qwen/qwen3.5-397b-a17b",
+        "qwen/qwen3.6-35b-a3b",
+        "deepseek/deepseek-r1-0528-qwen3-8b"
+      ],
+      "qwenCount": 15,
+      "keyEnv": null,
+      "attempts": [
+        {
+          "url": "https://api.novita.ai/openai/v1/models/sse",
+          "status": 404
+        },
+        {
+          "url": "https://api.novita.ai/openai/v1/models",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "nvidia",
+      "baseUrl": "https://integrate.api.nvidia.com/v1",
+      "endpoint": "https://integrate.api.nvidia.com/v1/models",
+      "status": 200,
+      "verdict": "ok",
+      "models": 83,
+      "qwenModels": [],
+      "qwenCount": 0,
+      "keyEnv": "NVIDIA_API_KEY",
+      "attempts": [
+        {
+          "url": "https://integrate.api.nvidia.com/v1/models/sse",
+          "status": 404
+        },
+        {
+          "url": "https://integrate.api.nvidia.com/v1/models/sse",
+          "status": 404
+        },
+        {
+          "url": "https://integrate.api.nvidia.com/v1/models",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "ollama-cloud",
+      "baseUrl": "https://ollama.com/v1",
+      "endpoint": "https://ollama.com/v1/models",
+      "status": 200,
+      "verdict": "ok",
+      "models": 23,
+      "qwenModels": [],
+      "qwenCount": 0,
+      "keyEnv": null,
+      "attempts": [
+        {
+          "url": "https://ollama.com/v1/models/sse",
+          "status": 404
+        },
+        {
+          "url": "https://ollama.com/v1/models",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "omniroute",
+      "baseUrl": "http://127.0.0.1:20130/v1",
+      "endpoint": "http://127.0.0.1:20130/v1/models/sse",
+      "status": 0,
+      "verdict": "missing",
+      "models": 0,
+      "qwenModels": [],
+      "qwenCount": 0,
+      "keyEnv": null,
+      "attempts": [
+        {
+          "url": "http://127.0.0.1:20130/v1/models/sse",
+          "status": 0
+        },
+        {
+          "url": "http://127.0.0.1:20130/v1/models",
+          "status": 0
+        },
+        {
+          "url": "http://127.0.0.1:20130/models",
+          "status": 0
+        }
+      ]
+    },
+    {
+      "name": "onde",
+      "baseUrl": "https://cloud.ondeinference.com/v1",
+      "endpoint": "https://cloud.ondeinference.com/v1/models",
+      "status": 200,
+      "verdict": "ok",
+      "models": 15,
+      "qwenModels": [],
+      "qwenCount": 0,
+      "keyEnv": null,
+      "attempts": [
+        {
+          "url": "https://cloud.ondeinference.com/v1/models/sse",
+          "status": 404
+        },
+        {
+          "url": "https://cloud.ondeinference.com/v1/models",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "openai",
+      "baseUrl": "https://api.openai.com/v1",
+      "endpoint": "https://api.openai.com/v1/models/sse",
+      "status": 401,
+      "verdict": "needs-auth",
+      "models": 0,
+      "qwenModels": [],
+      "qwenCount": 0,
+      "keyEnv": null,
+      "attempts": [
+        {
+          "url": "https://api.openai.com/v1/models/sse",
+          "status": 401
+        },
+        {
+          "url": "https://api.openai.com/v1/models",
+          "status": 401
+        },
+        {
+          "url": "https://api.openai.com/models",
+          "status": 404
+        }
+      ]
+    },
+    {
+      "name": "parasail",
+      "baseUrl": "https://api.parasail.io/v1",
+      "endpoint": "https://api.parasail.io/v1/models",
+      "status": 200,
+      "verdict": "ok",
+      "models": 96,
+      "qwenModels": [
+        "parasail-qwen25-vl-72b-instruct",
+        "Qwen/Qwen2.5-VL-72B-Instruct",
+        "parasail-qwen3-235b-a22b-instruct-2507",
+        "Qwen/Qwen3-235B-A22B-Instruct-2507",
+        "parasail-qwen-3-next-80b-instruct",
+        "Qwen/Qwen3-Next-80B-A3B-Instruct",
+        "parasail-qwen3-vl-235b-a22b-instruct",
+        "Qwen/Qwen3-VL-235B-A22B-Instruct",
+        "parasail-qwen3vl-8b-instruct",
+        "Qwen/Qwen3-VL-8B-Instruct",
+        "parasail-qwen3-coder-next",
+        "Qwen/Qwen3-Coder-Next"
+      ],
+      "qwenCount": 24,
+      "keyEnv": "PARASAIL_API_KEY",
+      "attempts": [
+        {
+          "url": "https://api.parasail.io/v1/models/sse",
+          "status": 404
+        },
+        {
+          "url": "https://api.parasail.io/v1/models/sse",
+          "status": 401
+        },
+        {
+          "url": "https://api.parasail.io/v1/models",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "qianfan",
+      "baseUrl": "https://qianfan.baidubce.com/v2",
+      "endpoint": "https://qianfan.baidubce.com/v2/models",
+      "status": 403,
+      "verdict": "needs-auth",
+      "models": 0,
+      "qwenModels": [],
+      "qwenCount": 0,
+      "keyEnv": null,
+      "attempts": [
+        {
+          "url": "https://qianfan.baidubce.com/v2/models",
+          "status": 403
+        },
+        {
+          "url": "https://qianfan.baidubce.com/v2/models/sse",
+          "status": 404
+        }
+      ]
+    },
+    {
+      "name": "sakana",
+      "baseUrl": "https://api.sakana.ai/v1",
+      "endpoint": "https://api.sakana.ai/v1/models",
+      "status": 401,
+      "verdict": "needs-auth",
+      "models": 0,
+      "qwenModels": [],
+      "qwenCount": 0,
+      "keyEnv": null,
+      "attempts": [
+        {
+          "url": "https://api.sakana.ai/v1/models/sse",
+          "status": 404
+        },
+        {
+          "url": "https://api.sakana.ai/v1/models",
+          "status": 401
+        },
+        {
+          "url": "https://api.sakana.ai/models",
+          "status": 404
+        }
+      ]
+    },
+    {
+      "name": "sambanova",
+      "baseUrl": "https://api.sambanova.ai/v1",
+      "endpoint": "https://api.sambanova.ai/v1/models",
+      "status": 200,
+      "verdict": "ok",
+      "models": 6,
+      "qwenModels": [],
+      "qwenCount": 0,
+      "keyEnv": null,
+      "attempts": [
+        {
+          "url": "https://api.sambanova.ai/v1/models/sse",
+          "status": 404
+        },
+        {
+          "url": "https://api.sambanova.ai/v1/models",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "sference",
+      "baseUrl": "https://api.sference.com/v1",
+      "endpoint": "https://api.sference.com/v1/models",
+      "status": 200,
+      "verdict": "ok",
+      "models": 9,
+      "qwenModels": [],
+      "qwenCount": 0,
+      "keyEnv": null,
+      "attempts": [
+        {
+          "url": "https://api.sference.com/v1/models/sse",
+          "status": 404
+        },
+        {
+          "url": "https://api.sference.com/v1/models",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "siliconflow",
+      "baseUrl": "https://api.siliconflow.com/v1",
+      "endpoint": "https://api.siliconflow.com/v1/models",
+      "status": 401,
+      "verdict": "needs-auth",
+      "models": 0,
+      "qwenModels": [],
+      "qwenCount": 0,
+      "keyEnv": null,
+      "attempts": [
+        {
+          "url": "https://api.siliconflow.com/v1/models/sse",
+          "status": 404
+        },
+        {
+          "url": "https://api.siliconflow.com/v1/models",
+          "status": 401
+        },
+        {
+          "url": "https://api.siliconflow.com/models",
+          "status": 404
+        }
+      ]
+    },
+    {
+      "name": "singularityapi-dev",
+      "baseUrl": "https://api.singularityapi.dev/v1",
+      "endpoint": "https://api.singularityapi.dev/v1/models",
+      "status": 401,
+      "verdict": "needs-auth",
+      "models": 0,
+      "qwenModels": [],
+      "qwenCount": 0,
+      "keyEnv": null,
+      "attempts": [
+        {
+          "url": "https://api.singularityapi.dev/v1/models/sse",
+          "status": 404
+        },
+        {
+          "url": "https://api.singularityapi.dev/v1/models",
+          "status": 401
+        },
+        {
+          "url": "https://api.singularityapi.dev/models",
+          "status": 404
+        }
+      ]
+    },
+    {
+      "name": "synthetic",
+      "baseUrl": "https://api.synthetic.new/openai/v1",
+      "endpoint": "https://api.synthetic.new/openai/v1/models",
+      "status": 200,
+      "verdict": "ok",
+      "models": 14,
+      "qwenModels": [
+        "hf:Qwen/Qwen3.8-27B"
+      ],
+      "qwenCount": 1,
+      "keyEnv": null,
+      "attempts": [
+        {
+          "url": "https://api.synthetic.new/openai/v1/models/sse",
+          "status": 404
+        },
+        {
+          "url": "https://api.synthetic.new/openai/v1/models",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "together",
+      "baseUrl": "https://api.together.xyz/v1",
+      "endpoint": "https://api.together.xyz/v1/models",
+      "status": 401,
+      "verdict": "needs-auth",
+      "models": 0,
+      "qwenModels": [],
+      "qwenCount": 0,
+      "keyEnv": null,
+      "attempts": [
+        {
+          "url": "https://api.together.xyz/v1/models/sse",
+          "status": 404
+        },
+        {
+          "url": "https://api.together.xyz/v1/models",
+          "status": 401
+        },
+        {
+          "url": "https://api.together.xyz/models",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "venice",
+      "baseUrl": "https://api.venice.ai/api/v1",
+      "endpoint": "https://api.venice.ai/api/v1/models",
+      "status": 200,
+      "verdict": "ok",
+      "models": 136,
+      "qwenModels": [
+        "qwen-3-8-2-4t-a95b",
+        "qwen-3-8-max",
+        "qwen-3-8-27b",
+        "qwen-3-8-flash",
+        "qwen-3-7-max",
+        "qwen-3-7-plus",
+        "qwen-3-6-plus",
+        "qwen3-6-27b",
+        "qwen3-6-35b-a3b",
+        "qwen3-5-397b-a17b",
+        "qwen3-5-35b-a3b",
+        "qwen3-235b-a22b-thinking-2507"
+      ],
+      "qwenCount": 20,
+      "keyEnv": null,
+      "attempts": [
+        {
+          "url": "https://api.venice.ai/api/v1/models/sse",
+          "status": 404
+        },
+        {
+          "url": "https://api.venice.ai/api/v1/models",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "wafer-serverless",
+      "baseUrl": "https://pass.wafer.ai/v1",
+      "endpoint": "https://pass.wafer.ai/v1/models",
+      "status": 200,
+      "verdict": "ok",
+      "models": 9,
+      "qwenModels": [
+        "Qwen3.8-27B"
+      ],
+      "qwenCount": 1,
+      "keyEnv": null,
+      "attempts": [
+        {
+          "url": "https://pass.wafer.ai/v1/models/sse",
+          "status": 401
+        },
+        {
+          "url": "https://pass.wafer.ai/v1/models",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "wandb",
+      "baseUrl": "https://api.inference.wandb.ai/v1",
+      "endpoint": "https://api.inference.wandb.ai/v1/models/sse",
+      "status": 401,
+      "verdict": "needs-auth",
+      "models": 0,
+      "qwenModels": [],
+      "qwenCount": 0,
+      "keyEnv": null,
+      "attempts": [
+        {
+          "url": "https://api.inference.wandb.ai/v1/models/sse",
+          "status": 401
+        },
+        {
+          "url": "https://api.inference.wandb.ai/v1/models",
+          "status": 401
+        },
+        {
+          "url": "https://api.inference.wandb.ai/models",
+          "status": 401
+        }
+      ]
+    },
+    {
+      "name": "zai",
+      "baseUrl": "https://api.z.ai/api/coding/paas/v4",
+      "endpoint": "https://api.z.ai/api/coding/paas/v4/v1/models/sse",
+      "status": 401,
+      "verdict": "needs-auth",
+      "models": 0,
+      "qwenModels": [],
+      "qwenCount": 0,
+      "keyEnv": null,
+      "attempts": [
+        {
+          "url": "https://api.z.ai/api/coding/paas/v4/v1/models/sse",
+          "status": 401
+        },
+        {
+          "url": "https://api.z.ai/api/coding/paas/v4/v1/models",
+          "status": 401
+        },
+        {
+          "url": "https://api.z.ai/api/coding/paas/v4/models/sse",
+          "status": 401
+        },
+        {
+          "url": "https://api.z.ai/api/coding/paas/v4/models",
+          "status": 401
+        }
+      ]
+    },
+    {
+      "name": "zen",
+      "baseUrl": "https://opencode.ai/zen/v1",
+      "endpoint": "https://opencode.ai/zen/v1/models",
+      "status": 200,
+      "verdict": "ok",
+      "models": 49,
+      "qwenModels": [
+        "qwen3.6-plus",
+        "qwen3.8-flash",
+        "qwen3.8-max"
+      ],
+      "qwenCount": 3,
+      "keyEnv": "OPENCODE_API_KEY",
+      "attempts": [
+        {
+          "url": "https://opencode.ai/zen/v1/models/sse",
+          "status": 404
+        },
+        {
+          "url": "https://opencode.ai/zen/v1/models/sse",
+          "status": 404
+        },
+        {
+          "url": "https://opencode.ai/zen/v1/models",
+          "status": 200
+        }
+      ]
+    }
+  ]
+}

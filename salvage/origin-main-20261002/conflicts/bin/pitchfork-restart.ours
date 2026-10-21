@@ -17,7 +17,7 @@
 #   passed explicitly (and even then it prints the safe procedure reminder).
 #
 # Usage: pitchfork-restart <daemon-id> [--reregister|--evict] [--force-bridge]
-#   e.g. pitchfork-restart sovereign/herd
+#   e.g. pitchfork-restart estate/herd
 # Modes:
 #   (default)    stop -> start. Ground-truth port verification + desync reap.
 #   --reregister stop -> clean --daemon -> start. Evicts the supervisor's
@@ -75,9 +75,9 @@ fi
 # Systemd-migrated daemons (P3): pitchfork no longer manages these -- the
 # pitchfork registration is intentionally kept stopped as a status shim.
 # Never re-register/start/evict via pitchfork; systemd owns them.
-if [[ -f "/home/toxic/.config/systemd/user/sovereign-${SHORT}.service" ]] || \
-   systemctl --user list-units --all --no-legend "sovereign-${SHORT}.service" 2>/dev/null | grep -q .; then
-  echo "[pitchfork-restart] REFUSING: $DAEMON is systemd-managed (sovereign-${SHORT}.service). Use systemctl --user." >&2
+if [[ -f "/home/toxic/.config/systemd/user/estate-${SHORT}.service" ]] || \
+   systemctl --user list-units --all --no-legend "estate-${SHORT}.service" 2>/dev/null | grep -q .; then
+  echo "[pitchfork-restart] REFUSING: $DAEMON is systemd-managed (estate-${SHORT}.service). Use systemctl --user." >&2
   exit 3
 fi
 # Bridge safety: awrawr-ws-exec (live bridge, :25204) is NEVER restarted here. Refuse up front.

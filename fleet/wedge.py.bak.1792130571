@@ -24,8 +24,8 @@ import sys
 import urllib.request
 from datetime import datetime, timezone
 
-TOKEN_FILE = "/home/toxic/.config/sovereign-chat-token"
-DEFAULT_STATE_DIR = "/home/toxic/sovereign/tools/sovereign-chat/state"
+TOKEN_FILE = "/home/toxic/.config/estate-chat-token"
+DEFAULT_STATE_DIR = "/home/toxic/estate/tools/estate-chat/state"
 HEARTBEAT_DEAD_S = 300
 
 
@@ -99,7 +99,7 @@ def main():
     ap.add_argument("--port", type=int, default=25120)
     ap.add_argument("--local", action="store_true",
                     help="read-only forensic classification from dispatch.db (no server write)")
-    ap.add_argument("--state-dir", default=os.environ.get("SOVEREIGN_CHAT_STATE_DIR", DEFAULT_STATE_DIR))
+    ap.add_argument("--state-dir", default=os.environ.get("ESTATE_CHAT_STATE_DIR", DEFAULT_STATE_DIR))
     ap.add_argument("--json", action="store_true")
     args = ap.parse_args()
     if args.local:

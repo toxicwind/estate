@@ -4,7 +4,7 @@
 set -euo pipefail
 
 PITCHFORK="/home/toxic/.local/bin/pitchfork"
-SOVEREIGN="/home/toxic/estate"
+ESTATE="/home/toxic/estate"
 
 # Strip ANSI escape sequences
 strip_ansi() {
@@ -52,7 +52,7 @@ case "$CMD" in
             exit 1
         fi
         "$PITCHFORK" stop "$DAEMON" "$@" 2>/dev/null | filter_debug
-        echo "{\"id\": \"sovereign/$DAEMON\", \"status\": \"stopped\"}"
+        echo "{\"id\": \"estate/$DAEMON\", \"status\": \"stopped\"}"
         ;;
     status|stat)
         DAEMON="${1:-}"

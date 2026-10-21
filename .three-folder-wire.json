@@ -1,8 +1,8 @@
 {
   "timestamp": "2026-09-08T02:03:47.160Z",
-  "wire": "sovereign <-> sovereign-projects <-> projects",
+  "wire": "estate <-> sovereign-projects <-> projects",
   "folders": {
-    "sovereign": {
+    "estate": {
       "path": "/home/toxic/estate",
       "helpers": [
         "git-mutator",
@@ -31,17 +31,17 @@
     }
   },
   "shared": {
-    "portsEnv": "/home/toxic/.sovereign-shared/ports.env",
-    "miseToml": "/home/toxic/.sovereign-shared/mise.toml",
-    "agentsMd": "/home/toxic/.sovereign-shared/AGENTS.md",
+    "portsEnv": "/home/toxic/.estate-shared/ports.env",
+    "miseToml": "/home/toxic/.estate-shared/mise.toml",
+    "agentsMd": "/home/toxic/.estate-shared/AGENTS.md",
     "helpersDir": "/home/toxic/estate/helpers"
   },
   "crossLinks": {
-    "sovereign->sovereign-projects": ".sovereign-helpers -> ../../sovereign/helpers",
-    "sovereign->projects": ".shared -> ../.sovereign-shared",
-    "sovereign-projects->sovereign": ".sovereign-helpers -> ../../sovereign/helpers",
-    "sovereign-projects->projects": ".shared -> ../.sovereign-shared",
-    "projects->sovereign": ".shared -> ./.sovereign-shared",
-    "projects->sovereign-projects": ".shared -> ./.sovereign-shared"
+    "estate->sovereign-projects": ".estate-helpers -> ../../estate/helpers",
+    "estate->projects": ".shared -> ../.estate-shared",
+    "sovereign-projects->estate": ".estate-helpers -> ../../estate/helpers",
+    "sovereign-projects->projects": ".shared -> ../.estate-shared",
+    "projects->estate": ".shared -> ./.estate-shared",
+    "projects->sovereign-projects": ".shared -> ./.estate-shared"
   }
 }

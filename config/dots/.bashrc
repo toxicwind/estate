@@ -5,12 +5,13 @@
 # 1. Load Universal Environment Tier First
 [ -f "$HOME/.bashrc.env" ] && . "$HOME/.bashrc.env"
 
-# 2. Re-entry Guard
-if [ -n "${__BASHRC_LOADED:-}" ]; then return 0 2>/dev/null || exit 0; fi
+# 2. Re-entry Guard (never export __BASHRC_LOADED into child processes, and allow tau/kappa SNAPSHOT_FILE capture)
+export -n __BASHRC_LOADED 2>/dev/null || true
+if [ -n "${__BASHRC_LOADED:-}" ] && [ -z "${SNAPSHOT_FILE:-}" ]; then return 0 2>/dev/null || exit 0; fi
 __BASHRC_LOADED=1
 
-# 3. Non-Interactive Guard (Abort cleanly for scp/rsync)
-[[ $- != *i* ]] && return
+# 3. Non-Interactive Guard (Abort cleanly for scp/rsync, but run for tau/kappa SNAPSHOT_FILE generation)
+[[ $- != *i* ]] && [ -z "${SNAPSHOT_FILE:-}" ] && return
 
 # 4. History Management
 HISTCONTROL=ignoreboth:erasedups

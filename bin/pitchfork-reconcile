@@ -55,7 +55,7 @@ PROTECTED_PORTS = {25147, 25135, 25204}  # squawk-ws, squawk-feed, bridge
 PROTECTED_IDS = {"estate/awrawr-ws-exec"}  # live bridge daemon
 
 # Orphan registrations (in the supervisor, no [daemons.*] toml section) that
-# must NOT be evicted. Empty by default: add "sovereign/<name>" with a reason
+# must NOT be evicted. Empty by default: add "estate/<name>" with a reason
 # comment if a registration is intentionally kept outside the toml.
 INTENTIONALLY_MANUAL = set()
 
@@ -150,7 +150,7 @@ def monitor():
 
 def detect_systemd_managed():
     """P3 migrations: daemons moved to systemd user units
-    (sovereign-<name>.service). Pitchfork must never re-register/start/evict
+    (estate-<name>.service). Pitchfork must never re-register/start/evict
     these -- systemd owns them now. Returns {short_name: unit_state}.
 
     Detection is the union of (a) unit files on disk (no DBUS needed) and
@@ -159,7 +159,7 @@ def detect_systemd_managed():
     managed = {}
     try:
         for fn in os.listdir(SYSTEMD_USER_DIR):
-            m = re.fullmatch(r"sovereign-(.+)\.service", fn)
+            m = re.fullmatch(r"estate-(.+)\.service", fn)
             if m:
                 managed[m.group(1)] = "unit file present"
     except OSError:
@@ -171,7 +171,7 @@ def detect_systemd_managed():
             parts = line.split()
             if not parts:
                 continue
-            m = re.fullmatch(r"sovereign-(.+)\.service", parts[0])
+            m = re.fullmatch(r"estate-(.+)\.service", parts[0])
             if m:
                 state = parts[2] if len(parts) > 2 else "loaded"
                 managed[m.group(1)] = state
@@ -181,11 +181,11 @@ def detect_systemd_managed():
 def is_systemd_managed_now(short):
     """Fresh per-action check: unit file exists or unit is loaded/active."""
     if os.path.exists(os.path.join(SYSTEMD_USER_DIR,
-                                    f"sovereign-{short}.service")):
+                                    f"estate-{short}.service")):
         return True
     rc, out = run(["systemctl", "--user", "list-units", "--all",
                    "--no-legend", "--no-pager",
-                   f"sovereign-{short}.service"], timeout=15)
+                   f"estate-{short}.service"], timeout=15)
     return rc == 0 and bool(out.strip())
 
 
@@ -255,7 +255,7 @@ def analyze(desired, registered, snapshots, systemd_managed):
         # registration is intentionally kept stopped as a status shim.
         if name in systemd_managed:
             add(did, "skip-systemd",
-                f"systemd-managed via sovereign-{name}.service "
+                f"systemd-managed via estate-{name}.service "
                 f"({systemd_managed[name]}); pitchfork registration left stopped")
             continue
         want = desired_running(section)
@@ -313,7 +313,7 @@ def analyze(desired, registered, snapshots, systemd_managed):
             add(did, "skip-protected", "orphan but protected (squawk/bridge)")
         elif short in systemd_managed:
             add(did, "skip-systemd",
-                f"orphan but systemd-managed via sovereign-{short}.service "
+                f"orphan but systemd-managed via estate-{short}.service "
                 f"({systemd_managed[short]}); registration kept as status shim")
         elif did in INTENTIONALLY_MANUAL:
             add(did, "nothing-manual", "orphan but intentionally-manual allowlisted")
@@ -399,7 +399,7 @@ def execute(plan, pf, desired, listeners):
         short = did.split("/", 1)[1]
         if is_systemd_managed_now(short):
             log(f"SKIP {did}: became systemd-managed since analyze "
-                f"(sovereign-{short}.service); leaving to systemd")
+                f"(estate-{short}.service); leaving to systemd")
             continue
         reason = item["reason"]
         cmd = [WRAPPER, did]

@@ -23,7 +23,7 @@
  * Reputation: .../market/reputation.json (behavior-anchored, (tag x task-class)).
  *
  * FIT NOTE: this daemon is weaver's operational body, so it lives with
- * weaver's OpenFang definition (sovereign/agents/weaver/bin/) rather than in
+ * weaver's OpenFang definition (estate/agents/weaver/bin/) rather than in
  * the trading-post repo. trading-post/src/market is the library; this file
  * is the deployment wiring (paths, fleet, pitchfork). The import below is an
  * absolute path into the yote trading-post checkout — both repos are pinned

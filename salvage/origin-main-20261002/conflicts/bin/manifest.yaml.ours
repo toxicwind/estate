@@ -1,5 +1,5 @@
 # =============================================================================
-# sovereign bin manifest — canonical inventory of executable entry points.
+# estate bin manifest — canonical inventory of executable entry points.
 #   /home/toxic/estate/bin/manifest.yaml
 # Verified by /home/toxic/estate/bin/bin-verify.sh (exit != 0 on any FAIL).
 #
@@ -15,10 +15,10 @@
 #       -> projects/tau. There is no [[bin]] in tau's Cargo.toml files —
 #       the engine ships as a dist artifact (omp), not a cargo bin target.
 # =============================================================================
-schema: sovereign-bin-manifest/1
+schema: estate-bin-manifest/1
 
 stale_paths:
-  - sovereign-merge-stash-20260914
+  - estate-merge-stash-20260914
   - /home/toxic/projects/ik_llama.cpp-main
   - /home/toxic/workspace/tau-launcher-build
 
@@ -26,7 +26,7 @@ dirs:
   - bin
 
 bins:
-  # ---------------- sovereign/bin ----------------
+  # ---------------- estate/bin ----------------
   - name: cron-trust-monitor
     dir: bin
     kind: script
@@ -44,7 +44,7 @@ bins:
     run: [--help]
     expect: "Usage: hotfix"
     timeout: 20
-    notes: "sovereign hotfix registry CLI (bun)"
+    notes: "estate hotfix registry CLI (bun)"
 
   - name: nvidia-fan-curve.py
     dir: bin

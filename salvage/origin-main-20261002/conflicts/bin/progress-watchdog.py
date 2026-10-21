@@ -53,7 +53,7 @@ DAEMONS = {
     "beellama-fast": 25122,
     "whatsapp-mcp": 25146,
     "toolcall-llm": 25152,
-    "sovereign-router": 25104,
+    "estate-router": 25104,
     # 2026-09-29: herd/model-guard/gatehouse were invisible to the watchdog;
     # herd sat stopped ~8h (gatehouse dep) with no alert. Added for coverage.
     "herd": 25100,
@@ -248,7 +248,7 @@ def snapshot(chan_dir, ledger_events):
     # TRIAGE_WINDOW_S of the file's mtime (validated 2026-09-20: 6/6
     # intakes triaged in ~1s with matching `from`). Each decision is
     # consumed by at most one file (earliest mtime first).
-    ostat = pfget("sovereign/oracle-market")
+    ostat = pfget("estate/oracle-market")
     oracle_proc = {"running": False, "pid": None, "uptime_s": None}
     for line in sh(["pgrep", "-f",
                     "[o]racle/bin/oracle_loop.py"]).splitlines():
@@ -353,7 +353,7 @@ def snapshot(chan_dir, ledger_events):
     # watchdog restarts only when neither is alive.
     bidders = []
     for name, status in sorted(pf.items()):
-        if not name.startswith("sovereign/bidder-"):
+        if not name.startswith("estate/bidder-"):
             continue
         short = name.split("/", 1)[1]
         bid = short.split("-", 1)[1] if "-" in short else short
@@ -368,11 +368,11 @@ def snapshot(chan_dir, ledger_events):
     # --- core daemons ---
     daemons = {}
     for name, port in DAEMONS.items():
-        daemons[name] = {"pitchfork": pfget(f"sovereign/{name}"),
+        daemons[name] = {"pitchfork": pfget(f"estate/{name}"),
                          "health": health(port)}
     # bridge daemon expected stopped-clean; holder alive is what matters
     daemons["awrawr-ws-exec"] = {
-        "pitchfork": pfget("sovereign/awrawr-ws-exec")}
+        "pitchfork": pfget("estate/awrawr-ws-exec")}
     snap["daemons"] = daemons
 
     # --- bridge holder ---

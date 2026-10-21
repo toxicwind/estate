@@ -21,7 +21,7 @@ If you discover a security vulnerability, prompt-injection vector, or privilege-
 
 1. **Private Disclosure**: Email the core maintainer or open a private [GitHub Security Advisory](../../security/advisories/new).
 2. **Include Technical Context**:
-   - Subsystem affected (e.g., `shep`, `sovereign-router`, `bridge`, `tau`).
+   - Subsystem affected (e.g., `shep`, `estate-router`, `bridge`, `tau`).
    - Minimal reproduction script or vector.
    - Any observed log traces (with secrets redacted).
 

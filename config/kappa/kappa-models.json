@@ -3,7 +3,7 @@
   "contract": "estate-pinax/kappa-catalog/v1",
   "generator": "@toxicwind/pinax codegen — kappa target (installed profile) — DO NOT EDIT BY HAND",
   "provenance": "@toxicwind/pinax src/data.ts",
-  "generatedAt": "2026-10-21T04:47:27.000Z",
+  "generatedAt": "2026-10-21T06:25:05.000Z",
   "deadIds": [
     "llama-3.3-70b-versatile",
     "meta-llama/llama-3.1-8b-instruct",
@@ -107,18 +107,6 @@
       "google",
       "models/gemini-2.5-flash"
     ],
-    "groq-llama-3.3-70b": [
-      "groq",
-      "llama-3.3-70b-versatile"
-    ],
-    "groq-qwen3-32b": [
-      "groq",
-      "qwen/qwen3-32b"
-    ],
-    "groq-qwen3.6-27b": [
-      "groq",
-      "qwen/qwen3.6-27b"
-    ],
     "groq-gpt-oss-120b": [
       "groq",
       "openai/gpt-oss-120b"
@@ -127,9 +115,9 @@
       "groq",
       "openai/gpt-oss-20b"
     ],
-    "groq-llama-4-scout": [
+    "groq-qwen3.8-27b": [
       "groq",
-      "meta-llama/llama-4-scout-17b-16e-instruct"
+      "qwen/qwen3.8-27b"
     ]
   },
   "seeds": {
@@ -504,7 +492,7 @@
         "openai/gpt-oss-20b": {
           "name": "openai/gpt-oss-20b",
           "limit": {
-            "context": 128000,
+            "context": 131072,
             "output": 8192
           }
         },
@@ -731,8 +719,7 @@
       "name": "FreeInference",
       "options": {
         "baseURL": "https://freeinference.org/v1",
-        "apiKey": "{env:FREEINFERENCE_API_KEY}",
-        "maxConcurrency": 2
+        "apiKey": "{env:FREEINFERENCE_API_KEY}"
       },
       "models": {
         "glm-5.3-flash": {
@@ -877,7 +864,7 @@
       "npm": "@ai-sdk/openai-compatible",
       "name": "Chutes",
       "options": {
-        "baseURL": "https://inference.chutes.ai/v1",
+        "baseURL": "https://llm.chutes.ai/v1",
         "apiKey": "{env:CHUTES_API_KEY}"
       },
       "models": {
@@ -1423,7 +1410,7 @@
     {
       "name": "chutes",
       "displayName": "Chutes",
-      "baseUrl": "https://inference.chutes.ai/v1",
+      "baseUrl": "https://llm.chutes.ai/v1",
       "keyEnv": "CHUTES_API_KEY",
       "keyEnvs": [
         "CHUTES_API_KEY"

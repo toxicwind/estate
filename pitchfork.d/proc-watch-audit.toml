@@ -1,0 +1,12 @@
+# proc-watch-audit — continuous process audit to catch runaway CPU/IO consumers
+# that freeze the box (orphaned `bun --check`, btdu, heavy typecheck rems).
+# Observability: logs top-CPU + flags hot/old procs every 30s. Purely a watcher
+# (no auto-kill); an owner/agent can run with --kill after confirming the proc.
+[daemons.proc-watch-audit]
+run = "exec /home/toxic/estate/ranch/bun-scaffold/bin/watch-procs.sh --watch=30"
+dir = "."
+mise = false
+retry = true
+boot_start = true
+auto = ["start"]
+# logging to the estate journal is handled by pitchfork's stdout capture

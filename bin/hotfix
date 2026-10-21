@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 // ============================================================================
-// SOVEREIGN — Hotfix Registry Management CLI
+// ESTATE — Hotfix Registry Management CLI
 // Usage: hotfix [list|status|enable|disable] [target]
 // ============================================================================
 
@@ -14,7 +14,7 @@ switch (command) {
   case "list": {
     await preReleaseIntegration.loadAll();
     console.log(
-      "\n⚡ Sovereign Pre-Release Integration — Staging Modules\n" +
+      "\n⚡ Estate Pre-Release Integration — Staging Modules\n" +
         "=".repeat(60),
     );
     console.log(

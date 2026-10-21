@@ -13,9 +13,9 @@
  * What it does:
  *   1. renders agent.toml + system.md (template or clone)
  *   2. runs the validation gate (TOML parse, required fields, name uniqueness
- *      across sovereign/agents/ + ~/.openfang/agents/ + live API, persona,
+ *      across estate/agents/ + ~/.openfang/agents/ + live API, persona,
  *      sanity) — any failure REFUSES the join
- *   3. writes canonical sovereign/agents/<name>/ (git-tracked) + live copy
+ *   3. writes canonical estate/agents/<name>/ (git-tracked) + live copy
  *      ~/.openfang/agents/<name>/ (atomically)
  *   4. spawns: `openfang agent spawn` primary, POST /api/agents fallback
  *   5. verifies Running via the API (bounded gate)
@@ -39,8 +39,8 @@ import { $ } from "bun";
 const HOME = "/home/toxic";
 const OPENFANG = `${HOME}/.local/bin/openfang`;
 const OPENFANG_API = "http://127.0.0.1:25196";
-const SOVEREIGN = `${HOME}/sovereign`;
-const SOVEREIGN_AGENTS = `${SOVEREIGN}/agents`;
+const ESTATE = `${HOME}/estate`;
+const ESTATE_AGENTS = `${ESTATE}/agents`;
 const LIVE_AGENTS = `${HOME}/.openfang/agents`;
 const WORKSPACES = `${HOME}/.openfang/workspaces`;
 
@@ -197,7 +197,7 @@ function buildFromTemplate(): Record<string, any> {
 
 // B. clone-from-manifest (lane B): inherit operational config, regenerate identity
 function readManifest(agent: string): Record<string, any> | null {
-  for (const p of [`${LIVE_AGENTS}/${agent}/agent.toml`, `${SOVEREIGN_AGENTS}/${agent}/agent.toml`]) {
+  for (const p of [`${LIVE_AGENTS}/${agent}/agent.toml`, `${ESTATE_AGENTS}/${agent}/agent.toml`]) {
     try {
       const raw = Bun.file(p).textSync();
       return Bun.TOML.parse(raw) as Record<string, any>;
@@ -207,7 +207,7 @@ function readManifest(agent: string): Record<string, any> | null {
 }
 function buildFromClone(): Record<string, any> {
   const src = readManifest(fromAgent);
-  if (!src) { console.error(`clone source '${fromAgent}' not found in ${LIVE_AGENTS}/ or ${SOVEREIGN_AGENTS}/`); process.exit(2); }
+  if (!src) { console.error(`clone source '${fromAgent}' not found in ${LIVE_AGENTS}/ or ${ESTATE_AGENTS}/`); process.exit(2); }
   const caps = { ...(src.capabilities ?? {}) };
   if (Array.isArray(caps.memory_write))
     caps.memory_write = caps.memory_write.map((ns: string) => ns.replace(fromAgent, name));
@@ -275,9 +275,9 @@ async function validate(toml: string): Promise<Verdict[]> {
   out.push({ id: "V2", label: "required fields", ok: ok2,
     detail: ok2 ? "name/description/module + [model].provider/model/system_prompt present"
                 : `missing: ${[...missingTop, ...missingModel.map((k: string) => "model." + k)].join(", ")}` });
-  const sov = dirNames(SOVEREIGN_AGENTS), live = dirNames(LIVE_AGENTS), api = await liveAgentNames();
+  const sov = dirNames(ESTATE_AGENTS), live = dirNames(LIVE_AGENTS), api = await liveAgentNames();
   const collisions: string[] = [];
-  if (sov.has(name)) collisions.push(`sovereign/agents/${name}`);
+  if (sov.has(name)) collisions.push(`estate/agents/${name}`);
   if (live.has(name)) collisions.push(`~/.openfang/agents/${name}`);
   if (api.has(name)) collisions.push(`live API (id ${api.get(name)})`);
   if (rejoin && collisions.length) {
@@ -344,7 +344,7 @@ async function uninstallExisting(): Promise<void> {
     const r = await fetch(`${OPENFANG_API}/api/agents/${id}/uninstall`, { method: "DELETE", signal: AbortSignal.timeout(15000) });
     console.log(`  uninstall live agent: ${r.status}`);
   }
-  for (const d of [`${SOVEREIGN_AGENTS}/${name}`, `${LIVE_AGENTS}/${name}`]) {
+  for (const d of [`${ESTATE_AGENTS}/${name}`, `${LIVE_AGENTS}/${name}`]) {
     if (existsSync(d)) { rmSync(d, { recursive: true }); console.log(`  removed ${d}`); }
   }
 }
@@ -383,17 +383,17 @@ async function main() {
   if (!allOk) { console.log("\nGATE REFUSED: no spawn attempted, nothing written."); process.exit(1); }
 
   // canonical (git-tracked) + live copy, atomic
-  for (const dir of [`${SOVEREIGN_AGENTS}/${name}`, `${LIVE_AGENTS}/${name}`]) {
+  for (const dir of [`${ESTATE_AGENTS}/${name}`, `${LIVE_AGENTS}/${name}`]) {
     mkdirSync(dir, { recursive: true });
     atomicWrite(`${dir}/agent.toml`, toml);
     atomicWrite(`${dir}/system.md`, md);
   }
-  console.log(`\nwrote ${SOVEREIGN_AGENTS}/${name}/agent.toml + system.md (canonical)`);
+  console.log(`\nwrote ${ESTATE_AGENTS}/${name}/agent.toml + system.md (canonical)`);
   console.log(`wrote ${LIVE_AGENTS}/${name}/agent.toml + system.md (live copy)`);
 
   // spawn: CLI primary, API fallback
   const t0 = Date.now();
-  const manifestPath = `${SOVEREIGN_AGENTS}/${name}/agent.toml`;
+  const manifestPath = `${ESTATE_AGENTS}/${name}/agent.toml`;
   let ok = await spawnViaCli(manifestPath);
   if (!ok) { console.log("CLI failed — falling back to POST /api/agents"); ok = await spawnViaApi(toml); }
   if (!ok) { console.log("SPAWN FAILED on both paths. Manifests are on disk; fix the kernel and re-run with --rejoin."); process.exit(1); }
@@ -412,16 +412,16 @@ async function main() {
 
   if (doCommit || doPush) {
     console.log("\n--- committing canonical manifest ---");
-    const res = await $`git -C ${SOVEREIGN} add agents/${name}/agent.toml agents/${name}/system.md && git -C ${SOVEREIGN} commit -m ${`openfang-join: admit fleet agent '${name}' (${lane}/${task})`}`.text();
+    const res = await $`git -C ${ESTATE} add agents/${name}/agent.toml agents/${name}/system.md && git -C ${ESTATE} commit -m ${`openfang-join: admit fleet agent '${name}' (${lane}/${task})`}`.text();
     console.log(res.text().slice(0, 300));
     if (doPush) {
       console.log("--- pushing (fetch-first, no force) ---");
-      await $`git -C ${SOVEREIGN} fetch origin main`.quiet();
-      const base = (await $`git -C ${SOVEREIGN} rev-parse origin/main`.text()).trim();
-      const head = (await $`git -C ${SOVEREIGN} rev-parse HEAD`.text()).trim();
-      const merged = (await $`git -C ${SOVEREIGN} merge-base --is-ancestor ${base} HEAD`.exitCode()) === 0;
+      await $`git -C ${ESTATE} fetch origin main`.quiet();
+      const base = (await $`git -C ${ESTATE} rev-parse origin/main`.text()).trim();
+      const head = (await $`git -C ${ESTATE} rev-parse HEAD`.text()).trim();
+      const merged = (await $`git -C ${ESTATE} merge-base --is-ancestor ${base} HEAD`.exitCode()) === 0;
       if (!merged) { console.log("remote moved and not our ancestor — manual merge needed, NOT pushing"); process.exit(1); }
-      await $`git -C ${SOVEREIGN} push origin HEAD:main`;
+      await $`git -C ${ESTATE} push origin HEAD:main`;
       const ref = (await $`git ls-remote origin refs/heads/main`.text()).trim().split(/\s+/)[0];
       console.log(ref === head ? `push verified: origin/main = ${ref}` : `PUSH UNVERIFIED: remote=${ref} local=${head}`);
     }

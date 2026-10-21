@@ -10,7 +10,7 @@
     {
       "name": "daemons",
       "status": "fail",
-      "detail": "79/82 running; down: sovereign/squawk-ws-client sovereign/squawk-relay-forward sovereign/squawk-relay-sink"
+      "detail": "79/82 running; down: estate/squawk-ws-client estate/squawk-relay-forward estate/squawk-relay-sink"
     },
     {
       "name": "openfang_kernel",

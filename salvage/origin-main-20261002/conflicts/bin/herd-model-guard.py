@@ -24,7 +24,7 @@ Audit: every rewrite appends one JSON line to
 (override with MODEL_GUARD_AUDIT). Rotated at MODEL_GUARD_AUDIT_MAX_BYTES
 (default 10MB) -> <path>.1.
 
-Run under pitchfork as sovereign/model-guard (see pitchfork daemon entry).
+Run under pitchfork as estate/model-guard (see pitchfork daemon entry).
 Stdlib only. Fail-open: if the constraints file is unreadable, traffic
 passes through untouched and the error is logged.
 """

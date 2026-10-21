@@ -95,7 +95,7 @@ packages/coding-agent/bench/boot-baseline.json
 
 .parity/
 
-# Sovereign standard sensitive & ephemeral patterns added by auditor
+# Estate standard sensitive & ephemeral patterns added by auditor
 .secrets
 *.key
 *.pat
@@ -114,11 +114,11 @@ node_modules/
 .bun/
 
 # ============================================================================
-# Sovereign estate rules restored after the vendored oh-my-pi merge (329ca019)
+# Estate estate rules restored after the vendored oh-my-pi merge (329ca019)
 # left conflict markers in this file. The de-vendoring commit 9fb535d300
 # removed the upstream source tree but the root .gitignore had been
 # overwritten by the merge, silently dropping the estate's own rules.
-# Every rule below existed in the pre-merge sovereign .gitignore and is
+# Every rule below existed in the pre-merge estate .gitignore and is
 # reinstated here; none of the upstream base above is removed.
 # ============================================================================
 .env*
@@ -356,7 +356,7 @@ projects/tau-occupied-*/
 projects/nim-repos/
 projects/gear/
 worktrees/
-sovereign-github-search/
+estate-github-search/
 bench-wt-tau/
 killer-features/*/vendor/
 agents/oracle-market/ledger/

@@ -2,7 +2,7 @@
 """bin/debate-run -- HFT debate orchestrator for debate-oracle-code-selector.
 
 t3-impl-orchestrator. Spawns N debater lanes (one champion-advocate per
-candidate), runs R timed rounds through the sovereign router (:25104,
+candidate), runs R timed rounds through the estate router (:25104,
 hedgedChain), CUTS slow lanes mid-round (partial streamed output stands),
 and assembles a structured transcript for `oracle-judge --mode code`.
 
@@ -38,7 +38,7 @@ RUNS_DIR = os.path.join(ORACLE_DIR, "runs")
 
 DEFAULT_ROUTER = "http://127.0.0.1:25104/v1"
 # Default debater ladder: DIRECT backend endpoints, one per candidate.
-# Shakedown 2026-09-20 proved the sovereign-router's hedgedChain substitutes
+# Shakedown 2026-09-20 proved the estate-router's hedgedChain substitutes
 # a DIFFERENT (cloud!) model for the pinned lane after HEDGE_MS, breaking
 # lane identity and burning cloud inference. Direct pinning keeps each lane
 # on its own backend. Index-aligned with candidates.

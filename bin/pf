@@ -18,7 +18,7 @@
  * Reload semantics (verified against pitchfork 2.25.0 + the config's own
  * header): pitchfork notices new/deleted daemons via mtime; EDITING a running
  * daemon's stanza does NOT re-register it — run bin/pitchfork-restart
- * sovereign/<name> (use `pf diff` for the exact list).
+ * estate/<name> (use `pf diff` for the exact list).
  */
 import { join, resolve, basename } from "node:path";
 import { createHash } from "node:crypto";
@@ -233,7 +233,7 @@ async function cmdBuild(args: string[]): Promise<void> {
   // per-daemon change summary vs git HEAD (the restart list)
   const changedDaemons = await changedDaemonNames();
   console.log(JSON.stringify({ built: PARENT, bytes: text.length, changed, changed_daemons: changedDaemons,
-    restart: changedDaemons.length ? `bin/pitchfork-restart ${changedDaemons.map((d) => `sovereign/${d}`).join(" ")}` : "none" }));
+    restart: changedDaemons.length ? `bin/pitchfork-restart ${changedDaemons.map((d) => `estate/${d}`).join(" ")}` : "none" }));
 }
 
 /** Daemons whose stanza differs between git HEAD and worktree parent. */
@@ -278,7 +278,7 @@ async function changedDaemonNames(): Promise<string[]> {
 async function cmdDiff(): Promise<void> {
   const names = await changedDaemonNames();
   console.log(JSON.stringify({ changed_daemons: names,
-    restart: names.length ? `bin/pitchfork-restart ${names.map((d) => `sovereign/${d}`).join(" ")}` : "none" }, null, 1));
+    restart: names.length ? `bin/pitchfork-restart ${names.map((d) => `estate/${d}`).join(" ")}` : "none" }, null, 1));
 }
 
 // ---------------- check ----------------

@@ -60,9 +60,9 @@ function splitBlocks(src: string): { preamble: string; blocks: Block[] } {
 
 function projectKey(dir: string, daemon: string): string {
   let d = dir;
-  if (!d) return "sovereign";
+  if (!d) return "estate";
   if (!d.startsWith("/")) d = SOV + "/" + d;
-  if (d === SOV) return "sovereign";
+  if (d === SOV) return "estate";
   const ranch = SOV + "/projects/range/ranch/";
   if (d.startsWith(ranch)) {
     const rest = d.slice(ranch.length).split("/").filter(Boolean);
@@ -73,7 +73,7 @@ function projectKey(dir: string, daemon: string): string {
   if (d.startsWith(SOV + "/projects/range/")) return `range/${d.slice((SOV + "/projects/range/").length).split("/").filter(Boolean)[0]}`;
   if (d.startsWith(SOV + "/projects/")) return `projects/${d.slice((SOV + "/projects/").length).split("/").filter(Boolean)[0]}`;
   if (d.startsWith(SOV + "/tools/")) return `tools/${d.slice((SOV + "/tools/").length).split("/").filter(Boolean)[0]}`;
-  if (d.startsWith(SOV + "/")) return "sovereign";
+  if (d.startsWith(SOV + "/")) return "estate";
   if (d === "/home/toxic") {
     if (daemon === "tau") return "standalone/tau";
     if (daemon.startsWith("awrawr-")) return "standalone/awrawr";
@@ -90,7 +90,7 @@ function projectKey(dir: string, daemon: string): string {
 
 // manifest path relative to the compose root
 function manifestPath(key: string): string {
-  if (key === "sovereign") return "pitchfork.d";
+  if (key === "estate") return "pitchfork.d";
   if (key.startsWith("ranch/")) return `projects/range/ranch/${key.slice(6)}/pitchfork.d`;
   if (key === "range") return "projects/range/pitchfork.d";
   if (key.startsWith("range/")) return `projects/range/${key.slice(6)}/pitchfork.d`;
@@ -128,7 +128,7 @@ for (const d of daemons) {
 }
 
 const rank = (k: string) =>
-  k === "sovereign" ? 0 : k.startsWith("ranch/") ? 1 : k.startsWith("range") ? 2 :
+  k === "estate" ? 0 : k.startsWith("ranch/") ? 1 : k.startsWith("range") ? 2 :
   k.startsWith("tools/") ? 3 : k.startsWith("projects/") ? 4 : 5;
 const order = [...byProject.keys()].sort((a, b) => rank(a) - rank(b) || (a < b ? -1 : 1));
 

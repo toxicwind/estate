@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# Sovereign Estate Path & Binary Audit Launcher
+# Estate Path & Binary Audit Launcher
 set -euo pipefail
-SOV="${SOVEREIGN_ROOT:-/home/toxic/estate}"
+# ESTATE_ROOT is the current name; the retired root variable stays as a
+# legacy fallback so old callers (and old shells) still resolve the same root.
+SOV="${ESTATE_ROOT:-${SOVEREIGN_ROOT:-/home/toxic/estate}}"
 exec bun "$SOV/helpers/estate-scanner.ts" "$@"

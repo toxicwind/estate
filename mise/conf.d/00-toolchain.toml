@@ -2,7 +2,11 @@
 [tools]
 python = "3.12.13"
 node = "22.12.0"
-bun = "1.4.2"
+# bun: we run the CANARY channel (bleeding-edge, like rust=nightly). The
+# upstream stable index tops out at 1.4.3; `bun upgrade` yields canary builds
+# (currently 1.4.4) installed at ~/.bun. Pin mise to that install via a path
+# tool so the whole estate resolves the same canary binary.
+"bun:path:/home/toxic/.bun/bin/bun" = "true"
 rust = "nightly"
 go = "1.23.1"
 pitchfork = "2.25.0"

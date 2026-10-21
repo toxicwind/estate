@@ -1,0 +1,12 @@
+# delendai-web — DelendAI Astro dashboard (apps/web), first-class service.
+# Port SSOT: config/ports.env DELENDAI_WEB_PORT=25197.
+[daemons.delendai-web]
+run = "exec env PORT=25197 PAGES_BASE='' astro preview --host 127.0.0.1 --port 25197"
+dir = "/home/toxic/estate/ranch/borrowed/delendai/apps/web"
+mise = false
+retry = true
+ready_http = "http://127.0.0.1:25197/"
+boot_start = false
+auto = ["start"]
+# NOTE: `astro preview` needs a build (bun run build in apps/web) first. If that
+# isn't present, switch to `astro dev --host 127.0.0.1 --port 25197`.

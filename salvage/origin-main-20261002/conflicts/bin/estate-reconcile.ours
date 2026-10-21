@@ -12,7 +12,7 @@
 #   estate-reconcile proc-audit               declared vs /proc exe for the daemons
 #
 # Environment:
-#   ESTATE_ROOT   sovereign worktree (default /home/toxic/estate)
+#   ESTATE_ROOT   estate worktree (default /home/toxic/estate)
 #   SQUAWK_ROOT   squawk root (default /home/toxic/.fleet-bus/squawk-root);
 #                 unset/no-fleet-dir => squawk alerts no-op (sandbox-safe)
 #

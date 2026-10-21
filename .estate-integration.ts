@@ -40,8 +40,8 @@ async function integrate() {
     }
   };
   
-  await Bun.write(`${SOV_PROJECTS}/.sovereign-integration.json`, JSON.stringify(config, null, 2));
-  console.log(`Written: ${SOV_PROJECTS}/.sovereign-integration.json`);
+  await Bun.write(`${SOV_PROJECTS}/.estate-integration.json`, JSON.stringify(config, null, 2));
+  console.log(`Written: ${SOV_PROJECTS}/.estate-integration.json`);
   
   // 3. Symlink estate helpers into estate-projects for direct access
   await $`ln -sf ${ESTATE}/helpers ${SOV_PROJECTS}/.estate-helpers 2>/dev/null || true`;
