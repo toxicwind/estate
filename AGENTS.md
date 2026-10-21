@@ -1,183 +1,223 @@
-# AGENTS.md — estate control-plane (nested; refines $HOME/AGENTS.md)
+# AGENTS.md — awrawr-pc standing rules
 
-> **Refines:** `/home/toxic/AGENTS.md` (the universal contract). **Where**:
-> estate control-plane. **Refines, never contradicts** the root above it.
+> **CURATED 2026-10-21, not accumulated.** Right context = findable/scoped/pruned,
+> never wrong/missing/stale ("The Developer as Curator", ACM 2026). A shallow root
+> here + nested `AGENTS.md` files where a domain owns its own rules beats one
+> wall-file that drifts ("Agent READMEs: 2,303 context files", ACM 2026).
 >
-> CURATED 2026-10-21, not accumulated. Context is findable/scoped/pruned — wrong
-> context, missing context, and stale context are the three failure modes
-> ("Developer as Curator", ACM 2026). If a rule below disagrees with the code,
-> the code is absolute; fix this file.
+> This file is **authoritative**. `/home/toxic/estate/AGENTS.md` mirrors it;
+> nested `AGENTS.md` files refine, never contradict, the rules above them.
 
-## Non-negotiable (do NOT repeat the root — these are estate-only)
+## Non-negotiable (verbatim, applies to every agent on this box)
 
-0. **The 2-second rule applies here** (root AGENTS.md, Tooling): every command
-   runs under `run-fast` (2.0s hard deadline); inherently long work goes to
-   `background_process` or a pitchfork daemon, never a blocking tool call.
-   `ranch/estate/bin/bash-2s-shim.sh` (sourced via `~/.bashrc`) auto-wraps
-   known-slow commands. Deadline breach = race a faster alternative.
-
-1. **Secrets live in the keyring** — `ranch/barn/secretsmith` (freedesktop Secret
-   Service) FIRST and SSOT; `~/.secrets` is the fallback, never the source of
-   truth. **First-class `cookie-vault` integration** (Firefox + keeper CDP :9223 sync)
-   is the bridge between browser state and secrets keyring. The Bun drop-in is
-   `ranch/secretsmith/bun/` (`import "secretsmith"`). Daemon/agent injection uses
-   `secretsmith env` (opt-in export lines) or keyring inspection/management via
-   `secretsmith`. The smithers-gateway pitchfork daemon
-   (`stack/services/smithers-gateway.sh`) boots with keyring-loaded env — every
-   smithers-spawned agent seat inherits it. Secret printing is permitted.
-   Never COMMIT a secret to git.
-2. **One writer per subtree.** Same as root's parallelism rule, reiterated for
-   estate: two workers writing the same tree fratricide each other.
-3. **The control plane is live**: ver `ranch/estate` → `estate` (commit `6af2094`),
-   89+ pitchfork+mise daemons. Additive only. Never run `scripts/generate.ts`.
-4. **Docker is scoped (2026-10-16)**: Lane A — estate services run **native under
-   pitchfork+mise, never dockerized** (docker duplicates steal ports + strand NAT
-   rules: rustdesk outage 2026-10-16). Lane B — ops/websites deployables
-   (effusion-labs, arlockworks) run **docker compose in their own repo**, ports in
-   `config/ports.env`, bound 127.0.0.1/tailnet unless intentionally public.
-   Tie-breaker: **one supervisor per service** — check `docker ps -a` before adding
-   a pitchfork daemon, and vice versa.
+1. **MAXIMAL.** Go fully, or don't go. Fix-repairs, never report-only audits.
+   No review gates: commit, push, forward-only.
+2. **The box is live.** 89+ pitchfork+mise daemons. Additive only — never remove or
+   disable a peer/daemon/model without an explicit order. Never touch
+   `awrawr-mcp.service` from a bridge call. Never run the retired
+   `bun run scripts/generate.ts` (would destroy 15 daemons).
+3. **Secrets live in the secretsmith keyring** (`ranch/barn/secretsmith`,
+   freedesktop Secret Service — the SSOT since 2026-10-18) with first-class
+   `cookie-vault` integration (Firefox + keeper CDP :9223 sync). `~/.secrets` is
+   a fallback record, never the source of truth. Inject keys into any
+   process with `secretsmith env` (opt-in export lines) or inspect/manage
+   with `secretsmith`. Secret printing is permitted. Never COMMIT them to git.
+4. **Diverged main:** back up origin main as `backup/main-<date>` on origin first,
+   then merge, then push. Never force-push main without that backup. Never push
+   to evmts.
+5. **Docs lie; code is absolute.** A claim in any `.md` that disagrees with the
+   code is wrong. Fix the doc, don't work around it.
 
 ## The vibe meta-todo (first-class, resets every task)
 
-Every `todowrite` list here ENDS with a final **vibe meta-todo** (always last,
-the reset) that holds this estate's whole doctrine mid-task:
+Every `todowrite` list ENDS with a final **vibe meta-todo** (always last, always
+the reset). It holds the estate's whole doctrine so even mid-task you never lose
+the thread:
 
 - **Free-will / MAXIMAL / first-class / future-usable / cutting-edge.** Never
-  "report-only" — always _fix-forward_. Slow, blocked, or basic = race the
-  fastest available path, not a stop.
-- **Race faster with borrow + papers DURING the task**, not just at planning:
-  on any slow/blocked step route ast-grep → bm25 → paper-finder → forge borrow →
-  background-process, in that order, before any workaround. Never retry the same
-  slow command; a breach without a raced fix is a defect.
-- **After research, spawn the next 6 complex todos** capturing the directions
-  found and execute them in sequence — don't let the research evaporate.
-- **2s breach = opportunity, not failure.** Every breach triggers finding the
-  faster pattern or paper via the AST tools.
-- **Verbosity stays ON.** MAXIMAL: go fully or don't go.
-- **Additive-only** (never remove/disable a peer/daemon/model without order).
-  **Secrets never committed.** **One writer per subtree.** **Everything
-  pushed.** Docs lie, code is absolute.
-- **End every task** by re-visiting this vibe todo as the reset.
+  "report-only" — always *fix-forward*. If something is slow, blocked, or basic,
+  that's a signal to race the fastest available path, not to stop.
+- **Race faster with borrow + papers, DURING the task, not just at planning:**
+  on any slow/blocked step route `ast-grep` → `bm25` → **paper-finder** →
+  **forge borrow** → `background_process`, in that order, before ANY workaround.
+  Never retry the same slow command; a breach without a raced fix is a defect.
+- **After research, spawn the next 6 complex todos** capturing the cutting-edge
+  directions found and execute them in sequence — don't let the research
+  evaporate.
+- **2s breach = opportunity, not failure.** Every breach is the trigger to find
+  the faster pattern or paper, via the AST tools.
+- **Verbosity stays ON.** This project's ethos is MAXIMAL: go fully or don't go.
+- **Additive-only** on the live box (never remove/disable a peer/daemon/model
+  without explicit order). **Secrets never committed.** **One writer per
+  subtree.** **Everything pushed** (commit/push/forward-only).
+- **End every task** by re-visiting this vibe todo as the reset — it is the
+  standing meta-context for the whole estate.
 
-## Provider SSOT — Pinax
+## Tooling — MCP-first doctrine
 
-- **`@toxicwind/pinax`** (`estate/ranch/pinax`) is the single source of truth for
-  provider configuration. It generates:
-  - `tau-models.yml` (Tau agent model routing)
-  - `kappa-models.json` (Kappa model routing)
-  - `providers.go` (Go provider bindings)
-  - `providers.rs` (Rust provider bindings)
-  - `providers.json` (generic provider registry)
-- **"roost" is retired and purged.** Never reference it.
-- **FreeInference** (`freeinference.org/v1`) is the primary fast inference provider
-  with `maxConcurrency: 2` per API key.
+### Gatehouse MCP: First-Class Over Raw Bash
 
-## Orchestration — Corral + DelendAI
+Calling raw bash subshells or binaries is flawed when **Gatehouse MCP**
+(`http://127.0.0.1:25127/mcp`) and first-class retrieve tools exist. Gatehouse
+federates MCP tools across the box — FFS, BM25, memory (`recall`/`retain`/`reflect`),
+browser-keeper CDP (`computer` / `:9223`), and more — behind a unified interface.
 
-- **Corral** (`@estate/corral`, `estate/ranch/corral`): Multi-agent fleet orchestration
-  with merge queue, proposal guardian, and spec-first workflow.
-- **DelendAI** (`shared-checkout-merge` development profile): Proposal guardian and
-  speculative merge queue for agent-driven code changes.
-- **"super-ralph" is retired.** Never reference it.
+**Use native tool calls and Gatehouse MCP interfaces over raw terminal commands.**
+The following first-class tools are the primary interface, not bash:
 
-## Scope split (deeper nested files)
+| Tool | Purpose |
+|---|---|
+| `read` | File/URL/document reading with outline, budget, selectors |
+| `bash` | Real facts/pipelines only — not specialized-tool work |
+| `edit` | Anchored patch edits |
+| `write` | Create/overwrite files |
+| `eval` | Python/IPython, browser, computer control |
+| `glob` | File/directory discovery |
+| `find` | Behavior-to-source mapping (first for unknown locations) |
+| `web_search` | Structured web search |
+| `lsp` | Symbol-aware code intelligence (navigation, refactor, rename) |
 
-| Path | Owns |
-| --- | --- |
-| `/home/toxic/estate/ranch/<component>/AGENTS.md` | each ranch component repo's contract |
-| `/home/toxic/estate/skills/<skill>/AGENTS.md` (if present) | that skill's own contract |
-| `/home/toxic/estate/ranch/secretsmith/bun/` | the Bun secretsmith drop-in |
-| `/home/toxic/estate/grasp-hub/` | skills registry + DAG router |
+#### Gatehouse MCP federated tools
 
-## Estate tooling canon (the boxes' ffs is the universal rule; estate-specific)
+Gatehouse at `http://127.0.0.1:25127/mcp` exposes MCP resources and tools for:
+- **FFS** (full-text search, BM25 ranking, symbol indexing)
+- **BM25** (relevance-ranked text search across the estate)
+- **Memory** (`recall`, `retain`, `reflect` — long-term memory queries)
+- **Browser-keeper CDP** (`:9223` — Chromium DevTools Protocol, `computer` object)
+- **GitHub** (`gh` wrapper for repos, PRs, search, checkout, push)
+- **Debug** (`xd://debug` — debugger access, breakpoints, stepping)
+- **Ast-grep** (`xd://ast_grep`, `xd://ast_edit` — AST-aware search and rewrite)
+- **Session tools** (`xd://retain`, `xd://recall`, `xd://reflect`, `xd://hashline`)
 
-- **Search/read = `ffs`** exactly as the root AGENTS.md table; estate does NOT add a
-  competing search tool. When an estate subcommand's semantics are unclear,
-  `ffs guide` before guessing.
-- **grasp-hub router**: `node /home/toxic/estate/grasp-hub/bin/grasp-hub.js
-  route "<query>"` picks orthogonal sub-skills (GraSP DAG). Use it when a task
-  spans >1 skill.
-- **meta (multi-repo manifest)**: the ranch's 214 component repos are peers,
-  coordinated by `meta` (`.meta.yaml` from `.gitmodules`; AI-native MCP server).
-  Sync all with `meta git update`, inspect with `meta git status`, batch-run with
-  `meta exec '<cmd>'`. Prefer meta over raw per-submodule churn. Regenerate the
-  manifest with `bun toolkit/gen-meta-manifest.ts`. The repository is
-  `gitkb/meta`.
-- **Git push everything** (root rule, restated for estate): commit after every
-  unit of work, no local-only work. Never force-push `main` without a
-  `backup/main-<date>` on origin. Never push to `evmts`.
+**Rule:** When a first-class tool or Gatehouse MCP tool exists for a task, use it.
+Raw bash is a last resort — acceptable only for system introspection that no MCP tool
+covers (e.g. `docker ps`, `ss`, `curl` for health checks).
 
-## Verified ecosystem map (2026-10-21, spot-checked)
+### FFS — The Universal Search/Read Interface
 
-| Thing | Path / port | Notes |
-| --- | --- | --- |
-| Control plane repo | `/home/toxic/estate` | git repo on `main`; 89+ pitchfork daemons |
-| Ranch (252 entries) | `/home/toxic/estate/ranch` | ferret-den at `ranch/ferret-den` |
-| Tau engine (5.1G) | `/home/toxic/estate/ranch/tau` | own git repo, bazel+rust+bun |
-| Tau agent config | `$HOME/.tau` → `estate/config/tau` | agent dir `$HOME/.tau/agent` |
-| Skills | `/home/toxic/estate/skills` | pattern-forge, tau-session-audit, … |
-| Secrets keyring | `ranch/barn/secretsmith` | freedesktop Secret Service via D-Bus |
-| Cookie-vault | `ranch/cookie-vault` | Firefox + keeper CDP :9223 sync |
-| Secrets vault (fallback) | `/home/toxic/.secrets` | record of last resort |
-| Pitchfork CLI | `/home/toxic/.local/bin/pitchfork` | `pf check` reports real drift |
-| Pinax (provider SSOT) | `estate/ranch/pinax` | generates tau-models.yml, kappa-models.json, providers.go, providers.rs, providers.json |
-| Qdrant | `127.0.0.1:25133`/`:25134` | HTTP/gRPC |
-| Redis (valkey) | `127.0.0.1:25203` | migrated off :25199 |
-| Flicker build daemon | `127.0.0.1:25148` | ranch build daemon |
-| awrawr-mcp | `127.0.0.1:25198` | live + auth-gated (stale-definition bug) |
-| Gatehouse MCP | `http://127.0.0.1:25127/mcp` | federates FFS, BM25, memory, browser-keeper |
-| Browser-keeper CDP | `127.0.0.1:9223` | Chromium DevTools Protocol |
-| ranch-ui | `127.0.0.1:25218` | consolidated dashboard, DelendAI SPA + herd proxy |
-| range-ui | `127.0.0.1:25156` | Vite dev server, `/api` → control-api:25162 |
-| Control-api | `127.0.0.1:25162` | `GET /health`, `GET /services`, etc. |
-| Corral | `estate/ranch/corral` | multi-agent fleet orchestration |
-| Deep-paper-reader | `/home/toxic/src/local/deep-paper-reader` | paper-poller :25149/:25150 |
+`ffs` is a single CLI over a persistent on-disk index (Bigram, Bloom, Symbol, Outline).
 
-## MCP servers + doorbell (2026-10-16)
+| When you need to… | Use `ffs …` | Notes |
+|---|---|---|
+| Find a file by name fragment | `find <needle>` | substring, case-insensitive; `--scored` adds role/socle |
+| Match by shape/glob | `glob '**/<pattern>'` | shell glob (`**`,`*`,`?`,`[…]`) |
+| Content match, one pattern | `grep <regex>` | ripgrep semantics; `--group` groups by enclosing symbol |
+| Content match, many needles | `multi-grep` | Aho-Corasick literal AND/OR |
+| Read a file without flooding context | `read <path>` | §budget-aware *outline* by default; `--full` raw |
+| Sketch a single file's structure | `outline <path>` | tree-sitter, `--style agent/…` |
+| Resolve a symbol to its definition | `symbol <name>` | tree-sitter AST, not substring |
+| Who refers to this symbol | `callers <name>` | `--hops N` BFS (≤5) |
+| What this symbol calls | `callees <name>` | `--depth N` |
+| Defs + usages in one shot | `refs <name>` | full defs + paged callers |
+| Full card per definition | `flow <name>` | def+signature+body+callees+callers |
+| Peers at same scope | `siblings <name>` | same class/file/module |
+| Imports + dependents of a file | `deps <path>` | import graph of a file |
+| Rank blast radius of a change | `impact <symbol>` | score = direct×3 + imports×2 + transitive×1 |
+| See the whole workspace | `map` / `overview` | file counts + token estimates |
+| Warm the indexes | `index` | build Bigram/Bloom/Symbol/Outline caches |
+| Be an MCP server | `mcp` | replaces Grep/Glob/Read for agents |
+| Recall the guide | `guide` | print the embedded doc |
 
-- **Config: gatehouse `mcp_config.json`**
-  (`/home/toxic/estate/ranch/barn/gatehouse/mcp_config.json`) — all MCP servers
-  registered directly in gatehouse. agent-mcp-gateway is NOT a separate upstream
-  server; its functionality (policy engine, proxy, access control, audit, metrics,
-  config watching) is built into gatehouse natively. Topology: doorbell → gatehouse
-  → MCP servers (no redundant gateway layer).
-- **grasp-hub MCP** (`/home/toxic/estate/grasp-hub/mcp/server.ts`) — healthy, 7
-  tools (skills_list, stats, validate, route, paper-match, papers, registry_search).
-  Read-only, wraps the skills-hub CLI.
-- **Doorbell health**: `doorbell-upstream_servers list` shows enabled/quarantined/healthy
-  state per server. Unhealthy servers retry forever.
-- **Guide convention REQUIRED** for every MCP drop-in server:
-  `ranch/mcp-dropin-guide` (github: toxicwind/mcp-dropin-guide):
-  R-1xx Transport & Framing (Content-Length, dual input framing,
-  protocolVersion 2024-11-05), R-2xx Tool Definitions (schemas, descriptions,
-  confirm:true for mutating), R-3xx Registration & gatehouse (gatehouse
-  `mcp_config.json`, unique names, health checks, no agent-mcp-gateway layer),
-  R-4xx Code Quality (LF+ASCII, machine gate). Scaffold with the
-  `guide-project-creator` skill.
-- **R-503 autonomous enforcement**: `bin/r503-forge.sh` scans for hardcoded
-  `github.com/<owner>/<repo>` URLs in ts/py/sh/json/yaml — reference repos by
-  local path, resolve via `git -C <path> remote get-url origin`.
+- **Global flags**: `--root <dir>`, `--format text|json`. Listing commands
+  (`find/symbol/callers/callees/refs/flow/siblings`) page with
+  `--limit N --offset N`. Use `--limit` aggressively (5–20 usually enough).
+- **Index-aware**: search correctness depends on fresh indexes. If a search
+  returns nothing that should exist, `ffs index` then retry.
+- **Symbols**: trailing `*` = prefix glob (`symbol Foo*`).
+- Never `fd`/`rg`/`find`/`grep`/`cat` — that is a doctrine violation, not a
+  fallback. `bash -lc` read-only is acceptable only when ffs cannot express the
+  query (e.g. `docker ps`, `ss`, `curl`).
 
-`/home/toxic/sovereign/` does not exist (renamed to `estate`, commit `6af2094`).
-UUID-prefixed scratch under `/home/toxic/` only; nothing precious in `/tmp`.
+- **Patch safely with hashline**: ALWAYS carry the `read` anchor
+  (`SWAP 641:3f2a..674:9b1c:`); never mix a bare op after a line-count-changing
+  op; re-read every file and diff the `~/-/+` lines after every patch.
+- **Live token counting**: `tok` (see `tok --help`).
+- **The 2-second rule (MANDATORY): `run-fast` wraps EVERY command.**
+  `/home/toxic/estate/bin/run-fast <cmd…>` — hard 2.0s wall-clock per
+  execution; streams output live; deadline breach = FAILED, and the breach
+  is the trigger to race a FASTER alternative (better code, new libs,
+  pattern-borrow) — never to wait longer. Inherently long work (network
+  fetches, builds, installs) goes to `background_process` or a pitchfork
+  daemon — never a blocking tool call. The bash tool auto-shims known-slow
+  commands through run-fast (`bin/bash-2s-shim.sh`, sourced in the shell).
+- **Verification**: parallelize reads; persist every check's FULL output to a file
+  and give a PASS/FAIL per check with evidence. Truncated stdio is a defect, not
+  a result. Two real failures on one target → stop and replan.
+
+## Provider doctrine
+
+- **Provider catalog SSOT — Pinax**: `@toxicwind/pinax` (`estate/ranch/pinax`) is
+  the single source of truth. It generates `tau-models.yml`, `kappa-models.json`,
+  `providers.go`, `providers.rs`, and `providers.json`. **"roost" is retired and
+  purged** — never reference it.
+- **Primary fast inference — FreeInference** (`freeinference.org/v1`):
+  models: `qwen3.6-35b`, `glm-5.3-flash`, `deepseek-v4-flash`, `minimax-m3`.
+  Strict provider concurrency limit: **`maxConcurrency: 2`** per API key
+  (returns HTTP 429 with retry-after: 1). All agent spawn/batch workflows MUST
+  declare and observe `maxConcurrency: 2`.
+- **Orchestration: Corral + DelendAI**:
+  Multi-agent fleet orchestration is **Corral** (`@estate/corral`, `estate/ranch/corral`)
+  merged with **DelendAI** (`shared-checkout-merge` development profile, proposal
+  guardian, and speculative merge queue). **"super-ralph" is retired.**
+- **DelendAI Checkpoint Fast-Path — `delend-quick`**:
+  Under `shared-checkout-merge` repositories (such as `ranch`), direct commits to
+  `main` are strictly blocked by the reference-transaction guard. Use the universal
+  first-class helper `/home/toxic/estate/bin/delend-quick -m "<message>"` (on PATH).
+  It auto-discovers changed paths, climbs to the repository root, safely normalizes
+  the work-ref namespace (`heads/wip/${agent}/implement/${proposal}-${slice}-g1/${topic}`),
+  executes `delendai work checkpoint`, and pushes the work-ref to `origin`.
+
+## 25xxx fleet & dashboards
+
+- **89 active supervised daemons** on 25xxx managed by pitchfork.
+- **ranch-ui (port 25218)**: Consolidated dashboard serving DelendAI control plane
+  SPA + herd proxy.
+- **range-ui (port 25156)**: Vite dev server with `/api` proxying to control-api on
+  port 25162.
+- **Unified Chats**: First-class Tau + Kappa + Kimi running chats aggregator in
+  `range/apps/delendai-control-plane` (`src/data/channels.ts`, `src/data/unified-chats.ts`).
+
+## Working rules
+
+- **Docker is scoped, not banned (decided 2026-10-16).** Two lanes:
+  - **Lane A — estate services** (MCP servers, routers, daemons, watchdogs): native,
+    supervised by pitchfork+mise. **Docker forbidden** — a container duplicating a
+    pitchfork daemon steals its ports and strands stale NAT rules (rustdesk outage
+    2026-10-16: stale REDIRECT rules broke remote 25221/25222 for days).
+  - **Lane B — ops/websites deployables** (effusion-labs, arlockworks stacks): docker
+    compose, in the site's own repo/infra dir, ports pinned in `config/ports.env`,
+    bound to 127.0.0.1/tailnet unless intentionally public.
+  - **Tie-breaker: one supervisor per service.** Before adding a pitchfork daemon,
+    check `docker ps -a`; before dockerizing, check pitchfork. Compose file lives
+    in the repo that owns the site.
+
+- Stage scratch under `/home/toxic/`, unique per-task dirs (`mktemp -d`), never
+  `rm -rf` a shared hardcoded /tmp path. Never leave a backgrounded bridge call
+  outstanding — wait for delivery.
+- One writer per subtree; many readers. Race redundant read-only approaches;
+  first valid answer wins. Gates serialize: token scrub → pushes; stash merge →
+  build.
+- Luis guesses are starting points, not specs — fuzz/verify, don't anchor.
+
+## Scope split (nested AGENTS.md)
+
+| Path | Owner of these rules |
+|---|---|
+| `/home/toxic/estate/AGENTS.md` | estate control-plane: repos, skills, grasp-hub, pitchfork |
+| `/home/toxic/estate/ranch/*/AGENTS.md` | each ranch component repo's own contract |
+
+**Container path**: `$HOME/AGENTS.md` = this file; `$HOME/estate/AGENTS.md` = the
+estate mirror. Every nested file declares *what it refines and where*; none
+repeats or contradicts the universal contract above.
 
 ## Agent customizations + skills hub (2026-10-16)
 
-- **Skills hub = grasp-hub — SSOT for BOTH kappa and tau**
-  (`/home/toxic/estate/grasp-hub`; supersedes the old skills-hub MCP naming).
-  Every estate coding agent loads skills from this one tree, never per-agent copies:
-  - **kappa**: global `skills.paths` → `grasp-hub/skills`
-    (`~/.config/kappa/kappa.jsonc`, dots-managed under `ranch/shell/ii`) +
-    project `.agents/skills/` → `../grasp-hub/skills` symlink (native discovery).
-  - **tau**: `config/tau/skills` → `grasp-hub/skills` symlink.
-    Register a new skill by dropping it in `/home/toxic/estate/skills/<name>/`
-    (SKILL.md frontmatter required), symlinking into
-    `grasp-hub/skills/<cluster>/<name>`, then proving pickup:
-    `node bin/grasp-hub.js list | grep <name>` and `node bin/grasp-hub.js validate`
-    must be green. The MCP server (`grasp-hub/mcp/server.ts`) wraps this CLI.
-    Frontmatter must parse for gray-matter/js-yaml: plain string or `description: >`
-    folded block; never an unquoted scalar containing `: ` (drops the skill silently).
+- **Skills hub = grasp-hub** (`/home/toxic/estate/grasp-hub`; supersedes the old
+  skills-hub MCP naming). Register a new skill by dropping it in
+  `/home/toxic/estate/skills/<name>/` (SKILL.md frontmatter required), symlinking
+  into `grasp-hub/skills/<cluster>/<name>`, then proving pickup:
+  `node bin/grasp-hub.js list | grep <name>` and `node bin/grasp-hub.js validate`
+  must be green. The MCP server (`grasp-hub/mcp/server.ts`) wraps this CLI.
 - **Guide convention is REQUIRED** for every `*-guide` project: flat R-NNN rule
   ids (renumbering forbidden; commits cite ids), a Why paragraph naming the
   failure mode per rule, Correct/Avoid pairs, at least one machine gate, and the
@@ -189,4 +229,4 @@ UUID-prefixed scratch under `/home/toxic/` only; nothing precious in `/tmp`.
   .prompt.md, R-3xx .agent.md (quote YAML values containing colons; no body
   prose in frontmatter; no spec duplication in handoffs), R-501 LF+ASCII on the
   Arch host, R-503 reference sibling repos by local path, never hardcoded
-  github.com URLs — resolve with `git -C <path> remote get-url origin`.
+  github.com URLs -- resolve with `git -C <path> remote get-url origin`.
