@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# delendai swarm orchestrator — recurse-aware, todo-recursive, ffs-native.
+# Proxy into the estate's delendai recursive-swarm tool.
+#
+# `--check` runs the recursion gate (bounded, de-duped, ffs-checked). Used by
+# `mise run doctor`. All search/read inside goes through ffs.
+
+set -euo pipefail
+cd "${ESTATE_ROOT:-$(cd "$(dirname "$0")/../.." && pwd)}"
+exec bun run tools/delendai-swarm.ts "$@"

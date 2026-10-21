@@ -37,5 +37,18 @@ for spec in kimi-auto-shim:25153 beellama-fast:25122 whatsapp-mcp:25146 toolcall
   fi
 done
 
+# delendai recursive-swarm gate: the self-recreating loop must stay bounded,
+# de-duped and ffs-checked. Fail closed when the door breaks; WARN if the
+# delendai CLI (or ffs) is absent so doctor never hard-fails on a clean box.
+if command -v delendai >/dev/null && command -v ffs >/dev/null; then
+  if ! bun run tools/delendai-swarm.ts --check >/dev/null 2>&1; then
+    echo "FAIL: delendai recursion door broken (run 'mise run delendai-swarm --check')" >&2; FAIL=1
+  else
+    echo "INFO: delendai recursive swarm: bounded + de-duped"
+  fi
+else
+  echo "WARN: delendai/ffs not on PATH; recursion gate skipped" >&2
+fi
+
 if ((FAIL)); then echo "doctor: FAIL" >&2; exit 1; fi
 echo "doctor ok: pitchfork=$(pitchfork --version | head -1)"
