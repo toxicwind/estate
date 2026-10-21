@@ -495,7 +495,7 @@ health_http = { url = "http://127.0.0.1:25127/health", interval = "30s", timeout
 port = 25127
 # gatehouse-serve.sh self-heals: bootstraps gitignored mcp_config.json from .dist when missing,
 # injects secrets from /home/toxic/.secrets (gatehouse direct-run crash-loops without it).
-run = "exec /home/toxic/estate/ranch/range/bin/gatehouse-serve.sh"
+run = "exec /home/toxic/estate/ranch/range/bin/gatehouse-serve.ts"
 dir = "/home/toxic/estate/ranch/barn/gatehouse"
 mise = false
 retry = true
@@ -1346,7 +1346,7 @@ ready_port = 25215
 # Its control-plane SPA (:25156) + Svelte passsthrough are served here; this
 # manifest exists so the pitchfork-compose accepts the range project.
 [daemons.range-ui]
-run = "exec /home/toxic/.local/bin/bun run --cwd /home/toxic/estate/ranch/range/apps/delendai-control-plane dev:server"
+run = "exec /home/toxic/.bun/bin/bun run --cwd /home/toxic/estate/ranch/range/apps/delendai-control-plane dev"
 dir = "/home/toxic/estate/ranch/range"
 mise = false
 retry = true
