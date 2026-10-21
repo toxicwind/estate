@@ -64,6 +64,10 @@ _2s_slow() { case "$1:$2" in
   ffs:index|ffs:map) return 0 ;;
   *) return 1 ;;
 esac }
+# Export the router so nested/persistent shells that inherit the wrapper
+# functions always carry _2s_slow too (un-exported helpers are dropped across
+# shell boundaries -> "command not found: _2s_slow" on every wrapped call).
+export -f _2s_slow 2>/dev/null || true
 
 git()          { if [ "$RUN_FAST_ACTIVE" = "1" ]; then command git "$@"; elif _2s_slow git "$1"; then "$RF" git "$@"; else command git "$@"; fi; }
 bun()          { if [ "$RUN_FAST_ACTIVE" = "1" ]; then command bun "$@"; elif _2s_slow bun "$1"; then "$RF" bun "$@"; else command bun "$@"; fi; }
@@ -160,6 +164,7 @@ if [ -z "${_2S_GUARD_ARMED:-}" ] && [ -z "$(trap -p DEBUG 2>/dev/null)" ]; then
 fi
 
 export -f _2s_guard _2s_urgent 2>/dev/null
+export -f _2s_slow 2>/dev/null || true
 export BASH_2S_SHIM=1
 export RF_DEADLINE="${RF_DEADLINE:-2.0}"
 
