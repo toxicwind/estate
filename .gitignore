@@ -1458,22 +1458,19 @@ ranch/rustdesk-server/id_ed25519
 ranch/rustdesk-server/id_ed25519
 ranch/rustdesk-server/id_ed25519.pub
 
-# estate-owned monorepos: independent checkouts managed via meta (NOT submodules)
-ranch/*
-!ranch/keeper/
-ranch/keeper/dist/*.js.map
-ranch/keeper/dist/*.d.ts.map
-!ranch/keeper/dist/
-!ranch/keeper/smoke/
-
 # 2026-10-21: a bulk `git add -A` re-indexed these independent checkouts as
 # gitlinks (mode 160000) with no .gitmodules entry — a top-level defect per
 # docs/REPO_TOPOLOGY.md ("Rule - no gitlinks"). The directories stay on disk;
-# the index does not claim them. Same family as ranch/* above.
+# the index does not claim them. Same family as ranch/ above.
 grasp-hub/
 sigma/
 pi-skills/
+# kernel-memory state and other machine-local scratch
+.estate/
 
-# keeper: track compiled output and smoke test
-!ranch/keeper/dist/
-!ranch/keeper/smoke/
+# estate-owned monorepos: independent checkouts managed via meta (NOT submodules).
+# The whole ranch/ tree is the ranch super-repo's own checkout — the estate
+# does not index it (docs/REPO_TOPOLOGY.md, "Rule - no gitlinks"). The old
+# !ranch/keeper/ exceptions were dead: keeper is a nested repo, so git never
+# descends into it and an un-ignore cannot reach it.
+ranch/
