@@ -3,7 +3,7 @@
 > **Refines:** `/home/toxic/AGENTS.md` (the universal contract). **Where**:
 > estate control-plane. **Refines, never contradicts** the root above it.
 >
-> CURATED 2026-10-16, not accumulated. Context is findable/scoped/pruned — wrong
+> CURATED 2026-10-21, not accumulated. Context is findable/scoped/pruned — wrong
 > context, missing context, and stale context are the three failure modes
 > ("Developer as Curator", ACM 2026). If a rule below disagrees with the code,
 > the code is absolute; fix this file.
@@ -16,18 +16,20 @@
    `ranch/estate/bin/bash-2s-shim.sh` (sourced via `~/.bashrc`) auto-wraps
    known-slow commands. Deadline breach = race a faster alternative.
 
-1. **Secrets live in the keyring** — `ranch/secretsmith` (freedesktop Secret
+1. **Secrets live in the keyring** — `ranch/barn/secretsmith` (freedesktop Secret
    Service) FIRST and SSOT; `~/.secrets` is the fallback, never the source of
-   truth. The Bun drop-in is `ranch/secretsmith/bun/` (`import "secretsmith"`).
-   Daemon/agent injection uses `secretsmith env` (opt-in export lines) or
-   keyring inspection/management via `secretsmith`. The smithers-gateway pitchfork
-   daemon (`stack/services/smithers-gateway.sh`) boots with keyring-loaded env —
-   every smithers-spawned agent seat inherits it. Secret printing is permitted.
+   truth. **First-class `cookie-vault` integration** (Firefox + keeper CDP :9223 sync)
+   is the bridge between browser state and secrets keyring. The Bun drop-in is
+   `ranch/secretsmith/bun/` (`import "secretsmith"`). Daemon/agent injection uses
+   `secretsmith env` (opt-in export lines) or keyring inspection/management via
+   `secretsmith`. The smithers-gateway pitchfork daemon
+   (`stack/services/smithers-gateway.sh`) boots with keyring-loaded env — every
+   smithers-spawned agent seat inherits it. Secret printing is permitted.
    Never COMMIT a secret to git.
 2. **One writer per subtree.** Same as root's parallelism rule, reiterated for
    estate: two workers writing the same tree fratricide each other.
 3. **The control plane is live**: ver `ranch/estate` → `estate` (commit `6af2094`),
-   90+ pitchfork+mise daemons. Additive only. Never run `scripts/generate.ts`.
+   89+ pitchfork+mise daemons. Additive only. Never run `scripts/generate.ts`.
 4. **Docker is scoped (2026-10-16)**: Lane A — estate services run **native under
    pitchfork+mise, never dockerized** (docker duplicates steal ports + strand NAT
    rules: rustdesk outage 2026-10-16). Lane B — ops/websites deployables
@@ -58,22 +60,43 @@ the reset) that holds this estate's whole doctrine mid-task:
   pushed.** Docs lie, code is absolute.
 - **End every task** by re-visiting this vibe todo as the reset.
 
+## Provider SSOT — Pinax
+
+- **`@toxicwind/pinax`** (`estate/ranch/pinax`) is the single source of truth for
+  provider configuration. It generates:
+  - `tau-models.yml` (Tau agent model routing)
+  - `kappa-models.json` (Kappa model routing)
+  - `providers.go` (Go provider bindings)
+  - `providers.rs` (Rust provider bindings)
+  - `providers.json` (generic provider registry)
+- **"roost" is retired and purged.** Never reference it.
+- **FreeInference** (`freeinference.org/v1`) is the primary fast inference provider
+  with `maxConcurrency: 2` per API key.
+
+## Orchestration — Corral + DelendAI
+
+- **Corral** (`@estate/corral`, `estate/ranch/corral`): Multi-agent fleet orchestration
+  with merge queue, proposal guardian, and spec-first workflow.
+- **DelendAI** (`shared-checkout-merge` development profile): Proposal guardian and
+  speculative merge queue for agent-driven code changes.
+- **"super-ralph" is retired.** Never reference it.
+
 ## Scope split (deeper nested files)
 
-| Path                                                       | Owns                                 |
-| ---------------------------------------------------------- | ------------------------------------ |
-| `/home/toxic/estate/ranch/<component>/AGENTS.md`           | each ranch component repo's contract |
-| `/home/toxic/estate/skills/<skill>/AGENTS.md` (if present) | that skill's own contract            |
-| `/home/toxic/estate/ranch/secretsmith/bun/`                | the Bun secretsmith drop-in          |
-| `/home/toxic/estate/grasp-hub/`                            | skills registry + DAG router         |
+| Path | Owns |
+| --- | --- |
+| `/home/toxic/estate/ranch/<component>/AGENTS.md` | each ranch component repo's contract |
+| `/home/toxic/estate/skills/<skill>/AGENTS.md` (if present) | that skill's own contract |
+| `/home/toxic/estate/ranch/secretsmith/bun/` | the Bun secretsmith drop-in |
+| `/home/toxic/estate/grasp-hub/` | skills registry + DAG router |
 
 ## Estate tooling canon (the boxes' ffs is the universal rule; estate-specific)
 
-- **Search/read = `ffs`** exactly as the root AGENTS.md table; estate does NOT add
-  a competing search tool. When an estate subcommand's semantics are unclear,
+- **Search/read = `ffs`** exactly as the root AGENTS.md table; estate does NOT add a
+  competing search tool. When an estate subcommand's semantics are unclear,
   `ffs guide` before guessing.
 - **grasp-hub router**: `node /home/toxic/estate/grasp-hub/bin/grasp-hub.js
-route "<query>"` picks orthogonal sub-skills (GraSP DAG). Use it when a task
+  route "<query>"` picks orthogonal sub-skills (GraSP DAG). Use it when a task
   spans >1 skill.
 - **meta (multi-repo manifest)**: the ranch's 214 component repos are peers,
   coordinated by `meta` (`.meta.yaml` from `.gitmodules`; AI-native MCP server).
@@ -83,34 +106,47 @@ route "<query>"` picks orthogonal sub-skills (GraSP DAG). Use it when a task
   `gitkb/meta`.
 - **Git push everything** (root rule, restated for estate): commit after every
   unit of work, no local-only work. Never force-push `main` without a
-  `backup/main-<date>` on origin. Never push to `evmts`/`super-ralph`.
+  `backup/main-<date>` on origin. Never push to `evmts`.
 
-## Verified ecosystem map (2026-10-14, spot-checked 2026-10-16)
+## Verified ecosystem map (2026-10-21, spot-checked)
 
-| Thing                    | Path / port                               | Notes                                      |
-| ------------------------ | ----------------------------------------- | ------------------------------------------ |
-| Control plane repo       | `/home/toxic/estate`                      | git repo on `main`; 90+ pitchfork daemons  |
-| Ranch (252 entries)      | `/home/toxic/estate/ranch`                | ferret-den at `ranch/ferret-den`           |
-| Tau engine (5.1G)        | `/home/toxic/estate/ranch/tau`            | own git repo, bazel+rust+bun               |
-| Tau agent config         | `$HOME/.tau` → `estate/config/tau`        | agent dir `$HOME/.tau/agent`               |
-| Skills                   | `/home/toxic/estate/skills`               | pattern-forge, tau-session-audit, …        |
-| Secrets keyring          | `ranch/secretsmith`                       | freedesktop Secret Service via D-Bus       |
-| Secrets vault (fallback) | `/home/toxic/.secrets`                    | record of last resort                      |
-| Pitchfork defs           | `/home/toxic/estate/pitchfork.toml`       | SSOT, daemons                              |
-| Mise defs                | `/home/toxic/estate/mise.toml`            | hand-edited; ports from `config/ports.env` |
-| Port SSOT                | `/home/toxic/estate/config/ports.env`     | all 25xxx, never invent                    |
-| Pitchfork CLI            | `/home/toxic/estate/bin/pitchfork`        | `pf check` reports real drift              |
-| Qdrant                   | `127.0.0.1:25133`/`:25134`                | HTTP/gRPC                                  |
-| Redis (valkey)           | `127.0.0.1:25203`                         | migrated off :25199                        |
-| Flicker build daemon     | `127.0.0.1:25148`                         | ranch build daemon, NOT mbx-cache          |
-| awrawr-mcp               | `127.0.0.1:25198`                         | live + auth-gated (stale-definition bug)   |
-| deep-paper-reader        | `/home/toxic/src/local/deep-paper-reader` | paper-poller :25149/:25150                 |
+| Thing | Path / port | Notes |
+| --- | --- | --- |
+| Control plane repo | `/home/toxic/estate` | git repo on `main`; 89+ pitchfork daemons |
+| Ranch (252 entries) | `/home/toxic/estate/ranch` | ferret-den at `ranch/ferret-den` |
+| Tau engine (5.1G) | `/home/toxic/estate/ranch/tau` | own git repo, bazel+rust+bun |
+| Tau agent config | `$HOME/.tau` → `estate/config/tau` | agent dir `$HOME/.tau/agent` |
+| Skills | `/home/toxic/estate/skills` | pattern-forge, tau-session-audit, … |
+| Secrets keyring | `ranch/barn/secretsmith` | freedesktop Secret Service via D-Bus |
+| Cookie-vault | `ranch/cookie-vault` | Firefox + keeper CDP :9223 sync |
+| Secrets vault (fallback) | `/home/toxic/.secrets` | record of last resort |
+| Pitchfork CLI | `/home/toxic/.local/bin/pitchfork` | `pf check` reports real drift |
+| Pinax (provider SSOT) | `estate/ranch/pinax` | generates tau-models.yml, kappa-models.json, providers.go, providers.rs, providers.json |
+| Qdrant | `127.0.0.1:25133`/`:25134` | HTTP/gRPC |
+| Redis (valkey) | `127.0.0.1:25203` | migrated off :25199 |
+| Flicker build daemon | `127.0.0.1:25148` | ranch build daemon |
+| awrawr-mcp | `127.0.0.1:25198` | live + auth-gated (stale-definition bug) |
+| Gatehouse MCP | `http://127.0.0.1:25127/mcp` | federates FFS, BM25, memory, browser-keeper |
+| Browser-keeper CDP | `127.0.0.1:9223` | Chromium DevTools Protocol |
+| ranch-ui | `127.0.0.1:25218` | consolidated dashboard, DelendAI SPA + herd proxy |
+| range-ui | `127.0.0.1:25156` | Vite dev server, `/api` → control-api:25162 |
+| Control-api | `127.0.0.1:25162` | `GET /health`, `GET /services`, etc. |
+| Corral | `estate/ranch/corral` | multi-agent fleet orchestration |
+| Deep-paper-reader | `/home/toxic/src/local/deep-paper-reader` | paper-poller :25149/:25150 |
 
 ## MCP servers + doorbell (2026-10-16)
 
-- **Config: gatehouse `mcp_config.json`** (`/home/toxic/estate/ranch/barn/gatehouse/mcp_config.json`) — all MCP servers registered directly in gatehouse. agent-mcp-gateway is NOT a separate upstream server; its functionality (policy engine, proxy, access control, audit, metrics, config watching) is built into gatehouse natively. Topology: doorbell → gatehouse → MCP servers (no redundant gateway layer).
-- **grasp-hub MCP** (`/home/toxic/estate/grasp-hub/mcp/server.ts`) — healthy, 7 tools (skills_list, stats, validate, route, paper-match, papers, registry_search). Read-only, wraps the skills-hub CLI.
-- **Doorbell health**: `doorbell-upstream_servers list` shows enabled/quarantined/healthy state per server. Unhealthy servers retry forever.
+- **Config: gatehouse `mcp_config.json`**
+  (`/home/toxic/estate/ranch/barn/gatehouse/mcp_config.json`) — all MCP servers
+  registered directly in gatehouse. agent-mcp-gateway is NOT a separate upstream
+  server; its functionality (policy engine, proxy, access control, audit, metrics,
+  config watching) is built into gatehouse natively. Topology: doorbell → gatehouse
+  → MCP servers (no redundant gateway layer).
+- **grasp-hub MCP** (`/home/toxic/estate/grasp-hub/mcp/server.ts`) — healthy, 7
+  tools (skills_list, stats, validate, route, paper-match, papers, registry_search).
+  Read-only, wraps the skills-hub CLI.
+- **Doorbell health**: `doorbell-upstream_servers list` shows enabled/quarantined/healthy
+  state per server. Unhealthy servers retry forever.
 - **Guide convention REQUIRED** for every MCP drop-in server:
   `ranch/mcp-dropin-guide` (github: toxicwind/mcp-dropin-guide):
   R-1xx Transport & Framing (Content-Length, dual input framing,
@@ -123,17 +159,17 @@ route "<query>"` picks orthogonal sub-skills (GraSP DAG). Use it when a task
   `github.com/<owner>/<repo>` URLs in ts/py/sh/json/yaml — reference repos by
   local path, resolve via `git -C <path> remote get-url origin`.
 
-/home/toxic/sovereign/`does not exist (renamed to`estate`, commit `6af2094`).
-UUID-prefixed scratch under `/home/toxic/`only; nothing precious in`/tmp`.
+`/home/toxic/sovereign/` does not exist (renamed to `estate`, commit `6af2094`).
+UUID-prefixed scratch under `/home/toxic/` only; nothing precious in `/tmp`.
 
 ## Agent customizations + skills hub (2026-10-16)
 
-- **Skills hub = grasp-hub — SSOT for BOTH kappa and tau** (`/home/toxic/estate/grasp-hub`;
-  supersedes the old skills-hub MCP naming). Every estate coding agent loads
-  skills from this one tree, never per-agent copies:
-  - **kappa**: global `skills.paths` → `grasp-hub/skills` (`~/.config/kappa/kappa.jsonc`,
-    dots-managed under `ranch/shell/ii`) + project `.agents/skills/` →
-    `../grasp-hub/skills` symlink (native discovery).
+- **Skills hub = grasp-hub — SSOT for BOTH kappa and tau**
+  (`/home/toxic/estate/grasp-hub`; supersedes the old skills-hub MCP naming).
+  Every estate coding agent loads skills from this one tree, never per-agent copies:
+  - **kappa**: global `skills.paths` → `grasp-hub/skills`
+    (`~/.config/kappa/kappa.jsonc`, dots-managed under `ranch/shell/ii`) +
+    project `.agents/skills/` → `../grasp-hub/skills` symlink (native discovery).
   - **tau**: `config/tau/skills` → `grasp-hub/skills` symlink.
     Register a new skill by dropping it in `/home/toxic/estate/skills/<name>/`
     (SKILL.md frontmatter required), symlinking into
@@ -153,4 +189,4 @@ UUID-prefixed scratch under `/home/toxic/`only; nothing precious in`/tmp`.
   .prompt.md, R-3xx .agent.md (quote YAML values containing colons; no body
   prose in frontmatter; no spec duplication in handoffs), R-501 LF+ASCII on the
   Arch host, R-503 reference sibling repos by local path, never hardcoded
-  github.com URLs -- resolve with `git -C <path> remote get-url origin`.
+  github.com URLs — resolve with `git -C <path> remote get-url origin`.
