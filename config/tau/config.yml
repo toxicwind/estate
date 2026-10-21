@@ -57,20 +57,21 @@ providers:
 modelRoles:
   dots: custom/dots
   bodybuilder: custom/bodybuilder
-  smol: freeinference/qwen3.6-35b
+  smol: qwen/qwen3.7-flash
   slow: freeinference/minimax-m3
   vision: freeinference/minimax-m3
-  plan: freeinference/glm-5.3-flash
-  advisor: freeinference/glm-5.3-flash
-  judge: freeinference/glm-5.3-flash
-  task: freeinference/qwen3.6-35b
+  plan: deepseek/deepseek-chat
+  advisor: qwen/qwen3.6-flash
+  judge: qwen/qwen3.6-plus
+  task: qwen/qwen3.7-flash
   commit: freeinference/qwen3.6-35b
   tiny: freeinference/qwen3.6-35b
   memory: freeinference/qwen3.6-35b
-  verification: freeinference/qwen3.6-35b
+  verification: freeinference/deepseek-v4-flash
   fallback: freeinference/qwen3.6-35b
   web: web/exa
-  default: freeinference/qwen3.6-35b
+  default: freeinference/glm-5.3-flash
+
 subagents:
   can_spawn_subagents: true
   whitelist:
@@ -251,8 +252,11 @@ retry:
       - freeinference/qwen3.6-35b
       - freeinference/glm-5.3-flash
     freeinference/*:
-      - freeinference/glm-5.3-flash
-      - freeinference/minimax-m3
+      - qwen/qwen3.7-flash
+      - deepseek/deepseek-chat
+    hodos/*:
+      - freeinference/qwen3.6-35b
+      - deepseek/deepseek-chat
     web:
       - web/perplexity
       - web/zai
