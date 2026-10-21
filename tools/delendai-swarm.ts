@@ -45,7 +45,7 @@
  * bounded, deduped, todo-shaped, and ffs-grounded.
  */
 
-import { existsSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 
@@ -62,6 +62,7 @@ type TodoNode = {
   leaf: boolean; // true when this row is actionable (at --depth boundary)
   parent: string | null;
   children: TodoNode[]; // recursive sub-goals
+  risk?: string; // session-audit past-failure flag, when --audit is given
 };
 
 type Plan = {
@@ -127,6 +128,46 @@ function taskSig(feature: string, title: string): string {
   return `${feature}:${norm}`;
 }
 
+/**
+ * Audit-aware todo forming. The estate's merged session audit (grasp-hub's
+ * tau-session-audit over tau JSONL + kappa SQLite) reports past failures —
+ * most notably "Repeated Tool Failure Loop" incidents with their concrete
+ * paths. Before spawning an emergent child todo blindly, cross the title's
+ * signature tokens against the audit: if a token appears where the audit names
+ * a repeated-failure loop, the node is surfaced (risk flag + warning) instead
+ * of being re-amplified into the same loop. Conservative on purpose — only
+ * fires on the audit's own loop-region tokens, never a broad keyword sweep.
+ */
+function auditRisk(title: string, audit: string): string | null {
+  if (!audit || !/Repeated Tool Failure Loop/i.test(audit)) return null;
+  const loopAt = audit.search(/Repeated Tool Failure Loop/i);
+  const region = audit
+    .slice(Math.max(0, loopAt - 300), loopAt + 400)
+    .toLowerCase();
+  const toks = title
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter((t) => t.length >= 4)
+    .filter(
+      (t) =>
+        ![
+          "agent",
+          "controls",
+          "this",
+          "that",
+          "with",
+          "and",
+          "the",
+          "for",
+          "from",
+        ].includes(t),
+    );
+  for (const t of toks) {
+    if (region.includes(t)) return `loop-prone (audit flags '${t}')`;
+  }
+  return null;
+}
+
 function parseRecurse(out: string): Array<{ feature: string; title: string }> {
   const tasks: Array<{ feature: string; title: string }> = [];
   for (const line of out.split("\n")) {
@@ -142,6 +183,7 @@ function buildForest(
   depth: number,
   fanout: number,
   seen: Set<string>,
+  audit: string,
 ): Plan {
   const forest: TodoNode[] = [];
   const warnings: string[] = [];
@@ -162,6 +204,7 @@ function buildForest(
     seen.add(id);
     spawned++;
     const leaf = curDepth >= depth;
+    const risk = auditRisk(title, audit);
     const node: TodoNode = {
       id,
       feature,
@@ -170,7 +213,12 @@ function buildForest(
       leaf,
       parent,
       children: [],
+      risk: risk ?? undefined,
     };
+    if (risk)
+      warnings.push(
+        `[${feature}] '${title}' is ${risk} — surface, do not re-amplify`,
+      );
     if (!leaf) {
       const r = sh("delendai", ["recurse"], root);
       const kids = r.ok ? parseRecurse(r.out) : [];
@@ -241,6 +289,7 @@ function main(argv: string[]): number {
   let json = false;
   let check = false;
   let planOut: string | null = null;
+  let audit = ""; // path to a session-audit report; --audit <file>
 
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
@@ -258,6 +307,7 @@ function main(argv: string[]): number {
     else if (a === "--json") json = true;
     else if (a === "--check") check = true;
     else if (a === "--plan") planOut = argv[++i];
+    else if (a === "--audit") audit = argv[++i];
     else args.set(a, "1");
   }
 
@@ -267,8 +317,23 @@ function main(argv: string[]): number {
     return 2;
   }
 
+  let auditText = "";
+  if (audit) {
+    const f = resolve(audit);
+    if (!existsSync(f)) {
+      process.stderr.write(`--audit file does not exist: ${f}\n`);
+      return 2;
+    }
+    try {
+      auditText = readFileSync(f, "utf8");
+    } catch (e: any) {
+      process.stderr.write(`could not read --audit file: ${e?.message ?? e}\n`);
+      return 2;
+    }
+  }
+
   const seen = new Set<string>();
-  const plan = buildForest(root, depth, fanout, seen);
+  const plan = buildForest(root, depth, fanout, seen, auditText);
 
   if (args.has("--todo-state-boundary")) {
     // `--check` proves termination by asserting the depth boundary is respected.
