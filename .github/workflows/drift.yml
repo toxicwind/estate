@@ -35,3 +35,13 @@ jobs:
         run: |
           dirty=$(git submodule --quiet foreach --recursive "echo dirty" 2>/dev/null || true)
           [ -z "$dirty" ] || echo "::warning::nested gitlinks present: $dirty"
+      # Local estate-gate (layout/daemon-gate/fragment-clean) is pure-Bun and
+      # bash — it runs here in cloud CI. delendai-swarm + pitchfork-compose
+      # need the local delendai/ffs/pitchfork CLIs, so they stay local:
+      # `mise run estate-gate` on the estate host covers the full set.
+      - name: Layout doc drift
+        run: bun tools/estate-layout/layout.ts --check
+      - name: Daemon registry gate (ports SSOT)
+        run: bun tools/estate-layout/daemon-gate.ts --root .
+      - name: Fragment ownership gate
+        run: bun tools/estate-layout/fragment-clean.ts --check
