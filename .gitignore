@@ -1482,4 +1482,10 @@ ranch/
 readme-fix-estate-*/
 session-ses_*.md
 .agent/tmp/*.bak.*
+# rig/recall-agent per-workspace scaffolding (unreferenced runtime state)
+AGENT.json
+BOOTSTRAP.md
+MEMORY.md
+TOOLS.md
+USER.md
 config/tau/*.bak
