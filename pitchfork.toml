@@ -44,6 +44,18 @@ ready_cmd = "ss -tln | grep -q 127.0.0.1:5900"
 boot_start = true
 auto = ["start"]
 
+# proc-watch-audit (2026-10-21): continuous process audit to catch runaway
+# CPU/IO consumers that freeze the box (orphaned `bun --check`, btdu, heavy
+# typecheck rems). Observability only: logs top-CPU + flags hot/old procs every
+# 30s; no auto-kill. Source: ranch/bun-scaffold/bin/watch-procs.sh.
+[daemons.proc-watch-audit]
+run = "exec /home/toxic/estate/ranch/bun-scaffold/bin/watch-procs.sh --watch=30"
+dir = "."
+mise = false
+retry = true
+boot_start = true
+auto = ["start"]
+
 # estate — project-owned daemon manifest. Source of truth for 'agent-viewer'.
 # Owned by the estate project; the parent only composes it.
 
