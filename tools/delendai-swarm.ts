@@ -39,6 +39,16 @@
  *   delendai-swarm --root /home/toxic/estate --plan out.json   # write the forest
  *   delendai-swarm --root /home/toxic/estate --check           # gate: run one level, assert termination
  *   delendai-swarm --root /home/toxic/estate --json
+ *   delendai-swarm --root /home/toxic/estate --audit report.md # explicit audit report
+ *   delendai-swarm --root /home/toxic/estate --audit -         # audit from stdin
+ *   delendai-swarm --root /home/toxic/estate --no-audit        # opt out of the default auto-audit
+ *
+ * The swarm is AUDIT-AWARE BY DEFAULT: it auto-runs the estate's merged
+ * session audit (tau JSONL + kappa SQLite via the grasp-hub tau-session-audit
+ * helper) and surfaces any emergent task whose signature lands in the report's
+ * "Repeated Tool Failure Loop" region as loop-prone, rather than re-amplifying
+ * a known-failing domain. This makes recursive todo-forming part of delend and
+ * grounded in past failures, per the estate doctrine.
  *
  * The leaf rows are the actionable handoff unit for a real executing agent;
  * this tool is the planner/orchestrator that makes the recursion visible,
@@ -62,7 +72,7 @@ type TodoNode = {
   leaf: boolean; // true when this row is actionable (at --depth boundary)
   parent: string | null;
   children: TodoNode[]; // recursive sub-goals
-  risk?: string; // session-audit past-failure flag, when --audit is given
+  risk?: string; // session-audit past-failure flag (loop-prone etc.), when audit-aware
 };
 
 type Plan = {
@@ -289,7 +299,8 @@ function main(argv: string[]): number {
   let json = false;
   let check = false;
   let planOut: string | null = null;
-  let audit = ""; // path to a session-audit report; --audit <file>
+  let audit = ""; // path to a session-audit report; --audit <file> | '-' (stdin)
+  let noAudit = false; // --no-audit: skip the default auto-audit
 
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
@@ -307,7 +318,10 @@ function main(argv: string[]): number {
     else if (a === "--json") json = true;
     else if (a === "--check") check = true;
     else if (a === "--plan") planOut = argv[++i];
-    else if (a === "--audit") audit = argv[++i];
+    else if (a === "--audit") {
+      audit = argv[++i] ?? "";
+      noAudit = false;
+    } else if (a === "--no-audit") noAudit = true;
     else args.set(a, "1");
   }
 
@@ -318,7 +332,13 @@ function main(argv: string[]): number {
   }
 
   let auditText = "";
-  if (audit) {
+  if (audit === "-") {
+    try {
+      auditText = readFileSync(0, "utf8");
+    } catch {
+      /* empty stdin = no audit awareness */
+    }
+  } else if (audit) {
     const f = resolve(audit);
     if (!existsSync(f)) {
       process.stderr.write(`--audit file does not exist: ${f}\n`);
@@ -329,6 +349,20 @@ function main(argv: string[]): number {
     } catch (e: any) {
       process.stderr.write(`could not read --audit file: ${e?.message ?? e}\n`);
       return 2;
+    }
+  } else if (!noAudit) {
+    // Part of delend: the recursive swarm is audit-aware by default, so todo
+    // forming is grounded in past failures (tau JSONL + kappa SQLite, merged
+    // by the grasb-hub tau-session-audit helper) rather than blind. Non-fatal:
+    // a missing helper just strands audit-awareness, it never blocks the swarm.
+    const helper =
+      "/home/toxic/estate/grasp-hub/skills/04_code_intelligence/tau-session-audit/helper/audit.ts";
+    if (existsSync(helper)) {
+      // --all prints (among others) the "Repeated Tool Failure Loop" section;
+      // exit-code 1 (critical unknown-types) still yields a useful report for
+      // the loop signal, so capture output regardless of exit status.
+      const r = sh("bun", ["run", helper, "--all"], root);
+      if (r.out) auditText = r.out;
     }
   }
 
