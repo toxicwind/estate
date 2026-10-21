@@ -1408,3 +1408,13 @@ boot_start = true
 auto = ["start"]
 env = { PORT = "4000", FALKORDB_HOST = "127.0.0.1", FALKORDB_PORT = "6379", FALKORDB_GRAPH_NAME = "archguard_estate" }
 ready_http = "/api/health"
+
+# kappa-board-bridge (2026-10-21): mirrors kappa board as a squawk chat channel
+# (kappa_board). Two-way, additive, idempotent; watch mode keeps it live.
+[daemons.kappa-board-bridge]
+run = "exec /usr/bin/python3 /home/toxic/estate/ranch/squawk/kappa_board_bridge.py --db /home/toxic/.local/share/kappa/kappa-main.db --watch"
+dir = "/home/toxic/estate/ranch/squawk"
+mise = false
+retry = true
+boot_start = true
+auto = ["start"]
