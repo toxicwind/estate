@@ -45,3 +45,26 @@ bun run --cwd /home/toxic/estate/ranch/kappa/kappa-code make --single --skip-ins
 description = "Build kappa binary via forge remote cache"
 sources = ["package.json", "bun.lock", "packages/cli/script/build.ts"]
 outputs = ["packages/cli/dist/@kappacode/cli-linux-x64/bin/kappa"]
+
+# DelendAI — first-class maximal Bun scaffold / MCP monorepo (fork 2026-10-20).
+# Full gates + CLI; usable as the estate's scaffold/agent-runtime reference.
+[tasks.delendai-install]
+run = "bun install --cwd /home/toxic/estate/ranch/borrowed/delendai"
+description = "Install DelendAI monorepo deps (bun)"
+
+[tasks.delendai-validate]
+run = "bun run --cwd /home/toxic/estate/ranch/borrowed/delendai validate -- --ci"
+description = "Run DelendAI full gate (typecheck + lint + tests + coverage)"
+
+[tasks.delendai-cli]
+run = "bun run --cwd /home/toxic/estate/ranch/borrowed/delendai cli -- $@"
+description = "Run the DelendAI CLI (delendai <cmd>)"
+
+[tasks.delendai-scaffold]
+run = "bun run --cwd /home/toxic/estate/ranch/bun-scaffold apply:scaffold -- $@"
+description = "Apply the maximal Bun scaffold across estate projects"
+
+[tasks.pinax-codegen]
+run = "bun run build"
+dir = "/home/toxic/estate/ranch/pinax"
+description = "Regenerate + live-sync pinax provider catalog (5 artifacts + tau/kappa installed slices). Rerunnable."
