@@ -6,13 +6,13 @@ treat this document as the authority.
 
 ## The only EAP project
 
-| project | id | EAP | evidence |
-|---|---|---|---|
-| **gen-lang-client-0111199472** | 654595778272 | **yes** | all six keys return `status: completed` on `POST /v1beta/interactions` and run the full `tool_search_call → tool_search_result → thought → function_call` loop |
-| flashy-squirrel | 991309044265 | no | its key 401s on interactions |
-| gallery-effusion | 55739192275 | no | 401 |
-| gassist-d31c8 | 989227872366 | no | 401 |
-| yotube-161921 | 269278422746 | no | 401 |
+| project                        | id           | EAP     | evidence                                                                                                                                                                                                                                              |
+| ------------------------------ | ------------ | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **gen-lang-client-0111199472** | 654595778272 | **yes** | all six keys authenticate on `POST /v1beta/interactions` (run the `tool_search` loop) — BUT the project's **prepay credits are depleted**, so inference returns `402 RESOURCE_EXHAUSTED` until a balance is added in AI Studio (`ai.studio/projects`) |
+| flashy-squirrel                | 991309044265 | no      | its key 401s on interactions                                                                                                                                                                                                                          |
+| gallery-effusion               | 55739192275  | no      | 401                                                                                                                                                                                                                                                   |
+| gassist-d31c8                  | 989227872366 | no      | 401                                                                                                                                                                                                                                                   |
+| yotube-161921                  | 269278422746 | no      | 401                                                                                                                                                                                                                                                   |
 
 EAP (Gemini "Tool Retrieval") is a **project entitlement**, not a per-key property. A key
 from any of the other four projects is worthless for this regardless of its metadata.
@@ -23,14 +23,14 @@ cross-project rotation is not available, only cross-key rotation within one proj
 
 `/home/toxic/.secrets`, lines 61-66. All six are on gen-lang-client-0111199472.
 
-| variable | gcloud display name | notes |
-|---|---|---|
-| `GEMINI_EAP_KEY_1` | Gemini API Key 4 | **this is the key GCP flagged as publicly exposed on 2026-09-23.** Revoked by GCP? No — still live. Rotate it. |
-| `GEMINI_EAP_KEY_2` | Gemini API Key 3 | |
-| `GEMINI_EAP_KEY_3` | Gemini API Key | |
-| `GEMINI_EAP_KEY_4` | Tasker | |
-| `GEMINI_EAP_KEY_5` | CachyOS | |
-| `GEMINI_EAP_KEY_6` | Generative Language API Key | |
+| variable           | gcloud display name         | notes                                                                                                          |
+| ------------------ | --------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `GEMINI_EAP_KEY_1` | Gemini API Key 4            | **this is the key GCP flagged as publicly exposed on 2026-09-23.** Revoked by GCP? No — still live. Rotate it. |
+| `GEMINI_EAP_KEY_2` | Gemini API Key 3            |                                                                                                                |
+| `GEMINI_EAP_KEY_3` | Gemini API Key              |                                                                                                                |
+| `GEMINI_EAP_KEY_4` | Tasker                      |                                                                                                                |
+| `GEMINI_EAP_KEY_5` | CachyOS                     |                                                                                                                |
+| `GEMINI_EAP_KEY_6` | Generative Language API Key |                                                                                                                |
 
 Removed 2026-10-02: `GEMINI_EAP_KEY_0` (revoked by GCP after the exposure),
 `GEMINI_API_KEY*` (all 401), `GOOGLE_API_KEY` (a byte-duplicate of `GEMINI_API_KEY_4`,
@@ -43,7 +43,10 @@ Google's native endpoint takes the key in the **`x-goog-api-key` header**, not
 in `ranch/mesh/keypool/src/pool.ts`:
 
 ```ts
-export function upstreamAuthHeader(upstream: string, secret: string): [string, string]
+export function upstreamAuthHeader(
+  upstream: string,
+  secret: string,
+): [string, string];
 // .../openai suffix          -> ["Authorization", `Bearer ${secret}`]
 // generativelanguage.google… -> ["x-goog-api-key", secret]
 // otherwise                  -> ["Authorization", `Bearer ${secret}`]
@@ -51,6 +54,14 @@ export function upstreamAuthHeader(upstream: string, secret: string): [string, s
 
 It used to exist only in `probe()`, so a pool probed green and then 401'd on every real
 request. `server.ts::forward` now calls the same helper.
+
+### `x-goog-user-project` is REQUIRED for metered calls (verified live 2026-10-21)
+
+A valid `x-goog-api-key` alone returns `403 PERMISSION_DENIED "unregistered callers"` on
+the EAP project's `GET /v1beta/models`. Adding **`x-goog-user-project: 654595778272`**
+(the quota / billing project) establishes caller identity and returns `200`. The Bun
+keypool (`services/keypool`) encodes this per pool via `auth_headers`; without it every
+gemini pool probes down and 502s "no healthy key". This header is the 2026-10-21 fix.
 
 ## Interaction protocol rules (empirical)
 
