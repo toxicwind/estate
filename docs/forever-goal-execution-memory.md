@@ -60,3 +60,15 @@ Built + committed a self-contained Kilo hindsight CLI at ranch/kilo-code/hindsig
 ledger (162 settled) + fleet directives. Proof: `node src/cli.ts all` lists recent goals,
 open/blocked todos, oracle tallies. Commit cd58de0714 pushed to origin/ranch-fork-metadata
 (remote kilodev/kilo-code). Pre-existing husky pre-push typecheck broken in that repo (unrelated).
+
+## ROUND CLOSE (2026-10-22 ~21:21) — big batch landed
+- MARKET-LOOP-RIG DONE: repointed pitchfork.d/market-loop.toml + pitchfork.toml run/dir to
+  ranch/estate-brain/agents/weaver/bin/market-loop.ts; daemon LIVE pid 1335663. Commit 9620b3d213 (estate main, pushed).
+  Pre-existing blockers surfaced (NOT fixed): agent-display double-daemon (pf build aborts);
+  ranch/barn/gatehouse/pitchfork.d missing (compose fail-closed); market-loop key-order divergence.
+- UNIFIED-TAILSCALE-ENDPOINTS DONE (checkpointed not merged): pylae src/app/api/tunnels/unified/
+  {health,status,fallback}/route.ts. Work-ref wip/toxic/implement/pylae-core-g1/work@85c2a7fe42 (pushed).
+  NOT on main yet (pylae eslint-env). Publish via delendai work publish when ready.
+- KILO-HINDSIGHT-PLUGIN DONE (cd58de0714, ranch/kilo-code/hindsight-plugin).
+- KAPPA-DEPLOY CORRECTION (no gap; binary=origin/main; cache empty).
+- delend-oracle status verified live.
