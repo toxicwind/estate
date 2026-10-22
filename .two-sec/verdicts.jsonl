@@ -45,3 +45,5 @@
 {"ts":"2026-10-21T05:04:15.508Z","kind":"breach","elapsedMs":6,"exit":1,"command":"bun test"}
 {"ts":"2026-10-21T05:23:23.548Z","kind":"breach","elapsedMs":6,"exit":1,"command":"bun test"}
 {"ts":"2026-10-21T07:26:43.810Z","kind":"breach","elapsedMs":6,"exit":1,"command":"bun test"}
+{"ts":"2026-10-22T00:23:22.177Z","kind":"breach","elapsedMs":6,"exit":1,"command":"bun test"}
+{"ts":"2026-10-22T00:23:25.157Z","kind":"breach","elapsedMs":7,"exit":1,"command":"bun test"}
