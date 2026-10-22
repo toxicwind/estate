@@ -1,0 +1,33 @@
+# FOREVER-GOAL EXECUTION MEMORY (2026-10-22)
+
+Standing engine: maximal, recursive, non-idle. Every turn re-ends with the meta-todo
+"find more to do by asking the oracle for tasks + applying new emergent experimental."
+One writer per subtree; 2 concurrent subagents; 4s race budget; deps/canary allowed.
+
+## Done (committed to toxicwind/estate main)
+- delend-code-race (sub-4s breach auto-racer; iteration-2 budget-capped; 10-clip gate) — b688cf, 83b47ac7
+- delend-experimental (3+ divergent self-healer) — ef703388
+- delend-iterate (sync-feedback, model-checked; positional N) — bd129eaa + 6ed8e05a (positional)
+- delend-oracle (oracle-market recursive helper: loop/status/apply) — 6ed8e05a
+- rig-create (openfang rig scaffolder) + AGENTS.md deps/bun-canary/emergent doctrine — f4d42e13
+- AGENTS.md deps/bun/canary doctrine — f4d42e13
+- hatch-gate zero-trust origin gate — 604cd304fe
+- kite-cli gateway keepalive+reconnect — toxicwind/kite-cli baedc9e
+- Oracle intake 2988 posted; 2996 posted → assigned bidder-vesper
+
+## In-flight / open tasks (recover from any cancelled subagent)
+1. oracle-hindsight: write /home/toxic/estate/ranch/squawk/oracle/hindsight.md (Done/Open/Mandate) + verify delend-oracle status reads it. [resumed background ses_e9a88012]
+2. market-loop rig fix: repoint stale run path estate/agents/weaver/bin/market-loop.ts → estate-brain/agents/weaver/bin. [background ses_e9a877d7]
+3. Kilo hindsight plugin: find+install OR build minimal at ranch/kilo/hindsight-plugin reading estate recall/session store. [errored on cap — replay when a slot frees]
+4. unified tailscale endpoints: pylae src/app/api/tunnels/unified/{health,status,fallback}/route.ts; checkpoint (pylae eslint-env broken). [cancelled — replay]
+5. Kappa 429 retry + fast-build un-deployed behind opencode-v2.1.2 merge poisoning — finish the merge on a clean line, then build main binary.
+6. Tau work-refs publish via delendai work publish (ordering: base/valgate first, refresh, then core).
+
+## Standing blockers (pre-existing, other writers)
+- opencode-v2.1.2 in-progress conflicted merge (kappa-code) — another writer's subtree.
+- pylae/flocksync eslint missing (env) — unified tailscale commits checkpointed not merged.
+- hatch cell sshd/kite-listener DOWN (RST) — cell-side; cell unreachable, Muse session cookie lock.
+- keeper-failover.toml 'boot_start redefined' — another writer's config.
+
+## Recursive loop (always last todo)
+find more to do by asking the oracle for tasks + new emergent experimental you should apply.
