@@ -42,3 +42,14 @@ find more to do by asking the oracle for tasks + new emergent experimental you s
 - Tau work-refs publish: coordination-blocked (delendai stacked units). Untouched.
 - Background agents (still running at this scan): market-loop rig fix (ses_e9a877d7), Kilo hindsight plugin (ses_e9a86fa7).
 - Worker slice this round: none forced (2 bg running + market/Kappa/Tau owned elsewhere) — logged observation only.
+
+## KAPPA-DEPLOY CORRECTION (2026-10-22 ~21:19)
+The board's "stale kappa binary / cache poison / deploy-blocked-on-merge" was a FALSE
+NEGATIVE. Truth: (1) origin/main has the 429 feature (retry.ts isConcurrencyShed). (2) A
+clean worktree build at origin/main@fc0ffe2da4 gave an EMPTY mise kappa-build cache
+(`entries:[]`), so the binary was NOT cache-restored; they fresh-compiled to sha 194ae3ec
+== identical to the "stale" running binary — the running kappa ALREADY matches origin/main.
+(3) The `strings <bin> | grep -c isConcurrencyShed = 0` verdict is a false negative on the
+302M minified native blob (the bundler renames that literal: `grep -a RetryAfter` = 1, and
+kappa.jsonc carries "unlimitedRetryOn429":true). CONCLUSION: NO kappa deploy gap; the
+"deploy queue" item is DONE/correct. Do not re-run the long build chasing a ghost.
