@@ -252,6 +252,10 @@
       "enabled": true,
       "origin": "bundled",
       "prefix": "ac"
+    },
+    "auto-agent-selector": {
+      "enabled": true,
+      "origin": "bundled"
     }
   }
 }
