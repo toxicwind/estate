@@ -10,6 +10,12 @@
 
 ## Non-negotiable (verbatim, applies to every agent on this box)
 
+- **The estate is the deploy plane.** This repo/box is where the estate actually
+  deploys: push → `forge` (build cache/REAPI `:25155`) → `pitchfork` (93-boolean
+  daemons, health-checked) → live. If you stand something up, it gets a real
+  `pitchfork` daemon + healthck here; the estate is the shipping lane, not a
+  scratch folder.
+
 1. **MAXIMAL.** Go fully, or don't go. Fix-repairs, never report-only audits.
    No review gates: commit, push, forward-only.
    1b. **Never leave the working tree dirty — commit/checkpoint your in-flight
@@ -310,7 +316,8 @@ These recur every session; honor them without being told.
   auto-wired so any future agent can be scaffolded in seconds.
 
 ## GLOBAL GITHUB — MAJOR PRIMITIVE (2026-10-22)
-The estate operates on **ARBITRARY upstream repos, not just toxicwind/*.** The primitive is
+
+The estate operates on **ARBITRARY upstream repos, not just toxicwind/\*.** The primitive is
 `bin/delend-gh <org/repo|url> [audit-main|raw <path>|<git-args>] [--keep]`: it resolves any
 GitHub/gitlab/codeberg/self-hosted repo into a temp clone, runs a git op (default: a branch
 audit vs the remote default branch), and cleans up. `bin/delend-branch-audit-for-main --repo

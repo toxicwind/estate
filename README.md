@@ -9,7 +9,11 @@
 
 **One human's entire compute estate — a swarm of distributed boxes, 93 supervised daemons.**
 
-_The control plane for a one-person AI lab: local + cloud model routing, a fleet of named agents that actually talk to each other, and every daemon health-checked under one supervisor._
+**_The deploy plane_: this repo is where the estate actually deploys — every box, every model front door, every daemon (93 under `pitchfork`) is stood up, wired, and health-checked from here. It is both the control plane and the shipping lane.** Local + cloud model routing, a fleet of named agents that talk to each other, and every service built/cached by `forge` then rolled out under `pitchfork` — the estate is where "push → build → launch" ends.
+
+```text
+push → forge (:25155 build cache/REAPI) → pitchfork (:25185 health) → LIVE on the estate
+```
 
 <p align="center">
   <a href="docs/">Explore the docs »</a>
@@ -145,23 +149,23 @@ What lives where in this repo, at the top level (all verified present 2026-10-15
 
 Every row below was verified against the live box on 2026-10-15 (port probed + listener checked via `ss`). This table is the contract — if a row lies, that's a bug, file it.
 
-| Service                     | Port                | What it is                                                                                                                                                                                            |
-| --------------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Service                     | Port                | What it is                                                                                                                                                                                      |
+| --------------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 🚂 **herd**                 | `25100`             | Local model front door. `/v1/models` serves the on-box GGUF catalog (herd engines on `:25001+`); cloud traffic overflows to hodos. Launched via `stack/services/herd.sh`, depends on gatehouse. |
-| 🦅 **hodos**                | `25193`             | External provider router (Rust). Strategies, key pools, 429 rotation, circuit breakers, health/Elo. Auth-gated — bring a `Bearer` key.                                                                |
-| 🧭 ~~**estate-router-ts**~~ | ~~`25104`~~         | **RETIRED** — no listener, no daemon definition (verified 2026-10-15). The fleet default moved to `estate/free` via hodos/herd.                                                                       |
-| 🏠 **gatehouse**            | `25127`             | MCP gateway — tool serving, a peer of the routers, not their parent. Has a `/ui/`.                                                                                                                    |
-| 📱 ~~**phone-sentinel**~~   | ~~`25178`~~         | **DOWN** — no listener (verified 2026-10-15).                                                                                                                                                         |
-| 🔑 **keypool**              | `25109`             | Provider key pool sidecar. `/health` → `{"ok":true,"service":"keypool"}`.                                                                                                                             |
-| 🛡️ **model-guard**          | `25101`             | Inference safety layer. _(Fleet note 2026-10-02: was serving its upstream-unreachable fallback when this table was written — tracked as a live issue, not doc drift.)_                                |
-| 💬 ~~**squawk-ws**~~        | ~~`25147`~~         | **DOWN** — no listener (verified 2026-10-15); the feed (:25135) and UI (:25136) carry the channel.                                                                                                    |
-| 📜 **squawk feed**          | `25135`             | Fleet message feed API — the live channel plane (`squawk-ws` :25147 is down as of 2026-10-15).                                                                                                        |
-| 🏗️ ~~**nativelink**~~       | ~~`25155`/`25157`~~ | **DOWN** — no listener on either port (verified 2026-10-15).                                                                                                                                          |
-| 🔥 **flicker**              | `25148`             | Ranch build daemon (`POST /api/jobs`). Direct binary, no container runtime. (Formerly mislabeled "mbx-cache".)                                                                                        |
-| 🔮 **oracle**               | `25151`             | Standalone decision corral — prediction-market work loop, biddable tasks, dated yes/no verdicts on evidence, tamper-evident ledger.                                                                   |
-| 🖥️ **fleet-ui**             | `25136`             | Fleet web UI, reachable over the tailnet (serves at `/`).                                                                                                                                             |
-| 📊 **Ralph dashboard**      | `25194`             | Ops dashboard (HTML UI).                                                                                                                                                                              |
-| 🧠 **codebase-memory**      | `25195`             | Codebase graph UI (serves at `/`).                                                                                                                                                                    |
+| 🦅 **hodos**                | `25193`             | External provider router (Rust). Strategies, key pools, 429 rotation, circuit breakers, health/Elo. Auth-gated — bring a `Bearer` key.                                                          |
+| 🧭 ~~**estate-router-ts**~~ | ~~`25104`~~         | **RETIRED** — no listener, no daemon definition (verified 2026-10-15). The fleet default moved to `estate/free` via hodos/herd.                                                                 |
+| 🏠 **gatehouse**            | `25127`             | MCP gateway — tool serving, a peer of the routers, not their parent. Has a `/ui/`.                                                                                                              |
+| 📱 ~~**phone-sentinel**~~   | ~~`25178`~~         | **DOWN** — no listener (verified 2026-10-15).                                                                                                                                                   |
+| 🔑 **keypool**              | `25109`             | Provider key pool sidecar. `/health` → `{"ok":true,"service":"keypool"}`.                                                                                                                       |
+| 🛡️ **model-guard**          | `25101`             | Inference safety layer. _(Fleet note 2026-10-02: was serving its upstream-unreachable fallback when this table was written — tracked as a live issue, not doc drift.)_                          |
+| 💬 ~~**squawk-ws**~~        | ~~`25147`~~         | **DOWN** — no listener (verified 2026-10-15); the feed (:25135) and UI (:25136) carry the channel.                                                                                              |
+| 📜 **squawk feed**          | `25135`             | Fleet message feed API — the live channel plane (`squawk-ws` :25147 is down as of 2026-10-15).                                                                                                  |
+| 🏗️ ~~**nativelink**~~       | ~~`25155`/`25157`~~ | **DOWN** — no listener on either port (verified 2026-10-15).                                                                                                                                    |
+| 🔥 **flicker**              | `25148`             | Ranch build daemon (`POST /api/jobs`). Direct binary, no container runtime. (Formerly mislabeled "mbx-cache".)                                                                                  |
+| 🔮 **oracle**               | `25151`             | Standalone decision corral — prediction-market work loop, biddable tasks, dated yes/no verdicts on evidence, tamper-evident ledger.                                                             |
+| 🖥️ **fleet-ui**             | `25136`             | Fleet web UI, reachable over the tailnet (serves at `/`).                                                                                                                                       |
+| 📊 **Ralph dashboard**      | `25194`             | Ops dashboard (HTML UI).                                                                                                                                                                        |
+| 🧠 **codebase-memory**      | `25195`             | Codebase graph UI (serves at `/`).                                                                                                                                                              |
 
 Full daemon inventory (93, with health checks and restart paths): [`pitchfork.toml`](pitchfork.toml) — port SSOT is `config/ports.env`.
 
