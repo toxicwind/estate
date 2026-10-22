@@ -12,6 +12,17 @@
 
 1. **MAXIMAL.** Go fully, or don't go. Fix-repairs, never report-only audits.
    No review gates: commit, push, forward-only.
+   1b. **Never leave the working tree dirty — commit/checkpoint your in-flight
+   work before finishing.** If you touched a file, it gets committed and
+   pushed (or delendai-checkpointed to origin) before you call it done — even
+   when the work is partial or belongs to a prior in-flight change from
+   another agent. "It's someone else's uncommitted change" is not an excuse:
+   squat it, checkpoint it to a work-ref, and say so. A dirty tree is how
+   work silently goes missing and how agents get confused ("did my change
+   land?"). Under `shared-checkout-merge`, dirty local files may ALREADY be
+   checkpointed on an origin work-ref — verify `git ls-remote origin
+'refs/heads/**/wip/**'` before assuming work is lost, and checkpoint+push
+   anything still uncommitted so the tree is clean at handoff.
 2. **The box is live.** 89+ pitchfork+mise daemons. Additive only — never remove or
    disable a peer/daemon/model without an explicit order. Never touch
    `awrawr-mcp.service` from a bridge call. Never run the retired
@@ -27,6 +38,12 @@
    to evmts.
 5. **Docs lie; code is absolute.** A claim in any `.md` that disagrees with the
    code is wrong. Fix the doc, don't work around it.
+6. **After any local binary swap/redeploy of a supervised service, restart it
+   immediately (pitchfork-managed) so the running estate adopts the change — do
+   not leave an updated binary dormant. "Deployed" means a running process is
+   using it.** Only skip the restart if an explicit order says not to disrupt a
+   live flow. This applies to kappa, tau, kite and any pitchfork-supervised
+   daemon (real-time reload, no force-kill of unrelated sessions).
 
 ## The vibe meta-todo (first-class, resets every task)
 
@@ -35,7 +52,7 @@ the reset). It holds the estate's whole doctrine so even mid-task you never lose
 the thread:
 
 - **Free-will / MAXIMAL / first-class / future-usable / cutting-edge.** Never
-  "report-only" — always *fix-forward*. If something is slow, blocked, or basic,
+  "report-only" — always _fix-forward_. If something is slow, blocked, or basic,
   that's a signal to race the fastest available path, not to stop.
 - **Race faster with borrow + papers, DURING the task, not just at planning:**
   on any slow/blocked step route `ast-grep` → `bm25` → **paper-finder** →
@@ -65,21 +82,22 @@ browser-keeper CDP (`computer` / `:9223`), and more — behind a unified interfa
 **Use native tool calls and Gatehouse MCP interfaces over raw terminal commands.**
 The following first-class tools are the primary interface, not bash:
 
-| Tool | Purpose |
-|---|---|
-| `read` | File/URL/document reading with outline, budget, selectors |
-| `bash` | Real facts/pipelines only — not specialized-tool work |
-| `edit` | Anchored patch edits |
-| `write` | Create/overwrite files |
-| `eval` | Python/IPython, browser, computer control |
-| `glob` | File/directory discovery |
-| `find` | Behavior-to-source mapping (first for unknown locations) |
-| `web_search` | Structured web search |
-| `lsp` | Symbol-aware code intelligence (navigation, refactor, rename) |
+| Tool         | Purpose                                                       |
+| ------------ | ------------------------------------------------------------- |
+| `read`       | File/URL/document reading with outline, budget, selectors     |
+| `bash`       | Real facts/pipelines only — not specialized-tool work         |
+| `edit`       | Anchored patch edits                                          |
+| `write`      | Create/overwrite files                                        |
+| `eval`       | Python/IPython, browser, computer control                     |
+| `glob`       | File/directory discovery                                      |
+| `find`       | Behavior-to-source mapping (first for unknown locations)      |
+| `web_search` | Structured web search                                         |
+| `lsp`        | Symbol-aware code intelligence (navigation, refactor, rename) |
 
 #### Gatehouse MCP federated tools
 
 Gatehouse at `http://127.0.0.1:25127/mcp` exposes MCP resources and tools for:
+
 - **FFS** (full-text search, BM25 ranking, symbol indexing)
 - **BM25** (relevance-ranked text search across the estate)
 - **Memory** (`recall`, `retain`, `reflect` — long-term memory queries)
@@ -97,26 +115,26 @@ covers (e.g. `docker ps`, `ss`, `curl` for health checks).
 
 `ffs` is a single CLI over a persistent on-disk index (Bigram, Bloom, Symbol, Outline).
 
-| When you need to… | Use `ffs …` | Notes |
-|---|---|---|
-| Find a file by name fragment | `find <needle>` | substring, case-insensitive; `--scored` adds role/socle |
-| Match by shape/glob | `glob '**/<pattern>'` | shell glob (`**`,`*`,`?`,`[…]`) |
-| Content match, one pattern | `grep <regex>` | ripgrep semantics; `--group` groups by enclosing symbol |
-| Content match, many needles | `multi-grep` | Aho-Corasick literal AND/OR |
-| Read a file without flooding context | `read <path>` | §budget-aware *outline* by default; `--full` raw |
-| Sketch a single file's structure | `outline <path>` | tree-sitter, `--style agent/…` |
-| Resolve a symbol to its definition | `symbol <name>` | tree-sitter AST, not substring |
-| Who refers to this symbol | `callers <name>` | `--hops N` BFS (≤5) |
-| What this symbol calls | `callees <name>` | `--depth N` |
-| Defs + usages in one shot | `refs <name>` | full defs + paged callers |
-| Full card per definition | `flow <name>` | def+signature+body+callees+callers |
-| Peers at same scope | `siblings <name>` | same class/file/module |
-| Imports + dependents of a file | `deps <path>` | import graph of a file |
-| Rank blast radius of a change | `impact <symbol>` | score = direct×3 + imports×2 + transitive×1 |
-| See the whole workspace | `map` / `overview` | file counts + token estimates |
-| Warm the indexes | `index` | build Bigram/Bloom/Symbol/Outline caches |
-| Be an MCP server | `mcp` | replaces Grep/Glob/Read for agents |
-| Recall the guide | `guide` | print the embedded doc |
+| When you need to…                    | Use `ffs …`           | Notes                                                   |
+| ------------------------------------ | --------------------- | ------------------------------------------------------- |
+| Find a file by name fragment         | `find <needle>`       | substring, case-insensitive; `--scored` adds role/socle |
+| Match by shape/glob                  | `glob '**/<pattern>'` | shell glob (`**`,`*`,`?`,`[…]`)                         |
+| Content match, one pattern           | `grep <regex>`        | ripgrep semantics; `--group` groups by enclosing symbol |
+| Content match, many needles          | `multi-grep`          | Aho-Corasick literal AND/OR                             |
+| Read a file without flooding context | `read <path>`         | §budget-aware _outline_ by default; `--full` raw        |
+| Sketch a single file's structure     | `outline <path>`      | tree-sitter, `--style agent/…`                          |
+| Resolve a symbol to its definition   | `symbol <name>`       | tree-sitter AST, not substring                          |
+| Who refers to this symbol            | `callers <name>`      | `--hops N` BFS (≤5)                                     |
+| What this symbol calls               | `callees <name>`      | `--depth N`                                             |
+| Defs + usages in one shot            | `refs <name>`         | full defs + paged callers                               |
+| Full card per definition             | `flow <name>`         | def+signature+body+callees+callers                      |
+| Peers at same scope                  | `siblings <name>`     | same class/file/module                                  |
+| Imports + dependents of a file       | `deps <path>`         | import graph of a file                                  |
+| Rank blast radius of a change        | `impact <symbol>`     | score = direct×3 + imports×2 + transitive×1             |
+| See the whole workspace              | `map` / `overview`    | file counts + token estimates                           |
+| Warm the indexes                     | `index`               | build Bigram/Bloom/Symbol/Outline caches                |
+| Be an MCP server                     | `mcp`                 | replaces Grep/Glob/Read for agents                      |
+| Recall the guide                     | `guide`               | print the embedded doc                                  |
 
 - **Global flags**: `--root <dir>`, `--format text|json`. Listing commands
   (`find/symbol/callers/callees/refs/flow/siblings`) page with
@@ -152,9 +170,14 @@ covers (e.g. `docker ps`, `ss`, `curl` for health checks).
   purged** — never reference it.
 - **Primary fast inference — FreeInference** (`freeinference.org/v1`):
   models: `qwen3.6-35b`, `glm-5.3-flash`, `deepseek-v4-flash`, `minimax-m3`.
-  Strict provider concurrency limit: **`maxConcurrency: 2`** per API key
-  (returns HTTP 429 with retry-after: 1). All agent spawn/batch workflows MUST
-  declare and observe `maxConcurrency: 2`.
+  **No hard provider concurrency cap** (proven 2026-10-22: 4 concurrent → all 200,
+  no 429/rate-limit headers; Pinax defines no cap). A "429 with retry-after:1" seen
+  from proxied tool calls is a **local Gatehouse/limiter concurrency shed**, not the
+  provider. When a provider opts into client `unlimitedRetryOn429` (default off),
+  ride a concurrency-contained 429 through (retry) rather than hard-stopping. The
+  `maxConcurrency: 2` number is a **Kappa client knob** (`kappa.jsonc`), not provider
+  doctrine. See `estate/ranch/estate-recon/muse-meta-hatch/docs/field-notes/kite-fleet-recon/
+FIX-usage-limit-as-dev-env.md`.
 - **Orchestration: Corral + DelendAI**:
   Multi-agent fleet orchestration is **Corral** (`@estate/corral`, `estate/ranch/corral`)
   merged with **DelendAI** (`shared-checkout-merge` development profile, proposal
@@ -201,13 +224,13 @@ covers (e.g. `docker ps`, `ss`, `curl` for health checks).
 
 ## Scope split (nested AGENTS.md)
 
-| Path | Owner of these rules |
-|---|---|
-| `/home/toxic/estate/AGENTS.md` | estate control-plane: repos, skills, grasp-hub, pitchfork |
-| `/home/toxic/estate/ranch/*/AGENTS.md` | each ranch component repo's own contract |
+| Path                                   | Owner of these rules                                      |
+| -------------------------------------- | --------------------------------------------------------- |
+| `/home/toxic/estate/AGENTS.md`         | estate control-plane: repos, skills, grasp-hub, pitchfork |
+| `/home/toxic/estate/ranch/*/AGENTS.md` | each ranch component repo's own contract                  |
 
 **Container path**: `$HOME/AGENTS.md` = this file; `$HOME/estate/AGENTS.md` = the
-estate mirror. Every nested file declares *what it refines and where*; none
+estate mirror. Every nested file declares _what it refines and where_; none
 repeats or contradicts the universal contract above.
 
 ## Agent customizations + skills hub (2026-10-16)
@@ -230,3 +253,33 @@ repeats or contradicts the universal contract above.
   prose in frontmatter; no spec duplication in handoffs), R-501 LF+ASCII on the
   Arch host, R-503 reference sibling repos by local path, never hardcoded
   github.com URLs -- resolve with `git -C <path> remote get-url origin`.
+
+## Estate operating rules (session boot defaults)
+
+These recur every session; honor them without being told.
+
+- **Search/read:** use ffs / dedicated MCP tools (`ffs_*`, `bm25_*`), never raw
+  `grep`/`find`/`head`/`sed`/`cat` when an ffs tool covers the job. Do not
+  truncate output with `head`/`tail` — persist full output and read it.
+- **Commit + push forward-only.** Never leave the working tree dirty; if you
+  touch a file, commit + push (or delendai-checkpoint) before done. Only commit
+  YOUR files (pathspec); never sweep in peer WIP; stash-and-restore peer work if
+  a rebase needs a clean tree.
+- **No monkeypatch.** Every fix is a real committed file. Prefer fixing the root
+  cause (e.g. a shared library/upstream) over a per-caller workaround; document
+  drop-in TODOs when something is embedded and should import from the canonical
+  package.
+- **Secretsmith is SSOT (Rule 3).** Resolve keys/creds from the secretsmith
+  keyring, never a stale env var. `secretsmith get --label <NAME> --show` —
+  parse the `secret:` line.
+- **Use the fleet tools.** Constant forge (now resilient: Brave/SERPER/Tavily/
+  GitHub search legs) for pattern-borrow; `gh` for GitHub; the oracle market for
+  engineering calls; keeper (persistent_*) is the logged-in browser, fast-browser
+  for scripted known flows.
+- **Ask, don't guess.** When a decision or a contributor's intent is unclear,
+  ask via the `question` tool (the user would rather answer than correct a wrong
+  guess). Use it liberally.
+- **Naming map (2026-10-22):** EAP/Gemini Tool Retrieval = **@estate/theta**
+  (PRIVATE `toxicwind/theta`, confidential — never public). Merged provider
+  gateway (auth+keys+routing) = **atlas** (ex-cuttinggate). Key-pool router =
+  keygate. EAP keys live in secretsmith (`GEMINI_EAP_KEY_1..6`), not env.
