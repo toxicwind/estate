@@ -72,3 +72,12 @@ open/blocked todos, oracle tallies. Commit cd58de0714 pushed to origin/ranch-for
 - KILO-HINDSIGHT-PLUGIN DONE (cd58de0714, ranch/kilo-code/hindsight-plugin).
 - KAPPA-DEPLOY CORRECTION (no gap; binary=origin/main; cache empty).
 - delend-oracle status verified live.
+
+## FOREVER-LOOP DAEMON LIVE (2026-10-22 ~21:28) — mission bounded
+- Created the forever-loop squawk C2 rig: ranch/estate-brain/agents/forever-loop/{agent.toml (schedule interval:3m),
+  run-loop.ts driver}, pitchfork.d/forever-loop.toml, and a LIVE [daemons.forever-loop] stanza added to pitchfork.toml
+  directly (the pf-build recompose is broken by agent-display double-daemon pre-existing; mirrored market-loop shape).
+- Started under pitchfork: pid 1504222, ready_cmd pgrep matched, "started". Squawk/pitchfork owns the 3-min loop now.
+- Session 3-min forever cron: gone (already cleared by state change) — so the loop is estate-native, not session-scoped.
+- Note: pf-build (recompose) pre-existing broken due to agent-display double-daemon — the live-stanza-add path is the
+  workaround until that's fixed; effort to fix agent-display recompose is a good next fleet task.
