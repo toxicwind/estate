@@ -7,14 +7,18 @@ But where code is _organized_ is a separate layer — the **pens**.
 
 ```
 /home/toxic/
-  pens/      where the code pens physically live (non-GitHub workspace/home) — ORGANIZATION
+  pens/      where the code pens physically live — FULLY LOCAL, non-GitHub (ORGANIZATION)
      ranch/     the 169-component workspace pen (one dir per component)
-     olympus/   the Greek-coded pantheon pen (the `toxicwind/olympus` repo)
-  estate/    the deploy plane  (GitHub: toxicwind/estate)
+     olympus/   the Greek-coded pantheon pen (pure local, NOT a GitHub repo)
+  estate/    the deploy plane  (GitHub: toxicwind/estate — the ONLY GitHub-hosted thing here)
      ranch   ->  /home/toxic/pens/ranch    (symlink: deploy plane resolves to the pen)
      olympus ->  /home/toxic/pens/olympus  (symlink)
-GitHub       remote home for each component (toxicwind/<name>)
 ```
+
+The pens are **fully local**: they organize the code, they are not GitHub orgs.
+Only the deploy plane (`estate`) is GitHub-hosted. olympus is a local Greek-pantheon
+registry pen — it maps each Greek codename to where its product physically lives
+in `ranch/`, and it has no remote of its own.
 
 The estate deploys _through_ the symlinks: `/home/toxic/estate/ranch/…` keeps
 working and is just `pens/ranch/…`. This is the organization — code pens under
