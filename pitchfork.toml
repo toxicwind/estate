@@ -46,6 +46,7 @@ auto = ["start"]
 retry = true
 ready_cmd = "ss -ltn 'sport = :25198' | grep -q LISTEN"
 port = 25198
+expected_port = [25198]
 boot_start = true
 dir = "/home/toxic"
 mise = false
@@ -65,6 +66,7 @@ run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/estate/bridge/aw
 auto = ["start"]
 retry = true
 port = 25204
+expected_port = [25204]
 dir = "/home/toxic"
 mise = false
 
@@ -178,6 +180,7 @@ auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25154/"
 port = 25154
+expected_port = [25154]
 boot_start = true
 depends = ["agent-display"]
 dir = "."
@@ -294,6 +297,7 @@ run = "mise exec -- bun run ./src/index.ts"
 retry = true
 ready_http = "http://127.0.0.1:25202/health"
 port = 25202
+expected_port = [25202]
 dir = "/home/toxic/estate/ranch/doorbell"
 mise = true
 
@@ -302,6 +306,7 @@ run = "/home/toxic/.local/share/mise/installs/bun/1.4.2/bin/bun run ./src/oauth-
 retry = true
 ready_http = "http://127.0.0.1:25217/health"
 port = 25217
+expected_port = [25217]
 dir = "/home/toxic/estate/ranch/doorbell"
 mise = false
 
@@ -464,6 +469,7 @@ auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25127/health"
 port = 25127
+expected_port = [25127]
 dir = "/home/toxic/estate/ranch/barn/gatehouse"
 mise = false
 
@@ -604,6 +610,7 @@ auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:4747/"
 port = 4747
+expected_port = [4747]
 boot_start = true
 depends = ["agent-display"]
 dir = "/home/toxic/estate"
@@ -775,7 +782,7 @@ timeout = "5s"
 retries = 3
 
 [daemons.mesh-landing]
-run = "exec /usr/bin/python3 /home/toxic/estate/ranch/range/bin/landing.py"
+run = "exec /usr/bin/python3 /home/toxic/estate/ranch/propylon/landing.py"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25207/health"
@@ -1331,6 +1338,23 @@ auto = ["start"]
 retry = 5
 dir = "/home/toxic/estate/ranch/fleetd"
 
+[daemons.squawk-ws]
+run = "exec /home/toxic/.local/share/squawk-nats/venv/bin/python /home/toxic/estate/ranch/squawk-ws/squawk_ws_server.py"
+auto = ["start"]
+retry = true
+port = 25147
+expected_port = [25147]
+boot_start = true
+dir = "/home/toxic/estate/ranch/squawk-ws"
+mise = false
+
+[daemons.squawk-feed]
+run = "exec /usr/bin/python3 /home/toxic/estate/ranch/squawk/squawk_feed.py --root /home/toxic/.fleet-bus/squawk-root"
+auto = ["start"]
+retry = 5
+dir = "/home/toxic/estate/ranch/squawk"
+env = { SQUAWK_FEED_TOKEN = "5a378d9aea8a965fcd633002772a2f47" }
+
 [groups.mesh]
 daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "feedlot", "hindsight", "kimi-code", "nginx"]
 
@@ -1339,16 +1363,3 @@ daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "hodo
 
 [groups.agents]
 daemons = ["rig"]
-
-# squawk-ws -- the fleet WSS channel backend (:25147), the core of the
-# cell<->here bridge. Restored 2026-10-22: was STOPPED w/ no registration,
-# which took down the bridge/fleet channel. Supervised so it auto-restarts.
-[daemons.squawk-ws]
-dir = "/home/toxic/estate/ranch/squawk-ws"
-run = "exec /home/toxic/.local/share/squawk-nats/venv/bin/python /home/toxic/estate/ranch/squawk-ws/squawk_ws_server.py"
-port = 25147
-env_forward = []
-mise = false
-retry = true
-boot_start = true
-auto = ["start"]
