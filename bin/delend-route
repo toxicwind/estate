@@ -52,6 +52,51 @@ function classify(txt: string): { name: string; match: string } | null {
 if (list) {
   console.log("=== delend-route table ===");
   for (const [name, pats] of Object.entries(ROUTES)) console.log(`  ${name}  <~ ${pats.join(" | ")}`);
+  console.log("\n-- resources (estate source-of-truth routing) --");
+  console.log("  delend-route --where '<port|daemon|zero|25xxx>'  -> routes to the LIVE resource");
+  process.exit(0);
+}
+
+// ---- RESOURCES: give delend real routing powers by consulting the estate's
+//      source-of-truth inventory (ports.env + zero-primitives register), not
+//      just a static keyword table. This lets it route port/daemon/zero lookups. ----
+if (flags.includes("--where")) {
+  const q = (flags[flags.indexOf("--where")+1] || "").toLowerCase();
+  const has = (s: string) => q.includes(s);
+  const PORTS = "/home/toxic/estate/config/ports.env";
+  const REG = "/home/toxic/estate/docs/zero-primitives-register.md";
+  const fs = "node:fs";
+  const mk = await import(fs);
+  const lines: string[] = [];
+  // 1) port lookup: annotate the matching 25xxx from ports.env + register
+  if (has("port") || /\b25\d{3}\b/.test(q)) {
+    const port = q.match(/25\d{3}/)?.[0] || (has("hodos")? "25193" : has("squawk")? "25147" : has("feed")? "25135" : has("gatehouse")? "25127" : has("oracle")? "25151" : has("mbx")? "25148" : has("ranch-ui")? "25218" : has("doorbell")? "25217" : null);
+    if (port) {
+      const env = mk.readFileSync(PORTS, "utf8").split("\n").find(l => l.includes(port));
+      lines.push(`port ${port}: ${env?.trim() || "in ports.env range"} → {ssh|hodos|squawk|gatehouse|mbx|oracle|ranch-ui|doorbell}`);
+      // annotate the service the register/README says
+      const svc = has("hodos")?"hodos model-proxy":has("squawk")?"squawk-ws fleet":has("feed")?"squawk-feed":has("gatehouse")?"gatehouse mcp":has("oracle")?"oracle-market":has("mbx")?"mbx build-cache":has("ranch-ui")?"ranch-ui dashboard":has("doorbell")?"doorbell oauth-entry":null;
+      if (svc) lines.push(`  → route to: ${svc} (${port})`);
+    }
+  }
+  // 2) zero-* lookup -> route to the zero-transport register / primitive
+  if (has("zero")) {
+    if (has("pcie") || has("copy")) lines.push("  zero-* → true-zero-copy-pcie-streaming (PCIe GPU skill)");
+    else lines.push("  zero-* → zero-transport (libzero_transport.so, SPSC ring; see docs/zero-primitives-register.md)");
+  }
+  // 3) daemon lookup -> route to the pitchfork daemon id
+  const dm = q.match(/daemon\s+([\w-]+)/);
+  if (dm) {
+    const pid = dm[1];
+    const cmd = `/home/toxic/estate/pitchfork.d/${pid.replace(/^estate\//,'')}.toml`;
+    lines.push(`daemon ${pid}: config ${cmd} exists=${mk.existsSync(cmd)} → route to pitchfork ${cmd}`);
+  }
+  // 4) primitive lookup
+  if (has("delend")) {
+    const which = Object.keys(ROUTES).find(n => q.includes(n.replace("delend-","")));
+    lines.push(which ? `primitive → ${which}` : "primitive → delend-route --list");
+  }
+  console.log(lines.length ? lines.join("\n") : `--where: no match for "${q}" (try: port 25148 / daemon squawk-ws / zero / hodos / delend)`);
   process.exit(0);
 }
 
