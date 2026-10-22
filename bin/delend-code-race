@@ -66,7 +66,7 @@ if (!orig.timedOut && orig.status===0) {
   done("PASS flaky", `original completed under ${budget}ms budget (rc=0). No race needed.`);
   process.exit(0);
 }
-const origProblem = orig.timedOut ? `breached ${budget}ms` : `rc=${orig.status}: ${orig.stderr.slice(0,120)}`;
+const origProblem = orig.timedOut ? `breached ${budget}ms` : `rc=${orig.status}: ${orig.stderr}`;
 
 // 2. persistent breach → auto pattern-borrow + code-race
 if (!existsSync(FORGE)) {
@@ -74,7 +74,7 @@ if (!existsSync(FORGE)) {
   process.exit(1);
 }
 const bn = run("bun", [FORGE, "borrow", cmdLine, "--per-source", String(perSource)], process.cwd(), 9000);
-const borrowLines = (bn.stdout||" ").split("\n").filter(l => l.trim() && /^\s*[0-9]+\.\s|^\s*[0-9]+\.\[|^\s*1\.\s/.test(l)).slice(0,6);
+const borrowLines = (bn.stdout||" ").split("\n").filter(l => l.trim() && /^\s*[0-9]+\.\s|^\s*[0-9]+\.\[|^\s*1\.\s/.test(l));
 
 // 3. attempt a code-race: forge race if we can map the exe to candidate strategies;
 //    otherwise emulate a hedged race by timing the original vs. a faster variant guess.
@@ -87,7 +87,7 @@ console.log(`borrow candidates (top ${perSource}):`);
 for (const l of borrowLines) console.log("  "+l.trim());
 if (bn.stdout) {
   const src = (bn.stdout.match(/\[([a-z_]+)\]/) || [])[1] ?? "external";
-  const title = borrowLines[0]?.replace(/^\s*[0-9.]+\s*\[[^\]]+\]\s*/, "")?.slice(0,60) ?? "(none surfaced)";
+  const title = borrowLines[0]?.replace(/^\s*[0-9.]+\s*\[[^\]]+\]\s*/, "") ?? "(none surfaced)";
   console.log(`\nPASS borrow → fastest external pattern [source=${src}] — consider basing your sub-${budget} rewrite on: '${title}'`);
   console.log(`winner written to /tmp/delend-code-race-winner.json`);
   const fs = "node:fs";
