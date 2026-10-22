@@ -22,13 +22,15 @@
  * Zero deps. bun or node.
  */
 import { spawnSync } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, writeFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 
 const BUDGET_MS = 4000;
-const FORGE = join(dirname(import.meta.path), "..", "grasp-hub", "skills", "04_code_intelligence", "code-patterns", "src", "cli.ts");
+export const FORGE = process.env.DELEND_CODERACE_FORGE ||
+  join(dirname(import.meta.path), "..", "grasp-hub", "skills", "04_code_intelligence", "code-patterns", "src", "cli.ts");
+const WINNER_PATH = process.env.DELEND_CODERACE_WINNER || "/tmp/delend-code-race-winner.json";
 
-function run(cmd: string, args: string[], cwd=process.cwd(), timeoutMs=8000) {
+export function run(cmd: string, args: string[], cwd=process.cwd(), timeoutMs=8000) {
   try {
     const p = spawnSync(cmd, args, { cwd, encoding: "utf8", timeout: timeoutMs, shell: false });
     return { status: p.status ?? 1, stdout: (p.stdout||"").trim(), stderr: (p.stderr||"").trim(), timedOut: !!p.error?.code?.includes("ETIMEDOUT") || p.signal==="SIGTERM" };
@@ -37,62 +39,108 @@ function run(cmd: string, args: string[], cwd=process.cwd(), timeoutMs=8000) {
   }
 }
 
-function argvOf(line: string): string[] {
+export function argvOf(line: string): string[] {
   // minimal POSIX-ish tokenizer for the failing 4s line macro
   const out:string[] = []; const re = /\s+|"([^"]*)"|'([^']*)'|(\S+)/g; let m;
   while ((m = re.exec(line))) { if (m[1]!==undefined) out.push(m[1]); else if (m[2]!==undefined) out.push(m[2]); else if (m[3]!==undefined) out.push(m[3]); }
   return out;
 }
 
-const args = process.argv.slice(2);
-const iPer = args.indexOf("--per-source");
-const iBudget = args.findIndex(a => a==="--2s");
-const iRace = args.indexOf("--race-timeout");
-const perSource = iPer>=0 ? Number(args[iPer+1])||3 : 3;
-const budget = iBudget>=0 ? 2000 : BUDGET_MS;
-const raceTimeout = iRace>=0 ? Number(args[iRace+1])||6 : 6;
-// the failing line is whatever isn't a flag
-const cmdLine = args.filter((a,idx)=> !args[idx-1]?.startsWith("--") && !["--per-source","--2s","--race-timeout"].includes(a)).join(" ").trim();
-
-if (!cmdLine) { console.error("usage: delend-code-race '<failing 4s command>' [--per-source N] [--2s] [--race-timeout S]"); process.exit(2); }
-
-const parts = argvOf(cmdLine);
-const exe = parts.shift() ?? "";
-const done = (token: string, detail: string) => { console.log(token); console.error(detail); };
-
-// 1. re-run original under budget once
-const orig = run(exe, parts, process.cwd(), budget);
-if (!orig.timedOut && orig.status===0) {
-  done("PASS flaky", `original completed under ${budget}ms budget (rc=0). No race needed.`);
-  process.exit(0);
+export interface RaceResult {
+  token: string;
+  detail: string;
+  lines: string[];
+  rc: number;
+  winnerWritten?: boolean;
 }
-const origProblem = orig.timedOut ? `breached ${budget}ms` : `rc=${orig.status}: ${orig.stderr}`;
 
-// 2. persistent breach → auto pattern-borrow + code-race
-if (!existsSync(FORGE)) {
-  done("FAIL", `${cmdLine} -> ${origProblem}; FORGE cli missing at ${FORGE}, no race possible.`);
-  process.exit(1);
+/**
+ * Core race logic (no process.exit — testable). Returns a summary + exit code.
+ */
+export async function raceCore(
+  cmdLine: string,
+  opts: { perSource?: number; budget?: number; raceTimeout?: number; cwd?: string; forge?: string; writeWinner?: (payload: any) => void } = {},
+): Promise<RaceResult> {
+  const perSource = opts.perSource ?? 3;
+  const budget = opts.budget ?? BUDGET_MS;
+  const raceTimeout = opts.raceTimeout ?? 6;
+  const cwd = opts.cwd ?? process.cwd();
+  const forge = opts.forge ?? FORGE;
+  const lines: string[] = [];
+  const done = (token: string, detail: string, extra: string[] = []) => {
+    lines.push(token);
+    lines.push(detail);
+    for (const e of extra) lines.push(e);
+  };
+
+  const parts = argvOf(cmdLine);
+  const exe = parts.shift() ?? "";
+
+  // 1. re-run original under budget once
+  const orig = run(exe, parts, cwd, budget);
+  if (!orig.timedOut && orig.status===0) {
+    const detail = `original completed under ${budget}ms budget (rc=0). No race needed.`;
+    done("PASS flaky", detail);
+    return { token: "PASS flaky", detail, lines, rc: 0 };
+  }
+  const origProblem = orig.timedOut ? `breached ${budget}ms` : `rc=${orig.status}: ${orig.stderr}`;
+
+  // 2. persistent breach → auto pattern-borrow + code-race
+  if (!existsSync(forge)) {
+    const detail = `${cmdLine} -> ${origProblem}; FORGE cli missing at ${forge}, no race possible.`;
+    done("FAIL", detail);
+    return { token: "FAIL", detail, lines, rc: 1 };
+  }
+  const bn = run("bun", [forge, "borrow", cmdLine, "--per-source", String(perSource)], cwd, Math.max(800, Math.floor(budget*0.7)));
+  const borrowLines = (bn.stdout||" ").split("\n").filter(l => l.trim() && /^\s*[0-9]+\.\s|^\s*[0-9]+\.\[|^\s*1\.\s/.test(l));
+
+  // 3. attempt a code-race: forge race if we can map the exe to candidate strategies;
+  //    otherwise emulate a hedged race by timing the original vs. a faster variant guess.
+  run("bun", [forge, "race", "--strategies", "/tmp/delend-code-race-strat.json", "--race-timeout", String(raceTimeout)], cwd, Math.max(800, Math.floor(budget*0.3)));
+
+  lines.push(`\n=== delend-code-race result for: ${exe} ${parts.join(" ")} ===`);
+  lines.push(`breach: ${origProblem}`);
+  lines.push(`borrow candidates (top ${perSource}):`);
+  for (const l of borrowLines) lines.push("  "+l.trim());
+  if (bn.stdout) {
+    const src = (bn.stdout.match(/\[([a-z_]+)\]/) || [])[1] ?? "external";
+    const title = borrowLines[0]?.replace(/^\s*[0-9.]+\s*\[[^\]]+\]\s*/, "") ?? "(none surfaced)";
+    lines.push(`\nPASS borrow → fastest external pattern [source=${src}] — consider basing your sub-${budget} rewrite on: '${title}'`);
+    lines.push(`winner written to ${WINNER_PATH}`);
+    const payload = { cmd: cmdLine, budget_ms: budget, breach: origProblem, borrow_src: src, top_candidate: title, ts: Date.now() };
+    const writer = opts.writeWinner;
+    if (writer) writer(payload);
+    else writeFileSync(WINNER_PATH, JSON.stringify(payload, null, 2));
+    return { token: "PASS borrow", detail: title, lines, rc: 0, winnerWritten: true };
+  }
+  lines.push(`\nFAIL — no borrow surfaced; original still ${origProblem}. Investigate manually.`);
+  return { token: "FAIL", detail: origProblem, lines, rc: 1 };
 }
-const bn = run("bun", [FORGE, "borrow", cmdLine, "--per-source", String(perSource)], process.cwd(), Math.max(800, Math.floor(budget*0.7)));
-const borrowLines = (bn.stdout||" ").split("\n").filter(l => l.trim() && /^\s*[0-9]+\.\s|^\s*[0-9]+\.\[|^\s*1\.\s/.test(l));
 
-// 3. attempt a code-race: forge race if we can map the exe to candidate strategies;
-//    otherwise emulate a hedged race by timing the original vs. a faster variant guess.
-let raceOut = "";
-const tryRace = run("bun", [FORGE, "race", "--strategies", "/tmp/delend-code-race-strat.json", "--race-timeout", String(raceTimeout)], process.cwd(), Math.max(800, Math.floor(budget*0.3)));
-
-console.log(`\n=== delend-code-race result for: ${exe} ${parts.join(" ")} ===`);
-console.log(`breach: ${origProblem}`);
-console.log(`borrow candidates (top ${perSource}):`);
-for (const l of borrowLines) console.log("  "+l.trim());
-if (bn.stdout) {
-  const src = (bn.stdout.match(/\[([a-z_]+)\]/) || [])[1] ?? "external";
-  const title = borrowLines[0]?.replace(/^\s*[0-9.]+\s*\[[^\]]+\]\s*/, "") ?? "(none surfaced)";
-  console.log(`\nPASS borrow → fastest external pattern [source=${src}] — consider basing your sub-${budget} rewrite on: '${title}'`);
-  console.log(`winner written to /tmp/delend-code-race-winner.json`);
-  const fs = "node:fs";
-  await import(fs).then(m => m.writeFileSync("/tmp/delend-code-race-winner.json", JSON.stringify({ cmd: cmdLine, budget_ms: budget, breach: origProblem, borrow_src: src, top_candidate: title, ts: Date.now() }, null, 2)));
-  process.exit(0);
+export function parseArgs(args: string[]): { perSource: number; budget: number; raceTimeout: number; cmdLine: string } {
+  const iPer = args.indexOf("--per-source");
+  const iBudget = args.findIndex(a => a==="--2s");
+  const iRace = args.indexOf("--race-timeout");
+  const perSource = iPer>=0 ? Number(args[iPer+1])||3 : 3;
+  const budget = iBudget>=0 ? 2000 : BUDGET_MS;
+  const raceTimeout = iRace>=0 ? Number(args[iRace+1])||6 : 6;
+  const cmdLine = args.filter((a,idx)=> !args[idx-1]?.startsWith("--") && !["--per-source","--2s","--race-timeout"].includes(a)).join(" ").trim();
+  return { perSource, budget, raceTimeout, cmdLine };
 }
-console.log(`\nFAIL — no borrow surfaced; original still ${origProblem}. Investigate manually.`);
-process.exit(1);
+
+export async function main(argv: string[] = process.argv.slice(2)): Promise<number> {
+  const { perSource, budget, raceTimeout, cmdLine } = parseArgs(argv);
+  if (!cmdLine) {
+    console.error(
+      "usage: delend-code-race '<failing 4s command>' [--per-source N] [--2s] [--race-timeout S]",
+    );
+    return 2;
+  }
+  const res = await raceCore(cmdLine, { perSource, budget, raceTimeout });
+  for (const l of res.lines) console.log(l);
+  return res.rc;
+}
+
+if (import.meta.main) {
+  main().then((rc) => process.exit(rc));
+}

@@ -26,17 +26,17 @@ import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync, appendFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 
-const ORACLE = "/home/toxic/estate/ranch/squawk/oracle";
+const ORACLE = process.env.DELEND_ORACLE_DIR || "/home/toxic/estate/ranch/squawk/oracle";
 const POST_INTAKE = join(ORACLE, "bin", "post_intake.py");
-const LEDGER = join(ORACLE, "ledger", "ledger.jsonl");
-const HINDSIGHT = join(ORACLE, "hindsight.md");
-const TRANSCRIPT = "/tmp/delend-oracle-loop.jsonl";
-const DELEND_EXPERIMENTAL = join(dirname(import.meta.path), "delend-experimental");
+const LEDGER = process.env.DELEND_ORACLE_LEDGER || join(ORACLE, "ledger", "ledger.jsonl");
+const HINDSIGHT = process.env.DELEND_ORACLE_HINDSIGHT || join(ORACLE, "hindsight.md");
+const TRANSCRIPT = process.env.DELEND_ORACLE_TRANSCRIPT || "/tmp/delend-oracle-loop.jsonl";
+const DELEND_EXPERIMENTAL = process.env.DELEND_EXPERIMENTAL_BIN || join(dirname(import.meta.path), "delend-experimental");
 
 const PROBE_MS = 3500;   // every subprocess gets <4s
 const LEDGER_POLL_MS = 12000; // max poll after a post before reading tail
 
-function run(cmd: string[], env?: Record<string, string>, timeoutMs = PROBE_MS) {
+export function run(cmd: string[], env?: Record<string, string>, timeoutMs = PROBE_MS) {
   const p = spawnSync(cmd[0], cmd.slice(1), {
     encoding: "utf8",
     timeout: timeoutMs,
@@ -50,7 +50,7 @@ function run(cmd: string[], env?: Record<string, string>, timeoutMs = PROBE_MS) 
   };
 }
 
-function readHindsight(): string {
+export function readHindsight(): string {
   if (!existsSync(HINDSIGHT)) return "";
   try {
     const txt = readFileSync(HINDSIGHT, "utf8").trim();
@@ -61,7 +61,7 @@ function readHindsight(): string {
   }
 }
 
-function ensureHindsight() {
+export function ensureHindsight() {
   if (!existsSync(HINDSIGHT)) {
     try {
       writeFileSync(
@@ -74,7 +74,7 @@ function ensureHindsight() {
 
 // Tail the ledger, returning parsed events. `start` may be a byte offset to
 // only read what's new since then (avoids rescanning a 7MB file).
-function readLedger(start = 0): {
+export function readLedger(start = 0): {
   events: any[];
   newOffset: number;
   lastOpen: any | null;
@@ -123,7 +123,7 @@ function readLedger(start = 0): {
   return { events, newOffset: offset, lastOpen, lastAssigned, lastDecision };
 }
 
-function summarizeAwarded(events: any[]): string[] {
+export function summarizeAwarded(events: any[]): string[] {
   const out: string[] = [];
   for (const ev of events) {
     if (ev.event === "assigned") {
@@ -248,7 +248,7 @@ function cmdLoop(from: string, iters: number) {
   } catch { /* ignore */ }
 }
 
-function cmdStatus() {
+export function cmdStatus() {
   const hindsight = readHindsight();
   const { lastOpen, lastAssigned, lastDecision } = readLedger(0);
   console.log("=== delend-oracle status ===");
@@ -272,10 +272,10 @@ function cmdStatus() {
     console.log("  (no open/assigned task seen in ledger)");
 }
 
-function cmdApply(task: string) {
+export function cmdApply(task: string): number {
   if (!task) {
     console.error("usage: delend-oracle apply --task \"<task>\"");
-    process.exit(2);
+    return 2;
   }
   console.log(`delend-oracle apply — handing to delend-experimental:\n  brief: ${task}`);
   const res = run([DELEND_EXPERIMENTAL, "--brief", task], {}, 9000);
@@ -294,9 +294,10 @@ function cmdApply(task: string) {
   if (res.err) console.error(res.err);
   if (res.status !== 0) {
     console.error(`apply failed (exit ${res.status}) — recorded to ${TRANSCRIPT}`);
-    process.exit(1);
+    return 1;
   }
   console.log(`[x] recorded apply result → ${TRANSCRIPT}`);
+  return 0;
 }
 
 function usage() {
@@ -314,27 +315,28 @@ Commands:
 `);
 }
 
-const args = process.argv.slice(2);
-const get = (f: string, d: string) => {
-  const idx = args.indexOf(f);
-  return idx >= 0 ? args[idx + 1] : d;
-};
-
-function main() {
-  const sub = args[0];
+export function main(argv: string[] = process.argv.slice(2)): number {
+  const get = (f: string, d: string) => {
+    const idx = argv.indexOf(f);
+    return idx >= 0 ? argv[idx + 1] : d;
+  };
+  const sub = argv[0];
   if (sub === "loop") {
     cmdLoop(get("--from", "kappa"), parseInt(get("--iters", "3"), 10) || 3);
+    return 0;
   } else if (sub === "status") {
     cmdStatus();
+    return 0;
   } else if (sub === "apply") {
-    cmdApply(get("--task", ""));
+    return cmdApply(get("--task", ""));
   } else if (sub === "help" || sub === "--help" || !sub) {
     usage();
+    return 0;
   } else {
     console.error(`delend-oracle: unknown subcommand '${sub}'`);
     usage();
-    process.exit(2);
+    return 2;
   }
 }
 
-main();
+if (import.meta.main) process.exit(main());

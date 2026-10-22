@@ -1,0 +1,277 @@
+#!/usr/bin/env bun
+/**
+ * delend-quick — Universal zero-friction work-ref checkpoint & push helper
+ * for DelendAI's `shared-checkout-merge` policy.
+ *
+ * Automatically:
+ *  1. Discovers the nearest git repo with delendai / shared-checkout-merge.
+ *  2. Discovers changed or untracked files if --paths is omitted.
+ *  3. Normalizes proposal, slice, and topic names so they never collide with
+ *     delendai's strict regex grammar (${proposal}-${slice}-g${generation}/${topic}).
+ *  4. Performs `delendai work checkpoint`.
+ *  5. Automatically pushes the created work-ref to the remote origin.
+ *
+ * Usage:
+ *   delend-quick -m "feat: commit message" [-p proposal] [-s slice] [-t topic] [--push]
+ */
+
+import { spawnSync } from "node:child_process";
+import { existsSync, statSync } from "node:fs";
+import { resolve, dirname, join, relative } from "node:path";
+import { homedir } from "node:os";
+
+export function run(cmd: string, args: string[], cwd = process.cwd()): { status: number; stdout: string; stderr: string } {
+  const p = spawnSync(cmd, args, { cwd, encoding: "utf8" });
+  return {
+    status: p.status ?? 1,
+    stdout: (p.stdout || "").trim(),
+    stderr: (p.stderr || "").trim(),
+  };
+}
+
+export function findRepoRoot(startDir: string): string {
+  let cur = resolve(startDir);
+  const home = homedir();
+  while (cur !== "/" && cur !== home) {
+    if (existsSync(join(cur, ".git"))) return cur;
+    const parent = dirname(cur);
+    if (parent === cur) break;
+    cur = parent;
+  }
+  return resolve(startDir);
+}
+
+export function getChangedPaths(repoRoot: string): string[] {
+  const res = run("git", ["status", "--porcelain"], repoRoot);
+  if (res.status !== 0 || !res.stdout) return [];
+  return res.stdout
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      // Porcelain format: XY PATH or XY ORIG -> PATH
+      const parts = line.replace(/^[AMD?RCU\s]{1,3}\s+/, "").split(" -> ");
+      return parts[parts.length - 1].trim();
+    })
+    .filter((p) => !p.startsWith(".git") && !p.includes("__pycache__"));
+}
+
+/** Prefer staged (cached) files so a `git add <paths>`+`delend-quick` only
+ * checkpoints the developer's intended subset, never a blind full-tree sweep
+ * of a busy shared checkout. Returns [] if nothing is staged. */
+export function getStagedPaths(repoRoot: string): string[] {
+  const res = run("git", ["diff", "--cached", "--name-only", "-z"], repoRoot);
+  if (res.status !== 0 || !res.stdout) return [];
+  return res.stdout
+    .split("\0")
+    .filter(Boolean)
+    .map((p) => p.trim())
+    .filter((p) => !p.startsWith(".git") && !p.includes("__pycache__"));
+}
+
+export function cleanId(s: string): string {
+  // Strip characters that break delendai's ${proposal}-${slice} parser
+  return s.toLowerCase().replace(/[^a-z0-9_]/g, "_").replace(/^_+|_+$/g, "") || "core";
+}
+
+export async function main(): Promise<number> {
+  const args = process.argv.slice(2);
+  let message = "";
+  let proposal = "";
+  let slice = "";
+  let topic = "";
+  let explicitPaths: string[] = [];
+  let doPush = true;
+  let agent = process.env.DELENDAI_AGENT_ID || "toxic";
+  let workspaceOverride = "";
+
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    let key = arg;
+    let val = "";
+    if (arg.includes("=")) {
+      const eqIdx = arg.indexOf("=");
+      key = arg.slice(0, eqIdx);
+      val = arg.slice(eqIdx + 1);
+    }
+
+    if (key === "-w" || key === "--workspace" || key === "--cwd") {
+      workspaceOverride = val || args[++i];
+    } else if (key === "-m" || key === "--message") {
+      message = val || args[++i];
+    } else if (key === "-p" || key === "--proposal") {
+      proposal = val || args[++i];
+    } else if (key === "-s" || key === "--slice") {
+      slice = val || args[++i];
+    } else if (key === "-t" || key === "--topic") {
+      topic = val || args[++i];
+    } else if (key === "--agent") {
+      agent = val || args[++i];
+    } else if (key === "--paths") {
+      const raw = val || args[++i];
+      explicitPaths = raw.split(",").map((s) => s.trim()).filter(Boolean);
+    } else if (key === "--no-push") {
+      doPush = false;
+    } else if (key === "-h" || key === "--help") {
+      console.log(`delend-quick: Universal DelendAI checkpoint & push helper
+
+Options:
+  -m, --message <text>   Commit/checkpoint message (required)
+  -p, --proposal <name>  Proposal ID (auto-inferred if omitted)
+  -s, --slice <name>     Slice ID (default: 'core' or s1)
+  -t, --topic <name>     Topic branch descriptor (default: 'work')
+  --paths <a,b>          Specific paths to include (default: all changed/untracked)
+  --agent <name>         Agent identity (default: $DELENDAI_AGENT_ID or 'toxic')
+  --no-push              Skip pushing work-ref to remote
+`);
+      return 0;
+    }
+  }
+
+  if (!message) {
+    console.error("Error: --message (-m) is required.");
+    return 1;
+  }
+
+  const repoRoot = workspaceOverride ? resolve(workspaceOverride) : findRepoRoot(process.cwd());
+
+  // Resolve the final path list. Explicit --paths may name a directory (like
+  // `--paths src/app`); delendai expands a dir to every file under it, which
+  // blows posix_spawn (E2BIG) on large projects. Intersect with staged files
+  // so we checkpoint exactly the intended subset as individual paths.
+  let paths: string[];
+  if (explicitPaths.length > 0) {
+    const staged = new Set(getStagedPaths(repoRoot));
+    const resolved: string[] = [];
+    for (const p of explicitPaths) {
+      const rel = p.startsWith("/") ? relative(repoRoot, p) : p;
+      const abs = resolve(repoRoot, rel);
+      let isDir = false;
+      try {
+        isDir = existsSync(abs) && statSync(abs).isDirectory();
+      } catch {
+        isDir = false;
+      }
+      if (isDir && !staged.has(rel)) {
+        // It's a directory; expand to its staged files under it, so delendai
+        // gets individual paths and avoids E2BIG on large projects.
+        const wantDir = rel.endsWith("/") ? rel : `${rel}/`;
+        const matches = [...staged].filter((s) => s.startsWith(wantDir));
+        if (matches.length > 0) resolved.push(...matches);
+        else resolved.push(rel);
+      } else if (staged.has(rel)) {
+        resolved.push(rel);
+      } else {
+        resolved.push(rel);
+      }
+    }
+    paths = [...new Set(resolved)];
+  } else {
+    paths = getStagedPaths(repoRoot);
+  }
+
+  if (explicitPaths.length === 0) {
+    if (paths.length === 0) {
+      // Nothing staged and no explicit paths: refuse to blind-sweep a busy
+      // shared checkout. A blanket `git status` sweep silently grabs other
+      // agents' in-progress files — exactly what the 2026-10-22 incident did.
+      const dirty = getChangedPaths(repoRoot).length;
+      if (dirty > 0) {
+        console.error(
+          `[delend-quick] Refused: ${dirty} dirty path(s) but none staged and no --paths given.\n` +
+            `  Stage exactly what you intend (git add <path>) or pass --paths <a,b>.`,
+        );
+        return 1;
+      }
+    }
+  }
+
+  if (paths.length === 0) {
+    console.log("No changed, staged, or untracked paths found to checkpoint.");
+    return 0;
+  }
+
+  // Harden against delendai recursive parser stack overflow on huge path sets,
+  // but do NOT count 'git add'ed (staged) project files against it — a project
+  // legitimately has hundreds of files that must ALL be checkpointed. Only the
+  // sweeping default (hundreds of unrelated dirty files) gets the low cap.
+  const cap = explicitPaths.length > 0 || getStagedPaths(repoRoot).length > 0 ? 1500 : 50;
+  if (paths.length > cap) {
+    console.warn(`[delend-quick] Warning: ${paths.length} path(s) exceed the ${cap} safety cap; narrowing.`);
+    paths = paths.slice(0, cap);
+  }
+
+  // Auto-infer proposal & slice if not given
+  if (!proposal) {
+    // Derive from repo or folder name
+    const folder = repoRoot.split("/").pop() || "project";
+    proposal = cleanId(folder);
+  } else {
+    proposal = cleanId(proposal);
+  }
+
+  if (!slice) {
+    slice = "core";
+  } else {
+    slice = cleanId(slice);
+  }
+
+  if (!topic) {
+    topic = "work";
+  } else {
+    topic = cleanId(topic);
+  }
+
+  console.log(`[delend-quick] Checkpointing in ${repoRoot}`);
+  console.log(`[delend-quick] Ref: heads/wip/${agent}/implement/${proposal}-${slice}-g1/${topic}`);
+  console.log(`[delend-quick] Files: ${paths.length} path(s)`);
+
+  const cpArgs = [
+    "work",
+    "checkpoint",
+    `--workspace=${repoRoot}`,
+    `--agent=${agent}`,
+    `--proposal=${proposal}`,
+    `--slice=${slice}`,
+    `--topic=${topic}`,
+    `--paths=${paths.join(",")}`,
+    `--message=${message}`,
+  ];
+
+  const cpRes = run("delendai", cpArgs, repoRoot);
+  let parsed: any;
+  try {
+    parsed = JSON.parse(cpRes.stdout);
+  } catch {
+    console.log(cpRes.stdout);
+    if (cpRes.stderr) console.error(cpRes.stderr);
+  }
+
+  if (cpRes.status !== 0 || (parsed && parsed.status === "failed")) {
+    console.error(`[delend-quick] Checkpoint failed: ${parsed?.reason || cpRes.stderr || cpRes.stdout}`);
+    return 1;
+  }
+
+  const createdRef = parsed?.ref;
+  console.log(`✔ [delend-quick] Checkpointed commit ${parsed?.commit?.slice(0, 10)} on ${createdRef}`);
+
+  if (doPush && createdRef) {
+    console.log(`[delend-quick] Pushing ${createdRef} to origin...`);
+    const pushRes = run("git", ["push", "origin", createdRef], repoRoot);
+    if (pushRes.status === 0) {
+      console.log(`✔ [delend-quick] Pushed to remote successfully.`);
+    } else {
+      console.warn(`[delend-quick] Push warning: ${pushRes.stderr || pushRes.stdout}`);
+    }
+  }
+  return 0;
+}
+
+if (import.meta.main) {
+  main()
+    .then((rc) => process.exit(rc))
+    .catch((err) => {
+      console.error(err);
+      process.exit(1);
+    });
+}

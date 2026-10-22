@@ -24,51 +24,59 @@ import { spawnSync } from "node:child_process";
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 
-const a = process.argv.slice(2);
-const get = (f: string, d="") => { const i=a.indexOf(f); return i>=0?a[i+1]:d; };
-const goal = get("--goal",""); const wd = resolve(get("--workdir", "."));
-const argsAll = process.argv.slice(2);
-const posN = Number((argsAll.find((x, i) => /^\d+$/.test(x) && !argsAll[i-1]?.startsWith("--")) ) ?? 0) || 0;
-const iters = argsAll.includes("--iters") ? Number(get("--iters","10")) : (posN > 0 ? posN : 10);
-const budget = Number(get("--budget-ms","4000"));
-const before = get("--before","");
-const after = get("--after","");
+export function get(argv: string[], f: string, d = "") {
+  const i = argv.indexOf(f);
+  return i >= 0 ? argv[i + 1] : d;
+}
 
-if (!goal) { console.error("usage: delend-iterate --goal '<objective>' --workdir <dir> [--iters 10]"); process.exit(2); }
-const runp = (cmd: string, t=budget) => { const p = spawnSync("bash",["-lc",cmd],{ cwd:wd, encoding:"utf8", timeout:t }); return { rc:p.status??1, err:(p.stderr||"").trim(), out:(p.stdout||"").trim() }; };
-
-// model double-check via hodos + theta EAP (allowed egresses)
-function checkModel(): string {
+export function checkModel(runp: (cmd: string, t?: number) => { rc: number; err: string; out: string }): string {
   const h = runp(`curl -s --max-time 2 http://127.0.0.1:25193/v1/models 2>/dev/null | head -c 160 || echo hodos-down`, 2500);
   const t = runp(`[ -n "\$GEMINI_EAP_KEY_1" ] && echo "EAP:\${GEMINI_EAP_KEY_1:0:6}..." || echo no-eap-key`, 1500);
-  return (h.out || "hodos-down") + " | " + (t.out||"");
+  return (h.out || "hodos-down") + " | " + (t.out || "");
 }
 
-const state = { prev: null as any, n: 0, passStreak: 0 };
-const OUT = resolve(wd, ".delend-iterate.json");
-mkdirSync(wd, { recursive: true });
+export function main(argv: string[] = process.argv.slice(2)): number {
+  const argsAll = argv;
+  const goal = get(argsAll, "--goal", "");
+  const wd = resolve(get(argsAll, "--workdir", "."));
+  const posN = Number((argsAll.find((x, i) => /^\d+$/.test(x) && !argsAll[i - 1]?.startsWith("--"))) ?? 0) || 0;
+  const iters = argsAll.includes("--iters") ? Number(get(argsAll, "--iters", "10")) : (posN > 0 ? posN : 10);
+  const budget = Number(get(argsAll, "--budget-ms", "4000"));
+  const before = get(argsAll, "--before", "");
+  const after = get(argsAll, "--after", "");
 
-console.log(`delend-iterate — ${iters} sync-feedback iters, budget ${budget}ms, goal: ${goal}`);
-for (let i = 0; i < iters; i++) {
-  const t0 = Date.now();
-  const model = checkModel();
-  let probe = state.prev ? `# iter ${i+1} fed from prev → ${JSON.stringify(state.prev).slice(0,80)}` : `# iter ${i+1} initial`;
-  // run the (possibly changed) workload; on breach, auto-code-race
-  let step = runp(before || `echo "iter ${i+1}; goal=${goal}"`, budget);
-  if (step.rc !== 0 && /(timed out|124|TIMEOUT)/i.test(step.rc+" "+step.err)) {
-    const r = runp(`/home/toxic/estate/bin/delend-code-race "${goal}" 2>&1 | tail -3`, 4500);
-    step = { rc:0, err:"", out:"breach→race: "+(r.out||"") };
+  if (!goal) { console.error("usage: delend-iterate --goal '<objective>' --workdir <dir> [--iters 10]"); return 2; }
+  const runp = (cmd: string, t = budget) => { const p = spawnSync("bash", ["-lc", cmd], { cwd: wd, encoding: "utf8", timeout: t }); return { rc: p.status ?? 1, err: (p.stderr || "").trim(), out: (p.stdout || "").trim() }; };
+
+  const state = { prev: null as any, n: 0, passStreak: 0 };
+  const OUT = resolve(wd, ".delend-iterate.json");
+  mkdirSync(wd, { recursive: true });
+
+  console.log(`delend-iterate — ${iters} sync-feedback iters, budget ${budget}ms, goal: ${goal}`);
+  for (let i = 0; i < iters; i++) {
+    const t0 = Date.now();
+    const model = checkModel(runp);
+    let probe = state.prev ? `# iter ${i + 1} fed from prev → ${JSON.stringify(state.prev).slice(0, 80)}` : `# iter ${i + 1} initial`;
+    // run the (possibly changed) workload; on breach, auto-code-race
+    let step = runp(before || `echo "iter ${i + 1}; goal=${goal}"`, budget);
+    if (step.rc !== 0 && /(timed out|124|TIMEOUT)/i.test(step.rc + " " + step.err)) {
+      const r = runp(`/home/toxic/estate/bin/delend-code-race "${goal}" 2>&1 | tail -3`, 4500);
+      step = { rc: 0, err: "", out: "breach→race: " + (r.out || "") };
+    }
+    // apply change after this result (the 'change code' step), feeding prev
+    if (after) { const ch = runp(after, budget); /* code was changed */ }
+    const ms = Date.now() - t0;
+    const result = { n: i + 1, ms, ok: step.rc === 0, breach: step.rc !== 0 && ms >= budget, model, prev: state.prev && { n: state.prev.n, ok: state.prev.ok }, out: step.out.slice(0, 120) };
+    state.prev = result; state.n = i + 1;
+    if (result.ok) state.passStreak++; else state.passStreak = 0;
+    console.log(`  iter ${i + 1}: ${result.ok ? "✓" : "✗"} ${ms}ms model=${(model || "").slice(0, 50)}` + (result.breach ? " [breach→raced]" : ""));
+    // convergence: 2 consecutive clean passes + model stable → usable
+    if (state.passStreak >= 2) { console.log("converged: 2 clean passes, model stable. usable."); break; }
+    if (i === iters - 1) console.log(`reached ${iters} iters. usable=${state.passStreak >= 2}`);
   }
-  // apply change after this result (the 'change code' step), feeding prev
-  if (after) { const ch = runp(after, budget); /* code was changed */ }
-  const ms = Date.now() - t0;
-  const result = { n: i+1, ms, ok: step.rc===0, breach: step.rc!==0&&ms>=budget, model, prev: state.prev&&{n:state.prev.n,ok:state.prev.ok}, out: step.out.slice(0,120) };
-  state.prev = result; state.n = i+1;
-  if (result.ok) state.passStreak++; else state.passStreak = 0;
-  console.log(`  iter ${i+1}: ${result.ok?"✓":"✗"} ${ms}ms model=${(model||"").slice(0,50)}` + (result.breach?" [breach→raced]":""));
-  // convergence: 2 consecutive clean passes + model stable → usable
-  if (state.passStreak >= 2) { console.log("converged: 2 clean passes, model stable. usable."); break; }
-  if (i === iters-1) console.log(`reached ${iters} iters. usable=${state.passStreak>=2}`);
+  writeFileSync(OUT, JSON.stringify({ goal, wd, iters_run: state.n, passStreak: state.passStreak, last: state.prev, ts: Date.now() }, null, 2));
+  console.log(`\nwrote ${OUT}`);
+  return 0;
 }
-writeFileSync(OUT, JSON.stringify({ goal, wd, iters_run: state.n, passStreak: state.passStreak, last: state.prev, ts: Date.now() }, null, 2));
-console.log(`\nwrote ${OUT}`);
+
+if (import.meta.main) process.exit(main());
