@@ -1,0 +1,340 @@
+#!/usr/bin/env bun
+/**
+ * delend-oracle — reconcile the estate oracle market with the recursive
+ * emergent mandate "find more to do asking oracle for tasks + new emergent
+ * experimental work to apply."
+ *
+ * The oracle market lives at estate/ranch/squawk/oracle: intakes are posted
+ * via bin/post_intake.py and the triage + auction decisions land append-only
+ * in ledger/ledger.jsonl. This helper wraps that market as a recursive CLI:
+ * it posts hindsight-wrapped intakes, watches the ledger tail for the next
+ * task the market awards, feeds each result back into the next iteration
+ * (delend-iterate doctrine), and hands surfaced tasks to
+ * delend-experimental to APPLY.
+ *
+ * Subcommands:
+ *   loop  [--from kappa] [--iters N]   RECURSIVE emergent loop
+ *   status                              show hindsight + last open oracle task
+ *   apply --task "<task>"               hand a market-surfaced task to the
+ *                                       emergent agent (delend-experimental),
+ *                                       then record the result
+ *
+ * Zero hard deps (node stdlib only). Every probe subprocess is timeboxed so
+ * a command never hangs.
+ */
+import { spawnSync } from "node:child_process";
+import { existsSync, readFileSync, writeFileSync, appendFileSync } from "node:fs";
+import { join, dirname } from "node:path";
+
+const ORACLE = "/home/toxic/estate/ranch/squawk/oracle";
+const POST_INTAKE = join(ORACLE, "bin", "post_intake.py");
+const LEDGER = join(ORACLE, "ledger", "ledger.jsonl");
+const HINDSIGHT = join(ORACLE, "hindsight.md");
+const TRANSCRIPT = "/tmp/delend-oracle-loop.jsonl";
+const DELEND_EXPERIMENTAL = join(dirname(import.meta.path), "delend-experimental");
+
+const PROBE_MS = 3500;   // every subprocess gets <4s
+const LEDGER_POLL_MS = 12000; // max poll after a post before reading tail
+
+function run(cmd: string[], env?: Record<string, string>, timeoutMs = PROBE_MS) {
+  const p = spawnSync(cmd[0], cmd.slice(1), {
+    encoding: "utf8",
+    timeout: timeoutMs,
+    env: { ...process.env, ...(env || {}) },
+  });
+  return {
+    status: p.status ?? 1,
+    out: (p.stdout || "").toString().trim(),
+    err: (p.stderr || "").toString().trim(),
+    killed: p.signal === "SIGTERM" || p.signal === "SIGKILL",
+  };
+}
+
+function readHindsight(): string {
+  if (!existsSync(HINDSIGHT)) return "";
+  try {
+    const txt = readFileSync(HINDSIGHT, "utf8").trim();
+    if (!txt) return "";
+    return txt.slice(0, 4000);
+  } catch {
+    return "";
+  }
+}
+
+function ensureHindsight() {
+  if (!existsSync(HINDSIGHT)) {
+    try {
+      writeFileSync(
+        HINDSIGHT,
+        "# hindsight\n\nDelend-oracle recursive emergent context (seeded).\n",
+      );
+    } catch { /* best-effort */ }
+  }
+}
+
+// Tail the ledger, returning parsed events. `start` may be a byte offset to
+// only read what's new since then (avoids rescanning a 7MB file).
+function readLedger(start = 0): {
+  events: any[];
+  newOffset: number;
+  lastOpen: any | null;
+  lastAssigned: any | null;
+  lastDecision: any | null;
+} {
+  let events: any[] = [];
+  let offset = start;
+  let lastOpen: any | null = null;
+  let lastAssigned: any | null = null;
+  let lastDecision: any | null = null;
+  try {
+    if (existsSync(LEDGER)) {
+      const raw = readFileSync(LEDGER, "utf8");
+      offset = raw.length;
+      const slice = start > 0 ? raw.slice(start) : raw;
+      for (const line of slice.split("\n")) {
+        if (!line.trim()) continue;
+        try {
+          const ev = JSON.parse(line);
+          events.push(ev);
+          if (ev.event === "task_open" || ev.event === "task_post") lastOpen = ev;
+          if (ev.event === "assigned") lastAssigned = ev;
+          if (ev.event === "intake-decision") lastDecision = ev;
+        } catch { /* skip malformed */ }
+      }
+    }
+  } catch { /* ledger unreadable → treat as empty */ }
+  if (events.length === 0 && start > 0) {
+    // file may have rotated; rescan fully but still report events as fresh
+    try {
+      const raw = readFileSync(LEDGER, "utf8");
+      offset = raw.length;
+      for (const line of raw.split("\n")) {
+        if (!line.trim()) continue;
+        try {
+          const ev = JSON.parse(line);
+          events.push(ev);
+          if (ev.event === "task_open" || ev.event === "task_post") lastOpen = ev;
+          if (ev.event === "assigned") lastAssigned = ev;
+          if (ev.event === "intake-decision") lastDecision = ev;
+        } catch { /* skip */ }
+      }
+    } catch { /* ignore */ }
+  }
+  return { events, newOffset: offset, lastOpen, lastAssigned, lastDecision };
+}
+
+function summarizeAwarded(events: any[]): string[] {
+  const out: string[] = [];
+  for (const ev of events) {
+    if (ev.event === "assigned") {
+      out.push(
+        `[assigned] task ${ev.task_id} → winner ${ev.winner} @ ${
+          ev.price_paid ?? ev.amount ?? "?"
+        }`,
+      );
+    } else if (ev.event === "task_open") {
+      out.push(`[task_open] ${ev.task_id} ${ev.title ?? ""}`.trim());
+    } else if (ev.event === "intake-decision") {
+      out.push(
+        `[intake-decision] ${ev.from}: route=${ev.route} reason=${ev.reason}`,
+      );
+    } else if (ev.event === "next_work_request") {
+      out.push(`[next_work] prev=${ev.prev_task}`);
+    }
+  }
+  return out;
+}
+
+function cmdLoop(from: string, iters: number) {
+  ensureHindsight();
+  let startOffset = 0;
+  try {
+    if (existsSync(LEDGER)) startOffset = readFileSync(LEDGER, "utf8").length;
+  } catch { /* ignore */ }
+
+  const transcript: any[] = [];
+  let emptyRuns = 0;
+  let n = Math.max(1, iters);
+
+  console.log(`delend-oracle loop — from=${from}, iters=${n}`);
+  for (let i = 1; i <= n; i++) {
+    const hindsight = readHindsight();
+    const goal =
+      "RECURSIVE EMERGENT MANDATE: find more to do by asking the oracle market " +
+      "for the NEXT task + new emergent experimental work to apply. We reconcile " +
+      "the estate oracle market with the standing recursive mandate.";
+    let text = goal;
+    if (hindsight) text += `\n\nHINDSIGHT CONTEXT (prior loop): ${hindsight}`;
+    text +=
+      `\n\nOPEN ASK (iteration ${i}/${n}): award us the next concrete task or ` +
+      "emergent experimental direction to APPLY. Bidders, propose implementation.";
+    if (i > 1 && transcript.length) {
+      const last = transcript[transcript.length - 1];
+      if (last.awarded && last.awarded.length) {
+        text += `\n\nPRIOR RESULT (already being applied): ${last.awarded.join(" | ")}. `;
+      }
+      if (last.task_text) {
+        text += `Previous intake asked: ${last.task_text.slice(0, 200)}. `;
+      }
+      text += "Feed prior result forward: surface the genuinely NEXT task, not a repeat.";
+    }
+
+    const res = run(
+      ["python3", POST_INTAKE, "--from", from, "--text", text],
+      { ORACLE_INTAKE: "1" },
+    );
+    const entry: any = { iter: i, ts: Date.now() };
+    if (res.status !== 0) {
+      entry.error = res.err || res.out || `post_intake exit ${res.status}`;
+      console.error(`  iter ${i}: post failed — ${entry.error}`);
+    } else {
+      console.log(`  iter ${i}: ${res.out}`);
+    }
+
+    // Give the oracle a beat to triage + (maybe) auction, then read the tail.
+    const SLEEP = spawnSync("sleep", [(LEDGER_POLL_MS / 1000).toString()], {
+      timeout: LEDGER_POLL_MS,
+    });
+    if (SLEEP.status !== 0) { /* ignore */ }
+
+    const { events, newOffset } = readLedger(startOffset);
+    startOffset = newOffset;
+    const awarded = summarizeAwarded(events);
+    entry.events = events.map((e) => e.event);
+    entry.awarded = awarded;
+    entry.task_text = text;
+    transcript.push(entry);
+
+    if (awarded.length) {
+      console.log("  market awarded:");
+      for (const a of awarded) console.log(`    ${a}`);
+    } else {
+      console.log("  no new award this iteration.");
+      emptyRuns += 1;
+    }
+
+    // Convergence: no new market activity twice in a row → stop early.
+    if (i > 1 && emptyRuns >= 2) {
+      console.log("  converged (no new task for 2 iterations). stopping early.");
+      break;
+    }
+  }
+
+  try {
+    appendFileSync(TRANSCRIPT, transcript.map((t) => JSON.stringify(t)).join("\n") + "\n");
+  } catch { /* best-effort transcript */ }
+
+  // Final "next to do": the last awarded task, or the last open/assigned seen.
+  const lastAwarded = transcript.flatMap((t) => t.awarded || []);
+  let nextToDo = "(market surfaced nothing new this loop)";
+  if (lastAwarded.length) nextToDo = lastAwarded.join(" ; ");
+  else {
+    const tail = readLedger(0);
+    if (tail.lastAssigned)
+      nextToDo = `last awarded task ${tail.lastAssigned.task_id} → ${tail.lastAssigned.winner}`;
+    else if (tail.lastOpen)
+      nextToDo = `last open task ${tail.lastOpen.task_id} ${tail.lastOpen.title ?? ""}`.trim();
+  }
+
+  console.log(`\n[x] wrote transcript → ${TRANSCRIPT}`);
+  console.log(`[x] NEXT-TO-DO: ${nextToDo}`);
+  // Emit machine-readable next-to-do for the coordinator.
+  try {
+    appendFileSync(
+      TRANSCRIPT,
+      JSON.stringify({ event: "loop_done", next_to_do: nextToDo, ts: Date.now() }) +
+        "\n",
+    );
+  } catch { /* ignore */ }
+}
+
+function cmdStatus() {
+  const hindsight = readHindsight();
+  const { lastOpen, lastAssigned, lastDecision } = readLedger(0);
+  console.log("=== delend-oracle status ===");
+  if (hindsight) {
+    console.log("-- hindsight (head) --");
+    for (const l of hindsight.split("\n").slice(0, 8)) console.log("  " + l);
+  } else {
+    console.log("-- hindsight --");
+    console.log("  (none yet — will be seeded on first `loop`)");
+  }
+  console.log("-- last oracle activity --");
+  if (lastDecision)
+    console.log(
+      `  intake-decision from=${lastDecision.from} route=${lastDecision.route} reason=${lastDecision.reason}`,
+    );
+  if (lastAssigned)
+    console.log(`  assigned task=${lastAssigned.task_id} winner=${lastAssigned.winner}`);
+  else if (lastOpen)
+    console.log(`  last open task=${lastOpen.task_id} ${lastOpen.title ?? ""}`.trim());
+  else
+    console.log("  (no open/assigned task seen in ledger)");
+}
+
+function cmdApply(task: string) {
+  if (!task) {
+    console.error("usage: delend-oracle apply --task \"<task>\"");
+    process.exit(2);
+  }
+  console.log(`delend-oracle apply — handing to delend-experimental:\n  brief: ${task}`);
+  const res = run([DELEND_EXPERIMENTAL, "--brief", task], {}, 9000);
+  const rec = {
+    event: "apply",
+    task,
+    ts: Date.now(),
+    exit: res.status,
+    out: res.out.slice(0, 4000),
+    err: res.err.slice(0, 1000),
+  };
+  try {
+    appendFileSync(TRANSCRIPT, JSON.stringify(rec) + "\n");
+  } catch { /* ignore */ }
+  if (res.out) console.log(res.out);
+  if (res.err) console.error(res.err);
+  if (res.status !== 0) {
+    console.error(`apply failed (exit ${res.status}) — recorded to ${TRANSCRIPT}`);
+    process.exit(1);
+  }
+  console.log(`[x] recorded apply result → ${TRANSCRIPT}`);
+}
+
+function usage() {
+  console.log(`usage: delend-oracle <command> [args]
+
+Commands:
+  loop [--from kappa] [--iters N]   recursive emergent loop: hindsight-wrapped
+                                    intake → post to oracle → read ledger tail for
+                                    awarded task → feed result forward → iterate N
+                                    times (early-stop on 2 empty iterations). Writes
+                                    transcript to ${TRANSCRIPT}.
+  status                            show hindsight + last open/assigned oracle task.
+  apply --task "<task>"             hand a market-surfaced task to delend-experimental
+                                    to apply, then record the result.
+`);
+}
+
+const args = process.argv.slice(2);
+const get = (f: string, d: string) => {
+  const idx = args.indexOf(f);
+  return idx >= 0 ? args[idx + 1] : d;
+};
+
+function main() {
+  const sub = args[0];
+  if (sub === "loop") {
+    cmdLoop(get("--from", "kappa"), parseInt(get("--iters", "3"), 10) || 3);
+  } else if (sub === "status") {
+    cmdStatus();
+  } else if (sub === "apply") {
+    cmdApply(get("--task", ""));
+  } else if (sub === "help" || sub === "--help" || !sub) {
+    usage();
+  } else {
+    console.error(`delend-oracle: unknown subcommand '${sub}'`);
+    usage();
+    process.exit(2);
+  }
+}
+
+main();

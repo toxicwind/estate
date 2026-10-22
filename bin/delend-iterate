@@ -27,7 +27,10 @@ import { join, resolve } from "node:path";
 const a = process.argv.slice(2);
 const get = (f: string, d="") => { const i=a.indexOf(f); return i>=0?a[i+1]:d; };
 const goal = get("--goal",""); const wd = resolve(get("--workdir", "."));
-const iters = Number(get("--iters","10")); const budget = Number(get("--budget-ms","4000"));
+const argsAll = process.argv.slice(2);
+const posN = Number((argsAll.find((x, i) => /^\d+$/.test(x) && !argsAll[i-1]?.startsWith("--")) ) ?? 0) || 0;
+const iters = argsAll.includes("--iters") ? Number(get("--iters","10")) : (posN > 0 ? posN : 10);
+const budget = Number(get("--budget-ms","4000"));
 const before = get("--before","");
 const after = get("--after","");
 
