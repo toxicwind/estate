@@ -731,11 +731,11 @@ dir = "/home/toxic/estate"
 mise = false
 
 [daemons.market-loop]
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/agents/weaver/bin/market-loop.ts"
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/ranch/estate-brain/agents/weaver/bin/market-loop.ts"
 auto = ["start"]
 retry = true
 ready_cmd = "pgrep -f '[m]arket-loop.ts' >/dev/null"
-dir = "/home/toxic/estate/agents/weaver"
+dir = "/home/toxic/estate/ranch/estate-brain/agents/weaver"
 mise = false
 
 [daemons.market-watchdog]
