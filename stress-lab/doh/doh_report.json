@@ -1,0 +1,39 @@
+{
+  "domain": "x",
+  "type": "A",
+  "google": {
+    "ips": [
+      "140.82.112.3"
+    ],
+    "ttls": [
+      42
+    ],
+    "min": 42,
+    "max": 42,
+    "raw": {
+      "Status": 0
+    }
+  },
+  "cloudflare": {
+    "ips": [
+      "140.82.113.3",
+      "140.82.114.3"
+    ],
+    "ttls": [
+      999
+    ],
+    "min": 999,
+    "max": 999,
+    "raw": {
+      "Status": 0
+    }
+  },
+  "ip_differ": true,
+  "ttl_delta": 957,
+  "ttl_discrepancy": true,
+  "discrepancy": true,
+  "google_status": 0,
+  "cf_status": 0,
+  "vjTrigger": "GLITCH",
+  "timestamp": "2026-10-22T03:02:27.345311"
+}
