@@ -174,3 +174,64 @@ describe("interactionsToOpenai", () => {
     });
   });
 });
+
+describe("openaiToInteractions edge coverage", () => {
+  test("function tool with tool-level description + parameters (no fn.*)", () => {
+    const out = openaiToInteractions({
+      model: "x",
+      messages: [{ role: "user", content: "hi" }],
+      tools: [{ type: "function", name: "f", description: "tool desc", parameters: { type: "object" } }],
+    } as any);
+    expect((out.tools as any[])[1].description).toBe("tool desc");
+    expect((out.tools as any[])[1].parameters).toEqual({ type: "object" });
+  });
+
+  test("function tool with missing description/parameters defaults", () => {
+    const out = openaiToInteractions({
+      model: "x",
+      messages: [{ role: "user", content: "hi" }],
+      tools: [{ type: "function", name: "f" }],
+    } as any);
+    const fn = (out.tools as any[])[1];
+    expect(fn.defer_loading).toBe(true);
+    expect(fn.parameters).toEqual({ type: "object", properties: {} });
+  });
+
+  test("passes tool_search and mcp_server tool types through", () => {
+    const out = openaiToInteractions({
+      model: "x",
+      messages: [{ role: "user", content: "hi" }],
+      tools: [{ type: "tool_search" }, { type: "mcp_server", name: "s", url: "http://x" }],
+    } as any);
+    expect(out.tools).toHaveLength(3); // tool_search + passthrough + mcp_server
+  });
+
+  test("tools absent leaves out.tools undefined", () => {
+    const out = openaiToInteractions({ model: "x", messages: [{ role: "user", content: "hi" }] } as any);
+    expect(out.tools).toBeUndefined();
+  });
+});
+
+describe("interactionsToOpenai edge coverage", () => {
+  test("text steps + tool_calls set finishReason tool_calls + content", () => {
+    const out = interactionsToOpenai({
+      steps: [
+        { type: "text", content: "hello world" },
+        { type: "function_call", id: "fc", name: "f", arguments: { a: 1 } },
+      ],
+    } as any, "model");
+    expect(out.choices[0].finish_reason).toBe("tool_calls");
+    expect(out.choices[0].message.content).toBe("hello world");
+    expect(out.choices[0].message.tool_calls[0].function.name).toBe("f");
+  });
+
+  test("no tool_calls + empty text falls back to output string", () => {
+    const out = interactionsToOpenai({ output: "fallback" } as any, "model");
+    expect(out.choices[0].message.content).toBe("fallback");
+  });
+
+  test("no output + error falls back to JSON error", () => {
+    const out = interactionsToOpenai({ error: { message: "boom" } } as any, "model");
+    expect(out.choices[0].message.content).toContain("boom");
+  });
+});
