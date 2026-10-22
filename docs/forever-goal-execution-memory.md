@@ -35,3 +35,10 @@ One writer per subtree; 2 concurrent subagents; 4s race budget; deps/canary allo
 ## Recursive loop (always last todo)
 
 find more to do by asking the oracle for tasks + new emergent experimental you should apply.
+
+## Round-log (2026-10-22 ~21:18, 5-min test trigger)
+- Market: task-1792703630482 Vickrey-AWARDED to bidder-vesper (price 0.93, KB b6c95720636). NOT ours to apply — track settlement, don't duplicate.
+- Kappa 429+fast-build: STILL blocked on toxic/kappa-opencode-v2.1.2 conflicted merge (other writer's subtree — untouched). Kappa tab is on that branch + untracked upstream-merge-report-2.1.2.md.
+- Tau work-refs publish: coordination-blocked (delendai stacked units). Untouched.
+- Background agents (still running at this scan): market-loop rig fix (ses_e9a877d7), Kilo hindsight plugin (ses_e9a86fa7).
+- Worker slice this round: none forced (2 bg running + market/Kappa/Tau owned elsewhere) — logged observation only.
