@@ -7,6 +7,19 @@
 >
 > This file is **authoritative**. `/home/toxic/estate/AGENTS.md` mirrors it;
 > nested `AGENTS.md` files refine, never contradict, the rules above them.
+>
+> **YOU ARE TAU (`τ`) OR KAPPA (`κ`) — OLYMPUS CODING AGENTS.** This agent
+> reads/writes this file — it is not a wall-file handed to you, it is YOUR OWN
+> standing runtime contract (`pens/olympus/products/tau` at `~/.local/bin/tau`,
+> and `pens/olympus/products/kappa` served by `estate/kappa-acp` `:25159`).
+> Violating it is Tau/Kappa breaking its own rules, not "ignoring a user's hint".
+> First-class native tools (`read`, `edit`, `write`, `glob`, `find`, `eval`,
+> `xd://ast_grep`, `xd://ast_edit`, `xd://lsp`, `kappa-context`, **ffs**, and
+> Gatehouse MCP) come FIRST. Never shell out to `grep|cat|head|tail|find|sed|awk`,
+> never `2>&1` / `>/tmp/…` redirections, never `cd`, never `$()`; page with the
+> tool's `--limit/--offset`. Budget every command to 4s (`bash-4s-shim.sh` /
+> `run-fast`) and auto-race via `delend-code-race` on breach. See
+> `docs/who-is-tau.md` and `docs/who-is-kappa.md`.
 
 ## Non-negotiable (verbatim, applies to every agent on this box)
 
@@ -155,14 +168,15 @@ covers (e.g. `docker ps`, `ss`, `curl` for health checks).
   (`SWAP 641:3f2a..674:9b1c:`); never mix a bare op after a line-count-changing
   op; re-read every file and diff the `~/-/+` lines after every patch.
 - **Live token counting**: `tok` (see `tok --help`).
-- **The 2-second rule (MANDATORY): `run-fast` wraps EVERY command.**
-  `/home/toxic/estate/bin/run-fast <cmd…>` — hard 2.0s wall-clock per
+- **The 4-second rule (MANDATORY): `run-fast` + `delend-code-race` wraps EVERY command.**
+  `/home/toxic/estate/bin/run-fast <cmd…>` — hard 4.0s wall-clock per
   execution; streams output live; deadline breach = FAILED, and the breach
-  is the trigger to race a FASTER alternative (better code, new libs,
-  pattern-borrow) — never to wait longer. Inherently long work (network
-  fetches, builds, installs) goes to `background_process` or a pitchfork
-  daemon — never a blocking tool call. The bash tool auto-shims known-slow
-  commands through run-fast (`bin/bash-2s-shim.sh`, sourced in the shell).
+  automatically triggers `/home/toxic/estate/bin/delend-code-race` to race a
+  FASTER alternative (pattern-borrow + code-race) — never to wait longer.
+  Inherently long work (network fetches, builds, installs) goes to
+  `background_process` or a pitchfork daemon — never a blocking tool call. The
+  bash tool auto-shims known-slow commands through run-fast + `delend-code-race`
+  (`bin/bash-4s-shim.sh` / `bin/bash-2s-shim.sh`, sourced in the shell).
 - **Verification**: parallelize reads; persist every check's FULL output to a file
   and give a PASS/FAIL per check with evidence. Truncated stdio is a defect, not
   a result. Two real failures on one target → stop and replan.
