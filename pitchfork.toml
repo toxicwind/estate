@@ -1,5 +1,5 @@
 [daemons.agent-display]
-run = "exec Xvnc :99 -geometry 1600x900 -depth 24 -rfbport 5900 -localhost -SecurityTypes VncAuth -rfbauth /home/toxic/archive/home-dirs-2026/.browserless/vncpasswd"
+run = "exec Xvnc :99 -geometry 3840x2160 -depth 24 -rfbport 5900 -localhost -SecurityTypes VncAuth -rfbauth /home/toxic/archive/home-dirs-2026/.browserless/vncpasswd"
 auto = ["start"]
 retry = true
 ready_cmd = "ss -tln | grep -q 127.0.0.1:5900"
