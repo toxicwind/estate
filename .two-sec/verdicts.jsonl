@@ -45,3 +45,14 @@
 {"ts":"2026-10-21T05:04:15.508Z","kind":"breach","elapsedMs":6,"exit":1,"command":"bun test"}
 {"ts":"2026-10-21T05:23:23.548Z","kind":"breach","elapsedMs":6,"exit":1,"command":"bun test"}
 {"ts":"2026-10-21T07:26:43.810Z","kind":"breach","elapsedMs":6,"exit":1,"command":"bun test"}
+{"ts":"2026-10-22T00:23:22.177Z","kind":"breach","elapsedMs":6,"exit":1,"command":"bun test"}
+{"ts":"2026-10-22T00:23:25.157Z","kind":"breach","elapsedMs":7,"exit":1,"command":"bun test"}
+{"ts":"2026-10-22T00:46:54.888Z","kind":"breach","elapsedMs":6,"exit":1,"command":"cargo install mergiraf"}
+{"ts":"2026-10-22T00:47:01.627Z","kind":"breach","elapsedMs":44,"exit":0,"command":"gh auth token"}
+{"ts":"2026-10-22T00:47:04.123Z","kind":"breach","elapsedMs":40,"exit":0,"command":"gh auth token"}
+{"ts":"2026-10-22T00:47:13.910Z","kind":"breach","elapsedMs":6,"exit":1,"command":"cargo install mergiraf --locked"}
+{"ts":"2026-10-22T01:58:58.432Z","kind":"breach","elapsedMs":45,"exit":0,"command":"gh auth setup-git"}
+{"ts":"2026-10-22T02:00:39.562Z","kind":"breach","elapsedMs":2,"exit":1,"command":"bun test test/session/retry.test.ts"}
+{"ts":"2026-10-22T02:03:04.192Z","kind":"breach","elapsedMs":2,"exit":1,"command":"bun test test/session/retry.test.ts -t"}
+{"ts":"2026-10-22T02:04:07.277Z","kind":"breach","elapsedMs":3,"exit":1,"command":"bun test test/session/retry.test.ts --timeout"}
+{"ts":"2026-10-22T02:09:17.290Z","kind":"breach","elapsedMs":46,"exit":0,"command":"gh auth token"}

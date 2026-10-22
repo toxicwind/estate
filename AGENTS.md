@@ -35,7 +35,7 @@ the reset). It holds the estate's whole doctrine so even mid-task you never lose
 the thread:
 
 - **Free-will / MAXIMAL / first-class / future-usable / cutting-edge.** Never
-  "report-only" — always *fix-forward*. If something is slow, blocked, or basic,
+  "report-only" — always _fix-forward_. If something is slow, blocked, or basic,
   that's a signal to race the fastest available path, not to stop.
 - **Race faster with borrow + papers, DURING the task, not just at planning:**
   on any slow/blocked step route `ast-grep` → `bm25` → **paper-finder** →
@@ -65,21 +65,22 @@ browser-keeper CDP (`computer` / `:9223`), and more — behind a unified interfa
 **Use native tool calls and Gatehouse MCP interfaces over raw terminal commands.**
 The following first-class tools are the primary interface, not bash:
 
-| Tool | Purpose |
-|---|---|
-| `read` | File/URL/document reading with outline, budget, selectors |
-| `bash` | Real facts/pipelines only — not specialized-tool work |
-| `edit` | Anchored patch edits |
-| `write` | Create/overwrite files |
-| `eval` | Python/IPython, browser, computer control |
-| `glob` | File/directory discovery |
-| `find` | Behavior-to-source mapping (first for unknown locations) |
-| `web_search` | Structured web search |
-| `lsp` | Symbol-aware code intelligence (navigation, refactor, rename) |
+| Tool         | Purpose                                                       |
+| ------------ | ------------------------------------------------------------- |
+| `read`       | File/URL/document reading with outline, budget, selectors     |
+| `bash`       | Real facts/pipelines only — not specialized-tool work         |
+| `edit`       | Anchored patch edits                                          |
+| `write`      | Create/overwrite files                                        |
+| `eval`       | Python/IPython, browser, computer control                     |
+| `glob`       | File/directory discovery                                      |
+| `find`       | Behavior-to-source mapping (first for unknown locations)      |
+| `web_search` | Structured web search                                         |
+| `lsp`        | Symbol-aware code intelligence (navigation, refactor, rename) |
 
 #### Gatehouse MCP federated tools
 
 Gatehouse at `http://127.0.0.1:25127/mcp` exposes MCP resources and tools for:
+
 - **FFS** (full-text search, BM25 ranking, symbol indexing)
 - **BM25** (relevance-ranked text search across the estate)
 - **Memory** (`recall`, `retain`, `reflect` — long-term memory queries)
@@ -97,26 +98,26 @@ covers (e.g. `docker ps`, `ss`, `curl` for health checks).
 
 `ffs` is a single CLI over a persistent on-disk index (Bigram, Bloom, Symbol, Outline).
 
-| When you need to… | Use `ffs …` | Notes |
-|---|---|---|
-| Find a file by name fragment | `find <needle>` | substring, case-insensitive; `--scored` adds role/socle |
-| Match by shape/glob | `glob '**/<pattern>'` | shell glob (`**`,`*`,`?`,`[…]`) |
-| Content match, one pattern | `grep <regex>` | ripgrep semantics; `--group` groups by enclosing symbol |
-| Content match, many needles | `multi-grep` | Aho-Corasick literal AND/OR |
-| Read a file without flooding context | `read <path>` | §budget-aware *outline* by default; `--full` raw |
-| Sketch a single file's structure | `outline <path>` | tree-sitter, `--style agent/…` |
-| Resolve a symbol to its definition | `symbol <name>` | tree-sitter AST, not substring |
-| Who refers to this symbol | `callers <name>` | `--hops N` BFS (≤5) |
-| What this symbol calls | `callees <name>` | `--depth N` |
-| Defs + usages in one shot | `refs <name>` | full defs + paged callers |
-| Full card per definition | `flow <name>` | def+signature+body+callees+callers |
-| Peers at same scope | `siblings <name>` | same class/file/module |
-| Imports + dependents of a file | `deps <path>` | import graph of a file |
-| Rank blast radius of a change | `impact <symbol>` | score = direct×3 + imports×2 + transitive×1 |
-| See the whole workspace | `map` / `overview` | file counts + token estimates |
-| Warm the indexes | `index` | build Bigram/Bloom/Symbol/Outline caches |
-| Be an MCP server | `mcp` | replaces Grep/Glob/Read for agents |
-| Recall the guide | `guide` | print the embedded doc |
+| When you need to…                    | Use `ffs …`           | Notes                                                   |
+| ------------------------------------ | --------------------- | ------------------------------------------------------- |
+| Find a file by name fragment         | `find <needle>`       | substring, case-insensitive; `--scored` adds role/socle |
+| Match by shape/glob                  | `glob '**/<pattern>'` | shell glob (`**`,`*`,`?`,`[…]`)                         |
+| Content match, one pattern           | `grep <regex>`        | ripgrep semantics; `--group` groups by enclosing symbol |
+| Content match, many needles          | `multi-grep`          | Aho-Corasick literal AND/OR                             |
+| Read a file without flooding context | `read <path>`         | §budget-aware _outline_ by default; `--full` raw        |
+| Sketch a single file's structure     | `outline <path>`      | tree-sitter, `--style agent/…`                          |
+| Resolve a symbol to its definition   | `symbol <name>`       | tree-sitter AST, not substring                          |
+| Who refers to this symbol            | `callers <name>`      | `--hops N` BFS (≤5)                                     |
+| What this symbol calls               | `callees <name>`      | `--depth N`                                             |
+| Defs + usages in one shot            | `refs <name>`         | full defs + paged callers                               |
+| Full card per definition             | `flow <name>`         | def+signature+body+callees+callers                      |
+| Peers at same scope                  | `siblings <name>`     | same class/file/module                                  |
+| Imports + dependents of a file       | `deps <path>`         | import graph of a file                                  |
+| Rank blast radius of a change        | `impact <symbol>`     | score = direct×3 + imports×2 + transitive×1             |
+| See the whole workspace              | `map` / `overview`    | file counts + token estimates                           |
+| Warm the indexes                     | `index`               | build Bigram/Bloom/Symbol/Outline caches                |
+| Be an MCP server                     | `mcp`                 | replaces Grep/Glob/Read for agents                      |
+| Recall the guide                     | `guide`               | print the embedded doc                                  |
 
 - **Global flags**: `--root <dir>`, `--format text|json`. Listing commands
   (`find/symbol/callers/callees/refs/flow/siblings`) page with
@@ -152,9 +153,14 @@ covers (e.g. `docker ps`, `ss`, `curl` for health checks).
   purged** — never reference it.
 - **Primary fast inference — FreeInference** (`freeinference.org/v1`):
   models: `qwen3.6-35b`, `glm-5.3-flash`, `deepseek-v4-flash`, `minimax-m3`.
-  Strict provider concurrency limit: **`maxConcurrency: 2`** per API key
-  (returns HTTP 429 with retry-after: 1). All agent spawn/batch workflows MUST
-  declare and observe `maxConcurrency: 2`.
+  **No hard provider concurrency cap** (proven 2026-10-22: 4 concurrent → all 200,
+  no 429/rate-limit headers; Pinax defines no cap). A "429 with retry-after:1" seen
+  from proxied tool calls is a **local Gatehouse/limiter concurrency shed**, not the
+  provider. When a provider opts into client `unlimitedRetryOn429` (default off),
+  ride a concurrency-contained 429 through (retry) rather than hard-stopping. The
+  `maxConcurrency: 2` number is a **Kappa client knob** (`kappa.jsonc`), not provider
+  doctrine. See `estate/ranch/estate-recon/muse-meta-hatch/docs/field-notes/kite-fleet-recon/
+FIX-usage-limit-as-dev-env.md`.
 - **Orchestration: Corral + DelendAI**:
   Multi-agent fleet orchestration is **Corral** (`@estate/corral`, `estate/ranch/corral`)
   merged with **DelendAI** (`shared-checkout-merge` development profile, proposal
@@ -201,13 +207,13 @@ covers (e.g. `docker ps`, `ss`, `curl` for health checks).
 
 ## Scope split (nested AGENTS.md)
 
-| Path | Owner of these rules |
-|---|---|
-| `/home/toxic/estate/AGENTS.md` | estate control-plane: repos, skills, grasp-hub, pitchfork |
-| `/home/toxic/estate/ranch/*/AGENTS.md` | each ranch component repo's own contract |
+| Path                                   | Owner of these rules                                      |
+| -------------------------------------- | --------------------------------------------------------- |
+| `/home/toxic/estate/AGENTS.md`         | estate control-plane: repos, skills, grasp-hub, pitchfork |
+| `/home/toxic/estate/ranch/*/AGENTS.md` | each ranch component repo's own contract                  |
 
 **Container path**: `$HOME/AGENTS.md` = this file; `$HOME/estate/AGENTS.md` = the
-estate mirror. Every nested file declares *what it refines and where*; none
+estate mirror. Every nested file declares _what it refines and where_; none
 repeats or contradicts the universal contract above.
 
 ## Agent customizations + skills hub (2026-10-16)
