@@ -43,12 +43,6 @@
    it, not just a file on disk.** Skip the restart only on an explicit
    "don't disrupt this flow" order (e.g. a live user session you must not kill).
    Applies to kappa, tau, kite and every pitchfork-supervised daemon.
-7. **After any local binary swap/redeploy of a supervised service, restart it
-   immediately (pitchfork-managed) so the running estate adopts the change — do
-   not leave an updated binary dormant. "Deployed" means a running process is
-   using it.** Only skip the restart if an explicit order says not to disrupt a
-   live flow. This applies to kappa, tau, kite and any pitchfork-supervised
-   daemon (real-time reload, no force-kill of unrelated sessions).
 
 ## The vibe meta-todo (first-class, resets every task)
 
