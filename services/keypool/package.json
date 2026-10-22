@@ -20,6 +20,6 @@
   "type": "module",
   "version": "0.1.0",
   "dependencies": {
-    "@estate/theta": "file:../../ranch/theta"
+    "@estate/theta": "file:../../packages/theta"
   }
 }

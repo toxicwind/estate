@@ -5,11 +5,11 @@
     "": {
       "name": "@estate/keypool",
       "dependencies": {
-        "@estate/theta": "file:../../ranch/theta",
+        "@estate/theta": "file:../../packages/theta",
       },
     },
   },
   "packages": {
-    "@estate/theta": ["@estate/theta@file:../../ranch/theta", {}],
+    "@estate/theta": ["@estate/theta@file:../../packages/theta", {}],
   }
 }
