@@ -23,3 +23,7 @@ returns. Current state: keepalive reports cell `unreachable` (listener still abs
 - Interactive: `bun keepalive-tailscale.ts`
 - Supervised: `pitchfork.d/tailscale-keepalive.toml` (retry+boot_start, 90s)
 - State: `/tmp/keepalive-tailscale.json`
+
+## hatch-gate (added 2026-10-22)
+Zero-trust inbound origin gate: admit only known-hatch/internal origins, quarantine unknown.
+See gate/README.md for the borrow-race provenance (AIP + ZT-runtime papers).
