@@ -30,7 +30,3 @@ jobs:
           for script in scripts/*.sh; do
             [ -f "$script" ] && bash -n "$script"
           done
-      - name: Health-check script syntax
-        run: |
-          bash -n scripts/health-check.sh
-          bash -n scripts/open-web-uis.sh
