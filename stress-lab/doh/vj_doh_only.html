@@ -1,0 +1,29 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>cell-side DoH VJ</title>
+<style>
+ body{background:#0b0f14;color:#c8d6e5;font:13px ui-monospace,monospace;margin:24px}
+ h1{color:#7ee787;font-size:15px}.row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #21262d;max-width:420px}
+ .glitch{color:#ff3344;text-shadow:0 0 10px #ff3344;font-weight:700}.stable{color:#7ee787;font-weight:700}
+ .flash{animation:fl 1s infinite}@keyframes fl{0%,100%{opacity:1}50%{opacity:.15}}
+ #status{color:#8b949e;margin-top:14px;font-size:11px}
+</style></head><body>
+<h1>cell-side DoH — Google vs Cloudflare discrepancy</h1>
+<div class="row"><span>domain</span><span id="dom">—</span></div>
+<div class="row"><span>google 8.8.8.8</span><span id="g">—</span></div>
+<div class="row"><span>cloudflare 1.1.1.1</span><span id="c">—</span></div>
+<div class="row"><span>ttl Δ</span><span id="ttl">—</span></div>
+<div class="row"><span>verdict</span><span id="vj">—</span></div>
+<div id="status">loading doh_report.json…</div>
+<script>
+ fetch('doh_report.json').then(r=>r.json()).then(d=>{
+  const disc=d.discrepancy, vj=d.vjTrigger;
+  document.getElementById('dom').textContent=d.domain;
+  document.getElementById('g').textContent=(d.google?.ips||[]).join(',')||'—';
+  document.getElementById('c').textContent=(d.cloudflare?.ips||[]).join(',')||'—';
+  const ttl=d.ttl_delta;
+  document.getElementById('ttl').textContent=(ttl??'—')+(disc?'  (Δ>30)':'');
+  const vje=document.getElementById('vj');
+  vje.textContent=vj||'—'; vje.className= vj==='GLITCH'?'glitch flash':'stable';
+  document.getElementById('status').textContent='live from estate doh_report.json · '+(d.timestamp||'');
+ }).catch(e=>{document.getElementById('status').textContent='feed unreachable — cell offline, snapshot kept on origin';});
+</script></body></html>
