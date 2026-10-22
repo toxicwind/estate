@@ -1,0 +1,15 @@
+{
+  "lockfileVersion": 2,
+  "configVersion": 1,
+  "workspaces": {
+    "": {
+      "name": "@estate/keypool",
+      "dependencies": {
+        "@estate/theta": "file:../../ranch/theta",
+      },
+    },
+  },
+  "packages": {
+    "@estate/theta": ["@estate/theta@file:../../ranch/theta", {}],
+  }
+}
