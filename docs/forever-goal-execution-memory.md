@@ -53,3 +53,10 @@ clean worktree build at origin/main@fc0ffe2da4 gave an EMPTY mise kappa-build ca
 302M minified native blob (the bundler renames that literal: `grep -a RetryAfter` = 1, and
 kappa.jsonc carries "unlimitedRetryOn429":true). CONCLUSION: NO kappa deploy gap; the
 "deploy queue" item is DONE/correct. Do not re-run the long build chasing a ghost.
+
+## KILO-HINDSIGHT-PLUGIN DONE (2026-10-22 ~21:20)
+Built + committed a self-contained Kilo hindsight CLI at ranch/kilo-code/hindsight-plugin/
+(zero deps, node:sqlite). Reads kappa-main.db session store (170 sessions) + squawk oracle
+ledger (162 settled) + fleet directives. Proof: `node src/cli.ts all` lists recent goals,
+open/blocked todos, oracle tallies. Commit cd58de0714 pushed to origin/ranch-fork-metadata
+(remote kilodev/kilo-code). Pre-existing husky pre-push typecheck broken in that repo (unrelated).
