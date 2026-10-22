@@ -1,0 +1,69 @@
+#!/usr/bin/env bun
+/**
+ * delend-route — the zero* fast-intent router for delend.
+ *
+ * Fast-understands an INCOMING instruction/command string and dispatches it to the
+ * correct delend-* primitive, first-valid-wins, sub-4s. So delend is self-routing:
+ * given "audit branches for main" it auto-calls delend-branch-audit-for-main;
+ * given "this command breached 4s" it calls delend-code-race; etc.
+ *
+ * Usage:
+ *   delend-route "<incoming instruction>"          # classify + print the routed plan
+ *   delend-route --run "<instruction>"             # also execute the routed primitive
+ *   delend-route --list                            # show the route table
+ *
+ * Route table (intent -> zero primitive). Includes the python delend-* as well; the
+ * delend oracle/market, gh, branch, iter, code-race, experimental, model-race,
+ * forge-audit, quick, stash, working-dirty. Run via `bun`.
+ */
+import { spawnSync } from "node:child_process";
+
+const BIN = "/home/toxic/estate/bin";
+const flags = process.argv.slice(2);
+const run = flags.includes("--run");
+const list = flags.includes("--list");
+const arg = flags.filter(x => !x.startsWith("--")).join(" ");
+
+type Route = { name: string; match: RegExp; cmd: string };
+const ROUTES: Record<string, string[]> = {
+  "delend-gh":                    ["global github", "upstream", "foreign repo", "not toxicwind", "clone.*audit", "any org", "clone that"],
+  "delend-branch-audit-for-main": ["branch", "audit branches", "merged", "diverged", "ahead of main", "reconcile.*main", "clean.*main"],
+  "delend-code-race":             ["breach", "timed", "timeout", "too slow", "sub-4s", "at 4s", "4s", "4 sec", "race.*faster", "slow command", "faster alt"],
+  "delend-experimental":          ["emergen", "conjecture", "3 parallel", "divergent", "whoa", "experimental fwd", "self-heal"],
+  "delend-iterate":               ["iterate", "10x", "feeds.*previous", "model-checked", "sync-feedback", "--iters"],
+  "delend-oracle":                ["oracle", "market", "intake", "bid", "find more", "task.*award", "delend-oracle"],
+  "delend-quick":                 ["checkpoint", "publish work-ref", "work-ref", "delendai", "commit.*guard", "shared-checkout"],
+  "delend-stash-optimize":        ["stash", "stash-optimize", "stacked unit"],
+  "delend-working-dirty":         ["dirty tree", "working tree", "uncommitted", "check.*dirty"],
+  "delend-forge-audit":           ["forge.*audit", "pattern audit", "borrow.*audit", "ast-grep.*claim"],
+  "delend-model-race":            ["model", "which model", "eap", "theta", "hodos", "provider.*race"],
+};
+
+function classify(txt: string): { name: string; match: string } | null {
+  const t = txt.toLowerCase();
+  for (const [name, pats] of Object.entries(ROUTES)) {
+    for (const p of pats) {
+      if (new RegExp(p, "i").test(t)) return { name, match: p };
+    }
+  }
+  return null;
+}
+
+if (list) {
+  console.log("=== delend-route table ===");
+  for (const [name, pats] of Object.entries(ROUTES)) console.log(`  ${name}  <~ ${pats.join(" | ")}`);
+  process.exit(0);
+}
+
+if (!arg) { console.error("usage: delend-route ['<instruction>'|--run '<instruction>'|--list]"); process.exit(2); }
+const r = classify(arg);
+if (!r) {
+  console.log(`delend-route: NO MATCH for "${arg}" — try --list, or hand it to delend-experimental.`);
+  process.exit(1);
+}
+console.log(`delend-route "${arg}" -> ${r.name} (matched: ${r.match})`);
+if (run) {
+  const p = spawnSync("bun", [BIN + "/" + r.name, ...arg.split(" ")], { encoding: "utf8", timeout: 20000 });
+  console.log((p.stdout || p.stderr || "").slice(0, 1500));
+  process.exit(p.status ?? 1);
+}
