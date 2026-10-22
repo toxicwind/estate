@@ -12,6 +12,15 @@
 **_The deploy plane_: this repo is where the estate actually deploys — every box, every model front door, every daemon (93 under `pitchfork`) is stood up, wired, and health-checked from here. It is both the control plane and the shipping lane.** Local + cloud model routing, a fleet of named agents that talk to each other, and every service built/cached by `forge` then rolled out under `pitchfork` — the estate is where "push → build → launch" ends.
 
 ```text
+**Where the code lives: the pens.** This estate deploys *through* the pens —
+the fully-local organization trees under `pens/`. The GPA that points at them is
+**[`toxicwind/pens`](https://github.com/toxicwind/pens)** (a pointer/registry
+repo: `pens.yaml` manifest + `pensctl` generator; `*` ignores every pen dir so it
+is never a monorepo, and there are **no submodules**). Pens: `ranch` (169-component
+workspace), `olympus` (Greek pantheon, fully local), `archive` (clutter). This
+estate root symlinks to them (`estate/ranch` → `pens/ranch`, `estate/olympus` →
+`pens/olympus`), so the deploy plane reads the code from the pens.
+
 push → forge (:25155 build cache/REAPI) → pitchfork (:25185 health) → LIVE on the estate
 ```
 
