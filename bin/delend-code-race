@@ -73,13 +73,13 @@ if (!existsSync(FORGE)) {
   done("FAIL", `${cmdLine} -> ${origProblem}; FORGE cli missing at ${FORGE}, no race possible.`);
   process.exit(1);
 }
-const bn = run("bun", [FORGE, "borrow", cmdLine, "--per-source", String(perSource)], process.cwd(), 9000);
+const bn = run("bun", [FORGE, "borrow", cmdLine, "--per-source", String(perSource)], process.cwd(), Math.max(800, Math.floor(budget*0.7)));
 const borrowLines = (bn.stdout||" ").split("\n").filter(l => l.trim() && /^\s*[0-9]+\.\s|^\s*[0-9]+\.\[|^\s*1\.\s/.test(l));
 
 // 3. attempt a code-race: forge race if we can map the exe to candidate strategies;
 //    otherwise emulate a hedged race by timing the original vs. a faster variant guess.
 let raceOut = "";
-const tryRace = run("bun", [FORGE, "race", "--strategies", "/tmp/delend-code-race-strat.json", "--race-timeout", String(raceTimeout)], process.cwd(), 7000);
+const tryRace = run("bun", [FORGE, "race", "--strategies", "/tmp/delend-code-race-strat.json", "--race-timeout", String(raceTimeout)], process.cwd(), Math.max(800, Math.floor(budget*0.3)));
 
 console.log(`\n=== delend-code-race result for: ${exe} ${parts.join(" ")} ===`);
 console.log(`breach: ${origProblem}`);
