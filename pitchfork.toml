@@ -35,6 +35,10 @@ daemons = ["rig"]
 # ---- project: estate (97 daemons) ----
 [daemons.agent-display]
 # Forge 2026-09-21: isolated virtual display for the agent browser.
+# Isolated Xvnc :99 desktop. A window manager (agent-wm) must run against this
+# X server or the desktop has no WM: the keeper Chromium (1600x900) gets no
+# decorations, --start-maximized is a no-op, and window resizes never propagate
+# to the page — behaves like a bare headless/automation browser.
 port = 5900
 run = "exec Xvnc :99 -geometry 1600x900 -depth 24 -rfbport 5900 -localhost -SecurityTypes VncAuth -rfbauth /home/toxic/archive/home-dirs-2026/.browserless/vncpasswd"
 dir = "."
@@ -43,6 +47,21 @@ retry = true
 ready_cmd = "ss -tln | grep -q 127.0.0.1:5900"
 boot_start = true
 auto = ["start"]
+
+# Lightweight window manager for the agent's virtual desktop (:99).
+# openbox is already installed (openbox-3.6.1). Without it _NET_SUPPORTING_WM_CHECK
+# is absent on the root and the keeper Chromium cannot be resized/maximized.
+# ready_cmd uses xprop (x11-utils) to confirm the WM has taken the root.
+[daemons.agent-wm]
+port = 0
+run = "export DISPLAY=:99 LD_LIBRARY_PATH=/home/toxic/.browserless/keeper/openbox-build/lib; exec /home/toxic/.browserless/keeper/openbox-build/bin/openbox >> /home/toxic/.browserless/keeper/agent-wm.log 2>&1"
+dir = "."
+mise = false
+retry = true
+ready_cmd = "DISPLAY=:99 xprop -root _NET_SUPPORTING_WM_CHECK 2>/dev/null | grep -q ."
+boot_start = true
+auto = ["start"]
+after = ["agent-display"]
 
 [daemons.agent-viewer]
 # Forge 2026-09-21: noVNC web viewer for the agent display.
@@ -263,16 +282,13 @@ auto = ["start"]
 # delendai-web — DelendAI Astro dashboard (apps/web), first-class service.
 # Port SSOT: config/ports.env DELENDAI_WEB_PORT=25197.
 [daemons.delendai-web]
-run = "exec env PORT=25197 PAGES_BASE='' astro preview --host 127.0.0.1 --port 25197"
-dir = "/home/toxic/estate/ranch/borrowed/delendai/apps/web"
+run = "exec /home/toxic/estate/ranch/corral/delendai/apps/web/node_modules/.bin/astro preview --host 127.0.0.1 --port 25197"
+dir = "/home/toxic/estate/ranch/corral/delendai/apps/web"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25197/"
 boot_start = false
 auto = ["start"]
-# NOTE: `astro preview` needs a build (bun run build in apps/web) first. If that
-# isn't present, switch to `astro dev --host 127.0.0.1 --port 25197`.
-
 [daemons.dnsmasq]
 run = "exec ./stack/services/dnsmasq.sh"
 dir = "."
@@ -398,6 +414,17 @@ mise = false
 retry = true
 boot_start = true
 ready_cmd = "ss -ltn 'sport = :25136' | grep -q LISTEN"
+auto = ["start"]
+
+# kappa-board-bridge — two-way mirror between the kappa board (SQLite) and the
+# squawk `kappa_board` chat channel, so tau & kappa agents connect to the same
+# shared board. Runs the newer per-board-cursor bridge (2026-10-22 fix).
+[daemons.kappa-board-bridge]
+run = "exec /usr/bin/python3 /home/toxic/estate/ranch/squawk/kappa_board_bridge.py --watch --root /home/toxic/.fleet-bus/squawk-root --db /home/toxic/.local/share/kappa/kappa-main.db"
+dir = "/home/toxic/estate/ranch/squawk"
+mise = false
+retry = true
+boot_start = true
 auto = ["start"]
 
 # forge-agent — execution agent for the forge build daemon (gRPC :25240; renamed from estate/flicker-agent 2026-10-13).
