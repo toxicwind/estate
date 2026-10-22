@@ -47,3 +47,19 @@ products out of their pens.
 - The deploy plane (`estate`) stays GitHub-hosted; the pens are the organization
   layer. "Push → forge build → pitchfork roll → live" ships from the pens
   through estate.
+
+## Decluttering `/home/toxic` (in progress)
+
+The home dir accumulated ~535 top-level entries (state, scripts, split `.b64`
+parts, tarballs, ad-hoc servers). Target end-state:
+
+```
+pens/       ranch, olympus, archive, barn, work, lab  (fully local, no submodules)
+estate/     deploy plane only (config, pitchfork, manifest, docs) + symlinks -> pens/
+archive/    junk pen: .b64 parts, tarballs, unreferenced recovered artifacts
+<dot-state> .local .config .cache .ssh  (the real box infra)
+<sacred>    bin, config  (small fixed set)
+```
+
+No submodules. Components are plain local git checkouts under `pens/`; the estate
+deploy plane symlinks to them.
