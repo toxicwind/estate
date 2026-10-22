@@ -1,0 +1,6 @@
+[daemons.forever-loop]
+run = "exec bun run-loop.ts"
+dir = "/home/toxic/estate/ranch/estate-brain/agents/forever-loop"
+mise = false
+retry = true
+boot_start = true
