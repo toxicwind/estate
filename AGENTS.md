@@ -282,3 +282,29 @@ These recur every session; honor them without being told.
   (PRIVATE `toxicwind/theta`, confidential — never public). Merged provider
   gateway (auth+keys+routing) = **atlas** (ex-cuttinggate). Key-pool router =
   keygate. EAP keys live in secretsmith (`GEMINI_EAP_KEY_1..6`), not env.
+- **Home of the Greek-coded products (2026-10-22):** **olympus** (`toxicwind/olympus`,
+  private) HOLDS the Greek codename lineage — τ tau, κ kappa, **skopos** (the
+  persistent browser, was `keeper`), kilo, muse, keryx, hodos, kairos, kryptos.
+  ranch/barn are ranch-structure (NOT Greek); only Greek-coded products join
+  olympus. skopos = the keeper browser watcher (`ranch/keeper`, `keeper/bin/skopos.ts`,
+  CDP :25154). Naming taxonomy: `kite-fleet-recon/NAMING-THEMES.md`.
+
+## Emergent rig doctrine (2026-10-22) — deps allowed, dig deeper, maximal
+
+- **New dependencies, shims, and bun-canary are ALLOWED.** There is no "no-deps"
+  rule. Before building anything that could use a faster/newer runtime, check the
+  latest bun canary:
+  `npm view bun@canary version` and skim its changelog (e.g. 1.4.4-canary.yyyymmdd.N).
+  Use it (or stable) whichever wins the race; prefer canary when a fix/API lands there.
+- **Time is not a construct for the depth of exploration.** The 4s/2s race budget is
+  for RUNNING a chosen tool fast, not for limiting how far you dig (byte-level RE,
+  cross-codebase synthesis, skill updates). Dig deeper: reverse-engineer binaries,
+  bring two codebases together, conjecture 3+ parallel experimental forward paths
+  ("whoa, no one has bridged these yet — we can"), and race them in parallel.
+- **delend-experimental**: when a step is novel/emergent, spawn a new agent that uses
+  the code finder to auto-heal and auto-iterate itself, conjecturing multiple (3+)
+  parallel divergent implementations chosen by code-race + borrow. Never settle on a
+  single guess.
+- **New agents (rigs) get a full rig auto-populated** via the rig-helper in
+  `bin/rig-create` (openfang integration): persona + squawk join + config + glue
+  auto-wired so any future agent can be scaffolded in seconds.
