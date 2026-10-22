@@ -308,3 +308,12 @@ These recur every session; honor them without being told.
 - **New agents (rigs) get a full rig auto-populated** via the rig-helper in
   `bin/rig-create` (openfang integration): persona + squawk join + config + glue
   auto-wired so any future agent can be scaffolded in seconds.
+
+## GLOBAL GITHUB — MAJOR PRIMITIVE (2026-10-22)
+The estate operates on **ARBITRARY upstream repos, not just toxicwind/*.** The primitive is
+`bin/delend-gh <org/repo|url> [audit-main|raw <path>|<git-args>] [--keep]`: it resolves any
+GitHub/gitlab/codeberg/self-hosted repo into a temp clone, runs a git op (default: a branch
+audit vs the remote default branch), and cleans up. `bin/delend-branch-audit-for-main --repo
+<path|url>` is the estate-wide branch audit on any repo. Global-by-construction: never assume
+a repo lives under a specific org — always resolve from the provided org/URL. This is the
+basis for foreign-pattern borrow, upstream tracking, and cross-org recon.

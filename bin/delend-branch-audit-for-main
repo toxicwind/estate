@@ -1,64 +1,107 @@
 #!/usr/bin/env bun
 /**
- * delend-branch-audit-for-main — audit branches against main and reconcile ready ones.
+ * delend-branch-audit-for-main — audit branches against main for ANY repo (estate-wide).
  *
- * Scans local+remote branches, classifies each vs main (merged / ahead / diverged /
- * stale), and (with --merge-ready) fast-forwards/merges the ready non-diverged ones
- * into main + pushes. Used by the rig agent for the `delend-branch-audit-for-main`
- * rag. Never force; never touches other-writer merge branches.
+ * Works on:
+ *   (default) the repo in the current working directory, OR
+ *   --repo <local-path>   a local git checkout path, OR
+ *   --repo <upstream-url> any git upstream URL (clone to a temp dir) — NOT limited to
+ *                          toxicwind/*; works on arbitrary github/other hosts.
+ * Classifies each branch vs main/HEAD as merged / ahead / diverged, and (--merge-ready)
+ * safely merges non-diverged ahead branches into the default branch + pushes. For a URL
+ * clone, --merge-ready reports the merges it would do but does not push to the clone's
+ * origin (that's the caller's choice) unless --push is also given.
  *
  * Usage:
- *   delend-branch-audit-for-main                # audit only (report)
- *   delend-branch-audit-for-main --merge-ready  # also merge ahead-safe branches into main+push
- *   delend-branch-audit-for-main --only <matches> --list
+ *   delend-branch-audit-for-main                          # cwd repo, audit only
+ *   delend-branch-audit-for-main --repo /path/to/repo
+ *   delend-branch-audit-for-main --repo https://github.com/org/repo --merge-ready
+ *   delend-branch-audit-for-main --only <substring> --main <branch>
  */
 import { spawnSync } from "node:child_process";
+import { existsSync, mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
-const mergeReady = process.argv.includes("--merge-ready");
-const only = process.argv.includes("--only") ? process.argv[process.argv.indexOf("--only")+1] : null;
-const git = (a: string[]) => {
-  const p = spawnSync("git", a, { encoding: "utf8", cwd: process.cwd() });
-  if (p.status !== 0) throw new Error((p.stderr||"").trim().slice(0,120) || `git ${a[0]} failed rc=${p.status}`);
+const argv = process.argv.slice(2);
+const gv = (f: string) => argv.includes(f) ? argv[argv.indexOf(f)+1] : null;
+const repo = gv("--repo") || process.cwd();
+const mainBranch = gv("--main") || "main";      // default branch to audit against
+const only = gv("--only");
+const mergeReady = argv.includes("--merge-ready");
+const doPush = argv.includes("--push");
+
+function gitIn(cwd: string, a: string[]) {
+  const p = spawnSync("git", a, { encoding: "utf8", cwd });
+  if (p.status !== 0) throw new Error((p.stderr||"").trim().slice(0,140) || `git ${a[0]} failed rc=${p.status}`);
   return (p.stdout||"").trim();
-};
+}
 
-const main = git(["rev-parse", "HEAD"]);
-const locals = git(["for-each-ref", "refs/heads", "--format=%(refname:short)"]).split("\n").filter(Boolean);
-const remotes = git(["for-each-ref", "refs/remotes/origin", "--format=%(refname:short)"]).split("\n")
+// resolve --repo to a working dir. Local path -> use it. URL (http/git/ssh/gh) -> clone to temp.
+let cwd: string = repo;
+let isClone = false;
+let cloneDir = "";
+try {
+  if (/^(https?|git|ssh):\/\/|^git@|^gh:/.test(repo)) {
+    cloneDir = mkdtempSync(join(tmpdir(), "branch-audit-"));
+    gitIn(cloneDir, ["clone", "--quiet", repo, "upstream"]);
+    cwd = join(cloneDir, "upstream");
+    isClone = true;
+  } else if (!existsSync(join(repo, ".git"))) {
+    console.error(`not a repo / bad path or URL: ${repo}`); process.exit(2);
+  }
+} catch (e:any) {
+  console.error(`clone/open failed: ${String(e.message).slice(0,140)}`); process.exit(2);
+}
+
+const g = (a: string[]) => gitIn(cwd, a);
+const upstream = isClone ? "origin" : "origin";
+
+const rev = (branch: string) => { try { return g(["rev-parse", branch]); } catch { return null; } };
+const mainRev = rev(mainBranch);
+if (!mainRev) { console.error(`default branch '${mainBranch}' not found; use --main`); if(isClone) rmSync(cloneDir,{recursive:true,force:true}); process.exit(2); }
+
+const remotes = g(["for-each-ref", "refs/remotes", `--format=%(refname:short)`]).split("\n")
   .filter(r => r.startsWith("origin/") && !r.startsWith("origin/HEAD"));
 
 const report: any[] = [];
-for (const r of remotes) {
-  const name = r.replace("origin/", "");
+for (const rname of remotes) {
+  const name = rname.replace(/^origin\//, "");
   if (only && !name.includes(only)) continue;
+  if (name === mainBranch) continue;
   let ahead = 0, behind = 0, state = "merged";
   try {
-    const rr = git(["rev-list", "--left-right", "--count", `main...${r}`]).split(/\s+/);
+    const rr = g(["rev-list", "--left-right", "--count", `${mainBranch}...${rname}`]).split(/\s+/);
     behind = Number(rr[0]||0); ahead = Number(rr[1]||0);
-  } catch { behind = -1; ahead = 0; state = "unresolvable"; }
-  if (behind === -1) state = "unresolvable";
-  else if (ahead === 0) state = "merged";
-  else if (behind === 0) state = ahead > 1 ? "ahead-clean-after" : "ahead-clean";
-  else state = "diverged";
+  } catch { state = "unresolvable"; }
+  if (state !== "unresolvable") state = ahead === 0 ? "merged" : (behind === 0 ? "ahead-clean" : "diverged");
   report.push({ branch: name, ahead, behind, state });
 }
 
 console.log("=== delend-branch-audit-for-main ===");
-console.log(`main HEAD: ${main.slice(0,8)}  (${git(["log","-1","--format=%s","--oneline"]).slice(0,60)})`);
+console.log(`repo: ${repo}${isClone ? " (cloned to temp)" : ""}  main=${mainBranch}@${mainRev.slice(0,8)}  [${g(["remote","get-url","origin"]).split("\n")[0] || "no-origin"}]`);
 for (const r of report) {
   const icon = r.state==="merged"?"✓":r.state==="diverged"?"✗":r.state==="ahead-clean"?"△":"?";
   console.log(`  ${icon} ${r.branch}  (${r.ahead} ahead / ${r.behind} behind) [${r.state}]`);
 }
+const div = report.filter(r=>r.state==="diverged").length, merged = report.filter(r=>r.state==="merged").length, clean = report.filter(r=>r.state==="ahead-clean").length;
+console.log(`\n  summary: ${merged} merged · ${clean} ahead-clean · ${div} diverged (need reconcile, not force) · ${isClone?"read-only clone (no push unless --push)":""}`);
 
 if (mergeReady) {
-  console.log("\n-- merge-ready: fast-forward/merge non-diverged ahead branches into main + push --");
+  console.log("\n-- merge-ready: land non-diverged ahead-clean branches into " + mainBranch + " --");
   for (const r of report) {
-    if (r.state === "ahead-clean" || r.state === "ahead-clean-after") {
-      try {
-        git(["merge", "--no-ff", `origin/${r.branch}`, "-m", `merge(${r.branch}): land ahead-clean branch into main (audit-for-main)`]);
-        console.log(`  merged ${r.branch}`);
-      } catch (e:any) { console.log(`  SKIP ${r.branch}: ${String(e.message).slice(0,80)}`); }
+    if (r.state === "ahead-clean") {
+      const msg = `merge(${r.branch}): land ahead-clean branch (delend-branch-audit-for-main)`;
+      if (doPush || !isClone) {
+        try { g(["merge", "--no-ff", `origin/${r.branch}`, "-m", msg]); console.log(`  merged ${r.branch}`); }
+        catch (e:any) { console.log(`  SKIP ${r.branch}: ${String(e.message).slice(0,90)}`); }
+      } else {
+        // clone read-only: report the merge it WOULD do; caller decides on push
+        console.log(`  would-merge ${r.branch} (clone read-only; use --push on a real checkout to apply)`);
+      }
     }
   }
-  try { git(["push","origin","main"]); console.log("  pushed main"); } catch(e:any){ console.log("  push blocked:", String(e.message).slice(0,80)); }
+  if (doPush) { try { g(["push", "origin", mainBranch]); console.log("  pushed " + mainBranch); } catch(e:any){ console.log("  push blocked:", String(e.message).slice(0,90)); } }
 }
+
+if (isClone) rmSync(cloneDir, { recursive: true, force: true });
