@@ -1,6 +1,6 @@
 # Registered 2026-10-21: the tau ACP engine speaks stdio only, so it was
 # invisible to the supervisor and to every port-based surface registry.
-# `chute` (ranch/barn/chute) is the estate's TCP<->stdio ACP passage: it makes
+# `chute` (pens/barn/chute) is the estate's TCP<->stdio ACP passage: it makes
 # the tau engine observable as a daemon on a real port without patching omp.
 # Port is TAU_CHUTE_PORT from config/ports.env (SSOT = 25111).
 #
@@ -11,7 +11,7 @@
 [daemons.tau-chute]
 port = 25111
 run = "exec /usr/bin/node chute.mjs --port 25111 -- /home/toxic/.local/bin/tau acp"
-dir = "/home/toxic/estate/ranch/barn/chute"
+dir = "/home/toxic/pens/barn/chute"
 mise = true
 retry = true
 ready_port = 25111
