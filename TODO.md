@@ -65,29 +65,51 @@
 - [ ] Verify: `ffs grep -i flicker --root /home/toxic/estate` → only
       var/archive + docs/history hits; daemons green.
 
-## 2. Shell config cleanup (ble.sh / .env / nim-omnibus)
+## 2. Shell config cleanup (ble.sh / .env / nim-omnibus) — DONE 2026-10-23
 
-- [ ] **SECURITY**: `~/nim-omnibus.sh` (sourced by .bashrc:178) hardcodes
-      NGC_API_KEY + NVCF_API_KEY (same nvapi- value) + BREV_API_KEY +
-      BREV_ORG_ID in plaintext — NONE in vault yet. Add all 4 to `~/.secrets`,
-      convert the script to vault-grep (copy the proven pattern from
-      `.bashrc.local` GITHUB_TOKEN block). Canonical copy is
-      `ranch/nim-omnibus/nim-omnibus.sh` (differs from $HOME copy — reconcile).
-- [ ] Archive 15 shell backup files (.bashrc.bak*, .bashrc.env.bak*,
-      .bashrc.pre-ssot, .bashrc.backup, .bashrc.local.bak*) →
-      `~/archive/shell-backups-20261016/`.
-- [ ] Pattern-borrow (in progress): 6 real ble.sh bashrcs fetched to
-      `/tmp/kilo/bashrc-borrow/` (ARKye03/dotfiles, Narsell/dotfiles,
-      rashil2000/dotfiles, jonpas/dotfiles, 6aru/i3-EllenJoe, gyro-uyt/dotfiles —
-      21-140 lines each; 12 repos found, 6 fetched). Fetch 2-3 more, compare
-      structure (ble.sh→starship order, guards, env handling), rebuild `~/.bashrc`
-      proven-style. Current chain works: .profile→.bashrc.env→.bashrc→
-      (line 128) .bashrc.local (ble.sh→starship→vault keys)→(line 178)
-      nim-omnibus.sh.
+- [x] **ble.sh removed**: `.bashrc.local` ble source + duplicate starship init
+      deleted; `blesh-git` pacman-uninstalled; `~/.blerc` + `~/.cache/blesh`
+      removed (was agent-hostile: escape-sequence/PTY corruption under agents).
+- [x] **nim-omnibus removed**: `source /home/toxic/nim-omnibus.sh` deleted from
+      `.bashrc`; `~/nim-omnibus.sh`+baks, `~/.local/share/nim-omnibus`, stray
+      `proxy.py` process killed, `alias npx='nim-proxy-start'` gone, injected
+      kilo `config.json` providers dropped; NGC/Brev keys already in
+      secretsmith (never committed).
+- [x] **15 stale shell backups** archived → `~/archive/shell-backups-20261016/`.
+- [x] **~/.bashrc agent-ified**: interactive TUI/completion hooks (zoxide,
+      starship, direnv, atuin, bash-completion, fzf, wezterm) now guarded by
+      `[[ $- == *i* ]] && [ -z "${SNAPSHOT_FILE:-}" ]` so agent `SNAPSHOT_FILE`
+      captures skip prompt/completion overhead; env + mise path still load.
 - [ ] `~/.env` (9.7KB, NOT sourced by shells — app/compose env): cleaned of
       omniroute refs; document its role in AGENTS.md shell-chain section.
 
-## 3. FreeInference upstream proof (.md doc pending)
+## 3. Delend → DelendAI plugin conversion + Corral merge — DONE 2026-10-23
+
+- [x] All bin/delend-* helpers converted to first-class @delendai/* plugins
+      (`ranch/barn/corral/delendai/plugins/*`: work-refs (quick/dirty/stash),
+      code-race, experimental, iterate, oracle-market, model-race, forge-audit,
+      intent-router, global-gh (gh + branch-audit), rig-c2) — definePlugin +
+      MCP tools + importable Bun library.
+- [x] bin/delend-* bins are thin shims over the plugins; delend.test.ts loads
+      plugin sources via dynamic import; 74/74 pass.
+- [x] Corral merged (ranch/corral → moved to ranch/barn/corral per user):
+      src/delendai/index.ts re-exports every plugin + guardian/optimizer/
+      profile; src/cli/index.ts + args.ts wire `corral delend <subcommand>`
+      dispatcher (16 subcommands).
+- [x] delendai.config.json registers all 10 plugins (path/prefix/enabled).
+- [x] Forge pattern-borrow modularized: code-patterns/src/providers/
+      pattern-borrow.ts (10-factor ranker reusing ./http + ffs local scan);
+      `forge pattern-borrow|pb` CLI + forge_pattern_borrow MCP + scripts/
+      pattern-borrow.ts delegate; ranch/forge/bin/forge unifies triad +
+      pattern-forge; estate/bin/forge + pattern-borrow linked on PATH.
+- [ ] Follow-up: register the 10 plugins' MCP tools in gatehouse :25127 and
+      run them through the proxy (MCP-first doctrine).
+- [ ] GitHub auth: dead fine-grained PAT rotated/revoked 2026-10-23 — all
+      stores cleaned (`~/.secrets`, `~/.git-credentials`, gh hosts.yml,
+      .bashrc.local/.profile exports); re-auth via `gh auth login` device
+      flow, then push b578477a17 (estate) + corral + delendai plugins.
+
+## 4. FreeInference upstream proof (.md doc pending)
 
 - [ ] Proven local-side: no /etc/hosts intercept; freeinference.org → real
       Cloudflare IP 172.67.197.180; legit Google Trust Services TLS cert;
