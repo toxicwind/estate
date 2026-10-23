@@ -1517,3 +1517,6 @@ packages/theta/
 submodules/phone-sentinel/
 work/airspeak/
 work/tau-extensions/
+
+# corral scratch (generated workflows)
+/.corral/

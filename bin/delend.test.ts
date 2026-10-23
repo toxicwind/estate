@@ -24,6 +24,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 const BIN = "/home/toxic/estate/bin";
+const PLUGINS = "/home/toxic/estate/ranch/barn/corral/delendai/plugins";
 
 // ---- helper: run a CLI as a child process, return {rc, stdout, stderr} ----
 function cli(
@@ -42,6 +43,49 @@ function cli(
   return { rc: p.status ?? 1, out: p.stdout || "", err: p.stderr || "" };
 }
 
+// ---- helper: load a @delendai/* plugin source as the canonical module.
+// The bin/delend-* files are now thin shims over the plugins, so tests import
+// the plugin source directly (bun ESM: dynamic import, never require).
+// `fresh: true` cache-busts so module-level env reads (oracle paths, forge)
+// re-evaluate with the caller's process.env — the oracle tests require this.
+const PLUGIN_PATHS: Record<string, string> = {
+  "code-race": `${PLUGINS}/code-race/src/index.ts`,
+  experimental: `${PLUGINS}/experimental/src/index.ts`,
+  iterate: `${PLUGINS}/iterate/src/index.ts`,
+  "oracle-market": `${PLUGINS}/oracle-market/src/index.ts`,
+  "work-refs": `${PLUGINS}/work-refs/src/index.ts`,
+  "model-race": `${PLUGINS}/model-race/src/index.ts`,
+  "forge-audit": `${PLUGINS}/forge-audit/src/index.ts`,
+  "intent-router": `${PLUGINS}/intent-router/src/index.ts`,
+  "global-gh": `${PLUGINS}/global-gh/src/index.ts`,
+  "rig-c2": `${PLUGINS}/rig-c2/src/index.ts`,
+};
+// Legacy name -> plugin name (delend-quick lives in work-refs, etc.)
+const PLUGIN_ALIASES: Record<string, string> = {
+  "delend-code-race": "code-race",
+  "delend-experimental": "experimental",
+  "delend-iterate": "iterate",
+  "delend-oracle": "oracle-market",
+  "delend-quick": "work-refs",
+  "delend-working-dirty": "work-refs",
+  "delend-stash-optimize": "work-refs",
+  "delend-model-race": "model-race",
+  "delend-forge-audit": "forge-audit",
+  "delend-route": "intent-router",
+  "delend-gh": "global-gh",
+  "delend-branch-audit-for-main": "global-gh",
+  "delend-rig-c2": "rig-c2",
+};
+function pluginPath(legacyOrPlugin: string): string {
+  const plugin = PLUGIN_ALIASES[legacyOrPlugin] ?? legacyOrPlugin;
+  return PLUGIN_PATHS[plugin] ?? join(BIN, legacyOrPlugin);
+}
+async function loadPlugin(legacyOrPlugin: string, fresh = false): Promise<any> {
+  const p = pluginPath(legacyOrPlugin);
+  const spec = fresh ? `${p}?cb=${Date.now()}-${Math.random().toString(36).slice(2)}` : p;
+  return import(spec);
+}
+
 // A scratch dir for oracle/iterate temp state. Synchronous at module load so
 // describe-body path computations (delend-oracle) can reference it at
 // collection time — `beforeAll` runs too late for that.
@@ -53,11 +97,17 @@ afterAll(() => {
 
 // ============================================================================
 describe("delend-code-race", () => {
-  const crmod = require(join(BIN, "delend-code-race"));
-  const argvOf: (line: string) => string[] = crmod.argvOf;
-  const craRun = crmod.run;
-  const raceCore: any = crmod.raceCore;
-  const FORGE = crmod.FORGE;
+  let crmod: any;
+  let argvOf: (line: string) => string[];
+  let craRun: (cmd: string, args: string[]) => any;
+  let raceCore: any;
+  beforeAll(async () => {
+    crmod = await loadPlugin("delend-code-race");
+    argvOf = crmod.argvOf;
+    craRun = crmod.run;
+    raceCore = crmod.raceCore;
+  });
+  const FORGE = "";
   void FORGE;
 
   test("argvOf tokenizes quoted + unquoted words", () => {
@@ -204,7 +254,10 @@ describe("delend-code-race", () => {
 
 // ============================================================================
 describe("delend-experimental", () => {
-  const mod = require(join(BIN, "delend-experimental"));
+  let mod: any;
+  beforeAll(async () => {
+    mod = await loadPlugin("delend-experimental");
+  });
 
   test("get parses present + absent flags", () => {
     expect(mod.get(["--brief", "hi", "--paths", "3"], "--brief", "")).toBe(
@@ -264,7 +317,7 @@ describe("delend-experimental", () => {
     expect((r.out.match(/-\s+P\d+:/g) || []).length).toBe(3);
   }, 30000);
 
-  test("main (in-process) returns 0, writes result JSON with a stub forge", () => {
+  test("main (in-process) returns 0, writes result JSON with a stub forge", async () => {
     const stubForge = join(scratch, "exp-stub-forge.ts");
     writeFileSync(
       stubForge,
@@ -274,11 +327,9 @@ process.exit(0);
 `,
     );
     chmodSync(stubForge, 0o755);
-    const PKG = join(BIN, "delend-experimental");
     const priorEnv = process.env.DELEND_EXPERIMENTAL_FORGE;
     process.env.DELEND_EXPERIMENTAL_FORGE = stubForge;
-    delete (require as any).cache[(require as any).resolve(PKG)];
-    const fresh = require(PKG);
+    const fresh = await loadPlugin("delend-experimental", true);
     const prevArgv = process.argv;
     process.argv = [
       "bun",
@@ -296,9 +347,8 @@ process.exit(0);
     expect(existsSync("/tmp/delend-experimental-result.json")).toBe(true);
   });
 
-  test("main (in-process) no --brief → returns 2", () => {
-    const PKG = join(BIN, "delend-experimental");
-    const fresh = require(PKG);
+  test("main (in-process) no --brief → returns 2", async () => {
+    const fresh = await loadPlugin("delend-experimental", true);
     const prevArgv = process.argv;
     process.argv = ["bun", "delend-experimental"];
     const rc = fresh.main();
@@ -309,7 +359,10 @@ process.exit(0);
 
 // ============================================================================
 describe("delend-iterate", () => {
-  const mod = require(join(BIN, "delend-iterate"));
+  let mod: any;
+  beforeAll(async () => {
+    mod = await loadPlugin("delend-iterate");
+  });
 
   test("get parses argv pairs", () => {
     expect(mod.get(["--goal", "g", "--iters", "5"], "--iters", "10")).toBe("5");
@@ -462,7 +515,10 @@ describe("delend-iterate", () => {
 
 // ============================================================================
 describe("delend-oracle", () => {
-  const mod = require(join(BIN, "delend-oracle"));
+  let mod: any;
+  beforeAll(async () => {
+    mod = await loadPlugin("delend-oracle");
+  });
   // Temp oracle dir for status/hindsight tests
   const oDir = join(scratch, "oracle");
   const transcript = join(scratch, "oracle-transcript.jsonl");
@@ -482,7 +538,7 @@ describe("delend-oracle", () => {
     writeFileSync(
       harness,
       `
-      const m = require("/home/toxic/estate/bin/delend-oracle");
+      const m = await import("/home/toxic/estate/ranch/barn/corral/delendai/plugins/oracle-market/src/index.ts");
       ${code}
     `,
     );
@@ -561,7 +617,7 @@ describe("delend-oracle", () => {
     writeFileSync(
       harness,
       `
-      const { readLedger, summarizeAwarded } = require("/home/toxic/estate/bin/delend-oracle");
+      const { readLedger, summarizeAwarded } = await import("/home/toxic/estate/ranch/barn/corral/delendai/plugins/oracle-market/src/index.ts");
       const r = readLedger(0);
       const out = JSON.stringify({ newOffset: r.newOffset, lastOpen: r.lastOpen?.task_id, lastAssigned: r.lastAssigned?.task_id, lastDecision: r.lastDecision?.from, events: r.events.map((e:any)=>e.event) });
       console.log(out);
@@ -715,13 +771,11 @@ const b=process.argv.indexOf("--brief"); console.log("handled:"+(b>=0?process.ar
 
   // The oracle module reads its paths from env at import time, so exercise the
   // in-process command handlers against an env-pointed, freshly-required module.
-  function freshOracle(env: Record<string, string>) {
-    const PKG = join(BIN, "delend-oracle");
+  async function freshOracle(env: Record<string, string>) {
     const prior: Record<string, string | undefined> = {};
     for (const k of Object.keys(env)) prior[k] = process.env[k];
     Object.assign(process.env, env);
-    delete (require as any).cache[(require as any).resolve(PKG)];
-    const m = require(PKG);
+    const m = await loadPlugin("delend-oracle", true);
     for (const k of Object.keys(env)) {
       if (prior[k] === undefined) delete process.env[k];
       else process.env[k] = prior[k];
@@ -729,7 +783,7 @@ const b=process.argv.indexOf("--brief"); console.log("handled:"+(b>=0?process.ar
     return m;
   }
 
-  test("main (in-process): status subcommand exercises cmdStatus branches", () => {
+  test("main (in-process): status subcommand exercises cmdStatus branches", async () => {
     const o = join(scratch, "oracle-inproc-status");
     const ledger = join(o, "ledger.jsonl");
     const hh = join(o, "hh.md");
@@ -742,26 +796,26 @@ const b=process.argv.indexOf("--brief"); console.log("handled:"+(b>=0?process.ar
         JSON.stringify({ event: "assigned", task_id: "tX", winner: "w1" }),
       ].join("\n") + "\n",
     );
-    const m = freshOracle({
+    const m = await freshOracle({
       DELEND_ORACLE_DIR: o,
       DELEND_ORACLE_LEDGER: ledger,
       DELEND_ORACLE_HINDSIGHT: hh,
     });
-    expect(m.main(["status"])).toBe(0);
+    expect(await m.main(["status"])).toBe(0);
   });
 
-  test("main (in-process): status with no hindsight + no ledger shows seed messages", () => {
+  test("main (in-process): status with no hindsight + no ledger shows seed messages", async () => {
     const o = join(scratch, "oracle-inproc-none");
     mkdirSync(o, { recursive: true });
-    const m = freshOracle({
+    const m = await freshOracle({
       DELEND_ORACLE_DIR: o,
       DELEND_ORACLE_LEDGER: join(o, "nope.jsonl"),
       DELEND_ORACLE_HINDSIGHT: join(o, "nope.md"),
     });
-    expect(m.main(["status"])).toBe(0);
+    expect(await m.main(["status"])).toBe(0);
   });
 
-  test("main (in-process): apply with stub experimental records and returns 0", () => {
+  test("main (in-process): apply with stub experimental records and returns 0", async () => {
     const o = join(scratch, "oracle-inproc-apply");
     mkdirSync(o, { recursive: true });
     const transcript = join(o, "transcript.jsonl");
@@ -774,22 +828,22 @@ console.log("handled:" + (b >= 0 ? process.argv[b + 1] : ""));
 `,
     );
     chmodSync(stubExp, 0o755);
-    const m = freshOracle({
+    const m = await freshOracle({
       DELEND_ORACLE_DIR: o,
       DELEND_ORACLE_LEDGER: join(o, "ledger.jsonl"),
       DELEND_ORACLE_HINDSIGHT: join(o, "hh.md"),
       DELEND_ORACLE_TRANSCRIPT: transcript,
       DELEND_EXPERIMENTAL_BIN: stubExp,
     });
-    expect(m.main(["apply", "--task", "inproc task"])).toBe(0);
+    expect(await m.main(["apply", "--task", "inproc task"])).toBe(0);
     // apply without --task → usage exit 2
-    expect(m.main(["apply"])).toBe(2);
+    expect(await m.main(["apply"])).toBe(2);
     // no subcommand / help → usage exit 0; unknown → exit 2
-    expect(m.main([])).toBe(0);
-    expect(m.main(["bogus"])).toBe(2);
+    expect(await m.main([])).toBe(0);
+    expect(await m.main(["bogus"])).toBe(2);
   });
 
-  test("main (in-process): loop exercises cmdLoop with a stubbed python3 + sleep", () => {
+  test("main (in-process): loop exercises cmdLoop with a stubbed python3 + sleep", async () => {
     const o = join(scratch, "oracle-inproc-loop");
     const bin = join(o, "bin");
     const ledger = join(o, "ledger.jsonl");
@@ -827,7 +881,7 @@ exit 0
     const prevPath = process.env.PATH;
     const prevLedger = process.env.DELEND_ORACLE_LEDGER;
     const prevCount = process.env.COUNTF;
-    const m = freshOracle({
+    const m = await freshOracle({
       DELEND_ORACLE_DIR: o,
       DELEND_ORACLE_LEDGER: ledger,
       DELEND_ORACLE_HINDSIGHT: hh,
@@ -838,7 +892,7 @@ exit 0
       process.env.DELEND_ORACLE_LEDGER = ledger;
       process.env.COUNTF = countFile;
       // 3 iters: award (i=1), empty (i=2), empty (i=3 → converge early)
-      const rc = m.main(["loop", "--from", "test", "--iters", "3"]);
+      const rc = await m.main(["loop", "--from", "test", "--iters", "3"]);
       expect(rc).toBe(0);
       expect(existsSync(transcript)).toBe(true);
     } finally {
@@ -850,7 +904,7 @@ exit 0
     }
   });
 
-  test("main (in-process): loop post-failure + no-award nextToDo fallback", () => {
+  test("main (in-process): loop post-failure + no-award nextToDo fallback", async () => {
     const o = join(scratch, "oracle-inproc-loopfail");
     const bin = join(o, "bin");
     const ledger = join(o, "ledger.jsonl");
@@ -873,7 +927,7 @@ exit 0
     chmodSync(sleepStub, 0o755);
 
     const prevPath = process.env.PATH;
-    const m = freshOracle({
+    const m = await freshOracle({
       DELEND_ORACLE_DIR: o,
       DELEND_ORACLE_LEDGER: ledger,
       DELEND_ORACLE_HINDSIGHT: hh,
@@ -881,7 +935,7 @@ exit 0
     });
     try {
       process.env.PATH = stubbin + ":" + prevPath;
-      const rc = m.main(["loop", "--from", "test", "--iters", "1"]);
+      const rc = await m.main(["loop", "--from", "test", "--iters", "1"]);
       expect(rc).toBe(0);
       expect(existsSync(transcript)).toBe(true);
     } finally {
@@ -889,7 +943,7 @@ exit 0
     }
   });
 
-  test("in-process cmdStatus shows intake-decision line; readHindsight truncates; ensureHindsight seeds; readLedger rescans", () => {
+  test("in-process cmdStatus shows intake-decision line; readHindsight truncates; ensureHindsight seeds; readLedger rescans", async () => {
     const o = join(scratch, "oracle-inproc-misc");
     mkdirSync(o, { recursive: true });
     const ledger = join(o, "ledger.jsonl");
@@ -905,13 +959,13 @@ exit 0
         reason: "r",
       }) + "\n",
     );
-    const m = freshOracle({
+    const m = await freshOracle({
       DELEND_ORACLE_DIR: o,
       DELEND_ORACLE_LEDGER: ledger,
       DELEND_ORACLE_HINDSIGHT: hh,
     });
     // cmdStatus with lastDecision present
-    expect(m.main(["status"])).toBe(0);
+    expect(await m.main(["status"])).toBe(0);
     // readHindsight truncation + ensureHindsight on a missing file (covered in-process)
     expect(m.readHindsight().length).toBe(4000);
     expect(m.readHindsight().startsWith("x".repeat(50))).toBe(true);
@@ -920,7 +974,7 @@ exit 0
     expect(res.events.length).toBeGreaterThan(0);
   });
 
-  test("in-process cmdApply failure path returns 1", () => {
+  test("in-process cmdApply failure path returns 1", async () => {
     const o = join(scratch, "oracle-inproc-applyfail");
     mkdirSync(o, { recursive: true });
     const transcript = join(o, "transcript.jsonl");
@@ -933,20 +987,23 @@ process.exit(1);
 `,
     );
     chmodSync(badExp, 0o755);
-    const m = freshOracle({
+    const m = await freshOracle({
       DELEND_ORACLE_DIR: o,
       DELEND_ORACLE_LEDGER: join(o, "ledger.jsonl"),
       DELEND_ORACLE_HINDSIGHT: join(o, "hh.md"),
       DELEND_ORACLE_TRANSCRIPT: transcript,
       DELEND_EXPERIMENTAL_BIN: badExp,
     });
-    expect(m.main(["apply", "--task", "boom"])).toBe(1);
+    expect(await m.main(["apply", "--task", "boom"])).toBe(1);
   });
 });
 
 // ============================================================================
 describe("delend-quick", () => {
-  const mod = require(join(BIN, "delend-quick"));
+  let mod: any;
+  beforeAll(async () => {
+    mod = await loadPlugin("delend-quick");
+  });
 
   test("cleanId normalizes invalid characters", () => {
     expect(mod.cleanId("My-Proposal Name!")).toBe("my_proposal_name");
@@ -1417,7 +1474,10 @@ exit 0
 
 // ============================================================================
 describe("rig-create", () => {
-  const mod = require(join(BIN, "rig-create"));
+  let mod: any;
+  beforeAll(async () => {
+    mod = await loadPlugin("rig-create");
+  });
 
   test("rigCtx parses name + flags", () => {
     const c = mod.rigCtx([

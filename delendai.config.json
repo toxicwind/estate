@@ -219,6 +219,56 @@
     "memory": {
       "enabled": true,
       "origin": "bundled"
+    },
+    "work-refs": {
+      "enabled": true,
+      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/work-refs/src/index.ts",
+      "prefix": "work_refs"
+    },
+    "code-race": {
+      "enabled": true,
+      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/code-race/src/index.ts",
+      "prefix": "code_race"
+    },
+    "experimental": {
+      "enabled": true,
+      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/experimental/src/index.ts",
+      "prefix": "experimental"
+    },
+    "iterate": {
+      "enabled": true,
+      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/iterate/src/index.ts",
+      "prefix": "iterate"
+    },
+    "oracle-market": {
+      "enabled": true,
+      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/oracle-market/src/index.ts",
+      "prefix": "oracle"
+    },
+    "model-race": {
+      "enabled": true,
+      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/model-race/src/index.ts",
+      "prefix": "model_race"
+    },
+    "forge-audit": {
+      "enabled": true,
+      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/forge-audit/src/index.ts",
+      "prefix": "forge_audit"
+    },
+    "intent-router": {
+      "enabled": true,
+      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/intent-router/src/index.ts",
+      "prefix": "intent"
+    },
+    "global-gh": {
+      "enabled": true,
+      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/global-gh/src/index.ts",
+      "prefix": "gh"
+    },
+    "rig-c2": {
+      "enabled": true,
+      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/rig-c2/src/index.ts",
+      "prefix": "rig_c2"
     }
   }
 }
