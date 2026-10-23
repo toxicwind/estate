@@ -31,17 +31,23 @@
 
 1. **MAXIMAL.** Go fully, or don't go. Fix-repairs, never report-only audits.
    No review gates: commit, push, forward-only.
-   1b. **Never leave the working tree dirty — commit/checkpoint your in-flight
-   work before finishing.** If you touched a file, it gets committed and
-   pushed (or delendai-checkpointed to origin) before you call it done — even
-   when the work is partial or belongs to a prior in-flight change from
-   another agent. "It's someone else's uncommitted change" is not an excuse:
-   squat it, checkpoint it to a work-ref, and say so. A dirty tree is how
-   work silently goes missing and how agents get confused ("did my change
-   land?"). Under `shared-checkout-merge`, dirty local files may ALREADY be
-   checkpointed on an origin work-ref — verify `git ls-remote origin
-'refs/heads/**/wip/**'` before assuming work is lost, and checkpoint+push
-   anything still uncommitted so the tree is clean at handoff.
+   1b. **Never leave the working tree dirty — get your work onto origin before
+   finishing.** "Clean" means committed to a work-ref pushed to origin, not
+   necessarily merged to main. If you touched a file, commit it and push (or
+   `delend-quick`/`delendai work publish` it to a work-ref on origin) before you
+   call it done — even when the work is partial or belongs to a prior in-flight
+   change from another agent. "It's someone else's uncommitted change" is not an
+   excuse: squat it, checkpoint it to a work-ref, and say so. A tree with only
+   untracked-in-an-embedded-gitlink or dangling chunks is how work silently goes
+   missing and how agents get confused ("did my change land?"). Under
+   `shared-checkout-merge`, the pushed artifact is a work-ref (NOT a bare main
+   push — the guard refuses it); the merge to main is a separate, subsequent
+   `delendai work publish`. If local files differ from origin, verify `git
+ls-remote origin 'refs/heads/**/wip/**'` before assuming work is lost, and
+   checkpoint+push anything still uncommitted so the tree is clean at handoff.
+   Do NOT conflate "push/forward-only" with "must land on main this instant" —
+   pushing a work-ref to origin satisfies the forward-only rule; main merges
+   happen when the lane is clean.
 2. **The box is live.** 89+ pitchfork+mise daemons. Additive only — never remove or
    disable a peer/daemon/model without an explicit order. Never touch
    `awrawr-mcp.service` from a bridge call. Never run the retired
@@ -194,8 +200,11 @@ covers (e.g. `docker ps`, `ss`, `curl` for health checks).
   from proxied tool calls is a **local Gatehouse/limiter concurrency shed**, not the
   provider. When a provider opts into client `unlimitedRetryOn429` (default off),
   ride a concurrency-contained 429 through (retry) rather than hard-stopping. The
-  `maxConcurrency: 2` number is a **Kappa client knob** (`kappa.jsonc`), not provider
-  doctrine. See `estate/ranch/estate-recon/muse-meta-hatch/docs/field-notes/kite-fleet-recon/
+  per-provider concurrency ceiling is **config-driven** (`config.provider[<id>].maxConcurrency`,
+  fallback `config.defaultMaxConcurrency`, default 2) — kappa now enforces it with a
+  provider-wide Effect semaphore shared by all sessions/subagents (freeinference bundles
+  qwen/glm/deepseek/minimax under ONE permit; the estate configures it, e.g. 8). It is a
+  client knob, not provider doctrine. See `estate/ranch/estate-recon/muse-meta-hatch/docs/field-notes/kite-fleet-recon/
 FIX-usage-limit-as-dev-env.md`.
 - **Orchestration: Corral + DelendAI**:
   Multi-agent fleet orchestration is **Corral** (`@estate/corral`, `estate/ranch/corral`)
@@ -280,8 +289,9 @@ These recur every session; honor them without being told.
 - **Search/read:** use ffs / dedicated MCP tools (`ffs_*`, `bm25_*`), never raw
   `grep`/`find`/`head`/`sed`/`cat` when an ffs tool covers the job. Do not
   truncate output with `head`/`tail` — persist full output and read it.
-- **Commit + push forward-only.** Never leave the working tree dirty; if you
-  touch a file, commit + push (or delendai-checkpoint) before done. Only commit
+- **Commit + push forward-only (see #1b).** Never leave the working tree dirty; "clean"
+  = committed to a work-ref on origin, not necessarily on main. If you touch a file,
+  commit + push (or delendai-checkpoint/publish to a work-ref) before done. Only commit
   YOUR files (pathspec); never sweep in peer WIP; stash-and-restore peer work if
   a rebase needs a clean tree.
 - **No monkeypatch.** Every fix is a real committed file. Prefer fixing the root
