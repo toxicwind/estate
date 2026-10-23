@@ -285,7 +285,7 @@ export const ALL_SERVICES: ServiceDef[] = [
     name: "mesh",
     portKey: "MCPPROXY_GO_PORT",
     run: "exec /home/toxic/estate/projects/range/bin/gatehouse-serve.sh",
-    dir: "/home/toxic/pens/barn/gatehouse",
+    dir: "/home/toxic/estate/projects/range/ranch/barn/gatehouse",
     readyHttp: "/health",
     group: "core",
     autoStart: true,
