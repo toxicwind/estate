@@ -6,10 +6,10 @@
 # flash-attn off both slower. Port from config/ports.env SSOT (BEELLAMA_PORT).
 
 [daemons.beellama-fast]
+mise = true
 port = 25122
 run = "exec /home/toxic/estate/stack/services/_consolidated_herd_20260924/beellama-fast.sh"
 dir = "/home/toxic/estate"
-mise = false
 retry = true
 env = { BEELLAMA_PORT = "25122" }
 boot_start = true

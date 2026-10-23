@@ -1,10 +1,10 @@
 # forge — the ranch build daemon on :25148 (flicker-server binary; renamed from estate/flicker 2026-10-13 — mbx-cache duplicate entry merged away, forge is the master name).
 
 [daemons.forge]
+mise = true
 port = 25148
-run = "exec /home/toxic/estate/ranch/forge/flicker/bin/forge-server"
+run = "exec /home/toxic/pens/ranch/forge/flicker/bin/flicker-server"
 dir = "/home/toxic/estate/ranch/forge/flicker"
-mise = false
 retry = true
 boot_start = true
 ready_http = "http://127.0.0.1:25148/api/health"

@@ -1,7 +1,7 @@
 [daemons.dnsmasq]
+mise = true
 run = "exec ./stack/services/dnsmasq.sh"
 dir = "."
-mise = false
 retry = true
 ready_cmd = "ss -ltn 'sport = :53' | grep -q LISTEN"
 auto = ["start"]

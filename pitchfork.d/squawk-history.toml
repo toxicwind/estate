@@ -1,9 +1,9 @@
 # Registered 2026-10-19: squawk_history.py was an adopted orphan serving
 # :25152 (collided with TOOLCALL_PORT SSOT). Moved to :25229, registered here.
 [daemons.squawk-history]
+mise = true
 dir = "/home/toxic/estate/ranch/squawk/nats"
 run = "exec /home/toxic/.local/share/squawk-nats/venv/bin/python squawk_history.py"
 env = { SQUAWK_HISTORY_PORT = "25229" }
 port = 25229
 ready_port = 25229
-mise = true

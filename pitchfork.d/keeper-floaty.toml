@@ -7,10 +7,10 @@
 # CDP page + AX-snapshot-as-text). Depends on agent-display (Xvnc :99) for the
 # overlay and on the estate browser lanes.
 [daemons.keeper-floaty]
+mise = true
 port = 4747
 run = "exec /home/toxic/estate/bin/keeper-floaty.sh"
 dir = "/home/toxic/estate"
-mise = false
 retry = true
 depends = ["agent-display"]
 ready_http = "http://127.0.0.1:4747/"

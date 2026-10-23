@@ -5,9 +5,9 @@
 # The SPA itself runs as a Vite dev server (delendai-control-plane dev).
 # Port 25156 = DELENDAI_CONTROL_PORT.
 [daemons.range-ui]
+mise = true
 run = "exec /home/toxic/.bun/bin/bun run --cwd /home/toxic/estate/ranch/range/apps/delendai-control-plane dev"
 dir = "/home/toxic/estate/ranch/range"
-mise = false
 retry = true
 boot_start = true
 auto = ["start"]

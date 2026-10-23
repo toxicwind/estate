@@ -1,10 +1,10 @@
 # squawk-feed — bearer-authed fat long-poll Squawk feed (:25135).
 # Registered 2026-10-22 (was missing config -> ':25135 DOWN'). Canonical source ranch/squawk/squawk_feed.py.
 [daemons.squawk-feed]
+mise = true
 dir = "/home/toxic/estate/ranch/squawk"
 run = "exec /usr/bin/python3 /home/toxic/estate/ranch/squawk/squawk_feed.py"
 port = 25135
-mise = false
 retry = true
 boot_start = true
 env = { SQUAWK_FEED_PORT = "25135" }

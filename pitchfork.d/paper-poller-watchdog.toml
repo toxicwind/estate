@@ -3,10 +3,10 @@
 # pitchfork start (never --force). Additive; never touches the supervisor.
 
 [daemons.paper-poller-watchdog]
+mise = true
 port = 25150
 run = "exec /usr/bin/python3 /home/toxic/paper-poller/bin/watchdog.py"
 dir = "/home/toxic/paper-poller"
-mise = false
 retry = true
 boot_start = true
 ready_http = "http://127.0.0.1:25150/health"

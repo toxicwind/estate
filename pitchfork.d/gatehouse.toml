@@ -1,11 +1,11 @@
 [daemons.gatehouse]
 health_http = { url = "http://127.0.0.1:25127/health", interval = "30s", timeout = "5s", retries = 3 }
+mise = true
 port = 25127
 # gatehouse-serve.ts self-heals: bootstraps gitignored mcp_config.json from .dist when missing,
 # injects secrets from the secretsmith keyring (gatehouse direct-run crash-loops without it).
 dir = "/home/toxic/pens/barn/gatehouse"
-run = "exec /home/toxic/estate/ranch/range/bin/gatehouse-serve.ts"
-mise = false
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/ranch/range/bin/gatehouse-serve.ts"
 retry = true
 ready_http = "http://127.0.0.1:25127/health"
 auto = ["start"]

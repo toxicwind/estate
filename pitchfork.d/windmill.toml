@@ -1,9 +1,9 @@
 [daemons.windmill]
 health_http = { url = "http://127.0.0.1:25219/api/status", interval = "10s", timeout = "5s", retries = 2 }
+mise = true
 port = 25219
 run = "exec bun --hot run /home/toxic/estate/ranch/windmill/server.ts"
 dir = "/home/toxic/estate/ranch/windmill"
-mise = false
 retry = true
 boot_start = true
 ready_http = "http://127.0.0.1:25219/api/status"

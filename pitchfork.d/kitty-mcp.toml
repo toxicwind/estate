@@ -6,10 +6,10 @@
 # --listen-on explicitly (kitty.conf listen_on is not honored by kitty
 # 0.48.2 here; unix listen_on paths get -<pid> appended — see
 # bin/kitty-mcp-instance.sh).
+mise = true
 run = "exec /home/toxic/estate/bin/kitty-mcp-instance.sh"
 dir = "/home/toxic/estate"
 port = 25211
-mise = false
 retry = true
 boot_start = true
 auto = ["start"]

@@ -1,9 +1,9 @@
 [daemons.yote-relay]
 health_http = { url = "http://127.0.0.1:25102/health", interval = "30s", timeout = "5s", retries = 3 }
+mise = true
 port = 25102
 run = "exec bun run src/yote.ts"
 dir = "ranch/yote"
-mise = false
 retry = true
 ready_http = "http://127.0.0.1:25102/health"
 depends = ["gatehouse"]
@@ -12,10 +12,10 @@ auto = ["start"]
 
 [daemons.yote]
 health_http = { url = "http://127.0.0.1:25102/health", interval = "30s", timeout = "5s", retries = 3 }
+mise = true
 port = 25102
 run = "exec bun run src/yote.ts"
 dir = "ranch/yote"
-mise = false
 retry = true
 ready_http = "http://127.0.0.1:25102/health"
 depends = ["gatehouse"]

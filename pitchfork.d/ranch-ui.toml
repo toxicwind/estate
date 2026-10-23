@@ -5,10 +5,10 @@
 # Tailnet-only: tailscale serve fronts it; nothing binds 0.0.0.0.
 
 [daemons.ranch-ui]
+mise = true
 port = 25218
 run = "exec /home/toxic/.bun/bin/bun run /home/toxic/estate/stack/services/ranch-ui.ts"
 dir = "/home/toxic/estate"
-mise = false
 retry = true
 env = { RANCH_UI_PORT = "25218", RANCH_UI_DIST = "/home/toxic/estate/ranch/range/ui/dist", HERD_ORIGIN = "http://127.0.0.1:25100", HODOS_ORIGIN = "http://127.0.0.1:25193" }
 ready_http = "http://127.0.0.1:25218/health"

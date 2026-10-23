@@ -1,8 +1,8 @@
 [daemons.boundless]
+mise = true
 port = 25197
 run = "exec /home/toxic/boundless/.venv/bin/python -m uvicorn web.server:app --host 127.0.0.1 --port ${BOUNDLESS_PORT}"
 dir = "/home/toxic/boundless"
-mise = false
 retry = true
 boot_start = true
 env = { PORT = "25197", HOST = "127.0.0.1", BOUNDLESS_PORT = "25197" }

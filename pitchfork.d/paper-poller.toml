@@ -5,10 +5,10 @@
 # Watchdog (paper-poller-watchdog below) covers silent wedges.
 
 [daemons.paper-poller]
+mise = true
 port = 25149
 run = "exec /usr/bin/python3 /home/toxic/paper-poller/bin/poller.py"
 dir = "/home/toxic/paper-poller"
-mise = false
 retry = true
 boot_start = true
 ready_http = "http://127.0.0.1:25149/ready"

@@ -1,6 +1,6 @@
 [daemons.bidder-raccoon]
+mise = true
 run = "exec /home/toxic/estate/ranch/squawk/oracle/bin/bidder-raccoon.sh"
 dir = "/home/toxic/estate/ranch/squawk/oracle"
-mise = false
 retry = true
 auto = ["start"]

@@ -1,7 +1,7 @@
 [daemons.fleet-feed]
+mise = true
 run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/ranch/squawk/fleet-feed.ts"
 dir = "/home/toxic/estate/ranch/squawk"
-mise = false
 retry = true
 boot_start = true
 env = { FLEET_FEED_PORT = "25158" }
