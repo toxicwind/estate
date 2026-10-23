@@ -24,6 +24,15 @@
 case "${TERM_PROGRAM:-}${VSCODE_INJECTION:-}${VSCODE_GIT_ASKPASS_NODE:-}${VSCODE_SHELL_INTEGRATION:-}" in
   *vscode*|*code*) return 0 2>/dev/null || exit 0 ;;
 esac
+
+# RUN_FAST_ACTIVE is set to "1" by run-fast when it launches a child so the
+# wrappers below don't re-route a child already under run-fast. In any OTHER
+# shell (a fresh `bash -lc`, a background command, a human terminal) it is
+# unset — without a default, the `[ "$RUN_FAST_ACTIVE" = "1" ]` checks below
+# read an unbound var under `set -u` and a plain `go`/`bun`/`git` dies with
+# "unbound variable". Default it to 0 so the doctrine still applies (slow ->
+# run-fast, normal -> command) in every shell.
+RUN_FAST_ACTIVE="${RUN_FAST_ACTIVE:-0}"
 [ -n "${VSCODE_INJECTION:-}" ] && return 0 2>/dev/null || true
 
 # Always disable broken pi/kappa/tau shell builtins (e.g. ps 0.2.0 without -L, silent top)
