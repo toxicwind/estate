@@ -59,8 +59,14 @@ ranch dir or archive.
 - **Rule — no gitlinks.** A directory with its own `.git` must not be
   indexed as a gitlink by its parent. "If a sync creates `.git` in the in-tree
   copy, the tree is silently a submodule again. Refuse the sync and clean up."
-- **Rule — one `.gitmodules` entry.** Only the github/gitignore single entry
-  is allowed. Any addition is a top-level defect to undo.
+  **Baseline (2026-10-22): zero.** The desubmodule conversion removed all 8
+  tracked mode-160000 gitlinks (`config/tau/agent/extensions/hashline-pi`,
+  `engines/herd/beellama.cpp`, `engines/herd/ik_llama.cpp`,
+  `engines/herd/llama-cpp-turboquant`, `packages/theta`,
+  `submodules/phone-sentinel`, `work/airspeak`, `work/tau-extensions`) and the
+  `.gitmodules` declaration. All 8 remain as independent on-disk checkouts
+  coordinated by `gitkb/meta`, ignored via `estate/.gitignore`. Re-adding any
+  gitlink is a top-level defect to undo against this baseline.
 - **Rule — fork = standalone + in-tree copy (deliberately duplicated).** The
   standalone repo carries the real history + `upstream` remote (merges happen
   only there); the in-tree copy is committed real files so a fresh clone works
