@@ -48,10 +48,15 @@ export -f ps top pgrep pkill pidwait 2>/dev/null || true
 RF="${ESTATE_RUN_FAST:-/home/toxic/estate/bin/run-fast}"
 [ -x "$RF" ] || return 0
 export ESTATE_RUN_FAST="$RF"
+export DELEND_CODE_RACE="${DELEND_CODE_RACE:-/home/toxic/estate/bin/delend-code-race}"
 export RF_QUIET="${RF_QUIET:-1}"   # first-class default: silence ok lines
+export RF_DEADLINE="${RF_DEADLINE:-4.0}"
 
 # ---------------------------------------------------------------- slow router
-_2s_slow() { case "$1:$2" in
+# Named without leading underscore (two_sec_slow) AND aliased as _2s_slow so
+# agent SNAPSHOT_FILE generators (which strip `_*` completion helpers) never
+# drop the router while keeping `git`/`bun` wrapper functions.
+two_sec_slow() { case "$1:$2" in
   git:push|git:pull|git:fetch|git:clone|git:merge|git:rebase|git:submodule|git:gc|git:filter-repo) return 0 ;;
   bun:install|bun:add|bun:remove|bun:update|bun:test|bun:build|bun:publish|bun:link|bun:run) return 0 ;;
   npm:install|npm:ci|npm:update|npm:build|npm:test|npm:publish) return 0 ;;
@@ -64,22 +69,30 @@ _2s_slow() { case "$1:$2" in
   ffs:index|ffs:map) return 0 ;;
   *) return 1 ;;
 esac }
-# Export the router so nested/persistent shells that inherit the wrapper
-# functions always carry _2s_slow too (un-exported helpers are dropped across
-# shell boundaries -> "command not found: _2s_slow" on every wrapped call).
-export -f _2s_slow 2>/dev/null || true
+_2s_slow() { two_sec_slow "$@"; }
+four_sec_run() {
+  "$RF" "$@"
+  local rc=$?
+  if [ "$rc" -eq 124 ] || [ "$rc" -eq 137 ]; then
+    if [ -x "${DELEND_CODE_RACE:-/home/toxic/estate/bin/delend-code-race}" ]; then
+      "${DELEND_CODE_RACE:-/home/toxic/estate/bin/delend-code-race}" "$*"
+    fi
+  fi
+  return "$rc"
+}
+export -f two_sec_slow _2s_slow four_sec_run 2>/dev/null || true
 
-git()          { if [ "$RUN_FAST_ACTIVE" = "1" ]; then command git "$@"; elif _2s_slow git "$1"; then "$RF" git "$@"; else command git "$@"; fi; }
-bun()          { if [ "$RUN_FAST_ACTIVE" = "1" ]; then command bun "$@"; elif _2s_slow bun "$1"; then "$RF" bun "$@"; else command bun "$@"; fi; }
-npm()          { if [ "$RUN_FAST_ACTIVE" = "1" ]; then command npm "$@";       elif _2s_slow npm "$1";          then "$RF" npm "$@";        else command npm "$@"; fi; }
-pip()          { if [ "$RUN_FAST_ACTIVE" = "1" ]; then command pip "$@";       elif _2s_slow pip "$1";          then "$RF" pip "$@";        else command pip "$@"; fi; }
-pip3()         { if [ "$RUN_FAST_ACTIVE" = "1" ]; then command pip3 "$@";      elif _2s_slow pip3 "$1";         then "$RF" pip3 "$@";       else command pip3 "$@"; fi; }
-uv()           { if [ "$RUN_FAST_ACTIVE" = "1" ]; then command uv "$@";        elif _2s_slow uv "$1";           then "$RF" uv "$@";         else command uv "$@"; fi; }
-gh()           { if [ "$RUN_FAST_ACTIVE" = "1" ]; then command gh "$@";        elif _2s_slow gh "$1";           then "$RF" gh "$@";         else command gh "$@"; fi; }
-gitleaks()     { if [ "$RUN_FAST_ACTIVE" = "1" ]; then command gitleaks "$@";  elif _2s_slow gitleaks "$1";     then "$RF" gitleaks "$@";   else command gitleaks "$@"; fi; }
-codebase-memory(){ if [ "$RUN_FAST_ACTIVE" = "1" ]; then command codebase-memory "$@"; elif _2s_slow codebase-memory "$1"; then "$RF" codebase-memory "$@"; else command codebase-memory "$@"; fi; }
-cargo()        { if [ "$RUN_FAST_ACTIVE" = "1" ]; then command cargo "$@";     elif _2s_slow cargo "$1";        then "$RF" cargo "$@";      else command cargo "$@"; fi; }
-go()           { if [ "$RUN_FAST_ACTIVE" = "1" ]; then command go "$@";        elif _2s_slow go "$1";           then "$RF" go "$@";         else command go "$@"; fi; }
+git()          { if [ "$RUN_FAST_ACTIVE" = "1" ]; then command git "$@"; elif two_sec_slow git "$1"; then four_sec_run git "$@"; else command git "$@"; fi; }
+bun()          { if [ "$RUN_FAST_ACTIVE" = "1" ]; then command bun "$@"; elif two_sec_slow bun "$1"; then four_sec_run bun "$@"; else command bun "$@"; fi; }
+npm()          { if [ "$RUN_FAST_ACTIVE" = "1" ]; then command npm "$@";       elif two_sec_slow npm "$1";          then four_sec_run npm "$@";        else command npm "$@"; fi; }
+pip()          { if [ "$RUN_FAST_ACTIVE" = "1" ]; then command pip "$@";       elif two_sec_slow pip "$1";          then four_sec_run pip "$@";        else command pip "$@"; fi; }
+pip3()         { if [ "$RUN_FAST_ACTIVE" = "1" ]; then command pip3 "$@";      elif two_sec_slow pip3 "$1";         then four_sec_run pip3 "$@";       else command pip3 "$@"; fi; }
+uv()           { if [ "$RUN_FAST_ACTIVE" = "1" ]; then command uv "$@";        elif two_sec_slow uv "$1";           then four_sec_run uv "$@";         else command uv "$@"; fi; }
+gh()           { if [ "$RUN_FAST_ACTIVE" = "1" ]; then command gh "$@";        elif two_sec_slow gh "$1";           then four_sec_run gh "$@";         else command gh "$@"; fi; }
+gitleaks()     { if [ "$RUN_FAST_ACTIVE" = "1" ]; then command gitleaks "$@";  elif two_sec_slow gitleaks "$1";     then four_sec_run gitleaks "$@";   else command gitleaks "$@"; fi; }
+codebase-memory(){ if [ "$RUN_FAST_ACTIVE" = "1" ]; then command codebase-memory "$@"; elif two_sec_slow codebase-memory "$1"; then four_sec_run codebase-memory "$@"; else command codebase-memory "$@"; fi; }
+cargo()        { if [ "$RUN_FAST_ACTIVE" = "1" ]; then command cargo "$@";     elif two_sec_slow cargo "$1";        then four_sec_run cargo "$@";      else command cargo "$@"; fi; }
+go()           { if [ "$RUN_FAST_ACTIVE" = "1" ]; then command go "$@";        elif two_sec_slow go "$1";           then four_sec_run go "$@";         else command go "$@"; fi; }
 # `timeout N cmd` is a REAL wall-clock bound: route it to the genuine /usr/bin/timeout,
 # never through run-fast (which kills at the 2s base and destroys long work). Slow
 # commands are handled by the runner's auto-detach, not by corrupting `timeout`.
@@ -164,7 +177,8 @@ if [ -z "${_2S_GUARD_ARMED:-}" ] && [ -z "$(trap -p DEBUG 2>/dev/null)" ]; then
 fi
 
 export -f _2s_guard _2s_urgent 2>/dev/null
-export -f _2s_slow 2>/dev/null || true
+export -f two_sec_slow _2s_slow four_sec_run 2>/dev/null || true
 export BASH_2S_SHIM=1
-export RF_DEADLINE="${RF_DEADLINE:-2.0}"
+export BASH_4S_SHIM=1
+export RF_DEADLINE="${RF_DEADLINE:-4.0}"
 

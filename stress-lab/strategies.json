@@ -1,0 +1,15 @@
+{
+  "suite": "estate stress-harness (E8-pcie-less) — modular measurement lab",
+  "note": "Two suites: (A) socket edge-cases (overflow cap / half-close / fragmented reassembly / conn flood) run against a self-contained local echo server; (B) token-walk perplexity/entropy-siphon POC (deterministic). Arms are MEASUREMENT arms — none DoS any external service or mutate estate state; all self-contained. Paths are variables; remap the workspace root freely.",
+  "workspace": "ranch/experiments-lab/stress-harness",
+  "strategies": [
+    {"name": "a-overflow",   "suite": "socket", "cmd": "bash arms/arm_a_overflow.sh",   "match": "sock_ok a_overflow",   "exitCode": 0},
+    {"name": "b-halfclose",  "suite": "socket", "cmd": "bash arms/arm_b_halfclose.sh",  "match": "sock_ok b_halfclose",  "exitCode": 0},
+    {"name": "c-fragment",   "suite": "socket", "cmd": "bash arms/arm_c_fragment.sh",   "match": "sock_ok c_fragment",   "exitCode": 0},
+    {"name": "d-flood",      "suite": "socket", "cmd": "bash arms/arm_d_flood.sh",      "match": "sock_ok d_flood",      "exitCode": 0},
+    {"name": "tk-linear",    "suite": "tokwalk","cmd": "bash arms/arm_tk_linear.sh",    "match": "tokwalk_ok linear",    "exitCode": 0},
+    {"name": "tk-exp",       "suite": "tokwalk","cmd": "bash arms/arm_tk_exp.sh",       "match": "tokwalk_ok exponential","exitCode": 0},
+    {"name": "tk-stoch",     "suite": "tokwalk","cmd": "bash arms/arm_tk_stoch.sh",     "match": "tokwalk_ok stochastic", "exitCode": 0},
+    {"name": "tk-pseudo",    "suite": "tokwalk","cmd": "bash arms/arm_tk_pseudo.sh",    "match": "tokwalk_ok pseudo",     "exitCode": 0}
+  ]
+}

@@ -589,7 +589,7 @@ defaultThinkingLevel: medium
 modelRoles:
   judge: openrouter/~typesafe/jev-latest
   tiny: local/lfm2.5-230m
-  advisor: google/models/gemini-flash-tool-retrieval
+  advisor: ${THETA_EAP_MODEL:-google/models/${EAP_MODEL}} # obfuscated: EAP model handled by @estate/theta
   default: vercel-ai-gateway/poolside/laguna-s-2.1-free:medium
   fallbacks:
     - vercel-ai-gateway/inclusionai/ling-3.1-flash:medium

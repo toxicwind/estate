@@ -1,0 +1,15 @@
+{
+  "suite": "doh-bypass elevated (GRIEF/AgentChaos/SpecAgent)",
+  "endpoint": "estate/stress-lab/doh",
+  "note": "DoH bypass probe (Google vs Cloudflare) elevated with late-2026 verification paradigms. Arms are DISCREPANCY tests — flag poison vs stable; never DoS; local-mode simulator for offline.",
+  "strategies": [
+    {"name": "doh-live",       "suite": "doh", "cmd": "python3 doh_probe.py github.com A",        "match": "vjTrigger",    "exitOk": [0, 2]},
+    {"name": "doh-local",      "suite": "doh", "cmd": "python3 doh_probe.py github.com A --local", "match": "GLITCH",       "exitOk": [2]},
+    {"name": "doh-crash",      "suite": "agentchaos", "cmd": "python3 path/agentchaos/interceptor.py --inject crash",   "match": "fired", "exitOk": [0]},
+    {"name": "doh-omission",   "suite": "agentchaos", "cmd": "python3 path/agentchaos/interceptor.py --inject omission","match": "fired", "exitOk": [0]},
+    {"name": "doh-value",      "suite": "agentchaos", "cmd": "python3 path/agentchaos/interceptor.py --inject value",   "match": "fired", "exitOk": [0]},
+    {"name": "doh-grief",      "suite": "grief", "cmd": "python3 path/grief/trace_matrix.py 8",   "match": "contamination", "exitOk": [0]},
+    {"name": "doh-repair",     "suite": "repair", "cmd": "python3 path/repair/specagent_repair.py", "match": "trace",    "exitOk": [0]},
+    {"name": "doh-oracle",     "suite": "oracle", "cmd": "python3 path/oracle_semantic.py",        "match": "verdict",    "exitOk": [0]}
+  ]
+}

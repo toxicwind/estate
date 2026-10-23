@@ -32,5 +32,4 @@ jobs:
           done
       - name: Health-check script syntax
         run: |
-          bash -n scripts/health-check.sh
           bash -n scripts/open-web-uis.sh

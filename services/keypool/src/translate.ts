@@ -2,12 +2,13 @@
 // Interactions. Port of estate/keypool/translate.py (the verified, working
 // implementation) to Bun-native TypeScript.
 //
-// Implements the official Gemini Tool Retrieval (EAP) protocol:
-//   - server-side tool retrieval with {"type":"tool_search"} + defer_loading
-//   - unwraps OpenAI tool format (tools[].function) to Interactions format
-//   - turns tool messages into EAP {"type":"function_result"} inputs
-//   - turns EAP {"type":"function_call","type":"mcp_server_tool_call"} steps
-//     into OpenAI tool_calls
+// Full consolidation: the EAP wire now consumes the canonical constants and
+// client from **@estate/theta** (the single EAP engine). No hand-maintained
+// copies of the model name / tool_search shape / interactions contract here.
+import { EAP_MODEL, type ToolDef } from "@estate/theta";
+
+// The canonical tool_search marker + defer_loading flag from theta.
+const EAP_TOOL_SEARCH: ToolDef = { type: "tool_search" };
 
 export function openaiToInteractions(
   doc: Record<string, unknown>,
@@ -16,17 +17,16 @@ export function openaiToInteractions(
   if ("input" in doc && !("messages" in doc)) return doc;
 
   const messages = Array.isArray(doc.messages) ? doc.messages : [];
-  // The Interactions API wants the bare model name (`gemini-flash-tool-
-  // retrieval`), which routers may carry as `google/models/...` or
-  // `models/...`. Normalize away any `models/` provider prefix.
+  // theta owns the canonical bare EAP model name; just normalize away any
+  // routers' `models/` prefix when present.
   const rawModel = typeof doc.model === "string" ? doc.model : "";
-  const model = rawModel.split("models/").pop() ?? rawModel;
+  const model = (rawModel.split("models/").pop() ?? rawModel) || EAP_MODEL;
   const out: Record<string, unknown> = { model };
 
-  // 1. Translate tools to Gemini EAP format.
+  // 1. Translate tools to Gemini EAP format using theta's canonical shape.
   const openaiTools = doc.tools;
   if (Array.isArray(openaiTools)) {
-    const eapTools: unknown[] = [{ type: "tool_search" }];
+    const eapTools: unknown[] = [EAP_TOOL_SEARCH];
     let hasFunctions = false;
     for (const t of openaiTools) {
       if (typeof t !== "object" || t === null) continue;

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<title>cell-side VJ — DoH / token-walk / socket learned feed</title>
+<style>
+  body{background:#0b0f14;color:#c8d6e5;font:13px/1.5 ui-monospace,monospace;margin:24px}
+  h1{color:#7ee787;font-size:16px}.vj{display:flex;gap:18px;flex-wrap:wrap}
+  .board{border:1px solid #30363d;border-radius:8px;padding:14px;min-width:300px;background:#0d1117}
+  .board h2{font-size:12px;color:#8b949e;margin:0 0 8px}
+  .row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #21262d}
+  .t{color:#ff7b72;font-weight:700}.o{color:#7ee787}
+  .glitch{color:#ff3344;text-shadow:0 0 8px #ff3344}.stable{color:#7ee787}
+  .flash{animation:fl 1s ease-in-out infinite}
+  @keyframes fl{0%,100%{opacity:1}50%{opacity:.2}}
+  #status{color:#8b949e;font-size:11px;margin-top:12px}
+</style></head><body>
+<h1>cell-side VJ — lived from estate harness JSON</h1>
+<div class="vj">
+  <div class="board"><h2>DoH resolver discrepancy</h2><div id="doh"></div></div>
+  <div class="board"><h2>Token-walk entropy siphon</h2><div id="tok"></div></div>
+  <div class="board"><h2>Socket edge-case</h2><div id="sock"></div></div>
+</div>
+<div id="status">waiting for feeds…</div>
+<script>
+// Cell-side viewer: pulls the harness JSON artifacts. Self-contained, no deps.
+// If a feed isn't reachable (cell offline), it renders the last shipped snapshot.
+async function load(url, cb){
+  try{ const r=await fetch(url); cb(await r.json()); }
+  catch(e){ document.getElementById('status').textContent = 'feed '+url+' unreachable — cell offline, using last snapshot'; }
+}
+function flashGlitch(el){ el.classList.add('flash'); setInterval(()=>el.classList.remove('flash'),1500); }
+load('doh_report.json', d=>{
+  const box=document.getElementById('doh');
+  const ttl= d.ttl_delta ?? (d.google?.min && d.cloudflare?.min ? Math.abs(d.google.min-d.cloudflare.min):null);
+  const vj=d.vjTrigger; const disc=d.discrepancy;
+  box.innerHTML = `
+    <div class="row"><span>domain</span><span>${d.domain}</span></div>
+    <div class="row"><span>google</span><span>${(d.google?.ips||[]).join(',')||'—'}</span></div>
+    <div class="row"><span>cloudflare</span><span>${(d.cloudflare?.ips||[]).join(',')||'—'}</span></div>
+    <div class="row"><span>ttl Δ</span><span class="${disc?'t':'o'}">${ttl??'—'}${disc?' >30':''}</span></div>
+    <div class="row"><span>vj</span><span id="dohvj" class="${vj==='GLITCH'?'glitch flash':'stable'}">${vj}</span></div>`;
+  if(vj==='GLITCH') flashGlitch(document.getElementById('dohvj'));
+});
+load('walk_data.json', d=>{
+  const box=document.getElementById('tok'); const q=d.quantified||{};
+  const rows=Object.entries(q).map(([k,v])=>`<div class="row"><span>${k}</span><span>P ${v.meanPerplexity} · siph ${v.meanEntropySiphonRate||0}</span></div>`).join('');
+  box.innerHTML=rows+`<div class="row"><span>maxP</span><span class="${d.results? '':''}">${Math.max(...Object.values(q).map(v=>v.maxP),0)}</span></div>`;
+});
+load('verdicts.json', d=>{
+  const box=document.getElementById('sock');
+  if(Array.isArray(d)) box.innerHTML=d.map(v=>`<div class="row"><span>${v.name}</span><span class="${v.ok?'o':'t'}">${v.ok?'ok':'fail'}</span></div>`).join('');
+  else box.innerHTML=`<div class="row"><span>socket</span><span class="o">${d?.status||'n/a'}</span></div>`;
+});
+</script></body></html>

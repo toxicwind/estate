@@ -1,0 +1,89 @@
+#!/usr/bin/env bun
+/**
+ * delend-gh — GLOBAL GitHub primitive (any org/repo, not just toxicwind).
+ *
+ * First-class estate capability for operating on ARBITRARY upstream repos:
+ * resolve a repo (org/name or full URL) to a temp clone, run an arbitrary git
+ * subcommand against it, and clean up. This is the primitive the branch-auditor,
+ * future borrowers, and global-recon tools build on so the estate is never
+ * caged to a single namespace.
+ *
+ * Usage:
+ *   delend-gh <org/repo|url> "<git args...>"     # run git in a temp clone, print output
+ *   delend-gh <org/repo> audit-main              # alias: branch audit vs its default main
+ *   delend-gh <org/repo> raw <path>              # print a file's content from the upstream default branch
+ *   --keep                                       # keep the temp clone; print its path
+ *
+ * Global by construction: works for ANY host (github.com, gitlab, codeberg, self-hosted URL).
+ */
+import { spawnSync } from "node:child_process";
+import { mkdtempSync, rmSync, existsSync, readFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
+
+const a = process.argv.slice(2);
+if (a.includes("--help") || a.includes("-h")) {
+  console.log(`delend-gh — GLOBAL GitHub primitive (any org/repo, not just toxicwind).
+
+Usage:
+  delend-gh <org/repo|url> "<git args...>"     # run git in a temp clone, print output
+  delend-gh <org/repo> audit-main              # alias: branch audit vs its default main
+  delend-gh <org/repo> raw <path>              # print a file's content from the upstream default branch
+  --keep                                       # keep the temp clone; print its path
+
+Global by construction: works for ANY host (github.com, gitlab, codeberg, self-hosted URL).
+`);
+  process.exit(0);
+}
+const target = a[0];
+if (!target) { console.error("usage: delend-gh <org/repo|url> [git-args|'audit-main'|'raw <path>'] [--keep]"); process.exit(2); }
+const rest = a.slice(1);
+const keep = rest.includes("--keep");
+const argv = rest.filter(x => x !== "--keep");
+let url = target;
+if (!/^(https?|git|ssh):\/\/|^git@/.test(url)) url = /^[^\/]+\/[^\/]+$/.test(target) ? `https://github.com/${target}.git` : target;
+
+const cloneDir = mkdtempSync(join(tmpdir(), "delend-gh-"));
+const work = join(cloneDir, "r");
+const git = (args: string[]) => {
+  const p = spawnSync("git", args, { encoding: "utf8", cwd: work });
+  if (p.status !== 0) throw new Error((p.stderr||"").trim().slice(0,160) || `git ${args[0]} rc=${p.status}`);
+  return (p.stdout||"").trim();
+};
+
+let result = "";
+try {
+  spawnSync("git", ["clone","--quiet", url, "r"], { encoding: "utf8", cwd: cloneDir });
+  const mode = argv[0] || "audit-main";
+  if (mode === "audit-main") {
+    // branch audit vs the remote default head (main or master)
+    const branches = git(["for-each-ref","refs/remotes/origin","--format=%(refname:short)"]).split("\n")
+      .filter(r => r.startsWith("origin/") && !r.startsWith("origin/HEAD") && r!=="origin/main" && r!=="origin/master");
+    const def = git(["symbolic-ref","--short","refs/remotes/origin/HEAD"]).split("/").pop() || "main";
+    const defRev = git(["rev-parse", `origin/${def}`]);
+    const lines: string[] = [`delend-gh ${target} — remote ${git(["remote","get-url","origin"]).split("\n")[0]}, default ${def}@${defRev.slice(0,8)}`];
+    for (const b of branches) {
+      const name = b.replace("origin/","");
+      let ahead=0, behind=0, state;
+      try { const rr = git(["rev-list","--left-right","--count",`origin/${def}...${b}`]).split(/\s+/); behind=Number(rr[0]||0); ahead=Number(rr[1]||0); }
+      catch { state="?"; }
+      state ??= ahead===0?"merged":behind===0?"ahead":"diverged";
+      lines.push(`  ${state==="merged"?"✓":state==="diverged"?"✗":"△"} ${name} (${ahead}a/${behind}b) [${state}]`);
+    }
+    result = lines.join("\n");
+  } else if (mode === "raw") {
+    const p = argv[1];
+    const def = git(["symbolic-ref","--short","refs/remotes/origin/HEAD"]).split("/").pop() || "main";
+    const blob = spawnSync("git", ["show", `origin/${def}:${p}`], {encoding:"utf8", cwd: work});
+    result = blob.status===0 ? blob.stdout : `(not found on default branch)`;
+  } else {
+    result = git(argv);
+  }
+} catch (e:any) {
+  console.error("delend-gh error:", String(e.message).slice(0,200));
+  process.exit(1);
+} finally {
+  if (!keep) rmSync(cloneDir, { recursive: true, force: true });
+  else result += `\n(clone kept at ${work})`;
+}
+console.log(result);

@@ -7,11 +7,41 @@
 >
 > This file is **authoritative**. `/home/toxic/estate/AGENTS.md` mirrors it;
 > nested `AGENTS.md` files refine, never contradict, the rules above them.
+>
+> **YOU ARE TAU (`τ`) OR KAPPA (`κ`) — OLYMPUS CODING AGENTS.** This agent
+> reads/writes this file — it is not a wall-file handed to you, it is YOUR OWN
+> standing runtime contract (`pens/olympus/products/tau` at `~/.local/bin/tau`,
+> and `pens/olympus/products/kappa` served by `estate/kappa-acp` `:25159`).
+> Violating it is Tau/Kappa breaking its own rules, not "ignoring a user's hint".
+> First-class native tools (`read`, `edit`, `write`, `glob`, `find`, `eval`,
+> `xd://ast_grep`, `xd://ast_edit`, `xd://lsp`, `kappa-context`, **ffs**, and
+> Gatehouse MCP) come FIRST. Never shell out to `grep|cat|head|tail|find|sed|awk`,
+> never `2>&1` / `>/tmp/…` redirections, never `cd`, never `$()`; page with the
+> tool's `--limit/--offset`. Budget every command to 4s (`bash-4s-shim.sh` /
+> `run-fast`) and auto-race via `delend-code-race` on breach. See
+> `docs/who-is-tau.md` and `docs/who-is-kappa.md`.
 
 ## Non-negotiable (verbatim, applies to every agent on this box)
 
+- **The estate is the deploy plane.** This repo/box is where the estate actually
+  deploys: push → `forge` (build cache/REAPI `:25155`) → `pitchfork` (93-boolean
+  daemons, health-checked) → live. If you stand something up, it gets a real
+  `pitchfork` daemon + healthck here; the estate is the shipping lane, not a
+  scratch folder.
+
 1. **MAXIMAL.** Go fully, or don't go. Fix-repairs, never report-only audits.
    No review gates: commit, push, forward-only.
+   1b. **Never leave the working tree dirty — commit/checkpoint your in-flight
+   work before finishing.** If you touched a file, it gets committed and
+   pushed (or delendai-checkpointed to origin) before you call it done — even
+   when the work is partial or belongs to a prior in-flight change from
+   another agent. "It's someone else's uncommitted change" is not an excuse:
+   squat it, checkpoint it to a work-ref, and say so. A dirty tree is how
+   work silently goes missing and how agents get confused ("did my change
+   land?"). Under `shared-checkout-merge`, dirty local files may ALREADY be
+   checkpointed on an origin work-ref — verify `git ls-remote origin
+'refs/heads/**/wip/**'` before assuming work is lost, and checkpoint+push
+   anything still uncommitted so the tree is clean at handoff.
 2. **The box is live.** 89+ pitchfork+mise daemons. Additive only — never remove or
    disable a peer/daemon/model without an explicit order. Never touch
    `awrawr-mcp.service` from a bridge call. Never run the retired
@@ -27,6 +57,11 @@
    to evmts.
 5. **Docs lie; code is absolute.** A claim in any `.md` that disagrees with the
    code is wrong. Fix the doc, don't work around it.
+6. **Restart supervised services after any binary swap/redeploy (pitchfork), so
+   the running estate adopts the change — "deployed" means a running process uses
+   it, not just a file on disk.** Skip the restart only on an explicit
+   "don't disrupt this flow" order (e.g. a live user session you must not kill).
+   Applies to kappa, tau, kite and every pitchfork-supervised daemon.
 
 ## The vibe meta-todo (first-class, resets every task)
 
@@ -133,14 +168,15 @@ covers (e.g. `docker ps`, `ss`, `curl` for health checks).
   (`SWAP 641:3f2a..674:9b1c:`); never mix a bare op after a line-count-changing
   op; re-read every file and diff the `~/-/+` lines after every patch.
 - **Live token counting**: `tok` (see `tok --help`).
-- **The 2-second rule (MANDATORY): `run-fast` wraps EVERY command.**
-  `/home/toxic/estate/bin/run-fast <cmd…>` — hard 2.0s wall-clock per
+- **The 4-second rule (MANDATORY): `run-fast` + `delend-code-race` wraps EVERY command.**
+  `/home/toxic/estate/bin/run-fast <cmd…>` — hard 4.0s wall-clock per
   execution; streams output live; deadline breach = FAILED, and the breach
-  is the trigger to race a FASTER alternative (better code, new libs,
-  pattern-borrow) — never to wait longer. Inherently long work (network
-  fetches, builds, installs) goes to `background_process` or a pitchfork
-  daemon — never a blocking tool call. The bash tool auto-shims known-slow
-  commands through run-fast (`bin/bash-2s-shim.sh`, sourced in the shell).
+  automatically triggers `/home/toxic/estate/bin/delend-code-race` to race a
+  FASTER alternative (pattern-borrow + code-race) — never to wait longer.
+  Inherently long work (network fetches, builds, installs) goes to
+  `background_process` or a pitchfork daemon — never a blocking tool call. The
+  bash tool auto-shims known-slow commands through run-fast + `delend-code-race`
+  (`bin/bash-4s-shim.sh` / `bin/bash-2s-shim.sh`, sourced in the shell).
 - **Verification**: parallelize reads; persist every check's FULL output to a file
   and give a PASS/FAIL per check with evidence. Truncated stdio is a defect, not
   a result. Two real failures on one target → stop and replan.
@@ -236,3 +272,69 @@ repeats or contradicts the universal contract above.
   prose in frontmatter; no spec duplication in handoffs), R-501 LF+ASCII on the
   Arch host, R-503 reference sibling repos by local path, never hardcoded
   github.com URLs -- resolve with `git -C <path> remote get-url origin`.
+
+## Estate operating rules (session boot defaults)
+
+These recur every session; honor them without being told.
+
+- **Search/read:** use ffs / dedicated MCP tools (`ffs_*`, `bm25_*`), never raw
+  `grep`/`find`/`head`/`sed`/`cat` when an ffs tool covers the job. Do not
+  truncate output with `head`/`tail` — persist full output and read it.
+- **Commit + push forward-only.** Never leave the working tree dirty; if you
+  touch a file, commit + push (or delendai-checkpoint) before done. Only commit
+  YOUR files (pathspec); never sweep in peer WIP; stash-and-restore peer work if
+  a rebase needs a clean tree.
+- **No monkeypatch.** Every fix is a real committed file. Prefer fixing the root
+  cause (e.g. a shared library/upstream) over a per-caller workaround; document
+  drop-in TODOs when something is embedded and should import from the canonical
+  package.
+- **Secretsmith is SSOT (Rule 3).** Resolve keys/creds from the secretsmith
+  keyring, never a stale env var. `secretsmith get --label <NAME> --show` —
+  parse the `secret:` line.
+- **Use the fleet tools.** Constant forge (now resilient: Brave/SERPER/Tavily/
+  GitHub search legs) for pattern-borrow; `gh` for GitHub; the oracle market for
+  engineering calls; keeper (persistent_*) is the logged-in browser, fast-browser
+  for scripted known flows.
+- **Ask, don't guess.** When a decision or a contributor's intent is unclear,
+  ask via the `question` tool (the user would rather answer than correct a wrong
+  guess). Use it liberally.
+- **Naming map (2026-10-22):** EAP/Gemini Tool Retrieval = **@estate/theta**
+  (PRIVATE `toxicwind/theta`, confidential — never public). Merged provider
+  gateway (auth+keys+routing) = **atlas** (ex-cuttinggate). Key-pool router =
+  keygate. EAP keys live in secretsmith (`GEMINI_EAP_KEY_1..6`), not env.
+- **Home of the Greek-coded products (2026-10-22):** **olympus** (`toxicwind/olympus`,
+  private) HOLDS the Greek codename lineage — τ tau, κ kappa, **skopos** (the
+  persistent browser, was `keeper`), kilo, muse, keryx, hodos, kairos, kryptos.
+  ranch/barn are ranch-structure (NOT Greek); only Greek-coded products join
+  olympus. skopos = the keeper browser watcher (`ranch/keeper`, `keeper/bin/skopos.ts`,
+  CDP :25154). Naming taxonomy: `kite-fleet-recon/NAMING-THEMES.md`.
+
+## Emergent rig doctrine (2026-10-22) — deps allowed, dig deeper, maximal
+
+- **New dependencies, shims, and bun-canary are ALLOWED.** There is no "no-deps"
+  rule. Before building anything that could use a faster/newer runtime, check the
+  latest bun canary:
+  `npm view bun@canary version` and skim its changelog (e.g. 1.4.4-canary.yyyymmdd.N).
+  Use it (or stable) whichever wins the race; prefer canary when a fix/API lands there.
+- **Time is not a construct for the depth of exploration.** The 4s/2s race budget is
+  for RUNNING a chosen tool fast, not for limiting how far you dig (byte-level RE,
+  cross-codebase synthesis, skill updates). Dig deeper: reverse-engineer binaries,
+  bring two codebases together, conjecture 3+ parallel experimental forward paths
+  ("whoa, no one has bridged these yet — we can"), and race them in parallel.
+- **delend-experimental**: when a step is novel/emergent, spawn a new agent that uses
+  the code finder to auto-heal and auto-iterate itself, conjecturing multiple (3+)
+  parallel divergent implementations chosen by code-race + borrow. Never settle on a
+  single guess.
+- **New agents (rigs) get a full rig auto-populated** via the rig-helper in
+  `bin/rig-create` (openfang integration): persona + squawk join + config + glue
+  auto-wired so any future agent can be scaffolded in seconds.
+
+## GLOBAL GITHUB — MAJOR PRIMITIVE (2026-10-22)
+
+The estate operates on **ARBITRARY upstream repos, not just toxicwind/\*.** The primitive is
+`bin/delend-gh <org/repo|url> [audit-main|raw <path>|<git-args>] [--keep]`: it resolves any
+GitHub/gitlab/codeberg/self-hosted repo into a temp clone, runs a git op (default: a branch
+audit vs the remote default branch), and cleans up. `bin/delend-branch-audit-for-main --repo
+<path|url>` is the estate-wide branch audit on any repo. Global-by-construction: never assume
+a repo lives under a specific org — always resolve from the provided org/URL. This is the
+basis for foreign-pattern borrow, upstream tracking, and cross-org recon.
