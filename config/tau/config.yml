@@ -1,550 +1,549 @@
-plugins:
-  - name: herd
-    source: ./projects/range/ranch/stockyard/herd
-    merged: estate-swap
-    privileged: true
-  - name: hodos
-    source: ./projects/range/ranch/stockyard/hodos
-    privileged: true
-  - name: gatehouse
-    source: ./projects/range/ranch/barn/gatehouse
-    privileged: true
-    role: MCP federation gateway
-  - name: router
-    source: ./projects/range/ranch/stockyard/router-legacy
-    merged:
-      - router-legacy
-      - stockyard-hodos-router
-      - estate-router
-    privileged: true
-  - name: barn-browser
-    source: ./projects/range/ranch/barn/browserless
-    privileged: false
-  - name: barn-gemini
-    source: ./projects/range/ranch/barn/gemini-mcp
-    privileged: false
-  - name: secretsmith
-    source: ./projects/range/ranch/barn/secretsmith
-    privileged: true
-providers:
-  anthropic:
-    serverSideFallback: true
-  autoThinkingMaxEffort: xhigh
-  maxInFlightRequests:
-    freeinference: 2
-  openai-codex:
-    codeMode: "on"
-    codeModeDirectTools: []
-  ollama-cloud:
-    maxConcurrency: 3
-  openai-compatible:
-    baseUrl: http://127.0.0.1:25193/v1
-    apiKey: eyJhbGciOiAibm9uZSIsICJ0eXAiOiAiSldUIn0.eyJzdWIiOiAiZmxvY2stY2xpZW50IiwgIm5hbWUiOiAiY29ycmFsLWp3dGZtdCIsICJpYXQiOiAxNzkxOTAwMDAwfQ.d0391d5d684102b1ef80140f9920381b08aa43b417976ed1528618c7b76b60df
-  webSearchTimeoutSeconds: 60
-  antigravityEndpoint: auto
-  fireworksTier: standard
-  tinyModelDevice: auto
-  tinyModelDtype: auto
-  kimiApiFormat: auto
-  openaiWebsockets: auto
-  cacheRetention: auto
-  streamFirstEventTimeoutSeconds: 300
-  streamIdleTimeoutSeconds: 120
-  unboundedRetryAfter:
-    - opencode-go
-    - opencode-zen
-  openrouterVariant: default
-  fetch: auto
-modelRoles:
-  dots: custom/dots
-  bodybuilder: custom/bodybuilder
-  smol: freeinference/qwen3.6-35b:auto
-  slow: freeinference/minimax-m3:xhigh
-  vision: freeinference/minimax-m3:xhigh
-  plan: freeinference/deepseek-v4-flash
-  advisor: freeinference/deepseek-v4-flash:low
-  judge: qwen/qwen3.6-plus
-  task: freeinference/qwen3.6-35b
-  commit: freeinference/qwen3.6-35b
-  tiny: freeinference/qwen3.6-35b
-  memory: freeinference/qwen3.6-35b
-  verification: freeinference/deepseek-v4-flash
-  fallback: freeinference/qwen3.6-35b
-  web: web/exa
-  image: google-antigravity/gemini-3.1-flash-image:auto
-  default: flock/models/gemini-flash-tool-retrieval:off
-subagents:
-  can_spawn_subagents: true
-  whitelist:
-    - task
-    - plan
-    - review
-    - auditor
-    - critic
-    - explorer
-    - analyst
-    - debugger
-  defaultModel: openrouter/nvidia/nemotron-3.5-lightning:free
-  subagent: inherit
-tools:
-  approvalMode: yolo
-  intentTracing: true
-  xdev: true
-  xdevDocs: builtins
-  approval: {}
-  format: auto
-  artifactSpillThreshold: 50
-  artifactTailBytes: 20
-  artifactHeadBytes: 20
-  outputMaxColumns: 768
-  artifactTailLines: 500
-  abortOnFabricatedResult: true
-  maxTimeout: 0
-  xdevInlineDevices: []
-  speculativeExecution:
-    enabled: true
-task:
-  batch: true
-  maxConcurrency: 2
-  enableLsp: true
-  showResolvedModelBadge: true
-  isolation:
-    apply: true
-    merge: patch
-    commits: generic
-    enabled: true
-  eager: preferred
-  enableEffort: true
-  maxRecursionDepth: 0
-  maxRuntimeMs: 300000
-  agentIdleTtlMs: 420000
-  softRequestBudget: 90
-  softRequestBudgetNotice: true
-  maxEffort: high
-  prewalk: true
-interruptMode: wait
-steeringMode: all
-followUpMode: all
+advisor:
+  enabled: false
+  immuneTurns: 3
+  syncBacklog: 'off'
 appearance:
-  theme: dark-midnight
   compact: true
-symbolPreset: nerd
+  theme: dark-midnight
+ask:
+  enabled: true
+  notify: 'on'
+  timeout: 15
+astEdit:
+  enabled: true
+astGrep:
+  enabled: true
+async:
+  enabled: true
+  pollWaitDuration: smart
+autoResume: false
+autocompleteMaxVisible: 20
+autolearn:
+  autoContinue: true
+  enabled: true
+bash:
+  autoBackground:
+    enabled: true
+  direnv: auto
+  direnvLoadTimeoutMs: 30000
+  enabled: true
+  patterns: []
+bashInterceptor:
+  enabled: false
+branchSummary:
+  enabled: true
+browser:
+  cmux: true
+  enabled: true
+  headless: true
+  relay: false
+  screenshotDir: ~/screenshots/
+checkpoint:
+  enabled: true
+codexResets:
+  autoRedeem: 'yes'
+  keepCredits: 0
+  minBlockedMinutes: 60
+  salvageHorizonHours: 12
+collab:
+  displayName: ''
+  relayUrl: wss://my.omp.sh
+  webUrl: ''
+colorBlindMode: false
+commands:
+  enableClaudeProject: true
+  enableClaudeUser: true
+  enableOpencodeProject: true
+  enableOpencodeUser: true
+compaction:
+  asyncEnabled: true
+  dropUseless: false
+  enabled: false
+  experimentalContextManagement: true
+  handoffSaveToDisk: true
+  idleEnabled: false
+  idleThresholdTokens: 200000
+  idleTimeoutSeconds: 300
+  methodOrder:
+  - shake
+  - soft
+  - remote
+  - handoff
+  midTurnEnabled: true
+  remoteStreamingV2Enabled: true
+  supersedeReads: true
+  thresholdPercent: 95
+  thresholdTokens: -1
+completion:
+  notify: 'on'
 composer:
   shape: box
-theme:
-  dark: dark-sakura
-  light: light
-setupVersion: 2
+computer:
+  display: all
+  enabled: true
+  maxHeight: 2400
+  maxWidth: 3840
+contextPromotion:
+  enabled: true
+cycleOrder:
+- smol
+- default
+- slow
+debug:
+  enabled: true
 defaultThinkingLevel: auto
-hideThinkingBlock: false
-memory:
-  backend: hindsight
-hindsight:
-  apiUrl: http://127.0.0.1:25117
-  scoping: global
-  autoRecall: true
-  autoRetain: true
-  retainMode: full-session
-  mentalModelsEnabled: true
-  mentalModelAutoSeed: true
-  bankId: ""
-  apiToken: ""
-temperature: -1
+dev:
+  autoqa: true
+  autoqaConsent: granted
+  autoqaPush:
+    endpoint: https://qa.omp.sh/v1/grievances
+disabledExtensions:
+- airspeak
+disabledProviders: []
+display:
+  cacheMissMarker: true
+  collapseCompacted: true
+  hideToolActivity: false
+  pinnedAgents: full
+  shimmer: kitt
+  showTokenUsage: true
+  showTurnTime: true
+  smoothStreaming: true
+doubleEscapeAction: none
+edit:
+  autoRepair:
+    enabled: false
+  blackbox:
+    enabled: true
+  blockAutoGenerated: false
+  enforceSeenLines: false
+  fuzzyMatch: true
+  fuzzyThreshold: 0.95
+  mode: sloppy
+  streamingAbort: false
 effort:
   high: 0.9
   ultrathink: 0.99
-colorBlindMode: false
-statusLine:
-  preset: nerd
-  separator: powerline
-  contextLine: embedded
-  sessionAccent: true
-  transparent: false
-  compactThinkingLevel: true
-  showHookStatus: true
-shell:
-  env:
-    PI_DISABLE_UUTILS_BUILTINS: "1"
-terminal:
-  showImages: true
-  showProgress: true
+emojiAutocomplete: true
+error:
+  notify: 'on'
+eval:
+  autoBackground:
+    enabled: true
+  jl: true
+  js: false
+  py: true
+  rb: true
+  workpool:
+    freshAgents: true
+exa:
+  enabled: true
+  searchDelayMs: 1000
+extendedContext: true
+extensionHandlers:
+  toolCallTimeoutMs: 30000
+externalThinking: false
+features:
+  unexpectedStopDetection: smart
+fetch:
+  enabled: true
+followUpMode: all
+generate_image:
+  enabled: false
+git:
+  enabled: true
+github:
+  cache:
+    enabled: true
+    hardTtlSec: 604800
+    softTtlSec: 300
+  enabled: true
+glob:
+  enabled: true
+goal:
+  continuationModes:
+  - interactive
+  enabled: true
+  statusInFooter: true
+grep:
+  contextAfter: 3
+  contextBefore: 3
+  enabled: false
+hideThinkingBlock: false
+hindsight:
+  apiToken: ''
+  apiUrl: http://127.0.0.1:25117
+  autoRecall: true
+  autoRetain: true
+  bankId: ''
+  mentalModelAutoSeed: true
+  mentalModelsEnabled: true
+  retainMode: full-session
+  scoping: global
 images:
   autoResize: true
   blockImages: false
   describeForTextModels: true
-  urls:
-    enabled: false
-    backends:
-      - provider-files
-      - tailscale
-      - cloudflared
-      - litterbox
-    ttlHours: 72
-    bindHost: 127.0.0.1
-    sshRemotePort: 8787
   questionTimeoutMs: 300000
-tui:
-  resizeScrollback: rebuild
-  textSizing: false
-  renderMermaid: true
-  codexResetFireworks: false
-  titleState: true
-  hyperlinks: auto
-  tight: true
-  imeSafeCursor: false
-display:
-  shimmer: kitt
-  smoothStreaming: true
-  hideToolActivity: false
-  showTokenUsage: true
-  showTurnTime: true
-  cacheMissMarker: true
-  collapseCompacted: true
-  pinnedAgents: full
-showHardwareCursor: true
-advisor:
+  urls:
+    backends:
+    - provider-files
+    - tailscale
+    - cloudflared
+    - litterbox
+    bindHost: 127.0.0.1
+    enabled: false
+    sshRemotePort: 8787
+    ttlHours: 72
+includeModelInPrompt: true
+includeWorkspaceTree: false
+inlineToolDescriptors: 'off'
+interruptMode: wait
+irc:
+  timeoutMs: 120000
+isolation:
+  backend: auto
+julia:
+  interpreter: ''
+launch:
+  enabled: true
+live:
+  voice: sol
+loop:
+  mode: prompt
+lsp:
+  diagnosticsDeduplicate: true
+  diagnosticsOnEdit: true
+  diagnosticsOnWrite: true
+  enabled: true
+  formatOnWrite: false
+  lazy: true
+  shared: true
+magicKeywords:
   enabled: false
-  syncBacklog: "off"
-  immuneTurns: 3
-prewalk:
-  enabled: false
-modelRoleStorage: global
-proseOnlyThinking: true
-omitThinking: false
-externalThinking: false
+  orchestrate: true
+  ultrathink: true
+  workflow: true
+marketplace:
+  autoUpdate: notify
+mcp:
+  enableProjectConfig: true
+  notificationDebounceMs: 500
+  notifications: true
+  renderMarkdownResults: true
+memory:
+  backend: hindsight
+minP: -1
+mnemopi:
+  autoRecall: true
+  autoRetain: true
+  embeddingVariant: en
+  enhancedRecall: false
+  llmMode: smol
+  noEmbeddings: false
+  polyphonicRecall: false
+  proactiveLinking: false
+  scoping: per-project
 model:
   loopGuard:
-    enabled: true
     checkAssistantContent: true
+    enabled: true
     toolCallReminder: true
   toolCallLoopGuard:
     enabled: true
-    threshold: 5
     exemptTools:
-      - hub
-inlineToolDescriptors: "off"
-includeModelInPrompt: true
-includeWorkspaceTree: false
-personality: friendly
-topP: -1
-topK: -1
-minP: -1
-presencePenalty: -1
-repetitionPenalty: -1
-textVerbosity: medium
-tier:
-  openai: auto
-  anthropic: priority
-  google: flex
-  subagent: inherit
-  advisor: flex
-retry:
-  maxRetries: 3
-  maxDelayMs: 300000
-  modelFallback: true
-  usageAwareFallback: true
-  usageReservePct: 10
-  usageReservePolicy: confirm
-  fallbackChains:
-    web:
-      - web/tavily
-      - web/firecrawl
-      - web/brave
-      - web/parallel
-      - web/synthetic
-      - google-antigravity/gemini-3.8-flash
-    fallback:
-      - freeinference/minimax-m3
-      - freeinference/qwen3.6-35b
-      - groq/openai/gpt-oss-120b
-      - groq/openai/gpt-oss-20b
-  fallbackRevertPolicy: cooldown-expiry
-autoResume: false
-power:
-  sleepPrevention: idle
-git:
-  enabled: true
-loop:
-  mode: prompt
-doubleEscapeAction: none
-treeFilterMode: default
-autocompleteMaxVisible: 20
-spelling:
-  typoDetection: true
-  autocomplete: true
-  autocorrect: false
-emojiAutocomplete: true
+    - hub
+    threshold: 5
+modelRoleStorage: global
+modelRoles:
+  advisor: freeinference/qwen3.6-35b:low
+  bodybuilder: custom/bodybuilder
+  commit: freeinference/qwen3.6-35b
+  default: flock/models/gemini-flash-tool-retrieval:off
+  dots: custom/dots
+  fallback: freeinference/qwen3.6-35b
+  image: google-antigravity/gemini-3.1-flash-image:auto
+  judge: qwen/qwen3.6-plus
+  memory: freeinference/qwen3.6-35b
+  plan: freeinference/qwen3.6-35b
+  slow: freeinference/qwen3.6-35b:xhigh
+  smol: freeinference/qwen3.6-35b:auto
+  task: freeinference/qwen3.6-35b
+  tiny: freeinference/qwen3.6-35b
+  verification: freeinference/qwen3.6-35b
+  vision: freeinference/minimax-m3:xhigh
+  web: web/exa
+omitThinking: false
 paste:
   largeMenuThreshold: 100
-startup:
-  quiet: false
-  showSplash: false
-  setupWizard: true
-  checkUpdate: true
-  changelogMode: expanded
-update:
-  auto: false
-  channel: stable
-marketplace:
-  autoUpdate: notify
-magicKeywords:
-  enabled: false
-  ultrathink: true
-  orchestrate: true
-  workflow: true
-completion:
-  notify: "on"
-error:
-  notify: "on"
-ask:
-  timeout: 15
-  notify: "on"
+personality: friendly
+plan:
+  autosave: true
+  defaultOnStartup: false
   enabled: true
-recap:
+plugins:
+- merged: estate-swap
+  name: herd
+  privileged: true
+  source: ./projects/range/ranch/stockyard/herd
+- name: hodos
+  privileged: true
+  source: ./projects/range/ranch/stockyard/hodos
+- name: gatehouse
+  privileged: true
+  role: MCP federation gateway
+  source: ./projects/range/ranch/barn/gatehouse
+- merged:
+  - router-legacy
+  - stockyard-hodos-router
+  - estate-router
+  name: router
+  privileged: true
+  source: ./projects/range/ranch/stockyard/router-legacy
+- name: barn-browser
+  privileged: false
+  source: ./projects/range/ranch/barn/browserless
+- name: barn-gemini
+  privileged: false
+  source: ./projects/range/ranch/barn/gemini-mcp
+- name: secretsmith
+  privileged: true
+  source: ./projects/range/ranch/barn/secretsmith
+power:
+  sleepPrevention: idle
+presencePenalty: -1
+prewalk:
   enabled: false
-  idleSeconds: 240
-collab:
-  relayUrl: wss://my.omp.sh
-  webUrl: ""
-  displayName: ""
-share:
-  serverUrl: https://my.omp.sh/s
-  store: blob
-  redactSecrets: true
-stt:
-  enabled: false
-  submitTrigger: never
-features:
-  unexpectedStopDetection: smart
-workspace:
-  additionalDirectories: []
-contextPromotion:
-  enabled: true
-extendedContext: true
-compaction:
-  enabled: false
-  midTurnEnabled: true
-  methodOrder:
-    - shake
-    - soft
-    - remote
-    - handoff
-  thresholdPercent: 95
-  thresholdTokens: -1
-  handoffSaveToDisk: true
-  remoteStreamingV2Enabled: true
-  asyncEnabled: true
-  idleEnabled: false
-  idleThresholdTokens: 200000
-  idleTimeoutSeconds: 300
-  supersedeReads: true
-  dropUseless: false
-  experimentalContextManagement: true
-snapcompact:
-  systemPrompt: none
-  toolResults: false
-  shape: auto
-branchSummary:
-  enabled: true
-ttsr:
-  enabled: false
-  contextMode: discard
-  interruptMode: never
-  repeatMode: after-gap
-  repeatGap: 10
-  builtinRules: true
-  disabledRules: []
-autolearn:
-  enabled: true
-  autoContinue: true
-mnemopi:
-  scoping: per-project
-  embeddingVariant: en
-  autoRecall: true
-  autoRetain: true
-  polyphonicRecall: false
-  enhancedRecall: false
-  proactiveLinking: false
-  noEmbeddings: false
-  llmMode: smol
-edit:
-  mode: sloppy
-  fuzzyMatch: true
-  fuzzyThreshold: 0.95
-  streamingAbort: true
-  blockAutoGenerated: false
-  enforceSeenLines: false
-  blackbox:
-    enabled: true
-  autoRepair:
-    enabled: false
-readLineNumbers: true
+proseOnlyThinking: true
+provider:
+  appendOnlyContext: auto
+providers:
+  anthropic:
+    serverSideFallback: true
+  antigravityEndpoint: auto
+  autoThinkingMaxEffort: xhigh
+  cacheRetention: auto
+  fetch: auto
+  fireworksTier: standard
+  kimiApiFormat: auto
+  maxInFlightRequests:
+    freeinference: 8
+  ollama-cloud:
+    maxConcurrency: 3
+  openai-codex:
+    codeMode: 'on'
+    codeModeDirectTools: []
+  openai-compatible:
+    apiKey: eyJhbGciOiAibm9uZSIsICJ0eXAiOiAiSldUIn0.eyJzdWIiOiAiZmxvY2stY2xpZW50IiwgIm5hbWUiOiAiY29ycmFsLWp3dGZtdCIsICJpYXQiOiAxNzkxOTAwMDAwfQ.d0391d5d684102b1ef80140f9920381b08aa43b417976ed1528618c7b76b60df
+    baseUrl: http://127.0.0.1:25193/v1
+  openaiWebsockets: auto
+  openrouterVariant: default
+  streamFirstEventTimeoutSeconds: 300
+  streamIdleTimeoutSeconds: 120
+  tinyModelDevice: auto
+  tinyModelDtype: auto
+  unboundedRetryAfter:
+  - opencode-go
+  - opencode-zen
+  webSearchTimeoutSeconds: 60
+python:
+  interpreter: ''
+  kernelMode: session
 read:
   defaultLimit: 5000
   renderMarkdown: true
   summarize:
     enabled: false
-    prose: false
     minBodyLines: 4
     minCommentLines: 6
     minTotalLines: 100
-    unfoldUntil: 50
+    prose: false
     unfoldLimit: 100
+    unfoldUntil: 50
   toolResultPreview: true
-lsp:
-  enabled: true
-  lazy: true
-  shared: true
-  formatOnWrite: false
-  diagnosticsOnWrite: true
-  diagnosticsOnEdit: true
-  diagnosticsDeduplicate: true
-bash:
-  enabled: true
-  autoBackground:
-    enabled: true
-  patterns: []
-  direnv: auto
-  direnvLoadTimeoutMs: 30000
-bashInterceptor:
+readLineNumbers: true
+recap:
   enabled: false
+  idleSeconds: 240
+repetitionPenalty: -1
+retry:
+  fallbackChains:
+    fallback:
+    - freeinference/qwen3.6-35b
+    - qwen/qwen3.6-plus
+    - hodos/qwen3.6-35b
+    web:
+    - web/tavily
+    - web/firecrawl
+    - web/brave
+    - web/parallel
+    - web/synthetic
+    - google-antigravity/gemini-3.8-flash
+  fallbackRevertPolicy: cooldown-expiry
+  maxDelayMs: 300000
+  maxRetries: 3
+  modelFallback: true
+  usageAwareFallback: true
+  usageReservePct: 10
+  usageReservePolicy: confirm
+ruby:
+  interpreter: ''
+secrets:
+  enabled: false
+security:
+  enabled: false
+setupVersion: 2
+share:
+  redactSecrets: true
+  serverUrl: https://my.omp.sh/s
+  store: blob
+shell:
+  env:
+    PI_DISABLE_UUTILS_BUILTINS: '1'
 shellMinimizer:
   enabled: true
   sourceOutlineLevel: default
-eval:
-  py: true
-  js: false
-  rb: true
-  jl: true
-  autoBackground:
+showHardwareCursor: true
+skillful: true
+skills:
+  customDirectories:
+  - /home/toxic/estate/grasp-hub/skills
+  - /home/toxic/estate/projects/range/ranch/gear
+  enableSkillCommands: true
+snapcompact:
+  shape: auto
+  systemPrompt: none
+  toolResults: false
+speech:
+  enabled: false
+  enhanced: false
+  mode: assistant
+  voice: af_heart
+speechgen:
+  enabled: false
+spelling:
+  autocomplete: true
+  autocorrect: false
+  typoDetection: true
+startup:
+  changelogMode: expanded
+  checkUpdate: true
+  quiet: false
+  setupWizard: true
+  showSplash: false
+statusLine:
+  compactThinkingLevel: true
+  contextLine: embedded
+  preset: nerd
+  separator: powerline
+  sessionAccent: true
+  showHookStatus: true
+  transparent: false
+steeringMode: all
+stt:
+  enabled: false
+  submitTrigger: never
+subagents:
+  can_spawn_subagents: true
+  defaultModel: freeinference/qwen3.6-35b
+  subagent: inherit
+  whitelist:
+  - task
+  - plan
+  - review
+  - auditor
+  - critic
+  - explorer
+  - analyst
+  - debugger
+symbolPreset: nerd
+task:
+  agentIdleTtlMs: 420000
+  batch: true
+  eager: preferred
+  enableEffort: true
+  enableLsp: true
+  isolation:
+    apply: true
+    commits: generic
     enabled: true
-  workpool:
-    freshAgents: true
-python:
-  kernelMode: session
-  interpreter: ""
-ruby:
-  interpreter: ""
-julia:
-  interpreter: ""
+    merge: patch
+  maxConcurrency: 2
+  maxEffort: high
+  maxRecursionDepth: 0
+  maxRuntimeMs: 300000
+  prewalk: true
+  showResolvedModelBadge: true
+  softRequestBudget: 90
+  softRequestBudgetNotice: true
+tasks:
+  todoClearDelay: 60
+temperature: -1
+terminal:
+  showImages: true
+  showProgress: true
+textVerbosity: medium
+theme:
+  dark: dark-sakura
+  light: light
+tier:
+  advisor: flex
+  anthropic: priority
+  google: flex
+  openai: auto
+  subagent: inherit
+title:
+  refreshOnReplan: true
 todo:
+  eager: preferred
   enabled: true
   reminders: true
   remindersMax: 5
-  eager: preferred
-glob:
-  enabled: true
-grep:
-  enabled: false
-  contextBefore: 3
-  contextAfter: 3
-astGrep:
-  enabled: true
-astEdit:
-  enabled: true
-debug:
-  enabled: true
-launch:
-  enabled: true
-speechgen:
-  enabled: false
-generate_image:
-  enabled: false
-computer:
-  enabled: true
-  display: all
-  maxWidth: 3840
-  maxHeight: 2400
-checkpoint:
-  enabled: true
-fetch:
-  enabled: true
-vault:
-  enabled: true
-github:
-  enabled: true
-  cache:
+tools:
+  abortOnFabricatedResult: true
+  approval: {}
+  approvalMode: yolo
+  artifactHeadBytes: 20
+  artifactSpillThreshold: 50
+  artifactTailBytes: 20
+  artifactTailLines: 500
+  format: auto
+  intentTracing: true
+  maxTimeout: 0
+  outputMaxColumns: 768
+  speculativeExecution:
     enabled: true
-    softTtlSec: 300
-    hardTtlSec: 604800
-web_search:
-  enabled: true
-security:
-  enabled: false
-browser:
-  enabled: true
-  relay: false
-  headless: true
-  cmux: true
-  screenshotDir: ~/screenshots/
-async:
-  enabled: true
-  pollWaitDuration: smart
-irc:
-  timeoutMs: 120000
-mcp:
-  enableProjectConfig: true
-  renderMarkdownResults: true
-  notifications: true
-  notificationDebounceMs: 500
-tasks:
-  todoClearDelay: 60
-extensionHandlers:
-  toolCallTimeoutMs: 30000
-dev:
-  autoqa: true
-  autoqaPush:
-    endpoint: https://qa.omp.sh/v1/grievances
-  autoqaConsent: granted
-plan:
-  enabled: true
-  defaultOnStartup: false
-  autosave: true
-goal:
-  enabled: true
-  statusInFooter: true
-  continuationModes:
-    - interactive
-title:
-  refreshOnReplan: true
-skills:
-  enableSkillCommands: true
-  customDirectories:
-    - /home/toxic/estate/grasp-hub/skills
-    - /home/toxic/estate/projects/range/ranch/gear
-commands:
-  enableClaudeUser: true
-  enableClaudeProject: true
-  enableOpencodeUser: true
-  enableOpencodeProject: true
-secrets:
-  enabled: false
-live:
-  voice: sol
+  xdev: true
+  xdevDocs: builtins
+  xdevInlineDevices: []
+topK: -1
+topP: -1
+treeFilterMode: default
 tts:
   localVoice: af_heart
-speech:
+ttsr:
+  builtinRules: true
+  contextMode: discard
+  disabledRules: []
   enabled: false
-  mode: assistant
-  enhanced: false
-  voice: af_heart
-codexResets:
-  autoRedeem: "yes"
-  minBlockedMinutes: 60
-  keepCredits: 0
-  salvageHorizonHours: 12
-provider:
-  appendOnlyContext: auto
-exa:
+  interruptMode: never
+  repeatGap: 10
+  repeatMode: after-gap
+tui:
+  codexResetFireworks: false
+  hyperlinks: auto
+  imeSafeCursor: false
+  renderMermaid: true
+  resizeScrollback: rebuild
+  textSizing: false
+  tight: true
+  titleState: true
+update:
+  auto: false
+  channel: stable
+vault:
   enabled: true
-  searchDelayMs: 1000
-cycleOrder:
-  - smol
-  - default
-  - slow
-disabledProviders: []
-disabledExtensions:
-  - airspeak
-skillful: true
-isolation:
-  backend: auto
+web_search:
+  enabled: true
+workspace:
+  additionalDirectories: []
