@@ -12,9 +12,12 @@
 
 ```text
 **Where the code lives: the pens.** The estate deploys *through* the fully-local
-organization trees under `pens/` (symlinked here). ranch (`pens/ranch`, the
-project monorepo) and olympus (`pens/olympus`, the Greek-coded products) are the
-workshop; this estate root is the control plane that stands them up.
+organization trees under `pens/` (symlinked here). See
+[`toxicwind/pens`](https://github.com/toxicwind/pens) (pointer superproject),
+[`toxicwind/olympus`](https://github.com/toxicwind/olympus) (Greek-coded
+products), and [`toxicwind/ranch`](https://github.com/toxicwind/ranch) (project
+monorepo, workshop); this estate root is the control plane that stands them
+up.
 
 push → forge/mbx (:25148 build dispatch, :25155 forge REAPI) → pitchfork (health:
 pitchfork's own surface, unverified port)
@@ -228,14 +231,16 @@ The 25xxx fleet is bound as a **one-supervisor-per-service** doctrine: lane-A es
 
 The fleet is not a metaphor. Named agents — each with a species, a personality, and a lane — join squawk, post their own hellos, bid on oracle tasks, argue the point, and narrate their work live. Ember coordinates; the **forever-loop** rig keeps the pack from going idle. The roster changes constantly — the fleet channel (squawk, :25135) is the source of truth.
 
-## 🐘 Repo topology — three+ repos, one estate
+## 🐘 Repo topology — four repos, one estate
 
-| Repo                                                      | Visibility | What it is                                                                                                                                                        |
-| --------------------------------------------------------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`toxicwind/estate`](https://github.com/toxicwind/estate) | PUBLIC     | This repo — the control plane / deploy plane.                                                                                                                     |
-| [`toxicwind/ranch`](https://github.com/toxicwind/ranch)   | PUBLIC     | The workshop — project monorepo, nested at `ranch/` (own git, gitignored here).                                                                                   |
-| (former `hatch`, now `kite`)                              | —          | The control-cell repo split out of this tree (live checkout `/home/toxic/kite/kite`); dodge name `hatch`, real identity `kite`. No longer inside the estate tree. |
-| `pens/` (local → symlinked `ranch`, `olympus`)            | —          | The fully-local org trees the estate deploys through.                                                                                                             |
+| Repo                                                                                                              | Visibility | What it is                                                                                                                                                                                                                                                                                                                                                              |
+| ----------------------------------------------------------------------------------------------------------------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`toxicwind/estate`](https://github.com/toxicwind/estate)                                                         | PUBLIC     | This repo — the control plane / deploy plane.                                                                                                                                                                                                                                                                                                                           |
+| [`toxicwind/pens`](https://github.com/toxicwind/pens)                                                              | PUBLIC     | Pointer superproject (`*` in `.gitignore`) organizing `olympus/`, `ranch/`, and `archive/` with generators in `toolkit/`.                                                                                                                                                                                                                                                |
+| [`toxicwind/olympus`](https://github.com/toxicwind/olympus)                                                       | PUBLIC     | The Greek pantheon pen — registry of Greek-coded products (`tau`, `kappa`, `skopos`, `kilo`, `muse`, `keryx`, `hodos`, `kairos`, `kryptos`, `agele`, `pinax`, `agon`, `antilogos`, `pylae`, `propylon`, `opsis`, `didymos`, `chronos-forge`, `arroyo`). `pens/toolkit/` and `ranch/toolkit/` hold the Bun README/manifest generators. |
+| [`toxicwind/ranch`](https://github.com/toxicwind/ranch)                                                            | PUBLIC     | The workshop — 222-component peer workspace pen (`.meta.yaml` + `toolkit/`).                                                                                                                                                                                                                                                                                              |
+| [`toxicwind/agele`](https://github.com/toxicwind/agele)                                                            | PUBLIC     | The herd — local LLM inference front door (`llama.cpp` :25100; renamed from `herd`).                                                                                                                                                                                                                                                                                    |
+| (former `hatch`, now `kite`)                                                                                      | —          | The control-cell repo split out of this tree (live checkout `/home/toxic/kite/kite`); dodge name `hatch`, real identity `kite`. No longer inside the estate tree.                                                                                                                                                                                                       |
 
 _(The old README carried verified `main` SHAs here; those SHAs are mutable and were dated 2026-10-15. They've been dropped in favor of `git ls-remote origin` for current truth.)_
 
