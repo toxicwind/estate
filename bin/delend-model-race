@@ -159,6 +159,21 @@ function busysleep(ms: number) { const e = Date.now() + ms; while (Date.now() < 
 // ---------- main ----------
 if (import.meta.main) {
   const a = process.argv.slice(2);
+  if (a.includes("--help") || a.includes("-h")) {
+    console.log(`delend-model-race — MODULAR PROFILE RUNNER.
+
+Usage:
+  delend-model-race --provider P [--profile complex-image|complex-text|...]
+                    [--models a,b,c] [--img <png>] [--prompt ".."] [--timeouts 1,2,3,4]
+                    [--max N] [--score]
+  DELEND_RACE_OUT=path  writes json.
+
+Races any model over multiple complexity-profile benchmarks and finds the
+fastest-correct per profile. Adaptively backs off on 429/ratelimit; discovers
+models via /v1/models unless --models is given.
+`);
+    process.exit(0);
+  }
   const g = (f: string, d = "") => { const i = a.indexOf(f); return i >= 0 ? a[i + 1] : d; };
   const prov = g("--provider", "freeinference");
   const profId = g("--profile", "complex-image");

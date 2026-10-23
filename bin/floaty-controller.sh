@@ -31,10 +31,10 @@ for c in d:
 " 2>/dev/null | head -20
     ;;
   focus)
-    hyprctl dispatch focuswindow "class:$2" 2>&1 && echo "focused $2"
+    hyprctl dispatch "hl.dsp.focus({window=\"class:$2\"})" 2>&1 && echo "focused $2"
     ;;
   activate)
-    hyprctl dispatch focuswindow "address:$2" 2>&1 && echo "activated $2"
+    hyprctl dispatch "hl.dsp.focus({window=\"address:$2\"})" 2>&1 && echo "activated $2"
     ;;
   type)
     shift; wtype -M ctrl -k l 2>/dev/null; printf '%s' "$*" | wtype - 2>/dev/null && echo "typed"

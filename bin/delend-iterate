@@ -37,6 +37,19 @@ export function checkModel(runp: (cmd: string, t?: number) => { rc: number; err:
 
 export function main(argv: string[] = process.argv.slice(2)): number {
   const argsAll = argv;
+  if (argsAll.includes("--help") || argsAll.includes("-h")) {
+    console.log(`delend-iterate — async/await-aware synchronous iteration driver.
+
+Usage:
+  delend-iterate --goal "<objective>" --workdir <dir> [--iters 10]
+                 [--before <cmd>] [--after <cmd>] [--budget-ms 4000]
+
+Each iteration feeds the previous result into the next, may change code (--after),
+and double-checks the model/egress before continuing. Stops early on :iters reached
+or 2 clean passes with a stable model.
+`);
+    return 0;
+  }
   const goal = get(argsAll, "--goal", "");
   const wd = resolve(get(argsAll, "--workdir", "."));
   const posN = Number((argsAll.find((x, i) => /^\d+$/.test(x) && !argsAll[i - 1]?.startsWith("--"))) ?? 0) || 0;

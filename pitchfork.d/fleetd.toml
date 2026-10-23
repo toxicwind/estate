@@ -1,0 +1,13 @@
+# fleetd — infra-critical fleet daemon (sqlite ledger + import state), :25151.
+# Runs the real daemon (python3 fleetd.py) supervised; health = :25151/ping.
+# bin/run is a guard that documents the supervised start; bin/check is the gate.
+# Registered 2026-10-22 (was DOWN: config pointed at non-existent /home/toxic/fleet/fleetd).
+[daemons.fleetd]
+run = "exec env FLEETD_PORT=25151 FLEETD_DB=/home/toxic/estate/ranch/fleetd/fleetd.db python3 /home/toxic/estate/ranch/fleetd/fleetd.py"
+dir = "/home/toxic/estate/ranch/fleetd"
+mise = false
+retry = true
+boot_start = true
+auto = ["start"]
+ready_http = { port = 25151, path = "/ping", interval = "10s", timeout = "5s", retries = 5 }
+env = { FLEETD_ROOT = "/home/toxic/estate/ranch/fleetd" }

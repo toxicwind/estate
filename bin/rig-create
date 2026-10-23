@@ -20,16 +20,6 @@
 import { mkdirSync, writeFileSync, readFileSync, chmodSync, existsSync } from "node:fs";
 import { join, dirname, resolve } from "node:path";
 
-const args = process.argv.slice(2);
-const name = args[0];
-if (!name) { console.error("usage: rig-create <name> --lane L --tone T [flags]"); process.exit(2); }
-const get = (flag: string, d="") => { const i = args.indexOf(flag); return i>=0? args[i+1] : d; };
-const lane = get("--lane", "general ops");
-const tone = get("--tone", "warm, short, ranch-native; lead with the proof");
-const identity = get("--identity", name.toLowerCase().replace(/[^a-z0-9]/g,"-"));
-const alias = get("--alias", identity);
-const desc = get("--desc", "");
-const rigDir = resolve(get("--rig-dir", `.`), "rigs", name.toLowerCase());
 const PERSONA_TMPL = `# @NAME@
 
 @DESC@
@@ -44,15 +34,6 @@ const PERSONA_TMPL = `# @NAME@
 - Personality registered; hello posts in \`@IDENTITY@\`'s own voice with one genuine question.
 - Provenance: auto-created via \`bin/rig-create\` on @DATE@.
 `;
-const JOIN = {
-  type: "squawk.join",
-  identity,
-  channel: "fleet",
-  ready: true,
-  onboards: true,
-  alias,
-  ts: Date.now(),
-};
 const CONFIG = `[rig]
 name = "@NAME@"
 identity = "@IDENTITY@"
@@ -71,27 +52,72 @@ cat << 'J'
 J
 echo "[@NAME@] squawk join below ready; post via hatch-mcp squawk_send as @IDENTITY@."
 `;
-const TITLE = name[0].toUpperCase()+name.slice(1);
 
-function fill(t: string): string {
+export interface RigCtx {
+  name: string;
+  identity: string;
+  alias: string;
+  lane: string;
+  tone: string;
+  desc: string;
+}
+
+export function rigCtx(args: string[]): RigCtx {
+  const get = (flag: string, d = "") => { const i = args.indexOf(flag); return i >= 0 ? args[i + 1] : d; };
+  const name = args[0];
+  const identity = get("--identity", (name || "rig").toLowerCase().replace(/[^a-z0-9]/g, "-"));
+  return {
+    name,
+    identity,
+    alias: get("--alias", identity),
+    lane: get("--lane", "general ops"),
+    tone: get("--tone", "warm, short, ranch-native; lead with the proof"),
+    desc: get("--desc", ""),
+  };
+}
+
+export function titleOf(name: string): string {
+  return name ? name[0].toUpperCase() + name.slice(1) : "Rig";
+}
+
+export function fill(t: string, c: RigCtx): string {
+  const title = titleOf(c.name);
   return t
-    .replaceAll("@NAME@", name).replaceAll("@IDENTITY@", identity)
-    .replaceAll("@TITLE@", TITLE).replaceAll("@ALIASES@", alias)
-    .replaceAll("@LANE@", lane).replaceAll("@TONE@", tone).replaceAll("@DESC@", desc)
-    .replaceAll("@DATE@", new Date().toISOString().slice(0,10));
+    .replaceAll("@NAME@", c.name).replaceAll("@IDENTITY@", c.identity)
+    .replaceAll("@TITLE@", title).replaceAll("@ALIASES@", c.alias)
+    .replaceAll("@LANE@", c.lane).replaceAll("@TONE@", c.tone).replaceAll("@DESC@", c.desc)
+    .replaceAll("@DATE@", new Date().toISOString().slice(0, 10));
 }
 
-if (existsSync(rigDir) && !args.includes("--wipe")) {
-  console.error(`rig ${rigDir} exists (--wipe to overwrite)`); process.exit(3);
+export function main() {
+  const args = process.argv.slice(2);
+  const c = rigCtx(args);
+  if (!c.name) { console.error("usage: rig-create <name> --lane L --tone T [flags]"); process.exit(2); }
+  const JOIN = {
+    type: "squawk.join",
+    identity: c.identity,
+    channel: "fleet",
+    ready: true,
+    onboards: true,
+    alias: c.alias,
+    ts: Date.now(),
+  };
+  const rigDir = resolve(args.includes("--rig-dir") ? args[args.indexOf("--rig-dir") + 1] || "." : ".", "rigs", c.name.toLowerCase());
+
+  if (existsSync(rigDir) && !args.includes("--wipe")) {
+    console.error(`rig ${rigDir} exists (--wipe to overwrite)`); process.exit(3);
+  }
+  mkdirSync(rigDir, { recursive: true });
+  writeFileSync(join(rigDir, "PERSONA.md"), fill(PERSONA_TMPL, c));
+  writeFileSync(join(rigDir, "join.squawk.json"), JSON.stringify(JOIN, null, 2));
+  writeFileSync(join(rigDir, "config.toml"), fill(CONFIG, c));
+  writeFileSync(join(rigDir, "glue.sh"), fill(GLUE, c));
+  chmodSync(join(rigDir, "glue.sh"), 0o755);
+  writeFileSync(join(rigDir, "README.md"),
+    `# ${c.name} rig\n\nProvisioned by rig-create ${fill("@DATE@", c)}.\n\n- PERSONA.md — fleet-spawn persona\n- join.squawk.json — squawk join payload\n- config.toml — openfang config stub\n- glue.sh — squawk identity glue\n\nSquawk join line:\n\`hatch-mcp squawk_send identity=@IDENTITY@ 'hi fleet, @IDENTITY@ here'\`\n`);
+  console.log(`rig ${c.name} created at ${rigDir}:`);
+  for (const f of ["PERSONA.md", "join.squawk.json", "config.toml", "glue.sh", "README.md"]) console.log(`  ${f}`);
+  console.log(`\nSquawk join line:\n  hatch-mcp squawk_send identity=${c.identity} 'hi fleet, ${c.identity} here'`);
 }
-mkdirSync(rigDir, { recursive: true });
-writeFileSync(join(rigDir, "PERSONA.md"), fill(PERSONA_TMPL));
-writeFileSync(join(rigDir, "join.squawk.json"), JSON.stringify(JOIN, null, 2));
-writeFileSync(join(rigDir, "config.toml"), fill(CONFIG));
-writeFileSync(join(rigDir, "glue.sh"), fill(GLUE));
-chmodSync(join(rigDir, "glue.sh"), 0o755);
-writeFileSync(join(rigDir, "README.md"),
-  `# ${name} rig\n\nProvisioned by rig-create ${fill("@DATE@")}.\n\n- PERSONA.md — fleet-spawn persona\n- join.squawk.json — squawk join payload\n- config.toml — openfang config stub\n- glue.sh — squawk identity glue\n\nSquawk join line:\n\`hatch-mcp squawk_send identity=@IDENTITY@ 'hi fleet, @IDENTITY@ here'\`\n`);
-console.log(`rig ${name} created at ${rigDir}:`);
-for (const f of ["PERSONA.md","join.squawk.json","config.toml","glue.sh","README.md"]) console.log(`  ${f}`);
-console.log(`\nSquawk join line:\n  hatch-mcp squawk_send identity=${identity} 'hi fleet, ${identity} here'`);
+
+if (import.meta.main) main();

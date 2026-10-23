@@ -22,6 +22,19 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 
 const a = process.argv.slice(2);
+if (a.includes("--help") || a.includes("-h")) {
+  console.log(`delend-gh — GLOBAL GitHub primitive (any org/repo, not just toxicwind).
+
+Usage:
+  delend-gh <org/repo|url> "<git args...>"     # run git in a temp clone, print output
+  delend-gh <org/repo> audit-main              # alias: branch audit vs its default main
+  delend-gh <org/repo> raw <path>              # print a file's content from the upstream default branch
+  --keep                                       # keep the temp clone; print its path
+
+Global by construction: works for ANY host (github.com, gitlab, codeberg, self-hosted URL).
+`);
+  process.exit(0);
+}
 const target = a[0];
 if (!target) { console.error("usage: delend-gh <org/repo|url> [git-args|'audit-main'|'raw <path>'] [--keep]"); process.exit(2); }
 const rest = a.slice(1);

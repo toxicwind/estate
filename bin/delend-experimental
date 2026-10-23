@@ -73,6 +73,25 @@ function probePath(name: string, index: number, cands: string[], perProbe: numbe
 
 export function main(argv: string[] = process.argv.slice(2)): number {
   const args = argv;
+  if (args.includes("--help") || args.includes("-h")) {
+    console.log(`delend-experimental — sponsor a self-healing, self-iterating experimental agent.
+
+Usage:
+  delend-experimental --brief "<emergent goal>" [--paths 3] [--iter 4]
+                      [--budget-ms 4000] [--rig <name>]
+
+Flags:
+  --brief "<goal>"   emergent briefing to conjecture divergent forward paths on
+  --paths N          number of parallel divergent paths (default 3)
+  --iter N           max iterations (default 4)
+  --budget-ms N      time budget per probe (default 4000)
+  --rig <name>       experimental rig name (default experimental)
+
+Conjectures divergent paths (code-finder borrow -> code-race), probes each for real,
+heals the winner, and writes /tmp/delend-experimental-result.json.
+`);
+    return 0;
+  }
   const brief = get(args, "--brief", "");
   const paths = Number(get(args, "--paths", "3"));
   const iters = Number(get(args, "--iter", "4"));

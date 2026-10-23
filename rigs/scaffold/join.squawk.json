@@ -1,0 +1,9 @@
+{
+  "type": "squawk.join",
+  "identity": "scaffold",
+  "channel": "fleet",
+  "ready": true,
+  "onboards": true,
+  "alias": "scaffold",
+  "ts": 1792712664636
+}

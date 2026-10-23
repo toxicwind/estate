@@ -632,7 +632,7 @@ export function main(argv: string[] = process.argv.slice(2)): number {
     return 0;
   } else if (sub === "apply") {
     return cmdApply(get("--task", ""));
-  } else if (sub === "help" || sub === "--help" || !sub) {
+  } else if (sub === "help" || sub === "--help" || sub === "-h" || !sub) {
     usage();
     return 0;
   } else {

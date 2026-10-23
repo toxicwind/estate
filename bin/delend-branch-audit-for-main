@@ -24,6 +24,24 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 const argv = process.argv.slice(2);
+if (argv.includes("--help") || argv.includes("-h")) {
+  console.log(`delend-branch-audit-for-main — audit branches against main for ANY repo (estate-wide).
+
+Usage:
+  delend-branch-audit-for-main                          # cwd repo, audit only
+  delend-branch-audit-for-main --repo /path/to/repo
+  delend-branch-audit-for-main --repo https://github.com/org/repo --merge-ready
+  delend-branch-audit-for-main --only <substring> --main <branch>
+
+Flags:
+  --repo <path|url>   local git checkout path or any git upstream URL (clone + audit)
+  --main <branch>     default branch to audit against (default: main)
+  --only <substring>  only audit branches whose name includes <substring>
+  --merge-ready       safely merge non-diverged ahead branches into the default branch
+  --push              also push (for a real checkout; clones stay read-only unless set)
+`);
+  process.exit(0);
+}
 const gv = (f: string) => argv.includes(f) ? argv[argv.indexOf(f)+1] : null;
 const repo = gv("--repo") || process.cwd();
 const mainBranch = gv("--main") || "main";      // default branch to audit against

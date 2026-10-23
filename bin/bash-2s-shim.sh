@@ -178,7 +178,33 @@ fi
 
 export -f _2s_guard _2s_urgent 2>/dev/null
 export -f two_sec_slow _2s_slow four_sec_run 2>/dev/null || true
-export BASH_2S_SHIM=1
+# ----------------------------------------- bun → kairos (run-fast)
+# Route known-slow `bun <sub>` through kairos (the run-fast runner): it applies
+# the 4s deadline and, on breach, hands the failing command to delend-code-race
+# to race a faster route. `command bun` bypasses this. kairos is the canonical
+# home; `run-fast` and `kairos` both exec ranch/kairos/src/cli.ts.
+#
+# Routing is DECLARATIVE: it uses the same `two_sec_slow` table (the bash mirror
+# of kairos SLOW_ROUTES.bun, which includes `bun run <script>`), not a hand-rolled
+# case list — so the set never drifts from the kairos SSOT. The RUN_FAST_ACTIVE
+# guard prevents re-wrapping a child that is already running under run-fast.
+_kairos_runfast="${ESTATE_RUN_FAST:-/home/toxic/estate/bin/run-fast}"
+if [ -x "$_kairos_runfast" ]; then
+  bun() {
+    if [ "$RUN_FAST_ACTIVE" = "1" ]; then
+      command bun "$@"
+    elif two_sec_slow bun "$1"; then
+      # Reference ESTATE_RUN_FAST (exported above, never unset) rather than a
+      # local that the definition block unsets — an unset var would make this
+      # resolve to an empty command (": command not found") at call time.
+      "${ESTATE_RUN_FAST:-/home/toxic/estate/bin/run-fast}" bun "$@"
+    else
+      /usr/bin/env bun "$@"
+    fi
+  }
+  export -f bun 2>/dev/null || true
+  unset _kairos_runfast
+fi
 export BASH_4S_SHIM=1
 export RF_DEADLINE="${RF_DEADLINE:-4.0}"
 

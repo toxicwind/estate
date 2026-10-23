@@ -72,7 +72,7 @@ modelRoles:
   fallback: freeinference/qwen3.6-35b
   web: web/exa
   image: google-antigravity/gemini-3.1-flash-image:auto
-  default: google-antigravity/gemini-3.8-flash:off
+  default: flock/models/gemini-flash-tool-retrieval:off
 subagents:
   can_spawn_subagents: true
   whitelist:

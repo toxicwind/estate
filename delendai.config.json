@@ -55,11 +55,7 @@
       "modelId": "glm-5.3-flash",
       "contextWindow": 128000,
       "costTier": 1,
-      "strengths": [
-        "fast-iteration",
-        "code-edit",
-        "reasoning"
-      ],
+      "strengths": ["fast-iteration", "code-edit", "reasoning"],
       "weaknesses": []
     },
     {
@@ -74,13 +70,8 @@
       "modelId": "deepseek-chat",
       "contextWindow": 64000,
       "costTier": 1,
-      "strengths": [
-        "reasoning",
-        "code-edit"
-      ],
-      "weaknesses": [
-        "vision"
-      ]
+      "strengths": ["reasoning", "code-edit"],
+      "weaknesses": ["vision"]
     },
     {
       "id": "nim-glm-arch",
@@ -94,13 +85,8 @@
       "modelId": "glm-5.2",
       "contextWindow": 128000,
       "costTier": 3,
-      "strengths": [
-        "architecture",
-        "long-context"
-      ],
-      "weaknesses": [
-        "vision"
-      ]
+      "strengths": ["architecture", "long-context"],
+      "weaknesses": ["vision"]
     },
     {
       "id": "nim-qwen-122b",
@@ -114,10 +100,7 @@
       "modelId": "qwen3.5-122b-a10b",
       "contextWindow": 64000,
       "costTier": 3,
-      "strengths": [
-        "agentic",
-        "long-context"
-      ],
+      "strengths": ["agentic", "long-context"],
       "weaknesses": []
     },
     {
@@ -132,10 +115,7 @@
       "modelId": "qwen3.5-397b-a17b",
       "contextWindow": 128000,
       "costTier": 4,
-      "strengths": [
-        "reasoning",
-        "very-long-context"
-      ],
+      "strengths": ["reasoning", "very-long-context"],
       "weaknesses": []
     },
     {
@@ -150,13 +130,8 @@
       "modelId": "qwen3.6-27b",
       "contextWindow": 32000,
       "costTier": 2,
-      "strengths": [
-        "agentic",
-        "code-edit"
-      ],
-      "weaknesses": [
-        "vision"
-      ]
+      "strengths": ["agentic", "code-edit"],
+      "weaknesses": ["vision"]
     },
     {
       "id": "groq-qwen-fast",
@@ -170,10 +145,7 @@
       "modelId": "qwen3.8-27b",
       "contextWindow": 64000,
       "costTier": 1,
-      "strengths": [
-        "fast-iteration",
-        "json-strict"
-      ],
+      "strengths": ["fast-iteration", "json-strict"],
       "weaknesses": []
     },
     {
@@ -188,13 +160,8 @@
       "modelId": "glm-5.2",
       "contextWindow": 128000,
       "costTier": 2,
-      "strengths": [
-        "reasoning",
-        "agentic"
-      ],
-      "weaknesses": [
-        "vision"
-      ]
+      "strengths": ["reasoning", "agentic"],
+      "weaknesses": ["vision"]
     },
     {
       "id": "deepseek-code",
@@ -208,13 +175,8 @@
       "modelId": "deepseek-coder",
       "contextWindow": 64000,
       "costTier": 1,
-      "strengths": [
-        "code-edit",
-        "fast-iteration"
-      ],
-      "weaknesses": [
-        "vision"
-      ]
+      "strengths": ["code-edit", "fast-iteration"],
+      "weaknesses": ["vision"]
     },
     {
       "id": "skyserve-arch",
@@ -228,10 +190,7 @@
       "modelId": "architect-3",
       "contextWindow": 128000,
       "costTier": 3,
-      "strengths": [
-        "architecture",
-        "security-audit"
-      ],
+      "strengths": ["architecture", "security-audit"],
       "weaknesses": []
     }
   ],
@@ -254,6 +213,10 @@
       "prefix": "ac"
     },
     "auto-agent-selector": {
+      "enabled": true,
+      "origin": "bundled"
+    },
+    "memory": {
       "enabled": true,
       "origin": "bundled"
     }

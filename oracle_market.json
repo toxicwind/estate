@@ -1,0 +1,11 @@
+{
+  "tasks": [
+    {
+      "id": "task-001",
+      "description": "Implement a new feature for the delendai CLI",
+      "status": "pending",
+      "priority": "high"
+    }
+  ],
+  "emergent_work": []
+}

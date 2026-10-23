@@ -20,6 +20,20 @@ import { spawnSync } from "node:child_process";
 
 const BIN = "/home/toxic/estate/bin";
 const flags = process.argv.slice(2);
+if (flags.includes("--help") || flags.includes("-h")) {
+  console.log(`delend-route — the zero* fast-intent router for delend.
+
+Usage:
+  delend-route "<incoming instruction>"          # classify + print the routed plan
+  delend-route --run "<instruction>"             # also execute the routed primitive
+  delend-route --list                            # show the route table
+  delend-route --where '<port|daemon|zero|25xxx>'  # route to a LIVE estate resource
+
+Fast-understands an incoming instruction and dispatches it to the correct delend-*
+primitive, first-valid-wins, sub-4s.
+`);
+  process.exit(0);
+}
 const run = flags.includes("--run");
 const list = flags.includes("--list");
 const arg = flags.filter(x => !x.startsWith("--")).join(" ");

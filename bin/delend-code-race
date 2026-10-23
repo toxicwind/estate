@@ -129,6 +129,23 @@ export function parseArgs(args: string[]): { perSource: number; budget: number; 
 }
 
 export async function main(argv: string[] = process.argv.slice(2)): Promise<number> {
+  if (argv.includes("--help") || argv.includes("-h")) {
+    console.log(`delend-code-race — sub-4s breach auto-racer.
+
+Usage:
+  delend-code-race "<failing 4s command>" [--per-source N] [--2s] [--race-timeout S]
+
+Flags:
+  --per-source N      borrow candidates per source (default 3)
+  --2s                use the 2s budget instead of the default 4s
+  --race-timeout S    seconds to race candidates (default 6)
+
+Reruns the original command once under budget; on persistent breach, auto-races a
+faster alternative via pattern-borrow + code-race and writes the winner to
+/tmp/delend-code-race-winner.json.
+`);
+    return 0;
+  }
   const { perSource, budget, raceTimeout, cmdLine } = parseArgs(argv);
   if (!cmdLine) {
     console.error(
