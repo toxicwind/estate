@@ -25,21 +25,27 @@
       "release": "main"
     },
     "governance": {
-      "strategy": "MAXIMAL never-yield: a wall is never a stop; it is the trigger to spawn an emergent sub-goal (or the next six disparate tangents) and continue. Report blockers only when literally no scheduled wait or alternate can carry the work. Verbose, forward-only, additive.",
+      "strategy": "enforced",
       "failClosedOnUnverifiable": false
     },
     "coordination": {
-      "strategy": "event-derived swarm: agents register via agent-orchestration and delendai derives the roster from units/leases/refs. Swarm agents carry unique EXTERNAL model picks (1 FreeInference for kappa-owner, alternates external). Keep live todo on every change; spawn emergent tasks.",
+      "strategy": "file-locks",
       "leaseTtlMinutes": 20
     },
     "persistence": {
-      "strategy": "checkpoint + push every unit",
+      "strategy": "wip-ref",
       "autoCommitOnTask": true,
       "autoPushAfterCommit": true
     },
     "recovery": {
-      "strategy": "reset-and-forward; never discard unmerged work",
+      "strategy": "resume-wip",
       "neverDiscardUnmergedWork": true
+    },
+    "notes": {
+      "governance": "MAXIMAL never-yield: a wall is never a stop; it is the trigger to spawn an emergent sub-goal (or the next six disparate tangents) and continue. Report blockers only when literally no scheduled wait or alternate can carry the work. Verbose, forward-only, additive.",
+      "coordination": "event-derived swarm: agents register via agent-orchestration and delendai derives the roster from units/leases/refs. Swarm agents carry unique EXTERNAL model picks. Keep live todo on every change; spawn emergent tasks.",
+      "recovery": "reset-and-forward; never discard unmerged work.",
+      "persistence": "checkpoint + push every unit."
     }
   },
   "providers": [
@@ -55,7 +61,11 @@
       "modelId": "glm-5.3-flash",
       "contextWindow": 128000,
       "costTier": 1,
-      "strengths": ["fast-iteration", "code-edit", "reasoning"],
+      "strengths": [
+        "fast-iteration",
+        "code-edit",
+        "reasoning"
+      ],
       "weaknesses": []
     },
     {
@@ -70,8 +80,13 @@
       "modelId": "deepseek-chat",
       "contextWindow": 64000,
       "costTier": 1,
-      "strengths": ["reasoning", "code-edit"],
-      "weaknesses": ["vision"]
+      "strengths": [
+        "reasoning",
+        "code-edit"
+      ],
+      "weaknesses": [
+        "vision"
+      ]
     },
     {
       "id": "nim-glm-arch",
@@ -85,8 +100,13 @@
       "modelId": "glm-5.2",
       "contextWindow": 128000,
       "costTier": 3,
-      "strengths": ["architecture", "long-context"],
-      "weaknesses": ["vision"]
+      "strengths": [
+        "architecture",
+        "long-context"
+      ],
+      "weaknesses": [
+        "vision"
+      ]
     },
     {
       "id": "nim-qwen-122b",
@@ -100,7 +120,10 @@
       "modelId": "qwen3.5-122b-a10b",
       "contextWindow": 64000,
       "costTier": 3,
-      "strengths": ["agentic", "long-context"],
+      "strengths": [
+        "agentic",
+        "long-context"
+      ],
       "weaknesses": []
     },
     {
@@ -115,7 +138,10 @@
       "modelId": "qwen3.5-397b-a17b",
       "contextWindow": 128000,
       "costTier": 4,
-      "strengths": ["reasoning", "very-long-context"],
+      "strengths": [
+        "reasoning",
+        "very-long-context"
+      ],
       "weaknesses": []
     },
     {
@@ -130,8 +156,13 @@
       "modelId": "qwen3.6-27b",
       "contextWindow": 32000,
       "costTier": 2,
-      "strengths": ["agentic", "code-edit"],
-      "weaknesses": ["vision"]
+      "strengths": [
+        "agentic",
+        "code-edit"
+      ],
+      "weaknesses": [
+        "vision"
+      ]
     },
     {
       "id": "groq-qwen-fast",
@@ -145,7 +176,10 @@
       "modelId": "qwen3.8-27b",
       "contextWindow": 64000,
       "costTier": 1,
-      "strengths": ["fast-iteration", "json-strict"],
+      "strengths": [
+        "fast-iteration",
+        "json-strict"
+      ],
       "weaknesses": []
     },
     {
@@ -160,8 +194,13 @@
       "modelId": "glm-5.2",
       "contextWindow": 128000,
       "costTier": 2,
-      "strengths": ["reasoning", "agentic"],
-      "weaknesses": ["vision"]
+      "strengths": [
+        "reasoning",
+        "agentic"
+      ],
+      "weaknesses": [
+        "vision"
+      ]
     },
     {
       "id": "deepseek-code",
@@ -175,8 +214,13 @@
       "modelId": "deepseek-coder",
       "contextWindow": 64000,
       "costTier": 1,
-      "strengths": ["code-edit", "fast-iteration"],
-      "weaknesses": ["vision"]
+      "strengths": [
+        "code-edit",
+        "fast-iteration"
+      ],
+      "weaknesses": [
+        "vision"
+      ]
     },
     {
       "id": "skyserve-arch",
@@ -190,7 +234,10 @@
       "modelId": "architect-3",
       "contextWindow": 128000,
       "costTier": 3,
-      "strengths": ["architecture", "security-audit"],
+      "strengths": [
+        "architecture",
+        "security-audit"
+      ],
       "weaknesses": []
     }
   ],
@@ -222,53 +269,58 @@
     },
     "work-refs": {
       "enabled": true,
-      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/work-refs/src/index.ts",
-      "prefix": "work_refs"
+      "prefix": "work_refs",
+      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/work-refs/src/index.ts"
     },
     "code-race": {
       "enabled": true,
-      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/code-race/src/index.ts",
-      "prefix": "code_race"
+      "prefix": "code_race",
+      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/code-race/src/index.ts"
     },
     "experimental": {
       "enabled": true,
-      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/experimental/src/index.ts",
-      "prefix": "experimental"
+      "prefix": "experimental",
+      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/experimental/src/index.ts"
     },
     "iterate": {
       "enabled": true,
-      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/iterate/src/index.ts",
-      "prefix": "iterate"
+      "prefix": "iterate",
+      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/iterate/src/index.ts"
     },
     "oracle-market": {
       "enabled": true,
-      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/oracle-market/src/index.ts",
-      "prefix": "oracle"
+      "prefix": "oracle",
+      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/oracle-market/src/index.ts"
     },
     "model-race": {
       "enabled": true,
-      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/model-race/src/index.ts",
-      "prefix": "model_race"
+      "prefix": "model_race",
+      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/model-race/src/index.ts"
     },
     "forge-audit": {
       "enabled": true,
-      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/forge-audit/src/index.ts",
-      "prefix": "forge_audit"
+      "prefix": "forge_audit",
+      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/forge-audit/src/index.ts"
     },
     "intent-router": {
       "enabled": true,
-      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/intent-router/src/index.ts",
-      "prefix": "intent"
+      "prefix": "intent",
+      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/intent-router/src/index.ts"
     },
     "global-gh": {
       "enabled": true,
-      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/global-gh/src/index.ts",
-      "prefix": "gh"
+      "prefix": "gh",
+      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/global-gh/src/index.ts"
     },
     "rig-c2": {
       "enabled": true,
-      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/rig-c2/src/index.ts",
-      "prefix": "rig_c2"
+      "prefix": "rig_c2",
+      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/rig-c2/src/index.ts"
+    },
+    "consent": {
+      "enabled": true,
+      "origin": "user-local",
+      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/consent/src/index.ts"
     }
   }
 }
