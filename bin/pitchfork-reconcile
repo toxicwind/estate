@@ -238,7 +238,7 @@ def tracked_pid(pf, daemon_id):
 
 
 # --- ANALYZE ----------------------------------------------------------------
-def analyze(desired, registered, snapshots, systemd_managed):
+def analyze(desired, registered, snapshots, systemd_managed, listeners):
     """Return list of plan items: dict(daemon, action, reason)."""
     plan = []
 
@@ -290,13 +290,23 @@ def analyze(desired, registered, snapshots, systemd_managed):
             add(did, "reregister", "config drift toml-vs-snapshot: " + ", ".join(drift))
             continue
 
-        # (c) registered but not running
+        # (c) registered but not running -- Warden triage (lane 2026-10-23):
+        # ground-truth first, so we never blind-start a port-conflicting
+        # orphan (EADDRINUSE) or retry-spin a retired def.
         if status != "running":
-            if want:
-                add(did, "start", f"registered as {status}, desired running")
+            cls, detail = errored_ground_truth(name, section, status, listeners)
+            if cls == "ERRORED-BUT-ALIVE":
+                add(did, "adopt-check",
+                    f"supervisor={status} but {detail}; adopt binding, do NOT blind-start")
+            elif cls == "STALE-DEF":
+                add(did, "retire-review",
+                    f"{detail}; retirement candidate, not a restart")
+            elif want:
+                add(did, "start",
+                    f"registered as {status}, desired running; triage={cls} ({detail})")
             else:
                 add(did, "nothing-manual",
-                    f"registered as {status}, not desired (manual)")
+                    f"registered as {status}, not desired (manual); triage={cls}")
             continue
 
         add(did, "verify", "registered running, no drift; verify ground truth")
@@ -340,6 +350,35 @@ def ground_truth_check(pf, item, desired, listeners):
     if pid and pid_alive(pid):
         return True, f"pid {pid} alive (no port)"
     return False, f"supervisor=running but pid {pid} dead"
+
+
+def errored_ground_truth(name, section, status, listeners):
+    """Warden drift-watch triage for non-running daemons (lane 2026-10-23).
+
+    Classifies against ground truth (listening ports + run-target existence)
+    so the plan never blind-starts a port-conflicting orphan or retry-spins
+    a retired def. Returns (class, detail); class is one of:
+      ERRORED-BUT-ALIVE  port live but supervisor=errored (adopt, never start)
+      STALE-DEF          run-target script missing (retire, never retry-spin)
+      RUNNING-BUT-DARK   supervisor=running but port dark (verify/restart)
+      ERRORED-DEAD       errored, port dark, run target present (safe to start)
+      OK                 no anomaly
+    """
+    ports = norm_ports(section.get("port"))
+    port_live = any(listeners.get(p) for p in ports) if ports else False
+    run = (section.get("run") or "")
+    m = re.match(r"(?:exec\s+)?(/\S+)", run)
+    target = m.group(1) if m else None
+    target_ok = os.path.exists(target) if target else None
+    if status == "errored":
+        if port_live:
+            return "ERRORED-BUT-ALIVE", f"port(s) {ports} listening"
+        if target_ok is False:
+            return "STALE-DEF", f"run target missing: {target}"
+        return "ERRORED-DEAD", f"port(s) {ports} dark, run target present"
+    if status == "running" and ports and not port_live:
+        return "RUNNING-BUT-DARK", f"nothing listening on {ports}"
+    return "OK", ""
 
 
 def order_plan(plan, desired):
@@ -503,7 +542,7 @@ def main():
         f"systemd-managed=[{', '.join(sorted(systemd_managed)) or 'none'}], "
         f"mode={'dry-run' if dry_run else 'APPLY'}")
 
-    plan = analyze(desired, registered, snapshots, systemd_managed)
+    plan = analyze(desired, registered, snapshots, systemd_managed, listeners)
 
     # resolve ground-truth verifies (read-only, runs in both modes)
     for p in plan:
