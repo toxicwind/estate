@@ -132,29 +132,68 @@ bins:
     syntax: bash
     notes: "the verifier itself"
 
+# -----------------------------------------------------------------------------
+# links — product symlinks pinned to their pens/sovereign targets (AGENTS.md
+# Layout, 2026-10-23). A missing target is a FAIL. These live in ~/.local/bin
+# (PATH surface) and estate/bin (ops surface); the target is always a file in
+# pens/{barn,ranch,olympus} or sovereign/skills/scripts. The pens manifest
+# (/home/toxic/pens/MANIFEST.yaml, pens/audit-links.sh) verifies the same
+# targets from the product side.
+# -----------------------------------------------------------------------------
+links:
+  # -- ~/.local/bin surface
+  - name: ~/.local/bin/forge
+    target: /home/toxic/pens/barn/forge/bin/forge.ts
+  - name: ~/.local/bin/pattern-forge
+    target: /home/toxic/pens/barn/forge/bin/forge.ts
+  - name: ~/.local/bin/corral
+    target: /home/toxic/pens/barn/corral/src/cli/index.ts
+  - name: ~/.local/bin/hyper
+    target: /home/toxic/pens/barn/corral/src/cli/index.ts
+  - name: ~/.local/bin/taskforge
+    target: /home/toxic/pens/barn/corral/src/cli/index.ts
+  - name: ~/.local/bin/tau-pin
+    target: /home/toxic/pens/olympus/products/tau/scripts/tau-pin
+  - name: ~/.local/bin/tok
+    target: /home/toxic/pens/ranch/tok/script/tok.ts
+  - name: ~/.local/bin/syntax-guard
+    target: /home/toxic/sovereign/skills/scripts/syntax-guard.ts
+  - name: ~/.local/bin/vansrouter-bridged
+    target: /home/toxic/sovereign/skills/scripts/vansrouter.sh
+  # -- estate/bin ops surface
+  - name: bin/thresher-mcp-stdio
+    target: /home/toxic/pens/barn/thresher/bin/thresher-mcp-stdio
+  - name: bin/chute
+    target: /home/toxic/pens/barn/chute/chute.mjs
 
 archived:
   - name: tau-launcher-retired
+    kept: false  # tombstone cleaned during barn move
     from: projects/tau/launcher/bin/tau
     to: .archive-20260930/tau-launcher-retired.TOMBSTONE
     reason: ranch/tau deleted, deprecated 2026-09-24; collapse chain dead.
   - name: tau-profiles-retired
+    kept: false  # tombstone cleaned during barn move
     from: projects/tau/launcher/profiles
     to: .archive-20260930/tau-profiles-retired.TOMBSTONE
     reason: ranch/tau deleted; launcher profiles orphaned.
   - name: tau-installed-retired
+    kept: false  # tombstone cleaned during barn move
     from: /home/toxic/.local/bin/tau
     to: .archive-20260930/tau-installed-retired.TOMBSTONE
     reason: md5-pin target gone; launcher execs deleted ranch path. Broken.
   - name: omp-built-retired
+    kept: false  # tombstone cleaned during barn move
     from: projects/tau/engine/packages/coding-agent/dist/omp
     to: .archive-20260930/omp-built-retired.TOMBSTONE
     reason: ranch/tau deleted; engine CLI gone.
   - name: llama-gguf-hash
+    kept: false  # tombstone cleaned during barn move
     from: bin/llama-gguf-hash
     to: .archive-20260920/bin/llama-gguf-hash
     reason: "dead symlink; wrapper pointed at nonexistent /home/toxic/projects/ik_llama.cpp-main"
   - name: llama-gguf-hash-run
+    kept: false  # tombstone cleaned during barn move
     from: bin/llama-gguf-hash-run
     to: .archive-20260920/bin/llama-gguf-hash-run
     reason: "wrapper exec + LD_LIBRARY_PATH both stale; no llama-gguf-hash binary in any ik_llama.cpp build dir (build_ralph/build_rescue_verify/build_sm86). Restore: build ik_llama.cpp with the tool, rewrite wrapper."

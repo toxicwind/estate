@@ -20,7 +20,7 @@ const SERVICES: Record<string, number> = {
   "prometheus": portsMap.get("PROMETHEUS_PORT") ?? 25105,
   "grafana": portsMap.get("GRAFANA_PORT") ?? 25110,
   "nativelink": portsMap.get("NATIVELINK_FRONTEND_PORT") ?? 25155,
-  "gatehouse": portsMap.get("GATEHOUSE_PORT") ?? 25127,
+  "thresher": portsMap.get("THRESHER_PORT") ?? 25127,
 };
 
 const HEALTH_PATHS = ["/health", "/-/healthy", "/api/health", "/"];

@@ -79,7 +79,7 @@ def parse_manifest(text):
             k, v = s.split(':', 1)
             k, v = k.strip(), v.strip()
             if v == '':
-                if k not in ('stale_paths', 'dirs', 'bins', 'archived'):
+                if k not in ('stale_paths', 'dirs', 'bins', 'archived', 'links'):
                     raise ValueError('unsupported block key: %r' % k)
                 cur_list = []
                 root[k] = cur_list
@@ -180,6 +180,32 @@ def main():
         return 1
     stale = m.get('stale_paths', []) or []
     seen = set()
+    # links: pinned product symlinks (AGENTS.md Layout). Target must exist and
+    # the link (if present) must resolve to it. $HOME-expanded manually.
+    home = os.path.expanduser('~')
+    for link in m.get('links', []) or []:
+        name = link.get('name', '')
+        target = link.get('target', '')
+        if not name or not target:
+            fails.append('links entry incomplete: %r' % (link,))
+            continue
+        if not os.path.isfile(target):
+            fails.append('links/%s: missing target %s' % (name, target))
+            continue
+        if name.startswith('~'):
+            full = os.path.join(home, name[2:].lstrip('/'))
+        elif name.startswith('/'):
+            full = name
+        else:
+            full = os.path.join(SOV, name)
+        seen.add(os.path.normpath(full))
+        if not os.path.islink(full):
+            fails.append('links/%s: not a symlink (%s exists but does not point at %s)' % (name, full, target))
+            continue
+        if os.path.realpath(full) != os.path.realpath(target):
+            fails.append('links/%s: points at %s, expected %s' % (name, os.path.realpath(full), target))
+            continue
+        oks.append('links/%s -> %s' % (name, target))
     for e in m.get('bins', []) or []:
         name, d, kind = e['name'], e['dir'], e['kind']
         eid = '%s/%s' % (d, name)
@@ -264,7 +290,10 @@ def main():
             oks.append(eid)
     for a in m.get('archived', []) or []:
         dest = os.path.join(SOV, a['to'])
-        if os.path.lexists(dest):
+        # `kept: false` = removal already recorded, tombstone deliberately not
+        # kept (e.g. archive dir cleaned during a later move). The entry itself
+        # is the record; no tombstone is expected.
+        if os.path.lexists(dest) or a.get('kept') is False:
             oks.append('archived:%s' % a['name'])
         else:
             fails.append('archived:%s: missing at %s' % (a['name'], a['to']))
