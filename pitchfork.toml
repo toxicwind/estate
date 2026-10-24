@@ -1352,7 +1352,7 @@ auto = ["start"]
 
 # Ported from 2026-10-23 re-render (daemons absent from HEAD) by SwarmFixer
 [daemons.archguard-api]
-run = "exec /home/toxic/estate/ranch/barn/archguard/node_modules/.bin/tsx src/server.ts"
+run = "exec /home/toxic/.bun/bin/bun src/server.ts"
 dir = "/home/toxic/estate/ranch/barn/archguard"
 mise = false
 retry = true
