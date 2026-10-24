@@ -116,8 +116,56 @@ These are consumed via `getEnvApiKey()` (`packages/ai/src/stream.ts`) unless not
 | ------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `COPILOT_GITHUB_TOKEN`    | GitHub Copilot provider auth                    | Generic GitHub tokens are not used here                                                                                                                                                                                                                 |
 | `COPILOT_INTEGRATION_ID`  | GitHub Copilot client identity override         | Default `copilot-chat` (chat surface). Denied requests retry once as the Copilot CLI; set to pin the client id and skip the retry ([#11372](https://github.com/can1357/oh-my-pi/issues/11372)) |
-| `GH_TOKEN`                | GitHub API auth in web scraper                  | Web scraper fallback after `GITHUB_TOKEN`                                                                                                                                                                                                               |
-| `GITHUB_TOKEN`            | GitHub API auth in web scraper                  | Web scraper checks this before `GH_TOKEN`                                                                                                                                                                                                               |
+| `GH_TOKEN`                | GitHub API auth in web scraper                  | Web scraper fallback after `GITHUB_TOKEN`. Resolved from the secretsmith keyring (SSOT); see "GitHub credentials — keyring is SSOT" below                                                                                                                                     |
+| `GITHUB_TOKEN`            | GitHub API auth in web scraper                  | Web scraper checks this before `GH_TOKEN`. Canonical keyring item — see "GitHub credentials — keyring is SSOT" below                                                                                                                                                                          |
+
+### GitHub credentials — keyring is SSOT
+
+GitHub tokens are **never** stored in `.env` files, shell profiles, or any committed
+config. The freedesktop Secret Service keyring (via `secretsmith`) is the single
+source of truth.
+
+| Keyring item          | Value                                                        | Purpose                                                                       |
+| --------------------- | ------------------------------------------------------------ | ----------------------------------------------------------------------------- |
+| `GITHUB_TOKEN`        | fine-grained PAT (`github_pat_…`)                            | Canonical push/API credential. The only token programs should resolve.        |
+| `GITHUB_TOKEN_CLASSIC`| classic PAT (`ghp_…`)                                        | Org-admin scopes the fine-grained PAT lacks. Use explicitly; never the default. |
+| `GH_TOKEN`            | same fine-grained PAT as `GITHUB_TOKEN`                      | gh-CLI env-var fallback; kept in sync with the canonical item.               |
+
+**Alias expansion.** `~/.config/secretsmith/aliases.toml` maps legacy names onto the
+canonical item, so `GITHUB_PAT`, `GH_PAT`, `GITHUB_PERSONAL_ACCESS_TOKEN`,
+`HATCH_TOOLKIT_GITHUB_PAT`, and `MOONBOX_RACE_PAT` all resolve to `GITHUB_TOKEN`:
+
+```toml
+[aliases]
+GH_TOKEN = "GITHUB_TOKEN"
+GITHUB_PAT = "GITHUB_TOKEN"
+GH_PAT = "GITHUB_TOKEN"
+GITHUB_PERSONAL_ACCESS_TOKEN = "GITHUB_TOKEN"
+HATCH_TOOLKIT_GITHUB_PAT = "GITHUB_TOKEN"
+MOONBOX_RACE_PAT = "GITHUB_TOKEN"
+```
+
+**Autoload primitives** (the only supported way to consume a token):
+
+```bash
+# inject one keyring item into a single command's environment
+secretsmith exec --only GITHUB_TOKEN -- git push origin main
+
+# same thing, via the shell helper defined in estate/bin/bash-2s-shim.sh
+secret-run GITHUB_TOKEN -- git push origin main
+```
+
+Both resolve on every invocation — there is no TTL cache, so an expired or rotated
+token can never be resurrected from a stale cache file. `secretsmith env --all`
+prints the whole keyring as shell-safe `NAME='value'` lines for `set -a; eval` use.
+
+**Label-scoped replace.** `secretsmith set --label X --replace` deletes every
+same-label item before creating one, so rotating a token cannot leave a duplicate
+behind:
+
+```bash
+printf '%s' "$NEW_PAT" | secretsmith set --label GITHUB_TOKEN --replace
+```
 
 ### Auth broker / auth gateway (remote credential vault)
 
