@@ -18,7 +18,5 @@ kf() {
   secretsmith get --label "$1" --show --json 2>/dev/null |
     python3 -c 'import json,sys; d=json.load(sys.stdin); print(d.get("secret",""))' 2>/dev/null
 }
-if [ -z "${GITHUB_TOKEN:-}" ]; then GITHUB_TOKEN=$(kf GITHUB_TOKEN); export GITHUB_TOKEN; fi
-if [ -z "${GH_TOKEN:-}" ]; then GH_TOKEN="$GITHUB_TOKEN"; export GH_TOKEN; fi
 if [ -z "${FREEINFERENCE_API_KEY:-}" ]; then FREEINFERENCE_API_KEY=$(kf FREEINFERENCE_API_KEY); export FREEINFERENCE_API_KEY; fi
 if [ -z "${ATRIA_API_KEY:-}" ]; then ATRIA_API_KEY=$(kf ATRIA_API_KEY); export ATRIA_API_KEY; fi

@@ -5,5 +5,5 @@ run = "exec /usr/bin/nginx -c /home/toxic/estate/ranch/forge/ops/nginx/nginx.con
 dir = "."
 retry = true
 ready_cmd = "ss -ltn 'sport = :25208' | grep -q LISTEN"
-depends = ["gatehouse"]
+depends = ["thresher"]
 auto = ["start"]

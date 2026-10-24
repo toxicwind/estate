@@ -327,7 +327,7 @@ $gofmt_out"
 log "check 2 (gofmt): PASS ($(( $(now_ms) - t0 )) ms)"
 
 # --- check 3: go vet -- scoped to changed packages, run inside each enclosing Go module
-# Monorepo fix (2026-09-19): the old code ran `go vet <pkgs>` from the repo root,
+# Monorepo fix (2026-09-19): the old code  `go vet <pkgs>` from the repo root,
 # so in a monorepo without a root go.mod every pattern failed with
 # "directory prefix ... does not contain main module" noise instead of real
 # diagnostics. Each changed file is now mapped to its enclosing module (nearest

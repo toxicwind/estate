@@ -394,7 +394,21 @@ function discoverChannels(): void {
   try {
     names = fs
       .readdirSync(CHAT_ROOT, { withFileTypes: true })
-      .filter((d) => d.isDirectory())
+      .filter((d) => {
+        if (d.isDirectory()) return true;
+        // Parity with the old Python server: follow symlinks (e.g. kappa -> kappa_board).
+        // Bun reports isDirectory()=false for symlinks, so resolve explicitly.
+        // RESERVED_DIRS below applies by entry name after resolution.
+        if (d.isSymbolicLink()) {
+          try {
+            const target = fs.realpathSync(path.join(CHAT_ROOT, d.name));
+            return fs.statSync(target).isDirectory();
+          } catch {
+            return false;
+          }
+        }
+        return false;
+      })
       .map((d) => d.name);
   } catch {
     return;

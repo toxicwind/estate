@@ -3,7 +3,7 @@
   "contract": "estate-pinax/kappa-catalog/v1",
   "generator": "@toxicwind/pinax codegen — kappa target (installed profile) — DO NOT EDIT BY HAND",
   "provenance": "@toxicwind/pinax src/data.ts",
-  "generatedAt": "2026-10-21T06:25:05.000Z",
+  "generatedAt": "2026-10-21T05:24:12.000Z",
   "deadIds": [
     "llama-3.3-70b-versatile",
     "meta-llama/llama-3.1-8b-instruct",
@@ -107,6 +107,18 @@
       "google",
       "models/gemini-2.5-flash"
     ],
+    "groq-llama-3.3-70b": [
+      "groq",
+      "llama-3.3-70b-versatile"
+    ],
+    "groq-qwen3-32b": [
+      "groq",
+      "qwen/qwen3-32b"
+    ],
+    "groq-qwen3.6-27b": [
+      "groq",
+      "qwen/qwen3.6-27b"
+    ],
     "groq-gpt-oss-120b": [
       "groq",
       "openai/gpt-oss-120b"
@@ -115,9 +127,9 @@
       "groq",
       "openai/gpt-oss-20b"
     ],
-    "groq-qwen3.8-27b": [
+    "groq-llama-4-scout": [
       "groq",
-      "qwen/qwen3.8-27b"
+      "meta-llama/llama-4-scout-17b-16e-instruct"
     ]
   },
   "seeds": {
@@ -492,7 +504,7 @@
         "openai/gpt-oss-20b": {
           "name": "openai/gpt-oss-20b",
           "limit": {
-            "context": 131072,
+            "context": 128000,
             "output": 8192
           }
         },
@@ -864,7 +876,7 @@
       "npm": "@ai-sdk/openai-compatible",
       "name": "Chutes",
       "options": {
-        "baseURL": "https://llm.chutes.ai/v1",
+        "baseURL": "https://inference.chutes.ai/v1",
         "apiKey": "{env:CHUTES_API_KEY}"
       },
       "models": {
@@ -1410,7 +1422,7 @@
     {
       "name": "chutes",
       "displayName": "Chutes",
-      "baseUrl": "https://llm.chutes.ai/v1",
+      "baseUrl": "https://inference.chutes.ai/v1",
       "keyEnv": "CHUTES_API_KEY",
       "keyEnvs": [
         "CHUTES_API_KEY"

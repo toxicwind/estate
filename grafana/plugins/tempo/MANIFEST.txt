@@ -7,8 +7,8 @@ Hash: SHA512
   "signedByOrg": "grafana",
   "signedByOrgName": "Grafana Labs",
   "plugin": "tempo",
-  "version": "13.2.4",
-  "time": 1791304721689,
+  "version": "13.3.0",
+  "time": 1792597705398,
   "keyId": "7e4d0c6a708866e7",
   "files": {
     "2068.js.LICENSE.txt": "ce3489335ed872bc237885f09daa93256c6862151dcb9960ffabd61507623e32",
@@ -25,7 +25,7 @@ Hash: SHA512
     "8874.js": "220384359058b27ed9976c674dc02be6c535dac0196b953ddf903ee5a08a1962",
     "4458.js.LICENSE.txt": "ce3489335ed872bc237885f09daa93256c6862151dcb9960ffabd61507623e32",
     "4062.js.LICENSE.txt": "ce3489335ed872bc237885f09daa93256c6862151dcb9960ffabd61507623e32",
-    "module.js": "f597855f788ce3582bfe756ead2dc6ab5a5a423206243b94466a4fccc2b1179e",
+    "module.js": "f10f5a725663438059de630685e35751b1b0003f78bfee98c2f286d330fd8da6",
     "8874.js.map": "6c5d564dabe4fb1fa83a6fee74a34c71d847f9d53c19760fb8f0c1e89d4cbcbd",
     "3495.js.LICENSE.txt": "ce3489335ed872bc237885f09daa93256c6862151dcb9960ffabd61507623e32",
     "8586.js.map": "bba4be30fc37fdcb66dd49e2d50a6cc564dc84060e50f553b447b860a1143d83",
@@ -62,7 +62,7 @@ Hash: SHA512
     "8080.js.LICENSE.txt": "ce3489335ed872bc237885f09daa93256c6862151dcb9960ffabd61507623e32",
     "3530.js.LICENSE.txt": "ce3489335ed872bc237885f09daa93256c6862151dcb9960ffabd61507623e32",
     "762.js.map": "6acc052cfa41e0f561bf36518acfd706a9527f7c3a8a9027f5ce9875c09addaa",
-    "860.js": "18008b2e76ce6b800d35b08078cd23f2a9cd7e3a2ce0e36122d355465fca02b3",
+    "860.js": "c42bb9c97487362aafa3059a27393780ad51bef608d84df665704e63ed4489ed",
     "94.js": "94816db19bcdb6033d8a745190050c1e47003c6dd1cf45e69809fc2aa03dfdf0",
     "4858.js.map": "05be1d4e6cea491356eedaff58c75d964ccee38f59d4dfaa9ff24f78a07eeaa2",
     "2026.js.map": "ceab2b3b4c5ea90efe81d04f403fc250dab9fab4956625e779820aab94622178",
@@ -155,13 +155,13 @@ Hash: SHA512
     "890.js": "8f63758412c102612395b95391e373faa686a2746777fe84fb4b625328fa03ea",
     "4872.js.LICENSE.txt": "ce3489335ed872bc237885f09daa93256c6862151dcb9960ffabd61507623e32",
     "794.js.map": "5b07632628f6a17e7eeaf996de6459c204edd2e0031f4d73b7bd704efcfef504",
-    "860.js.map": "eb44c4e88a4ce850d585f553818888f78b6814b416f615ea72d08afb0ac0bcdf",
+    "860.js.map": "ffbaf5ffdeafa6842a6114df9727eea5903ba1a3a8a442ecbbf64f896ddf2aa1",
     "1957.js.map": "cfb4f33afbfca3ca5d52dfe35c4cbf37f7666b8d093be8e79becd1e3f3fa2461",
     "8498.js": "f3287eae1f7aa7a2094a2379aa0475663d5b83d91ffde0c6fb6ce678f6d8cb14",
     "7736.js.map": "16dcdc30c4bc83a2f259816de1ed2c760bcc4fa17f2a967adf107e70e6879c45",
     "test/mockServiceGraph.json": "be53cc5b388ff8411a9bbd62d7b3f2172ba9113ad74a18261c712564ecca1abd",
     "test/mockJsonResponse.json": "8dbfe2e8aab319033b90baadee303d5d8281b2b83c166edc6b593ee586af6d30",
-    "gpx_grafana-tempo-datasource_linux_amd64": "46835445b18790a0b512f5da38c47aab7caf010fea09f398ef3b535f08e4dd69",
+    "gpx_grafana-tempo-datasource_linux_amd64": "ee8eaf152c8ee65fba362a42643b79a80125297c4940f6382cd11d36b0035ebc",
     "4062.js": "28becdafe637b889b19742038570ef5396c2da58433dcaabf89d1501b42471fa",
     "5434.js": "6e648c89cf7e946b762f5c5ae2ce3b3f8fc60f380a261660d0f3cf758d917ded",
     "3608.js": "1eba6380c723d3c5d851c0fb465bad7f734aeecb6b3c5c068ff10f803944ecbd",
@@ -195,7 +195,7 @@ Hash: SHA512
     "8080.js.map": "71c67595495dba01a519d6eb800eaff6d1ad27686a18d9e45641dc2d8408f87e",
     "9158.js.map": "57d98357f92bb83ce38056d7e8620121c2df8ebe685592031483f181c4457362",
     "5704.js": "20a71cfae5acef4ebcdaff48e03bbeb62c45435d24871c9b8a3eb165b419a57a",
-    "CHANGELOG.md": "dc47348e856201f72fa156afb5fe617af919bc374d021c8957a0080efee5a7fe",
+    "CHANGELOG.md": "5dd36b89bd118b36d00f5b9ac24e2dd5d1d0aa604136a37bc727fbbd4023a4af",
     "6268.js.map": "45bf69dd797fd44c7554e4618fb59b92ee3f0df91b22a6bd44b122f0dbf9463f",
     "2650.js.map": "f5fb1a73b60bc9011b3055d8a4de2f032ddf0875f67831fc67b0a4dc401b7a82",
     "2066.js.map": "62329c2bb3dccf29624b01af1a603fa07b58c22d1a98ff4304e6afeda09bffff",
@@ -203,7 +203,7 @@ Hash: SHA512
     "8970.js": "99ad400ccc1cfb5ecfb30978851245439deca142f7b667f79737a182727ea073",
     "8586.js.LICENSE.txt": "ce3489335ed872bc237885f09daa93256c6862151dcb9960ffabd61507623e32",
     "3090.js.map": "d74c6a34c17500d13b73d42a0a277a0b871fc8b1eff8f08d9dd0a95e2a4464a8",
-    "module.js.map": "11aca8ac5328c81ec1203e768143bdaaa0cba953956fa69e288ef62e3e0b1766",
+    "module.js.map": "e81f95201a33a8084a7f9ea413f86a6fd683a8b9ecabe72f6e32d1a337223254",
     "7736.js": "6d5d9c6dd0aaa5d51ed62f4ddc42b172ab04a739481ec9cd0105ec9aedde644d",
     "8334.js": "ffc1dc70f0967a29e01a9c55329ae4d11da212777661de63a7a1d945589a1733",
     "7950.js": "9fbec6428c70cda4a620cc8dc7e5c52f50890409378e7526fff9509d97eef79a",
@@ -220,7 +220,7 @@ Hash: SHA512
     "3090.js": "933a41bc31e273fec6030872ef8d0c7c78338b59807f7376bacb743c35ab0eb1",
     "890.js.map": "c031aaf59a3a71a25265db87ab7c4f7b9db33d8bd1aca3cef90ae90dfc7de0ab",
     "762.js": "8a7b0d175039247479e3a5df895c2b0430df981e514eacc1ee85cec005dd00dd",
-    "plugin.json": "5342beac976a4b8c962d4c3ed7b6399226d3c6cd8c80760d0df05f52646a73cd",
+    "plugin.json": "84e421b6f5dbf982082f3fac3d6ad6c3208a35be97f1365b17609ec3ff264b9d",
     "3440.js": "c8e76323019888a8d255d25ef0accf2cdec1fed3b2c991fead615bc937a29c1b",
     "2532.js": "c309c253f4e5f046859e79381b2c294f7960afc8f03a7b67677e95b44bdf822d",
     "1690.js": "f5716f6cf505a816e25d0f306f752755e725c8f1d3bb31738c1f7911532772fe",
@@ -284,11 +284,11 @@ Hash: SHA512
 }
 -----BEGIN PGP SIGNATURE-----
 
-wsA/BAETCgBtBYJqxSQRCRB+TQxqcIhm50UUAAAAAAAcACBzYWx0QG5vdGF0
-aW9ucy5vcGVucGdwanMub3JnG953ZKF+jW02IeALGdblkR79s91mnUh2L6Kj
-iAycaosWIQTzOyW2kQdOhGNlcPN+TQxqcIhm5wAA+J4CCQHBSmN8IDf1lMrL
-r0VFqBzHj0IjQ64BSc5gN6D3ma6m9lmAwkPDEQPPUKYzaXcTHT7GA/fHDk7N
-RVOgnWFgiOlCMAIJAZB5leQJSc8lZoglvODV2fn77L8WWoyacaq0w3IJk/75
-XIZR/7e4h57KnGuUnpfMX4MjTRT1Bwl1VoyP7bWf5HWQ
-=yPg1
+wsA+BAETCgBtBYJq2N7JCRB+TQxqcIhm50UUAAAAAAAcACBzYWx0QG5vdGF0
+aW9ucy5vcGVucGdwanMub3Jn9cAGJjQXbyd5vcrwJmhHl1ed3nqif3PO/tky
+rSuiXWUWIQTzOyW2kQdOhGNlcPN+TQxqcIhm5wAAO2gCBjONTOF/HWkHXUv1
+pkejkuaYdXl0J/mpgcIjSB55A1YeR/Hao7ifwZqn64LMzeQQtbGocsy3IS7x
+F3qpDYFpF8DbAgkBnCprAkWDsd/dyRwUUvafv1V25OKfq3X3kVv0Pmg/wy4U
+d1viVtrzKCTMDO26vBj3RKsv82IPYVLJ0WDT1CxSG5Q=
+=hBS6
 -----END PGP SIGNATURE-----

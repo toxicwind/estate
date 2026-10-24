@@ -77,8 +77,8 @@
     "multiValueFilterOperators": true,
     "info": {
         "description": "Open source time series database & alerting",
-        "version": "13.2.3",
-        "updated": "2026-09-29",
+        "version": "13.2.4",
+        "updated": "2026-10-22",
         "author": {
             "name": "Grafana Labs",
             "url": "https://grafana.com"

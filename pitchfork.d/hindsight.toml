@@ -6,5 +6,5 @@ dir = "."
 retry = true
 ready_http = "http://127.0.0.1:25117/health"
 health_http = { url = "http://127.0.0.1:25117/health", interval = "30s", timeout = "5s", retries = 3 }
-depends = ["gatehouse"]
+depends = ["thresher"]
 auto = ["start"]

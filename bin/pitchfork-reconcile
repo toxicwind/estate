@@ -287,6 +287,19 @@ def analyze(desired, registered, snapshots, systemd_managed, listeners):
                 drift.append(f"port (toml={norm_ports(section.get('port'))} "
                              f"vs snap={norm_ports(snap.get('port'))})")
         if drift:
+            # Warden triage v2: an errored/disabled daemon with a live port
+            # (awrawr-mcp shape) must not be blind-reregistered into EADDRINUSE,
+            # and a retired def must not be reregistered at all.
+            if status in ("errored", "disabled"):
+                cls, detail = errored_ground_truth(name, section, status, listeners)
+                if cls == "ERRORED-BUT-ALIVE":
+                    add(did, "adopt-check",
+                        f"supervisor={status} but {detail}; adopt binding, do NOT reregister blind")
+                    continue
+                if cls == "STALE-DEF":
+                    add(did, "retire-review",
+                        f"{detail}; retirement candidate, do NOT reregister")
+                    continue
             add(did, "reregister", "config drift toml-vs-snapshot: " + ", ".join(drift))
             continue
 
@@ -370,7 +383,7 @@ def errored_ground_truth(name, section, status, listeners):
     m = re.match(r"(?:exec\s+)?(/\S+)", run)
     target = m.group(1) if m else None
     target_ok = os.path.exists(target) if target else None
-    if status == "errored":
+    if status in ("errored", "disabled"):
         if port_live:
             return "ERRORED-BUT-ALIVE", f"port(s) {ports} listening"
         if target_ok is False:

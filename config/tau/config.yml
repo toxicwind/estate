@@ -1,13 +1,13 @@
 advisor:
   enabled: false
   immuneTurns: 3
-  syncBacklog: 'off'
+  syncBacklog: "off"
 appearance:
   compact: true
   theme: dark-midnight
 ask:
   enabled: true
-  notify: 'on'
+  notify: "on"
   timeout: 15
 astEdit:
   enabled: true
@@ -41,14 +41,14 @@ browser:
 checkpoint:
   enabled: true
 codexResets:
-  autoRedeem: 'yes'
+  autoRedeem: "yes"
   keepCredits: 0
   minBlockedMinutes: 60
   salvageHorizonHours: 12
 collab:
-  displayName: ''
+  displayName: ""
   relayUrl: wss://my.omp.sh
-  webUrl: ''
+  webUrl: ""
 colorBlindMode: false
 commands:
   enableClaudeProject: true
@@ -65,17 +65,17 @@ compaction:
   idleThresholdTokens: 200000
   idleTimeoutSeconds: 300
   methodOrder:
-  - shake
-  - soft
-  - remote
-  - handoff
+    - shake
+    - soft
+    - remote
+    - handoff
   midTurnEnabled: true
   remoteStreamingV2Enabled: true
   supersedeReads: true
   thresholdPercent: 95
   thresholdTokens: -1
 completion:
-  notify: 'on'
+  notify: "on"
 composer:
   shape: box
 computer:
@@ -86,9 +86,9 @@ computer:
 contextPromotion:
   enabled: true
 cycleOrder:
-- smol
-- default
-- slow
+  - smol
+  - default
+  - slow
 debug:
   enabled: true
 defaultThinkingLevel: auto
@@ -98,7 +98,7 @@ dev:
   autoqaPush:
     endpoint: https://qa.omp.sh/v1/grievances
 disabledExtensions:
-- airspeak
+  - airspeak
 disabledProviders: []
 display:
   cacheMissMarker: true
@@ -119,14 +119,14 @@ edit:
   enforceSeenLines: false
   fuzzyMatch: true
   fuzzyThreshold: 0.95
-  mode: sloppy
+  mode: hashline
   streamingAbort: false
 effort:
   high: 0.9
   ultrathink: 0.99
 emojiAutocomplete: true
 error:
-  notify: 'on'
+  notify: "on"
 eval:
   autoBackground:
     enabled: true
@@ -162,7 +162,7 @@ glob:
   enabled: true
 goal:
   continuationModes:
-  - interactive
+    - interactive
   enabled: true
   statusInFooter: true
 grep:
@@ -171,11 +171,11 @@ grep:
   enabled: false
 hideThinkingBlock: false
 hindsight:
-  apiToken: ''
+  apiToken: ""
   apiUrl: http://127.0.0.1:25117
   autoRecall: true
   autoRetain: true
-  bankId: ''
+  bankId: ""
   mentalModelAutoSeed: true
   mentalModelsEnabled: true
   retainMode: full-session
@@ -187,24 +187,24 @@ images:
   questionTimeoutMs: 300000
   urls:
     backends:
-    - provider-files
-    - tailscale
-    - cloudflared
-    - litterbox
+      - provider-files
+      - tailscale
+      - cloudflared
+      - litterbox
     bindHost: 127.0.0.1
     enabled: false
     sshRemotePort: 8787
     ttlHours: 72
 includeModelInPrompt: true
 includeWorkspaceTree: false
-inlineToolDescriptors: 'off'
+inlineToolDescriptors: "off"
 interruptMode: wait
 irc:
   timeoutMs: 120000
 isolation:
   backend: auto
 julia:
-  interpreter: ''
+  interpreter: ""
 launch:
   enabled: true
 live:
@@ -252,14 +252,13 @@ model:
   toolCallLoopGuard:
     enabled: true
     exemptTools:
-    - hub
+      - hub
     threshold: 5
 modelRoleStorage: global
 modelRoles:
   advisor: freeinference/qwen3.6-35b:low
   bodybuilder: custom/bodybuilder
   commit: freeinference/qwen3.6-35b
-  default: flock/models/gemini-flash-tool-retrieval:off
   dots: custom/dots
   fallback: freeinference/qwen3.6-35b
   image: google-antigravity/gemini-3.1-flash-image:auto
@@ -273,6 +272,7 @@ modelRoles:
   verification: freeinference/qwen3.6-35b
   vision: freeinference/minimax-m3:xhigh
   web: web/exa
+  default: freeinference/qwen3.6-35b:off
 omitThinking: false
 paste:
   largeMenuThreshold: 100
@@ -282,33 +282,33 @@ plan:
   defaultOnStartup: false
   enabled: true
 plugins:
-- merged: estate-swap
-  name: herd
-  privileged: true
-  source: ./projects/range/ranch/stockyard/herd
-- name: hodos
-  privileged: true
-  source: ./projects/range/ranch/stockyard/hodos
-- name: gatehouse
-  privileged: true
-  role: MCP federation gateway
-  source: ./projects/range/ranch/barn/gatehouse
-- merged:
-  - router-legacy
-  - stockyard-hodos-router
-  - estate-router
-  name: router
-  privileged: true
-  source: ./projects/range/ranch/stockyard/router-legacy
-- name: barn-browser
-  privileged: false
-  source: ./projects/range/ranch/barn/browserless
-- name: barn-gemini
-  privileged: false
-  source: ./projects/range/ranch/barn/gemini-mcp
-- name: secretsmith
-  privileged: true
-  source: ./projects/range/ranch/barn/secretsmith
+  - merged: estate-swap
+    name: herd
+    privileged: true
+    source: ./projects/range/ranch/stockyard/herd
+  - name: hodos
+    privileged: true
+    source: ./projects/range/ranch/stockyard/hodos
+  - name: thresher
+    privileged: true
+    role: MCP federation gateway
+    source: ./ranch/barn/thresher
+  - merged:
+      - router-legacy
+      - stockyard-hodos-router
+      - estate-router
+    name: router
+    privileged: true
+    source: ./projects/range/ranch/stockyard/router-legacy
+  - name: barn-browser
+    privileged: false
+    source: ./projects/range/ranch/barn/browserless
+  - name: barn-gemini
+    privileged: false
+    source: ./projects/range/ranch/barn/gemini-mcp
+  - name: secretsmith
+    privileged: true
+    source: ./projects/range/ranch/barn/secretsmith
 power:
   sleepPrevention: idle
 presencePenalty: -1
@@ -331,7 +331,7 @@ providers:
   ollama-cloud:
     maxConcurrency: 3
   openai-codex:
-    codeMode: 'on'
+    codeMode: "on"
     codeModeDirectTools: []
   openai-compatible:
     apiKey: eyJhbGciOiAibm9uZSIsICJ0eXAiOiAiSldUIn0.eyJzdWIiOiAiZmxvY2stY2xpZW50IiwgIm5hbWUiOiAiY29ycmFsLWp3dGZtdCIsICJpYXQiOiAxNzkxOTAwMDAwfQ.d0391d5d684102b1ef80140f9920381b08aa43b417976ed1528618c7b76b60df
@@ -343,11 +343,11 @@ providers:
   tinyModelDevice: auto
   tinyModelDtype: auto
   unboundedRetryAfter:
-  - opencode-go
-  - opencode-zen
+    - opencode-go
+    - opencode-zen
   webSearchTimeoutSeconds: 60
 python:
-  interpreter: ''
+  interpreter: ""
   kernelMode: session
 read:
   defaultLimit: 5000
@@ -369,16 +369,16 @@ repetitionPenalty: -1
 retry:
   fallbackChains:
     fallback:
-    - freeinference/qwen3.6-35b
-    - qwen/qwen3.6-plus
-    - hodos/qwen3.6-35b
+      - freeinference/qwen3.6-35b
+      - qwen/qwen3.6-plus
+      - hodos/qwen3.6-35b
     web:
-    - web/tavily
-    - web/firecrawl
-    - web/brave
-    - web/parallel
-    - web/synthetic
-    - google-antigravity/gemini-3.8-flash
+      - web/tavily
+      - web/firecrawl
+      - web/brave
+      - web/parallel
+      - web/synthetic
+      - google-antigravity/gemini-3.8-flash
   fallbackRevertPolicy: cooldown-expiry
   maxDelayMs: 300000
   maxRetries: 3
@@ -387,7 +387,7 @@ retry:
   usageReservePct: 10
   usageReservePolicy: confirm
 ruby:
-  interpreter: ''
+  interpreter: ""
 secrets:
   enabled: false
 security:
@@ -399,7 +399,7 @@ share:
   store: blob
 shell:
   env:
-    PI_DISABLE_UUTILS_BUILTINS: '1'
+    PI_DISABLE_UUTILS_BUILTINS: "1"
 shellMinimizer:
   enabled: true
   sourceOutlineLevel: default
@@ -407,8 +407,8 @@ showHardwareCursor: true
 skillful: true
 skills:
   customDirectories:
-  - /home/toxic/estate/grasp-hub/skills
-  - /home/toxic/estate/projects/range/ranch/gear
+    - /home/toxic/estate/grasp-hub/skills
+    - /home/toxic/estate/projects/range/ranch/gear
   enableSkillCommands: true
 snapcompact:
   shape: auto
@@ -448,14 +448,14 @@ subagents:
   defaultModel: freeinference/qwen3.6-35b
   subagent: inherit
   whitelist:
-  - task
-  - plan
-  - review
-  - auditor
-  - critic
-  - explorer
-  - analyst
-  - debugger
+    - task
+    - plan
+    - review
+    - auditor
+    - critic
+    - explorer
+    - analyst
+    - debugger
 symbolPreset: nerd
 task:
   agentIdleTtlMs: 420000
