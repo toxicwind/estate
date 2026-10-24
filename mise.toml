@@ -48,16 +48,19 @@ outputs = ["packages/cli/dist/@kappacode/cli-linux-x64/bin/kappa"]
 
 # DelendAI — first-class maximal Bun scaffold / MCP monorepo (fork 2026-10-20).
 # Full gates + CLI; usable as the estate's scaffold/agent-runtime reference.
+# Canonical source is CORRAL (pens/barn/corral/delendai), the single home for
+# all DelendAI code. The former ranch/borrowed/delendai placeholder is empty and
+# deprecated — never point delend tasks at it.
 [tasks.delendai-install]
-run = "bun install --cwd /home/toxic/estate/ranch/borrowed/delendai"
+run = "bun install --cwd /home/toxic/pens/barn/corral/delendai"
 description = "Install DelendAI monorepo deps (bun)"
 
 [tasks.delendai-validate]
-run = "bun run --cwd /home/toxic/estate/ranch/borrowed/delendai validate -- --ci"
+run = "bun run --cwd /home/toxic/pens/barn/corral/delendai validate -- --ci"
 description = "Run DelendAI full gate (typecheck + lint + tests + coverage)"
 
 [tasks.delendai-cli]
-run = "bun run --cwd /home/toxic/estate/ranch/borrowed/delendai cli -- $@"
+run = "bun run --cwd /home/toxic/pens/barn/corral/delendai cli -- $@"
 description = "Run the DelendAI CLI (delendai <cmd>)"
 
 [tasks.delendai-scaffold]
