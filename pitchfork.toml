@@ -375,17 +375,6 @@ retries = 3
 FILES_PORT = "34567"
 FILES_ROOT = "/home/toxic/files"
 
-[daemons.fleet-feed]
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/ranch/squawk/fleet-feed.ts"
-auto = ["start"]
-retry = true
-ready_cmd = "ss -ltn 'sport = :25158' | grep -q LISTEN"
-boot_start = true
-dir = "/home/toxic/pens/ranch/squawk"
-mise = true
-[daemons.fleet-feed.env]
-FLEET_FEED_PORT = "25158"
-
 [daemons.fleet-ui]
 run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/ranch/squawk/squawk-ui.ts"
 auto = ["start"]
@@ -537,6 +526,16 @@ interval = "30s"
 timeout = "5s"
 retries = 3
 
+# retain-slot fix 2026-10-24: give retain a reserved floor so the Hindsight
+# worker can drain its 885-item claimable backlog. Hindsight's default reserves
+# 2 slots for consolidation with no retain floor, so with max_slots=2 retain
+# gets 0 shared slots and never claims. Now max=4, retain floor=2, consolidation
+# floor=1, leaving 1 shared slot.
+[daemons.hindsight.env]
+HINDSIGHT_API_WORKER_MAX_SLOTS = "4"
+HINDSIGHT_API_WORKER_RETAIN_RESERVED_SLOTS = "2"
+HINDSIGHT_API_WORKER_CONSOLIDATION_RESERVED_SLOTS = "1"
+
 # Bin contract canary (AGENTS.md Layout, 2026-10-23): verifies every product
 # symlink in ~/.local/bin + estate/bin resolves to its pens/sovereign target.
 # On FAIL the daemon goes unhealthy — a product move that breaks a link shows
@@ -547,6 +546,13 @@ auto = ["start"]
 retry = true
 interval = "5m"
 mise = false
+
+[daemons.maximal-audit]
+run = "exec /home/toxic/estate/bin/maximal-audit.sh"
+auto = ["start"]
+retry = true
+interval = "30m"
+mise = true
 
 [daemons.hodos]
 run = "exec /home/toxic/pens/olympus/products/hodos/proxy/serve.sh"
