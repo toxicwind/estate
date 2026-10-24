@@ -1,9 +1,10 @@
 [daemons.oracle-core]
-port = 25151
-ready_http = "http://127.0.0.1:25151/health"
-health_http = { url = "http://127.0.0.1:25151/health", interval = "30s", timeout = "5s", retries = 3 }
+mise = true
+port = 25235
+ready_http = "http://127.0.0.1:25235/health"
+health_http = { url = "http://127.0.0.1:25235/health", interval = "30s", timeout = "5s", retries = 3 }
+env = { ORACLE_CORE_LISTEN = "127.0.0.1:25235" }
 run = "exec /home/toxic/estate/ranch/squawk/oracle/bin/run-oracle-core.sh"
 dir = "/home/toxic/estate/ranch/squawk/oracle"
-mise = false
 retry = true
 auto = ["start"]

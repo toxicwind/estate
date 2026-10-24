@@ -1,8 +1,8 @@
 [daemons.estate-chat]
+mise = true
 port = 25120
 run = "exec bun run chat.ts"
 dir = "/home/toxic/estate/ranch/estate-chat"
-mise = true
 retry = true
 ready_http = "http://127.0.0.1:25120/health"
 env = { ESTATE_CHAT_PORT = "25120", ESTATE_CHAT_TOKEN_FILE = "/home/toxic/.config/estate-chat-token" }

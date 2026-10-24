@@ -5,6 +5,7 @@
 # 2026-10-15: run via serve wrapper — client keys come from the vault
 # (CUTTINGGATE_CLIENT_KEY); the bare def had zero client keys configured, so
 # every Bearer token was rejected with auth_missing.
+mise = true
 run = "exec /home/toxic/estate/ranch/forge/router/cuttinggate/cuttinggate-serve.sh"
 dir = "/home/toxic/estate/ranch/forge/router/cuttinggate"
 retry = true

@@ -8,6 +8,10 @@
 # steal the port — if the bind fails, pitchfork sees the failure and retries.
 set -euo pipefail
 SOV="/home/toxic/estate"
+# Pens overlay: the Go herd binary lives in — and is built from —
+# pens/ranch/forge/router/herd (the canonical, newest copy); estate/ranch/... is
+# a stale pre-reorg path. Search pens first, then estate, then the archived copy.
+PENS="/home/toxic/pens"
 source "$SOV/stack/lib-ports.sh"
 require_env HERD_PORT
 # Canonical secrets for provider keyEnvs (HODOS_API_KEY, OPENROUTER_API_KEY, ...).
@@ -30,10 +34,12 @@ export HERD_DASHBOARD_URL="${HERD_DASHBOARD_URL:-http://127.0.0.1:25218/}"
 # The binary lives beside its source in ranch/mesh/router/herd, not under var/ (var/ is
 # runtime state, and a launcher that points there means the path rots the next
 # time var/ is swept). The var/herd-backups copy is the last-known-good
-# restore point if the in-tree build is ever lost.
+# restore point if the in-tree build is ever lost. PENS paths are checked first
+# because that is where the current build actually lives (estate/ranch was a
+# pre-2026-10-08 reorg path; herd's canonical source moved to pens/ranch/forge).
 for BIN in \
+  "$PENS/ranch/forge/router/herd/herd" \
   "$SOV/ranch/mesh/router/herd/herd" \
-  "$SOV/ranch/herd/herd" \
   "$SOV/ranch/herd/herd" \
   "$SOV/var/herd-backups/herd/herd"
 do

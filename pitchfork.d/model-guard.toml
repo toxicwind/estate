@@ -2,12 +2,12 @@
 # CUTOVER 2026-10-19 (Forge leg 3): bun/TS port. Rollback = uncomment the python3
 # run line below, comment the bun line, health/ready back to /healthz.
 # run = "exec python3 /home/toxic/estate/bin/herd-model-guard.py"
+mise = true
 run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/services/model-guard/src/index.ts"
 health_http = { url = "http://127.0.0.1:25101/health", interval = "30s", timeout = "5s", retries = 3 }
 port = 25101
 dir = "/home/toxic/estate/services/model-guard"
 env = { MODEL_GUARD_PORT = "25101", MODEL_GUARD_UPSTREAM = "http://127.0.0.1:25193" }
-mise = false
 retry = true
 boot_start = true
 ready_http = "http://127.0.0.1:25101/health"

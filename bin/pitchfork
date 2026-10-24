@@ -14,16 +14,39 @@
 #    herd+gatehouse (plus awrawr-mcp, boundless, cuttinggate, model-guard,
 #    browser-keeper). Fail closed: refuse with the correct name.
 set -uo pipefail
-# Resolve the real pitchfork binary dynamically. /home/toxic/.local was
-# archived into archive/home-dirs-2026/.local during the 2026-10-08 home
-# reorg; prefer the live path, fall back to the archive copy (same SHA).
+# Resolve the real pitchfork binary. pitchfork is a mise-managed tool in this
+# estate (declared in ~/.config/mise/conf.d/00-toolchain.toml), so the source of
+# truth is MISE, not a hardcoded version path. Ask `mise which pitchfork` first;
+# it honors the currently-declared version column, survives version bumps, and
+# returns the mise-managed binary (either the real one or a .mise-bins shim).
+# Keep the live install dir + archive copies only as last-resort fallbacks for
+# the case where mise itself is unavailable.
 _pick_pitchfork() {
-  local cand
+  # 1. mise-native resolution (respects the declared pitchfork version).
+  local mise have_mise
+  mise="${MISE_BIN:-}"
+  [ -n "$mise" ] || mise="${HOME}/.local/bin/mise"
+  if [ -x "$mise" ]; then
+    have_mise="$(command "$mise" which pitchfork 2>/dev/null | head -n1)"
+    if [ -n "$have_mise" ] && [ -x "$have_mise" ]; then
+      printf '%s\n' "$have_mise"
+      return 0
+    fi
+  fi
+  # 2. Direct mise install dir for the declared column (and 'global' marshaller
+  #    that mise maintains), resolved without invoking mise.
+  local cand install_dir
+  install_dir="${HOME}/.local/share/mise/installs/pitchfork"
   for cand in \
-    "/home/toxic/.local/share/mise/installs/pitchfork/2.25.0/pitchfork" \
-    "/home/toxic/.local/bin/pitchfork-bin" \
-    "/home/toxic/archive/home-dirs-2026/.local/share/mise/installs/pitchfork/2.25.0/pitchfork" \
-    "/home/toxic/archive/home-dirs-2026/.local/bin/pitchfork-bin"; do
+    "$install_dir/global/pitchfork" \
+    "$install_dir"/2.*/pitchfork \
+    "$HOME/.local/bin/pitchfork-bin"; do
+    if [ -x "$cand" ]; then printf '%s\n' "$cand"; return 0; fi
+  done
+  # 3. Archive fallback after the 2026-10-08 home reorg (same SHA as live).
+  for cand in \
+    "$HOME/archive/home-dirs-2026/.local/share/mise/installs/pitchfork"/2.*/pitchfork \
+    "$HOME/archive/home-dirs-2026/.local/bin/pitchfork-bin"; do
     if [ -x "$cand" ]; then printf '%s\n' "$cand"; return 0; fi
   done
   return 1

@@ -1,7 +1,7 @@
 [daemons.sorry-watchdog]
+mise = true
 run = "exec python3 /home/toxic/refusal-hunt/sorry-watchdog.py"
 dir = "/home/toxic/refusal-hunt"
-mise = false
 retry = true
 boot_start = true
 auto = ["start"]

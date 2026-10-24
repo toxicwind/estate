@@ -3,9 +3,9 @@
 # Observability: logs top-CPU + flags hot/old procs every 30s. Purely a watcher
 # (no auto-kill); an owner/agent can run with --kill after confirming the proc.
 [daemons.proc-watch-audit]
+mise = true
 run = "exec /home/toxic/estate/ranch/bun-scaffold/bin/watch-procs.sh --watch=30"
 dir = "."
-mise = false
 retry = true
 boot_start = true
 auto = ["start"]

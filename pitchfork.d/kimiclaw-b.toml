@@ -1,7 +1,7 @@
 [daemons.kimiclaw-b]
+mise = true
 run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/tools/kimi-claw/bridge.ts --daemon --instance b"
 dir = "/home/toxic/estate/tools/kimi-claw"
-mise = false
 retry = true
 auto = ["start"]
 # --- herd-deployer 2026-09-20: key-pool rotation sidecar for herd cloud peers.

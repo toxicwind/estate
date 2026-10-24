@@ -160,18 +160,18 @@ HOST = "127.0.0.1"
 BOUNDLESS_PORT = "25197"
 
 [daemons.browser-keeper]
-run = "exec /home/toxic/.bun/bin/bun run /home/toxic/estate/ranch/keeper/bin/keeper.ts"
+run = "cd /home/toxic/estate/ranch/keeper && exec /home/toxic/.bun/bin/bun run keeper"
 auto = ["start"]
 retry = true
-ready_http = "http://127.0.0.1:25154/"
-port = 25154
-expected_port = [25154]
+ready_http = "http://127.0.0.1:25233/"
+port = 25233
+expected_port = [25233]
 boot_start = true
 depends = ["agent-display"]
-dir = "."
+dir = "/home/toxic/estate/ranch/keeper"
 mise = true
 [daemons.browser-keeper.health_http]
-url = "http://127.0.0.1:25154/"
+url = "http://127.0.0.1:25233/"
 interval = "30s"
 timeout = "5s"
 retries = 3
@@ -179,8 +179,8 @@ retries = 3
 [daemons.browser-keeper.env]
 DISPLAY = ":99"
 XDG_RUNTIME_DIR = "/run/user/1000"
-BROWSER_KEEPER_CDP_PORT = "25154"
-BROWSER_KEEPER_CDP = "http://127.0.0.1:25154"
+BROWSER_KEEPER_CDP_PORT = "25233"
+BROWSER_KEEPER_CDP = "http://127.0.0.1:25233"
 KEEPER_CHROMIUM_EXECUTABLE = "/home/toxic/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome"
 
 [daemons.browserless]
@@ -415,25 +415,27 @@ WOODPECKER_AGENT_SECRET = "c6eee4c1bce957ae19638a330efe5fc3c561f18ea58e3468fe224
 [daemons.forge]
 run = "exec /home/toxic/pens/ranch/forge/flicker/bin/flicker-server"
 retry = true
-ready_http = "http://127.0.0.1:25148/api/health"
-port = 25148
-expected_port = [25148]
+ready_http = "http://127.0.0.1:25234/api/health"
+port = 25234
+expected_port = [25234]
 boot_start = true
 dir = "/home/toxic/estate/ranch/forge/flicker"
 mise = true
 [daemons.forge.health_http]
-url = "http://127.0.0.1:25148/api/health"
+url = "http://127.0.0.1:25234/api/health"
 interval = "30s"
 timeout = "5s"
 retries = 3
 
 [daemons.forge.env]
 FLICKER_ROOT = "/home/toxic/estate/ranch/forge/flicker"
-WOODPECKER_HOST = "http://127.0.0.1:25148"
+WOODPECKER_HOST = "http://127.0.0.1:25234"
 WOODPECKER_GRPC_ADDR = ":25240"
-WOODPECKER_SERVER_ADDR = ":25148"
+WOODPECKER_SERVER_ADDR = ":25234"
 WOODPECKER_GRPC_SECRET = "66a9f7c1d6ffbac15c447f6d3d97827ab3d152286b23c0cbeb19a9372108419b"
 WOODPECKER_AGENT_SECRET = "c6eee4c1bce957ae19638a330efe5fc3c561f18ea58e3468fe224a60416faf4f"
+WOODPECKER_DATA = "/home/toxic/estate/ranch/forge/flicker/data"
+WOODPECKER_ADMIN = "toxic"
 
 [daemons.thresher]
 run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/ranch/range/bin/thresher-serve.ts"
@@ -600,7 +602,7 @@ timeout = "5s"
 retries = 3
 
 [daemons.keypool]
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/services/keypool/src/index.ts"
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/var/workspaces/layout/ranch/mesh/keypool/src/index.ts"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25109/health"
@@ -702,7 +704,7 @@ boot_start = true
 dir = "/home/toxic/estate"
 mise = true
 [daemons.market-loop]
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/agents/weaver/bin/market-loop.ts"
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/var/workspaces/layout/estate/agents/weaver/bin/market-loop.ts"
 auto = ["start"]
 retry = true
 ready_cmd = "pgrep -f '[m]arket-loop.ts' >/dev/null"
@@ -909,13 +911,15 @@ ORACLE_CHANNEL = "/home/toxic/.fleet-bus/squawk-root/bid-market"
 run = "exec /home/toxic/estate/ranch/squawk/oracle/bin/run-oracle-core.sh"
 auto = ["start"]
 retry = true
-ready_http = "http://127.0.0.1:25151/health"
-port = 25151
-expected_port = [25151]
+ready_http = "http://127.0.0.1:25235/health"
+port = 25235
+expected_port = [25235]
 dir = "/home/toxic/estate/ranch/squawk/oracle"
 mise = true
+[daemons.oracle-core.env]
+ORACLE_CORE_LISTEN = "127.0.0.1:25235"
 [daemons.oracle-core.health_http]
-url = "http://127.0.0.1:25151/health"
+url = "http://127.0.0.1:25235/health"
 interval = "30s"
 timeout = "5s"
 retries = 3
@@ -958,7 +962,7 @@ PAPER_POLLER_PORT = "25149"
 PAPER_POLLER_INTERVAL = "30"
 
 [daemons.phone-sentinel]
-run = "bun run /home/toxic/estate/ranch/phone-sentinel/src/index.ts"
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/ranch/phone-sentinel/src/index.ts"
 retry = 0
 ready_http = "http://127.0.0.1:25178/health"
 port = 25178

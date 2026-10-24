@@ -5,9 +5,9 @@
 # Squawks on drift/restore. Added 2026-09-21.
 
 [daemons.estate-reconcile-watch]
+mise = true
 run = "exec /home/toxic/estate/bin/estate-reconcile watch"
 dir = "/home/toxic/estate"
-mise = false
 retry = true
 auto = ["start"]
 # Pitchfork daemon fragment - merge into [daemons.browser-keeper] in

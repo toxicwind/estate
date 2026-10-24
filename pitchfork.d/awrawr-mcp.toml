@@ -1,7 +1,7 @@
 [daemons.awrawr-mcp]
+mise = true
 run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/awrawr_mcp.py"
 dir = "/home/toxic"
-mise = false
 retry = true
 boot_start = true
 port = 25198

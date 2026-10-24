@@ -168,7 +168,7 @@ _2s_guard() {
       : ;;
     *"| true"*|*"|true"*)
       _2s_urgent "'| true' swallows the exit code — handle the failure explicitly"; return 0 ;;
-    *"2>&1"*|*"2>&1 "*) 
+    *"2>&1"*|*"2>&1 "*)
       # auto-rewrite: `2>&1` merge -> keep streams separate per doctrine, but DO NOT
       # block. The agent legitimately inspects combined output; just let it run.
       return 0 ;;
@@ -216,4 +216,3 @@ if [ -x "$_kairos_runfast" ]; then
 fi
 export BASH_4S_SHIM=1
 export RF_DEADLINE="${RF_DEADLINE:-4.0}"
-

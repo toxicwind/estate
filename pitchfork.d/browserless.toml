@@ -1,4 +1,5 @@
 [daemons.browserless]
+mise = true
 dir = "."
 run = "exec /home/toxic/estate/ranch/stable/server/run.sh"
 env = { BROWSERLESS_PORT = "25130", HOST = "127.0.0.1" }

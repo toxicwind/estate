@@ -9,10 +9,10 @@
 # That remote relay was the red herring; this local daemon is the surface the
 # control plane actually probes and the ACP clients actually connect to.
 [daemons.tau-chute]
+mise = true
 port = 25111
 run = "exec /usr/bin/node chute.mjs --port 25111 -- /home/toxic/.local/bin/tau acp"
 dir = "/home/toxic/pens/barn/chute"
-mise = true
 retry = true
 ready_port = 25111
 env = { CHUTE_PORT = "25111" }

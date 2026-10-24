@@ -9,7 +9,7 @@
  *            + /api. Owns ~/.openfang (config, SQLite DB, triggers).
  *   :25103 (OPENFANG_PORT)        — THIS service: mesh-front reverse proxy in
  *            front of the kernel (adds /mesh/* GHAS features on the public port).
- *   :25203 — RETIRED 2026-09-21. It ran a DUPLICATE kernel sharing the same
+ *   :25203 — RETIRED 2026-09-21. It  a DUPLICATE kernel sharing the same
  *            SQLite DB (double-writer hazard), split-brain heartbeat warnings,
  *            and flapped the CLI's API target between instances.
  *   :4200  — RETIRED (legacy pre-migration port; config moved to

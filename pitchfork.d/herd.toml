@@ -1,10 +1,10 @@
 [daemons.herd]
 health_http = { url = "http://127.0.0.1:25100/health", interval = "30s", timeout = "5s", retries = 3 }
+mise = true
 port = 25100
 run = "exec /home/toxic/estate/stack/services/herd.sh"
 dir = "."
-mise = false
 retry = true
 ready_http = "http://127.0.0.1:25100/health"
-depends = ["gatehouse"]
+depends = ["thresher"]
 auto = ["start"]

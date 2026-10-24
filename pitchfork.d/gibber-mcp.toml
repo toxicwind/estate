@@ -2,8 +2,8 @@
 # vendored) was serving :25106 for 1d+ with no pitchfork registration. Registered
 # here; hf-downloader moved to :25226. Port per running process env PORT=25106.
 [daemons.gibber-mcp]
+mise = true
 dir = "/home/toxic/estate/ranch/vendored/gibber-mcp"
 run = "exec node build/index.js"
 port = 25106
 ready_port = 25106
-mise = true

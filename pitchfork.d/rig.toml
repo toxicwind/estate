@@ -3,10 +3,10 @@
 
 [daemons.rig]
 # Rig Agent OS kernel daemon (API server + kernel)
+mise = true
 port = 25196
 run = "exec /home/toxic/.local/bin/rig start"
 dir = "/home/toxic"
-mise = false
 retry = true
 ready_cmd = "ss -ltn 'sport = :25196' | grep -q LISTEN"
 health_port = { port = 25196, interval = "30s", timeout = "5s", retries = 3 }

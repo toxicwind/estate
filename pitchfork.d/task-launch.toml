@@ -1,7 +1,7 @@
 [daemons.task-launch]
+mise = true
 run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/ranch/task-launch/src/daemon.ts"
 dir = "/home/toxic/estate/ranch/task-launch"
-mise = false
 retry = true
 auto = ["start"]
 ready_cmd = "pgrep -f '[t]ask-launch/src/daemon.ts' >/dev/null"

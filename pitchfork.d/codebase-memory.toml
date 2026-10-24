@@ -1,7 +1,7 @@
 [daemons.codebase-memory]
+mise = true
 run = "exec /home/toxic/estate/tools/codebase-memory/run.sh"
 dir = "/home/toxic"
-mise = false
 retry = true
 boot_start = true
 port = 25195

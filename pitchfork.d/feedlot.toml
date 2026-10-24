@@ -1,8 +1,8 @@
 [daemons.feedlot]
+mise = true
 port = 25121
 run = "exec /home/toxic/estate/stack/services/feedlot.sh"
 dir = "."
-mise = true
 retry = true
 ready_http = "http://127.0.0.1:25121/health"
 health_http = { url = "http://127.0.0.1:25121/health", interval = "30s", timeout = "5s", retries = 3 }

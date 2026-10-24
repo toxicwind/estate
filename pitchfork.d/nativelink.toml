@@ -1,5 +1,6 @@
 [daemons.nativelink]
-run = "exec bun /home/toxic/estate/ranch/forge/ops/nativelink/run.ts"
+mise = true
+run = "exec /home/toxic/pens/ranch/forge/ops/nativelink/run.sh"
 dir = "/home/toxic/estate"
 port = 25155
 auto = ["start"]
