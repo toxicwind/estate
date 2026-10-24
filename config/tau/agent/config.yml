@@ -262,7 +262,7 @@ modelRoles:
   dots: custom/dots
   fallback: freeinference/qwen3.6-35b
   image: google-antigravity/gemini-3.1-flash-image:auto
-  judge: qwen/qwen3.6-plus
+  judge: freeinference/qwen3.6-35b
   memory: freeinference/qwen3.6-35b
   plan: freeinference/qwen3.6-35b
   slow: freeinference/qwen3.6-35b:xhigh
@@ -272,7 +272,7 @@ modelRoles:
   verification: freeinference/qwen3.6-35b
   vision: freeinference/minimax-m3:xhigh
   web: web/exa
-  default: freeinference/qwen3.6-35b:off
+  default: freeinference/minimax-m3:off
 omitThinking: false
 paste:
   largeMenuThreshold: 100
@@ -370,8 +370,8 @@ retry:
   fallbackChains:
     fallback:
       - freeinference/qwen3.6-35b
-      - qwen/qwen3.6-plus
-      - hodos/qwen3.6-35b
+      - freeinference/minimax-m3
+      - freeinference/deepseek-v4-flash
     web:
       - web/tavily
       - web/firecrawl
