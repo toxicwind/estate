@@ -1,6 +1,6 @@
-# keeper-failover — drop-in that takes over :25154 if the primary browser-keeper
+# keeper-failover — drop-in that takes over :25233 if the primary browser-keeper
 # is down (fallover replaces the swap gate). Runs the keeper-dropin in FAILOVER=1
-# mode: it health-probes :25154 and only spawns chromium when the keeper has been
+# mode: it health-probes :25233 and only spawns chromium when the keeper has been
 # down past KEEPER_FAILOVER_GRACE_S (default 15s), so only one server binds at a
 # time. Additive: does NOT replace, disable, or out-compete estate/browser-keeper.
 # 2026-10-24: two-truth fix — this fragment was stale (pointed at a nonexistent
@@ -13,8 +13,8 @@ run = "exec /home/toxic/.bun/bin/bun run /home/toxic/pens/olympus/products/skopo
 dir = "/home/toxic/pens/ranch/keeper"
 retry = true
 depends = ["agent-display"]
-env = { DISPLAY = ":99", XDG_RUNTIME_DIR = "/run/user/1000", BROWSER_KEEPER_CDP_PORT = "25154", BROWSER_KEEPER_CDP = "http://127.0.0.1:25154", KEEPER_CHROMIUM_EXECUTABLE = "/home/toxic/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome", KEEPER_FAILOVER = "1", KEEPER_FAILOVER_GRACE_S = "15" }
-# on-demand takeover; the drop-in's FAILOVER loop polls :25154 and only spawns
+env = { DISPLAY = ":99", XDG_RUNTIME_DIR = "/run/user/1000", BROWSER_KEEPER_CDP_PORT = "25233", BROWSER_KEEPER_CDP = "http://127.0.0.1:25233", KEEPER_CHROMIUM_EXECUTABLE = "/home/toxic/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome", KEEPER_FAILOVER = "1", KEEPER_FAILOVER_GRACE_S = "15" }
+# on-demand takeover; the drop-in's FAILOVER loop polls :25233 and only spawns
 # chromium when the primary has been down past the grace period, so only one
 # server binds at a time. boot_start true so the probe loop is always supervised.
 boot_start = true

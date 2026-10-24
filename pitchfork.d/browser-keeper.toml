@@ -11,8 +11,10 @@ depends = ["agent-display"]
 run = "cd /home/toxic/estate/ranch/keeper && exec /home/toxic/.bun/bin/bun run keeper"
 dir = "."
 retry = true
-ready_http = "http://127.0.0.1:25157/"
-health_http = { url = "http://127.0.0.1:25157/", interval = "30s", timeout = "5s", retries = 3 }
+# 2026-10-24: reconciled to monolith (live truth) — was stale 25157/25236 mix.
+# Live keeper binds CDP :25233 (health_http), ready :25236 (ready_http).
+ready_http = "http://127.0.0.1:25236/"
+health_http = { url = "http://127.0.0.1:25233/", interval = "30s", timeout = "5s", retries = 3 }
 boot_start = true
-env = { DISPLAY = ":99", XDG_RUNTIME_DIR = "/run/user/1000", BROWSER_KEEPER_CDP_PORT = "25157", BROWSER_KEEPER_CDP = "http://127.0.0.1:25157", KEEPER_CHROMIUM_EXECUTABLE = "/home/toxic/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome" }
+env = { DISPLAY = ":99", XDG_RUNTIME_DIR = "/run/user/1000", BROWSER_KEEPER_CDP_PORT = "25233", BROWSER_KEEPER_CDP = "http://127.0.0.1:25233", KEEPER_CHROMIUM_EXECUTABLE = "/home/toxic/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome" }
 auto = ["start"]

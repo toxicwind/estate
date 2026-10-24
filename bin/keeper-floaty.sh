@@ -8,4 +8,4 @@ set -uo pipefail
 SG=/home/toxic/pens/ranch/signalhead/src/cli.js
 STATE=/home/toxic/.local/state/keeper-floaty
 mkdir -p "$STATE"
-exec /usr/bin/node "$SG" start --foreground --port 25236
+exec /usr/bin/node "$SG" start --foreground --port 25238
