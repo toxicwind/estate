@@ -27,11 +27,6 @@ manifest = "ranch/squawk/oracle/pitchfork.d"
 kind = "dir"
 
 [[project]]
-key = "ranch/stream-broker"
-manifest = "ranch/stream-broker/pitchfork.d"
-kind = "dir"
-
-[[project]]
 key = "ranch/windmill"
 manifest = "ranch/windmill/pitchfork.d"
 kind = "dir"
@@ -47,31 +42,6 @@ manifest = "ranch/range/pitchfork.d"
 kind = "dir"
 
 [[project]]
-key = "tools/bench-radar"
-manifest = "tools/bench-radar/pitchfork.d"
-kind = "dir"
-
-[[project]]
-key = "tools/kimi-claw"
-manifest = "tools/kimi-claw/pitchfork.d"
-kind = "dir"
-
-[[project]]
-key = "tools/ml-serve"
-manifest = "tools/ml-serve/pitchfork.d"
-kind = "dir"
-
-[[project]]
-key = "tools/null-g-proxy"
-manifest = "tools/null-g-proxy/pitchfork.d"
-kind = "dir"
-
-[[project]]
-key = "tools/estate-chat"
-manifest = "tools/estate-chat/pitchfork.d"
-kind = "dir"
-
-[[project]]
 key = "ranch/yote"
 manifest = "ranch/yote/pitchfork.d"
 kind = "dir"
@@ -82,73 +52,8 @@ manifest = "standalone/awrawr/pitchfork.d"
 kind = "dir"
 
 [[project]]
-key = "standalone/bedrock"
-manifest = "standalone/bedrock/pitchfork.d"
-kind = "dir"
-
-[[project]]
-key = "standalone/boundless"
-manifest = "standalone/boundless/pitchfork.d"
-kind = "dir"
-
-[[project]]
-key = "standalone/codebase-memory"
-manifest = "standalone/codebase-memory/pitchfork.d"
-kind = "dir"
-
-[[project]]
-key = "standalone/hashline"
-manifest = "standalone/hashline/pitchfork.d"
-kind = "dir"
-
-[[project]]
-key = "standalone/kimi-code-npm"
-manifest = "standalone/kimi-code-npm/pitchfork.d"
-kind = "dir"
-
-[[project]]
 key = "standalone/kimi-token-audit"
 manifest = "ranch/standalone/kimi-token-audit/pitchfork.d"
-kind = "dir"
-
-[[project]]
-key = "standalone/paper-poller"
-manifest = "standalone/paper-poller/pitchfork.d"
-kind = "dir"
-
-[[project]]
-key = "standalone/ralph-dashboard"
-manifest = "standalone/ralph-dashboard/pitchfork.d"
-kind = "dir"
-
-[[project]]
-key = "standalone/refusal-hunt"
-manifest = "standalone/refusal-hunt/pitchfork.d"
-kind = "dir"
-
-[[project]]
-key = "standalone/rig-work"
-manifest = "standalone/rig-work/pitchfork.d"
-kind = "dir"
-
-[[project]]
-key = "standalone/squawk-relay"
-manifest = "standalone/squawk-relay/pitchfork.d"
-kind = "dir"
-
-[[project]]
-key = "standalone/tau"
-manifest = "standalone/tau/pitchfork.d"
-kind = "dir"
-
-[[project]]
-key = "standalone/whatsapp-mcp"
-manifest = "standalone/whatsapp-mcp/pitchfork.d"
-kind = "dir"
-
-[[project]]
-key = "standalone/duet"
-manifest = "standalone/duet/pitchfork.d"
 kind = "dir"
 
 [[project]]
