@@ -16,22 +16,31 @@
   (mise-managed daemons, health-checked) → live. Anything stood up gets a real
   pitchfork daemon + healthck here.
 - 1. **MAXIMAL.** Fix-forward, never report-only. Commit, push, forward-only.
-   1b. **Never leave the tree dirty.** "Clean" = committed to a work-ref pushed to
-   origin, not merged to main. Squat and checkpoint prior in-flight work; say so.
-   Push a work-ref satisfies forward-only; main merges when the lane is clean.
+     1b. **Never leave the tree dirty.** "Clean" = committed to a work-ref pushed to
+     origin, not merged to main. Squat and checkpoint prior in-flight work; say so.
+     Push a work-ref satisfies forward-only; main merges when the lane is clean.
 - 2. **The box is live.** Additive-only — never remove/disable a peer/daemon/model
-    without an explicit order. Never touch `awrawr-mcp.service`. Never run the
-    retired `bun run scripts/generate.ts`.
+     without an explicit order. Never touch `awrawr-mcp.service`. Never run the
+     retired `bun run scripts/generate.ts`.
 - 3. **Secrets live in the secretsmith keyring** (SSOT since 2026-10-18; inject
-   via `secretsmith env`). `~/.secrets` is a fallback record, never the source.
-   Never COMMIT them.
+     via `secretsmith env`). `~/.secrets` is a fallback record, never the source.
+     Never COMMIT them.
 - 4. **Diverged main:** back up origin main as `backup/main-<date>` first, then
-   merge, then push. Never force-push main without that backup.
+     merge, then push. Never force-push main without that backup.
+     4a. **NEVER ALLOW `git reset --hard`, `git checkout -- .`, `git clean -f`,
+     or any destructive working-tree reset.** The bash shim
+     (`estate/bin/bash-4s-shim.sh`) ENFORCES this: `git reset --hard`, `git
+ checkout -- ./<path>`, `git clean -f*`, and `git restore` are refused with
+     exit 127 unless `ESTATE_ALLOW_GIT_DESTRUCTIVE=1` (a human-approved,
+     backup-first recovery — see root AGENTS.md). A divergent repo is recovered by
+     backing up HEAD/branches (reflog, `backup/<ref>-<date>`, `git stash`) then
+     merging/cherry-picking forward — never by discarding the working tree or
+     index.
 - 5. **Docs lie; code is absolute.** A `.md` that disagrees with code is wrong.
-   Fix the doc, don't work around it.
+     Fix the doc, don't work around it.
 - 6. **Restart supervised services after any binary swap/redeploy (pitchfork)** —
-   "deployed" means a running process uses it. Skip only on an explicit
-   "don't disrupt this flow" order.
+     "deployed" means a running process uses it. Skip only on an explicit
+     "don't disrupt this flow" order.
 
 ## The vibe meta-todo (always the last item in every `todowrite`)
 
@@ -123,7 +132,7 @@ bun@canary version` and prefer canary when it wins.
 
 ## Provenance-first capability contracts
 
-*Codified from 2026-10-23 anomalies (endpoint probes, fleet recovery, funnel forensics). These replace assumptions with verified contracts.*
+_Codified from 2026-10-23 anomalies (endpoint probes, fleet recovery, funnel forensics). These replace assumptions with verified contracts._
 
 - **DECLARED ≠ OBSERVED.** Never trust a catalog (`supported_sampling_parameters`), model card, or SDK type definition as behavioral fact. Validate with a live probe (HTTP status + body + finish_reason + token accounting) before relying on it. Examples: minimax-m3 advertises `thinking` → HTTP 400; qwen3.6-35b shows `"reasoning": false` in catalog while `reasoning_effort` silently does nothing.
 - **REASONING BUDGET CONTRACT.** Reasoning tokens and content tokens share ONE ceiling. If `finish_reason=length` AND `reasoning_tokens ≥ ~0.95 × max_tokens` AND content is empty → classify as `reasoning_budget_starvation` (NOT an infinite loop, NOT provider failure). Rule: with reasoning on, `max_tokens ≥ 2500` (or record the per-model content-safe budget before choosing). Never diagnose "endless" from streaming deltas alone.
@@ -137,21 +146,21 @@ bun@canary version` and prefer canary when it wins.
 
 ## Anomaly program (D-2026-10-23)
 
-*Verified runtime anomalies from 2026-10-23. Each gets a capability-contract test before its fix is trusted.*
+_Verified runtime anomalies from 2026-10-23. Each gets a capability-contract test before its fix is trusted._
 
-| # | Anomaly | Essence | Dossier |
-|---|---------|---------|---------|
-| 1 | **Reasoning-budget trap** | `max_tokens=500` + `reasoning_effort=high` → finish=length, zero content, `reasoning_tokens=max_tokens` — not an infinite loop | `/home/toxic/tmp/endpoint-probe-results.md` |
-| 2 | **Catalog lies** | minimax `thinking` → HTTP 400; qwen3.6-35b has `reasoning: false` + empty `thinking` → `effort` silently ignored | `/home/toxic/tmp/effort-param-audit.md` |
-| 3 | **Model-identity chain** | CLI tag ≠ served model; resolved model is the chain through catalog → models.yml → overrides → modelRoles → frontmatter | `/home/toxic/tmp/effort-param-audit.md` |
-| 4 | **Single-lane observer effect** | 429 from a probe misread as "key lacks access" while workers succeeded on the same key+model simultaneously | `/home/toxic/tmp/endpoint-probe-results.md` |
-| 5 | **Front door vs exec lane** | Health/OAuth returns 401 (alive) while chat completions return 502/empty (dead backend) — a route-contract divergence | `/home/toxic/tmp/gem-forensic/analysis/funnel-443-diagnosis.txt` + `FUNNEL-FIXED.md` |
-| 6 | **Pitchfork two-truth problem** | Monolith is live truth; 103 pitchfork.d fragments are dead litter; `generate.ts` retired for destroying hand-tuned config | `/home/toxic/tmp/pitchfork-convention-report.md` |
-| 7 | **Fleet substrate failure** | One malformed toolchain string (`bun:path@true`) mass-killed 65 pitchfork daemons; disk at 96% exacerbated | `/home/toxic/tmp/estate-recovery3-state.md` + `estate-recovery-report.md` |
-| 8 | **External scheduled readers** | MacBook Claude Desktop tasks hold tunnel grants with no on-box inventory; provenance lives outside the estate box | `/home/toxic/tmp/gem-forensic/analysis/SCHEDULED-TASKS-FOUND.md` |
-| 9 | **Latency-only benchmark corruption** | `tps:0` rows are handshakes not completions — zero-token benchmark entries must be rejected from Pareto frontiers | `/home/toxic/tmp/endpoint-probe-results.md` |
+| #   | Anomaly                               | Essence                                                                                                                        | Dossier                                                                              |
+| --- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| 1   | **Reasoning-budget trap**             | `max_tokens=500` + `reasoning_effort=high` → finish=length, zero content, `reasoning_tokens=max_tokens` — not an infinite loop | `/home/toxic/tmp/endpoint-probe-results.md`                                          |
+| 2   | **Catalog lies**                      | minimax `thinking` → HTTP 400; qwen3.6-35b has `reasoning: false` + empty `thinking` → `effort` silently ignored               | `/home/toxic/tmp/effort-param-audit.md`                                              |
+| 3   | **Model-identity chain**              | CLI tag ≠ served model; resolved model is the chain through catalog → models.yml → overrides → modelRoles → frontmatter        | `/home/toxic/tmp/effort-param-audit.md`                                              |
+| 4   | **Single-lane observer effect**       | 429 from a probe misread as "key lacks access" while workers succeeded on the same key+model simultaneously                    | `/home/toxic/tmp/endpoint-probe-results.md`                                          |
+| 5   | **Front door vs exec lane**           | Health/OAuth returns 401 (alive) while chat completions return 502/empty (dead backend) — a route-contract divergence          | `/home/toxic/tmp/gem-forensic/analysis/funnel-443-diagnosis.txt` + `FUNNEL-FIXED.md` |
+| 6   | **Pitchfork two-truth problem**       | Monolith is live truth; 103 pitchfork.d fragments are dead litter; `generate.ts` retired for destroying hand-tuned config      | `/home/toxic/tmp/pitchfork-convention-report.md`                                     |
+| 7   | **Fleet substrate failure**           | One malformed toolchain string (`bun:path@true`) mass-killed 65 pitchfork daemons; disk at 96% exacerbated                     | `/home/toxic/tmp/estate-recovery3-state.md` + `estate-recovery-report.md`            |
+| 8   | **External scheduled readers**        | MacBook Claude Desktop tasks hold tunnel grants with no on-box inventory; provenance lives outside the estate box              | `/home/toxic/tmp/gem-forensic/analysis/SCHEDULED-TASKS-FOUND.md`                     |
+| 9   | **Latency-only benchmark corruption** | `tps:0` rows are handshakes not completions — zero-token benchmark entries must be rejected from Pareto frontiers              | `/home/toxic/tmp/endpoint-probe-results.md`                                          |
 
-*Charter: every anomaly gets a capability-contract test before its fix is trusted.*
+_Charter: every anomaly gets a capability-contract test before its fix is trusted._
 
 ## Layout (2026-10-23) — the bin contract
 
@@ -159,7 +168,7 @@ One rule: **products own their entrypoints; bins merely point at them.**
 
 - **Products live in `/home/toxic/pens/{barn,ranch,olympus}/<product>/`.** Their
   real entrypoints (scripts, binaries, `bin/` dirs) are the source of truth.
-  `estate/ranch/` may hold deployed copies of *configs*, never product code.
+  `estate/ranch/` may hold deployed copies of _configs_, never product code.
 - **`/home/toxic/.local/bin` is the PATH surface.** Every product link there is
   a symlink straight into `pens/` (e.g. `forge -> pens/barn/forge/bin/forge.ts`,
   `corral -> pens/barn/corral/src/cli/index.ts`). Never a second copy.

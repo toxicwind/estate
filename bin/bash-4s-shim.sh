@@ -91,7 +91,59 @@ four_sec_run() {
 }
 export -f two_sec_slow _2s_slow four_sec_run 2>/dev/null || true
 
-git()          { if [ "$RUN_FAST_ACTIVE" = "1" ]; then command git "$@"; elif two_sec_slow git "$1"; then four_sec_run git "$@"; else command git "$@"; fi; }
+# ------------------------------------------------------------------ git guard
+# Destructive git command firewall (2026-10-24, standing order: "NEVER ALLOW
+# RESET"). Resets/checkouts/cleans that drop the working tree or index are
+# refused outright. This is an ENFORCED backstop for the root AGENTS.md rule
+# 4a — the doc says "no reset", but a doc alone was violated; this refuses the
+# command at the shell level. Bypass bits:
+#   * `command git reset --hard` — escapes this function. That is intentional:
+#     the ban lives at the wrapper layer; a human who types the raw builtin is
+#     doing so deliberately. (Still subject to AGENTS.md 4a: only with an
+#     explicit named order + backup.)
+#   * ESTATE_ALLOW_GIT_DESTRUCTIVE=1 — explicit opt-out for a sanctioned,
+#     human-approved reset (the root rule requires naming exactly what is
+#     discarded). Never set it to grift the guard.
+_git_blocked() {
+  local verb="$1"
+  case "$verb" in
+    reset|checkout|clean|restore) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+_git_destructive() {
+  local verb="$1" arg="$2" arg2="$3"
+  case "$verb:$arg:$arg2" in
+    reset:--hard:*)  return 0 ;;
+    reset:-hard:*)   return 0 ;;
+    # checkout is destructive only when it targets the tree/paths (`.` or `--`)
+    # or forces (-f). `git checkout <branch>` is a plain switch and is ALLOWED.
+    checkout:--:*)   return 0 ;;
+    checkout:-f:*)   return 0 ;;
+    checkout:--force:*) return 0 ;;
+    checkout:.:*)    return 0 ;;
+    checkout:--hard:*) return 0 ;;
+    clean:*:*)       return 0 ;;   # clean -f/-fd/-fdx removes untracked/tracked
+    restore:*:*)     return 0 ;;   # restore --staged/--worktree discards
+    *) return 1 ;;
+  esac
+}
+_git_die() {
+  echo "[2s-shim] BLOCKED: 'git $*' is a destructive working-tree reset/clean. Root AGENTS.md 4a + standing order forbid it. Use reflog/backup refs + revert/merge-forward, or run it yourself with ESTATE_ALLOW_GIT_DESTRUCTIVE=1 (name exactly what's discarded)." >&2
+  return 127
+}
+git() {
+  # Destructive git firewall (standing order: NEVER ALLOW RESET / checkout-- /
+  # clean / restore). ESTATE_ALLOW_GIT_DESTRUCTIVE=1 is the only sanctioned
+  # opt-out for a human-approved, backup-first reset (AGENTS.md 4a).
+  if [ "${ESTATE_ALLOW_GIT_DESTRUCTIVE:-0}" = "1" ]; then
+    command git "$@"; return $?;
+  fi
+  if _git_blocked "$1"; then
+    _git_destructive "$@" && { _git_die "$@"; return 127; }
+  fi
+  if [ "$RUN_FAST_ACTIVE" = "1" ]; then command git "$@"; elif two_sec_slow git "$1"; then four_sec_run git "$@"; else command git "$@"; fi
+}
 bun()          { if [ "$RUN_FAST_ACTIVE" = "1" ]; then command bun "$@"; elif two_sec_slow bun "$1"; then four_sec_run bun "$@"; else command bun "$@"; fi; }
 npm()          { if [ "$RUN_FAST_ACTIVE" = "1" ]; then command npm "$@";       elif two_sec_slow npm "$1";          then four_sec_run npm "$@";        else command npm "$@"; fi; }
 pip()          { if [ "$RUN_FAST_ACTIVE" = "1" ]; then command pip "$@";       elif two_sec_slow pip "$1";          then four_sec_run pip "$@";        else command pip "$@"; fi; }
