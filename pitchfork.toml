@@ -588,13 +588,12 @@ auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25238/"
 port = 25238
-expected_port = [25238]
 boot_start = true
 depends = ["agent-display"]
 dir = "/home/toxic/estate"
 mise = true
 [daemons.skopos-floaty.health_http]
-url = "http://127.0.0.1:4747/"
+url = "http://127.0.0.1:25238/"
 interval = "30s"
 timeout = "5s"
 retries = 3
