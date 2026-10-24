@@ -11,5 +11,5 @@ node = "22.12.0"
 # plugin name"). If a mise-managed bun is ever needed, use `bun = "<version>"`.
 rust = "nightly"
 go = "1.23.1"
-pitchfork = "2.25.0"
+pitchfork = "2.32.1"
 "pypi:toxicwind/kite-cli" = "main"

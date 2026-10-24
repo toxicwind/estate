@@ -177,7 +177,7 @@ KEEPER_CHROMIUM_EXECUTABLE = "/home/toxic/.cache/ms-playwright/chromium-1243/chr
 run = "exec /home/toxic/pens/ranch/stable/server/run.sh"
 auto = ["start"]
 retry = 0
-ready_http = "http://127.0.0.1:25130/"
+ready_port = 25130
 depends = ["thresher"]
 dir = "."
 
