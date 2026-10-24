@@ -2,7 +2,7 @@
 set -uo pipefail
 
 VR=http://127.0.0.1:20128
-VR_DIR=/home/toxic/estate/ranch/vansrouter
+VR_DIR=/home/toxic/pens/ranch/vansrouter
 EXT=/home/toxic/.tau/extensions/vansrouter.ts
 OMODELS=/home/toxic/.tau/models.json
 TAU_CONFIG=/home/toxic/.tau/config.json

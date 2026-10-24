@@ -95,7 +95,7 @@ cat > "$TMP" <<'PAYLOAD'
 # Task: guidellm-scorer-protocol — scorer plugin package inside the GuideLLM fork
 
 ## Context
-Fork repo: /home/toxic/estate/ranch/guidellm (fork of vllm-project/guidellm,
+Fork repo: /home/toxic/pens/ranch/guidellm (fork of vllm-project/guidellm,
 remote https://github.com/toxicwind/guidellm, clean tree). Installed CLI
 /home/toxic/.local/bin/guidellm runs on /home/toxic/.venv-guidellm/bin/python3
 which imports guidellm from src/ in that checkout — edits there are live.

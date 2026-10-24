@@ -40,7 +40,7 @@ for c in d:
     shift; wtype -M ctrl -k l 2>/dev/null; printf '%s' "$*" | wtype - 2>/dev/null && echo "typed"
     ;;
   stoplight)
-    /usr/bin/node /home/toxic/estate/ranch/signalhead/src/cli.js set "${2:-idle}" --agent desk 2>/dev/null | tail -1
+    /usr/bin/node /home/toxic/pens/ranch/signalhead/src/cli.js set "${2:-idle}" --agent desk 2>/dev/null | tail -1
     curl -s --max-time 4 http://127.0.0.1:4747/state 2>/dev/null | head -c 90; echo
     ;;
   *)

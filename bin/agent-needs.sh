@@ -9,7 +9,7 @@
 #   agent-needs.sh ok         -> lamp idle (green), exit 0
 #   agent-needs.sh busy       -> lamp busy (yellow), exit 0
 set -uo pipefail
-SG=/home/toxic/estate/ranch/signalhead/src/cli.js
+SG=/home/toxic/pens/ranch/signalhead/src/cli.js
 REASON="${1:-ok}"
 case "$REASON" in
   ok|idle|done)

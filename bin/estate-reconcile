@@ -55,7 +55,7 @@ DEDUPE_STATE="$LOG_DIR/.squawk-dedupe.state"
 _seq_next() {
   local root="$1" ch="$2" sa=""
   for _sa in "$ESTATE_ROOT/projects/range/ranch/squawk/seq_alloc.py" \
-             /home/toxic/estate/ranch/squawk/seq_alloc.py; do
+             /home/toxic/pens/ranch/squawk/seq_alloc.py; do
     [ -f "$_sa" ] && sa="$_sa" && break
   done
   if [ -n "$sa" ]; then

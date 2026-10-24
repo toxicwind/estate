@@ -3,7 +3,7 @@ set -euo pipefail
 
 DB=/home/toxic/.9router/db/data.sqlite
 ENV_SYSTEMD=/home/toxic/.9router/env.systemd
-SRC=/home/toxic/estate/ranch/vansrouter/cli/app
+SRC=/home/toxic/pens/ranch/vansrouter/cli/app
 BUILD="$SRC/.next-cli-build"
 
 G='\033[0;32m'; C='\033[0;36m'; Y='\033[1;33m'; R='\033[0;31m'; N='\033[0m'

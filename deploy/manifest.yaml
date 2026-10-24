@@ -30,9 +30,9 @@ version: 1
 
 binaries:
   herd:
-    path: /home/toxic/estate/ranch/mesh/router/herd/herd
+    path: /home/toxic/pens/ranch/mesh/router/herd/herd
     sha256: "dddef255acb059eb00055700557b87b327c3aa911a9ae40d04139c1d1d69e543"
-    immutable_copy: /home/toxic/estate/ranch/mesh/router/herd/herd.20261003-211200
+    immutable_copy: /home/toxic/pens/ranch/mesh/router/herd/herd.20261003-211200
     source: toxicwind/ranch
     commit: 152e87375481671bb9d0af139830bf8fcd11db86
     upstream_base: 7a14664d98f0e66bc68bba08548290ca0b469f98

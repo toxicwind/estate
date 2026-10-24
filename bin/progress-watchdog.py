@@ -46,7 +46,7 @@ def _resolve_pf():
 
 
 PF = _resolve_pf()
-LEDGER = Path("/home/toxic/estate/ranch/oracle/ledger/ledger.jsonl")
+LEDGER = Path("/home/toxic/pens/ranch/oracle/ledger/ledger.jsonl")
 PLOF = ["tau-1826-health", "super-ralph-e2e"]
 DAEMONS = {
     "kimi-auto-shim": 25153,

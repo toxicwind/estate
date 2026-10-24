@@ -23,7 +23,7 @@ import sys
 from pathlib import Path
 
 SCHEMA_FILE = (Path.home() /
-    "estate/ranch/kappa/kappa-code/packages/core/src/v1/config/config.ts")
+    "pens/ranch/kappa/kappa-code/packages/core/src/v1/config/config.ts")
 LIVE = Path.home() / ".config/kappa/kappa.jsonc"
 
 

@@ -110,40 +110,40 @@ retries = 3
 BENCH_RADAR_PORT = "25181"
 
 [daemons.bidder-finch]
-run = "exec /home/toxic/estate/ranch/squawk/oracle/bin/bidder-finch.sh"
+run = "exec /home/toxic/pens/ranch/squawk/oracle/bin/bidder-finch.sh"
 auto = ["start"]
 retry = true
-dir = "/home/toxic/estate/ranch/squawk/oracle"
+dir = "/home/toxic/pens/ranch/squawk/oracle"
 mise = true
 [daemons.bidder-forge]
-run = "exec /home/toxic/estate/ranch/squawk/oracle/bin/bidder-forge.sh"
+run = "exec /home/toxic/pens/ranch/squawk/oracle/bin/bidder-forge.sh"
 auto = ["start"]
 retry = true
-dir = "/home/toxic/estate/ranch/squawk/oracle"
+dir = "/home/toxic/pens/ranch/squawk/oracle"
 mise = true
 [daemons.bidder-raccoon]
-run = "exec /home/toxic/estate/ranch/squawk/oracle/bin/bidder-raccoon.sh"
+run = "exec /home/toxic/pens/ranch/squawk/oracle/bin/bidder-raccoon.sh"
 auto = ["start"]
 retry = true
-dir = "/home/toxic/estate/ranch/squawk/oracle"
+dir = "/home/toxic/pens/ranch/squawk/oracle"
 mise = true
 [daemons.bidder-scout]
-run = "exec /home/toxic/estate/ranch/squawk/oracle/bin/bidder-scout.sh"
+run = "exec /home/toxic/pens/ranch/squawk/oracle/bin/bidder-scout.sh"
 auto = ["start"]
 retry = true
-dir = "/home/toxic/estate/ranch/squawk/oracle"
+dir = "/home/toxic/pens/ranch/squawk/oracle"
 mise = true
 [daemons.bidder-vesper]
-run = "exec /home/toxic/estate/ranch/squawk/oracle/bin/bidder-vesper.sh"
+run = "exec /home/toxic/pens/ranch/squawk/oracle/bin/bidder-vesper.sh"
 auto = ["start"]
 retry = true
-dir = "/home/toxic/estate/ranch/squawk/oracle"
+dir = "/home/toxic/pens/ranch/squawk/oracle"
 mise = true
 [daemons.bidder-warden]
-run = "exec /home/toxic/estate/ranch/squawk/oracle/bin/bidder-warden.sh"
+run = "exec /home/toxic/pens/ranch/squawk/oracle/bin/bidder-warden.sh"
 auto = ["start"]
 retry = true
-dir = "/home/toxic/estate/ranch/squawk/oracle"
+dir = "/home/toxic/pens/ranch/squawk/oracle"
 mise = true
 [daemons.boundless]
 run = "exec /home/toxic/boundless/.venv/bin/python -m uvicorn web.server:app --host 127.0.0.1 --port ${BOUNDLESS_PORT}"
@@ -160,7 +160,7 @@ HOST = "127.0.0.1"
 BOUNDLESS_PORT = "25197"
 
 [daemons.browser-keeper]
-run = "cd /home/toxic/estate/ranch/keeper && exec /home/toxic/.bun/bin/bun run keeper"
+run = "cd /home/toxic/pens/ranch/keeper && exec /home/toxic/.bun/bin/bun run keeper"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25233/"
@@ -168,7 +168,7 @@ port = 25233
 expected_port = [25233]
 boot_start = true
 depends = ["agent-display"]
-dir = "/home/toxic/estate/ranch/keeper"
+dir = "/home/toxic/pens/ranch/keeper"
 mise = true
 [daemons.browser-keeper.health_http]
 url = "http://127.0.0.1:25233/"
@@ -184,7 +184,7 @@ BROWSER_KEEPER_CDP = "http://127.0.0.1:25233"
 KEEPER_CHROMIUM_EXECUTABLE = "/home/toxic/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome"
 
 [daemons.browserless]
-run = "exec /home/toxic/estate/ranch/stable/server/run.sh"
+run = "exec /home/toxic/pens/ranch/stable/server/run.sh"
 auto = ["start"]
 retry = 0
 ready_http = "http://127.0.0.1:25130/"
@@ -229,11 +229,11 @@ timeout = "5s"
 retries = 3
 
 [daemons.cuttinggate]
-run = "exec /home/toxic/estate/ranch/forge/router/cuttinggate/cuttinggate-serve.sh"
+run = "exec /home/toxic/pens/ranch/forge/router/cuttinggate/cuttinggate-serve.sh"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25200/health"
-dir = "/home/toxic/estate/ranch/forge/router/cuttinggate"
+dir = "/home/toxic/pens/ranch/forge/router/cuttinggate"
 
 [daemons.cuttinggate.health_http]
 url = "http://127.0.0.1:25200/health"
@@ -252,7 +252,7 @@ retry = true
 ready_http = "http://127.0.0.1:25162/health"
 port = 25162
 expected_port = [25162]
-dir = "/home/toxic/estate/ranch/range/apps/delendai-control-plane"
+dir = "/home/toxic/pens/ranch/range/apps/delendai-control-plane"
 mise = true
 [daemons.delendai-control-api.env]
 DELENDAI_CONTROL_API_PORT = "25162"
@@ -278,7 +278,7 @@ retry = true
 ready_http = "http://127.0.0.1:25202/health"
 port = 25202
 expected_port = [25202]
-dir = "/home/toxic/estate/ranch/doorbell"
+dir = "/home/toxic/pens/ranch/doorbell"
 mise = true
 
 [daemons.doorbell-oauth-edge]
@@ -287,7 +287,7 @@ retry = true
 ready_http = "http://127.0.0.1:25217/health"
 port = 25217
 expected_port = [25217]
-dir = "/home/toxic/estate/ranch/doorbell"
+dir = "/home/toxic/pens/ranch/doorbell"
 mise = true
 [daemons.doorbell-oauth-edge.env]
 OAUTH_EDGE_PORT = "25217"
@@ -301,7 +301,7 @@ retry = true
 ready_http = "http://127.0.0.1:25120/health"
 port = 25120
 expected_port = [25120]
-dir = "/home/toxic/estate/ranch/estate-chat"
+dir = "/home/toxic/pens/ranch/estate-chat"
 mise = true
 
 [daemons.estate-chat.env]
@@ -336,7 +336,7 @@ retry = 0
 ready_port = 25215
 port = 25215
 expected_port = [25215]
-dir = "/home/toxic/estate/ranch/stream-broker"
+dir = "/home/toxic/pens/ranch/stream-broker"
 mise = true
 
 [daemons.feedlot]
@@ -376,37 +376,37 @@ FILES_PORT = "34567"
 FILES_ROOT = "/home/toxic/files"
 
 [daemons.fleet-feed]
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/ranch/squawk/fleet-feed.ts"
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/ranch/squawk/fleet-feed.ts"
 auto = ["start"]
 retry = true
 ready_cmd = "ss -ltn 'sport = :25158' | grep -q LISTEN"
 boot_start = true
-dir = "/home/toxic/estate/ranch/squawk"
+dir = "/home/toxic/pens/ranch/squawk"
 mise = true
 [daemons.fleet-feed.env]
 FLEET_FEED_PORT = "25158"
 
 [daemons.fleet-ui]
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/ranch/squawk/squawk-ui.ts"
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/ranch/squawk/squawk-ui.ts"
 auto = ["start"]
 retry = true
 ready_cmd = "ss -ltn 'sport = :25136' | grep -q LISTEN"
 boot_start = true
-dir = "/home/toxic/estate/ranch/squawk"
+dir = "/home/toxic/pens/ranch/squawk"
 mise = true
 [daemons.kappa-board-bridge]
-run = "exec /usr/bin/python3 /home/toxic/estate/ranch/squawk/kappa_board_bridge.py --watch --root /home/toxic/.fleet-bus/squawk-root --db /home/toxic/.local/share/kappa/kappa-main.db"
+run = "exec /usr/bin/python3 /home/toxic/pens/ranch/squawk/kappa_board_bridge.py --watch --root /home/toxic/.fleet-bus/squawk-root --db /home/toxic/.local/share/kappa/kappa-main.db"
 auto = ["start"]
 retry = true
 boot_start = true
-dir = "/home/toxic/estate/ranch/squawk"
+dir = "/home/toxic/pens/ranch/squawk"
 mise = true
 [daemons.forge-agent]
 run = "exec /home/toxic/pens/ranch/forge/flicker/bin/flicker-agent"
 auto = ["start"]
 retry = true
 boot_start = true
-dir = "/home/toxic/estate/ranch/forge/flicker"
+dir = "/home/toxic/pens/ranch/forge/flicker"
 mise = true
 [daemons.forge-agent.env]
 WOODPECKER_SERVER = "127.0.0.1:25240"
@@ -419,7 +419,7 @@ ready_http = "http://127.0.0.1:25234/api/health"
 port = 25234
 expected_port = [25234]
 boot_start = true
-dir = "/home/toxic/estate/ranch/forge/flicker"
+dir = "/home/toxic/pens/ranch/forge/flicker"
 mise = true
 [daemons.forge.health_http]
 url = "http://127.0.0.1:25234/api/health"
@@ -428,17 +428,17 @@ timeout = "5s"
 retries = 3
 
 [daemons.forge.env]
-FLICKER_ROOT = "/home/toxic/estate/ranch/forge/flicker"
+FLICKER_ROOT = "/home/toxic/pens/ranch/forge/flicker"
 WOODPECKER_HOST = "http://127.0.0.1:25234"
 WOODPECKER_GRPC_ADDR = ":25240"
 WOODPECKER_SERVER_ADDR = ":25234"
 WOODPECKER_GRPC_SECRET = "66a9f7c1d6ffbac15c447f6d3d97827ab3d152286b23c0cbeb19a9372108419b"
 WOODPECKER_AGENT_SECRET = "c6eee4c1bce957ae19638a330efe5fc3c561f18ea58e3468fe224a60416faf4f"
-WOODPECKER_DATA = "/home/toxic/estate/ranch/forge/flicker/data"
+WOODPECKER_DATA = "/home/toxic/pens/ranch/forge/flicker/data"
 WOODPECKER_ADMIN = "toxic"
 
 [daemons.thresher]
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/ranch/range/bin/thresher-serve.ts"
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/ranch/range/bin/thresher-serve.ts"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25127/health"
@@ -459,7 +459,7 @@ retry = 0
 ready_port = 25106
 port = 25106
 expected_port = [25106]
-dir = "/home/toxic/estate/ranch/vendored/gibber-mcp"
+dir = "/home/toxic/pens/ranch/vendored/gibber-mcp"
 mise = true
 
 [daemons.grafana]
@@ -692,7 +692,7 @@ run = "exec /home/toxic/.local/bin/kite-daemon"
 retry = true
 ready_cmd = "test -S /home/toxic/.config/kite-cli/daemon.sock"
 boot_start = true
-dir = "/home/toxic/estate/ranch/hatch/kite-cli"
+dir = "/home/toxic/pens/ranch/hatch/kite-cli"
 mise = true
 [daemons.kitty-mcp]
 run = "exec /home/toxic/estate/bin/kitty-mcp-instance.sh"
@@ -711,17 +711,17 @@ ready_cmd = "pgrep -f '[m]arket-loop.ts' >/dev/null"
 dir = "/home/toxic/estate/agents/weaver"
 mise = true
 [daemons.forever-loop]
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/ranch/estate-brain/agents/forever-loop/run-loop.ts"
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/ranch/estate-brain/agents/forever-loop/run-loop.ts"
 auto = ["start"]
 retry = true
 ready_cmd = "pgrep -f '[f]orever-loop/run-loop.ts' >/dev/null"
-dir = "/home/toxic/estate/ranch/estate-brain/agents/forever-loop"
+dir = "/home/toxic/pens/ranch/estate-brain/agents/forever-loop"
 mise = true
 [daemons.market-watchdog]
-run = "exec /home/toxic/estate/ranch/squawk/oracle/bin/market-watchdog.sh"
+run = "exec /home/toxic/pens/ranch/squawk/oracle/bin/market-watchdog.sh"
 auto = ["start"]
 retry = true
-dir = "/home/toxic/estate/ranch/squawk/oracle"
+dir = "/home/toxic/pens/ranch/squawk/oracle"
 mise = true
 [daemons.matter-server]
 run = "exec env STORAGE_PATH=/home/toxic/.matter_data BLUETOOTH_ADAPTER=0 LOG_LEVEL=info node --enable-source-maps /home/toxic/.matter-server/app/node_modules/matter-server/dist/esm/MatterServer.js --storage-path /home/toxic/.matter_data --bluetooth-adapter 0 --port ${MATTER_SERVER_PORT}"
@@ -759,13 +759,13 @@ timeout = "5s"
 retries = 3
 
 [daemons.mesh-landing]
-run = "exec /usr/bin/python3 /home/toxic/estate/ranch/propylon/landing.py"
+run = "exec /usr/bin/python3 /home/toxic/pens/ranch/propylon/landing.py"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25207/health"
 port = 25207
 expected_port = [25207]
-dir = "/home/toxic/estate/ranch"
+dir = "/home/toxic/pens/ranch"
 mise = true
 [daemons.mesh-landing.health_http]
 url = "http://127.0.0.1:25207/health"
@@ -825,22 +825,22 @@ expected_port = [25155]
 dir = "/home/toxic/estate"
 
 [daemons.nats-tail]
-run = "exec /home/toxic/estate/ranch/squawk/nats/run-tail.sh"
+run = "exec /home/toxic/pens/ranch/squawk/nats/run-tail.sh"
 auto = ["start"]
 retry = true
 boot_start = true
-dir = "/home/toxic/estate/ranch/squawk/nats"
+dir = "/home/toxic/pens/ranch/squawk/nats"
 mise = true
 [daemons.nats]
-run = "exec /home/toxic/estate/ranch/squawk/nats/run-nats.sh"
+run = "exec /home/toxic/pens/ranch/squawk/nats/run-nats.sh"
 auto = ["start"]
 retry = true
 ready_cmd = "ss -ltn 'sport = :4222' | grep -q LISTEN"
 boot_start = true
-dir = "/home/toxic/estate/ranch/squawk/nats"
+dir = "/home/toxic/pens/ranch/squawk/nats"
 mise = true
 [daemons.nginx]
-run = "exec /usr/bin/nginx -c /home/toxic/estate/ranch/forge/ops/nginx/nginx.conf -g 'daemon off; pid /tmp/nginx-pitchfork.pid;'"
+run = "exec /usr/bin/nginx -c /home/toxic/pens/ranch/forge/ops/nginx/nginx.conf -g 'daemon off; pid /tmp/nginx-pitchfork.pid;'"
 auto = ["start"]
 retry = true
 ready_cmd = "ss -ltn 'sport = :25208' | grep -q LISTEN"
@@ -899,22 +899,22 @@ timeout = "5s"
 retries = 3
 
 [daemons.oracle-chat]
-run = "exec /home/toxic/estate/ranch/squawk/oracle/bin/oracle_chat.py"
+run = "exec /home/toxic/pens/ranch/squawk/oracle/bin/oracle_chat.py"
 auto = ["start"]
 retry = true
-dir = "/home/toxic/estate/ranch/squawk/oracle"
+dir = "/home/toxic/pens/ranch/squawk/oracle"
 mise = true
 [daemons.oracle-chat.env]
 ORACLE_CHANNEL = "/home/toxic/.fleet-bus/squawk-root/bid-market"
 
 [daemons.oracle-core]
-run = "exec /home/toxic/estate/ranch/squawk/oracle/bin/run-oracle-core.sh"
+run = "exec /home/toxic/pens/ranch/squawk/oracle/bin/run-oracle-core.sh"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25235/health"
 port = 25235
 expected_port = [25235]
-dir = "/home/toxic/estate/ranch/squawk/oracle"
+dir = "/home/toxic/pens/ranch/squawk/oracle"
 mise = true
 [daemons.oracle-core.env]
 ORACLE_CORE_LISTEN = "127.0.0.1:25235"
@@ -925,10 +925,10 @@ timeout = "5s"
 retries = 3
 
 [daemons.oracle-market]
-run = "exec /home/toxic/estate/ranch/squawk/oracle/bin/run.sh"
+run = "exec /home/toxic/pens/ranch/squawk/oracle/bin/run.sh"
 auto = ["start"]
 retry = true
-dir = "/home/toxic/estate/ranch/squawk/oracle"
+dir = "/home/toxic/pens/ranch/squawk/oracle"
 mise = true
 [daemons.oracle-market.env]
 ORACLE_INTAKE = "1"
@@ -962,12 +962,12 @@ PAPER_POLLER_PORT = "25149"
 PAPER_POLLER_INTERVAL = "30"
 
 [daemons.phone-sentinel]
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/ranch/phone-sentinel/src/index.ts"
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/ranch/phone-sentinel/src/index.ts"
 retry = 0
 ready_http = "http://127.0.0.1:25178/health"
 port = 25178
 expected_port = [25178]
-dir = "/home/toxic/estate/ranch/phone-sentinel"
+dir = "/home/toxic/pens/ranch/phone-sentinel"
 mise = true
 
 [daemons.phone-sentinel.health_http]
@@ -979,7 +979,7 @@ timeout = "3s"
 PORT = "25178"
 
 [daemons.proc-watch-audit]
-run = "exec /home/toxic/estate/ranch/bun-scaffold/bin/watch-procs.sh --watch=30"
+run = "exec /home/toxic/pens/ranch/bun-scaffold/bin/watch-procs.sh --watch=30"
 auto = ["start"]
 retry = true
 boot_start = true
@@ -1017,14 +1017,14 @@ timeout = "5s"
 retries = 3
 
 [daemons.ralph-dashboard]
-run = "exec /home/toxic/estate/ranch/ralph-dashboard/backend/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port ${RALPH_DASH_PORT}"
+run = "exec /home/toxic/pens/ranch/ralph-dashboard/backend/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port ${RALPH_DASH_PORT}"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25194/api/health"
 port = 25194
 expected_port = [25194]
 boot_start = true
-dir = "/home/toxic/estate/ranch/ralph-dashboard/backend"
+dir = "/home/toxic/pens/ranch/ralph-dashboard/backend"
 mise = true
 [daemons.ralph-dashboard.health_http]
 url = "http://127.0.0.1:25194/api/health"
@@ -1052,17 +1052,17 @@ retries = 3
 
 [daemons.ranch-ui.env]
 RANCH_UI_PORT = "25218"
-RANCH_UI_DIST = "/home/toxic/estate/ranch/range/ui/dist"
+RANCH_UI_DIST = "/home/toxic/pens/ranch/range/ui/dist"
 HERD_ORIGIN = "http://127.0.0.1:25100"
 HODOS_ORIGIN = "http://127.0.0.1:25193"
 
 [daemons.range-ui]
-run = "exec /home/toxic/.bun/bin/bun run --cwd /home/toxic/estate/ranch/range/apps/delendai-control-plane dev"
+run = "exec /home/toxic/.bun/bin/bun run --cwd /home/toxic/pens/ranch/range/apps/delendai-control-plane dev"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25156/"
 boot_start = true
-dir = "/home/toxic/estate/ranch/range"
+dir = "/home/toxic/pens/ranch/range"
 mise = true
 [daemons.range-ui.health_http]
 url = "http://127.0.0.1:25156/"
@@ -1125,14 +1125,14 @@ run = "exec ./amd64/hbbr -p 25222"
 auto = ["start"]
 retry = true
 ready_cmd = "ss -ltn 'sport = :25222' | grep -q LISTEN"
-dir = "/home/toxic/estate/ranch/rustdesk-server"
+dir = "/home/toxic/pens/ranch/rustdesk-server"
 mise = true
 [daemons.rustdesk-hbbs]
 run = "exec ./amd64/hbbs -p 25221 -r 100.72.199.93:25222"
 auto = ["start"]
 retry = true
 ready_cmd = "ss -ltn 'sport = :25221' | grep -q LISTEN"
-dir = "/home/toxic/estate/ranch/rustdesk-server"
+dir = "/home/toxic/pens/ranch/rustdesk-server"
 mise = true
 [daemons.search-api]
 run = "exec bun --hot run apps/api/src/server.ts"
@@ -1142,7 +1142,7 @@ ready_http = "http://127.0.0.1:25112/health"
 port = 25112
 expected_port = [25112]
 depends = ["thresher"]
-dir = "/home/toxic/estate/ranch/github-search"
+dir = "/home/toxic/pens/ranch/github-search"
 mise = true
 
 [daemons.search-api.health_http]
@@ -1183,7 +1183,7 @@ retry = 0
 ready_port = 25229
 port = 25229
 expected_port = [25229]
-dir = "/home/toxic/estate/ranch/squawk/nats"
+dir = "/home/toxic/pens/ranch/squawk/nats"
 mise = true
 
 [daemons.squawk-history.env]
@@ -1197,11 +1197,11 @@ boot_start = true
 dir = "/home/toxic/estate"
 mise = true
 [daemons.task-launch]
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/ranch/task-launch/src/daemon.ts"
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/ranch/task-launch/src/daemon.ts"
 auto = ["start"]
 retry = true
 ready_cmd = "pgrep -f '[t]ask-launch/src/daemon.ts' >/dev/null"
-dir = "/home/toxic/estate/ranch/task-launch"
+dir = "/home/toxic/pens/ranch/task-launch"
 mise = true
 [daemons.tau-chute]
 run = "exec /usr/bin/node chute.mjs --port 25111 -- /home/toxic/.local/bin/tau acp"
@@ -1223,7 +1223,7 @@ retry = true
 dir = "/home/toxic/estate"
 mise = true
 [daemons.toolcall-llm]
-run = "exec /home/toxic/estate/engines/llama.cpp-b11059/llama-b11059/llama-server -m /home/toxic/estate/ranch/models/qwen3.5-9b-dflash-Q5_K_M.gguf --host 127.0.0.1 --port 25152 -ngl 99 -c 32768 --alias qwen3.5-9b-tool"
+run = "exec /home/toxic/estate/engines/llama.cpp-b11059/llama-b11059/llama-server -m /home/toxic/pens/ranch/models/qwen3.5-9b-dflash-Q5_K_M.gguf --host 127.0.0.1 --port 25152 -ngl 99 -c 32768 --alias qwen3.5-9b-tool"
 auto = ["start"]
 retry = 5
 ready_http = "http://127.0.0.1:25152/health"
@@ -1250,14 +1250,14 @@ timeout = "5s"
 retries = 3
 
 [daemons.windmill]
-run = "exec bun --hot run /home/toxic/estate/ranch/windmill/server.ts"
+run = "exec bun --hot run /home/toxic/pens/ranch/windmill/server.ts"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25219/api/status"
 port = 25219
 expected_port = [25219]
 boot_start = true
-dir = "/home/toxic/estate/ranch/windmill"
+dir = "/home/toxic/pens/ranch/windmill"
 mise = true
 [daemons.windmill.health_http]
 url = "http://127.0.0.1:25219/api/status"
@@ -1282,10 +1282,10 @@ timeout = "5s"
 retries = 3
 
 [daemons.fleetd]
-run = "exec env FLEETD_PORT=25151 FLEETD_DB=/home/toxic/estate/ranch/fleetd/fleetd.db python3 /home/toxic/estate/ranch/fleetd/fleetd.py"
+run = "exec env FLEETD_PORT=25151 FLEETD_DB=/home/toxic/pens/ranch/fleetd/fleetd.db python3 /home/toxic/pens/ranch/fleetd/fleetd.py"
 auto = ["start"]
 retry = 5
-dir = "/home/toxic/estate/ranch/fleetd"
+dir = "/home/toxic/pens/ranch/fleetd"
 
 [daemons.squawk-ws]
 run = "/home/toxic/.bun/bin/bun /home/toxic/estate/services/squawk-ws/src/index.ts"
@@ -1297,12 +1297,12 @@ expected_port = [25147]
 boot_start = true
 ready_http = "/ping"
 mise = false
-# rollback (reverted by outage-#3 recovery, estate cf6a10b455): exec /home/toxic/.local/share/squawk-nats/venv/bin/python /home/toxic/estate/ranch/squawk-ws/squawk_ws_server.py
+# rollback (reverted by outage-#3 recovery, estate cf6a10b455): exec /home/toxic/.local/share/squawk-nats/venv/bin/python /home/toxic/pens/ranch/squawk-ws/squawk_ws_server.py
 [daemons.squawk-feed]
-run = "exec /usr/bin/python3 /home/toxic/estate/ranch/squawk/squawk_feed.py --root /home/toxic/.fleet-bus/squawk-root"
+run = "exec /usr/bin/python3 /home/toxic/pens/ranch/squawk/squawk_feed.py --root /home/toxic/.fleet-bus/squawk-root"
 auto = ["start"]
 retry = 5
-dir = "/home/toxic/estate/ranch/squawk"
+dir = "/home/toxic/pens/ranch/squawk"
 env = { SQUAWK_FEED_TOKEN = "5a378d9aea8a965fcd633002772a2f47" }
 
 [groups.mesh]
@@ -1315,8 +1315,8 @@ daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "hodo
 daemons = ["rig"]
 
 [daemons.pitchfork-binding-watch]
-run = "exec /usr/bin/bash /home/toxic/estate/ranch/ops/bin/pitchfork-binding-watch.sh"
-dir = "/home/toxic/estate/ranch/ops/bin"
+run = "exec /usr/bin/bash /home/toxic/pens/ranch/ops/bin/pitchfork-binding-watch.sh"
+dir = "/home/toxic/pens/ranch/ops/bin"
 auto = ["start"]
 retry = true
 boot_start = true
@@ -1343,8 +1343,8 @@ retries = 3
 # Re-applied 2026-10-23: dropped from the outage-#3 fleet-recovery re-render.
 
 [daemons.shim-drift-watch]
-run = "exec /usr/bin/bash /home/toxic/estate/ranch/ops/bin/shim-drift-watch.sh"
-dir = "/home/toxic/estate/ranch/ops/bin"
+run = "exec /usr/bin/bash /home/toxic/pens/ranch/ops/bin/shim-drift-watch.sh"
+dir = "/home/toxic/pens/ranch/ops/bin"
 mise = false
 retry = true
 boot_start = true
@@ -1353,7 +1353,7 @@ auto = ["start"]
 # Ported from 2026-10-23 re-render (daemons absent from HEAD) by SwarmFixer
 [daemons.archguard-api]
 run = "exec /home/toxic/.bun/bin/bun src/server.ts"
-dir = "/home/toxic/estate/ranch/barn/archguard"
+dir = "/home/toxic/pens/ranch/barn/archguard"
 mise = false
 retry = true
 boot_start = true
@@ -1380,7 +1380,7 @@ ready_http = "/api/health"
 
 [daemons.archguard-falkordb]
 run = "exec docker run --rm --name archguard-falkordb -p 127.0.0.1:6379:6379 -p 127.0.0.1:13000:3000 -v archguard_falkordb_data:/var/lib/falkordb/data falkordb/falkordb:latest"
-dir = "/home/toxic/estate/ranch/barn/archguard"
+dir = "/home/toxic/pens/ranch/barn/archguard"
 mise = false
 retry = true
 boot_start = true
@@ -1419,8 +1419,8 @@ auto = ["start"]
 
 [daemons.keeper-failover]
 mise = true
-run = "exec /home/toxic/.bun/bin/bun run /home/toxic/estate/ranch/keeper/bin/skopos.ts"
-dir = "/home/toxic/estate/ranch/keeper"
+run = "exec /home/toxic/.bun/bin/bun run /home/toxic/pens/ranch/keeper/bin/skopos.ts"
+dir = "/home/toxic/pens/ranch/keeper"
 retry = true
 depends = ["agent-display"]
 env = { DISPLAY = ":99", XDG_RUNTIME_DIR = "/run/user/1000", BROWSER_KEEPER_CDP_PORT = "25154", BROWSER_KEEPER_CDP = "http://127.0.0.1:25154", KEEPER_CHROMIUM_EXECUTABLE = "/home/toxic/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome", KEEPER_FAILOVER = "1", KEEPER_FAILOVER_GRACE_S = "15" }
@@ -1447,7 +1447,7 @@ port = 25144
 # of every scattered knowledge location and the recovered artifacts
 # (github sort algorithm, recursive-agents study) as one first-class surface.
 # MCP tools are provided by ranch/olympus/mcp.ts (stdio) for the gatehouse.
-run = "exec bun /home/toxic/estate/ranch/olympus/api.ts"
+run = "exec bun /home/toxic/pens/ranch/olympus/api.ts"
 dir = "/home/toxic/estate"
 retry = true
 boot_start = true

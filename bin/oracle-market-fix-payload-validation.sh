@@ -167,7 +167,7 @@ rm -f "$TMP"
 hdr "5. Test: em-dash markdown rejected"
 
 TMP=$(mktemp /tmp/bad.XXXXXX.md)
-printf '# Task: guidellm-scorer-protocol \xe2\x80\x94 scorer plugin package\n\n## Context\nFork repo: /home/toxic/estate/ranch/guidellm\n' > "$TMP"
+printf '# Task: guidellm-scorer-protocol \xe2\x80\x94 scorer plugin package\n\n## Context\nFork repo: /home/toxic/pens/ranch/guidellm\n' > "$TMP"
 if python3 - "$TMP" <<'PYEOF'
 import sys
 payload = open(sys.argv[1], encoding="utf-8").read()

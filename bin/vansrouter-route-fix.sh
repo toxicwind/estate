@@ -77,9 +77,9 @@ hdr "3. Read vansrouter source routes"
 
 VR_DIR=""
 for candidate in \
-  /home/toxic/estate/ranch/vansrouter \
+  /home/toxic/pens/ranch/vansrouter \
   /home/toxic/estate/stack/services \
-  /home/toxic/estate/ranch/vansrouter \
+  /home/toxic/pens/ranch/vansrouter \
   /home/toxic/vansrouter
 do
   if [ -d "$candidate" ]; then
