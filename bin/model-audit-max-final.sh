@@ -15,7 +15,7 @@ fetch_catalog nim "https://integrate.api.nvidia.com/v1" "$NIM_KEY"
 fetch_catalog herd "http://127.0.0.1:25100/v1" ""
 fetch_catalog sov "http://127.0.0.1:25104/v1" ""
 fetch_catalog flock "http://127.0.0.1:25193/v1" "$FLOCK_KEY"
-fetch_catalog vr "http://127.0.0.1:20128/v1" "$VR_KEY"
+fetch_catalog vr "http://127.0.0.1:25237/v1" "$VR_KEY"
 
 # 2. probe - NO arithmetic on model name, fully quoted
 cat > /tmp/probe.sh <<'PROBE'
@@ -40,7 +40,7 @@ chmod +x /tmp/probe.sh
 # parallel WITHOUT ever using $model in arithmetic
 jq -r '[.provider,.id] | @tsv' "$CATALOG" | xargs -P 24 -I{} bash -c '
   IFS=$'"'"'\t'"'"' read -r prov model <<< "{}"
-  case "$prov" in nim) url="https://integrate.api.nvidia.com/v1"; auth="'"$NIM_KEY"'";; herd) url="http://127.0.0.1:25100/v1"; auth="";; sov) url="http://127.0.0.1:25104/v1"; auth="";; flock) url="http://127.0.0.1:25193/v1"; auth="'"$FLOCK_KEY"'";; vr) url="http://127.0.0.1:20128/v1"; auth="'"$VR_KEY"'";; esac
+  case "$prov" in nim) url="https://integrate.api.nvidia.com/v1"; auth="'"$NIM_KEY"'";; herd) url="http://127.0.0.1:25100/v1"; auth="";; sov) url="http://127.0.0.1:25104/v1"; auth="";; flock) url="http://127.0.0.1:25193/v1"; auth="'"$FLOCK_KEY"'";; vr) url="http://127.0.0.1:25237/v1"; auth="'"$VR_KEY"'";; esac
   /tmp/probe.sh "$prov" "$model" "$url" "$auth"
 ' >> "$PROBES"
 

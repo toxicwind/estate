@@ -112,14 +112,14 @@ pitchfork clean --daemon estate/vansrouter 2>&1 | tail -1 || true
 pitchfork restart estate/vansrouter 2>&1 | tail -5 || true
 sleep 3
 
-ss -tlnH "( sport = :20128 )" 2>/dev/null | grep -q LISTEN && ok "vansrouter :20128 bound" || bad "vansrouter not bound"
+ss -tlnH "( sport = :25237 )" 2>/dev/null | grep -q LISTEN && ok "vansrouter :25237 bound" || bad "vansrouter not bound"
 
 # ─────────────────────────────────────────────────────────────────────
 echo
 echo "── 6. Verify NVIDIA chat ──"
 
 echo "  probing POST /v1/chat/completions with $NVIDIA_MODEL..."
-resp="$(curl -s -X POST "http://127.0.0.1:20128/v1/chat/completions" \
+resp="$(curl -s -X POST "http://127.0.0.1:25237/v1/chat/completions" \
   -H 'Content-Type: application/json' \
   -H "Authorization: Bearer $(grep -E '^API_KEY_SECRET=' "$VANS_ENV" | cut -d= -f2-)" \
   -d "{\"model\":\"$NVIDIA_MODEL\",\"messages\":[{\"role\":\"user\",\"content\":\"say hi\"}],\"max_tokens\":5}" \

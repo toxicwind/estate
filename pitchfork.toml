@@ -77,19 +77,6 @@ expected_port = [25137]
 boot_start = true
 dir = "/home/toxic/projects/bedrock/web"
 mise = true
-[daemons.beellama-fast]
-run = "exec /home/toxic/estate/stack/services/_consolidated_herd_20260924/beellama-fast.sh"
-auto = ["start"]
-retry = true
-ready_http = "http://127.0.0.1:25122/health"
-port = 25122
-expected_port = [25122]
-boot_start = true
-dir = "/home/toxic/estate"
-mise = true
-[daemons.beellama-fast.env]
-BEELLAMA_PORT = "25122"
-
 [daemons.bench-radar]
 run = "exec /home/toxic/.bun/bin/bun --hot /home/toxic/estate/tools/bench-radar/server.ts"
 auto = ["start"]
@@ -163,9 +150,9 @@ BOUNDLESS_PORT = "25197"
 run = "cd /home/toxic/pens/ranch/keeper && exec /home/toxic/.bun/bin/bun run keeper"
 auto = ["start"]
 retry = true
-ready_http = "http://127.0.0.1:25233/"
-port = 25233
-expected_port = [25233]
+ready_http = "http://127.0.0.1:25236/"
+port = 25236
+expected_port = [25236]
 boot_start = true
 depends = ["agent-display"]
 dir = "/home/toxic/pens/ranch/keeper"
@@ -179,8 +166,8 @@ retries = 3
 [daemons.browser-keeper.env]
 DISPLAY = ":99"
 XDG_RUNTIME_DIR = "/run/user/1000"
-BROWSER_KEEPER_CDP_PORT = "25233"
-BROWSER_KEEPER_CDP = "http://127.0.0.1:25233"
+BROWSER_KEEPER_CDP_PORT = "25154"
+BROWSER_KEEPER_CDP = "http://127.0.0.1:25154"
 KEEPER_CHROMIUM_EXECUTABLE = "/home/toxic/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome"
 
 [daemons.browserless]
@@ -246,7 +233,7 @@ CUTTINGGATE_PORT = "25200"
 CUTTINGGATE_LOG_LEVEL = "info"
 
 [daemons.delendai-control-api]
-run = "exec /home/toxic/.bun/bin/bun server.ts"
+run = "exec /home/toxic/.bun/bin/bun --hot server.ts"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25162/health"
@@ -404,23 +391,23 @@ WOODPECKER_AGENT_SECRET = "c6eee4c1bce957ae19638a330efe5fc3c561f18ea58e3468fe224
 [daemons.forge]
 run = "exec /home/toxic/pens/ranch/forge/flicker/bin/flicker-server"
 retry = true
-ready_http = "http://127.0.0.1:25234/api/health"
-port = 25234
-expected_port = [25234]
+ready_http = "http://127.0.0.1:25237/api/health"
+port = 25237
+expected_port = [25237]
 boot_start = true
 dir = "/home/toxic/pens/ranch/forge/flicker"
 mise = true
 [daemons.forge.health_http]
-url = "http://127.0.0.1:25234/api/health"
+url = "http://127.0.0.1:25237/api/health"
 interval = "30s"
 timeout = "5s"
 retries = 3
 
 [daemons.forge.env]
 FLICKER_ROOT = "/home/toxic/pens/ranch/forge/flicker"
-WOODPECKER_HOST = "http://127.0.0.1:25234"
+WOODPECKER_HOST = "http://127.0.0.1:20128"
 WOODPECKER_GRPC_ADDR = ":25240"
-WOODPECKER_SERVER_ADDR = ":25234"
+WOODPECKER_SERVER_ADDR = ":20128"
 WOODPECKER_GRPC_SECRET = "66a9f7c1d6ffbac15c447f6d3d97827ab3d152286b23c0cbeb19a9372108419b"
 WOODPECKER_AGENT_SECRET = "c6eee4c1bce957ae19638a330efe5fc3c561f18ea58e3468fe224a60416faf4f"
 WOODPECKER_DATA = "/home/toxic/pens/ranch/forge/flicker/data"
@@ -594,9 +581,9 @@ mise = true
 run = "exec /home/toxic/estate/bin/keeper-floaty.sh"
 auto = ["start"]
 retry = true
-ready_http = "http://127.0.0.1:4747/"
-port = 4747
-expected_port = [4747]
+ready_http = "http://127.0.0.1:25236/"
+port = 25236
+expected_port = [25236]
 boot_start = true
 depends = ["agent-display"]
 dir = "/home/toxic/estate"
@@ -1230,13 +1217,14 @@ dir = "/home/toxic/estate"
 mise = true
 [daemons.toolcall-llm]
 run = "exec /home/toxic/estate/engines/llama.cpp-b11059/llama-b11059/llama-server -m /home/toxic/pens/ranch/models/qwen3.5-9b-dflash-Q5_K_M.gguf --host 127.0.0.1 --port 25152 -ngl 99 -c 32768 --alias qwen3.5-9b-tool"
-auto = ["start"]
+auto = []
 retry = 5
 ready_http = "http://127.0.0.1:25152/health"
 port = 25152
 expected_port = [25152]
 dir = "/home/toxic/estate/engines/llama.cpp-b11059/llama-b11059"
 mise = true
+boot_start = false
 [daemons.toolcall-llm.env]
 TOOLCALL_PORT = "25152"
 
@@ -1244,13 +1232,13 @@ TOOLCALL_PORT = "25152"
 run = "exec /home/toxic/estate/stack/services/vansrouter.sh"
 auto = ["start"]
 retry = true
-ready_http = "http://127.0.0.1:20128/api/health"
-port = 20128
-expected_port = [20128]
+ready_http = "http://127.0.0.1:25237/api/health"
+port = 25237
+expected_port = [25237]
 dir = "."
 mise = true
 [daemons.vansrouter.health_http]
-url = "http://127.0.0.1:20128/api/health"
+url = "http://127.0.0.1:25237/api/health"
 interval = "30s"
 timeout = "5s"
 retries = 3
@@ -1364,8 +1352,10 @@ mise = false
 retry = true
 boot_start = true
 auto = ["start"]
-env = { PORT = "4000", FALKORDB_HOST = "127.0.0.1", FALKORDB_PORT = "6379", FALKORDB_GRAPH_NAME = "archguard_estate", OPENROUTER_API_KEY = "", ANTHROPIC_API_KEY = "" }
-ready_http = "/api/health"
+port = 25230
+expected_port = [25230]
+env = { PORT = "25230", FALKORDB_HOST = "127.0.0.1", FALKORDB_PORT = "6379", FALKORDB_GRAPH_NAME = "archguard_estate", OPENROUTER_API_KEY = "", ANTHROPIC_API_KEY = "" }
+ready_http = "http://127.0.0.1:25230/api/health"
 
 # toxicwind/archguard integration (Forge, 2026-10-20; re-landed as composer
 # fragment 2026-10-23 after a pitchfork-compose regen wiped the hand-added
@@ -1425,7 +1415,7 @@ auto = ["start"]
 
 [daemons.keeper-failover]
 mise = true
-run = "exec /home/toxic/.bun/bin/bun run /home/toxic/pens/ranch/keeper/bin/skopos.ts"
+run = "exec /home/toxic/.bun/bin/bun run /home/toxic/pens/olympus/products/skopos/bin/skopos.ts"
 dir = "/home/toxic/pens/ranch/keeper"
 retry = true
 depends = ["agent-display"]

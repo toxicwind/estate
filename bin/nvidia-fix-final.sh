@@ -43,12 +43,12 @@ pitchfork clean --daemon estate/vansrouter 2>&1 | tail -1 || true
 pitchfork restart estate/vansrouter 2>&1 | tail -5 || true
 sleep 4
 
-ss -tlnH "( sport = :20128 )" | grep -q LISTEN && ok "bound" || { bad "not bound"; exit 1; }
+ss -tlnH "( sport = :25237 )" | grep -q LISTEN && ok "bound" || { bad "not bound"; exit 1; }
 
 hdr "4. Probe nvidia chat"
 BEARER="$(grep -E '^API_KEY_SECRET=' "$VANS_ENV" | cut -d= -f2-)"
 
-resp="$(curl -s -X POST "http://127.0.0.1:20128/v1/chat/completions" \
+resp="$(curl -s -X POST "http://127.0.0.1:25237/v1/chat/completions" \
   -H 'Content-Type: application/json' \
   -H "Authorization: Bearer $BEARER" \
   -d '{"model":"nvidia/nemotron-3-super-120b-a12b","messages":[{"role":"user","content":"reply with exactly: ok"}],"max_tokens":5,"stream":false}' \

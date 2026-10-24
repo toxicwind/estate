@@ -3,10 +3,14 @@
 # mode: it health-probes :25154 and only spawns chromium when the keeper has been
 # down past KEEPER_FAILOVER_GRACE_S (default 15s), so only one server binds at a
 # time. Additive: does NOT replace, disable, or out-compete estate/browser-keeper.
+# 2026-10-24: two-truth fix — this fragment was stale (pointed at a nonexistent
+# ranch/keeper/bin/skopos.ts). Monolith is live truth; consolidated to the product
+# entrypoint. The skopos product owns bin/skopos.ts (failover drop-in); the daemon
+# just runs it here. See pitchfork.toml [daemons.keeper-failover].
 [daemons.keeper-failover]
 mise = true
-run = "exec /home/toxic/.bun/bin/bun run /home/toxic/estate/ranch/keeper/bin/skopos.ts"
-dir = "/home/toxic/estate/ranch/keeper"
+run = "exec /home/toxic/.bun/bin/bun run /home/toxic/pens/olympus/products/skopos/bin/skopos.ts"
+dir = "/home/toxic/pens/ranch/keeper"
 retry = true
 depends = ["agent-display"]
 env = { DISPLAY = ":99", XDG_RUNTIME_DIR = "/run/user/1000", BROWSER_KEEPER_CDP_PORT = "25154", BROWSER_KEEPER_CDP = "http://127.0.0.1:25154", KEEPER_CHROMIUM_EXECUTABLE = "/home/toxic/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome", KEEPER_FAILOVER = "1", KEEPER_FAILOVER_GRACE_S = "15" }

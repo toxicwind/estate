@@ -94,7 +94,7 @@ probe() {
   sleep 4
 
   local resp
-  resp="$(curl -s -X POST "http://127.0.0.1:20128/v1/chat/completions" \
+  resp="$(curl -s -X POST "http://127.0.0.1:25237/v1/chat/completions" \
     -H 'Content-Type: application/json' \
     -H "Authorization: Bearer $(grep -E '^API_KEY_SECRET=' /home/toxic/.config/vansrouter/env | cut -d= -f2-)" \
     -d '{"model":"nvidia/nemotron-3-super-120b-a12b","messages":[{"role":"user","content":"hi"}],"max_tokens":3,"stream":false}' \

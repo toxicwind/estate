@@ -76,16 +76,6 @@ export const SURFACES: readonly Surface[] = [
 		description: "Cloud provider gateway — the other half of the model plane.",
 	},
 	{
-		id: "beellama",
-		label: "Beellama",
-		group: "Models",
-		origin: loopback(25122),
-		kind: "ui",
-		daemon: "beellama-fast",
-		healthPath: "/health",
-		description: "llama.cpp server front end — full llama-server chat UI.",
-	},
-	{
 		id: "model-guard",
 		label: "Model Guard",
 		group: "Models",

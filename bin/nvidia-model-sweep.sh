@@ -14,7 +14,7 @@ for model in \
   "mistralai/mistral-7b-instruct-v0.3" \
   ; do
   code="$(curl -s -o /dev/null -w '%{http_code}' -X POST \
-    "http://127.0.0.1:20128/v1/chat/completions" \
+    "http://127.0.0.1:25237/v1/chat/completions" \
     -H 'Content-Type: application/json' \
     -H "Authorization: Bearer $BEARER" \
     -d "{\"model\":\"$model\",\"messages\":[{\"role\":\"user\",\"content\":\"hi\"}],\"max_tokens\":3,\"stream\":false}" \

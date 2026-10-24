@@ -15,10 +15,15 @@ PENS="/home/toxic/pens"
 source "$SOV/stack/lib-ports.sh"
 require_env HERD_PORT
 # Canonical secrets for provider keyEnvs (HODOS_API_KEY, OPENROUTER_API_KEY, ...).
-# Sourced, never copied — keys stay in /home/toxic/.secrets.
-if [[ -f /home/toxic/.secrets ]]; then
+# Sourced from secretsmith keyring (SSOT), never copied — keys stay in the
+# keyring. ~/.secrets is legacy and no longer used.
+if command -v secretsmith-env >/dev/null 2>&1; then
   set -a
-  set +u  # .secrets has forward refs (e.g. ${NVIDIA_API_KEY}); don't crash
+  eval "$(secretsmith-env 2>/dev/null)" || true
+  set +a
+elif [[ -f /home/toxic/.secrets ]]; then
+  set -a
+  set +u
   source /home/toxic/.secrets
   set -u
   set +a

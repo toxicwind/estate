@@ -15,7 +15,7 @@ PROVIDERS=(
   "herd:http://127.0.0.1:25100/v1::"
   "sov-router:http://127.0.0.1:25104/v1::"
   "flock:http://127.0.0.1:25193/v1:$FLOCK_KEY:bearer"
-  "vansrouter:http://127.0.0.1:20128/v1:$BEARER:bearer"
+  "vansrouter:http://127.0.0.1:25237/v1:$BEARER:bearer"
 )
 
 # Audit battery — each prompt has a check function

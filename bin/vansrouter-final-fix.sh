@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -uo pipefail
 
-VR=http://127.0.0.1:20128
+VR=http://127.0.0.1:25237
 VR_DIR=/home/toxic/pens/ranch/vansrouter
 EXT=/home/toxic/.tau/extensions/vansrouter.ts
 OMODELS=/home/toxic/.tau/models.json
@@ -57,7 +57,7 @@ done
 
 echo
 echo "  env from running process:"
-VR_PID="$(ss -tlnpH '( sport = :20128 )' 2>/dev/null | grep -oP 'pid=\K[0-9]+' | head -1 || true)"
+VR_PID="$(ss -tlnpH '( sport = :25237 )' 2>/dev/null | grep -oP 'pid=\K[0-9]+' | head -1 || true)"
 if [ -n "$VR_PID" ]; then
   tr '\0' '\n' < /proc/$VR_PID/environ 2>/dev/null | grep -iE 'API_KEY|PROVIDER|UPSTREAM|BASE_URL' | head -20
 fi
@@ -164,7 +164,7 @@ const SEED_MODELS: ProviderModelConfig[] = [
 ].map((id) => toProviderModel({ id }));
 
 export default function vansrouterExtension(pi: ExtensionAPI): void {
-  const baseUrl = process.env.VANSROUTER_URL || "http://127.0.0.1:20128/v1";
+  const baseUrl = process.env.VANSROUTER_URL || "http://127.0.0.1:25237/v1";
   const apiKey = resolveApiKey();
 
   const register = (models: ProviderModelConfig[]) => {
@@ -236,7 +236,7 @@ if [ ! -f "$OMODELS" ]; then
 {
   "providers": {
     "vansrouter": {
-      "baseUrl": "http://127.0.0.1:20128/v1",
+      "baseUrl": "http://127.0.0.1:25237/v1",
       "api": "openai-completions",
       "authHeader": true,
       "defaultModel": "oc/jev-1.13-free"
