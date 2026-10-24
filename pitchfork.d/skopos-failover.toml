@@ -3,8 +3,8 @@
 # mode: it health-probes :25233 and only spawns chromium when the keeper has been
 # down past KEEPER_FAILOVER_GRACE_S (default 15s), so only one server binds at a
 # time. Additive: does NOT replace, disable, or out-compete estate/browser-keeper.
-# 2026-10-24: two-truth fix — this fragment was stale (pointed at a nonexistent
-# ranch/keeper/bin/skopos.ts). Monolith is live truth; consolidated to the product
+# 2026-10-24: two-truth fix — this fragment was stale (pointed at the retired
+# ranch/keeper copy). Monolith is live truth; consolidated to the product
 # entrypoint. The skopos product owns bin/skopos.ts (failover drop-in); the daemon
 # just runs it here. See pitchfork.toml [daemons.skopos-failover].
 [daemons.skopos-failover]
