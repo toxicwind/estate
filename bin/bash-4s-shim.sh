@@ -84,7 +84,10 @@ four_sec_run() {
   local rc=$?
   if [ "$rc" -eq 124 ] || [ "$rc" -eq 137 ]; then
     if [ -x "${DELEND_CODE_RACE:-/home/toxic/estate/bin/delend-code-race}" ]; then
-      "${DELEND_CODE_RACE:-/home/toxic/estate/bin/delend-code-race}" "$*"
+      # The hard budget run-fast just enforced is the window the racer must
+      # beat. Re-run the failed command through delend-code-race under that
+      # same budget (--2s) so it autonomously races/fixes the breach.
+      "${DELEND_CODE_RACE:-/home/toxic/estate/bin/delend-code-race}" --2s "$*"
     fi
   fi
   return "$rc"
