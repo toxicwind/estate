@@ -3,5 +3,5 @@ mise = true
 run = "exec /home/toxic/estate/ranch/squawk/oracle/bin/oracle_chat.py"
 dir = "/home/toxic/estate/ranch/squawk/oracle"
 retry = true
-env = { ORACLE_CHANNEL = "/home/toxic/.fleet-bus/squawk-root/bid-market" }
+env = { ORACLE_CHANNEL = "/home/toxic/.squawk-bus/squawk-root/bid-market" }
 auto = ["start"]

@@ -1,7 +1,0 @@
-[daemons.kappa-board-bridge]
-run = "exec /usr/bin/python3 /home/toxic/estate/ranch/squawk/kappa_board_bridge.py --db /home/toxic/.local/share/kappa/kappa-main.db --watch"
-dir = "/home/toxic/estate/ranch/squawk"
-mise = false
-retry = true
-auto = ["start"]
-restart_delay = 5

@@ -584,7 +584,7 @@ async function tool_bg_kill(args: Record<string, unknown>): Promise<string> {
 // --- markers; the squawk server assigns the global seq on inotify pickup.
 // ---------------------------------------------------------------------------
 
-const SQUAWK_ROOT = process.env["SQUAWK_CHAT_ROOT"] ?? `${HOME}/.fleet-bus/squawk-root`;
+const SQUAWK_ROOT = process.env["SQUAWK_CHAT_ROOT"] ?? `${HOME}/.squawk-bus/squawk-root`;
 const CHANNEL_RX = /^[A-Za-z0-9_-]{1,32}$/;
 
 function squawkChannelDir(channel: string): string | null {

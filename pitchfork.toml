@@ -285,18 +285,18 @@ DOORBELL_UPSTREAM = "http://127.0.0.1:25202"
 PUBLIC_ISSUER = "https://github-mcp-host.tailc9ac71.ts.net"
 
 [daemons.estate-chat]
-run = "exec bun run chat.ts"
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/ranch/squawk/bun/index.ts"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25120/health"
 port = 25120
 expected_port = [25120]
-dir = "/home/toxic/pens/ranch/estate-chat"
-mise = true
+dir = "/home/toxic/pens/ranch/squawk"
+mise = false
 
 [daemons.estate-chat.env]
-ESTATE_CHAT_PORT = "25120"
-ESTATE_CHAT_TOKEN_FILE = "/home/toxic/.config/estate-chat-token"
+SQUAWK_CHAT_PORT = "25120"
+SQUAWK_CHAT_TOKEN_FILE = "/home/toxic/.config/estate-chat-token"
 
 [daemons.estate-exporter]
 run = "exec python3 ./stack/services/estate-exporter.py"
@@ -374,12 +374,12 @@ boot_start = true
 dir = "/home/toxic/pens/ranch/squawk"
 mise = true
 [daemons.kappa-board-bridge]
-run = "exec /usr/bin/python3 /home/toxic/pens/ranch/squawk/kappa_board_bridge.py --watch --root /home/toxic/.fleet-bus/squawk-root --db /home/toxic/.local/share/kappa/kappa-main.db"
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/ranch/squawk/bun/bridge/index.ts --watch --root /home/toxic/.squawk-bus/squawk-root --db /home/toxic/.local/share/kappa/kappa-main.db"
 auto = ["start"]
 retry = true
 boot_start = true
 dir = "/home/toxic/pens/ranch/squawk"
-mise = true
+mise = false
 [daemons.forge-agent]
 run = "exec /home/toxic/pens/ranch/forge/flicker/bin/flicker-agent"
 auto = ["start"]
@@ -597,7 +597,7 @@ timeout = "5s"
 retries = 3
 
 [daemons.keypool]
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/var/workspaces/layout/ranch/mesh/keypool/src/index.ts"
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/olympus/products/kryptos/keypool/src/index.ts"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25109/health"
@@ -900,7 +900,7 @@ retry = true
 dir = "/home/toxic/pens/ranch/squawk/oracle"
 mise = true
 [daemons.oracle-chat.env]
-ORACLE_CHANNEL = "/home/toxic/.fleet-bus/squawk-root/bid-market"
+ORACLE_CHANNEL = "/home/toxic/.squawk-bus/squawk-root/bid-market"
 
 [daemons.oracle-core]
 run = "exec /home/toxic/pens/ranch/squawk/oracle/bin/run-oracle-core.sh"
@@ -1277,29 +1277,32 @@ interval = "30s"
 timeout = "5s"
 retries = 3
 
-[daemons.fleetd]
-run = "exec env FLEETD_PORT=25151 FLEETD_DB=/home/toxic/pens/ranch/fleetd/fleetd.db python3 /home/toxic/pens/ranch/fleetd/fleetd.py"
+[daemons.campfire]
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/ranch/squawk/src/campfire/index.ts"
+env = { SQUAWK_ROOT = "/home/toxic/.squawk-bus/squawk-root" }
 auto = ["start"]
-retry = 5
-dir = "/home/toxic/pens/ranch/fleetd"
+retry = true
+boot_start = true
+dir = "/home/toxic/pens/ranch/squawk"
+mise = false
 
 [daemons.squawk-ws]
-run = "/home/toxic/.bun/bin/bun /home/toxic/estate/services/squawk-ws/src/index.ts"
-env = { SQUAWK_WS_PORT = "25147", SQUAWK_CHAT_ROOT = "/home/toxic/.fleet-bus/squawk-root" }
+run = "exec /usr/bin/python3 /home/toxic/pens/ranch/squawk/core/ws.py"
+env = { SQUAWK_WS_PORT = "25147", SQUAWK_CHAT_ROOT = "/home/toxic/.squawk-bus/squawk-root" }
 auto = ["start"]
 retry = true
 port = 25147
 expected_port = [25147]
 boot_start = true
-ready_http = "/ping"
+ready_http = "http://127.0.0.1:25147/ping"
 mise = false
-# rollback (reverted by outage-#3 recovery, estate cf6a10b455): exec /home/toxic/.local/share/squawk-nats/venv/bin/python /home/toxic/pens/ranch/squawk-ws/squawk_ws_server.py
+# merged from standalone repo squawk-ws (2026-10-24); canonical core/ws.py
 [daemons.squawk-feed]
-run = "exec /usr/bin/python3 /home/toxic/pens/ranch/squawk/squawk_feed.py --root /home/toxic/.fleet-bus/squawk-root"
+run = "exec /usr/bin/python3 /home/toxic/pens/ranch/squawk/relay/feed.py"
 auto = ["start"]
 retry = 5
-dir = "/home/toxic/pens/ranch/squawk"
-env = { SQUAWK_FEED_TOKEN = "5a378d9aea8a965fcd633002772a2f47" }
+dir = "/home/toxic/pens/ranch/squawk/relay"
+env = { SQUAWK_FEED_TOKEN = "5a378d9aea8a965fcd633002772a2f47", SQUAWK_CHAT_ROOT = "/home/toxic/.squawk-bus/squawk-root" }
 
 [groups.mesh]
 daemons = ["thresher", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "feedlot", "hindsight", "kimi-code", "nginx"]

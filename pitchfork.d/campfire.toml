@@ -1,0 +1,11 @@
+# campfire — chatty fleet helper (merged into squawk/src/campfire).
+# Greets new agents, nudges stalled conversations, bridges announcements.
+# Bun daemon watching the fleet bus. Monolith is live truth; keep consistent.
+[daemons.campfire]
+mise = false
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/ranch/squawk/src/campfire/index.ts"
+dir = "/home/toxic/pens/ranch/squawk"
+retry = true
+boot_start = true
+auto = ["start"]
+env = { SQUAWK_ROOT = "/home/toxic/.squawk-bus/squawk-root" }

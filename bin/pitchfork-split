@@ -81,7 +81,7 @@ function projectKey(dir: string, daemon: string): string {
   }
   if (d.startsWith("/home/toxic/")) {
     const rest = d.slice("/home/toxic/".length).split("/").filter(Boolean);
-    if (rest[0] === ".fleet-bus") return "standalone/squawk-relay";
+    if (rest[0] === ".squawk-bus") return "standalone/squawk-relay";
     if (rest[0] === "projects") return `standalone/${rest[1]}`;
     return `standalone/${rest[0]}`;
   }
