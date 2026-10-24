@@ -1288,14 +1288,16 @@ retry = 5
 dir = "/home/toxic/estate/ranch/fleetd"
 
 [daemons.squawk-ws]
-run = "exec /home/toxic/.local/share/squawk-nats/venv/bin/python /home/toxic/estate/ranch/squawk-ws/squawk_ws_server.py"
+run = "/home/toxic/.bun/bin/bun /home/toxic/estate/services/squawk-ws/src/index.ts"
+env = { SQUAWK_WS_PORT = "25147", SQUAWK_CHAT_ROOT = "/home/toxic/.fleet-bus/squawk-root" }
 auto = ["start"]
 retry = true
 port = 25147
 expected_port = [25147]
 boot_start = true
-dir = "/home/toxic/estate/ranch/squawk-ws"
-mise = true
+ready_http = "/ping"
+mise = false
+# rollback (reverted by outage-#3 recovery, estate cf6a10b455): exec /home/toxic/.local/share/squawk-nats/venv/bin/python /home/toxic/estate/ranch/squawk-ws/squawk_ws_server.py
 [daemons.squawk-feed]
 run = "exec /usr/bin/python3 /home/toxic/estate/ranch/squawk/squawk_feed.py --root /home/toxic/.fleet-bus/squawk-root"
 auto = ["start"]
