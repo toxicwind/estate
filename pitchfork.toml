@@ -1334,3 +1334,16 @@ url = "http://127.0.0.1:25148/v1/status"
 interval = "30s"
 timeout = "5s"
 retries = 3
+
+# ranch/ops -- project-owned daemon manifest. Source of truth for 'shim-drift-watch'.
+# Event-driven (inotify on the shim files); the sentinel runs only when a
+# canonical sidechat-shim copy actually changes. No polling.
+# Re-applied 2026-10-23: dropped from the outage-#3 fleet-recovery re-render.
+
+[daemons.shim-drift-watch]
+run = "exec /usr/bin/bash /home/toxic/estate/ranch/ops/bin/shim-drift-watch.sh"
+dir = "/home/toxic/estate/ranch/ops/bin"
+mise = false
+retry = true
+boot_start = true
+auto = ["start"]
