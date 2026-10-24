@@ -421,7 +421,7 @@ run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/ranch/range/bin/thresher-s
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25127/health"
-dir = "/home/toxic/pens/barn/thresher"
+dir = "/home/toxic/pens/ranch/thresher"
 mise = true
 # NOTE: no `port` field — pitchfork's port pre-check binds 0.0.0.0 and false-
 # conflicts with tailscaled's SNI forwarder on 100.72.199.93:25127. Readiness
@@ -1447,7 +1447,7 @@ port = 25144
 # Olympus — consolidated estate knowledge hub (API + web). Serves the registry
 # of every scattered knowledge location and the recovered artifacts
 # (github sort algorithm, recursive-agents study) as one first-class surface.
-# MCP tools are provided by ranch/olympus/mcp.ts (stdio) for the gatehouse.
+# MCP tools are provided by ranch/olympus/mcp.ts (stdio) for the gateway.
 run = "exec bun /home/toxic/pens/ranch/olympus/api.ts"
 dir = "/home/toxic/estate"
 retry = true

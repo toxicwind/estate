@@ -160,9 +160,11 @@ links:
     target: /home/toxic/sovereign/skills/scripts/syntax-guard.ts
   - name: ~/.local/bin/vansrouter-bridged
     target: /home/toxic/sovereign/skills/scripts/vansrouter.sh
+  - name: ~/.local/bin/secretsmith
+    target: /home/toxic/pens/barn/secretsmith/bin/secretsmith
   # -- estate/bin ops surface
   - name: bin/thresher-mcp-stdio
-    target: /home/toxic/pens/barn/thresher/bin/thresher-mcp-stdio
+    target: /home/toxic/pens/ranch/thresher/bin/thresher-mcp-stdio
   - name: bin/chute
     target: /home/toxic/pens/barn/chute/chute.mjs
 
