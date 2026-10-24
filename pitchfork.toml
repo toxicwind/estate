@@ -292,7 +292,7 @@ mise = true
 [daemons.doorbell-oauth-edge.env]
 OAUTH_EDGE_PORT = "25217"
 DOORBELL_UPSTREAM = "http://127.0.0.1:25202"
-PUBLIC_ISSUER = "https://estate.tailc9ac71.ts.net"
+PUBLIC_ISSUER = "https://github-mcp-host.tailc9ac71.ts.net"
 
 [daemons.estate-chat]
 run = "exec bun run chat.ts"
@@ -1358,7 +1358,7 @@ mise = false
 retry = true
 boot_start = true
 auto = ["start"]
-env = { PORT = "4000", FALKORDB_HOST = "127.0.0.1", FALKORDB_PORT = "6379", FALKORDB_GRAPH_NAME = "archguard_estate" }
+env = { PORT = "4000", FALKORDB_HOST = "127.0.0.1", FALKORDB_PORT = "6379", FALKORDB_GRAPH_NAME = "archguard_estate", OPENROUTER_API_KEY = "", ANTHROPIC_API_KEY = "" }
 ready_http = "/api/health"
 
 # toxicwind/archguard integration (Forge, 2026-10-20; re-landed as composer
