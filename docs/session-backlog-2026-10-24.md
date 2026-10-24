@@ -107,3 +107,5 @@ green (was: missing `mod roost_providers` in lib.rs — I added it; re-verify).
 Pursue A: mint/find a Standard `AIzaSy` EAP key ⇒ secretsmith + keypool ⇒
 eap-smoke 200 (the theta E2E manual test). Then B rust coverage. Then verify+push
 E. Report each with evidence.
+
+## H. (2026-10-24 late) hodos rust: [DONE] reverted generated-file hand-edit (pinax_providers KEY_ENV stays via overlay); added mod roost_providers so crate compiles; 308/309 tests pass; the 1 fail (roost_providers_copy_in_sync) needs the EXTERNAL pinax/generated/providers.rs (mesh/catalog) which is absent from this checkout — pre-existing env test, not a regression. hodos commit 698380f pushed.
