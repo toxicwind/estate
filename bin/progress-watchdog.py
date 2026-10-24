@@ -50,7 +50,6 @@ LEDGER = Path("/home/toxic/pens/ranch/oracle/ledger/ledger.jsonl")
 PLOF = ["tau-1826-health", "super-ralph-e2e"]
 DAEMONS = {
     "kimi-auto-shim": 25153,
-    "beellama-fast": 25122,
     "whatsapp-mcp": 25146,
     "toolcall-llm": 25152,
     "stoat": 25104,

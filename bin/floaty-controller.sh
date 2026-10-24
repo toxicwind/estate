@@ -41,7 +41,7 @@ for c in d:
     ;;
   stoplight)
     /usr/bin/node /home/toxic/pens/ranch/signalhead/src/cli.js set "${2:-idle}" --agent desk 2>/dev/null | tail -1
-    curl -s --max-time 4 http://127.0.0.1:4747/state 2>/dev/null | head -c 90; echo
+    curl -s --max-time 4 http://127.0.0.1:25233/state 2>/dev/null | head -c 90; echo
     ;;
   *)
     echo "unknown: $CMD";;

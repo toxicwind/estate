@@ -14,19 +14,19 @@ REASON="${1:-ok}"
 case "$REASON" in
   ok|idle|done)
     /usr/bin/node "$SG" set idle --agent desk >/dev/null 2>&1
-    curl -s --max-time 4 http://127.0.0.1:4747/state 2>/dev/null | head -c 60; echo
+    curl -s --max-time 4 http://127.0.0.1:25233/state 2>/dev/null | head -c 60; echo
     exit 0
     ;;
   busy|working)
     /usr/bin/node "$SG" set busy --agent desk >/dev/null 2>&1
-    curl -s --max-time 4 http://127.0.0.1:4747/state 2>/dev/null | head -c 60; echo
+    curl -s --max-time 4 http://127.0.0.1:25233/state 2>/dev/null | head -c 60; echo
     exit 0
     ;;
   *)
     # needs human: red floaty + non-zero exit so the caller gates on it
     /usr/bin/node "$SG" set waiting --agent desk "$REASON" >/dev/null 2>&1
     printf 'NEEDS-HUMAN: %s\n' "$REASON"
-    curl -s --max-time 4 http://127.0.0.1:4747/state 2>/dev/null | head -c 60; echo
+    curl -s --max-time 4 http://127.0.0.1:25233/state 2>/dev/null | head -c 60; echo
     exit 2
     ;;
 esac

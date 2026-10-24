@@ -65,7 +65,7 @@ check_port() {
 check_port 25111 chute
 check_port 25100 herd
 check_port 25193 flock
-check_port 20128 vansrouter
+check_port 25237 vansrouter
 check_port 25127 wrangler
 check_port 25130 browserless
 check_port 25104 sov-router
@@ -89,7 +89,7 @@ probe_http() {
 probe_http "herd"        "http://127.0.0.1:25100/health"
 probe_http "flock"       "http://127.0.0.1:25193/health"
 probe_http "wrangler"        "http://127.0.0.1:25127/health"
-probe_http "vansrouter"  "http://127.0.0.1:20128/api/health"
+probe_http "vansrouter"  "http://127.0.0.1:25237/api/health"
 probe_http "sov-router"  "http://127.0.0.1:25104/health"
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -151,7 +151,7 @@ count_models() {
 }
 
 count_models "herd"       "http://127.0.0.1:25100/v1/models"
-count_models "vansrouter" "http://127.0.0.1:20128/v1/models"
+count_models "vansrouter" "http://127.0.0.1:25237/v1/models"
 [ -f "$TAU_HOME/.tau/flock.key" ] && count_models "flock" "http://127.0.0.1:25193/v1/models" "$(cat "$TAU_HOME/.tau/flock.key")"
 count_models "sov-router" "http://127.0.0.1:25104/v1/models"
 
@@ -309,7 +309,7 @@ hdr "11. VANSROUTER CHAT ENDPOINT"
 
 sub "POST /v1/chat/completions (oc/jev-1.13-free):"
 code="$(curl -s -o /tmp/vr-audit-chat.txt -w '%{http_code}' --max-time 8 \
-  -X POST "http://127.0.0.1:20128/v1/chat/completions" \
+  -X POST "http://127.0.0.1:25237/v1/chat/completions" \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer local-estate' \
   -d '{"model":"oc/jev-1.13-free","messages":[{"role":"user","content":"hi"}],"max_tokens":1}' 2>/dev/null)"
@@ -360,7 +360,7 @@ summ() {
 [ -n "$(ss -tlnH '( sport = :25100 )' 2>/dev/null)" ] && summ "herd" 1 ":25100 bound" || summ "herd" 0 "not listening"
 [ -n "$(ss -tlnH '( sport = :25193 )' 2>/dev/null)" ] && summ "flock" 1 ":25193 bound" || summ "flock" 0 "not listening"
 [ -n "$(ss -tlnH '( sport = :25127 )' 2>/dev/null)" ] && summ "wrangler" 1 ":25127 bound" || summ "wrangler" 0 "not listening"
-[ -n "$(ss -tlnH '( sport = :20128 )' 2>/dev/null)" ] && summ "vansrouter" 1 ":20128 bound" || summ "vansrouter" 0 "not listening"
+[ -n "$(ss -tlnH '( sport = :25237 )' 2>/dev/null)" ] && summ "vansrouter" 1 ":25237 bound" || summ "vansrouter" 0 "not listening"
 
 [ -L "$BIN/tau" ] && [ -e "$(readlink -f "$BIN/tau" 2>/dev/null)" ] && summ "bin/tau" 1 "-> stockyard" || summ "bin/tau" 0 "broken or missing"
 [ -L "$BIN/omp" ] && [ -e "$(readlink -f "$BIN/omp" 2>/dev/null)" ] && summ "bin/omp" 1 "ok" || summ "bin/omp" 0 "broken or missing"
