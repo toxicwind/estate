@@ -184,6 +184,8 @@ dir = "."
 [daemons.browserless.env]
 BROWSERLESS_PORT = "25130"
 HOST = "127.0.0.1"
+DISPLAY = ":99"
+XDG_RUNTIME_DIR = "/run/user/1000"
 
 [daemons.codebase-memory]
 run = "exec /home/toxic/estate/tools/codebase-memory/run.sh"
@@ -1418,7 +1420,7 @@ auto = ["start"]
 
 [daemons.skopos-failover]
 mise = true
-run = "exec /home/toxic/.bun/bin/bun run /home/toxic/pens/olympus/products/skopos/bin/skopos.ts"
+run = "exec /home/toxic/.bun/bin/bun run /home/toxic/pens/olympus/products/skopos/bin/skopos-failover.ts"
 dir = "/home/toxic/pens/olympus/products/skopos"
 retry = true
 depends = ["agent-display"]

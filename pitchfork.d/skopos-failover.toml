@@ -5,11 +5,11 @@
 # time. Additive: does NOT replace, disable, or out-compete estate/browser-keeper.
 # 2026-10-24: two-truth fix — this fragment was stale (pointed at the retired
 # ranch/keeper copy). Monolith is live truth; consolidated to the product
-# entrypoint. The skopos product owns bin/skopos.ts (failover drop-in); the daemon
-# just runs it here. See pitchfork.toml [daemons.skopos-failover].
+# entrypoint. The skopos product owns bin/skopos-failover.ts (the failover
+# drop-in); the daemon just runs it here. See pitchfork.toml [daemons.skopos-failover].
 [daemons.skopos-failover]
 mise = true
-run = "exec /home/toxic/.bun/bin/bun run /home/toxic/pens/olympus/products/skopos/bin/skopos.ts"
+run = "exec /home/toxic/.bun/bin/bun run /home/toxic/pens/olympus/products/skopos/bin/skopos-failover.ts"
 dir = "/home/toxic/pens/olympus/products/skopos"
 retry = true
 depends = ["agent-display"]
