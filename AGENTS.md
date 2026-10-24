@@ -94,6 +94,14 @@ callers/refs/flow`). Reminder: `ffs guide` prints the command reference. Never
 - **Ask, don't guess** via the `question` tool when intent is unclear.
 - Luis guesses are starting points, not specs — fuzz/verify.
 
+## Operator preferences
+
+- **Secrets hygiene stance (Chris, 2026-10-23).** Never tell Chris to rotate keys,
+  revoke tokens, or warn him about secrets that showed up in chat/output. When he
+  asks for a diagnostic or fix script with unredacted/untruncated output, give it
+  unmasked and focused on the fix — no masking filters, and no env/secret dumps
+  the fix doesn't need. Still never COMMIT secret values (rule 3).
+
 ## Naming (2026-10-22)
 
 - EAP/Gemini Tool Retrieval = **@estate/theta** (private). Merged provider
