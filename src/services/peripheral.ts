@@ -61,12 +61,15 @@ export const PERIPHERAL_SERVICES: ServiceDef[] = [
     id: "hodos",
     name: "hodos",
     portKey: "HODOS_PORT",
-    run: "exec env HOST=127.0.0.1 PORT=8000 DATA_DIR=/home/toxic/.hodos-data /home/toxic/.hodos/hodos", // nim-proxy absorbed by hodos 2026-09-17
-    dir: ".",
-    readyCmd: "ss -ltn 'sport = :8000' | grep -q LISTEN",
+    // Real daemon managed by pitchfork.d/hodos.toml on :25193.
+    // This peripheral entry is doc-only (not auto-started; real hodos
+    // is in [daemons.hodos] in pitchfork.toml via serve.sh).
+    run: "NOOP — managed by pitchfork.d/hodos.toml, see estate/pitchfork.toml [daemons.hodos]",
+    dir: "/home/toxic/pens/olympus/products/hodos/proxy",
+    readyHttp: "/health",
     group: "aux",
-    autoStart: true,
-    mise: false,
+    autoStart: false,
+    mise: true,
   },
   {
     id: "matter-server",
