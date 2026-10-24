@@ -1,10 +1,9 @@
 [daemons.agent-display]
-run = "exec Xvnc :99 -geometry 3840x2160 -depth 24 -rfbport 5900 -localhost -SecurityTypes VncAuth -rfbauth /home/toxic/archive/home-dirs-2026/.browserless/vncpasswd"
+run = "exec Xvnc :99 -geometry 3840x2160 -depth 24 -rfbport 5900 -localhost -SecurityTypes VncAuth -rfbauth /home/toxic/.browserless/vncpasswd"
 auto = ["start"]
 retry = true
 ready_cmd = "ss -tln | grep -q 127.0.0.1:5900"
 port = 5900
-expected_port = [5900]
 boot_start = true
 dir = "."
 mise = true
@@ -19,12 +18,11 @@ boot_start = true
 dir = "."
 mise = true
 [daemons.agent-viewer]
-run = "exec /home/toxic/archive/home-dirs-2026/.local/bin/websockify --web /home/toxic/archive/home-dirs-2026/.browserless/novnc 127.0.0.1:6080 127.0.0.1:5900"
+run = "exec /home/toxic/.local/bin/websockify --web /home/toxic/pens/ranch/stable/novnc 127.0.0.1:6080 127.0.0.1:5900"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:6080/"
 port = 6080
-expected_port = [6080]
 boot_start = true
 dir = "."
 mise = true
