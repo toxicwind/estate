@@ -1,4 +1,4 @@
-[daemons.browser-keeper]
+[daemons.skopos]
 mise = true
 port = 25233
 # The keeper launches a HEADED chromium on DISPLAY :99, so it cannot come up
@@ -8,8 +8,10 @@ port = 25233
 # every omp startup paid for the failed connect. The dependency is real, so
 # it is declared here instead of being discovered again after a reboot.
 depends = ["agent-display"]
-run = "cd /home/toxic/estate/ranch/keeper && exec /home/toxic/.bun/bin/bun run keeper"
-dir = "."
+# 2026-10-24: consolidated onto olympus/products/skopos (canonical keeper).
+# daemon = bin/keeper.ts; old ranch/keeper CJS copy retired.
+run = "cd /home/toxic/pens/olympus/products/skopos && exec /home/toxic/.bun/bin/bun run bin/keeper.ts"
+dir = "/home/toxic/pens/olympus/products/skopos"
 retry = true
 # 2026-10-24: reconciled to monolith (live truth) — was stale 25157/25236 mix.
 # Live keeper binds CDP :25233 (health_http), ready :25236 (ready_http).

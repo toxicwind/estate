@@ -6,11 +6,11 @@
 # 2026-10-24: two-truth fix — this fragment was stale (pointed at a nonexistent
 # ranch/keeper/bin/skopos.ts). Monolith is live truth; consolidated to the product
 # entrypoint. The skopos product owns bin/skopos.ts (failover drop-in); the daemon
-# just runs it here. See pitchfork.toml [daemons.keeper-failover].
-[daemons.keeper-failover]
+# just runs it here. See pitchfork.toml [daemons.skopos-failover].
+[daemons.skopos-failover]
 mise = true
 run = "exec /home/toxic/.bun/bin/bun run /home/toxic/pens/olympus/products/skopos/bin/skopos.ts"
-dir = "/home/toxic/pens/ranch/keeper"
+dir = "/home/toxic/pens/olympus/products/skopos"
 retry = true
 depends = ["agent-display"]
 env = { DISPLAY = ":99", XDG_RUNTIME_DIR = "/run/user/1000", BROWSER_KEEPER_CDP_PORT = "25233", BROWSER_KEEPER_CDP = "http://127.0.0.1:25233", KEEPER_CHROMIUM_EXECUTABLE = "/home/toxic/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome", KEEPER_FAILOVER = "1", KEEPER_FAILOVER_GRACE_S = "15" }

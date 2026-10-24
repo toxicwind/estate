@@ -146,8 +146,11 @@ PORT = "25197"
 HOST = "127.0.0.1"
 BOUNDLESS_PORT = "25197"
 
-[daemons.browser-keeper]
-run = "cd /home/toxic/pens/ranch/keeper && exec /home/toxic/.bun/bin/bun run keeper"
+[daemons.skopos]
+# 2026-10-24: consolidated onto olympus/products/skopos (canonical keeper).
+# daemon = bin/keeper.ts, failover = bin/skopos.ts, MCP = src/. The old
+# ranch/keeper CJS copy is retired; nothing points at it.
+run = "cd /home/toxic/pens/olympus/products/skopos && exec /home/toxic/.bun/bin/bun run bin/keeper.ts"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25236/"
@@ -155,15 +158,15 @@ port = 25236
 expected_port = [25236]
 boot_start = true
 depends = ["agent-display"]
-dir = "/home/toxic/pens/ranch/keeper"
+dir = "/home/toxic/pens/olympus/products/skopos"
 mise = true
-[daemons.browser-keeper.health_http]
+[daemons.skopos.health_http]
 url = "http://127.0.0.1:25233/"
 interval = "30s"
 timeout = "5s"
 retries = 3
 
-[daemons.browser-keeper.env]
+[daemons.skopos.env]
 DISPLAY = ":99"
 XDG_RUNTIME_DIR = "/run/user/1000"
 BROWSER_KEEPER_CDP_PORT = "25233"
@@ -577,8 +580,8 @@ ready_http = "http://127.0.0.1:25159/"
 boot_start = true
 dir = "/home/toxic/estate"
 mise = true
-[daemons.keeper-floaty]
-run = "exec /home/toxic/estate/bin/keeper-floaty.sh"
+[daemons.skopos-floaty]
+run = "exec /home/toxic/estate/bin/skopos-floaty.sh"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25238/"
@@ -588,7 +591,7 @@ boot_start = true
 depends = ["agent-display"]
 dir = "/home/toxic/estate"
 mise = true
-[daemons.keeper-floaty.health_http]
+[daemons.skopos-floaty.health_http]
 url = "http://127.0.0.1:4747/"
 interval = "30s"
 timeout = "5s"
@@ -1413,10 +1416,10 @@ auto = ["start"]
 # ranch/flicker — project-owned daemon manifest. Source of truth for 'flicker'.
 # Owned by the ranch/flicker project; the parent only composes it.
 
-[daemons.keeper-failover]
+[daemons.skopos-failover]
 mise = true
 run = "exec /home/toxic/.bun/bin/bun run /home/toxic/pens/olympus/products/skopos/bin/skopos.ts"
-dir = "/home/toxic/pens/ranch/keeper"
+dir = "/home/toxic/pens/olympus/products/skopos"
 retry = true
 depends = ["agent-display"]
 env = { DISPLAY = ":99", XDG_RUNTIME_DIR = "/run/user/1000", BROWSER_KEEPER_CDP_PORT = "25233", BROWSER_KEEPER_CDP = "http://127.0.0.1:25233", KEEPER_CHROMIUM_EXECUTABLE = "/home/toxic/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome", KEEPER_FAILOVER = "1", KEEPER_FAILOVER_GRACE_S = "15" }
@@ -1426,7 +1429,7 @@ env = { DISPLAY = ":99", XDG_RUNTIME_DIR = "/run/user/1000", BROWSER_KEEPER_CDP_
 boot_start = true
 auto = ["start"]
 
-# keeper-floaty — supervised combined agent floaty stack.
+# skopos-floaty — supervised combined agent floaty stack.
 # Why: the estate's combined browser/agent control surface (ego + signalhead +
 # browserless + keeper) needs an always-on floaty that a) gives the agent a
 # full monitor/control surface via ego-browser, b) keeps the human-visible
