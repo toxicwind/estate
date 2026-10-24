@@ -94,7 +94,7 @@ The estate's numbered services live in the **25xxx range**, pinned in the **port
 25224 25225 25226 25229 25231 25280
 ```
 
-> **110 unique 25xxx slot-values** are pinned. `25001–25099` is the **herd-dynamic pool** (llama.cpp + alias shims, allocated at runtime). `25170`, `25178`, `25180` are reserved/reserved-ish slots. The remaining tail (`25280+`) is the **Smithers gateway** and the DelendAI dashboards. Platform ports outside 25xxx (also SSOT-pinned): `5900`/`6080` agent-display/viewer, `34567` files (tailscale-mapped).
+> **110 unique 25xxx slot-values** are pinned. `25001–25099` is the **herd-dynamic pool** (llama.cpp + alias shims, allocated at runtime). `25170`, `25178`, `25180` are reserved/reserved-ish slots. The remaining tail (`25280+`) is the **Smithers gateway** and the DelendAI dashboards. Platform ports outside 25xxx (also SSOT-pinned): `20128` vansrouter, `4747` keeper-floaty, `5900`/`6080` agent-display/viewer, `34567` files.
 
 ### Known-important ports (annotated from config/ports.env)
 
