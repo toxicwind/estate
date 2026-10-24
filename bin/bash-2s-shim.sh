@@ -216,3 +216,46 @@ if [ -x "$_kairos_runfast" ]; then
 fi
 export BASH_4S_SHIM=1
 export RF_DEADLINE="${RF_DEADLINE:-4.0}"
+
+# =====================================================================
+# Credential injection — secretsmith keyring SSOT (C-phase).
+# `secret <VAR>` resolves a keyring entry; `secret <VAR> -- cmd` injects
+# it into cmd's environment without printing. No hardcoded tokens.
+# =====================================================================
+secret() {
+  local var="${1:-}"
+  if [ -z "$var" ]; then
+    echo "usage: secret <VAR_NAME> [-- <cmd> [args...]]" >&2
+    return 1
+  fi
+  shift
+  if [ "${1:-}" = "--" ]; then shift; fi
+  if [ $# -gt 0 ]; then
+    # Inject secret into child env; never print it.
+    set -a
+    eval "$(secretsmith env --env "${var}=label=${var}" 2>/dev/null)"
+    set +a
+    "$@"
+  else
+    # Diagnostic: just resolve and echo the var name
+    echo "$var"
+  fi
+}
+export -f secret 2>/dev/null || true
+# =====================================================================
+# secret-run — thin wrapper: `secret-run VAR cmd [args...]`
+# Uses secretsmith exec to inject VAR from keyring into cmd's env,
+# with no stdout leakage of the secret value.
+# =====================================================================
+secret-run() {
+  local var="${1:-}"
+  shift || { echo "usage: secret-run <VAR_NAME> -- <cmd> [args...]" >&2; return 1; }
+  [ "${1:-}" = "--" ] && shift
+  if [ $# -gt 0 ]; then
+    /home/toxic/.local/bin/secretsmith exec --only "$var" -- "$@"
+  else
+    echo "usage: secret-run <VAR_NAME> -- <cmd> [args...]" >&2
+    return 1
+  fi
+}
+export -f secret-run 2>/dev/null || true
