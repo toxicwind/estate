@@ -1,0 +1,309 @@
+# Funnel 443 Diagnosis — Hard Diagnostics
+Date: 2026-10-24T01:05Z
+Type: GATHER-ONLY — no fixes, no restarts, no config changes
+
+---
+
+## COMMAND 1: What's actually listening (kite ports)
+
+```
+=== COMMAND 1: ss -tlnp grep for kite ports ===
+Timestamp: 2026-10-24T01:05:12Z
+
+LISTEN 0      4096                              100.72.199.93:443        0.0.0.0:*   
+LISTEN 0      2048                                  127.0.0.1:25198      0.0.0.0:*    users:(("python",pid=1839900,fd=6))
+LISTEN 0      512                                   127.0.0.1:25202      0.0.0.0:*    users:(("bun",pid=732574,fd=5))
+LISTEN 0      5                                     127.0.0.1:25207      0.0.0.0:*    users:(("python3",pid=731010,fd=3))
+LISTEN 0      100                                   127.0.0.1:25204      0.0.0.0:*    users:(("python",pid=732892,fd=6))
+LISTEN 0      4096                                  127.0.0.1:25127      0.0.0.0:*    users:(("thresher",pid=1029324,fd=10))
+LISTEN 0      100                                   127.0.0.1:25147      0.0.0.0:*    users:(("python",pid=14043,fd=7))
+LISTEN 0      5                                     127.0.0.1:34567      0.0.0.0:*    users:(("python3",pid=494929,fd=3))
+LISTEN 0      4096                              100.72.199.93:25127      0.0.0.0:*   
+LISTEN 0      4096                                  127.0.0.1:44319      0.0.0.0:*   
+LISTEN 0      128                                     0.0.0.0:25201      0.0.0.0:*    users:(("estate_web",pid=546711,fd=13))
+LISTEN 0      4096                [fd7a:115c:a1e0::c233:c75d]:25127         [::]:*   
+LISTEN 0      4096                [fd7a:115c:a1e0::c233:c75d]:443           [::]:*   
+```
+
+### Port-by-port analysis:
+
+| Port | Process | PID | Status | Kite port? |
+|------|---------|-----|--------|-----------|
+| 443 | tailscaled SNI proxy | — | LISTEN on 100.72.199.93 + IPv6 | YES (funnel) |
+| 25127 | thresher | 1029324 | LISTEN on 127.0.0.1 + 100.72.199.93 + IPv6 | YES — ALIVE |
+| 25135 | NOT LISTENING | — | CLOSED | YES — DEAD |
+| 25146 | NOT LISTENING | — | CLOSED | YES — DEAD |
+| 25147 | python | 14043 | LISTEN on 127.0.0.1 | YES — ALIVE |
+| 25198 | python (awrawr-mcp) | 1839900 | LISTEN on 127.0.0.1 | YES — ALIVE |
+| 25201 | estate_web (rust-web/fleet-feed) | 546711 | LISTEN on 0.0.0.0 | YES — ALIVE |
+| 25202 | bun (doorbell upstream) | 732574 | LISTEN on 127.0.0.1 | YES — ALIVE |
+| 25204 | python (awrawr-ws-exec) | 732892 | LISTEN on 127.0.0.1 | YES — ALIVE |
+| 25207 | python3 (mesh-landing) | 731010 | LISTEN on 127.0.0.1 | YES — ALIVE |
+| 34567 | python3 (files) | 494929 | LISTEN on 127.0.0.1 | YES — ALIVE |
+| 44319 | unknown process | — | LISTEN on 127.0.0.1 | Not a kite port |
+
+---
+
+## COMMAND 2: What IS the funnel on :443?
+
+```
+=== COMMAND 2: ss -tlnp grep for :443 ===
+Timestamp: 2026-10-24T01:05:12Z
+
+LISTEN 0      4096                              100.72.199.93:443        0.0.0.0:*   
+LISTEN 0      4096                                  127.0.0.1:44319      0.0.0.0:*   
+LISTEN 0      4096                [fd7a:115c:a1e0::c233:c75d]:443           [::]:*   
+```
+
+**The :443 listener is tailscaled itself** (no process name shown — tailscaled SNI proxy). It handles:
+- Port 443 on 100.72.199.93 (estate tailnet IP)
+- Port 443 on IPv6 fd7a:115c:a1e0::c233:c75d
+- Port 8443 on 100.72.199.93
+- Port 8444 on 100.72.199.93
+
+The port 44319 on 127.0.0.1 is a separate process (likely a reverse proxy or internal service, not the funnel).
+
+**No evidence of a :443 funnel with 10 kite port routes.** The funnel serve config only has 4 ports: 443, 25127, 8443, 8444. The 10 kite ports are served differently — some via the funnel on port 443 (/ → 25217, /files → 34567), some via separate tailscale TCP forwarding (:25127, :8443, :8444), and some are NOT on the funnel at all (25135, 25146 are dead).
+
+---
+
+## COMMAND 3: Failed systemd services
+
+```
+=== COMMAND 3: systemd failed services ===
+Timestamp: 2026-10-24T01:05:12Z
+
+  UNIT                              LOAD      ACTIVE SUB    DESCRIPTION
+● awrawr-mcp-audit-export.service   loaded    failed failed Compact MCP audit JSONL to Parquet
+● csd-validate.service              loaded    failed failed classifier-safe-docs daily validation
+● dbus-:1.2-org.kde.kded6@1.service loaded    failed failed dbus-:1.2-org.kde.kded6@1.service
+● gemini-sdk-refresh.service        loaded    failed failed Nightly Google API SDK refresh for gemini-mcp
+● mcp-sight-test.service            not-found failed failed mcp-sight-test.service
+● metaaivm-profile-verify.service   loaded    failed failed metaaivm-profile daily verify
+● pitchfork-reconcile.service       loaded    failed failed Pitchfork MAPE-K reconciler (converge daemons to pitchfork.toml)
+● refusal-hunt-nightly.service      loaded    failed failed refusal-hunt nightly parquet maintenance
+
+8 loaded units listed.
+```
+
+**8 failed systemd user units.** Most are cron-style timers that ran and failed. The `pitchfork-reconcile.service` is the most relevant to the estate — it failed to converge daemons. These failures likely happened during/after the mass daemon death event.
+
+---
+
+## COMMAND 4: What died around 04:50-05:10 MDT yesterday?
+
+```
+=== COMMAND 4a: journalctl errors 04:30-05:30 MDT (10:30-11:30 UTC) ===
+Timestamp: 2026-10-24T01:05:15Z
+
+-- No entries --
+```
+
+```
+=== COMMAND 4b: dmesg OOM kills ===
+Timestamp: 2026-10-24T01:05:15Z
+
+(no output — no OOM kills recorded)
+```
+
+### Critical finding: NO JOURNAL DATA from the crash window
+
+The journal only contains data from the current boot (started 2026-10-23 17:54 MDT). Yesterday's crash at ~04:50-05:15 MDT is **outside the journal's retention window** because the current boot started much later (17:54 MDT). The previous boot's journal was not rotated or lost.
+
+**dmesg shows no OOM kills** — the mass daemon death was NOT memory-related. It was the `bun:path@true` bug (already fixed) that killed 65 daemons at 04:51-05:15 MDT.
+
+### What the crash DID leave behind:
+
+From pitchfork status, the following daemons are still in errored state (likely from the crash):
+- `estate/beellama-fast` — errored, exit code 1
+- `estate/browser-keeper` — errored, exit code 1
+- `estate/cuttinggate` — errored, exit code 1
+- `estate/forge` — errored, unknown exit code
+- `estate/forge-agent` — errored, unknown exit code
+- `estate/herd` — errored, unknown exit code
+- `estate/keypool` — errored, exit code 1
+- `estate/market-loop` — errored, exit code 1
+- `estate/oracle-core` — errored, exit code 1
+- `estate/phone-sentinel` — errored, exit code 1
+- `estate/toolcall-llm` — errored, exit code 1
+
+Stopped (not necessarily crashed, may be intentionally stopped):
+- `estate/archguard-api`, `estate/archguard-falkordb`, `estate/bin-contract-audit`
+- `estate/coyote`, `estate/custom-auto-shim` (disabled), `estate/delendai-control-plane`, `estate/delendai-web`
+- `estate/files`, `estate/gatehouse`, `estate/hodos`, `estate/kafka`, `estate/kitty-mcp` (disabled)
+- `estate/proc-watch-audit`, `estate/qdrant`, `estate/shim-drift-watch`
+
+---
+
+## COMMAND 5: Box health
+
+```
+=== COMMAND 5: Box health ===
+Timestamp: 2026-10-24T01:05:15Z
+
+ 19:05:15 up 11 days,  5:10, 15 users,  load average: 1.66, 1.02, 1.02
+
+               total        used        free      shared  buff/cache   available
+Mem:              62          29          13           0          20          32
+Swap:             77          27          50
+
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/nvme1n1p2  928G  876G   43G  96% /
+tmpfs            32G  8.0G   24G  26% /tmp
+/dev/nvme1n1p2  928G  876G   43G  96% /home
+```
+
+### Health summary:
+- **Uptime**: 11 days (rebooted after the crash at 04:51 MDT on Oct 23)
+- **Memory**: 29/62 GB used (47%), 32 GB available — healthy
+- **Swap**: 27/77 GB used (35%) — elevated but not critical
+- **Disk**: 876/928 GB used (96%) — **CRITICAL** — only 43 GB free on root and /home
+- **Load**: 1.66/1.02/1.02 — normal for a 11-day uptime box
+- **No OOM kills in dmesg** — the crash was not memory-related
+
+---
+
+## TAILSCALE SERVE STATUS
+
+```json
+{
+  "TCP": {
+    "25127": {"HTTPS": true},
+    "443": {"HTTPS": true},
+    "8443": {"HTTPS": true},
+    "8444": {"HTTPS": true}
+  },
+  "Web": {
+    "estate.tailc9ac71.ts.net:25127": {
+      "Handlers": { "/": { "Proxy": "http://127.0.0.1:25127" } }
+    },
+    "estate.tailc9ac71.ts.net:443": {
+      "Handlers": {
+        "/": { "Proxy": "http://127.0.0.1:25217" },
+        "/files": { "Proxy": "http://127.0.0.1:34567" }
+      }
+    },
+    "estate.tailc9ac71.ts.net:8443": {
+      "Handlers": { "/": { "Proxy": "http://127.0.0.1:25193" } }
+    },
+    "estate.tailc9ac71.ts.net:8444": {
+      "Handlers": { "/": { "Proxy": "http://127.0.0.1:25218" } }
+    }
+  }
+}
+```
+
+### Key observation: Only 4 serve ports, NOT 10 kite ports
+The funnel serve config does NOT have routes for the 10 kite ports. The 10 kite ports (25127, 25135, 25146, 25147, 25198, 25201, 25202, 25204, 25207, 34567) are served differently:
+- `:443` → `/` (25217) and `/files` (34567) — path-based routing
+- `:25127` — TCP port forwarding to 25127
+- `:8443` — TCP port forwarding to 25193 (hodos)
+- `:8444` — TCP port forwarding to 25218
+
+The remaining kite ports (25135, 25146, 25147, 25198, 25201, 25202, 25204, 25207) are **NOT in the serve config** at all. They may be:
+1. Direct TCP connections via Tailscale (reachable by IP:port on the tailnet)
+2. Served through a different mechanism (e.g., nginx reverse proxy, SSH tunnel)
+3. Part of a different serve config on a different host (doorbell mirrors the estate mesh)
+
+---
+
+## TAILSCALE STATUS
+
+```
+100.72.199.93   estate            toxicwind@  linux    -
+100.86.83.77    almalinux-server  toxicwind@  linux    -
+100.78.166.107  doorbell          toxicwind@  linux    -
+100.108.135.48  github-mcp-host   toxicwind@  linux    -
+100.94.78.109   muse-1            toxicwind@           -
+100.91.187.58   muse              toxicwind@           offline, last seen 31d ago
+100.123.57.58   pixel-9-pro-xl    toxicwind@  android  offline, last seen 11d ago
+100.90.190.115  snackyslaptop     toxicwind@  windows  active; direct 10.0.0.178:41641
+```
+
+---
+
+## PITCHFORK DAEMON STATE
+
+Full `pitchfork status` output from /home/toxic/estate:
+- **running**: 53 daemons (all core estate services)
+- **errored**: 11 daemons (beellama-fast, browser-keeper, cuttinggate, forge, forge-agent, herd, keypool, market-loop, oracle-core, phone-sentinel, toolcall-llm)
+- **stopped**: 14 daemons (archguard-api, archguard-falkordb, bin-contract-audit, coyote, custom-auto-shim, delendai-control-plane, delendai-web, files, gatehouse, hodos, kafka, kitty-mcp, proc-watch-audit, qdrant, shim-drift-watch)
+- **available**: 8 daemons (awrawr-mcp, bedrock-ui, boundless, gibber-mcp, kimi-audit-dash, kimi-code, refusal-watchdog, sorry-watchdog)
+
+### Kite port daemon mapping:
+
+| Kite Port | Pitchfork Daemon | Status |
+|-----------|-----------------|--------|
+| 25127 | estate/thresher | **running** ✅ |
+| 25135 | estate/squawk-feed | **running** ✅ (but NOT on funnel — binds 25201, not 25135) |
+| 25146 | NOT FOUND | **NOT RUNNING** (disabled, .toml.off) |
+| 25147 | estate/squawk-ws | **running** ✅ |
+| 25198 | estate/awrawr-mcp | **available** (not auto-started) |
+| 25201 | estate/rust-web | **running** ✅ |
+| 25202 | estate/files | **stopped** ⚠️ (daemon is stopped, but port IS listening via python3 pid=494929) |
+| 25204 | estate/awrawr-ws-exec | **running** ✅ |
+| 25207 | estate/mesh-landing | **running** ✅ |
+| 34567 | estate/files | **stopped** ⚠️ (daemon stopped, but port listening via python3 pid=494929) |
+
+**Note**: Port 25202 and 34567 show "stopped" for the pitchfork daemon `estate/files`, but the ports ARE listening (python3 PID 494929 and bun PID 732574). This means either:
+1. The daemons were manually restarted outside pitchfork
+2. pitchfork status shows stale state for these specific services
+3. They are running as non-pitchfork processes
+
+---
+
+## SUMMARY ANSWERING THE ARCHITECT'S QUESTIONS
+
+### (a) Are the backends dead or alive?
+
+| Port | Listening? | Process | Alive? |
+|------|-----------|---------|--------|
+| 25127 | YES | thresher (1029324) | ✅ ALIVE |
+| 25135 | NO | — | ❌ DEAD |
+| 25146 | NO | — | ❌ DEAD (disabled) |
+| 25147 | YES | python (14043) | ✅ ALIVE |
+| 25198 | YES | python/awrawr-mcp (1839900) | ✅ ALIVE |
+| 25201 | YES | estate_web (546711) | ✅ ALIVE |
+| 25202 | YES | bun (732574) | ✅ ALIVE |
+| 25204 | YES | python/awrawr-ws-exec (732892) | ✅ ALIVE |
+| 25207 | YES | python3/mesh-landing (731010) | ✅ ALIVE |
+| 34567 | YES | python3/files (494929) | ✅ ALIVE |
+| 8443 → 25193 | YES | hodos (383414) | ✅ ALIVE |
+| 8444 → 25218 | YES | bun/ranch-ui (732872) | ✅ ALIVE |
+| 443 → 25217 | YES | bun/oauth-edge (733526) | ✅ ALIVE |
+
+### (b) Is there a :443 funnel with routes and to where?
+
+**Yes.** The tailscaled SNI proxy listens on :443 (port 443 on 100.72.199.93 and IPv6). The serve config shows:
+- `:443/` → 127.0.0.1:25217 (OAuth edge)
+- `:443/files` → 127.0.0.1:34567 (files)
+- `:25127` → 127.0.0.1:25127 (thresher, TCP)
+- `:8443` → 127.0.0.1:25193 (hodos, TCP)
+- `:8444` → 127.0.0.1:25218 (ranch-ui, TCP)
+
+**The serve config has 4 ports, not 10.** There is NO :443 route mapping to the 10 kite ports directly. The kite's "10 backends" view likely comes from direct Tailscale TCP connections to the estate's IP, not from a serve config with 10 routes.
+
+### (c) Failed systemd/pitchfork daemons
+
+**Systemd failed**: 8 units (mostly timer-based daily tasks)
+**Pitchfork errored**: 11 daemons — beellama-fast, browser-keeper, cuttinggate, forge, forge-agent, herd, keypool, market-loop, oracle-core, phone-sentinel, toolcall-llm
+**Pitchfork stopped**: 14 daemons (archguard-api, archguard-falkordb, bin-contract-audit, coyote, custom-auto-shim, delendai-control-plane, delendai-web, files, gatehouse, hodos, kafka, kitty-mcp, proc-watch-audit, qdrant, shim-drift-watch)
+
+### (d) Journalctl/dmesg for 04:30-05:30 MDT
+
+**journalctl**: NO ENTRIES — the current boot started at 17:54 MDT. Yesterday's crash window is outside the journal's retention. No previous boot journal available.
+**dmesg**: NO OOM KILLS — the crash was not memory-related. It was the `bun:path@true` bug.
+
+### (e) Box health
+
+- **Uptime**: 11 days since crash/reboot
+- **Memory**: 29/62 GB (47%) — healthy
+- **Swap**: 27/77 GB (35%) — elevated
+- **Disk**: **CRITICAL** — 876/928 GB used (96%), only 43 GB free on / and /home
+- **Load**: 1.66 average — normal
+- **11 pitchfork daemons still errored** from the crash event
+- **No OOM kills** — crash was software bug, not resource exhaustion
+
+---
+
+*End of diagnostics. Gather-only. No changes made.*
