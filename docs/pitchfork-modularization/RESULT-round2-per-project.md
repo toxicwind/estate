@@ -66,7 +66,7 @@ where things run; 30 projects, 82 daemons):
 | `ranch/squawk` | 4 | squawk-feed, fleet-ui, nats, nats-tail |
 | `ranch/squawk-ws` | 2 | squawk-ws, squawk-ws-client |
 | `ranch/flicker` | 2 | flicker, flicker-agent (both stale) |
-| `ranch/windmill`, `ranch/stream-broker`, `ranch/barn/gatehouse` | 1 each | |
+| `ranch/windmill`, `ranch/stream-broker`, `ranch/barn/thresher` | 1 each | |
 | `range` | 1 | mesh-landing — the ONLY daemon owned by range proper |
 | `tools/buildsrv` | 2 | buildsrv, buildsrv-watchdog (1 stale) |
 | `tools/kimi-claw` | 2 | |

@@ -121,7 +121,7 @@
   "intent_declaration": {
     "strict_server_validation": false
   },
-  "listen": "127.0.0.1:25128",
+  "listen": "127.0.0.1:25127",
   "logging": {
     "level": "warn",
     "enable_file": true,
@@ -834,7 +834,7 @@
       "command": "uvx",
       "args": [
         "--with",
-        "mcp\u003c2",
+        "mcp<2",
         "qdrant-mcp-server"
       ],
       "env": {
@@ -1021,7 +1021,7 @@
       "command": "uvx",
       "args": [
         "--with",
-        "mcp\u003c2",
+        "mcp<2",
         "mcp-server-sqlite",
         "--db-path",
         "/home/toxic/ast_matrix.db"

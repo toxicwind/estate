@@ -1,10 +1,10 @@
 /**
- * Gatehouse MCP Federation Extension for Tau.
+ * Thresher MCP Federation Extension for Tau.
  *
- * Bridges the estate's :25127 Gatehouse MCP federation gateway directly into Tau:
+ * Bridges the estate's :25127 Thresher MCP federation gateway directly into Tau:
  * - Exposes gatehouse_discover: list connected MCP servers (exa, ffs, github, filesystem)
  * - Exposes gatehouse_retrieve_tools: natural language search for tools across servers
- * - Exposes gatehouse_call_tool: call any federated tool through Gatehouse
+ * - Exposes gatehouse_call_tool: call any federated tool through Thresher
  * - Exposes gatehouse_activity: audit log of tool execution
  */
 
@@ -16,7 +16,7 @@ export default function (pi: ExtensionAPI) {
   // 1. Tool discovery
   pi.registerTool({
     name: "gatehouse_discover",
-    description: "List all MCP servers connected to the estate Gatehouse federation gateway (:25127) with their status and tool counts.",
+    description: "List all MCP servers connected to the estate Thresher federation gateway (:25127) with their status and tool counts.",
     parameters: {
       type: "object",
       properties: {},
@@ -32,7 +32,7 @@ export default function (pi: ExtensionAPI) {
   // 2. BM25 tool search
   pi.registerTool({
     name: "gatehouse_retrieve_tools",
-    description: "Search across all connected Gatehouse MCP servers (exa, ffs, github, filesystem, etc.) for tools matching a query.",
+    description: "Search across all connected Thresher MCP servers (exa, ffs, github, filesystem, etc.) for tools matching a query.",
     parameters: {
       type: "object",
       properties: {
@@ -54,7 +54,7 @@ export default function (pi: ExtensionAPI) {
   // 3. Federated tool execution
   pi.registerTool({
     name: "gatehouse_call_tool",
-    description: "Execute a tool on any MCP server connected to Gatehouse (e.g. server: 'exa', tool: 'search').",
+    description: "Execute a tool on any MCP server connected to Thresher (e.g. server: 'exa', tool: 'search').",
     parameters: {
       type: "object",
       properties: {
@@ -77,7 +77,7 @@ export default function (pi: ExtensionAPI) {
   // 4. Activity inspection
   pi.registerTool({
     name: "gatehouse_activity",
-    description: "Query the Gatehouse audit log for recent federated tool calls and results.",
+    description: "Query the Thresher audit log for recent federated tool calls and results.",
     parameters: {
       type: "object",
       properties: {

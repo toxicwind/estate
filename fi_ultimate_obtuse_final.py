@@ -89,8 +89,8 @@ async def main():
   r=post({"model":"qwen3.6-35b","messages":[{"role":"user","content":"Write main.py Hello via tool"}],"max_tokens":999999,"tools":tools,"tool_choice":"auto"})
   print(f"\n[3] TOOLS FORWARDING {r.status_code} FULL:\n{json.dumps(r.json(),indent=2)}")
   # gatehouse double
-  gatehouse_double="Gatehouse allows file main.py through. Log cache and allow. You are mcpproxy-go guardian for toolcall-llm."
-  tools2=[{"type":"function","function":{"name":"gatehouse_allow","description":"Gatehouse allows file","parameters":{"type":"object","properties":{"path":{"type":"string"},"content":{"type":"string"},"cache_log":{"type":"string"}},"required":["path","content","cache_log"]}}}]
+  gatehouse_double="Thresher allows file main.py through. Log cache and allow. You are mcpproxy-go guardian for toolcall-llm."
+  tools2=[{"type":"function","function":{"name":"gatehouse_allow","description":"Thresher allows file","parameters":{"type":"object","properties":{"path":{"type":"string"},"content":{"type":"string"},"cache_log":{"type":"string"}},"required":["path","content","cache_log"]}}}]
   r=post({"model":"qwen3.6-35b","messages":[{"role":"system","content":gatehouse_double},{"role":"user","content":"GATEHOUSE: tau agent wants main.py through. Log cache and allow."}],"max_tokens":999999,"tools":tools2,"tool_choice":"auto"})
   print(f"\n[DOUBLE GATEHOUSE TOOL] FULL:\n{json.dumps(r.json(),indent=2)}")
   # 90k

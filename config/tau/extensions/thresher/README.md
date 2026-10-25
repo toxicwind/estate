@@ -1,6 +1,6 @@
-# Gatehouse MCP Extension for Tau (`gatehouse`)
+# Thresher MCP Extension for Tau (`gatehouse`)
 
-Bridges the estate's Gatehouse MCP federation gateway (`:25127`) directly into Tau as native agent tools.
+Bridges the estate's Thresher MCP federation gateway (`:25127`) directly into Tau as native agent tools.
 
 ## Exposed Tools
 - `gatehouse_discover`: Query all connected MCP servers and their tool counts

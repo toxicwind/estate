@@ -169,7 +169,7 @@ grep:
   contextAfter: 3
   contextBefore: 3
   enabled: false
-hideThinkingBlock: false
+hideThinkingBlock: true
 hindsight:
   apiToken: ""
   apiUrl: http://127.0.0.1:25117
@@ -272,7 +272,7 @@ modelRoles:
   verification: freeinference/qwen3.6-35b
   vision: freeinference/minimax-m3:xhigh
   web: web/exa
-  default: freeinference/minimax-m3:off
+  default: freeinference/deepseek-v4-flash:off
 omitThinking: false
 paste:
   largeMenuThreshold: 100

@@ -1197,7 +1197,7 @@ async function tool_exa_answer(args: Record<string, unknown>): Promise<string> {
 
 const MESH_MCP_URL = process.env["MESH_MCP_URL"] ?? "http://127.0.0.1:25127/mcp";
 const MESH_SHEP_BIN = process.env["MESH_SHEP_BIN"] ?? `${HOME}/estate/ranch/mesh/bin/gatehouse`;
-const MESH_SHEP_CONFIG = process.env["MESH_SHEP_CONFIG"] ?? `${HOME}/estate/ranch/barn/gatehouse/mcp_config.json`;
+const MESH_SHEP_CONFIG = process.env["MESH_SHEP_CONFIG"] ?? `${HOME}/estate/ranch/barn/thresher/mcp_config.json`;
 const MESH_OUT_CAP = 20000;
 const MESH_INTENTS: Record<string, string> = {
   read: "call_tool_read",

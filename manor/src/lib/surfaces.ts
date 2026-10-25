@@ -199,7 +199,7 @@ export const SURFACES: readonly Surface[] = [
 	// ── Mesh & routing ────────────────────────────────────────────────────
 	{
 		id: "gatehouse",
-		label: "Gatehouse",
+		label: "Thresher",
 		group: "Mesh",
 		origin: loopback(25127),
 		kind: "ui",

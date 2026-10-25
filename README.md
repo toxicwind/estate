@@ -249,7 +249,7 @@ _(The old README carried verified `main` SHAs here; those SHAs are mutable and w
 - **Port not answering?** Check it's pinned in `config/ports.env` (the SSOT) — if it isn't, it's an unowned listener, not a live service. Then `ss -ltnp | grep :PORT`.
 - **Daemon reports errored?** Verify the _re-registered_ definition, not the dashboard (orphaned predecessor can still answer 200).
 - **Squawk feed / ws giving 302?** That's expected — root paths redirect to their real endpoints (`/squawk-feed/seq`, `/ping`).
-- **Gatehouse MCP flaky?** It federates FFS, BM25, memory, browser CDP, GitHub, debug, ast-grep behind `http://127.0.0.1:25127/mcp` — start there for tool discovery and health.
+- **Thresher MCP flaky?** It federates FFS, BM25, memory, browser CDP, GitHub, debug, ast-grep behind `http://127.0.0.1:25127/mcp` — start there for tool discovery and health.
 - **Build cache?** `mbx`/mise remote task-cache is :25148; forge REAPI is :25155; NativeLink worker :25157.
 
 ## 🤝 Contributing

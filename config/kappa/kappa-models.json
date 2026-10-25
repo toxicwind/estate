@@ -1,9 +1,9 @@
 {
   "$schema": "https://app.kappa.ai/config.json",
-  "contract": "estate-pinax/kappa-catalog/v1",
-  "generator": "@toxicwind/pinax codegen — kappa target (installed profile) — DO NOT EDIT BY HAND",
-  "provenance": "@toxicwind/pinax src/data.ts",
-  "generatedAt": "2026-10-21T06:25:05.000Z",
+  "contract": "estate-mimetite/kappa-catalog/v1",
+  "generator": "@toxicwind/mimetite codegen — kappa target (installed profile) — DO NOT EDIT BY HAND",
+  "provenance": "@toxicwind/mimetite src/data.ts",
+  "generatedAt": "2026-10-25T21:56:02.000Z",
   "deadIds": [
     "llama-3.3-70b-versatile",
     "meta-llama/llama-3.1-8b-instruct",
@@ -127,6 +127,7 @@
       "moonshot-v1-128k",
       "kimi-k2-instruct"
     ],
+    "bornite": [],
     "hodos": [],
     "nvidia": [
       "google/diffusiongemma-26b-a4b-it",
@@ -311,6 +312,15 @@
         }
       }
     },
+    "bornite": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Bornite (local VRAM engine)",
+      "options": {
+        "baseURL": "http://127.0.0.1:25100/v1",
+        "apiKey": "none"
+      },
+      "models": {}
+    },
     "hodos": {
       "npm": "@ai-sdk/openai-compatible",
       "name": "Hodos (estate multi-provider gateway)",
@@ -319,51 +329,6 @@
         "apiKey": "herd-local"
       },
       "models": {}
-    },
-    "hodos.flock": {
-      "npm": "@ai-sdk/openai-compatible",
-      "name": "Hodos (estate multi-provider gateway) / Flock (hodos :25193)",
-      "options": {
-        "baseURL": "http://127.0.0.1:25193/v1",
-        "apiKey": "{env:HODOS_API_KEY}"
-      },
-      "models": {
-        "nvidia/nemotron-3.5-super-vl-120b-a12b": {
-          "name": "nvidia/nemotron-3.5-super-vl-120b-a12b",
-          "limit": {
-            "context": 128000,
-            "output": 8192
-          }
-        },
-        "nvidia/nemotron-3.5-lightning-30b-a3b": {
-          "name": "nvidia/nemotron-3.5-lightning-30b-a3b",
-          "limit": {
-            "context": 128000,
-            "output": 8192
-          }
-        },
-        "nvidia/nemotron-3-super-120b-a12b": {
-          "name": "nvidia/nemotron-3-super-120b-a12b",
-          "limit": {
-            "context": 128000,
-            "output": 8192
-          }
-        },
-        "meta/llama-3.2-11b-vision-instruct": {
-          "name": "meta/llama-3.2-11b-vision-instruct",
-          "limit": {
-            "context": 128000,
-            "output": 8192
-          }
-        },
-        "google/diffusiongemma-26b-a4b-it": {
-          "name": "google/diffusiongemma-26b-a4b-it",
-          "limit": {
-            "context": 128000,
-            "output": 8192
-          }
-        }
-      }
     },
     "hodos.cuttinggate": {
       "npm": "@ai-sdk/openai-compatible",
@@ -1447,6 +1412,15 @@
       "auth": "bearer"
     },
     {
+      "name": "bornite",
+      "displayName": "Bornite (local VRAM engine)",
+      "baseUrl": "http://127.0.0.1:25100/v1",
+      "keyEnv": "",
+      "keyEnvs": [],
+      "adapter": "openai",
+      "auth": "none"
+    },
+    {
       "name": "hodos",
       "displayName": "Hodos (estate multi-provider gateway)",
       "baseUrl": "http://127.0.0.1:25193/v1",
@@ -1457,24 +1431,6 @@
       "adapter": "none",
       "auth": "bearer",
       "modelProviders": [
-        {
-          "name": "flock",
-          "baseUrl": "http://127.0.0.1:25193/v1",
-          "keyEnv": "HODOS_API_KEY",
-          "adapter": "openai",
-          "auth": "bearer",
-          "seeds": [
-            "nvidia/nemotron-3.5-super-vl-120b-a12b",
-            "nvidia/nemotron-3.5-lightning-30b-a3b",
-            "nvidia/nemotron-3-super-120b-a12b",
-            "meta/llama-3.2-11b-vision-instruct",
-            "google/diffusiongemma-26b-a4b-it"
-          ],
-          "contextLengths": {
-            "nvidia/nemotron-3.5-super-vl-120b-a12b": 128000,
-            "nvidia/nemotron-3.5-lightning-30b-a3b": 128000
-          }
-        },
         {
           "name": "cuttinggate",
           "baseUrl": "http://127.0.0.1:25200/v1",

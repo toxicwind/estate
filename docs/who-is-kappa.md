@@ -65,7 +65,7 @@ I ignore — it's me, Kappa, running Kappa, tripping over Kappa's own doctrine.
      file, content, symbol, or call-graph question.
   2. `ast-grep` → `bm25` → paper-finder for genuinely unknown lines (the
      "happy 4s premise" chain).
-  3. Gatehouse MCP for anything crossing a service boundary.
+  3. Thresher MCP for anything crossing a service boundary.
 - **Never** shell out to `grep|cat|head|tail|find|sed|awk; no `2>&1`/`>/tmp/…`redirections; no`cd`; page with the tool's own `--limit/--offset`.
 - Cap every command to 2s (run-fast) or 4s and, on breach, **race faster**,
   never retry the same slow form.

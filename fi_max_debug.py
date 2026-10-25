@@ -21,15 +21,15 @@ def debug_response(title, r, ms):
         print(r.text)
     print("=" * (62 + len(title)))
 
-# 1. Local Gatehouse (:25127) Probe
+# 1. Local Thresher (:25127) Probe
 t0 = time.perf_counter()
 try:
     r_local = requests.get("http://127.0.0.1:25127/health", timeout=3)
     debug_response("LOCAL GATEHOUSE :25127/health", r_local, (time.perf_counter() - t0) * 1000)
 except Exception as e:
-    print(f"\n[!] Local Gatehouse Exception: {e}")
+    print(f"\n[!] Local Thresher Exception: {e}")
 
-# 2. Remote FreeInference API Call (Estate / Gatehouse Context)
+# 2. Remote FreeInference API Call (Estate / Thresher Context)
 url_remote = "https://freeinference.org/v1/chat/completions"
 headers_remote = {
     "Authorization": f"Bearer {KEY}",

@@ -12,7 +12,7 @@ Repairs landed this session are marked [FIXED]; open items marked [OPEN].
 - `bidder-finch` stopped vs `bidder-forge` running: two bidder chains on
   different gateways; no action taken (additive-only doctrine).
 
-## 2. Gatehouse / MCP mesh
+## 2. Thresher / MCP mesh
 
 - gatehouse = the **mcpproxy-go gateway binary** (rebrand), listening on
   :25127, running under pitchfork `estate/gatehouse`. [FIXED: understood]
@@ -22,7 +22,7 @@ Repairs landed this session are marked [FIXED]; open items marked [OPEN].
     unclear which the serve script would pick if re-run — it execs the
     unversioned one)
   - port SSOT calls it `MCPPROXY_GO_PORT=25127` (old brand), config+data live
-    in `ranch/barn/gatehouse/`, a data dir sits in `ranch/gatehouse-staging/`
+    in `ranch/barn/thresher/`, a data dir sits in `ranch/gatehouse-staging/`
     (config.db + index.bleve + logs)
   - `ranch/mcpproxy-go` repo is the source; `daemons.gatehouse` bootstrap
     logic (mcp_config.json from .dist, secrets injected from ~/.secrets) is

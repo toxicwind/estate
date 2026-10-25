@@ -65,7 +65,7 @@ open/blocked todos, oracle tallies. Commit cd58de0714 pushed to origin/ranch-for
 - MARKET-LOOP-RIG DONE: repointed pitchfork.d/market-loop.toml + pitchfork.toml run/dir to
   ranch/estate-brain/agents/weaver/bin/market-loop.ts; daemon LIVE pid 1335663. Commit 9620b3d213 (estate main, pushed).
   Pre-existing blockers surfaced (NOT fixed): agent-display double-daemon (pf build aborts);
-  ranch/barn/gatehouse/pitchfork.d missing (compose fail-closed); market-loop key-order divergence.
+  ranch/barn/thresher/pitchfork.d missing (compose fail-closed); market-loop key-order divergence.
 - UNIFIED-TAILSCALE-ENDPOINTS DONE (checkpointed not merged): pylae src/app/api/tunnels/unified/
   {health,status,fallback}/route.ts. Work-ref wip/toxic/implement/pylae-core-g1/work@85c2a7fe42 (pushed).
   NOT on main yet (pylae eslint-env). Publish via delendai work publish when ready.

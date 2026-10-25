@@ -7,8 +7,8 @@ manifest = "pitchfork.d"
 kind = "dir"
 
 [[project]]
-key = "ranch/barn/gatehouse"
-manifest = "ranch/barn/gatehouse/pitchfork.d"
+key = "ranch/barn/thresher"
+manifest = "ranch/barn/thresher/pitchfork.d"
 kind = "dir"
 
 [[project]]

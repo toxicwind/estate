@@ -6,15 +6,15 @@ KEY = os.environ.get("FI_KEY") or os.environ.get("FREEINFERENCE_API_KEY")
 if not KEY:
     sys.exit("[!] Set FI_KEY: export FI_KEY='hyi-...'")
 
-# 1. Local Gatehouse Health Check (:25127)
+# 1. Local Thresher Health Check (:25127)
 print("=== 1. LOCAL GATEHOUSE PROBE (:25127) ===")
 try:
     r_local = requests.get("http://127.0.0.1:25127/health", timeout=2)
-    print(f"Local Gatehouse Health: {r_local.status_code} {r_local.text}")
+    print(f"Local Thresher Health: {r_local.status_code} {r_local.text}")
 except Exception as e:
-    print(f"Local Gatehouse unreachable: {e}")
+    print(f"Local Thresher unreachable: {e}")
 
-# 2. Remote Prompt Test with Estate / Gatehouse Context (Using Chrome TLS)
+# 2. Remote Prompt Test with Estate / Thresher Context (Using Chrome TLS)
 print("\n=== 2. REMOTE PROMPT TEST (CURL_CFFI BYPASSES CF 1010) ===")
 remote_url = "https://freeinference.org/v1/chat/completions"
 headers = {"Authorization": f"Bearer {KEY}", "Content-Type": "application/json"}
