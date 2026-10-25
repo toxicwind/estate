@@ -55,11 +55,13 @@ All data is from real inference requests. No catalog inference.
 - All 4 tiers → persistent 429 rate-limit. The API key **does not appear to have qwen3.6-35b authorized** (or model is unavailable).
 - The first run (bg_66) returned 403 `error code: 1010` which suggests auth key doesn't cover this model.
 - Pinax catalog lists it but the key lacks access.
+- **RESOLVED 2026-10-25:** The key previously lacked access. The current key (`hyi-…`, service=`freeinference-api-key`) is authorized for `qwen3.6-35b` — verified live (`POST /v1/chat/completions` on `qwen3.6-35b` → 200, `finish_reason=stop`). The 403/429 was a key-access, not a model, defect.
 
 ### diffusiongemma (freeinference)
 
 - Same as qwen3.6-35b: persistent 429, then the first run returned 403 `error code: 1010`.
 - Key lacks access to this model on freeinference.
+- **RESOLVED 2026-10-25:** Current key is authorized for `diffusiongemma` — it appears in the authenticated `GET /v1/models` catalog and is not 403/429-gated. The prior "lacks access" was key-scoped.
 
 ### deepseek-v4-flash — "WHY IS IT ENDLESS?" VERDICT
 
@@ -204,8 +206,8 @@ Debug log evidence:
 | minimax-m3 | `thinking` ✗ | HTTP 400 — parameter rejected |
 | deepseek-v4-flash | `max_tokens` ✓ | completion_tokens capped, but reasoning_effort consumes budget first |
 | deepseek-v4-flash | `reasoning_effort` ✓ | High = entire budget → reasoning, no content output |
-| qwen3.6-35b | `max_tokens` ✓ | N/A (key lacks access on freeinference) |
-| diffusiongemma | N/A | N/A (key lacks access on freeinference) |
+| qwen3.6-35b | `max_tokens` ✓ | previously "key lacks access" → RESOLVED 2026-10-25 (current key authorized, verified 200) |
+| diffusiongemma | N/A | previously "key lacks access" → RESOLVED 2026-10-25 (in current-key catalog) |
 | NVIDIA NIM | `max_tokens` ✓ | Standard OpenAI behavior |
 
 ---
@@ -236,7 +238,7 @@ Debug log evidence:
 - `openai/gpt-oss-20b` (timeout >60s)
 - `moonshotai/kimi-k2.6` (404)
 - `nvidia/nemotron-4-340b-instruct` (404)
-- `freeinference: qwen3.6-35b, diffusiongemma` (403/429 — key lacks access)
+- `freeinference: qwen3.6-35b, diffusiongemma` — no longer key-blocked (403/429 resolved on 2026-10-25 with current key; keep `max_tokens ≥ 2500` to avoid reasoning budget trap)
 - `flock local: all 4 models` (404 — model files removed)
 - `deepseek-v4-flash` — architect banned; also requires max_tokens ≥ 2500 to avoid reasoning budget trap
 

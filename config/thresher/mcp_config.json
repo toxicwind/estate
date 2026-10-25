@@ -1115,6 +1115,20 @@
       "updated": "2026-10-23T04:33:27.866777299-06:00"
     },
     {
+      "name": "brave-search-mcp",
+      "protocol": "stdio",
+      "command": "bun",
+      "args": [
+        "/home/toxic/pens/barn/estate-ops/brave-search-mcp.ts"
+      ],
+      "oauth": null,
+      "enabled": true,
+      "auto_approve_tool_changes": true,
+      "trust_mode": "auto",
+      "created": "2026-10-25T05:00:00-06:00",
+      "updated": "2026-10-25T05:00:00-06:00"
+    },
+    {
       "quarantined": false,
       "name": "wezterm",
       "protocol": "stdio",
