@@ -1470,3 +1470,13 @@ run = "exec ./reconcile-funnel.sh"
 retry = true
 boot_start = true
 env = { TAILSCALE_FUNNEL_SOCK = "/run/tailscale/doorbell.sock", FUNNEL_RECONCILE_INTERVAL = "30" }
+
+[daemons.fleet-feed]
+mise = true
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/ranch/squawk/fleet-feed.ts"
+dir = "/home/toxic/pens/ranch/squawk"
+retry = true
+boot_start = true
+env = { FLEET_FEED_PORT = "25158" }
+ready_cmd = "ss -ltn 'sport = :25158' | grep -q LISTEN"
+auto = ["start"]
