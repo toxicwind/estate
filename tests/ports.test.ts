@@ -3,7 +3,6 @@
  * localUrl edge cases.
  */
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { homedir } from "node:os";
 import { join } from "node:path";
 
 // Save original env
@@ -25,8 +24,11 @@ afterEach(() => {
 });
 
 // Import fresh each time — the module caches loadEstatePorts internally,
-// but we set ESTATE_ROOT so the paths resolve predictably.
-process.env.ESTATE_ROOT = join(homedir(), "estate");
+// but we set ESTATE_ROOT so the paths resolve predictably. Derive the estate
+// root from THIS file's real location (the checked-out repo) instead of
+// hardcoding ${HOME}/estate — the latter breaks on GitHub Actions runners
+// where the checkout lives at /home/runner/work/<repo>/<repo>.
+process.env.ESTATE_ROOT = join(import.meta.dir, "..");
 
 import {
   loadEstatePorts,
