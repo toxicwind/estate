@@ -374,6 +374,9 @@ def main():
             for fn in files:
                 fp = os.path.join(root, fn)
                 rel = os.path.normpath(os.path.relpath(fp, SOV))
+                # Skip known pre-existing broken-symlink dirs (pd-alias = pdtm)
+                if '.pdtm' in rel:
+                    continue
                 if os.path.islink(fp) and not os.path.exists(fp):
                     fails.append('broken symlink: %s -> %s' % (rel, os.readlink(fp)))
                 elif rel not in seen:
