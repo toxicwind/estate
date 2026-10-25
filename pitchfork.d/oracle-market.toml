@@ -1,7 +1,7 @@
 [daemons.oracle-market]
 mise = true
-run = "exec /home/toxic/estate/ranch/squawk/oracle/bin/run.sh"
-dir = "/home/toxic/estate/ranch/squawk/oracle"
+run = "exec /home/toxic/pens/ranch/squawk/oracle/bin/run.sh"
+dir = "/home/toxic/pens/ranch/squawk/oracle"
 retry = true
 env = { ORACLE_INTAKE = "1", ORACLE_CHANNEL = "/home/toxic/.squawk-bus/squawk-root/bid-market" }
 auto = ["start"]

@@ -6,7 +6,7 @@
 [daemons.delendai-control-api]
 mise = true
 port = 25162
-dir = "/home/toxic/estate/ranch/range/apps/delendai-control-plane"
+dir = "/home/toxic/pens/ranch/range/apps/delendai-control-plane"
 run = "exec /home/toxic/.bun/bin/bun server.ts"
 env = { DELENDAI_CONTROL_API_PORT = "25162" }
 ready_http = "http://127.0.0.1:25162/health"

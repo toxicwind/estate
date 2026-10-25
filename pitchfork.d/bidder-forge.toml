@@ -1,6 +1,6 @@
 [daemons.bidder-forge]
 mise = true
-run = "exec /home/toxic/estate/ranch/squawk/oracle/bin/bidder-forge.sh"
-dir = "/home/toxic/estate/ranch/squawk/oracle"
+run = "exec /home/toxic/pens/ranch/squawk/oracle/bin/bidder-forge.sh"
+dir = "/home/toxic/pens/ranch/squawk/oracle"
 retry = true
 auto = ["start"]

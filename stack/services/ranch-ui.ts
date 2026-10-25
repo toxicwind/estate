@@ -5,7 +5,7 @@
 // reaches it same-origin, the way the embedded build used to.
 //
 // 2026-10-21 FIX (the "dist missing" 503): the old hardcoded dist path
-// (/home/toxic/estate/ranch/range/ui/dist) no longer exists — that build was
+// (/home/toxic/pens/ranch/range/ui/dist) no longer exists — that build was
 // folded into the DelendAI control-plane SPA, which now lives at
 // apps/delendai-control-plane and is served by the Vite dev server on :25156.
 // The daemon was still pointing at the dead path, so every request to
@@ -46,7 +46,7 @@ const HERD_API_PREFIXES = [
 
 const DIST_CANDIDATES = [
   process.env.RANCH_UI_DIST,
-  "/home/toxic/estate/ranch/range/apps/delendai-control-plane/dist",
+  "/home/toxic/pens/ranch/range/apps/delendai-control-plane/dist",
 ].filter((p): p is string => Boolean(p));
 
 const DIST =

@@ -315,7 +315,7 @@ timeout = "5s"
 retries = 3
 
 [daemons.estate-reconcile-watch]
-run = "exec /home/toxic/estate/bin/estate-reconcile watch"
+run = "exec /home/toxic/pens/barn/estate-ops/estate-reconcile watch"
 auto = ["start"]
 retry = true
 dir = "/home/toxic/estate"
@@ -527,18 +527,18 @@ HINDSIGHT_API_WORKER_RETAIN_RESERVED_SLOTS = "2"
 HINDSIGHT_API_WORKER_CONSOLIDATION_RESERVED_SLOTS = "1"
 
 # Bin contract canary (AGENTS.md Layout, 2026-10-23): verifies every product
-# symlink in ~/.local/bin + estate/bin resolves to its pens/sovereign target.
+# symlink in ~/.local/bin + pens/barn/estate-ops resolves to its pens/sovereign target.
 # On FAIL the daemon goes unhealthy — a product move that breaks a link shows
 # up within 5 minutes instead of at next use.
 [daemons.bin-contract-audit]
-run = "exec /home/toxic/estate/bin/bin-contract-audit.sh"
+run = "exec /home/toxic/pens/barn/estate-ops/bin-contract-audit.sh"
 auto = ["start"]
 retry = true
 interval = "5m"
 mise = false
 
 [daemons.maximal-audit]
-run = "exec /home/toxic/estate/bin/maximal-audit.sh"
+run = "exec /home/toxic/pens/barn/estate-ops/maximal-audit.sh"
 auto = ["start"]
 retry = true
 interval = "30m"
@@ -573,7 +573,7 @@ dir = "."
 mise = true
 
 [daemons.kappa-acp]
-run = "exec /home/toxic/estate/bin/kappa-serve.sh"
+run = "exec /home/toxic/pens/barn/estate-ops/kappa-serve.sh"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25159/"
@@ -581,7 +581,7 @@ boot_start = true
 dir = "/home/toxic/estate"
 mise = true
 [daemons.skopos-floaty]
-run = "exec /home/toxic/estate/bin/skopos-floaty.sh"
+run = "exec /home/toxic/pens/barn/estate-ops/skopos-floaty.sh"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25238/"
@@ -653,7 +653,7 @@ KIMI_AUTO_SHIM_PORT = "25153"
 SHIM_CONNECT_TIMEOUT = "240"
 
 [daemons.kimi-code]
-run = "exec /home/toxic/estate/bin/claim-port 25126 /home/toxic/kimi-code-npm/node_modules/@moonshot-ai/kimi-code/dist/main.mjs web --no-open --port 25126"
+run = "exec /home/toxic/pens/barn/estate-ops/claim-port 25126 /home/toxic/kimi-code-npm/node_modules/@moonshot-ai/kimi-code/dist/main.mjs web --no-open --port 25126"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25126/health"
@@ -690,7 +690,7 @@ boot_start = true
 dir = "/home/toxic/pens/ranch/hatch/kite-cli"
 mise = true
 [daemons.kitty-mcp]
-run = "exec /home/toxic/estate/bin/kitty-mcp-instance.sh"
+run = "exec /home/toxic/pens/barn/estate-ops/kitty-mcp-instance.sh"
 auto = ["start"]
 retry = true
 port = 25211
@@ -845,7 +845,7 @@ depends = ["thresher"]
 dir = "."
 mise = true
 [daemons.nim-kimi-sidecar]
-run = "exec python3 /home/toxic/estate/bin/nim-kimi-sidecar.py"
+run = "exec python3 /home/toxic/pens/barn/estate-ops/nim-kimi-sidecar.py"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25163/health"
@@ -1212,7 +1212,7 @@ mise = true
 CHUTE_PORT = "25111"
 
 [daemons.tmp-reaper]
-run = "exec /home/toxic/estate/bin/tmp-reaper/reap-loop.sh 3600"
+run = "exec /home/toxic/pens/barn/estate-ops/tmp-reaper/reap-loop.sh 3600"
 auto = ["start"]
 retry = true
 dir = "/home/toxic/estate"

@@ -137,8 +137,8 @@ export const ALL_SERVICES: ServiceDef[] = [
     name: "fleet-feed",
     portKey: "RUST_WEB_BACKEND_PORT",
     // See src/services/peripheral.ts — same service, one definition.
-    run: "exec bun /home/toxic/estate/ranch/squawk/fleet-feed.ts",
-    dir: "/home/toxic/estate/ranch/squawk",
+    run: "exec bun /home/toxic/pens/ranch/squawk/fleet-feed.ts",
+    dir: "/home/toxic/pens/ranch/squawk",
     readyHttp: "/health",
     group: "core",
     autoStart: true,

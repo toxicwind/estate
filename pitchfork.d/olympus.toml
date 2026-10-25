@@ -6,7 +6,7 @@ port = 25144
 # of every scattered knowledge location and the recovered artifacts
 # (github sort algorithm, recursive-agents study) as one first-class surface.
 # MCP tools are provided by ranch/olympus/mcp.ts (stdio) for the gatehouse.
-run = "exec bun /home/toxic/estate/ranch/olympus/api.ts"
+run = "exec bun /home/toxic/pens/ranch/olympus/api.ts"
 dir = "/home/toxic/estate"
 retry = true
 boot_start = true

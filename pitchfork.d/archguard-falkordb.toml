@@ -16,7 +16,7 @@
 # restarts actually restart-surviving (estate 1ad9d3ab; verified 2/2).
 [daemons.archguard-falkordb]
 run = "exec docker run --rm --name archguard-falkordb -p 127.0.0.1:6379:6379 -p 127.0.0.1:13000:3000 -v archguard_falkordb_data:/var/lib/falkordb/data falkordb/falkordb:latest"
-dir = "/home/toxic/estate/ranch/barn/archguard"
+dir = "/home/toxic/pens/ranch/barn/archguard"
 mise = false
 retry = true
 boot_start = true

@@ -1,7 +1,7 @@
 [daemons.nats-tail]
 mise = true
-run = "exec /home/toxic/estate/ranch/squawk/nats/run-tail.sh"
-dir = "/home/toxic/estate/ranch/squawk/nats"
+run = "exec /home/toxic/pens/ranch/squawk/nats/run-tail.sh"
+dir = "/home/toxic/pens/ranch/squawk/nats"
 retry = true
 boot_start = true
 auto = ["start"]

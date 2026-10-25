@@ -9,7 +9,7 @@
 set -euo pipefail
 SOV="/home/toxic/estate"
 # Pens overlay: the Go herd binary lives in — and is built from —
-# pens/ranch/forge/router/herd (the canonical, newest copy); estate/ranch/... is
+# pens/ranch/forge/router/herd (the canonical, newest copy); pens/ranch/... is
 # a stale pre-reorg path. Search pens first, then estate, then the archived copy.
 PENS="/home/toxic/pens"
 source "$SOV/stack/lib-ports.sh"
@@ -40,7 +40,7 @@ export HERD_DASHBOARD_URL="${HERD_DASHBOARD_URL:-http://127.0.0.1:25218/}"
 # runtime state, and a launcher that points there means the path rots the next
 # time var/ is swept). The var/herd-backups copy is the last-known-good
 # restore point if the in-tree build is ever lost. PENS paths are checked first
-# because that is where the current build actually lives (estate/ranch was a
+# because that is where the current build actually lives (pens/ranch was a
 # pre-2026-10-08 reorg path; herd's canonical source moved to pens/ranch/forge).
 for BIN in \
   "$PENS/ranch/forge/router/herd/herd" \

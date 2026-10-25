@@ -1,7 +1,7 @@
 [daemons.ralph-dashboard]
 mise = true
-run = "exec /home/toxic/estate/ranch/ralph-dashboard/backend/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port ${RALPH_DASH_PORT}"
-dir = "/home/toxic/estate/ranch/ralph-dashboard/backend"
+run = "exec /home/toxic/pens/ranch/ralph-dashboard/backend/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port ${RALPH_DASH_PORT}"
+dir = "/home/toxic/pens/ranch/ralph-dashboard/backend"
 retry = true
 boot_start = true
 port = 25194

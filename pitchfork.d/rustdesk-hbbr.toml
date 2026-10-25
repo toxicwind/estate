@@ -1,7 +1,7 @@
 [daemons.rustdesk-hbbr]
 mise = true
 run = "exec ./amd64/hbbr -p 25222"
-dir = "/home/toxic/estate/ranch/rustdesk-server"
+dir = "/home/toxic/pens/ranch/rustdesk-server"
 retry = true
 ready_cmd = "ss -ltn 'sport = :25222' | grep -q LISTEN"
 auto = ["start"]

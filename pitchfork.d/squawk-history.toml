@@ -2,7 +2,7 @@
 # :25152 (collided with TOOLCALL_PORT SSOT). Moved to :25229, registered here.
 [daemons.squawk-history]
 mise = true
-dir = "/home/toxic/estate/ranch/squawk/nats"
+dir = "/home/toxic/pens/ranch/squawk/nats"
 run = "exec /home/toxic/.local/share/squawk-nats/venv/bin/python squawk_history.py"
 env = { SQUAWK_HISTORY_PORT = "25229" }
 port = 25229

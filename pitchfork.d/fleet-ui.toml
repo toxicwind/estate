@@ -1,7 +1,7 @@
 [daemons.fleet-ui]
 mise = true
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/ranch/squawk/squawk-ui.ts"
-dir = "/home/toxic/estate/ranch/squawk"
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/ranch/squawk/squawk-ui.ts"
+dir = "/home/toxic/pens/ranch/squawk"
 retry = true
 boot_start = true
 ready_cmd = "ss -ltn 'sport = :25136' | grep -q LISTEN"

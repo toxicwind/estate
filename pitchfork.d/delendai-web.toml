@@ -3,7 +3,7 @@
 [daemons.delendai-web]
 mise = true
 run = "exec env PORT=25197 PAGES_BASE='' astro preview --host 127.0.0.1 --port 25197"
-dir = "/home/toxic/estate/ranch/borrowed/delendai/apps/web"
+dir = "/home/toxic/pens/ranch/borrowed/delendai/apps/web"
 retry = true
 ready_http = "http://127.0.0.1:25197/"
 boot_start = false

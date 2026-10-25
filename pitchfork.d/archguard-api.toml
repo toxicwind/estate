@@ -11,7 +11,7 @@
 # (empty = falsy -> deterministic fallbacks).
 [daemons.archguard-api]
 run = "exec /home/toxic/.bun/bin/bun src/server.ts"
-dir = "/home/toxic/estate/ranch/barn/archguard"
+dir = "/home/toxic/pens/ranch/barn/archguard"
 mise = false
 retry = true
 boot_start = true

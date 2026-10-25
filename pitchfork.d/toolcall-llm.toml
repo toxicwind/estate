@@ -1,7 +1,7 @@
 [daemons.toolcall-llm]
 mise = true
 port = 25152
-run = "exec /home/toxic/estate/engines/llama.cpp-b11059/llama-b11059/llama-server -m /home/toxic/estate/ranch/models/qwen3.5-9b-dflash-Q5_K_M.gguf --host 127.0.0.1 --port 25152 -ngl 99 -c 32768 --alias qwen3.5-9b-tool"
+run = "exec /home/toxic/estate/engines/llama.cpp-b11059/llama-b11059/llama-server -m /home/toxic/pens/ranch/models/qwen3.5-9b-dflash-Q5_K_M.gguf --host 127.0.0.1 --port 25152 -ngl 99 -c 32768 --alias qwen3.5-9b-tool"
 env = { TOOLCALL_PORT = "25152" }
 dir = "/home/toxic/estate/engines/llama.cpp-b11059/llama-b11059"
 retry = 5 # 2026-09-20: was infinite; flappy daemon churned 125+ retries

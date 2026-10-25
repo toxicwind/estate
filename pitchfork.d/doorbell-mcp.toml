@@ -2,6 +2,6 @@
 mise = true
 port = 25202
 run = "mise exec -- bun run ./src/index.ts"
-dir = "/home/toxic/estate/ranch/doorbell"
+dir = "/home/toxic/pens/ranch/doorbell"
 retry = true
 ready_http = "http://127.0.0.1:25202/health"

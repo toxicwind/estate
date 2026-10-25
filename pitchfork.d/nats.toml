@@ -1,7 +1,7 @@
 [daemons.nats]
 mise = true
-run = "exec /home/toxic/estate/ranch/squawk/nats/run-nats.sh"
-dir = "/home/toxic/estate/ranch/squawk/nats"
+run = "exec /home/toxic/pens/ranch/squawk/nats/run-nats.sh"
+dir = "/home/toxic/pens/ranch/squawk/nats"
 retry = true
 boot_start = true
 ready_cmd = "ss -ltn 'sport = :4222' | grep -q LISTEN"
