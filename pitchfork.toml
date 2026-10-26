@@ -8,7 +8,7 @@ boot_start = true
 dir = "."
 mise = true
 [daemons.agent-wm]
-run = "export DISPLAY=:99 LD_LIBRARY_PATH=/home/toxic/.browserless/keeper/openbox-build/lib; exec /home/toxic/.browserless/keeper/openbox-build/bin/openbox >> /home/toxic/.browserless/keeper/agent-wm.log 2>&1"
+run = "export DISPLAY=:99 LD_LIBRARY_PATH=/home/toxic/.browserless/keeper/openbox-build/lib; (tint2 </dev/null >/tmp/tint2.log 2>&1 &) ; exec /home/toxic/.browserless/keeper/openbox-build/bin/openbox >> /home/toxic/.browserless/keeper/agent-wm.log 2>&1"
 auto = ["start"]
 retry = true
 ready_cmd = "DISPLAY=:99 xprop -root _NET_SUPPORTING_WM_CHECK 2>/dev/null | grep -q ."
