@@ -108,4 +108,4 @@ Pursue A: mint/find a Standard `AIzaSy` EAP key ⇒ secretsmith + keypool ⇒
 eap-smoke 200 (the theta E2E manual test). Then B rust coverage. Then verify+push
 E. Report each with evidence.
 
-## H. (2026-10-24 late) rhodochrosite rust: [DONE] reverted generated-file hand-edit (pinax_providers KEY_ENV stays via overlay); added mod roost_providers so crate compiles; 308/309 tests pass; the 1 fail (roost_providers_copy_in_sync) needs the EXTERNAL mimetite/generated/providers.rs (mesh/catalog) which is absent from this checkout — pre-existing env test, not a regression. rhodochrosite commit 698380f pushed.
+## H. (2026-10-24 late) rhodochrosite rust: [DONE] reverted generated-file hand-edit (mimetite_providers KEY_ENV stays via overlay); added mod roost_providers so crate compiles; 308/309 tests pass; the 1 fail (roost_providers_copy_in_sync) needs the EXTERNAL mimetite/generated/providers.rs (mesh/catalog) which is absent from this checkout — pre-existing env test, not a regression. rhodochrosite commit 698380f pushed.

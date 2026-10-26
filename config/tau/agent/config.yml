@@ -27,7 +27,8 @@ bash:
   direnv: auto
   direnvLoadTimeoutMs: 30000
   enabled: true
-  patterns: []
+  patterns:
+    []
 bashInterceptor:
   enabled: false
 branchSummary:
@@ -99,7 +100,8 @@ dev:
     endpoint: https://qa.omp.sh/v1/grievances
 disabledExtensions:
   - airspeak
-disabledProviders: []
+disabledProviders:
+  []
 display:
   cacheMissMarker: true
   collapseCompacted: true
@@ -272,6 +274,7 @@ modelRoles:
   verification: freeinference/qwen3.6-35b
   vision: freeinference/minimax-m3:xhigh
   web: web/exa
+  default: freeinference/glm-5.3-flash:low
 omitThinking: false
 paste:
   largeMenuThreshold: 100
@@ -331,7 +334,8 @@ providers:
     maxConcurrency: 3
   openai-codex:
     codeMode: "on"
-    codeModeDirectTools: []
+    codeModeDirectTools:
+      []
   openai-compatible:
     apiKey: eyJhbGciOiAibm9uZSIsICJ0eXAiOiAiSldUIn0.eyJzdWIiOiAiZmxvY2stY2xpZW50IiwgIm5hbWUiOiAiY29ycmFsLWp3dGZtdCIsICJpYXQiOiAxNzkxOTAwMDAwfQ.d0391d5d684102b1ef80140f9920381b08aa43b417976ed1528618c7b76b60df
     baseUrl: http://127.0.0.1:25193/v1
@@ -500,7 +504,8 @@ todo:
   remindersMax: 5
 tools:
   abortOnFabricatedResult: true
-  approval: {}
+  approval:
+    {}
   approvalMode: yolo
   artifactHeadBytes: 20
   artifactSpillThreshold: 50
@@ -514,7 +519,8 @@ tools:
     enabled: true
   xdev: true
   xdevDocs: builtins
-  xdevInlineDevices: []
+  xdevInlineDevices:
+    []
 topK: -1
 topP: -1
 treeFilterMode: default
@@ -523,7 +529,8 @@ tts:
 ttsr:
   builtinRules: true
   contextMode: discard
-  disabledRules: []
+  disabledRules:
+    []
   enabled: false
   interruptMode: never
   repeatGap: 10
@@ -545,4 +552,5 @@ vault:
 web_search:
   enabled: true
 workspace:
-  additionalDirectories: []
+  additionalDirectories:
+    []

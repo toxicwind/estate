@@ -207,11 +207,11 @@ timeout = "5s"
 retries = 3
 
 [daemons.chalcopyrite]
-run = "exec /home/toxic/pens/ranch/forge/router/chalcopyrite/chalcopyrite-serve.sh"
+run = "exec /home/toxic/pens/geode/products/chalcopyrite/chalcopyrite-serve.sh"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25200/health"
-dir = "/home/toxic/pens/ranch/forge/router/chalcopyrite"
+dir = "/home/toxic/pens/geode/products/chalcopyrite"
 
 [daemons.chalcopyrite.health_http]
 url = "http://127.0.0.1:25200/health"
@@ -221,7 +221,7 @@ retries = 3
 
 [daemons.chalcopyrite.env]
 CHALCOPYRITE_PORT = "25200"
-CUTTINGGATE_LOG_LEVEL = "info"
+CHALCOPYRITE_LOG_LEVEL = "info"
 
 [daemons.delendai-control-api]
 run = "exec /home/toxic/.bun/bin/bun --hot server.ts"
@@ -533,13 +533,13 @@ interval = "30m"
 mise = true
 
 [daemons.rhodochrosite]
-run = "exec /home/toxic/pens/olympus/products/rhodochrosite/proxy/serve.sh"
+run = "exec /home/toxic/pens/geode/products/rhodochrosite/proxy/serve.sh"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25193/health"
 port = 25193
 expected_port = [25193]
-dir = "/home/toxic/pens/olympus/products/rhodochrosite/proxy"
+dir = "/home/toxic/pens/geode/products/rhodochrosite/proxy"
 mise = true
 [daemons.rhodochrosite.health_http]
 url = "http://127.0.0.1:25193/health"

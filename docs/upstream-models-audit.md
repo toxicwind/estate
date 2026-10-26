@@ -5,10 +5,10 @@ upstream provider's `/v1/models`, what vision-capable models each exposes, and
 how to dip a screenshot through them for agent-display (`:99`) verification.
 
 Source of truth: the AST of the rhodochrosite gateway at
-`ranch/rhodochrosite/proxy/src/pinax_providers.rs` (the canonical provider catalog) and
+`ranch/rhodochrosite/proxy/src/mimetite_providers.rs` (the canonical provider catalog) and
 `~/.rhodochrosite/nim-data/config.json` (the live 9-provider federation).
 
-## 1. The upstream provider catalog (from `pinax_providers.rs`)
+## 1. The upstream provider catalog (from `mimetite_providers.rs`)
 
 Each upstream is an OpenAI-compatible endpoint. Its model list lives at
 `<base_url> + models_path`, defaulting to `<base_url>/models` **or** `<base_url>/v1/models`

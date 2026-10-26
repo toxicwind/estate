@@ -88,7 +88,7 @@ Notes that cost real time to learn:
 
 | Variable                   | Default                                       | Purpose              |
 | -------------------------- | --------------------------------------------- | -------------------- |
-| `PINAX_PROVIDERS_JSON`     | `estate/ranch/mimetite/generated/providers.json` | the catalog to probe |
+| `MIMETITE_PROVIDERS_JSON`     | `estate/ranch/mimetite/generated/providers.json` | the catalog to probe |
 | `PROBE_TIMEOUT_MS` (const) | `8000`                                        | per-request deadline |
 | `CONCURRENCY` (const)      | `12`                                          | parallel probes      |
 

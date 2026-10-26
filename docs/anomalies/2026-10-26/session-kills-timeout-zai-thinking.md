@@ -37,7 +37,7 @@ Pushed to `github.com/toxicwind/ranch` (main `80642f2e`, backup ref
 `abb1795`).
 
 > **Environment note (not fixed — architect's):** the local `pens/ranch` clone
-> is a broken/half-migrated shared checkout (`origin` → `pinax.git` does not
+> is a broken/half-migrated shared checkout (`origin` → `mimetite.git` does not
 > contain the shell history, missing parent objects, `backup/ranch-pre-migration-*
 > ` refs). The quickshell fix landed on the real `toxicwind/ranch` via a clean
 > sandbox clone. Do not fight the local clone; use sandbox-merge.

@@ -23,8 +23,8 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
-const PINAX_PROVIDERS =
-  process.env.PINAX_PROVIDERS_JSON ??
+const MIMETITE_PROVIDERS =
+  process.env.MIMETITE_PROVIDERS_JSON ??
   "/home/toxic/estate/ranch/mimetite/generated/providers.json";
 const OUT_DIR = here;
 const PROBE_TIMEOUT_MS = 8000;
@@ -239,7 +239,7 @@ async function probeProvider(
 }
 
 async function main(): Promise<void> {
-  const raw = JSON.parse(readFileSync(PINAX_PROVIDERS, "utf8")) as {
+  const raw = JSON.parse(readFileSync(MIMETITE_PROVIDERS, "utf8")) as {
     providers?: Array<Record<string, unknown>>;
   };
   const providers = Array.isArray(raw.providers) ? raw.providers : [];
@@ -267,7 +267,7 @@ async function main(): Promise<void> {
 
   const artifact = {
     generatedAt: new Date().toISOString(),
-    source: PINAX_PROVIDERS,
+    source: MIMETITE_PROVIDERS,
     summary,
     providers: results,
   };

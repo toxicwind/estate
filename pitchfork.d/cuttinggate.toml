@@ -3,7 +3,7 @@
 # on :25200. Keep this fragment and the composed stanza in sync.
 [daemons.chalcopyrite]
 # 2026-10-15: run via serve wrapper — client keys come from the vault
-# (CUTTINGGATE_CLIENT_KEY); the bare def had zero client keys configured, so
+# (CHALCOPYRITE_CLIENT_KEY); the bare def had zero client keys configured, so
 # every Bearer token was rejected with auth_missing.
 mise = true
 run = "exec /home/toxic/pens/ranch/forge/router/chalcopyrite/chalcopyrite-serve.sh"
@@ -11,5 +11,5 @@ dir = "/home/toxic/pens/ranch/forge/router/chalcopyrite"
 retry = true
 ready_http = "http://127.0.0.1:25200/health"
 health_http = { url = "http://127.0.0.1:25200/health", interval = "30s", timeout = "5s", retries = 3 }
-env = { CHALCOPYRITE_PORT = "25200", CUTTINGGATE_LOG_LEVEL = "info" }
+env = { CHALCOPYRITE_PORT = "25200", CHALCOPYRITE_LOG_LEVEL = "info" }
 auto = ["start"]

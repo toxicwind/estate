@@ -243,7 +243,7 @@ retries = 3
 
 [daemons.chalcopyrite.env]
 CHALCOPYRITE_PORT = "25200"
-CUTTINGGATE_LOG_LEVEL = "info"
+CHALCOPYRITE_LOG_LEVEL = "info"
 
 [daemons.delendai-control-api]
 run = "exec /home/toxic/.bun/bin/bun server.ts"

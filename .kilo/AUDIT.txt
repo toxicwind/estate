@@ -5,8 +5,8 @@ schema: https://app.kilo.ai/config.json
 
 == BLOCKERS (will break startup or a provider) ==========================
 
-[B1] provider.cuttinggate is incomplete
-     location: provider.cuttinggate
+[B1] provider.chalcopyrite is incomplete
+     location: provider.chalcopyrite
      has: options.baseURL, options.apiKey
      missing: npm, name, models
      effect: provider cannot be instantiated (no SDK package); startup
@@ -28,11 +28,11 @@ schema: https://app.kilo.ai/config.json
      requires: FREEINFERENCE_API_KEY
      effect: no start if the var is absent.
      fix: export the var, or move model/small_model to a provider whose key
-          you already have (nim or hodos).
+          you already have (nim or rhodochrosite).
 
 == HIGH RISK (type errors or silent misbehaviour) =======================
 
-[H1] options.timeout: false  (hodos, freeinference)
+[H1] options.timeout: false  (rhodochrosite, freeinference)
      Not a documented type in @ai-sdk/openai-compatible. Accepted as
      "disable" in some builds, rejected in others.
      fix: omit, or use 0.
@@ -43,8 +43,8 @@ schema: https://app.kilo.ai/config.json
      fix: remove the "http" object.
 
 [H3] local routers assumed up
-     hodos        http://127.0.0.1:25193/v1
-     cuttinggate  http://127.0.0.1:25200/v1
+     rhodochrosite        http://127.0.0.1:25193/v1
+     chalcopyrite  http://127.0.0.1:25200/v1
      nim          http://127.0.0.1:8000/v1
      freeinference is remote (freeinference.org).
      effect: any 127.0.0.1 target that is down = connection refused on
@@ -53,8 +53,8 @@ schema: https://app.kilo.ai/config.json
 
 [H4] four local .ts plugins loaded from disk
      .kilo/plugin/estate-thresher.ts
-     .kilo/plugin/estate-herd-models.ts
-     .kilo/plugin/estate-hodos-strategy.ts
+     .kilo/plugin/estate-bornite-models.ts
+     .kilo/plugin/estate-rhodochrosite-strategy.ts
      .kilo/plugin/estate-autofixer.ts
      effect: one missing file or one TS compile error in any of them
              aborts startup and the error will NOT mention config.json.
@@ -63,7 +63,7 @@ schema: https://app.kilo.ai/config.json
 == LOW / COSMETIC ======================================================
 
 [L1] duplicate model id "z-ai/glm-5.3-flash"
-     declared under both provider.hodos and provider.nim.
+     declared under both provider.rhodochrosite and provider.nim.
      Not an error. Ambiguous in UI / model pickers. Consider renaming the
      nim entry (e.g. "z-ai/glm-5.3-flash-max").
 
@@ -79,20 +79,20 @@ schema: https://app.kilo.ai/config.json
      Requires a git repo at the workspace root for snapshots to do
      anything. Harmless if absent.
 
-[L5] hodos model id "nvidia/nemotron-3-ultra-550b-a55b"
+[L5] rhodochrosite model id "nvidia/nemotron-3-ultra-550b-a55b"
      Only errors when selected, not at startup. Confirm the router
      actually exposes this exact id.
 
 == ENV VARS REQUIRED ===================================================
 
-HODOS_API_KEY              hodos
+RHODOCHROSITE_API_KEY              rhodochrosite
 FREEINFERENCE_API_KEY      freeinference   (+ gates model/small_model)
-CUTTINGGATE_CLIENT_KEY     cuttinggate
+CHALCOPYRITE_CLIENT_KEY     chalcopyrite
 NIM_PROXY_KEY              nim
 
 == ORDERED FIX LIST ====================================================
 
-1. Fix or delete provider.cuttinggate            [B1]
+1. Fix or delete provider.chalcopyrite            [B1]
 2. Repoint or delete skills.paths                [B2]
 3. Ensure FREEINFERENCE_API_KEY is exported      [B3]
 4. Drop options.timeout and options.http         [H1][H2]

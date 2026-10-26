@@ -43,7 +43,7 @@
     "chalcopyrite": {
       "options": {
         "baseURL": "http://127.0.0.1:25200/v1",
-        "apiKey": "{env:CUTTINGGATE_CLIENT_KEY}"
+        "apiKey": "{env:CHALCOPYRITE_CLIENT_KEY}"
       }
     },
     "nim": {
