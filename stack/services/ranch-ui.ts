@@ -49,17 +49,50 @@ const DIST_CANDIDATES = [
   "/home/toxic/pens/ranch/range/apps/delendai-control-plane/dist",
 ].filter((p): p is string => Boolean(p));
 
-const DIST =
-  DIST_CANDIDATES.find((p) => existsSync(p) && statSync(p).isDirectory()) ??
-  DIST_CANDIDATES[0] ??
-  "";
 const PORT = Number.parseInt(process.env.RANCH_UI_PORT ?? "", 10) || 25205;
 const HERD_ORIGIN = process.env.HERD_ORIGIN ?? "http://127.0.0.1:25100";
-// The live control-plane SPA (Vite dev server). Proxied when no build exists.
+// The live control-plane SPA (Vite dev server).
 const SPA_ORIGIN =
   process.env.SPA_ORIGIN ??
   process.env.DELENDAI_CONTROL_ORIGIN ??
   "http://127.0.0.1:25156";
+
+// Which shell does :25218 serve?
+//   "live"  (default) — proxy the running Vite dev server, so the dashboard
+//            hot-reloads while you edit (HMR over the same origin).
+//   "static"         — serve the built dist/ (production shape, no HMR).
+// A stale dist/ must not silently win: the built shell from days ago looks
+// fine but every source edit is invisible, which is exactly the "dashboard
+// isn't updating" failure. Set RANCH_UI_MODE=static to pin the built shell.
+const RANCH_UI_MODE = (process.env.RANCH_UI_MODE ?? "live").toLowerCase();
+const DIST =
+  DIST_CANDIDATES.find((p) => existsSync(p) && statSync(p).isDirectory()) ??
+  DIST_CANDIDATES[0] ??
+  "";
+// The live mode needs the dev server to actually be up; otherwise fall back
+// to the built shell so the dashboard is never a dead 503.
+const SPA_REACHABLE =
+  RANCH_UI_MODE === "live" &&
+  (() => {
+    try {
+      const u = new URL(SPA_ORIGIN);
+      const probe = Bun.spawnSync({
+        cmd: [
+          "bash",
+          "-c",
+          `exec 3<>/dev/tcp/${u.hostname}/${u.port || 80} && echo up`,
+        ],
+        stdout: "pipe",
+        stderr: "ignore",
+        timeout: 800,
+      });
+      return probe.exitCode === 0;
+    } catch {
+      return false;
+    }
+  })();
+const SERVE_DIST = RANCH_UI_MODE === "static" || !SPA_REACHABLE;
+const SERVE_DIST_DIR = SERVE_DIST && existsSync(DIST) && statSync(DIST).isDirectory();
 
 const MIME: Record<string, string> = {
   ".html": "text/html; charset=utf-8",
@@ -123,6 +156,11 @@ async function proxy(
   }
 }
 
+/** Is this path part of the herd API surface the dashboard calls? */
+function isHerdApiPath(path: string): boolean {
+  return HERD_API_PREFIXES.some((p) => path === p || path.startsWith(p));
+}
+
 Bun.serve({
   port: PORT,
   // The dashboard is tailnet-only; it binds loopback and tailscale serve
@@ -137,8 +175,10 @@ Bun.serve({
       return Response.json({
         ok: true,
         dist: DIST || null,
-        mode: DIST && existsSync(DIST) ? "static" : "proxy",
+        mode: SERVE_DIST_DIR ? "static" : "proxy",
+        requestedMode: RANCH_UI_MODE,
         spa: SPA_ORIGIN,
+        spaReachable: SPA_REACHABLE,
         herd: HERD_ORIGIN,
       });
     }
@@ -147,10 +187,20 @@ Bun.serve({
     // it before resolving; dist itself has no ui/ prefix.
     const rel = path.replace(/^\/ui\//, "/");
 
+    // Live mode (proxied Vite dev server): the dev server owns module and
+    // HMR URLs (/src/main.tsx, /@vite/client, /@react-refresh, /node_modules/…)
+    // and they all carry file extensions -- routing them to the herd API by
+    // "has an extension" would 404 every module and render a blank page.
+    // In live mode the SPA origin serves everything that is not a herd API
+    // path, so the whole dev-server surface stays reachable through :25218.
+    if (!SERVE_DIST_DIR && !isHerdApiPath(path)) {
+      return proxy(req, SPA_ORIGIN + path, SPA_ORIGIN);
+    }
+
     // Hashed build assets are exact-match only. A missing asset is a real
     // 404 (stale index.html referencing a deleted chunk), not a SPA route.
     if (rel.startsWith("/assets/")) {
-      const file = resolve(rel);
+      const file = SERVE_DIST_DIR ? resolve(rel) : null;
       if (file) {
         return new Response(Bun.file(file), {
           headers: { "Content-Type": contentTypeFor(file) },
@@ -163,14 +213,15 @@ Bun.serve({
     // extension, so anything file-like that resolved above was an asset;
     // anything else reaching here is an API path heading to herd.
     if (rel === "/" || rel === "/ui" || rel === "/ui/") {
-      const file = resolve("/index.html");
+      const file = SERVE_DIST_DIR ? resolve("/index.html") : null;
       if (file) {
         return new Response(Bun.file(file), {
           headers: { "Content-Type": "text/html; charset=utf-8" },
         });
       }
-      // No build on disk: proxy the running control-plane SPA so the
-      // dashboard is reachable at :25218 instead of a 503 "dist missing".
+      // No build on disk (or live mode): proxy the running control-plane SPA
+      // so the dashboard is reachable at :25218 instead of a 503 "dist
+      // missing" — and, in live mode, so it hot-reloads.
       return proxy(req, SPA_ORIGIN + path, SPA_ORIGIN);
     }
 
@@ -178,11 +229,8 @@ Bun.serve({
     // to the herd API. A client route has no file extension; the herd API
     // paths below all do, or are explicit prefixes. Without this the Chats
     // view (and every other client route) 404s when pasted into a browser.
-    if (
-      !HERD_API_PREFIXES.some((p) => path === p || path.startsWith(p)) &&
-      !extname(path)
-    ) {
-      const file = resolve("/index.html");
+    if (!isHerdApiPath(path) && !extname(path)) {
+      const file = SERVE_DIST_DIR ? resolve("/index.html") : null;
       if (file) {
         return new Response(Bun.file(file), {
           headers: { "Content-Type": "text/html; charset=utf-8" },
@@ -199,5 +247,5 @@ Bun.serve({
 });
 
 console.log(
-  `ranch-ui on :${PORT} serving ${DIST || "(no build — proxying the SPA)"} (spa ${SPA_ORIGIN}, herd ${HERD_ORIGIN})`,
+  `ranch-ui on :${PORT} serving ${SERVE_DIST_DIR ? DIST : `${SPA_ORIGIN} (live — hot-reloads)`} (mode ${RANCH_UI_MODE}, spa ${SPA_ORIGIN}, herd ${HERD_ORIGIN})`,
 );
