@@ -274,7 +274,7 @@ modelRoles:
   verification: freeinference/qwen3.6-35b
   vision: freeinference/minimax-m3:xhigh
   web: web/exa
-  default: freeinference/deepseek-v4-flash:off
+  default: openrouter/nvidia/nemotron-3.5-super-vl:free:medium
 omitThinking: false
 paste:
   largeMenuThreshold: 100
