@@ -258,23 +258,23 @@ model:
     threshold: 5
 modelRoleStorage: global
 modelRoles:
-  advisor: openai-compatible/deepseek-v4-flash:low
+  advisor: freeinference/qwen3.6-35b:low
   bodybuilder: custom/bodybuilder
-  commit: openai-compatible/qwen3.6-35b
+  commit: freeinference/qwen3.6-35b
   dots: custom/dots
-  fallback: openai-compatible/deepseek-v4-flash
+  fallback: freeinference/qwen3.6-35b
   image: google-antigravity/gemini-3.1-flash-image:auto
-  judge: openai-compatible/qwen3.6-35b
-  memory: openai-compatible/qwen3.6-35b
-  plan: openai-compatible/deepseek-v4-flash:low
-  slow: openai-compatible/deepseek-v4-flash:max
-  smol: openai-compatible/minimax-m3
-  task: openai-compatible/qwen3.6-35b
-  tiny: openai-compatible/qwen3.6-35b
-  verification: openai-compatible/deepseek-v4-flash:low
-  vision: openai-compatible/minimax-m3:xhigh
+  judge: freeinference/qwen3.6-35b
+  memory: freeinference/qwen3.6-35b
+  plan: freeinference/qwen3.6-35b:low
+  slow: freeinference/qwen3.6-35b:max
+  smol: freeinference/minimax-m3
+  task: freeinference/qwen3.6-35b
+  tiny: freeinference/qwen3.6-35b
+  verification: freeinference/qwen3.6-35b:low
+  vision: freeinference/minimax-m3:xhigh
   web: web/exa
-  default: rhodochrosite.secure-nim/nvidia/nemotron-3.5-bolt-e4b
+  default: openrouter/openrouter/free
 omitThinking: false
 paste:
   largeMenuThreshold: 100
@@ -372,9 +372,9 @@ repetitionPenalty: -1
 retry:
   fallbackChains:
     fallback:
-      - openai-compatible/qwen3.6-35b
-      - openai-compatible/minimax-m3
-      - openai-compatible/deepseek-v4-flash
+      - freeinference/qwen3.6-35b
+      - freeinference/minimax-m3
+      - freeinference/qwen3.6-35b
     web:
       - web/tavily
       - web/firecrawl
@@ -448,7 +448,7 @@ stt:
   submitTrigger: never
 subagents:
   can_spawn_subagents: true
-  defaultModel: openai-compatible/deepseek-v4-flash
+  defaultModel: freeinference/qwen3.6-35b
   subagent: inherit
   whitelist:
     - task
