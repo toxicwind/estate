@@ -12,12 +12,30 @@
     "context_window": 1000000
   },
   "services": {
-    "herd": { "port": 25100, "status": "ok" },
-    "mcpproxy": { "port": 25109, "status": "ok" },
-    "ghas_api": { "port": 25112, "status": "ok" },
-    "ghas_mcp": { "port": 25113, "status": "ok" },
-    "mesh_hub": { "port": 25115, "status": "ok" },
-    "pi_web_dashboard": { "port": 25192, "status": "ok" }
+    "bornite": {
+      "port": 25100,
+      "status": "ok"
+    },
+    "mcpproxy": {
+      "port": 25109,
+      "status": "ok"
+    },
+    "ghas_api": {
+      "port": 25112,
+      "status": "ok"
+    },
+    "ghas_mcp": {
+      "port": 25113,
+      "status": "ok"
+    },
+    "mesh_hub": {
+      "port": 25115,
+      "status": "ok"
+    },
+    "pi_web_dashboard": {
+      "port": 25192,
+      "status": "ok"
+    }
   },
   "tools": {
     "native": [
