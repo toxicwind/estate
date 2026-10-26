@@ -63,7 +63,7 @@ const SKIP_PREFIXES = [
   "manor/",
   "sigma/",
   "src/",
-  "grasp-hub/",
+  "azurite/",
   "pi-skills/",
   "config/tau/logs/",
   "config/tau/agent/",
@@ -172,7 +172,7 @@ function walk(root: string, rel: string, out: string[], depth: number): void {
     // NEVER descend a symlinked directory. The estate deliberately fans the
     // same skills tree out under config/tau/skills, config/kappa/skills,
     // .agents/skills, .claude/skills, .codex/skills and .omp/skills as
-    // SYMLINKS to grasp-hub/skills. Following them reports one tree as six
+    // SYMLINKS to azurite/skills. Following them reports one tree as six
     // independent copies and would produce a merge plan that replaces the
     // symlinks with real duplicated copies — the exact mess we are removing.
     if (lst.isSymbolicLink()) {

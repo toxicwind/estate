@@ -519,11 +519,11 @@
       "tool_discovery_interval": "2m0s"
     },
     {
-      "name": "grasp-hub",
+      "name": "azurite",
       "protocol": "stdio",
       "command": "/home/toxic/.bun/bin/bun",
       "args": [
-        "/home/toxic/estate/grasp-hub/mcp/server.ts"
+        "/home/toxic/estate/azurite/mcp/server.ts"
       ],
       "oauth": null,
       "enabled": true,

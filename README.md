@@ -207,17 +207,17 @@ It holds the 4s race budget and uses `delend-code-race` on breach. The rig **nev
 
 The estate operates on **arbitrary upstream repos**, not just `toxicwind/*`. `bin/delend-gh <org/repo|url> [audit-main|raw <path>|<git-args>] [--keep]` resolves any GitHub/GitLab/Codeberg/self-hosted repo into a temp clone, runs a git operation (default: a branch audit vs the remote default branch), and cleans up. `bin/delend-branch-audit-for-main --repo <path|url>` is the estate-wide branch audit on any repo. Global-by-construction: never assume a repo lives under a specific org — always resolve from the provided org/URL. This is the basis for foreign-pattern borrow, upstream tracking, and cross-org recon.
 
-## 🧠 Skills — grasp-hub, one registry for every agent
+## 🧠 Skills — azurite, one registry for every agent
 
-All estate skills (kappa **and** tau) load from **one registry**: [`grasp-hub/`](grasp-hub/) — `grasp-hub/skills/<cluster>/<name>/SKILL.md`, exposed via Graph-Structured Agent Planning (GraSP) clusters with a classifier and an MCP server (`grasp-hub/mcp/server.ts`).
+All estate skills (kappa **and** tau) load from **one registry**: [`azurite/`](azurite/) — `azurite/skills/<cluster>/<name>/SKILL.md`, exposed via Graph-Structured Agent Planning (GraSP) clusters with a classifier and an MCP server (`azurite/mcp/server.ts`).
 
-- **kappa** → `skills.paths` → `grasp-hub/skills` (global, dots-managed) and the project `.agents/skills/` symlink. Verify with `kappa debug skill`.
-- **tau** → `config/tau/skills` → `grasp-hub/skills` symlink.
+- **kappa** → `skills.paths` → `azurite/skills` (global, dots-managed) and the project `.agents/skills/` symlink. Verify with `kappa debug skill`.
+- **tau** → `config/tau/skills` → `azurite/skills` symlink.
 - Clusters: `00_inbox`, `01_orchestration`, `02_research_intel`, `03_systems_runtime`, `04_code_intelligence`, `05_data_hardware`, `06_knowledge_authoring`, plus `archive`.
 
-**Agent-paradigm-audit** is a first-class skill here: [`grasp-hub/skills/06_knowledge_authoring/agent-paradigm-audit/SKILL.md`](grasp-hub/skills/06_knowledge_authoring/agent-paradigm-audit/SKILL.md). It runs a neutral, evidence-backed audit of the 2026 "openclaw-era" agent paradigms (deterministic / infra-aware / self-grading / settlement) grounded in the real October-2026 orchestration literature (Jasper OS, INFRAMIND, WorkflowOps, OrchRM, the MAS orchestration survey) **and** in concrete estate reality (oracle-market, corral/delendai, forever-loop+squawk C2, rhodochrosite/EAP/theta routing, delend-experimental self-healing). Output is a scored Oracle-Decision-Table, not a vendor cheerleading sheet — and it is itself the estate's documented evidence for how it chooses orchestration.
+**Agent-paradigm-audit** is a first-class skill here: [`azurite/skills/06_knowledge_authoring/agent-paradigm-audit/SKILL.md`](azurite/skills/06_knowledge_authoring/agent-paradigm-audit/SKILL.md). It runs a neutral, evidence-backed audit of the 2026 "openclaw-era" agent paradigms (deterministic / infra-aware / self-grading / settlement) grounded in the real October-2026 orchestration literature (Jasper OS, INFRAMIND, WorkflowOps, OrchRM, the MAS orchestration survey) **and** in concrete estate reality (oracle-market, corral/delendai, forever-loop+squawk C2, rhodochrosite/EAP/theta routing, delend-experimental self-healing). Output is a scored Oracle-Decision-Table, not a vendor cheerleading sheet — and it is itself the estate's documented evidence for how it chooses orchestration.
 
-Add or edit a skill once in grasp-hub and both consumers pick it up — no per-agent copies. Keep the `name == directory` contract and parseable frontmatter. Register a new skill by dropping it in `skills/<name>/` (SKILL.md frontmatter required), symlinking into `grasp-hub/skills/<cluster>/<name>`, then proving pickup (`node bin/grasp-hub.js list | grep <name>` and `validate` must be green).
+Add or edit a skill once in azurite and both consumers pick it up — no per-agent copies. Keep the `name == directory` contract and parseable frontmatter. Register a new skill by dropping it in `skills/<name>/` (SKILL.md frontmatter required), symlinking into `azurite/skills/<cluster>/<name>`, then proving pickup (`node bin/azurite.js list | grep <name>` and `validate` must be green).
 
 ## 🗺️ Operations & the live box
 

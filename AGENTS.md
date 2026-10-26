@@ -182,7 +182,7 @@ style is MONADIC PRIMITIVES + bun-forward, not ad-hoc imperative bash:
 ## Naming (2026-10-22)
 
 - EAP/Gemini Tool Retrieval = **@estate/theta** (private). Merged provider
-  gateway = **atlas** (ex-chalcopyrite). Key-pool router = **keygate**.
+  gateway = **atlas** (ex-cuttinggate; renamed chalcopyrite). Key-pool router = **keygate**.
 - **olympus** holds the Greek codename lineage (τ tau, κ kappa, skopos, kilo,
   muse, keryx, rhodochrosite, kairos, kryptos). ranch/barn are NOT Greek; only Greek
   products join olympus.
@@ -261,7 +261,7 @@ One rule: **products own their entrypoints; bins merely point at them.**
 
 | Path                                   | Owner                                                     |
 | -------------------------------------- | --------------------------------------------------------- |
-| `/home/toxic/estate/AGENTS.md`         | estate control-plane: repos, skills, grasp-hub, pitchfork |
+| `/home/toxic/estate/AGENTS.md`         | estate control-plane: repos, skills, azurite, pitchfork |
 | `/home/toxic/estate/ranch/*/AGENTS.md` | each ranch component repo's own contract                  |
 
 Nested files declare what they refine and where; none repeat or contradict these.

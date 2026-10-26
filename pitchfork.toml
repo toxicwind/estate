@@ -696,11 +696,11 @@ ready_cmd = "pgrep -f '[m]arket-loop.ts' >/dev/null"
 dir = "/home/toxic/estate/agents/weaver"
 mise = true
 [daemons.forever-loop]
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/ranch/estate-brain/agents/forever-loop/run-loop.ts"
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/estate/products/estate-brain/agents/forever-loop/run-loop.ts"
 auto = ["start"]
 retry = true
 ready_cmd = "pgrep -f '[f]orever-loop/run-loop.ts' >/dev/null"
-dir = "/home/toxic/pens/ranch/estate-brain/agents/forever-loop"
+dir = "/home/toxic/pens/estate/products/estate-brain/agents/forever-loop"
 mise = true
 [daemons.market-watchdog]
 run = "exec /home/toxic/pens/ranch/squawk/oracle/bin/market-watchdog.sh"

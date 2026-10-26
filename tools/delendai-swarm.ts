@@ -44,7 +44,7 @@
  *   delendai-swarm --root /home/toxic/estate --no-audit        # opt out of the default auto-audit
  *
  * The swarm is AUDIT-AWARE BY DEFAULT: it auto-runs the estate's merged
- * session audit (tau JSONL + kappa SQLite via the grasp-hub tau-session-audit
+ * session audit (tau JSONL + kappa SQLite via the azurite tau-session-audit
  * helper) and surfaces any emergent task whose signature lands in the report's
  * "Repeated Tool Failure Loop" region as loop-prone, rather than re-amplifying
  * a known-failing domain. This makes recursive todo-forming part of delend and
@@ -139,7 +139,7 @@ function taskSig(feature: string, title: string): string {
 }
 
 /**
- * Audit-aware todo forming. The estate's merged session audit (grasp-hub's
+ * Audit-aware todo forming. The estate's merged session audit (azurite's
  * tau-session-audit over tau JSONL + kappa SQLite) reports past failures —
  * most notably "Repeated Tool Failure Loop" incidents with their concrete
  * paths. Before spawning an emergent child todo blindly, cross the title's
@@ -356,7 +356,7 @@ function main(argv: string[]): number {
     // by the grasb-hub tau-session-audit helper) rather than blind. Non-fatal:
     // a missing helper just strands audit-awareness, it never blocks the swarm.
     const helper =
-      "/home/toxic/estate/grasp-hub/skills/04_code_intelligence/tau-session-audit/helper/audit.ts";
+      "/home/toxic/estate/azurite/skills/04_code_intelligence/tau-session-audit/helper/audit.ts";
     if (existsSync(helper)) {
       // --all prints (among others) the "Repeated Tool Failure Loop" section;
       // exit-code 1 (critical unknown-types) still yields a useful report for

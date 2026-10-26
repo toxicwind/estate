@@ -407,7 +407,7 @@ showHardwareCursor: true
 skillful: true
 skills:
   customDirectories:
-    - /home/toxic/estate/grasp-hub/skills
+    - /home/toxic/estate/azurite/skills
     - /home/toxic/estate/projects/range/ranch/gear
   enableSkillCommands: true
 snapcompact:

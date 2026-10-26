@@ -3,7 +3,7 @@
  * pattern-borrow.ts — GitHub-wide + in-tree pattern ranker / borrower (Forge modular integration).
  *
  * Delegates directly to the modular Forge provider in
- * `grasp-hub/skills/04_code_intelligence/code-patterns/src/providers/pattern-borrow.ts`.
+ * `azurite/skills/04_code_intelligence/code-patterns/src/providers/pattern-borrow.ts`.
  *
  * CLI:
  *   bun run scripts/pattern-borrow.ts [patterns...] [--top N] [--per-page N]
@@ -18,7 +18,7 @@ import {
   rankPatternRows,
   collectTopPatternRepos,
   renderPatternBorrow,
-} from "../grasp-hub/skills/04_code_intelligence/code-patterns/src/providers/pattern-borrow";
+} from "../azurite/skills/04_code_intelligence/code-patterns/src/providers/pattern-borrow";
 
 export {
   DEFAULT_PATTERN_WEIGHTS,

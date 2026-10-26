@@ -22,7 +22,7 @@
 - [ ] **estate repo dirty (~20 files)**: omniroute takeover (models.yml, ports.env,
       pitchfork.toml, hodossync config.ts/dialog, agent/config.yml), AGENTS.md
       (root is outside git; estate mirror tracked), docker-inventory doc,
-      deleted `stack/services/omniroute.sh`, grasp-hub gitlink bump,
+      deleted `stack/services/omniroute.sh`, azurite gitlink bump,
       skills/pattern-forge/{bun.lock,package.json,src/hf.ts},
       skills/guide-project-creator/ (new). Commit message ready:
       "omniroute → rhodochrosite takeover + docker lane policy + forge hf".
@@ -60,7 +60,7 @@
       NativeLink wrapper; do not merge codebases — decide name: forge-build?).
 - [ ] Delete `ranch/shell/ii/dots/.config/systemd/user/flicker-server.service`
       (no-competing-systemd doctrine; currently disabled).
-- [ ] grasp-hub `skills/03_systems_runtime/flicker` + `flat/flicker` symlink +
+- [ ] azurite `skills/03_systems_runtime/flicker` + `flat/flicker` symlink +
       estate/skills/flicker — merge content into a forge skill, clean delete.
 - [ ] Verify: `ffs grep -i flicker --root /home/toxic/estate` → only
       var/archive + docs/history hits; daemons green.
@@ -144,7 +144,7 @@
 
 - [ ] omniroute-gateway row in `findings/prior-audits/docker-inventory-20261016.md`
       → mark RETIRED (merged into rhodochrosite).
-- [ ] estate/skills/flicker + grasp-hub flicker skill → fold/rename (item 1).
+- [ ] estate/skills/flicker + azurite flicker skill → fold/rename (item 1).
 - [ ] `ranch/projects/estate-core` oddity → consolidate (move to ranch/<name> or
       estate/projects — pick the non-weird one).
 - [ ] `/home/toxic/projects/effusion-labs` (home-level, Lane B) → consolidate
@@ -157,8 +157,8 @@
 
 ## Context (paths/decisions — stable)
 
-- grasp-hub = `/home/toxic/estate/grasp-hub` (GitHub `toxicwind/grasp-hub`, was
-  estate-skills-hub). Router: `node bin/grasp-hub.js route "<query>"`. Registry
+- azurite = `/home/toxic/estate/azurite` (GitHub `toxicwind/azurite`, was
+  estate-skills-hub). Router: `node bin/azurite.js route "<query>"`. Registry
   submodule: tinh2/skills-hub-registry (553 skills). UI fork: toxicwind/skills-hub.
 - forge hf = `estate/skills/pattern-forge/src/{hf,hf-lib}.ts`; CLI
   `forge hf search|classify|embed|completions|find-classifier|tree|categorize`.
