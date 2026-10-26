@@ -133,30 +133,30 @@ diff --git a/docs/daemons.md b/docs/daemons.md
 index de185d95ad..7ca39575c4 100644
 --- a/docs/daemons.md
 +++ b/docs/daemons.md
-@@ -48,7 +48,7 @@ herd → hodos`.
- | `herd` | 25100 | The local model router. ELO-ranks providers, enforces the circuit breaker, owns the 25xxx model path. |
- | `estate-router` | 25104 | The older TS router, still serving. Runs *beside* herd, not behind it. Superseded but not retired — killing it is a separate decision. |
- | `hodos` | 25193 | The cloud/paid provider router. Holds the `VANSROUTER_API_KEY` namespace vansrouter used to own. |
--| `cuttinggate` | — | The guard plane in front of herd and hodos: quarantine, circuit breaker, credential rotation, winner ledger. Not in `groups.*` because it fronts everything else. |
-+| `cuttinggate` | 25200 | The guard plane in front of herd and hodos: quarantine, circuit breaker, credential rotation, winner ledger. Its project overlay (`ranch/mesh/proxy/cuttinggate/pitchfork.d/cuttinggate.toml`) supplies `CUTTINGGATE_PORT=25200` and the readiness URL, so the top-level daemon object has no `port =` field. Not in `groups.*` because it fronts everything else. |
+@@ -48,7 +48,7 @@ bornite → rhodochrosite`.
+ | `bornite` | 25100 | The local model router. ELO-ranks providers, enforces the circuit breaker, owns the 25xxx model path. |
+ | `estate-router` | 25104 | The older TS router, still serving. Runs *beside* bornite, not behind it. Superseded but not retired — killing it is a separate decision. |
+ | `rhodochrosite` | 25193 | The cloud/paid provider router. Holds the `VANSROUTER_API_KEY` namespace vansrouter used to own. |
+-| `chalcopyrite` | — | The guard plane in front of bornite and rhodochrosite: quarantine, circuit breaker, credential rotation, winner ledger. Not in `groups.*` because it fronts everything else. |
++| `chalcopyrite` | 25200 | The guard plane in front of bornite and rhodochrosite: quarantine, circuit breaker, credential rotation, winner ledger. Its project overlay (`ranch/mesh/proxy/chalcopyrite/pitchfork.d/chalcopyrite.toml`) supplies `CHALCOPYRITE_PORT=25200` and the readiness URL, so the top-level daemon object has no `port =` field. Not in `groups.*` because it fronts everything else. |
  | `mesh-hub` | 25115 | MCP registry. Answers "which MCPs exist". |
  | `gatehouse` | 25127 | MCP meta-tool layer — the gatehouse MCP endpoint itself. The SSOT still names this port `MCPPROXY_GO_PORT`. |
  | `null-g-proxy` | 25107 | Edge proxy that returns null for blocked traffic. |
-diff --git a/engines/herd/beellama.cpp b/engines/herd/beellama.cpp
---- a/engines/herd/beellama.cpp
-+++ b/engines/herd/beellama.cpp
+diff --git a/engines/bornite/beellama.cpp b/engines/bornite/beellama.cpp
+--- a/engines/bornite/beellama.cpp
++++ b/engines/bornite/beellama.cpp
 @@ -1 +1 @@
 -Subproject commit 78af8326522d94fb5fc24b60cfd6f26e29f12490
 +Subproject commit 78af8326522d94fb5fc24b60cfd6f26e29f12490-dirty
-diff --git a/engines/herd/ik_llama.cpp b/engines/herd/ik_llama.cpp
---- a/engines/herd/ik_llama.cpp
-+++ b/engines/herd/ik_llama.cpp
+diff --git a/engines/bornite/ik_llama.cpp b/engines/bornite/ik_llama.cpp
+--- a/engines/bornite/ik_llama.cpp
++++ b/engines/bornite/ik_llama.cpp
 @@ -1 +1 @@
 -Subproject commit 7434a014237e55b2e0d36edc2ace6acfb82fea1c
 +Subproject commit 7434a014237e55b2e0d36edc2ace6acfb82fea1c-dirty
-diff --git a/engines/herd/llama-cpp-turboquant b/engines/herd/llama-cpp-turboquant
---- a/engines/herd/llama-cpp-turboquant
-+++ b/engines/herd/llama-cpp-turboquant
+diff --git a/engines/bornite/llama-cpp-turboquant b/engines/bornite/llama-cpp-turboquant
+--- a/engines/bornite/llama-cpp-turboquant
++++ b/engines/bornite/llama-cpp-turboquant
 @@ -1 +1 @@
 -Subproject commit d69b48c7fe653535753964a283ceb09aed35ddd6
 +Subproject commit d69b48c7fe653535753964a283ceb09aed35ddd6-dirty
@@ -196,7 +196,7 @@ diff --git a/profiles/toxic/env.sh b/profiles/toxic/env.sh
 index 17cd90f05b..03bf4a1e16 100755
 --- a/profiles/toxic/env.sh
 +++ b/profiles/toxic/env.sh
-@@ -16,7 +16,7 @@ export SCOUT_API_KEY="herd"
+@@ -16,7 +16,7 @@ export SCOUT_API_KEY="bornite"
  export NIM_QUEUE_BASE_URL="http://127.0.0.1:8000/v1"
  export LLAMA_SWAP_MODEL="beellama/qwen-flash-64k"
  

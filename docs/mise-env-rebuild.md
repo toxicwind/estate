@@ -38,31 +38,31 @@ intentional: a second declaration is drift, not fallback.
 
 ## 2. Tools
 
-`herd` was **not a mise tool**. It was a 37 MB Go binary at
-`ranch/herd/herd` with no version and no upgrade path. That is why the
-herd outage stayed invisible behind a stale process for hours: nothing owned it.
+`bornite` was **not a mise tool**. It was a 37 MB Go binary at
+`ranch/bornite/bornite` with no version and no upgrade path. That is why the
+bornite outage stayed invisible behind a stale process for hours: nothing owned it.
 
 ```toml
 [tools]
-herd = "github:toxicwind/herd"
+bornite = "github:toxicwind/bornite"
 ```
 
 The launcher resolves tools through mise and fails loudly if a tool is missing,
 rather than pointing at a path that a directory move can invalidate:
 
 ```bash
-# stack/services/herd.sh
+# stack/services/bornite.sh
 resolve_tool() { mise which "$1" 2>/dev/null || command -v "$1" || return 1; }
 ```
 
-The old `BIN="$SOV/projects/herd/herd"` died on the 2026-10-01 restructure
+The old `BIN="$SOV/projects/bornite/bornite"` died on the 2026-10-01 restructure
 and only surfaced when `pitchfork clean` finally stopped the stale process.
 
 ## 3. pitchfork
 
 **`pitchfork clean` is destructive**: it removes *every* stopped or failed
 daemon from the in-memory list, not one. Using it to drop a single retired
-daemon took `estate/herd` down as collateral.
+daemon took `estate/bornite` down as collateral.
 
 The correct sequence to retire a daemon:
 
@@ -91,7 +91,7 @@ and exit 1 on findings.
 
 ## What this does NOT fix
 
-- hodos still loads one key per provider at boot and 502s with no diagnosis.
-  That is `cuttinggate`'s credential plane, not a config problem.
+- rhodochrosite still loads one key per provider at boot and 502s with no diagnosis.
+  That is `chalcopyrite`'s credential plane, not a config problem.
 - The ~700 dangling `~/.local/state/mise/{tracked,trusted}-configs` symlinks
   from deleted worktrees are bookkeeping, not config.

@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 set -euo pipefail
-bun run "${ESTATE_ROOT:-$HOME/Estate}/src/mcp/herd.ts" models
+bun run "${ESTATE_ROOT:-$HOME/Estate}/src/mcp/bornite.ts" models

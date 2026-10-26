@@ -17,7 +17,7 @@
   import MiddleTruncate from "./MiddleTruncate.svelte";
 
   function handleTitleChange(newTitle: string): void {
-    const sanitized = newTitle.replace(/\n/g, "").trim().substring(0, 64) || "herd";
+    const sanitized = newTitle.replace(/\n/g, "").trim().substring(0, 64) || "bornite";
     appTitle.set(sanitized);
   }
 

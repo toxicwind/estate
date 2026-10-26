@@ -11773,7 +11773,7 @@ Most applications should import from `smthrs`. The workspace packages below are 
 | `@smthrs/gateway-react` | React hooks and root helpers for Gateway-backed UIs | Gateway |
 | `@smthrs/gateway-ui` | Prebuilt React components for Gateway-backed UIs, built on the gateway-react hooks | Gateway UI Components |
 | `@smthrs/graph` | Framework-neutral workflow graph model, XML nodes, task descriptors, and graph snapshots | Planner Internals, Types |
-| `@smthrs/herdr` | Herdr socket client and run surface: mirror a run into a herdr terminal workspace as an optional presentation and steering plane | Herdr |
+| `@smthrs/borniter` | Herdr socket client and run surface: mirror a run into a herdr terminal workspace as an optional presentation and steering plane | Herdr |
 | `@smthrs/init-site` | Private Cloudflare Worker deployment for the interactive Smithers init wizard and workflow builder marketing site | Ecosystem |
 | `@smthrs/integrations` | External webhook and polling event sources, cursor storage, signature verification, and delivery helpers for workflow integrations | Integrations, Server |
 | `@smthrs/jj-darwin-arm64` | Vendored jj (Jujutsu) binary for darwin-arm64; auto-installed as an optional dependency of `@smthrs/vcs`, not depended on directly | VCS Guide |
@@ -22309,7 +22309,7 @@ visualization work unmodified on the machine definition.
 > Mirror a Smithers run into a herdr terminal workspace with an overview tab, a tab per attention-worthy node, authoritative status, in-pane approvals, and one-key steering (press s to steer, h to hijack, or smithers steer), all optional and degradable.
 
 
-[Herdr](https://herdr.dev) is a terminal workspace manager. Smithers can mirror a
+[Herdr](https://borniter.dev) is a terminal workspace manager. Smithers can mirror a
 run into a herdr workspace so you can watch the whole run at a glance, drop into
 any node, answer a parked gate in place, and take an agent over by hand, without
 giving up any of Smithers' guarantees.
@@ -22903,7 +22903,7 @@ forward or expose the socket itself; SSH to the host and run the client locally.
 
 The herdr control socket is **unauthenticated local control**. Anything that can
 reach it can start processes and drive panes. Keep it on a trusted local machine
-(the default socket lives under `~/.config/herdr/`). Never expose it over the
+(the default socket lives under `~/.config/borniter/`). Never expose it over the
 network or forward the raw socket. For a remote host, SSH in and run the client
 there rather than opening the socket up.
 

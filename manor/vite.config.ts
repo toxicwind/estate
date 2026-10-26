@@ -64,7 +64,7 @@ export default defineConfig({
     proxy: Object.fromEntries(
       ["/api", "/logs", "/upstream", "/unload", "/v1", "/sdapi"].map((path) => [
         path,
-        process.env.HERD_URL ?? "http://localhost:8080",
+        process.env.BORNITE_URL ?? "http://localhost:8080",
       ]),
     ),
   },

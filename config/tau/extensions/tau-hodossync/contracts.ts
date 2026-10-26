@@ -182,6 +182,6 @@ export interface AgentHomeOptions {
 	defaultHome: string;
 	matchesKey(data: string, key: string): boolean;
 	createInput(initialValue: string): FlockInput;
-	/** Wire API for the hodos gateway. OMP uses chat completions; Pi defaults to Responses. */
+	/** Wire API for the rhodochrosite gateway. OMP uses chat completions; Pi defaults to Responses. */
 	inferenceApi?: ProviderApi;
 }

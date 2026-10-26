@@ -43,7 +43,7 @@ Implement a WezTerm-compatible shell configuration that enables proper terminal 
   ```
 
 ### 5. Documentation
-- Update herd/README.md to reflect actual wezterm configuration
+- Update bornite/README.md to reflect actual wezterm configuration
 - Create mesh/README.md documenting mesh router endpoints and port 25120
 - Ensure all READMEs reference the correct configuration files
 

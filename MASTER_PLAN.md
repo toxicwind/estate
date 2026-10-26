@@ -1,6 +1,6 @@
 # Estate Pi Fork — Master Execution Plan
 
-> **Generated**: 2026-07-28 | **Updated**: 2026-08-06 | **Context**: Full session replay across pi fork, herd, GHAS MCP, mcpproxy, dashboards
+> **Generated**: 2026-07-28 | **Updated**: 2026-08-06 | **Context**: Full session replay across pi fork, bornite, GHAS MCP, mcpproxy, dashboards
 
 ---
 
@@ -8,7 +8,7 @@
 
 ```
 User runs "pi"
-    → pi-agent (fork) uses herd :25100 (AST matrix auto-routing)
+    → pi-agent (fork) uses bornite :25100 (AST matrix auto-routing)
     → AST matrix understands mcpproxy FIRST CLASS (via our pi-agent fork commits)
     → retrieve_tools shows ALL GitHub Advanced Search MCP endpoints
     → ghas narrow tools (ghas_search_code, ghas_search_repositories, etc.) accessible
@@ -22,10 +22,10 @@ User runs "pi"
 | Domain                        | Status                                                    | Owner              |
 | ----------------------------- | --------------------------------------------------------- | ------------------ |
 | **Pi fork** (`toxicwind/pi`)  | 4/9 critical PRs cherry-picked, 2 blocked on conflicts    | Current            |
-| **herd hodos router**      | Rate limiter rewritten (Go, full jitter)                  | Need to build+test |
+| **bornite rhodochrosite router**      | Rate limiter rewritten (Go, full jitter)                  | Need to build+test |
 | **GHAS MCP**                  | REFACTORED — needs full integration                       | In Progress        |
 | **estate-router**          | STOPPED (:25104)                                          | Need restart       |
-| **NIM e2e**                   | Config via estate-router, tested via herd health | ✅                 |
+| **NIM e2e**                   | Config via estate-router, tested via bornite health | ✅                 |
 | **Dashboard SPA**             | Done (JSON-driven, hash-routed)                           | ✅                 |
 | **AGENTS.md audit**           | 358 files found, need dedup                               | In Progress        |
 | **mcpproxy+ghas integration** | DISCONNECTED — needs unification                          | In Progress        |
@@ -76,7 +76,7 @@ cd /home/toxic/projects/github-advanced-search-mcp
 # Single server.ts handles both stdio (mcpproxy) and HTTP (pitchfork)
 ```
 
-## 📋 PHASE 3: Pi-Agent Fork hodos MCPproxy Awareness
+## 📋 PHASE 3: Pi-Agent Fork rhodochrosite MCPproxy Awareness
 
 ```bash
 cd /home/toxic/projects/pi-agent
@@ -104,13 +104,13 @@ curl -s -m 30 -X POST http://127.0.0.1:25100/v1/chat/completions \
 
 Expected: `content` response
 
-## 📋 PHASE 6: herd hodos router Build + Verify
+## 📋 PHASE 6: bornite rhodochrosite router Build + Verify
 
 ```bash
-cd /home/toxic/projects/herd-main
-go build -o herd .
-go test ./internal/hodos/...
-cd /home/toxic/estate && mise run restart herd
+cd /home/toxic/projects/bornite-main
+go build -o bornite .
+go test ./internal/rhodochrosite/...
+cd /home/toxic/estate && mise run restart bornite
 ```
 
 ## 📋 PHASE 7: Resume pi Session

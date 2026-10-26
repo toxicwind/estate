@@ -30,7 +30,7 @@ for review.
 
 > **SUPERSEDED (2026-10-22).** This plan proposed wiring GHAS into pylae. That
 > target is wrong: pylae/OmniRoute is legacy (not running; its MCP-tool role was
-> never merged into hodos, which is an LLM-only model gateway). The corrected,
+> never merged into rhodochrosite, which is an LLM-only model gateway). The corrected,
 > authoritative inventory + decision is
 > `docs/github-search-consolidation-INVENTORY.md` — GHAS stays live standalone
 > (`:25112`/`:25113`), and the engine lives at

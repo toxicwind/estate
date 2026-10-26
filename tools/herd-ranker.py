@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""herd-ranker: sweep every loadable model in the herd herd, rank by latency/validity.
+"""bornite-ranker: sweep every loadable model in the bornite bornite, rank by latency/validity.
 Kimi-auto pattern: thread-local hot persistent connections, fail-fast ceilings,
-sane concurrency (no thundering herd against one GPU), JSONL ledger.
+sane concurrency (no thundering bornite against one GPU), JSONL ledger.
 Event-driven pacing: no artificial sleeps; the swap queue itself paces us.
 """
 import json, re, time, sys, threading, http.client, os
 from concurrent.futures import ThreadPoolExecutor
 
-HERD = "/home/toxic/estate/config/herd.yaml"
-OUTDIR = "/home/toxic/estate/data/herd-ranker"
+BORNITE = "/home/toxic/estate/config/bornite.yaml"
+OUTDIR = "/home/toxic/estate/data/bornite-ranker"
 HOST, PORT = "127.0.0.1", 25100
 COLD_CEIL = 300   # includes model load
 WARM_CEIL = 60
@@ -20,7 +20,7 @@ LEDGER = os.path.join(OUTDIR, "ledger.jsonl")
 
 def loadable_models():
     models, cur = [], None
-    for line in open(HERD):
+    for line in open(BORNITE):
         m = re.match(r"^  ([A-Za-z0-9_./-]+):$", line)
         if m:
             cur = {"id": m.group(1), "cmd": False}
@@ -111,7 +111,7 @@ def rank_one(model, idx, total):
 
 def main():
     models = loadable_models()
-    print("herd-ranker: %d loadable models, %d workers, ceilings cold=%ds warm=%ds" % (
+    print("bornite-ranker: %d loadable models, %d workers, ceilings cold=%ds warm=%ds" % (
         len(models), WORKERS, COLD_CEIL, WARM_CEIL), flush=True)
     entries = []
     with ThreadPoolExecutor(max_workers=WORKERS) as ex:

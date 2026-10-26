@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * Live ranking + routing proof against herd SSOT (:25100).
+ * Live ranking + routing proof against bornite SSOT (:25100).
  * Writes evidence to SCRATCH (env) or .state/rank-route/
  *
  * Does NOT hardcode expected latency — probes real chat completions.
@@ -11,7 +11,7 @@ import {
   listSwapModels,
   swapBaseUrl,
   swapV1Url,
-} from "../src/lib/herd_ssot.ts";
+} from "../src/lib/bornite_ssot.ts";
 
 const SCRATCH =
   process.env.SCRATCH ||
@@ -304,19 +304,19 @@ const routeCases: RouteCase[] = [
   {
     class: "fast_utility",
     model: best.fast?.id || "beellama/exaone-4-0-1-2b-iq4xs",
-    surface: "herd/v1",
+    surface: "bornite/v1",
     url: `${V1}/chat/completions`,
   },
   {
     class: "quality_coding",
     model: best.quality?.id || "beellama/qwen-flash-64k",
-    surface: "herd/v1",
+    surface: "bornite/v1",
     url: `${V1}/chat/completions`,
   },
   {
     class: "long_context",
     model: best.longctx?.id || "beellama/qwen-flash-128k",
-    surface: "herd/v1",
+    surface: "bornite/v1",
     url: `${V1}/chat/completions`,
   },
   {

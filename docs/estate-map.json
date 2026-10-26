@@ -22,7 +22,7 @@
     {
       "name": "ranch",
       "path": "/home/toxic/estate/ranch",
-      "role": "the inference estate monorepo: herd, hodos, thresher, squawk, oracle, and the mesh provider catalog",
+      "role": "the inference estate monorepo: bornite, rhodochrosite, thresher, squawk, oracle, and the mesh provider catalog",
       "exists": true,
       "isRepo": true,
       "gitKind": "nested",
@@ -275,7 +275,7 @@
       "port": 25100,
       "ssot": "HERD_PORT",
       "daemons": [
-        "herd"
+        "bornite"
       ],
       "live": false,
       "addr": null,
@@ -286,7 +286,7 @@
       "port": 25100,
       "ssot": "HERD_PORT",
       "daemons": [
-        "herd"
+        "bornite"
       ],
       "live": false,
       "addr": null,
@@ -1180,7 +1180,7 @@
     },
     {
       "port": 25161,
-      "ssot": "HERD_RACE_PORT",
+      "ssot": "BORNITE_RACE_PORT",
       "daemons": [],
       "live": false,
       "addr": null,
@@ -1291,9 +1291,9 @@
     },
     {
       "port": 25193,
-      "ssot": "HODOS_PORT",
+      "ssot": "RHODOCHROSITE_PORT",
       "daemons": [
-        "hodos"
+        "rhodochrosite"
       ],
       "live": false,
       "addr": null,
@@ -1302,9 +1302,9 @@
     },
     {
       "port": 25193,
-      "ssot": "HODOS_PORT",
+      "ssot": "RHODOCHROSITE_PORT",
       "daemons": [
-        "hodos"
+        "rhodochrosite"
       ],
       "live": false,
       "addr": null,
@@ -1445,7 +1445,7 @@
     },
     {
       "port": 25200,
-      "ssot": "CUTTINGGATE_PORT",
+      "ssot": "CHALCOPYRITE_PORT",
       "daemons": [],
       "live": true,
       "addr": "127.0.0.1",
@@ -1454,7 +1454,7 @@
     },
     {
       "port": 25200,
-      "ssot": "CUTTINGGATE_PORT",
+      "ssot": "CHALCOPYRITE_PORT",
       "daemons": [],
       "live": true,
       "addr": "127.0.0.1",
@@ -1869,7 +1869,7 @@
     "mcpServers": [],
     "creds": [
       {
-        "name": "hodos client key",
+        "name": "rhodochrosite client key",
         "present": false
       }
     ]
@@ -2016,7 +2016,7 @@
     {
       "severity": "medium",
       "kind": "port-ssot-dead",
-      "detail": "ports.env claims 25161 (HERD_RACE_PORT) — no listener, no pitchfork daemon claims it",
+      "detail": "ports.env claims 25161 (BORNITE_RACE_PORT) — no listener, no pitchfork daemon claims it",
       "fix": "start the daemon or drop the SSOT entry"
     },
     {

@@ -2,11 +2,11 @@
 
 ## Incident Summary
 
-**Failure mode:** `moonshotai/kimi-k3` and other public NIM models returned `403 Authorization failed` via hodos proxy.
+**Failure mode:** `moonshotai/kimi-k3` and other public NIM models returned `403 Authorization failed` via rhodochrosite proxy.
 
-**Root cause:** Four `nvapi-*` keys in `NVIDIA_API_KEYS` (hodos env) belonged to NGC account `iuh5eKGaKSnWglC73O7UeZBzNHZ5aP7TLHyJpM-rxWY` — an account **missing the "Public API Endpoints" NGC entitlement**.
+**Root cause:** Four `nvapi-*` keys in `NVIDIA_API_KEYS` (rhodochrosite env) belonged to NGC account `iuh5eKGaKSnWglC73O7UeZBzNHZ5aP7TLHyJpM-rxWY` — an account **missing the "Public API Endpoints" NGC entitlement**.
 
-**Resolution:** Removed `NVIDIA_API_KEYS` from hodos config. The working `npk_` proxy key (value: `config/.secrets` → `NVIDIA_API_KEY`, masked `npk_ea166…47e9`) is now the sole NVIDIA credential; hodos proxy handles entitlement internally. Keys are never inlined in docs — always read them from `config/.secrets`.
+**Resolution:** Removed `NVIDIA_API_KEYS` from rhodochrosite config. The working `npk_` proxy key (value: `config/.secrets` → `NVIDIA_API_KEY`, masked `npk_ea166…47e9`) is now the sole NVIDIA credential; rhodochrosite proxy handles entitlement internally. Keys are never inlined in docs — always read them from `config/.secrets`.
 
 ---
 
@@ -30,15 +30,15 @@ Source: `~/.tau/logs/http-400-requests/1791701662567-3otza2kh038ha.json`
 | `nvapi-kaK-AFO2dsp9H6...` | nvapi | 200 ✅ | 403 "Authorization failed" | 403 "Authorization failed" | iuh5eKGaKSnWglC73O7UeZBzNHZ5aP7TLHyJpM-rxWY |
 | `npk_ea1662622a4d417a...` | npk_ (proxy) | 200 ✅ | 401 "Invalid JWT" (direct) | 401 "Invalid JWT" (direct) | Different (entitled via proxy) |
 
-**Key insight:** `nvapi-*` keys authenticate (200 on `/v1/models`) but **lack entitlement** for chat/completions on public models. The `npk_` proxy key is **not valid for direct NVCF calls** (401) but works through hodos proxy because the proxy uses its own internal entitled keys.
+**Key insight:** `nvapi-*` keys authenticate (200 on `/v1/models`) but **lack entitlement** for chat/completions on public models. The `npk_` proxy key is **not valid for direct NVCF calls** (401) but works through rhodochrosite proxy because the proxy uses its own internal entitled keys.
 
 ---
 
 ## Files Modified
 
-### 1. `/home/toxic/estate/config/hodos-ssot/hodos.env` (line 16)
+### 1. `/home/toxic/estate/config/rhodochrosite-ssot/rhodochrosite.env` (line 16)
 ```diff
-- NVIDIA_API_KEYS=<4× nvapi-… keys, retired; original values were in hodos.env + config/.secrets → NVIDIA_API_KEYS, now removed>
+- NVIDIA_API_KEYS=<4× nvapi-… keys, retired; original values were in rhodochrosite.env + config/.secrets → NVIDIA_API_KEYS, now removed>
 + # NVIDIA_API_KEYS removed - keys belonged to failing NGC account iuh5eKGaKSnWglC73O7UeZBzNHZ5aP7TLHyJpM-rxWY
 + # Working key is in NVIDIA_API_KEY / NIM_API_KEY (nvapi-FSFzZ…WLOk; full value: config/.secrets → NVIDIA_API_KEY)
 ```
@@ -54,10 +54,10 @@ Source: `~/.tau/logs/http-400-requests/1791701662567-3otza2kh038ha.json`
 
 ## Architecture Context
 
-### Hodos Proxy Key Resolution (`corral/src/nimProxy.ts`)
+### Rhodochrosite Proxy Key Resolution (`corral/src/nimProxy.ts`)
 ```typescript
 function resolveProxyConfig() {
-  // Reads HODOS_API_KEY (comma-separated) → falls back to:
+  // Reads RHODOCHROSITE_API_KEY (comma-separated) → falls back to:
   // 1. NIM_PROXY_API_KEY (deprecated)
   // 2. ANTHROPIC_API_KEY
   // 3. NVIDIA_API_KEY
@@ -69,7 +69,7 @@ The `NVIDIA_API_KEYS` env var was being read by the proxy's key pool rotation lo
 | Prefix | Type | Use Case |
 |--------|------|----------|
 | `nvapi-` | Direct NVCF credential | Requires NGC account with "Public API Endpoints" entitlement |
-| `npk_` | Hodos proxy key | Opaque token; proxy resolves to internal entitled keys |
+| `npk_` | Rhodochrosite proxy key | Opaque token; proxy resolves to internal entitled keys |
 
 ---
 
@@ -80,14 +80,14 @@ The `NVIDIA_API_KEYS` env var was being read by the proxy's key pool rotation lo
    ```bash
    bun run /home/toxic/estate/scripts/nvapi-key-audit.ts
    ```
-3. **Single source of truth.** Only `NVIDIA_API_KEY` (npk_) should be configured for hodos proxy. No `NVIDIA_API_KEYS` rotation.
+3. **Single source of truth.** Only `NVIDIA_API_KEY` (npk_) should be configured for rhodochrosite proxy. No `NVIDIA_API_KEYS` rotation.
 
 ---
 
 ## Related Links
 
 - Auditor script: [`/home/toxic/estate/scripts/nvapi-key-audit.ts`](../../scripts/nvapi-key-audit.ts)
-- Hodos env config: [`/home/toxic/estate/config/hodos-ssot/hodos.env`](../../config/hodos-ssot/hodos.env)
+- Rhodochrosite env config: [`/home/toxic/estate/config/rhodochrosite-ssot/rhodochrosite.env`](../../config/rhodochrosite-ssot/rhodochrosite.env)
 - Source secrets: [`/home/toxic/estate/config/.secrets`](../../config/.secrets)
 - Proxy implementation: [`/home/toxic/estate/corral/src/nimProxy.ts`](../../corral/src/nimProxy.ts)
 - Failed request logs: `~/.tau/logs/http-400-requests/`

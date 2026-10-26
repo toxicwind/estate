@@ -1,5 +1,5 @@
 # tmp-reaper — supervised recurring reaper for the /tmp tmpfs.
-# Why: build/backup scratch (weave-pull-*, pip-unpack-*, pinax-hodos-target,
+# Why: build/backup scratch (weave-pull-*, pip-unpack-*, mimetite-rhodochrosite-target,
 # kilo, ranch-push-*, ciw-fix-*, tau-reports-*, resolve-grep.txt) repeatedly
 # filled the 32G /tmp tmpfs to 25G/32G, which silently starved chromium /
 # browserless (no tmp space -> renderer exits) and bloated logs. This daemon

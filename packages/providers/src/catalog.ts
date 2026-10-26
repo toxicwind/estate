@@ -368,7 +368,7 @@ export class ModelCatalog {
   }
 
   /**
-   * Live catalog export — the ANSWER for non-TS consumers (Go herd, Python).
+   * Live catalog export — the ANSWER for non-TS consumers (Go bornite, Python).
    *
    * This is pure data, not logic: the derived serving sets, quarantine lists,
    * and discovery flags. Consumers read this file to learn what to serve;
@@ -416,7 +416,7 @@ export class ModelCatalog {
   private async saveToFileInner(path: string): Promise<void> {
     const data = JSON.stringify(this.toJSON(), null, 2) + "\n";
     await ModelCatalog.atomicWriteFile(path, data, () => `pstate-${this.nextTmpId()}`);
-    // The live catalog export is the contract for non-TS consumers (Go herd
+    // The live catalog export is the contract for non-TS consumers (Go bornite
     // reads this file for the serving sets). Written on every state save so
     // it can never go stale relative to the state file.
     await this.writeLiveCatalogInner(ModelCatalog.liveExportPathFor(path));

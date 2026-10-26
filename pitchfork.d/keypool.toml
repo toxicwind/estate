@@ -11,6 +11,6 @@ retry = true
 boot_start = true
 ready_http = "http://127.0.0.1:25109/health"
 auto = ["start"]
-# --- herd-deployer 2026-09-20: card-derived model request-contract enforcement.
-# Proxies 127.0.0.1:25101 -> herd :25100; rewrites chat/completions bodies per
+# --- bornite-deployer 2026-09-20: card-derived model request-contract enforcement.
+# Proxies 127.0.0.1:25101 -> bornite :25100; rewrites chat/completions bodies per
 # config/model_constraints.yaml (K3: top_p=0.95, reasoning_effort clamp, thinking on).

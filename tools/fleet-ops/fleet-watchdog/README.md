@@ -64,7 +64,7 @@ python3 test_decide.py   # exit 0
 | `sweep.py` | the watchdog — heartbeats lane-7, reads `/v1/presence`, checks rollover blocks against the manifest, diffs `state.json`, posts one consolidated message on transitions |
 | `lane_manifest.json` | canonical lane identity: chat_id prefix → lane (+ full chat_id); regenerate with `sweep.py --gen-manifest` after a verified rollover update, then commit |
 | `driver.sh` | cell-side driver for the platform scheduler: syncs the rollover mirror, runs `supervise.sh` on awrawr-pc |
-| `sweepd.sh` | the direct 60s sweeper daemon (hodos single-instance, `isleep` pacing, no `sleep` binary) |
+| `sweepd.sh` | the direct 60s sweeper daemon (rhodochrosite single-instance, `isleep` pacing, no `sleep` binary) |
 | `supervise.sh` | the 2m supervisor: restarts dead/wedged sweepd (systemd unit preferred, pgrep/setsid fallback), one backstop sweep when stale (>100s); prints one JSON line |
 | `systemd/fleet-watchdog-sweepd.service` | systemd user unit for `sweepd.sh` (repo copy is the source of truth) |
 | `state.json` | schema v2: per-lane `{block, live, last_seen_ts, last_transition, last_transition_ts}`, `last_sweep_ts`, capped `transitions` log (50); v1 migrates automatically |

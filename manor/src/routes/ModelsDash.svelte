@@ -37,7 +37,7 @@
   refreshPlaygroundModels();
 
   // Push-first capability merge: the modelStatus feed now carries
-  // capabilities + context_length + capabilitySources the instant herd learns
+  // capabilities + context_length + capabilitySources the instant bornite learns
   // them (ModelCapabilitiesChangedEvent over SSE), so a live feed payload
   // wins and badges appear with no round-trip. The debounced /v1/models
   // refetch in refreshPlaygroundModels() stays as the fallback: when a feed

@@ -63,10 +63,10 @@ health_http = { url = "http://127.0.0.1:25115/health", interval = "30s", timeout
 depends = ["gatehouse"]
 auto = ["start"]
 
-[daemons.herd]
+[daemons.bornite]
 health_http = { url = "http://127.0.0.1:25100/health", interval = "30s", timeout = "5s", retries = 3 }
 port = 25100
-run = "exec /home/toxic/estate/stack/services/herd.sh"
+run = "exec /home/toxic/estate/stack/services/bornite.sh"
 dir = "."
 mise = false
 retry = true
@@ -76,13 +76,13 @@ auto = ["start"]
 
 [daemons.coyote]
 port = 25143
-run = "exec ./stack/services/_consolidated_herd_20260924/coyote.sh"
+run = "exec ./stack/services/_consolidated_bornite_20260924/coyote.sh"
 dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25143/health"
 health_http = { url = "http://127.0.0.1:25143/health", interval = "30s", timeout = "5s", retries = 3 }
-depends = ["gatehouse", "herd"]
+depends = ["gatehouse", "bornite"]
 auto = ["start"]
 
 [daemons.yote]
@@ -122,7 +122,7 @@ auto = ["start"]
 # daemons.openfang on :25196. See src/services/openfang.ts.)
 [daemons.openfang-front]
 port = 25103
-run = "exec ./stack/services/_consolidated_herd_20260924/openfang.sh"
+run = "exec ./stack/services/_consolidated_bornite_20260924/openfang.sh"
 dir = "."
 mise = true
 retry = true
@@ -261,15 +261,15 @@ ready_http = "http://127.0.0.1:25110/api/health"
 health_http = { url = "http://127.0.0.1:25110/health", interval = "30s", timeout = "5s", retries = 3 }
 auto = ["start"]
 
-[daemons.hodos]
+[daemons.rhodochrosite]
 health_http = { url = "http://127.0.0.1:25193/health", interval = "30s", timeout = "5s", retries = 3 }
 port = 25193
-run = "exec /home/toxic/estate/projects/range/ranch/hodos/bin/hodos-run.sh"
+run = "exec /home/toxic/estate/projects/range/ranch/rhodochrosite/bin/rhodochrosite-run.sh"
 dir = "."
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25193/health"
-env = { VANSROUTER_API_KEY = "local-Estate", HODOS_PORT = "25193" }
+env = { VANSROUTER_API_KEY = "local-Estate", RHODOCHROSITE_PORT = "25193" }
 auto = ["start"]
 
 [daemons.vansrouter]
@@ -355,31 +355,31 @@ health_http = { url = "http://127.0.0.1:34567/health", interval = "30s", timeout
 auto = ["start"]
 
 [groups.mesh]
-daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "feedlot", "hindsight", "kimi-code", "nginx"]
+daemons = ["gatehouse", "mesh-hub", "bornite", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "feedlot", "hindsight", "kimi-code", "nginx"]
 
 [groups.core]
-daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "hodos", "matter-server"]
+daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "rhodochrosite", "matter-server"]
 
 [groups.agents]
 daemons = []
 
 [groups.all]
-daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "feedlot", "hindsight", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "hodos", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "squawk-feed", "squawk-ws", "fleet-ui", "buildsrv", "buildsrv-watchdog", "flicker", "flicker-agent", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash", "Estate-router"]
+daemons = ["gatehouse", "mesh-hub", "bornite", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "feedlot", "hindsight", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "rhodochrosite", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "squawk-feed", "squawk-ws", "fleet-ui", "buildsrv", "buildsrv-watchdog", "flicker", "flicker-agent", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash", "Estate-router"]
 
 
 [daemons.kimi-auto-shim]
 health_http = { url = "http://127.0.0.1:25153/health", interval = "30s", timeout = "5s", retries = 3 }
 port = 25153
-# Router-configured alias forwarder: same routing as the herd
+# Router-configured alias forwarder: same routing as the bornite
 # kimi-auto entry (--config-dir fragment). --target/--standby/--advance-on
-# MUST match /home/toxic/kimi-auto/herd.d/kimi-auto.yaml. Selection lives
+# MUST match /home/toxic/kimi-auto/bornite.d/kimi-auto.yaml. Selection lives
 # in router config; this shim never selects models.
 # 2026-09-21 (ember-kimi-route): maximal free-Kimi chain per Chris doctrine
 # -- Kimi routes are never defaults; they route Kimi FREE models maximally.
 # Chain: openrouter-free kimi :free IDs -> hf-free Kimi-K3; advance on
 # 5xx/conn/429/402/404; 401 never advances. Paid Kimi excluded (free only).
-run = "exec python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${KIMI_AUTO_SHIM_PORT} --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --standby nim-kimi/moonshotai/kimi-k3 --advance-on 5xx,conn,429,402,404 --name kimi-auto"
-dir = "/home/toxic/estate/config/herd.d"
+run = "exec python3 /home/toxic/estate/config/bornite.d/alias-shim.py --port ${KIMI_AUTO_SHIM_PORT} --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --standby nim-kimi/moonshotai/kimi-k3 --advance-on 5xx,conn,429,402,404 --name kimi-auto"
+dir = "/home/toxic/estate/config/bornite.d"
 mise = false
 retry = true
 boot_start = true
@@ -733,13 +733,13 @@ auto = ["start"]
 
 # beellama-fast — exaone-4.0-1.2b-iq4xs ("fast" alias) via beellama.cpp fork
 # v0.4.6 CUDA sm_86 build. Permanent supervised OpenAI-compatible endpoint
-# for the fastest local default. Added 2026-09-20 (herd-config-worker track 7).
+# for the fastest local default. Added 2026-09-20 (bornite-config-worker track 7).
 # Bench (RTX 3090, 1650-word prompt): pp 15.6k tok/s, gen 311-335 tok/s.
 # Runner-up config: -b 4096 -ub 1024 (pp 10.2k, gen 312.7). threads=16 and
 # flash-attn off both slower. Port from config/ports.env SSOT (BEELLAMA_PORT).
 [daemons.beellama-fast]
 port = 25122
-run = "exec /home/toxic/estate/stack/services/_consolidated_herd_20260924/beellama-fast.sh"
+run = "exec /home/toxic/estate/stack/services/_consolidated_bornite_20260924/beellama-fast.sh"
 dir = "/home/toxic/estate"
 mise = false
 retry = true
@@ -801,12 +801,12 @@ mise = false
 retry = true
 auto = ["start"]
 
-# --- herd-deployer 2026-09-20: key-pool rotation sidecar for herd cloud peers.
+# --- bornite-deployer 2026-09-20: key-pool rotation sidecar for bornite cloud peers.
 # Cheap health probes, first-valid-wins per call, 401/402/429 = routing signal.
 [daemons.keypool]
 health_http = { url = "http://127.0.0.1:25109/health", interval = "30s", timeout = "5s", retries = 3 }
 port = 25109
-run = "exec python3 /home/toxic/estate/bin/herd-keypool.py"
+run = "exec python3 /home/toxic/estate/bin/bornite-keypool.py"
 dir = "/home/toxic/estate"
 mise = false
 retry = true
@@ -814,13 +814,13 @@ boot_start = true
 ready_http = "http://127.0.0.1:25109/health"
 auto = ["start"]
 
-# --- herd-deployer 2026-09-20: card-derived model request-contract enforcement.
-# Proxies 127.0.0.1:25101 -> herd :25100; rewrites chat/completions bodies per
+# --- bornite-deployer 2026-09-20: card-derived model request-contract enforcement.
+# Proxies 127.0.0.1:25101 -> bornite :25100; rewrites chat/completions bodies per
 # config/model_constraints.yaml (K3: top_p=0.95, reasoning_effort clamp, thinking on).
 [daemons.model-guard]
 health_http = { url = "http://127.0.0.1:25101/v1/models", interval = "30s", timeout = "5s", retries = 3 }
 port = 25101
-run = "exec python3 /home/toxic/estate/bin/herd-model-guard.py"
+run = "exec python3 /home/toxic/estate/bin/bornite-model-guard.py"
 dir = "/home/toxic/estate"
 mise = false
 retry = true

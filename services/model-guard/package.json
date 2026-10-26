@@ -1,5 +1,5 @@
 {
-  "description": "Card-derived per-model request enforcement for herd — TypeScript/Bun reverse proxy",
+  "description": "Card-derived per-model request enforcement for bornite — TypeScript/Bun reverse proxy",
   "main": "src/index.ts",
   "name": "@estate/model-guard",
   "private": true,
@@ -12,7 +12,7 @@
   },
   "estate": {
     "daemon": "model-guard",
-    "description": "Per-model request contract enforcement proxy (herd-model-guard.py port). Rewrites /v1/chat/completions bodies per config/model_constraints.yaml before they reach herd.",
+    "description": "Per-model request contract enforcement proxy (bornite-model-guard.py port). Rewrites /v1/chat/completions bodies per config/model_constraints.yaml before they reach bornite.",
     "port": 25101,
     "portEnv": "MODEL_GUARD_PORT"
   },

@@ -51,11 +51,11 @@ The Estate fleet requires continuous health monitoring of all inference daemons 
 
 ### Solution
 
-The model-guard proxy (`herd-model-guard.py`) serves as the primary health enforcement layer:
+The model-guard proxy (`bornite-model-guard.py`) serves as the primary health enforcement layer:
 
 1. **Connection Reset Handling** — The `_proxy` method wraps the entire request/response lifecycle in `try/except (BrokenPipeError, ConnectionResetError)` to prevent server thread crashes when clients disconnect mid-stream.
 
-2. **Fail-Open Upstream** — If the constraints file is unreadable or the upstream (herd) resets, traffic passes through untouched with the error logged.
+2. **Fail-Open Upstream** — If the constraints file is unreadable or the upstream (bornite) resets, traffic passes through untouched with the error logged.
 
 3. **Audit Trail** — Every rewrite appends a JSON line to `/home/toxic/estate/data/model-guard-audit.jsonl`, rotated at 10MB.
 
@@ -63,7 +63,7 @@ The model-guard proxy (`herd-model-guard.py`) serves as the primary health enfor
 
 | Daemon | Port | Health Check |
 |--------|------|-------------|
-| herd | 25100 | `GET /health` → 200 |
+| bornite | 25100 | `GET /health` → 200 |
 | model-guard | 25101 | `GET /health` → 200 |
 | estate-router | 25104 | `GET /health` → 200 |
 | squawk-feed | 25135 | `GET /seq` → 200 |
@@ -97,7 +97,7 @@ Pitchfork is pinned to version 2.25 in `~/.config/mise/config.toml` (`pitchfork 
 
 1. **503 Error Resolution** — The pitchfork supervisor was running from `/home/toxic` instead of `/home/toxic/estate`, causing it to not find `pitchfork.toml`. Fixed by creating the symlink `/home/toxic/pitchfork.toml → /home/toxic/estate/pitchfork.toml`.
 
-2. **Model-Guard Connection Reset** — Added `try/except (BrokenPipeError, ConnectionResetError)` around the entire `_proxy` method body in `herd-model-guard.py` to prevent server thread crashes.
+2. **Model-Guard Connection Reset** — Added `try/except (BrokenPipeError, ConnectionResetError)` around the entire `_proxy` method body in `bornite-model-guard.py` to prevent server thread crashes.
 
 3. **Squawk-Feed Path Fix** — Updated `run-feed.sh` to point to the correct `squawk_feed.py` path in the ranch directory.
 

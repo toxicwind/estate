@@ -1,5 +1,5 @@
 // @estate/keypool — behavioral parity tests.
-// Port of herd-keypool.py selftest() (15 cases). Mock upstream, no real keys.
+// Port of bornite-keypool.py selftest() (15 cases). Mock upstream, no real keys.
 
 import { describe, test, expect, beforeAll, afterAll } from "bun:test";
 import { Pool, raceFirstValid, fingerprint, isFreeModel, extractModel } from "../src/pool.js";

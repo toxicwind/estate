@@ -73,7 +73,7 @@ const DEFAULT_AGENT = (
 ).replace(/^openfang:/, "");
 const PUP_TRIX_ID = Number(process.env.YOTE_TARGET_USER || "716302190");
 
-/** Coyote persona for the herd fallback path (used only when OpenFang is down). */
+/** Coyote persona for the bornite fallback path (used only when OpenFang is down). */
 const YOTE_SYSTEM = "You are Yote, a clever southwestern desert coyote and User's loyal trickster companion. Warm, dry, direct, a little mischievous — but all business when something real is at stake. Keep replies tight and useful. You answer as Yote in Telegram chats.";
 
 /** Avatar sync: push the Yote avatar to the Telegram bot profile (once). */
@@ -238,13 +238,13 @@ async function send(cid: number, t: string, o: any = {}) {
   }
 }
 
-/** Direct herd (herd) chat — fallback when OpenFang is unreachable. */
+/** Direct bornite (bornite) chat — fallback when OpenFang is unreachable. */
 async function herdChat(
   txt: string,
   maxTokens = 1024,
 ): Promise<{ ok: boolean; content: string; model: string }> {
   // Priority list: first model that answers wins. Env override:
-  // YOTE_FALLBACK_MODELS="model-a,model-b". Defaults cover the herd catalog.
+  // YOTE_FALLBACK_MODELS="model-a,model-b". Defaults cover the bornite catalog.
   const models = (process.env.YOTE_FALLBACK_MODELS ||
     "beellama/qwen-flash-128k,qwen-flash-128k,fast,code,gpt-oss")
     .split(",")
@@ -282,17 +282,17 @@ async function herdChat(
   return { ok: false, content: "", model: models[0] || "none" };
 }
 
-/** OpenFang HTTP chat with herd fallback — Yote stays alive if OpenFang is down. */
+/** OpenFang HTTP chat with bornite fallback — Yote stays alive if OpenFang is down. */
 async function ofChat(txt: string, agent?: string) {
   const r = await ofClient.chat(txt, {
     agent: agent || DEFAULT_AGENT,
     max_tokens: 1024,
   });
   if (r.ok) return r.content;
-  log(`ofChat openfang failed (${r.agent}): ${r.error} — herd fallback`);
+  log(`ofChat openfang failed (${r.agent}): ${r.error} — bornite fallback`);
   const h = await herdChat(txt);
-  if (h.ok) return `${h.content}\n\n⚡ via herd/${h.model} (openfang unreachable)`;
-  return `openfang err (${r.agent}): ${r.error || "empty"}; herd fallback also down`;
+  if (h.ok) return `${h.content}\n\n⚡ via bornite/${h.model} (openfang unreachable)`;
+  return `openfang err (${r.agent}): ${r.error || "empty"}; bornite fallback also down`;
 }
 
 async function hChat(cid: number, txt: string, o: any = {}) {
@@ -664,14 +664,14 @@ const app = serve({
     }
 
     if (p === "/test/fallback") {
-      // Exercise the full ofChat path (OpenFang -> herd fallback) without
+      // Exercise the full ofChat path (OpenFang -> bornite fallback) without
       // touching Telegram. Returns which tier answered.
       const msg = u.searchParams.get("msg") || "Reply with the single word: yip";
       const agent = u.searchParams.get("agent") || DEFAULT_AGENT;
       const t = Date.now();
       const text = await ofChat(msg, agent);
       const via = text.includes("(openfang unreachable)")
-        ? "herd-fallback"
+        ? "bornite-fallback"
         : text.startsWith("openfang err")
           ? "none"
           : "openfang";

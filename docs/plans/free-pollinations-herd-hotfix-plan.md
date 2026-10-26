@@ -1,8 +1,8 @@
-# Free Pollinations via Herd — Maximal Hotfix Plan (Tester + Live)
+# Free Pollinations via Bornite — Maximal Hotfix Plan (Tester + Live)
 
-**Owner:** toxic / herd (herd)  
+**Owner:** toxic / bornite (bornite)  
 **Date:** 2026-09-02  
-**Scope:** Tester + live estate home wiring for Cloudflare AI Gateway "bizarre method" — Custom Providers → free no-auth backends. Maximally patch `herd/herd` proxy to actually work on this host, following the generation latch path.
+**Scope:** Tester + live estate home wiring for Cloudflare AI Gateway "bizarre method" — Custom Providers → free no-auth backends. Maximally patch `bornite/bornite` proxy to actually work on this host, following the generation latch path.
 
 ---
 
@@ -10,9 +10,9 @@
 
 | User signal | Interpretation | Plan impact |
 |---|---|---|
-| `make a tester and then implement live home toxic estate` (attachment: Custom Providers → Pollinations / OVHcloud / OpenRouter) | Build a reproducible tester that proves free backends, then wire live on this estate host. | Two-track plan: **Track A = tester**, **Track B = live wiring**. Tester is runnable without host mutation; live mutates `herd` source + `estate/config/herd.yaml`. |
-| `shouldnt you follow the generstion latj path` | Follow **generation path** — do NOT hand-edit generated outputs (`pitchfork.toml`, `mise.toml`). Those are generated from `config/ports.env` + `src/services/*` via `bun run scripts/generate.ts`. | Any new daemon/port must go through `ports.env` + `src/services/registry.ts` → `generate.ts`. `config/herd.yaml` is **not generated** (no generator owns it), so direct edits there are latch-compliant. Add explicit latch notes to every file change. |
-| `we own herd/herd, maximallt hotfix patch the proxy to actually work` | Maximal hotfix, not minimal one-liner. We own `/home/toxic/projects/herd` source; patch Go directly. | Plan patches `internal/router/peer.go` and `internal/config/peer.go` (if needed) to fix free-backend auth stripping, model passthrough, and observability. Rebuild binary at `/home/toxic/projects/herd/herd` and restart `herd` via `pitchfork`. |
+| `make a tester and then implement live home toxic estate` (attachment: Custom Providers → Pollinations / OVHcloud / OpenRouter) | Build a reproducible tester that proves free backends, then wire live on this estate host. | Two-track plan: **Track A = tester**, **Track B = live wiring**. Tester is runnable without host mutation; live mutates `bornite` source + `estate/config/bornite.yaml`. |
+| `shouldnt you follow the generstion latj path` | Follow **generation path** — do NOT hand-edit generated outputs (`pitchfork.toml`, `mise.toml`). Those are generated from `config/ports.env` + `src/services/*` via `bun run scripts/generate.ts`. | Any new daemon/port must go through `ports.env` + `src/services/registry.ts` → `generate.ts`. `config/bornite.yaml` is **not generated** (no generator owns it), so direct edits there are latch-compliant. Add explicit latch notes to every file change. |
+| `we own bornite/bornite, maximallt hotfix patch the proxy to actually work` | Maximal hotfix, not minimal one-liner. We own `/home/toxic/projects/bornite` source; patch Go directly. | Plan patches `internal/router/peer.go` and `internal/config/peer.go` (if needed) to fix free-backend auth stripping, model passthrough, and observability. Rebuild binary at `/home/toxic/projects/bornite/bornite` and restart `bornite` via `pitchfork`. |
 | `not jwt those were typo, focus` | Ignore spurious JWT noise in logs; stay on Pollinations free tier. | No JWT/auth infra work. |
 | `not minimal, maximal /plan` | Override ponytail minimal. Produce maximal plan. | This artifact: exhaustive research, all edge cases, all verification steps. No code is written in plan phase. |
 
@@ -31,18 +31,18 @@ Attachment documents the "bizarre method": Cloudflare AI Gateway Custom Provider
 
 ### 1.2 Cloudflare gateway state (this host)
 - `.secrets`: `CLOUDFLARE_ACCOUNT_ID=2d5e60dbc717af626a1eb04177aa2225`, `CLOUDFLARE_GATEWAY_ID=default`, `CLOUDFLARE_API_KEY=cfat_FMf...695e3e88` (AI Gateway token).
-- Direct `GET /client/v4/accounts/.../ai-gateway/gateways` with that token returned empty body (not JSON) — likely scope = AI Gateway Run/Write but not Read for listing, or endpoint is `/ai-gateway/gateways` vs `/ai-gateway/gateways/default`. `POST /custom-providers` not yet proven. This does not block local herd proxying; we can wire herd directly to Pollinations without waiting for Cloudflare Custom Provider creation, and add the CF path as optional Track C.
+- Direct `GET /client/v4/accounts/.../ai-gateway/gateways` with that token returned empty body (not JSON) — likely scope = AI Gateway Run/Write but not Read for listing, or endpoint is `/ai-gateway/gateways` vs `/ai-gateway/gateways/default`. `POST /custom-providers` not yet proven. This does not block local bornite proxying; we can wire bornite directly to Pollinations without waiting for Cloudflare Custom Provider creation, and add the CF path as optional Track C.
 
 ### 1.3 Goals
-1. **Tester** that proves Pollinations free works direct, proves it works via herd after hotfix, and proves auth-stripping edge case (client sends dummy Bearer yet herd strips it).
-2. **Live wiring** that exposes Pollinations models via herd `http://127.0.0.1:25100/v1` (OpenAI-compatible) so `omp bench`, `tau` agents, and mesh tools can call free models with no 402s.
+1. **Tester** that proves Pollinations free works direct, proves it works via bornite after hotfix, and proves auth-stripping edge case (client sends dummy Bearer yet bornite strips it).
+2. **Live wiring** that exposes Pollinations models via bornite `http://127.0.0.1:25100/v1` (OpenAI-compatible) so `omp bench`, `tau` agents, and mesh tools can call free models with no 402s.
 3. **Generation-latch compliance** — no hand-edits to `pitchfork.toml`/`mise.toml`; all host orchestration changes flow through generators.
 4. **Maximal hotfix** — patch proxy to handle no-auth correctly, add observability, and guard rate limits.
 
 ### 1.4 Non-goals
 - Building a synthetic `omp-benchmark-probe` binary or typing new benchmark harness (user explicitly rejected synthetic wrappers; real harness is `mesh/gateway/bench` and `omp bench`).
 - Hard-allocating :25107 or mutating `null-g-proxy` (Antigravity IDE bridge, port 25107) — unrelated.
-- Persisting free models into `herd` local GGUF store.
+- Persisting free models into `bornite` local GGUF store.
 
 ---
 
@@ -71,9 +71,9 @@ POST https://openrouter.ai/api/v1/chat/completions  (with .secrets OPENROUTER_AP
   → 404 model is unavailable for free (is_free_tier:false for this key)
 ```
 
-### 2.2 Herd `herd` proxy internals (Go)
+### 2.2 Bornite `bornite` proxy internals (Go)
 - **Config shape:** `peers: { <peerID>: { proxy:string, apiKey:string, models:[]string, timeouts:{...}, filters:{...} } }` — see `internal/config/peer.go`, `config.example.yaml` `peers.openrouter.proxy=https://openrouter.ai/api`.
-- **Model vs peer:** Peers are remote OpenAI-compatible bases; herd appends the incoming request path to `proxy`. So `peer.proxy=https://gen.pollinations.ai` + request `POST /v1/chat/completions` → upstream `https://gen.pollinations.ai/v1/chat/completions` — correct.
+- **Model vs peer:** Peers are remote OpenAI-compatible bases; bornite appends the incoming request path to `proxy`. So `peer.proxy=https://gen.pollinations.ai` + request `POST /v1/chat/completions` → upstream `https://gen.pollinations.ai/v1/chat/completions` — correct.
 - **Routing:** `internal/router/peer.go:NewPeer` builds a `httputil.ReverseProxy` per peer, map `modelID → peerMember`. `ServeHTTP` looks up `data.ModelID` (parsed via `shared.FetchContext`) and proxies.
 - **Auth bug (hotfix target):** `peer.go:171-174`:
   ```go
@@ -82,16 +82,16 @@ POST https://openrouter.ai/api/v1/chat/completions  (with .secrets OPENROUTER_AP
     req.Header.Set("x-api-key", pp.apiKey)
   }
   ```
-  If `apiKey==""` (desired for Pollinations free), it **leaves the client's incoming Authorization untouched**. A client that sends `Authorization: Bearer dummy` or `Bearer herd` will forward that to Pollinations, which then sees an invalid key and returns 401 instead of treating the request as anonymous. Fix: when `apiKey==""`, **strip** both headers.
+  If `apiKey==""` (desired for Pollinations free), it **leaves the client's incoming Authorization untouched**. A client that sends `Authorization: Bearer dummy` or `Bearer bornite` will forward that to Pollinations, which then sees an invalid key and returns 401 instead of treating the request as anonymous. Fix: when `apiKey==""`, **strip** both headers.
 
 - **`useModelName` gap:** Local `models.*.useModelName` exists to rewrite the model field sent upstream (e.g., `useModelName: "openai/gpt-oss-120B"`). **Peers have no equivalent.** If we exposed `pollinations/openai` to avoid name collisions, the upstream would receive `pollinations/openai` and fail. Two options: (a) expose exact upstream IDs (`openai`) and accept the global name; (b) add peer-level model remapping. Maximal plan does (a) now and (b) as follow-on (see §4.2 patch).
 
-- **No generation latch for `herd.yaml`:** `src/generators/index.ts` only generates `pitchfork.toml` and `mise.toml`. `config/herd.yaml` is hand-managed, guarded by latch notes in the file header. Direct edits there are compliant. The autoscan variant at `tools/herd/config.yaml` is generated by `scripts/herd-autoscan.sh` from GGUF discovery — do not confuse with `config/herd.yaml` (the runtime config read by `stack/services/herd.sh` → `$BIN --config $SOV/config/herd.yaml`).
+- **No generation latch for `bornite.yaml`:** `src/generators/index.ts` only generates `pitchfork.toml` and `mise.toml`. `config/bornite.yaml` is hand-managed, guarded by latch notes in the file header. Direct edits there are compliant. The autoscan variant at `tools/bornite/config.yaml` is generated by `scripts/bornite-autoscan.sh` from GGUF discovery — do not confuse with `config/bornite.yaml` (the runtime config read by `stack/services/bornite.sh` → `$BIN --config $SOV/config/bornite.yaml`).
 
 ### 2.3 Estate orchestration latch
 - **SSOT:** `config/ports.env` (port map) + `src/services/*.ts` (service definitions) → `src/generators/pitchfork.ts` / `mise.ts` → `pitchfork.toml` / `mise.toml` (blocked from hand-edits).
-- **Herd service def:** `src/services/core.ts` / `registry.ts`: `id: herd, portKey: HERD_PORT (25100), run: "exec /home/toxic/estate/stack/services/herd.sh", dir: ".", readyHttp: "/health"`.
-- **If we added a new standalone free-proxy daemon**, we would add a port key to `config/ports.env`, a `ServiceDef` to `src/services/peripheral.ts` or `forks.ts`, then `bun run scripts/generate.ts`. For this plan we **do not add a new daemon** — we extend herd in place via `peers:` — so no new port or service def is needed. This keeps the change to one config file + Go patch + binary rebuild, respecting latch.
+- **Bornite service def:** `src/services/core.ts` / `registry.ts`: `id: bornite, portKey: HERD_PORT (25100), run: "exec /home/toxic/estate/stack/services/bornite.sh", dir: ".", readyHttp: "/health"`.
+- **If we added a new standalone free-proxy daemon**, we would add a port key to `config/ports.env`, a `ServiceDef` to `src/services/peripheral.ts` or `forks.ts`, then `bun run scripts/generate.ts`. For this plan we **do not add a new daemon** — we extend bornite in place via `peers:` — so no new port or service def is needed. This keeps the change to one config file + Go patch + binary rebuild, respecting latch.
 
 ---
 
@@ -100,7 +100,7 @@ POST https://openrouter.ai/api/v1/chat/completions  (with .secrets OPENROUTER_AP
 ```
 Client (omp bench, tau, mesh, curl)
   │
-  ├─► herd (herd :25100) ──local GGUF models──► beellama / turbo / ik_llama (:25001+)
+  ├─► bornite (bornite :25100) ──local GGUF models──► beellama / turbo / ik_llama (:25001+)
   │         │
   │         └─► peers.pollinations-free (hotfixed) ──► https://gen.pollinations.ai/v1  (free, no auth)
   │                      │
@@ -108,10 +108,10 @@ Client (omp bench, tau, mesh, curl)
   │                           https://gateway.ai.cloudflare.com/v1/<acct>/default/pollinations-free/v1
   │                           → same backend + CF caching/logging
   │
-  └─► mesh (mcpproxy :25127) / GHAS / yote — unchanged, consume herd's /v1 as upstream
+  └─► mesh (mcpproxy :25127) / GHAS / yote — unchanged, consume bornite's /v1 as upstream
 ```
 
-**Why herd peers, not a new daemon:** One reverse-proxy layer, one health check, zero new ports. `peers` already implements transport tuning, header injection, and streaming fixups. A standalone `free-llm-proxy` Bun service would duplicate all of that and need latch-generated orchestration.
+**Why bornite peers, not a new daemon:** One reverse-proxy layer, one health check, zero new ports. `peers` already implements transport tuning, header injection, and streaming fixups. A standalone `free-llm-proxy` Bun service would duplicate all of that and need latch-generated orchestration.
 
 ---
 
@@ -127,11 +127,11 @@ Client (omp bench, tau, mesh, curl)
 |---|---|---|---|---|
 | T1 | Direct Pollinations, no auth, `model=openai` | `POST gen.pollinations.ai/v1/chat/completions` no Authorization | HTTP 200, `choices[0].message.content` non-empty | Backend reachable, correct model ID (attachment's `openai/gpt-oss-20b` is wrong) |
 | T2 | Direct Pollinations, `model=openai/gpt-oss-20b` | same, prefixed | HTTP 401 `UNAUTHORIZED` | Documents why attachment snippet fails |
-| T3 | Direct Pollinations streaming | `stream:true` | HTTP 200, `text/event-stream` chunks | Verifies SSE path for herd |
-| T4 | Via herd, no auth, `model=openai` | `POST 127.0.0.1:25100/v1/chat/completions` | HTTP 200, content | Peer wiring works end-to-end |
-| T5 | Via herd, **with dummy auth** `Bearer dummy-client-key` | same + Authorization header | HTTP 200 (after patch strips it) / 401 before patch | **Regression for auth-strip bug** |
-| T6 | Via herd, streaming | `stream:true` | SSE 200, `X-Accel-Buffering: no` preserved | ReverseProxy ModifyResponse handling |
-| T7 | Via herd, unknown model `nope-xyz` | | HTTP 4xx `ErrNoPeerModelFound` | Routing guard |
+| T3 | Direct Pollinations streaming | `stream:true` | HTTP 200, `text/event-stream` chunks | Verifies SSE path for bornite |
+| T4 | Via bornite, no auth, `model=openai` | `POST 127.0.0.1:25100/v1/chat/completions` | HTTP 200, content | Peer wiring works end-to-end |
+| T5 | Via bornite, **with dummy auth** `Bearer dummy-client-key` | same + Authorization header | HTTP 200 (after patch strips it) / 401 before patch | **Regression for auth-strip bug** |
+| T6 | Via bornite, streaming | `stream:true` | SSE 200, `X-Accel-Buffering: no` preserved | ReverseProxy ModifyResponse handling |
+| T7 | Via bornite, unknown model `nope-xyz` | | HTTP 4xx `ErrNoPeerModelFound` | Routing guard |
 | T8 | Rate-limit probe | 3 rapid `openai` requests | First 200, subsequent may 429 after ~1/15s — tester logs headers `retry-after` | Documents Pollinations limit for `omp bench` batching |
 | T9 | `/v1/models` merge | `GET 127.0.0.1:25100/v1/models` | Includes `openai` + peer models, total count | Verifies listing |
 | T10 | Cloudflare gateway (optional) | `POST gateway.ai.cloudflare.com/v1/<acct>/default/...` | If Custom Provider configured, 200; otherwise skip with log | Tracks Track C |
@@ -143,7 +143,7 @@ Client (omp bench, tau, mesh, curl)
 
 ### 4.2 Go Hotfix — Track B1: `internal/router/peer.go`
 
-**File:** `internal/router/peer.go` (owned by us; herd fork).
+**File:** `internal/router/peer.go` (owned by us; bornite fork).
 
 **Patch P1 — Strip auth when `apiKey==""` (critical):**
 ```go
@@ -200,12 +200,12 @@ ApiKey string `yaml:"apiKey"`
 ```
 No new fields in v1. Future `modelAliases` would be added here if we adopt P4.
 
-### 4.4 Estate Config — Track B3: `config/herd.yaml` (latch-compliant direct edit)
+### 4.4 Estate Config — Track B3: `config/bornite.yaml` (latch-compliant direct edit)
 
 **Add `peers:` block** (reuses existing peer machinery; no new daemon, no `ports.env` change, no generator run):
 
 ```yaml
-# ── FREE BACKENDS — Pollinations (no-auth) via herd peers ──
+# ── FREE BACKENDS — Pollinations (no-auth) via bornite peers ──
 # Latch: this file is NOT generated; direct edits are compliant (see header comment).
 # Cloudflare AI Gateway Custom Provider alternative: proxy https://gateway.ai.cloudflare.com/v1/<acct>/default/pollinations-free/v1
 # with same models, if you want CF caching. This direct wiring avoids an extra hop for now.
@@ -237,9 +237,9 @@ peers:
 
 **Why these 8:** `openai` is proven 200; `gemma-4-31b` maps to Gemma 31B mentioned in attachment; others are from live `/v1/models` and cover the "maximal" request while staying under Pollinations' ~1 req/15s anonymous limit for bench batches. We start with `openai` + `gemma-4-31b` behind a feature flag and expand after T8 rate-limit observation.
 
-**Impact on `/v1/models`:** Herd merges peer models into the herd OpenAI listing automatically; no extra wiring needed. Clients see them alongside local GGUF models on `:25100`.
+**Impact on `/v1/models`:** Bornite merges peer models into the bornite OpenAI listing automatically; no extra wiring needed. Clients see them alongside local GGUF models on `:25100`.
 
-**No `pitchfork.toml`/`mise.toml` change** — herd already runs on `:25100`; no new port. If we later add a Cloudflare-proxied peer, we still use `:25100` and only change `proxy:` URL + add `apiKey: ${env.CLOUDFLARE_AI_GATEWAY_TOKEN}` (env var documented but not required for Pollinations-direct).
+**No `pitchfork.toml`/`mise.toml` change** — bornite already runs on `:25100`; no new port. If we later add a Cloudflare-proxied peer, we still use `:25100` and only change `proxy:` URL + add `apiKey: ${env.CLOUDFLARE_AI_GATEWAY_TOKEN}` (env var documented but not required for Pollinations-direct).
 
 ### 4.5 Cloudflare AI Gateway Track C (optional, not blocking live)
 
@@ -268,11 +268,11 @@ Tester T10 covers this. Track C is parked until `GET /tokens/verify` shows `AI G
 | `pitchfork.toml` | **Yes** (`src/generators/pitchfork.ts`) | No hand edit | Do not touch. | `grep -l "DO NOT EDIT DIRECTLY" pitchfork.toml` |
 | `mise.toml` | **Yes** (`src/generators/mise.ts`) | No hand edit | Do not touch. | Same. |
 | `config/ports.env` | SSOT for ports | Allowed, but not needed this plan (no new daemon) | No change. | `cat config/ports.env` |
-| `src/services/registry.ts` etc. | SSOT for services | Allowed if new daemon, not needed here | No change. | `grep -r herd src/services` |
-| `config/herd.yaml` | **No** (runtime config) | Hand edit allowed | Add `peers:` block. | `herd --config config/herd.yaml --check` (dry-run parse) |
-| `internal/router/peer.go`, `internal/config/peer.go` | Source (herd fork) | Owned | Patch P1-P3. | `go vet ./...` |
+| `src/services/registry.ts` etc. | SSOT for services | Allowed if new daemon, not needed here | No change. | `grep -r bornite src/services` |
+| `config/bornite.yaml` | **No** (runtime config) | Hand edit allowed | Add `peers:` block. | `bornite --config config/bornite.yaml --check` (dry-run parse) |
+| `internal/router/peer.go`, `internal/config/peer.go` | Source (bornite fork) | Owned | Patch P1-P3. | `go vet ./...` |
 | `tools/pollinations-proxy/tester.ts` | New tool | New file | Create as above. | `bun run tools/pollinations-proxy/tester.ts` |
-| `binary` | Build artifact | Build via `make`/`go build` | `make build` or `go build -o herd .` in herd repo | `ls -lh herd; file herd` |
+| `binary` | Build artifact | Build via `make`/`go build` | `make build` or `go build -o bornite .` in bornite repo | `ls -lh bornite; file bornite` |
 
 If a future iteration adds a standalone free-proxy daemon, add `FREE_PROXY_PORT=25xxx` to `config/ports.env`, add `ServiceDef` to `src/services/peripheral.ts`, then `bun run scripts/generate.ts` and commit the regenerated `pitchfork.toml`/`mise.toml`.
 
@@ -280,28 +280,28 @@ If a future iteration adds a standalone free-proxy daemon, add `FREE_PROXY_PORT=
 
 ## 6. Build, Deploy, and Smoke Pipeline
 
-### 6.1 Build herd
+### 6.1 Build bornite
 ```bash
-cd /home/toxic/projects/herd
+cd /home/toxic/projects/bornite
 go test ./internal/router -run Peer -count=1   # pre-patch baseline
 # apply patches to internal/router/peer.go + internal/config/peer.go
 go vet ./...
 go test ./internal/router -run Peer -count=1    # post-patch
 go test ./... -count=1                           # full, expect green
-make build   # or: go build -o herd .
-ls -lh herd   # fresh binary ~20MB
+make build   # or: go build -o bornite .
+ls -lh bornite   # fresh binary ~20MB
 ```
 
 ### 6.2 Deploy on estate home
 ```bash
 cd /home/toxic/estate
-# 1. Edit config/herd.yaml — add peers block (track B3)
-# Validate YAML parse via herd dry run before restart
-/home/toxic/projects/herd/herd --config config/herd.yaml --check 2>&1 | head
+# 1. Edit config/bornite.yaml — add peers block (track B3)
+# Validate YAML parse via bornite dry run before restart
+/home/toxic/projects/bornite/bornite --config config/bornite.yaml --check 2>&1 | head
 
-# 2. Restart herd (pitchfork manages it)
-pitchfork restart herd
-pitchfork logs herd -n 80 --follow   # watch for "peer: routing model ... to peer pollinations-free"
+# 2. Restart bornite (pitchfork manages it)
+pitchfork restart bornite
+pitchfork logs bornite -n 80 --follow   # watch for "peer: routing model ... to peer pollinations-free"
 curl -sf http://127.0.0.1:25100/health
 
 # 3. Run tester (maximal)
@@ -324,8 +324,8 @@ omp bench --model openai --prompt "hi"  # or: mesh/gateway/bench via go run ./be
 ```
 
 ### 6.3 Rollback
-- **Config only:** `git checkout -- config/herd.yaml` + `pitchfork restart herd`.
-- **Code:** `git -C /home/toxic/projects/herd checkout -- internal/router/peer.go internal/config/peer.go` + rebuild + restart.
+- **Config only:** `git checkout -- config/bornite.yaml` + `pitchfork restart bornite`.
+- **Code:** `git -C /home/toxic/projects/bornite checkout -- internal/router/peer.go internal/config/peer.go` + rebuild + restart.
 - **Tester:** no rollback needed; delete `tools/pollinations-proxy/`.
 
 ---
@@ -335,12 +335,12 @@ omp bench --model openai --prompt "hi"  # or: mesh/gateway/bench via go run ./be
 | Concern | Handling |
 |---|---|
 | **Pollinations rate limit ~1 req/15s anon** | Tester T8 measures it; document for bench. For sweeps, add CF Gateway Custom Provider (caches) or gate concurrency to 1. Add `// ponytail: global lock, per-peer queue if throughput matters` if we later add queuing. |
-| **Content policy (hate/sexual/self-harm)** | Pollinations response includes `content_filter_results`; herd proxies them unchanged. No extra filter needed. |
+| **Content policy (hate/sexual/self-harm)** | Pollinations response includes `content_filter_results`; bornite proxies them unchanged. No extra filter needed. |
 | **Billing surprise** | Free backend = $0; no BYOK key stored for Pollinations. OVH/OpenRouter remain paid/auth; we do not auto-enable them. |
 | **Client auth leakage** | P1 strips `Authorization`/`x-api-key` when peer is free; prevents 401 from invalid client keys leaking to Pollinations. |
 | **Model ID confusion (`openai` vs `openai/gpt-oss-20b`)** | Expose exact upstream IDs; do not namespace in v1. Document that `openai/gpt-oss-20b` is not a Pollinations ID (401). Future alias layer (P4) can map `pollinations/gpt-oss-20b → openai` if needed. |
 | **SSE streaming** | `ModifyResponse` already disables buffering for `text/event-stream`; tester T6 verifies. |
-| **Observability** | Herd logs `peer: routing model X to peer Y` at debug level; metrics already captured via `metricsMaxInMemory:5000` + SQLite `store.path`. No new telemetry daemon. |
+| **Observability** | Bornite logs `peer: routing model X to peer Y` at debug level; metrics already captured via `metricsMaxInMemory:5000` + SQLite `store.path`. No new telemetry daemon. |
 | **Supply chain** | Pollinations is community-run Berlin; no SLA. Flag as best-effort tier; local GGUF remains fallback via scheduler FIFO. |
 
 ---
@@ -351,7 +351,7 @@ omp bench --model openai --prompt "hi"  # or: mesh/gateway/bench via go run ./be
 |---|---|---|---|
 | Pollinations anonymous tier removed or key-gated overnight | Medium | Free tier goes 401 | Tester T1 fails fast; docs note fallback to local GGUF; Track C (CF gateway + BYOK key from Pollinations) is ready. |
 | OVH anon tier never materializes | High (already 403) | Plan covers only Pollinations; OVH removed from v1 | Park OVH as "needs OAuth" — do not burn rate-limit retries. |
-| Herd `peers` model collision (`openai` shadows a future local alias) | Low | Client ambiguity | Namespace later via `modelAliases` (P4) without breaking existing callers. |
+| Bornite `peers` model collision (`openai` shadows a future local alias) | Low | Client ambiguity | Namespace later via `modelAliases` (P4) without breaking existing callers. |
 | CF gateway token lacks `custom-providers` write | Medium | Track C blocked | Direct Pollinations still works; token scope can be re-issued via dash.cloudflare.com with AI Gateway Read/Write. |
 | Rate-limit stalls `omp bench` sweeps | High if parallel | Bench appears flaky | Cap bench concurrency to 1 for free tier; enable CF caching for parallel. |
 
@@ -363,9 +363,9 @@ omp bench --model openai --prompt "hi"  # or: mesh/gateway/bench via go run ./be
 |---|---|---|
 | **A. Tester** | Create `tools/pollinations-proxy/tester.ts` (+ `.sh`) covering T1-T10 | `bun run` green for T1/T4/T5/T9; T2/T8 informational |
 | **B. Hotfix code** | Patch `internal/router/peer.go` P1+P2+P3 + comment in `peer.go` config, add `peer_test.go` cases | `go test ./internal/router -run Peer` passes new cases, full `go test ./...` green |
-| **C. Config** | Add `peers.pollinations-free` to `config/herd.yaml` | `herd --config` dry-run parses, `/v1/models` lists `openai` |
-| **D. Build & deploy** | `make build` in herd, `pitchfork restart herd`, health 200 | `curl :25100/health` ok, logs show peer routing |
-| **E. Verify live** | Run tester via herd (T4-T6), bench sample, health check `mise run health:herd` | All probes 200, streaming works, dummy auth stripped |
+| **C. Config** | Add `peers.pollinations-free` to `config/bornite.yaml` | `bornite --config` dry-run parses, `/v1/models` lists `openai` |
+| **D. Build & deploy** | `make build` in bornite, `pitchfork restart bornite`, health 200 | `curl :25100/health` ok, logs show peer routing |
+| **E. Verify live** | Run tester via bornite (T4-T6), bench sample, health check `mise run health:bornite` | All probes 200, streaming works, dummy auth stripped |
 | **F. Optional CF gateway** | Create Custom Provider, switch `proxy:` to gateway URL, re-verify T10 | `POST` to custom provider 201, T10 200 with cache hit header |
 
 ---
@@ -374,11 +374,11 @@ omp bench --model openai --prompt "hi"  # or: mesh/gateway/bench via go run ./be
 
 - [ ] **Direct:** `curl https://gen.pollinations.ai/v1/chat/completions -d '{"model":"openai",...}'` → 200
 - [ ] **Direct negative:** same with `openai/gpt-oss-20b` → 401 (documented)
-- [ ] **Herd models:** `GET :25100/v1/models` includes `openai` (and `gemma-4-31b`) as peer model
-- [ ] **Herd inference no-auth:** `POST :25100/v1/chat/completions {"model":"openai"}` → 200
-- [ ] **Herd inference with dummy auth:** same + `Authorization: Bearer dummy` → 200 (proves P1 stripping)
-- [ ] **Herd streaming:** `stream:true` → SSE 200
-- [ ] **Logs:** `pitchfork logs herd -n 50` shows `peer: routing model openai to peer pollinations-free`
+- [ ] **Bornite models:** `GET :25100/v1/models` includes `openai` (and `gemma-4-31b`) as peer model
+- [ ] **Bornite inference no-auth:** `POST :25100/v1/chat/completions {"model":"openai"}` → 200
+- [ ] **Bornite inference with dummy auth:** same + `Authorization: Bearer dummy` → 200 (proves P1 stripping)
+- [ ] **Bornite streaming:** `stream:true` → SSE 200
+- [ ] **Logs:** `pitchfork logs bornite -n 50` shows `peer: routing model openai to peer pollinations-free`
 - [ ] **Go tests:** `go test ./internal/router -run Peer` + `go vet` green
 - [ ] **No generation violation:** `git diff --stat` shows no `pitchfork.toml`/`mise.toml` hand edits
 - [ ] **Bench:** one `omp bench` call against `openai` returns no 402
@@ -387,24 +387,24 @@ omp bench --model openai --prompt "hi"  # or: mesh/gateway/bench via go run ./be
 
 ## 11. Artifacts & Links
 
-- **This plan:** `docs/plans/free-pollinations-herd-hotfix-plan.md` (estate) — also mirrored to `plans/free-pollinations-hotfix-plan.md` (herd).
+- **This plan:** `docs/plans/free-pollinations-bornite-hotfix-plan.md` (estate) — also mirrored to `plans/free-pollinations-hotfix-plan.md` (bornite).
 - **Source of truth for method:** attachment (§ Custom Providers → free backends). Corrected per probe: Pollinations model ID is `openai`, not `openai/gpt-oss-20b`; OVH anon tier currently 403.
-- **Patch target:** `/home/toxic/projects/herd/internal/router/peer.go:148-188`, `/home/toxic/projects/herd/internal/config/peer.go`.
-- **Runtime config:** `/home/toxic/estate/config/herd.yaml` (add `peers:`).
-- **Launcher:** `/home/toxic/estate/stack/services/herd.sh` → `$HOME/projects/herd/herd --config $SOV/config/herd.yaml --listen 0.0.0.0:25100`.
+- **Patch target:** `/home/toxic/projects/bornite/internal/router/peer.go:148-188`, `/home/toxic/projects/bornite/internal/config/peer.go`.
+- **Runtime config:** `/home/toxic/estate/config/bornite.yaml` (add `peers:`).
+- **Launcher:** `/home/toxic/estate/stack/services/bornite.sh` → `$HOME/projects/bornite/bornite --config $SOV/config/bornite.yaml --listen 0.0.0.0:25100`.
 - **Generated files (DO NOT EDIT):** `pitchfork.toml`, `mise.toml` (`src/generators/*`).
 
 ---
 
 ## 12. Handoff
 
-Plan ready at `/home/toxic/estate/docs/plans/free-pollinations-herd-hotfix-plan.md`.
+Plan ready at `/home/toxic/estate/docs/plans/free-pollinations-bornite-hotfix-plan.md`.
 
 What would you like to do next?
 
-1. **Implement now** — apply tester + P1 hotfix + peers config + rebuild herd (I can dispatch in one `ce-work` pass).
+1. **Implement now** — apply tester + P1 hotfix + peers config + rebuild bornite (I can dispatch in one `ce-work` pass).
 2. **Deepen** — add Track C CF gateway wiring detail or expand peer model remapping (P4) before building.
-3. **Ship tester only** — verify free backend stability for a week before hotfixing herd.
+3. **Ship tester only** — verify free backend stability for a week before hotfixing bornite.
 4. **Park OVH/OpenRouter** — clean up attachment references to non-working free tiers and publish a reduced-scope v1.
 
 _If you choose (1), I will start with tester creation so live wiring has a provable before/after._

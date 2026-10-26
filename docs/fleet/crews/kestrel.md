@@ -1,6 +1,6 @@
 ---
 crew: 'kestrel'
-scope: 'Mistral key proof + GuideLLM audit of Mistral chat models via corral (direct Mistral API, not herd/hodos); pattern-borrow useful Mistral integrations'
+scope: 'Mistral key proof + GuideLLM audit of Mistral chat models via corral (direct Mistral API, not bornite/rhodochrosite); pattern-borrow useful Mistral integrations'
 owner: 'kestrel (Ember crew)'
 status: 'RUNNING (2026-09-29)'
 order: 98

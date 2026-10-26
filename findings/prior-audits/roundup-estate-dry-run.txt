@@ -110,7 +110,7 @@ would rewrite 1445 files in /home/toxic/estate
   M bin/estate-reconcile
   M bin/estate-scan
   M bin/fleet-join.ts
-  M bin/herd-model-guard.py
+  M bin/bornite-model-guard.py
   M bin/hotfix
   M bin/manifest.yaml
   M bin/openfang-join
@@ -132,14 +132,14 @@ would rewrite 1445 files in /home/toxic/estate
   M bridge/awrawr_ws_exec.py
   M config/deprecated/openfang-4200.toml
   M config/env/tau-env.sh
-  M config/hodos-ssot/env-shim.sh
-  M config/herd.yaml
-  M config/herd.yaml.bak-20260929
-  M config/herd.yaml.bak.20261001-quill
-  M config/herd.yaml
-  M config/herd.yaml.bak-20260929
-  M config/herd.yaml~HEAD
-  M config/herd/config.yaml
+  M config/rhodochrosite-ssot/env-shim.sh
+  M config/bornite.yaml
+  M config/bornite.yaml.bak-20260929
+  M config/bornite.yaml.bak.20261001-quill
+  M config/bornite.yaml
+  M config/bornite.yaml.bak-20260929
+  M config/bornite.yaml~HEAD
+  M config/bornite/config.yaml
   M config/naming-audit.py
   M config/ports.env
   M config/tau/AGENTS.md
@@ -178,9 +178,9 @@ would rewrite 1445 files in /home/toxic/estate
   M config/tau/extensions/nemotron/skills/nemotron-policy-generator/references/policy_patterns.md
   M config/tau/mcp.json
   M config/tau/model-router.json
-  M config/tau/plans/HODOS_401_AUTHENTICATION_FIX_PLAN.md
-  M config/tau/plans/HODOS_401_AUTH_FIX_PLAN.md
-  M config/tau/plans/HERD_MAXIMAL_MERGE_PLAN.md
+  M config/tau/plans/RHODOCHROSITE_401_AUTHENTICATION_FIX_PLAN.md
+  M config/tau/plans/RHODOCHROSITE_401_AUTH_FIX_PLAN.md
+  M config/tau/plans/BORNITE_MAXIMAL_MERGE_PLAN.md
   M config/tau/plans/MESH_RANCH_RECONSTITUTION_PLAN.md
   M config/tau/plans/README_REVITALIZATION_PLAN_SHREW_PLAN.md
   M config/tau/plans/ESTATE_MASTER_CONSOLIDATION_PLAN.md
@@ -224,7 +224,7 @@ would rewrite 1445 files in /home/toxic/estate
   M crews/roster/1m-prober.md
   M crews/roster/auto1m.md
   M crews/roster/benchlink.md
-  M crews/roster/bristle-herd-audit.md
+  M crews/roster/bristle-bornite-audit.md
   M crews/roster/daemon-repair.md
   M crews/roster/eclipse.md
   M crews/roster/elo-persist.md
@@ -345,7 +345,7 @@ would rewrite 1445 files in /home/toxic/estate
   M docs/pitchfork-modularization/research/phase1-papers.md
   M docs/pitchfork-modularization/sandbox/pitchfork.toml.orig
   M docs/pitchfork-modularization/setup-d.ts
-  M docs/plans/free-pollinations-herd-hotfix-plan.md
+  M docs/plans/free-pollinations-bornite-hotfix-plan.md
   M docs/plans/master/MASTER_PLAN.md
   M docs/plans/master/REORG-MANIFEST.txt
   M docs/plans/master/REORG-PLAN.md
@@ -521,7 +521,7 @@ would rewrite 1445 files in /home/toxic/estate
   M projects/gayxxx-estate/README.md
   M projects/hatch-decode/README.md
   M projects/hatch-decode/pass3/README.md
-  M projects/herd/herd
+  M projects/bornite/bornite
   M projects/kodi-fleet/README.md
   M projects/mesh/README.md
   M projects/mesh/browserless/README.md
@@ -533,8 +533,8 @@ would rewrite 1445 files in /home/toxic/estate
   M projects/mesh/gateway/specs/README.md
   M projects/mesh/gemini-mcp/README.md
   M projects/mesh/router/README.md
-  M projects/mesh/router/hodos-py/README.md
-  M projects/mesh/router/hodos-router/README.md
+  M projects/mesh/router/rhodochrosite-py/README.md
+  M projects/mesh/router/rhodochrosite-router/README.md
   M projects/mesh/router/free_zed_gateway/README.md
   M projects/mesh/secretsmith/README.md
   M projects/mesh/squawk/README.md
@@ -727,9 +727,9 @@ would rewrite 1445 files in /home/toxic/estate
   M salvage/origin-main-20261002/conflicts/bin/estate-scan.ours
   M salvage/origin-main-20261002/conflicts/bin/fleet-join.ts
   M salvage/origin-main-20261002/conflicts/bin/fleet-join.ts.ours
-  M salvage/origin-main-20261002/conflicts/bin/herd-keypool.py
-  M salvage/origin-main-20261002/conflicts/bin/herd-model-guard.py
-  M salvage/origin-main-20261002/conflicts/bin/herd-model-guard.py.ours
+  M salvage/origin-main-20261002/conflicts/bin/bornite-keypool.py
+  M salvage/origin-main-20261002/conflicts/bin/bornite-model-guard.py
+  M salvage/origin-main-20261002/conflicts/bin/bornite-model-guard.py.ours
   M salvage/origin-main-20261002/conflicts/bin/manifest.yaml
   M salvage/origin-main-20261002/conflicts/bin/manifest.yaml.ours
   M salvage/origin-main-20261002/conflicts/bin/or-free-grade.py
@@ -746,8 +746,8 @@ would rewrite 1445 files in /home/toxic/estate
   M salvage/origin-main-20261002/conflicts/bin/pitchfork-split.ours
   M salvage/origin-main-20261002/conflicts/bin/progress-watchdog.py
   M salvage/origin-main-20261002/conflicts/bin/progress-watchdog.py.ours
-  M salvage/origin-main-20261002/conflicts/config/herd.yaml
-  M salvage/origin-main-20261002/conflicts/config/herd.yaml.ours
+  M salvage/origin-main-20261002/conflicts/config/bornite.yaml
+  M salvage/origin-main-20261002/conflicts/config/bornite.yaml.ours
   M salvage/origin-main-20261002/conflicts/config/tau/AGENTS.md
   M salvage/origin-main-20261002/conflicts/config/tau/AGENTS.md.ours
   M salvage/origin-main-20261002/conflicts/config/tau/config.yml
@@ -762,12 +762,12 @@ would rewrite 1445 files in /home/toxic/estate
   M salvage/origin-main-20261002/conflicts/config/tau/model-router.json.ours
   M salvage/origin-main-20261002/conflicts/config/tau/models.yml
   M salvage/origin-main-20261002/conflicts/config/tau/models.yml.ours
-  M salvage/origin-main-20261002/conflicts/config/tau/plans/HODOS_401_AUTHENTICATION_FIX_PLAN.md
-  M salvage/origin-main-20261002/conflicts/config/tau/plans/HODOS_401_AUTHENTICATION_FIX_PLAN.md.ours
-  M salvage/origin-main-20261002/conflicts/config/tau/plans/HODOS_401_AUTH_FIX_PLAN.md
-  M salvage/origin-main-20261002/conflicts/config/tau/plans/HODOS_401_AUTH_FIX_PLAN.md.ours
-  M salvage/origin-main-20261002/conflicts/config/tau/plans/HERD_MAXIMAL_MERGE_PLAN.md
-  M salvage/origin-main-20261002/conflicts/config/tau/plans/HERD_MAXIMAL_MERGE_PLAN.md.ours
+  M salvage/origin-main-20261002/conflicts/config/tau/plans/RHODOCHROSITE_401_AUTHENTICATION_FIX_PLAN.md
+  M salvage/origin-main-20261002/conflicts/config/tau/plans/RHODOCHROSITE_401_AUTHENTICATION_FIX_PLAN.md.ours
+  M salvage/origin-main-20261002/conflicts/config/tau/plans/RHODOCHROSITE_401_AUTH_FIX_PLAN.md
+  M salvage/origin-main-20261002/conflicts/config/tau/plans/RHODOCHROSITE_401_AUTH_FIX_PLAN.md.ours
+  M salvage/origin-main-20261002/conflicts/config/tau/plans/BORNITE_MAXIMAL_MERGE_PLAN.md
+  M salvage/origin-main-20261002/conflicts/config/tau/plans/BORNITE_MAXIMAL_MERGE_PLAN.md.ours
   M salvage/origin-main-20261002/conflicts/config/tau/plans/MESH_RANCH_RECONSTITUTION_PLAN.md
   M salvage/origin-main-20261002/conflicts/config/tau/plans/MESH_RANCH_RECONSTITUTION_PLAN.md.ours
   M salvage/origin-main-20261002/conflicts/config/tau/plans/README_REVITALIZATION_PLAN_SHREW_PLAN.md
@@ -796,10 +796,10 @@ would rewrite 1445 files in /home/toxic/estate
   M salvage/origin-main-20261002/conflicts/pitchfork.d/estate-reconcile-watch.toml.ours
   M salvage/origin-main-20261002/conflicts/pitchfork.d/files.toml
   M salvage/origin-main-20261002/conflicts/pitchfork.d/files.toml.ours
-  M salvage/origin-main-20261002/conflicts/pitchfork.d/hodos.toml
-  M salvage/origin-main-20261002/conflicts/pitchfork.d/hodos.toml.ours
-  M salvage/origin-main-20261002/conflicts/pitchfork.d/herd.toml
-  M salvage/origin-main-20261002/conflicts/pitchfork.d/herd.toml.ours
+  M salvage/origin-main-20261002/conflicts/pitchfork.d/rhodochrosite.toml
+  M salvage/origin-main-20261002/conflicts/pitchfork.d/rhodochrosite.toml.ours
+  M salvage/origin-main-20261002/conflicts/pitchfork.d/bornite.toml
+  M salvage/origin-main-20261002/conflicts/pitchfork.d/bornite.toml.ours
   M salvage/origin-main-20261002/conflicts/pitchfork.d/keypool.toml
   M salvage/origin-main-20261002/conflicts/pitchfork.d/keypool.toml.ours
   M salvage/origin-main-20261002/conflicts/pitchfork.d/kimi-auto-shim.toml
@@ -840,11 +840,11 @@ would rewrite 1445 files in /home/toxic/estate
   M salvage/origin-main-20261002/conflicts/skills/estate-hatch-toolkit/README.md.ours
   M salvage/origin-main-20261002/conflicts/skills/tau-fork-pinning/SKILL.md
   M salvage/origin-main-20261002/conflicts/skills/tau-fork-pinning/SKILL.md.ours
-  M salvage/origin-main-20261002/conflicts/stack/services/_consolidated_herd_20260924/beellama-fast.sh
-  M salvage/origin-main-20261002/conflicts/stack/services/_consolidated_herd_20260924/herd.sh
-  M salvage/origin-main-20261002/conflicts/stack/services/_consolidated_herd_20260924/openfang.sh
-  M salvage/origin-main-20261002/conflicts/stack/services/_consolidated_herd_20260924/openfang.sh.ours
-  M salvage/origin-main-20261002/conflicts/stack/services/herd.sh
+  M salvage/origin-main-20261002/conflicts/stack/services/_consolidated_bornite_20260924/beellama-fast.sh
+  M salvage/origin-main-20261002/conflicts/stack/services/_consolidated_bornite_20260924/bornite.sh
+  M salvage/origin-main-20261002/conflicts/stack/services/_consolidated_bornite_20260924/openfang.sh
+  M salvage/origin-main-20261002/conflicts/stack/services/_consolidated_bornite_20260924/openfang.sh.ours
+  M salvage/origin-main-20261002/conflicts/stack/services/bornite.sh
   M salvage/origin-main-20261002/conflicts/stack/services/estate-exporter.py
   M salvage/origin-main-20261002/conflicts/stack/services/estate-exporter.py.ours
   M salvage/origin-main-20261002/conflicts/stack/services/vansrouter.sh
@@ -952,8 +952,8 @@ would rewrite 1445 files in /home/toxic/estate
   M scratch/goals/awrawr-pc-mcp-exec-bridge/GOAL.md
   M scratch/goals/first-class-estate-organization/GOAL.md
   M scratch/goals/stash-safe-maximalization-of-tau-work/GOAL.md
-  M scratch/herd-demote/demote.py
-  M scratch/herd-status.sh
+  M scratch/bornite-demote/demote.py
+  M scratch/bornite-status.sh
   M scratch/historical-tmp-scripts/add_daemon.py
   M scratch/historical-tmp-scripts/apply_fixes.py
   M scratch/historical-tmp-scripts/apply_readme_upgrade.py
@@ -968,7 +968,7 @@ would rewrite 1445 files in /home/toxic/estate
   M scratch/historical-tmp-scripts/fl.py
   M scratch/historical-tmp-scripts/fleet-onboard.sh
   M scratch/historical-tmp-scripts/fm.py
-  M scratch/historical-tmp-scripts/forge-herd-patch.py
+  M scratch/historical-tmp-scripts/forge-bornite-patch.py
   M scratch/historical-tmp-scripts/gen_toml.py
   M scratch/historical-tmp-scripts/insert_kb.py
   M scratch/historical-tmp-scripts/kb-row.py
@@ -1012,7 +1012,7 @@ would rewrite 1445 files in /home/toxic/estate
   M scratch/nim-rewire.py
   M scratch/plans/freeproxy-restore-plan.md
   M scratch/readme-audits/caddy-estate-auth.md
-  M scratch/readme-audits/herd.md
+  M scratch/readme-audits/bornite.md
   M scratch/readme-audits/local-work-archive.md
   M scratch/readme-audits/playwright-mcp.md
   M scratch/readme-audits/qed.md
@@ -1025,11 +1025,11 @@ would rewrite 1445 files in /home/toxic/estate
   M scratch/readme-audits/estate.md
   M scratch/readme-audits/web3-sec-workspace.md
   M scratch/readme-audits/zedra-estate.md
-  M scratch/readme-rewrite/herd-README.md
+  M scratch/readme-rewrite/bornite-README.md
   M scratch/readme-rewrite/mesh-README.md
   M scratch/readme-rewrite/qed-README.md
   M scratch/readme-rewrite/skills-README.md
-  M scratch/readmefix-herd/README.md
+  M scratch/readmefix-bornite/README.md
   M scratch/repo_audit_trees.pkl
   M scratch/repo_inventory_20260914.txt
   M scratch/router_ts_spec.json
@@ -1322,7 +1322,7 @@ would rewrite 1445 files in /home/toxic/estate
   M src/maximal-estate-agentic-audit/tests/audit.test.ts
   M src/maximal-estate-agentic-audit/tests/classify.test.ts
   M src/maximal-estate-agentic-audit/tests/local-audit.test.ts
-  M src/mcp/herd.ts
+  M src/mcp/bornite.ts
   M src/openfang/openfang.plugin.json
   M src/services/bun-runtime.ts
   M src/services/core.ts
@@ -1343,9 +1343,9 @@ would rewrite 1445 files in /home/toxic/estate
   M src/types/index.ts
   M src/utils/ports.ts
   M stack/bin/pitchfork-llm
-  M stack/services/_consolidated_herd_20260924/coyote.sh
-  M stack/services/_consolidated_herd_20260924/download-models.sh
-  M stack/services/_consolidated_herd_20260924/openfang.sh
+  M stack/services/_consolidated_bornite_20260924/coyote.sh
+  M stack/services/_consolidated_bornite_20260924/download-models.sh
+  M stack/services/_consolidated_bornite_20260924/openfang.sh
   M stack/services/feedlot.sh
   M stack/services/code-insiders-deploy.sh
   M stack/services/dnsmasq.sh
@@ -1402,7 +1402,7 @@ would rewrite 1445 files in /home/toxic/estate
   M tools/fleet-ops/shep-upstream-recover.sh
   M tools/fleet-ops/systemd/depend-refire.service
   M tools/fleet-ops/zombie-reaper
-  M tools/herd-ranker.py
+  M tools/bornite-ranker.py
   M tools/host-proof/README.md
   M tools/huggingface-mcp-server/README.md
   M tools/keep/README.md

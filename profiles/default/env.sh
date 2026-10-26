@@ -33,7 +33,7 @@ export REDIS_PORT="${REDIS_PORT:-25203}"
 # (config/tau/agent/config.yml), not from the environment.
 export SCOUT_MODEL="${SCOUT_MODEL:-local-fast}"
 export SCOUT_BASE_URL="${SCOUT_BASE_URL:-http://127.0.0.1:25100/v1}"
-export SCOUT_API_KEY="${SCOUT_API_KEY:-herd}"
+export SCOUT_API_KEY="${SCOUT_API_KEY:-bornite}"
 
 # Build Concurrency Defaults
 export CARGO_BUILD_JOBS="${CARGO_BUILD_JOBS:-$(nproc 2>/dev/null || echo 4)}"

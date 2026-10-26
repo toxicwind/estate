@@ -11,10 +11,10 @@ This consolidates Spark’s Funnel + hardcore-cleanup brief with the Grok Bot hy
 
 | Keep from Spark | Reject / correct |
 |---|---|
-| Funnel root cause: CLI parsed `on` as target → tailnet-only | Wrong ports in Spark READMEs (`herd :25104`, hodos as sole cloud door) |
+| Funnel root cause: CLI parsed `on` as target → tailnet-only | Wrong ports in Spark READMEs (`bornite :25104`, rhodochrosite as sole cloud door) |
 | Archive-then-purge scratch / tack | Aggressive `.gitmodules` wipe to one github/gitignore entry |
-| Roost sole provider authority; delete `ranch/tack/` | Four-pillar “toxicwind/herd” as separate GitHub face (herd lives in ranch) |
-| Abolish rotting submodules; prefer independent checkouts + sync | Spark README omission of thresher, doorbell, cuttinggate, squawk, **arroyo** |
+| Roost sole provider authority; delete `ranch/tack/` | Four-pillar “toxicwind/bornite” as separate GitHub face (bornite lives in ranch) |
+| Abolish rotting submodules; prefer independent checkouts + sync | Spark README omission of thresher, doorbell, chalcopyrite, squawk, **arroyo** |
 | `ops/sync.sh` idea | Buggy script (`{REPOS[@]}`, `"CHANGES"` string, commits ranch README into estate) |
 
 **Canonical mental model (Grok + corrected Spark):**
@@ -92,7 +92,7 @@ Do **not** `tar` absolute paths without `-C` (Spark’s script did). Prefer `tar
 - Do **not** blindly replace entire `.gitmodules` with a single github/gitignore submodule unless audit shows that’s the only live one
 - Prefer: no new submodules; research one-offs as plain dirs or archived repos
 
-### 2.4 Deploy docs (plane map — not Spark hodos-centric fiction)
+### 2.4 Deploy docs (plane map — not Spark rhodochrosite-centric fiction)
 
 **estate/README.md** — one page:
 
@@ -103,14 +103,14 @@ Do **not** `tar` absolute paths without `-C` (Spark’s script did). Prefer `tar
 
 **ranch/README.md** — animals by plane:
 
-- Inference: herd · hodos · cuttinggate · roost · keypool  
+- Inference: bornite · rhodochrosite · chalcopyrite · roost · keypool  
 - MCP: thresher · doorbell · switchboard · lasso  
 - Fleet: squawk · campfire · corral  
 - **Bot: arroyo** (overlord · coyote · discord)  
 - Agent: tau via chute  
 - Kill / rewrite `ESTATE-PROJECTS.md` (estate-projects fiction)
 
-**estate/ops/sync.sh** — status across `~/estate`, `~/estate/ranch`, `~/tau` (and herd path if separate). Fix array expansion; no auto-commit of wrong trees.
+**estate/ops/sync.sh** — status across `~/estate`, `~/estate/ranch`, `~/tau` (and bornite path if separate). Fix array expansion; no auto-commit of wrong trees.
 
 ### 2.5 Commit
 

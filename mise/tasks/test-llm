@@ -1,22 +1,22 @@
 #!/usr/bin/env bash
-# mise run test-llm — prove the herd (herd) serving path.
+# mise run test-llm — prove the bornite (bornite) serving path.
 # 2026-09-20: was calling subcommands settings/chat/stream which do not exist
-# in src/mcp/herd.ts (they fell through to the MCP stdio server and hung).
+# in src/mcp/bornite.ts (they fell through to the MCP stdio server and hung).
 # Only real CLI subcommands remain: health, models, e2e.
 set -euo pipefail
 
 # Resolve the repo from this script's own location. ESTATE_ROOT is unset in
 # practice, and its $HOME/Estate fallback is a stale duplicate with no
-# src/mcp/, so every subcommand died on "Module not found src/mcp/herd.ts".
+# src/mcp/, so every subcommand died on "Module not found src/mcp/bornite.ts".
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$ROOT"
 
 source "$ROOT/stack/lib-ports.sh"
-export HERD_BASE="${HERD_BASE:-http://127.0.0.1:${HERD_PORT:?}}"
+export BORNITE_BASE="${BORNITE_BASE:-http://127.0.0.1:${HERD_PORT:?}}"
 
-echo "=== herd_health ==="
-bun src/mcp/herd.ts health
-echo "=== herd_models ==="
-bun src/mcp/herd.ts models
-echo "=== herd_e2e ==="
-bun src/mcp/herd.ts e2e
+echo "=== bornite_health ==="
+bun src/mcp/bornite.ts health
+echo "=== bornite_models ==="
+bun src/mcp/bornite.ts models
+echo "=== bornite_e2e ==="
+bun src/mcp/bornite.ts e2e

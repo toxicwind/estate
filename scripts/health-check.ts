@@ -12,7 +12,7 @@ const portsMap = parsePortsEnv(ROOT);
 
 // Essential core services mapped to their ports (derived from ports.env or defaults)
 const SERVICES: Record<string, number> = {
-  "herd": portsMap.get("LLAMA_SWAP_PORT") ?? 25100,
+  "bornite": portsMap.get("LLAMA_SWAP_PORT") ?? 25100,
   "qdrant": portsMap.get("QDRANT_PORT") ?? 25133,
   "redis": portsMap.get("REDIS_PORT") ?? 25203,
   "yote-core": portsMap.get("YOTE_CORE_PORT") ?? portsMap.get("COYOTE_PORT") ?? 25143,

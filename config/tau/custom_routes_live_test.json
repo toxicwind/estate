@@ -14,7 +14,7 @@
     "route": "custom/bodybuilder",
     "requests": [
       {
-        "model": "herd/beellama/exaone-4-0-1-2b-iq4xs",
+        "model": "bornite/beellama/exaone-4-0-1-2b-iq4xs",
         "messages": [
           {
             "role": "user",
@@ -25,7 +25,7 @@
         "max_tokens": 2000
       },
       {
-        "model": "herd/beellama/exaone-4-0-1-2b-q4km",
+        "model": "bornite/beellama/exaone-4-0-1-2b-q4km",
         "messages": [
           {
             "role": "user",

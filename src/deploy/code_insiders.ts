@@ -1,11 +1,11 @@
 #!/usr/bin/env bun
 /**
- * Sync VS Code Insiders → herd via oaicopilot plugin settings (Bun).
+ * Sync VS Code Insiders → bornite via oaicopilot plugin settings (Bun).
  *
  * Catalog SSOT = live GET :25100/v1/models (not a hand-written inventory).
  * oaicopilot has no native /models/sse auto_discover (unlike Zed llama.cpp),
  * so we mirror the live catalog into oaicopilot.models. Optional --watch
- * re-syncs on herd SSE load/unload events.
+ * re-syncs on bornite SSE load/unload events.
  */
 import { homedir } from "node:os";
 import { join } from "node:path";
@@ -15,7 +15,7 @@ import {
   pickDefaultModel,
   swapV1Url,
   watchSwapModelsSseRefresh,
-} from "../lib/herd_ssot.ts";
+} from "../lib/bornite_ssot.ts";
 
 const settingsPath =
   process.env.VSCODE_INSIDERS_SETTINGS ||
@@ -80,7 +80,7 @@ console.log(
 console.log(`settings=${settingsPath}`);
 console.log("chatLanguageModels=[]");
 console.log(
-  "note=oaicopilot has no native SSE auto_discover; catalog mirrored from herd live API",
+  "note=oaicopilot has no native SSE auto_discover; catalog mirrored from bornite live API",
 );
 
 if (watch) {

@@ -1,21 +1,21 @@
 #!/usr/bin/env bash
 set -uo pipefail
-OUT=~/.tau/hodos.key
+OUT=~/.tau/rhodochrosite.key
 CONSOLE='https://awrawr-pc:25212'
 CURL=(curl -sk -m 5)
 : > "$OUT.tmp"
 log() { printf '%s\n' "$*" >&2; }
 
 # 1) env
-for v in HODOS_API_KEY HODOS_KEY HODOS_TOKEN API_KEY; do
+for v in RHODOCHROSITE_API_KEY RHODOCHROSITE_KEY RHODOCHROSITE_TOKEN API_KEY; do
   [[ -n "${!v:-}" ]] && { log "found \$$v"; printf '%s' "${!v}" > "$OUT.tmp"; break; }
 done
 
 # 2) known config files
 if [[ ! -s "$OUT.tmp" ]]; then
-  for f in ~/.tau/hodos.yml ~/.config/hodos/config.yml ~/.config/hodos/config.json \
-           /home/toxic/projects/hodos/.env /home/toxic/projects/hodos/.env.local \
-           /home/toxic/projects/hodos/config.yml /home/toxic/projects/hodos/config.toml; do
+  for f in ~/.tau/rhodochrosite.yml ~/.config/rhodochrosite/config.yml ~/.config/rhodochrosite/config.json \
+           /home/toxic/projects/rhodochrosite/.env /home/toxic/projects/rhodochrosite/.env.local \
+           /home/toxic/projects/rhodochrosite/config.yml /home/toxic/projects/rhodochrosite/config.toml; do
     [[ -f "$f" ]] || continue
     k=$(grep -aoE '(api[_-]?key|token|secret)["'\'']?\s*[:=]\s*["'\'']?[A-Za-z0-9._\-]{16,}' "$f" 2>/dev/null \
         | head -1 | grep -aoE '[A-Za-z0-9._\-]{16,}$')
@@ -27,13 +27,13 @@ fi
 if [[ ! -s "$OUT.tmp" ]]; then
   for ep in /api/key /api/keys /api/token /api/config /api/settings \
             /api/v1/key /api/v1/keys /api/v1/config /api/v1/settings \
-            /api/auth/key /api/auth/keys /api/hodos/key /api/proxy/key \
+            /api/auth/key /api/auth/keys /api/rhodochrosite/key /api/proxy/key \
             /api/admin/key /api/admin/config /api/console/key \
             /key /keys /token /config.json /settings.json /api/config.json; do
     body=$("${CURL[@]}" "$CONSOLE$ep" 2>/dev/null || true)
     [[ -z "$body" ]] && continue
     k=$(jq -r '
-      (.key // .api_key // .apiKey // .token // .proxy_key // .hodos_key //
+      (.key // .api_key // .apiKey // .token // .proxy_key // .rhodochrosite_key //
        .keys[0] // .keys[0].key // .keys[0].token //
        .data.key // .data.api_key // .data.apiKey // .data.token //
        .result.key // .result.token // empty)
@@ -63,17 +63,17 @@ if [[ ! -s "$OUT.tmp" ]]; then
   fi
 fi
 
-# 5) grep hodos project dir
-if [[ ! -s "$OUT.tmp" && -d /home/toxic/projects/hodos ]]; then
+# 5) grep rhodochrosite project dir
+if [[ ! -s "$OUT.tmp" && -d /home/toxic/projects/rhodochrosite ]]; then
   k=$(grep -raoE --include='*.yml' --include='*.yaml' --include='*.json' --include='*.env' --include='*.toml' \
       '(api[_-]?key|token|secret)["'\'']?\s*[:=]\s*["'\'']?[A-Za-z0-9._\-]{24,}' \
-      /home/toxic/projects/hodos 2>/dev/null | head -1 | grep -aoE '[A-Za-z0-9._\-]{24,}$')
-  [[ -n "$k" ]] && { log "found in hodos project"; printf '%s' "$k" > "$OUT.tmp"; }
+      /home/toxic/projects/rhodochrosite 2>/dev/null | head -1 | grep -aoE '[A-Za-z0-9._\-]{24,}$')
+  [[ -n "$k" ]] && { log "found in rhodochrosite project"; printf '%s' "$k" > "$OUT.tmp"; }
 fi
 
-# 6) herd default key probe
+# 6) bornite default key probe
 if [[ ! -s "$OUT.tmp" ]]; then
-  for guess in 'herd-local-key' 'sk-local' 'local' 'hodos' 'toxicwind' 'changeme' 'dev' 'test' 'admin' 'password'; do
+  for guess in 'bornite-local-key' 'sk-local' 'local' 'rhodochrosite' 'toxicwind' 'changeme' 'dev' 'test' 'admin' 'password'; do
     code=$("${CURL[@]}" -o /dev/null -w '%{http_code}' -H "Authorization: Bearer $guess" http://127.0.0.1:25193/v1/models)
     [[ "$code" == 200 ]] && { log "default key works: $guess"; printf '%s' "$guess" > "$OUT.tmp"; break; }
   done

@@ -1,13 +1,13 @@
-// CORS policy builder + live preflight probe for the herd dashboard.
+// CORS policy builder + live preflight probe for the bornite dashboard.
 //
-// herd exposes no config API, so this panel cannot read or write the active
+// bornite exposes no config API, so this panel cannot read or write the active
 // security.cors block directly. Instead it does two things:
 //   1. Probes the effective policy: a same-origin OPTIONS request carries the
-//      page's Origin automatically, and herd's CORS middleware answers with
+//      page's Origin automatically, and bornite's CORS middleware answers with
 //      the Access-Control-* headers it would send a browser. That is the
 //      policy as the browser sees it.
-//   2. Builds the security.cors YAML snippet to paste into herd.yaml, with
-//      the same validation rules herd applies at load time (mirrored from
+//   2. Builds the security.cors YAML snippet to paste into bornite.yaml, with
+//      the same validation rules bornite applies at load time (mirrored from
 //      internal/config/security.go).
 
 export interface CorsConfig {
@@ -33,7 +33,7 @@ export function defaultCorsConfig(): CorsConfig {
   };
 }
 
-// Server defaults mirrored from herd's internal/config/security.go. The YAML
+// Server defaults mirrored from bornite's internal/config/security.go. The YAML
 // builder omits fields left at these defaults so the snippet stays minimal.
 export const DEFAULT_CORS_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"];
 export const DEFAULT_CORS_HEADERS = ["Content-Type", "Authorization", "Accept", "X-Requested-With"];
@@ -52,13 +52,13 @@ export const KNOWN_HTTP_METHODS = [
 
 const HTTP_TOKEN_RE = /^[!#$%&'*+\-.^_`|~0-9A-Za-z]+$/;
 
-// isHttpToken mirrors herd's config.IsHTTPToken (RFC 9110 token), the
+// isHttpToken mirrors bornite's config.IsHTTPToken (RFC 9110 token), the
 // grammar both method names and header names follow.
 export function isHttpToken(s: string): boolean {
   return HTTP_TOKEN_RE.test(s);
 }
 
-// isValidCorsOrigin mirrors herd's validateCORSOrigin: a bare
+// isValidCorsOrigin mirrors bornite's validateCORSOrigin: a bare
 // scheme://host[:port], the only form a browser ever sends in an Origin
 // header. "*" is the explicit allow-any marker. A trailing slash, path,
 // query, fragment or userinfo would silently never match an Origin header,
@@ -81,8 +81,8 @@ export function isValidCorsOrigin(origin: string): boolean {
   return afterScheme !== "" && !/[/?#@]/.test(afterScheme);
 }
 
-// validateCorsConfig mirrors herd's CORSConfig.Validate. Returns human
-// readable problems; empty means herd would accept the block.
+// validateCorsConfig mirrors bornite's CORSConfig.Validate. Returns human
+// readable problems; empty means bornite would accept the block.
 export function validateCorsConfig(cfg: CorsConfig): string[] {
   const problems: string[] = [];
   const origins = cfg.allowedOrigins.map((o) => o.trim()).filter((o) => o !== "");
@@ -155,8 +155,8 @@ function yamlStringList(values: string[]): string[] {
   return values.map((v) => `      - ${yamlScalar(v)}`);
 }
 
-// corsConfigToYaml renders the security.cors block to paste into herd.yaml.
-// Fields left empty take herd's defaults, so they are omitted — except
+// corsConfigToYaml renders the security.cors block to paste into bornite.yaml.
+// Fields left empty take bornite's defaults, so they are omitted — except
 // allowedOrigins, which selects the mode (absent = legacy permissive).
 // An entirely empty config renders just the commented header.
 export function corsConfigToYaml(cfg: CorsConfig): string {
@@ -189,7 +189,7 @@ export function corsConfigToYaml(cfg: CorsConfig): string {
   }
 
   if (lines.length === 2) {
-    lines.push("    # (empty — herd keeps the legacy permissive policy)");
+    lines.push("    # (empty — bornite keeps the legacy permissive policy)");
   }
   return lines.join("\n") + "\n";
 }
@@ -226,9 +226,9 @@ function emptyProbeResult(probedOrigin: string, error: string): CorsProbeResult 
   };
 }
 
-// probeCorsPolicy asks herd for its effective CORS policy. The request is
+// probeCorsPolicy asks bornite for its effective CORS policy. The request is
 // same-origin so no preflight-of-the-preflight happens; the browser attaches
-// the page's Origin automatically (OPTIONS is not GET/HEAD) and herd's CORS
+// the page's Origin automatically (OPTIONS is not GET/HEAD) and bornite's CORS
 // middleware answers 204 with the Access-Control-* headers it would send a
 // browser carrying that Origin.
 export async function probeCorsPolicy(

@@ -7,7 +7,7 @@
 // health_http, port, and every explanatory comment).
 //
 // Audit 2026-09-14: generator defines 36 services, pitchfork has 28 daemons.
-// 11 generator-only services are superseded (llama.cpp forks -> herd), dev-only,
+// 11 generator-only services are superseded (llama.cpp forks -> bornite), dev-only,
 // or not running. 3 pitchfork daemons (dnsmasq, free-zed-gateway, tau-code) were
 // added natively post-generator.
 //

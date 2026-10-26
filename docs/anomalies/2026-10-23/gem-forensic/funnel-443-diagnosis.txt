@@ -117,10 +117,10 @@ The journal only contains data from the current boot (started 2026-10-23 17:54 M
 From pitchfork status, the following daemons are still in errored state (likely from the crash):
 - `estate/beellama-fast` — errored, exit code 1
 - `estate/browser-keeper` — errored, exit code 1
-- `estate/cuttinggate` — errored, exit code 1
+- `estate/chalcopyrite` — errored, exit code 1
 - `estate/forge` — errored, unknown exit code
 - `estate/forge-agent` — errored, unknown exit code
-- `estate/herd` — errored, unknown exit code
+- `estate/bornite` — errored, unknown exit code
 - `estate/keypool` — errored, exit code 1
 - `estate/market-loop` — errored, exit code 1
 - `estate/oracle-core` — errored, exit code 1
@@ -130,7 +130,7 @@ From pitchfork status, the following daemons are still in errored state (likely 
 Stopped (not necessarily crashed, may be intentionally stopped):
 - `estate/archguard-api`, `estate/archguard-falkordb`, `estate/bin-contract-audit`
 - `estate/coyote`, `estate/custom-auto-shim` (disabled), `estate/delendai-control-plane`, `estate/delendai-web`
-- `estate/files`, `estate/gatehouse`, `estate/hodos`, `estate/kafka`, `estate/kitty-mcp` (disabled)
+- `estate/files`, `estate/gatehouse`, `estate/rhodochrosite`, `estate/kafka`, `estate/kitty-mcp` (disabled)
 - `estate/proc-watch-audit`, `estate/qdrant`, `estate/shim-drift-watch`
 
 ---
@@ -197,7 +197,7 @@ tmpfs            32G  8.0G   24G  26% /tmp
 The funnel serve config does NOT have routes for the 10 kite ports. The 10 kite ports (25127, 25135, 25146, 25147, 25198, 25201, 25202, 25204, 25207, 34567) are served differently:
 - `:443` → `/` (25217) and `/files` (34567) — path-based routing
 - `:25127` — TCP port forwarding to 25127
-- `:8443` — TCP port forwarding to 25193 (hodos)
+- `:8443` — TCP port forwarding to 25193 (rhodochrosite)
 - `:8444` — TCP port forwarding to 25218
 
 The remaining kite ports (25135, 25146, 25147, 25198, 25201, 25202, 25204, 25207) are **NOT in the serve config** at all. They may be:
@@ -226,8 +226,8 @@ The remaining kite ports (25135, 25146, 25147, 25198, 25201, 25202, 25204, 25207
 
 Full `pitchfork status` output from /home/toxic/estate:
 - **running**: 53 daemons (all core estate services)
-- **errored**: 11 daemons (beellama-fast, browser-keeper, cuttinggate, forge, forge-agent, herd, keypool, market-loop, oracle-core, phone-sentinel, toolcall-llm)
-- **stopped**: 14 daemons (archguard-api, archguard-falkordb, bin-contract-audit, coyote, custom-auto-shim, delendai-control-plane, delendai-web, files, gatehouse, hodos, kafka, kitty-mcp, proc-watch-audit, qdrant, shim-drift-watch)
+- **errored**: 11 daemons (beellama-fast, browser-keeper, chalcopyrite, forge, forge-agent, bornite, keypool, market-loop, oracle-core, phone-sentinel, toolcall-llm)
+- **stopped**: 14 daemons (archguard-api, archguard-falkordb, bin-contract-audit, coyote, custom-auto-shim, delendai-control-plane, delendai-web, files, gatehouse, rhodochrosite, kafka, kitty-mcp, proc-watch-audit, qdrant, shim-drift-watch)
 - **available**: 8 daemons (awrawr-mcp, bedrock-ui, boundless, gibber-mcp, kimi-audit-dash, kimi-code, refusal-watchdog, sorry-watchdog)
 
 ### Kite port daemon mapping:
@@ -268,7 +268,7 @@ Full `pitchfork status` output from /home/toxic/estate:
 | 25204 | YES | python/awrawr-ws-exec (732892) | ✅ ALIVE |
 | 25207 | YES | python3/mesh-landing (731010) | ✅ ALIVE |
 | 34567 | YES | python3/files (494929) | ✅ ALIVE |
-| 8443 → 25193 | YES | hodos (383414) | ✅ ALIVE |
+| 8443 → 25193 | YES | rhodochrosite (383414) | ✅ ALIVE |
 | 8444 → 25218 | YES | bun/ranch-ui (732872) | ✅ ALIVE |
 | 443 → 25217 | YES | bun/oauth-edge (733526) | ✅ ALIVE |
 
@@ -278,7 +278,7 @@ Full `pitchfork status` output from /home/toxic/estate:
 - `:443/` → 127.0.0.1:25217 (OAuth edge)
 - `:443/files` → 127.0.0.1:34567 (files)
 - `:25127` → 127.0.0.1:25127 (thresher, TCP)
-- `:8443` → 127.0.0.1:25193 (hodos, TCP)
+- `:8443` → 127.0.0.1:25193 (rhodochrosite, TCP)
 - `:8444` → 127.0.0.1:25218 (ranch-ui, TCP)
 
 **The serve config has 4 ports, not 10.** There is NO :443 route mapping to the 10 kite ports directly. The kite's "10 backends" view likely comes from direct Tailscale TCP connections to the estate's IP, not from a serve config with 10 routes.
@@ -286,8 +286,8 @@ Full `pitchfork status` output from /home/toxic/estate:
 ### (c) Failed systemd/pitchfork daemons
 
 **Systemd failed**: 8 units (mostly timer-based daily tasks)
-**Pitchfork errored**: 11 daemons — beellama-fast, browser-keeper, cuttinggate, forge, forge-agent, herd, keypool, market-loop, oracle-core, phone-sentinel, toolcall-llm
-**Pitchfork stopped**: 14 daemons (archguard-api, archguard-falkordb, bin-contract-audit, coyote, custom-auto-shim, delendai-control-plane, delendai-web, files, gatehouse, hodos, kafka, kitty-mcp, proc-watch-audit, qdrant, shim-drift-watch)
+**Pitchfork errored**: 11 daemons — beellama-fast, browser-keeper, chalcopyrite, forge, forge-agent, bornite, keypool, market-loop, oracle-core, phone-sentinel, toolcall-llm
+**Pitchfork stopped**: 14 daemons (archguard-api, archguard-falkordb, bin-contract-audit, coyote, custom-auto-shim, delendai-control-plane, delendai-web, files, gatehouse, rhodochrosite, kafka, kitty-mcp, proc-watch-audit, qdrant, shim-drift-watch)
 
 ### (d) Journalctl/dmesg for 04:30-05:30 MDT
 

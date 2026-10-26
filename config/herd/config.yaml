@@ -20,6 +20,6 @@ models:
     aliases:
       - nemotron-lightning
     checkEndpoint: /health
-  # RETIRED 2026-10-02: estate-router merged into hodos :25193. The :25104
+  # RETIRED 2026-10-02: estate-router merged into rhodochrosite :25193. The :25104
   # daemon is gone and its binary is deleted, so this entry could never start.
 

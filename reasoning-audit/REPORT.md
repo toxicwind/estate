@@ -48,7 +48,7 @@ The stream contains 4 unique SSE IDs (4 separate completions), all `deepseek-v4-
 The full reasoning text around this chunk:
 ```
 "The `glm-trace.txt` is actually a benign benchmark trace from a different session ...
-The interesting one is `bench-results-20261021.json` -- that says `glm-5.3-flash` FAILED with **"403 Requires OpenCode Go subscription for Go models"** and was routed via \"custom-or (Hodos)\".
+The interesting one is `bench-results-20261021.json` -- that says `glm-5.3-flash` FAILED with **"403 Requires OpenCode Go subscription for Go models"** and was routed via \"custom-or (Rhodochrosite)\".
 ```
 
 This is the model **quoting from the benchmark file it just read** (`bench-results-20261021.json`). The model was analyzing the benchmark results and quoting the error string as part of its reasoning. **This is correct model behavior, not pipeline corruption.**
@@ -108,7 +108,7 @@ The prior GLM audit (141 PIDs, 3,779 log rows) already identified the real issue
 1. **Vision role bound to TEXT-ONLY model** -- FIXED: `minimax-m3:xhigh`
 2. **Single-provider fallback chain** -- FIXED: cross-provider targets added
 3. **Fallback references unknown models** -- Transient (catalog discovery race)
-4. **Hodos/opencode-go 403 routing** -- opencode-go requires subscription for Go models
+4. **Rhodochrosite/opencode-go 403 routing** -- opencode-go requires subscription for Go models
 5. **Worker model non-determinism** -- Resolved by vision role fix
 
 ---
@@ -142,4 +142,4 @@ None. The reasoning pipeline is sound. The prior audit's 6 fixes (commit `31989c
 | Config | `/home/toxic/estate/config/tau/config.yml` | Reasoning config verified functional |
 | SSE reasoning parsing | `tau/packages/ai/src/providers/openai-completions.ts:1316-1332` | reasoning_content -> thinking_delta |
 | Error detection | `openai-completions.ts:1256-1258` | In-band error detection before reasoning processing |
-| Tau model registry | `estate/ranch/pinax/src/data.ts` | freeinference seeds: 5 models |
+| Tau model registry | `estate/ranch/mimetite/src/data.ts` | freeinference seeds: 5 models |

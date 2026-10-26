@@ -12,10 +12,10 @@ const ESTATE = "/home/toxic/estate";
 async function integrate() {
   console.log("=== ESTATE-PROJECTS -> ESTATE INTEGRATION ===");
   
-  // 1. Link herd engines to estate health-audit ports
+  // 1. Link bornite engines to estate health-audit ports
   const herdPorts = {
-    "herd": 25100,
-    "herd": 25100,
+    "bornite": 25100,
+    "bornite": 25100,
     "mesh": 25127,
     "yote": 25102
   };
@@ -31,7 +31,7 @@ async function integrate() {
       portsEnv: `${ESTATE}/config/ports.env`
     },
     subdirIntegrations: {
-      "herd": { path: `${SOV_PROJECTS}/herd`, estatePort: "herd=25100", engines: true },
+      "bornite": { path: `${SOV_PROJECTS}/bornite`, estatePort: "bornite=25100", engines: true },
       "zedra": { path: `${SOV_PROJECTS}/zedra`, estateLink: "zed integration via estate-zed" },
       "boundless": { path: `${SOV_PROJECTS}/boundless`, estateLink: "openfang/yote services" },
       "extensions": { path: `${SOV_PROJECTS}/extensions`, estateLink: "semantouch/engram" },
@@ -48,7 +48,7 @@ async function integrate() {
   console.log("Symlinked estate helpers into estate-projects/.estate-helpers");
   
   // 4. Git commit
-  await $`cd /home/toxic && git add projects/estate-projects/.estate-integration.json projects/estate-projects/.estate-helpers 2>/dev/null && git commit -m "estate-projects integration: linked herd/zedra/boundless/extensions/tau to estate workspace helpers (health-audit, git-mutator, ports.env)" 2>&1`;
+  await $`cd /home/toxic && git add projects/estate-projects/.estate-integration.json projects/estate-projects/.estate-helpers 2>/dev/null && git commit -m "estate-projects integration: linked bornite/zedra/boundless/extensions/tau to estate workspace helpers (health-audit, git-mutator, ports.env)" 2>&1`;
 }
 
 integrate().catch(console.error);

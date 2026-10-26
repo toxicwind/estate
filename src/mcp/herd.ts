@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * MCP: herd - env only, no file reads
+ * MCP: bornite - env only, no file reads
  * All config via env, no VSCode settings.json reads
  */
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -12,12 +12,12 @@ loadSovereignPorts();
 
 // ENV ONLY - no homedir reads
 const DEFAULT_BASE = (
-  process.env.HERD_BASE ||
+  process.env.BORNITE_BASE ||
   (process.env.LLM_BASE_URL || "").replace(/\/v1\/?$/, "") ||
   `http://127.0.0.1:${requireEnv("HERD_PORT")}`
 ).replace(/\/$/, "");
 
-const DEFAULT_MODEL = process.env.HERD_MODEL || "beellama/qwen-flash-64k";
+const DEFAULT_MODEL = process.env.BORNITE_MODEL || "beellama/qwen-flash-64k";
 
 function j(obj: unknown): string {
   return JSON.stringify(obj, null, 2);
@@ -211,12 +211,12 @@ export async function upstreamServers(opts: {
 
 async function mcpMain() {
   const server = new McpServer({
-    name: "herd-test",
+    name: "bornite-test",
     version: "2.0.0-env-only",
   });
 
   server.tool(
-    "herd_health",
+    "bornite_health",
     "GET {base}/health",
     { base_url: z.string().optional() },
     async ({ base_url }) => ({
@@ -230,7 +230,7 @@ async function mcpMain() {
   );
 
   server.tool(
-    "herd_models",
+    "bornite_models",
     "GET {base}/v1/models",
     { base_url: z.string().optional() },
     async ({ base_url }) => ({
@@ -244,7 +244,7 @@ async function mcpMain() {
   );
 
   server.tool(
-    "herd_chat",
+    "bornite_chat",
     "POST chat/completions",
     {
       prompt: z.string().optional(),
@@ -259,7 +259,7 @@ async function mcpMain() {
   );
 
   server.tool(
-    "herd_chat_stream",
+    "bornite_chat_stream",
     "POST streaming",
     {
       prompt: z.string().optional(),
@@ -274,7 +274,7 @@ async function mcpMain() {
 
   server.tool(
     "upstream_servers",
-    "List/check herd upstreams. REQUIRES operation param.",
+    "List/check bornite upstreams. REQUIRES operation param.",
     {
       operation: z
         .enum(["list", "get", "health"])

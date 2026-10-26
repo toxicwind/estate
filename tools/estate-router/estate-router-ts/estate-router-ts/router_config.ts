@@ -59,11 +59,11 @@ export const STRATEGY = process.env.ESTATE_STRATEGY || "hybrid";
 export const UA = "Mozilla/5.0 (compatible; EstateASTMatrix/3.1)";
 
 // ---------------------------------------------------------------------------
-// HERD_V1 (must come before PROVIDERS that uses it)
+// BORNITE_V1 (must come before PROVIDERS that uses it)
 // ---------------------------------------------------------------------------
-export const HERD_V1 =
+export const BORNITE_V1 =
   process.env.LLM_BASE_URL ||
-  process.env.HERD_V1 ||
+  process.env.BORNITE_V1 ||
   "http://127.0.0.1:25100/v1";
 
 export function loadLocalRoleModels(): {
@@ -106,9 +106,9 @@ export const PROVIDERS: Record<
   { base: string; key_env: string; key_env_alt?: string; no_auth?: boolean }
 > = {
   // Local SSOT — always first-class for estate GPU path
-  "herd": {
-    base: HERD_V1,
-    key_env: "HERD_API_KEY",
+  "bornite": {
+    base: BORNITE_V1,
+    key_env: "BORNITE_API_KEY",
     no_auth: true,
   },
   openrouter: {
@@ -136,7 +136,7 @@ export const PROVIDERS: Record<
 // Catalog (depends on LOCAL_ROLES, must come after loadLocalRoleModels)
 // ---------------------------------------------------------------------------
 export const PROVIDER_MODELS: Record<string, string[]> = {
-  "herd": [LOCAL_ROLES.fast, LOCAL_ROLES.quality, LOCAL_ROLES.longctx],
+  "bornite": [LOCAL_ROLES.fast, LOCAL_ROLES.quality, LOCAL_ROLES.longctx],
   openrouter: [
     "tencent/hy3:free",
     "poolside/laguna-m.1:free",
@@ -191,14 +191,14 @@ export const CODING: Record<string, [string, string] | null> = {
   fcm: null,
   // free: route through the `free` strategy (local + all :free cloud models)
   free: null,
-  // Local-first ranked roles (herd exclusive matrix)
-  fast: ["herd", LOCAL_ROLES.fast],
-  "local-fast": ["herd", LOCAL_ROLES.fast],
-  quality: ["herd", LOCAL_ROLES.quality],
-  "local-quality": ["herd", LOCAL_ROLES.quality],
-  longctx: ["herd", LOCAL_ROLES.longctx],
-  "local-longctx": ["herd", LOCAL_ROLES.longctx],
-  "local-auto": ["herd", LOCAL_ROLES.quality],
+  // Local-first ranked roles (bornite exclusive matrix)
+  fast: ["bornite", LOCAL_ROLES.fast],
+  "local-fast": ["bornite", LOCAL_ROLES.fast],
+  quality: ["bornite", LOCAL_ROLES.quality],
+  "local-quality": ["bornite", LOCAL_ROLES.quality],
+  longctx: ["bornite", LOCAL_ROLES.longctx],
+  "local-longctx": ["bornite", LOCAL_ROLES.longctx],
+  "local-auto": ["bornite", LOCAL_ROLES.quality],
   hy3: ["openrouter", "tencent/hy3:free"],
   "laguna-m1": ["openrouter", "poolside/laguna-m.1:free"],
   "laguna-xs": ["openrouter", "poolside/laguna-xs-2.1:free"],
@@ -261,7 +261,7 @@ export function getKey(p: string): string {
 }
 
 export function keyOk(p: string): boolean {
-  if (p === "herd" || PROVIDERS[p]?.no_auth) return true;
+  if (p === "bornite" || PROVIDERS[p]?.no_auth) return true;
   const conf = PROVIDERS[p];
   if (!conf) return false;
   return Boolean(
@@ -271,13 +271,13 @@ export function keyOk(p: string): boolean {
 }
 
 export function firstModelFor(p: string): string {
-  if (p === "herd") return LOCAL_ROLES.quality;
+  if (p === "bornite") return LOCAL_ROLES.quality;
   return PROVIDER_MODELS[p]?.[0] || "";
 }
 
 export function isLocalSwapModelId(model: string): boolean {
   if (!model || model === "auto" || model === "fcm") return false;
-  if (model in CODING && CODING[model]?.[0] === "herd") return true;
+  if (model in CODING && CODING[model]?.[0] === "bornite") return true;
   if (
     model === LOCAL_ROLES.fast ||
     model === LOCAL_ROLES.quality ||
@@ -293,18 +293,18 @@ export function isLocalSwapModelId(model: string): boolean {
 
 export function resolveModel(model: string): [string, string] {
   if (model in CODING && CODING[model] != null) return CODING[model]!;
-  // Prefer herd for any local GGUF id so hybrid never sends GPU models to Gemini
-  if (isLocalSwapModelId(model)) return ["herd", model];
+  // Prefer bornite for any local GGUF id so hybrid never sends GPU models to Gemini
+  if (isLocalSwapModelId(model)) return ["bornite", model];
   if (model === "auto" || model === "fcm") {
     // local-first auto: quality role on swap
-    return ["herd", LOCAL_ROLES.quality];
+    return ["bornite", LOCAL_ROLES.quality];
   }
   for (const [p, models] of Object.entries(PROVIDER_MODELS)) {
     if (models.includes(model)) return [p, model];
   }
   if (keyOk("openrouter")) return ["openrouter", model];
   if (keyOk("nvidia")) return ["nvidia", model];
-  return ["herd", LOCAL_ROLES.quality];
+  return ["bornite", LOCAL_ROLES.quality];
 }
 
 export function isAst(text: string): boolean {

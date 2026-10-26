@@ -29,11 +29,11 @@ orchestration: {
   }
 }
 
-# ==================== 3. SMART ROUTING (herd) ====================
-herd: tools/herd {
+# ==================== 3. SMART ROUTING (bornite) ====================
+bornite: tools/bornite {
   shape: hexagon
   style.fill: "#c0392b"
-  label: "herd\n(Full Router + All Members)"
+  label: "bornite\n(Full Router + All Members)"
 }
 
 # All members from your config
@@ -124,34 +124,34 @@ process_compose -> services.yote
 process_compose -> services.prometheus
 process_compose -> services.rust_web
 process_compose -> services.watchdog
-process_compose -> herd
+process_compose -> bornite
 
-# herd routing (all members)
-herd -> members.beellama_qwen
-herd -> members.turbo_qwen
-herd -> members.ik_qwen
-herd -> members.beellama_strange
-herd -> members.turbo_strange
-herd -> members.ik_strange
-herd -> members.beellama_gemma
-herd -> members.turbo_gemma
-herd -> members.ik_gemma
-herd -> members.beellama_heretic
-herd -> members.turbo_heretic
-herd -> members.ik_heretic
-herd -> members.ik_tq_heretic
-herd -> members.beellama_mn
-herd -> members.turbo_mn
-herd -> members.ik_mn
-herd -> members.ik_tq_mn
-herd -> members.beellama_ud
-herd -> members.turbo_ud
-herd -> members.ik_ud
-herd -> members.ik_tq_ud
-herd -> members.beellama_q5
-herd -> members.turbo_q5
-herd -> members.ik_q5
-herd -> members.ik_tq_q5
+# bornite routing (all members)
+bornite -> members.beellama_qwen
+bornite -> members.turbo_qwen
+bornite -> members.ik_qwen
+bornite -> members.beellama_strange
+bornite -> members.turbo_strange
+bornite -> members.ik_strange
+bornite -> members.beellama_gemma
+bornite -> members.turbo_gemma
+bornite -> members.ik_gemma
+bornite -> members.beellama_heretic
+bornite -> members.turbo_heretic
+bornite -> members.ik_heretic
+bornite -> members.ik_tq_heretic
+bornite -> members.beellama_mn
+bornite -> members.turbo_mn
+bornite -> members.ik_mn
+bornite -> members.ik_tq_mn
+bornite -> members.beellama_ud
+bornite -> members.turbo_ud
+bornite -> members.ik_ud
+bornite -> members.ik_tq_ud
+bornite -> members.beellama_q5
+bornite -> members.turbo_q5
+bornite -> members.ik_q5
+bornite -> members.ik_tq_q5
 
 # Forks
 members.beellama_qwen -> forks.beellama
@@ -184,7 +184,7 @@ members.ik_tq_ud -> forks.ik_tq
 members.ik_tq_q5 -> forks.ik_tq
 
 # OpenFang as central brain
-services.openfang -> herd: decides model + best fork
+services.openfang -> bornite: decides model + best fork
 services.openfang -> code.config.openfang
 services.openfang -> code.src
 

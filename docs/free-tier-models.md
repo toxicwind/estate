@@ -24,22 +24,22 @@ How free models actually work across our providers, verified live. No marketing 
 | Anthropic | api.anthropic.com/v1/models | **401 invalid x-api-key — key dead** | — | — |
 | Opencode Zen | opencode.ai/zen/v1/models | 403 (Cloudflare 1010, egress) | — | `-free` suffix per docs, unverified |
 | HuggingFace | inference /models | NXDOMAIN — no served-inference /models | — | — |
-| Scout | 127.0.0.1:25100/v1/models | 200 | 98 | = herd itself; `:free` IDs are our own peer config |
+| Scout | 127.0.0.1:25100/v1/models | 200 | 98 | = bornite itself; `:free` IDs are our own peer config |
 
 OpenRouter's current 19 `:free` IDs: `cohere/north-mini-code:free`, `dots-studio/dots-3-note-preview:free`, `google/gemma-4-26b-a4b-it:free`, `google/gemma-4-31b-it:free`, `inclusionai/ling-3.0-flash-{fin,sante,vl}:free`, `liquid/lfm-2.5-2.6b:free`, `nex-agi/nex-n2.5-{mini,pro}:free`, `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free`, `nvidia/nemotron-3-super-120b-a12b:free`, `nvidia/nemotron-3-ultra-550b-a55b:free`, `nvidia/nemotron-3.5-content-safety:free`, `nvidia/nemotron-3.5-lightning:free`, `poolside/laguna-{s,xs}-2.1:free`, `thinkingmachines/inkling{,-small}:free`.
 
 ## Kimi routing status (kimi-auto)
 
 - `kimi-auto` is Kimi-only by design (User's order). It returns an honest **503** when no Kimi model is healthy — no silent `gpt-oss-20b` fallback.
-- 7 Kimi `:free` IDs are wired in the `openrouter-kimi` herd peer (additive, nothing removed). They auto-activate if OpenRouter re-enables Kimi free — zero code changes needed.
+- 7 Kimi `:free` IDs are wired in the `openrouter-kimi` bornite peer (additive, nothing removed). They auto-activate if OpenRouter re-enables Kimi free — zero code changes needed.
 - **To route Kimi today**: top up OpenRouter credits at `openrouter.ai/settings/credits`, or provide `MOONSHOT_API_KEY`/`KIMI_API_KEY`. There is no Kimi/Moonshot key in `.secrets` at all.
-- Related: the dead `pollinations-free` herd peer stays in place (User: don't remove things).
+- Related: the dead `pollinations-free` bornite peer stays in place (User: don't remove things).
 
 ## Key health flags
 
 - **Anthropic key is dead** (401 invalid x-api-key) — needs rotation.
 - Groq/Cerebras/Opencode 403s are Cloudflare error 1010 from our egress, not necessarily bad keys.
-- Pollinations free tier: only exact upstream model IDs work no-auth (`openai`, `gpt-oss` verified 2026-09-30); herd's dummy "pollinations-free-workaround" Bearer was removed 2026-09-30 — anonymous mode now sends zero auth and parks key-gated models (client dummy Bearer <redacted> upstream when `apiKey==""`). See `docs/plans/free-pollinations-herd-hotfix-plan.md` (2026-09-02 deep dive).
+- Pollinations free tier: only exact upstream model IDs work no-auth (`openai`, `gpt-oss` verified 2026-09-30); bornite's dummy "pollinations-free-workaround" Bearer was removed 2026-09-30 — anonymous mode now sends zero auth and parks key-gated models (client dummy Bearer <redacted> upstream when `apiKey==""`). See `docs/plans/free-pollinations-bornite-hotfix-plan.md` (2026-09-02 deep dive).
 
 ## Artifacts
 
@@ -47,7 +47,7 @@ OpenRouter's current 19 `:free` IDs: `cohere/north-mini-code:free`, `dots-studio
 - Probe script (re-runnable, prints key names only, never values): `/home/toxic/wt-freeprobe-20260914/probe_free_models.py`
 - Free-convention fuzzing: in progress (see below).
 
-## 2026-09-17 Ling re-probe (Herd/Mesh lane)
+## 2026-09-17 Ling re-probe (Bornite/Mesh lane)
 
 - `inclusionai/ling-3.0-flash-fin:free` through OpenRouter on OUR key: **HTTP 200, cost 0**
   (cost_details upstream all 0) via provider Novita. This contradicts the 2026-09-14 finding

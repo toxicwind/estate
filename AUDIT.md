@@ -13,7 +13,7 @@
 |---|---|---|---|
 | **Tau** | `tau/` | Canonical AI agent engine (TS/Bun/Rust) | Owned; `groq.ts` + `groq.models.ts` deleted; `model-catalog.ts` tracked |
 | **Tau-extensions** | `tau-extensions/` | Plugin/extensions layer | De-submoduled (tracked) |
-| **Herd** | `herd/` | Router / herd | Owned |
+| **Bornite** | `bornite/` | Router / bornite | Owned |
 | **Mesh** | `mesh/` | MCP gateway (`mcpproxy`) | Owned |
 | **Yote** | `yote/` | Minimal agent runtime | Owned |
 | **OpenFang** | `openfang/` | C++ inference engine | Owned |
@@ -76,7 +76,7 @@ bun ~/estate/helpers/git-mutator/cli.ts agentic-audit
 - **No monkey patch**: `tau-groq-max-all/` does not exist in workspace; deletion skipped safely.
 - **Model-catalog deletion**: `packages/ai/src/model-catalog.ts` deleted along with `groq.ts` + `data/groq.models.ts`. Regenerated via `generate-models.ts` (live catalog fetched from stencil.so + Groq manager).
 - **Framework artifacts**: `.omp` fully removed; framework writes through `.omp -> .tau` symlink continuously.
-- **Memory bank**: `hindsight` configured with Herd Qwen Flash 64K; `.pi/.tau` memory sync present.
+- **Memory bank**: `hindsight` configured with Bornite Qwen Flash 64K; `.pi/.tau` memory sync present.
 
 ---
 

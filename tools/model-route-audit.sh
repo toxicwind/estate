@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 # model-route-audit.sh — find anything on this box that points agents at the
-# LOCAL herd models (herd on :25100, toolcall-local on :25152).
+# LOCAL bornite models (bornite on :25100, toolcall-local on :25152).
 #
-# User's order (2026-10-13): local herd models are NOT ready. Nobody uses
+# User's order (2026-10-13): local bornite models are NOT ready. Nobody uses
 # them — not as primary, not as fallback, not as candidates. The working
-# chain is: cuttinggate :25200 -> hodos :25193 -> vans :20128, NIM-backed
-# models through hodos (e.g. openai/gpt-oss-20b).
+# chain is: chalcopyrite :25200 -> rhodochrosite :25193 -> vans :20128, NIM-backed
+# models through rhodochrosite (e.g. openai/gpt-oss-20b).
 #
 # Usage: model-route-audit.sh
 # Exit:  0 = no consumer hits. 1 = consumer hits found (fix them).
-# Definition-side files (herd.yaml, herd.d/, herd config, pitchfork
+# Definition-side files (bornite.yaml, bornite.d/, bornite config, pitchfork
 # stanzas for the local services themselves, the port registry) are
 # informational only — the local services existing is not consumption.
 # Session transcripts, caches, logs and databases are history, not config,
@@ -26,7 +26,7 @@ SURFACES=(
   /home/toxic/.tau/config.yml
   /home/toxic/.tau/model-router.json
   /home/toxic/.tau/profiles
-  /home/toxic/.hodos-data/config.json
+  /home/toxic/.rhodochrosite-data/config.json
   /home/toxic/estate/config
   /home/toxic/estate/stack
   /home/toxic/estate/pitchfork.toml
@@ -50,7 +50,7 @@ for surface in "${SURFACES[@]}"; do
   | cut -c1-160 \
   | while IFS= read -r line; do
       case "$line" in
-        *"/herd.yaml:"*|*"/herd.d/"*|*"pitchfork.toml:"*|*"herd"*|*"ports.env:"*|*"model_constraints.yaml:"*)
+        *"/bornite.yaml:"*|*"/bornite.d/"*|*"pitchfork.toml:"*|*"bornite"*|*"ports.env:"*|*"model_constraints.yaml:"*)
           echo "$line" >> "$defs_file" ;;
         *) echo "$line" >> "$hits_file" ;;
       esac
@@ -68,6 +68,6 @@ else
 fi
 echo "-- sample hits (first 25, lines capped at 160 chars):"
 if [ -s "$hits_file" ]; then head -25 "$hits_file"; else echo "(none)"; fi
-echo "-- herd-internal definitions (informational): $(wc -l < "$defs_file") lines"
+echo "-- bornite-internal definitions (informational): $(wc -l < "$defs_file") lines"
 echo "consumer hits: $hit_count"
 [ "$hit_count" -eq 0 ]

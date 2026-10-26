@@ -85,7 +85,7 @@ The D2 infrastructure (`parent.toml`, `projects.toml`) exists but is **stale and
 | `omniroute.toml.off` | **DEAD** — product retired, never in live monolith. |
 | `omniroute.toml` | In `.hashes` as `"omniroute": "f64157c95be4939f"` but no fragment or daemon block. |
 | `openfang-front.toml.bak-20261013` | **DEAD** — archived copy, not in monolith. `search-ui` and `openfang-front` referenced in `groups.mesh` but have NO daemon blocks. |
-| `hodos.toml.bak-20261018-flockdown` | **ARCHIVED** — backup from flockdown event. Current hodos.toml is active. |
+| `rhodochrosite.toml.bak-20261018-flockdown` | **ARCHIVED** — backup from flockdown event. Current rhodochrosite.toml is active. |
 | `kappa-board-bridge.toml.stale-dup-20261022` | **STALE** — duplicate detection artifact. |
 | `rustdesk-hbbs.toml.bak` | **ARCHIVED** — backup copy. |
 
@@ -181,7 +181,7 @@ These fragments have no corresponding daemon in the monolith and are never used:
 - `estate/pitchfork.d/thresher.toml` — thresher renamed to thresher
 - `estate/pitchfork.d/omniroute.toml.off` — dead product
 - `estate/pitchfork.d/openfang-front.toml.bak-20261013` — archived backup
-- `estate/pitchfork.d/hodos.toml.bak-20261018-flockdown` — archived backup
+- `estate/pitchfork.d/rhodochrosite.toml.bak-20261018-flockdown` — archived backup
 - `estate/pitchfork.d/kappa-board-bridge.toml.stale-dup-20261022` — stale duplicate
 
 **Action:** Delete all of the above.
@@ -190,7 +190,7 @@ These fragments have no corresponding daemon in the monolith and are never used:
 `groups.mesh` references `thresher` (renamed to `thresher`) and two non-existent daemons (`search-ui`, `openfang-front`). Update to:
 ```toml
 [groups.mesh]
-daemons = ["thresher", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "rust-web", "hf-downloader", "null-g-proxy", "feedlot", "hindsight", "kimi-code", "nginx"]
+daemons = ["thresher", "mesh-hub", "bornite", "vansrouter", "coyote", "yote", "search-api", "rust-web", "hf-downloader", "null-g-proxy", "feedlot", "hindsight", "kimi-code", "nginx"]
 ```
 **Note:** The monolith's groups.mesh already has `thresher` (not `thresher`), but `parent.toml` still has `thresher`. This is an inconsistency that would cause `pf build` to break if ever used.
 

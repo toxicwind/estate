@@ -13,20 +13,20 @@ Investigation resolved the earlier premise confusion:
 - **pylae/OmniRoute** (`ranch/mesh/pylae`, `@omniroute/*`) is LEGACY — it is NOT
   running (ports 25105-25107 are prometheus-mesh / gibber-mcp / null-g-proxy,
   not pylae). An attempted GHAS→pylae MCP wiring was made, then REVERTED.
-- **hodos** (`ranch/hodos`, `:25193`) is the LIVE router, but only an **LLM/NIM
+- **rhodochrosite** (`ranch/rhodochrosite`, `:25193`) is the LIVE router, but only an **LLM/NIM
   model gateway**: its config store shows `upstream` (NVIDIA NIM), `providers`,
   `routing`, `client_auth`, `governor` — it routes model/LLM API, NOT GitHub
   search. It has no search route and no MCP tool surface.
-- So the user's "OmniRoute merged into hodos" is TRUE for the **model-gateway
-  role only**; the **MCP-tool/search role** is a separate concern hodos does not
+- So the user's "OmniRoute merged into rhodochrosite" is TRUE for the **model-gateway
+  role only**; the **MCP-tool/search role** is a separate concern rhodochrosite does not
   host, and pylae's version is orphaned.
 - => **GitHub search stays where it's LIVE and works**: the standalone
   `github-search` MCP (`:25113`) + search-api (`:25112`) + the canonical
   `github-advanced-search-mcp` repo. Do NOT wire GHAS into pylae (legacy) NOR
-  hodos (model-gateway, wrong layer) without user direction.
+  rhodochrosite (model-gateway, wrong layer) without user direction.
 - Future home (unresolved, needs user): if agents want ONE github-forward search
-  in the mesh, it belongs on a DEDICATED GHAS-backed service (or a route hodos
-  proxies to), not pylae/hodos directly. Engine to reuse: the canonical
+  in the mesh, it belongs on a DEDICATED GHAS-backed service (or a route rhodochrosite
+  proxies to), not pylae/rhodochrosite directly. Engine to reuse: the canonical
   `github-search` packages staged at
   `ranch/mesh/pylae/tmp/github-search-family/github-search/packages/`
   (`github-client`, `search-core`, `contracts`).
@@ -64,7 +64,7 @@ into a legacy home) at `ranch/mesh/pylae/tmp/github-search-family/github-search/
 1. **Engine stays canonical + staged** (pylae is legacy, not the home): the
    GHAS engine source lives in `ranch/github-search/packages/*` and the staged
    copy at `ranch/mesh/pylae/tmp/github-search-family/github-search/packages/`.
-   Any future consolidated home (dedicated service / hodos-proxied route)
+   Any future consolidated home (dedicated service / rhodochrosite-proxied route)
    imports from those, not a dead `packages/ghas/`.
 2. **Live surfaces unchanged**: GHAS MCP :25113 + search-api :25112 keep running
    (do not break).

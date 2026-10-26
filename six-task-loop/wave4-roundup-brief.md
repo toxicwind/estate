@@ -18,7 +18,7 @@ Context: /home/toxic/estate/projects/range/ranch/roundup is the estate's guidell
 
 1. Audit roundup: what works, what's stale vs upstream guidellm, what the rename broke (imports, docs, CI references to guidellm). Fix rename fallout completely.
 2. Sync with upstream guidellm where valuable: check what upstream added since the fork point. Borrow, don't reinvent.
-3. Maximalize: build a one-command benchmark sweep across the estate's live endpoints (herd :25100, estate router :25104, free-model backends) producing comparable throughput/latency/quality numbers. Design the output schema for router consumption (model id, task shape, tokens/s, ttft, error rate, timestamp). Coordinate the schema with the router lane in fleet.
+3. Maximalize: build a one-command benchmark sweep across the estate's live endpoints (bornite :25100, estate router :25104, free-model backends) producing comparable throughput/latency/quality numbers. Design the output schema for router consumption (model id, task shape, tokens/s, ttft, error rate, timestamp). Coordinate the schema with the router lane in fleet.
 4. Wire roundup output into the router's sigma catalog or a weights file the router can read.
 5. Tests green, docs updated (README reflects roundup name, no stale guidellm references except upstream attribution), commit, push to canonical main, verify remote ref.
 6. Run the sweep live against estate endpoints and publish the first benchmark numbers.

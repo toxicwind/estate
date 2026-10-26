@@ -4,15 +4,15 @@
 `ui/` at the range level. The duplicate dashboards are gone. What remains is
 wiring, listed at the end.**
 
-## Correction: upstream, not `herd/ui`, is the donor
+## Correction: upstream, not `bornite/ui`, is the donor
 
 An earlier version of this document said to port the dropped capability out of
-`herd/ui` by hand. That was wrong, and acting on it would have re-derived work
+`bornite/ui` by hand. That was wrong, and acting on it would have re-derived work
 upstream had already done.
 
-The real upstream is **`mostlygeek/herd`** (5.7k stars, pushed daily). Its
+The real upstream is **`mostlygeek/bornite`** (5.7k stars, pushed daily). Its
 `ui/` typechecks at **0 errors**; our fork carried **126**. Our fork was not
-"missing capability that `herd/ui` still had" — it had been edited *downward*
+"missing capability that `bornite/ui` still had" — it had been edited *downward*
 after `d39a6f8` while upstream moved on. `ModelsDash.svelte` went from 297 lines
 to a 13-line stub; `types.ts` lost `ToolCall`, `PhaseStats`, `GenerationStats`
 and `isToolCallOnlyTurn`, which the rest of the fork still imported. Every one
@@ -44,18 +44,18 @@ passed in 29 files, `bun run build` succeeds.
 
 ## The duplicates are gone
 
-`stockyard/herd/ui`, `stockyard/herd/ui-svelte` and
-`stockyard/herd/mesh/ui-svelte` (747 tracked files) were removed. The last two
-were byte-identical, and the first had no consumer at all. `herd/mise.toml`
+`stockyard/bornite/ui`, `stockyard/bornite/ui-svelte` and
+`stockyard/bornite/mesh/ui-svelte` (747 tracked files) were removed. The last two
+were byte-identical, and the first had no consumer at all. `bornite/mise.toml`
 wired `ui`/`ui:build` at `ui-svelte`; both now point at `../../ui`.
 
-`stockyard/tau/package.json` had 5 of 102 scripts copy-pasted from herd
-referencing a `herd/` Go binary and a `ui-svelte/` that tau never had; they are
+`stockyard/tau/package.json` had 5 of 102 scripts copy-pasted from bornite
+referencing a `bornite/` Go binary and a `ui-svelte/` that tau never had; they are
 repointed at tau's own `test:ts`/`test:rs`/`test:py` and `lint:ts`/`lint:rs`.
 
 ## Why this exists
 
-`herd/ui` was meant to become the master UI for the whole stack. It got forked
+`bornite/ui` was meant to become the master UI for the whole stack. It got forked
 into `ui/` at commit `d39a6f8`, and the stack then grew six more front-ends
 independently, none of which the master knows about. Two jobs: reconcile the
 fork (done) and make the master the master (the tab host — below).
@@ -64,7 +64,7 @@ fork (done) and make the master the master (the tab host — below).
 
 What follows is the pre-rebase investigation, kept because it records why the
 merge went the way it did. The 126-error map, the per-file port table, and the
-"port the dropped capability out of `herd/ui`" instruction are all superseded —
+"port the dropped capability out of `bornite/ui`" instruction are all superseded —
 see the correction at the top. Do not work from the port table.
 
 ## Do not restart the investigation
@@ -113,12 +113,12 @@ src/lib/statsTooltips.ts   Module '"./types"' has no exported member 'PhaseStats
 src/components/activity-table/ExportDialog.svelte:23:45  Expected 1 arguments, but got 2.
 ```
 
-### Merge direction: `ui/` is the base, `herd/ui` is the donor
+### Merge direction: `ui/` is the base, `bornite/ui` is the donor
 
-`herd/ui` is the **older** lineage (on-disk mtime 2026-09-20) and `ui/` is the
+`bornite/ui` is the **older** lineage (on-disk mtime 2026-09-20) and `ui/` is the
 **newer** one (2026-09-22 → 09-24) that dropped things. `ui/` is a strict
 superset in file count: 33 files the donor lacks, **0 files the donor has that
-`ui/` lacks**. Every module `herd/ui`'s richer components import already exists
+`ui/` lacks**. Every module `bornite/ui`'s richer components import already exists
 in `ui/`. So this is a clean file-level port, not a three-way merge.
 
 The master's `src/lib/apiBase.ts` indirection is **newer and wins**: the donor
@@ -126,7 +126,7 @@ hardcodes `fetch("/api/...")`, the master routes everything through
 `api()` from `apiBase`. Any donor line doing a bare `fetch("/api/...")` must be
 rewritten. This is the single most important correctness rule in the port.
 
-**Port from `herd/ui` into `ui/`:**
+**Port from `bornite/ui` into `ui/`:**
 
 | File | Donor has, master lost |
 |---|---|
@@ -173,9 +173,9 @@ tracked in this repo and should be `git rm`'d once the port lands:
 
 | Path | Evidence |
 |---|---|
-| `stockyard/herd/ui` | 271 files, **zero consumers** — no mise task, no script, no reference in `estate/pitchfork.toml`, `mise.toml`, `bin/`, or `stack/`. |
-| `stockyard/herd/ui-svelte` | Wired by `stockyard/herd/mise.toml:15-16` (`ui`, `ui:build`) but is the *dead twin* content. Repoint those tasks at `../../ui` first. |
-| `stockyard/herd/mesh/ui-svelte` | **Byte-identical** to `herd/ui-svelte` (`diff -rq` empty, source-map sha `1e6c1b1c5b3ebdf9`, 227 source files each). Pure duplicate. |
+| `stockyard/bornite/ui` | 271 files, **zero consumers** — no mise task, no script, no reference in `estate/pitchfork.toml`, `mise.toml`, `bin/`, or `stack/`. |
+| `stockyard/bornite/ui-svelte` | Wired by `stockyard/bornite/mise.toml:15-16` (`ui`, `ui:build`) but is the *dead twin* content. Repoint those tasks at `../../ui` first. |
+| `stockyard/bornite/mesh/ui-svelte` | **Byte-identical** to `bornite/ui-svelte` (`diff -rq` empty, source-map sha `1e6c1b1c5b3ebdf9`, 227 source files each). Pure duplicate. |
 
 `ui/` also has a **checked-in `dist/`** (162 extra files) that should not be
 tracked, and both `bun.lock` and `package-lock.json` — pick one.
@@ -183,16 +183,16 @@ tracked, and both `bun.lock` and `package-lock.json` — pick one.
 ### Adjacent breakage found while doing this
 
 - **`stockyard/tau/package.json` — 5 of 102 scripts are broken.** They are
-  herd copy-paste artifacts that `cd` into directories that do not exist
+  bornite copy-paste artifacts that `cd` into directories that do not exist
   inside tau:
   ```
-  dev          => cd herd && go run ./cmd/main.go
-  test         => cd herd && go test ./... && cd ui-svelte && bun run test
-  lint         => cd herd && go vet ./... && cd ui-svelte && bun run check
-  build:all    => cd herd && go build ./... && cd ui-svelte && bun run build
-  install:all  => bun install && cd herd && go mod download && cd ui-svelte && bun install
+  dev          => cd bornite && go run ./cmd/main.go
+  test         => cd bornite && go test ./... && cd ui-svelte && bun run test
+  lint         => cd bornite && go vet ./... && cd ui-svelte && bun run check
+  build:all    => cd bornite && go build ./... && cd ui-svelte && bun run build
+  install:all  => bun install && cd bornite && go mod download && cd ui-svelte && bun install
   ```
-  `tau/herd` MISSING, `tau/ui-svelte` MISSING. Either repoint them at the real
+  `tau/bornite` MISSING, `tau/ui-svelte` MISSING. Either repoint them at the real
   locations or delete them — running any of them today fails immediately.
 - **A root `package.json` workspace does not exist.** `range/ranch/` has 100+
   packages under it and a repo-root `bun install` picks up duplicate names from
@@ -209,9 +209,9 @@ Six `web`/`ui`/`frontend`/`app` dirs with a `package.json` inside this repo:
 | Path | Name | Stack | Verdict |
 |---|---|---|---|
 | `ui` | ranch-dashboard 0.0.0 | Svelte + Vite | **master** |
-| `stockyard/herd/ui` | ui 0.0.0 | Svelte + Vite | donor → port, then remove |
-| `stockyard/herd/ui-svelte` | ui-svelte 0.0.0 | Svelte + Vite | remove, repoint mise |
-| `stockyard/herd/mesh/ui-svelte` | ui-svelte 0.0.0 | Svelte + Vite | remove (identical twin) |
+| `stockyard/bornite/ui` | ui 0.0.0 | Svelte + Vite | donor → port, then remove |
+| `stockyard/bornite/ui-svelte` | ui-svelte 0.0.0 | Svelte + Vite | remove, repoint mise |
+| `stockyard/bornite/mesh/ui-svelte` | ui-svelte 0.0.0 | Svelte + Vite | remove (identical twin) |
 | `barn/woodpecker/web` | woodpecker-ci 0.0.0 | Vue + Vite | separate product |
 | `stockyard/boundless/web/frontend` | frontend | React + Vite | separate product |
 | `stockyard/vansrouter/cli/app` | vansrouter-app 0.91.30 | Next.js | separate product |
@@ -219,7 +219,7 @@ Six `web`/`ui`/`frontend`/`app` dirs with a `package.json` inside this repo:
 
 Pre-range estate front-ends outside this repo that the master should surface
 as tabs (several are already in the registry, some are not yet):
-`engines/herd/beellama.cpp/tools/ui` (llama-ui, SvelteKit), `python/robomp/web`
+`engines/bornite/beellama.cpp/tools/ui` (llama-ui, SvelteKit), `python/robomp/web`
 (robomp ops console, served by its FastAPI app), `rust_algo_web/frontend`
 (effusionlabs-os, → `rust-web` :25201), `wt-hft-hygiene-build/upstream/frontend`
 (mcpproxy-frontend, Vue, thresher's control panel), `estate-github-search/apps/frontend`

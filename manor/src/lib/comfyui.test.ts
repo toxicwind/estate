@@ -24,7 +24,7 @@ function model(id: string, state: ModelStatus): Model {
 }
 
 describe("comfyuiUrl", () => {
-	it("points at the herd /comfyui/ proxy path", () => {
+	it("points at the bornite /comfyui/ proxy path", () => {
 		expect(comfyuiUrl()).toBe(api("/comfyui/"));
 	});
 
@@ -39,19 +39,19 @@ describe("findComfyUIModel", () => {
 		expect(findComfyUIModel(models)?.id).toBe(COMFYUI_MODEL_ID);
 	});
 
-	it("returns undefined when herd has no comfyui model configured", () => {
+	it("returns undefined when bornite has no comfyui model configured", () => {
 		expect(findComfyUIModel([model("llama-3", "ready")])).toBeUndefined();
 		expect(findComfyUIModel([])).toBeUndefined();
 	});
 });
 
 describe("comfyuiPhase", () => {
-	it("is disconnected when herd is unreachable, whatever the model list says", () => {
+	it("is disconnected when bornite is unreachable, whatever the model list says", () => {
 		expect(comfyuiPhase(model(COMFYUI_MODEL_ID, "ready"), false)).toBe("disconnected");
 		expect(comfyuiPhase(undefined, false)).toBe("disconnected");
 	});
 
-	it("is unconfigured when herd is up but has no comfyui model", () => {
+	it("is unconfigured when bornite is up but has no comfyui model", () => {
 		expect(comfyuiPhase(undefined, true)).toBe("unconfigured");
 	});
 
@@ -70,7 +70,7 @@ describe("comfyuiPhase", () => {
 describe("comfyuiPhaseLabel", () => {
 	it("labels every phase", () => {
 		const labels: Record<ComfyUIPhase, string> = {
-			disconnected: "herd unreachable",
+			disconnected: "bornite unreachable",
 			unconfigured: "not configured",
 			"not-loaded": "stopped",
 			starting: "starting",
@@ -84,7 +84,7 @@ describe("comfyuiPhaseLabel", () => {
 });
 
 describe("launchWithRetry", () => {
-	const url = "http://herd:25104/comfyui/";
+	const url = "http://bornite:25104/comfyui/";
 
 	function okResponse(): Response {
 		return new Response("ok", { status: 200 });
@@ -130,11 +130,11 @@ describe("launchWithRetry", () => {
 		expect(attemptsSeen).toEqual([1, 2, 3]);
 	});
 
-	it("treats non-2xx herd responses as failures and throws the last error", async () => {
+	it("treats non-2xx bornite responses as failures and throws the last error", async () => {
 		const fetchImpl = vi.fn().mockResolvedValue(failResponse(503));
 		await expect(
 			launchWithRetry(fetchImpl, url, new AbortController().signal, [0, 5, 10]),
-		).rejects.toThrow("herd answered 503");
+		).rejects.toThrow("bornite answered 503");
 		expect(fetchImpl).toHaveBeenCalledTimes(3);
 	});
 

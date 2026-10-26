@@ -12,11 +12,11 @@ export const capabilityLabels: Record<string, string> = {
   reranker: "Reranker",
 };
 
-// Where a capability badge came from. The herd API merges config-set and
+// Where a capability badge came from. The bornite API merges config-set and
 // auto-discovered capabilities field-by-field without exposing per-field
 // provenance, so badges sourced from /v1/models or the modelStatus feed
 // default to "discovered": the discovery pipeline is what populates them on
-// this estate (herd.yaml carries no capability blocks today). An explicit
+// this estate (bornite.yaml carries no capability blocks today). An explicit
 // model.capabilitySources entry overrides the default wherever provenance
 // is actually known.
 export type CapabilitySource = "discovered" | "configured" | "unknown";
@@ -29,9 +29,9 @@ export interface CapabilityBadge {
 
 // Tooltip text per provenance, shown on the badge title attribute.
 export const capabilitySourceLabels: Record<CapabilitySource, string> = {
-  discovered: "Auto-discovered by herd\u2019s capability probe when the model became ready",
-  configured: "Set explicitly in herd.yaml (capabilities block)",
-  unknown: "Capability source not reported by this herd version",
+  discovered: "Auto-discovered by bornite\u2019s capability probe when the model became ready",
+  configured: "Set explicitly in bornite.yaml (capabilities block)",
+  unknown: "Capability source not reported by this bornite version",
 };
 
 // Extra badge classes per provenance. Discovered badges get a dashed outline
@@ -48,7 +48,7 @@ export const capabilitySourceBadgeClass: Record<CapabilitySource, string> = {
 export type BadgeModel = Pick<Model, "capabilities" | "context_length" | "capabilitySources">;
 
 // Resolves a badge's provenance: an explicit per-model override wins, then
-// the caller-supplied default (used for badges sourced from the herd API),
+// the caller-supplied default (used for badges sourced from the bornite API),
 // otherwise undefined so callers render the neutral style.
 export function resolveCapabilitySource(
   model: BadgeModel,
@@ -93,7 +93,7 @@ export const capabilityBadgeClass: Record<string, string> = {
 export interface ListCapabilityBadgesOptions {
   // Provenance stamped onto every badge that has no explicit
   // model.capabilitySources entry. The Models dashboard passes "discovered"
-  // for badges sourced from the herd API.
+  // for badges sourced from the bornite API.
   defaultSource?: CapabilitySource;
 }
 
@@ -134,7 +134,7 @@ export function listCapabilityBadges(
 // Push-first merge of a modelStatus feed entry with its /v1/models record.
 //
 // The feed now carries capabilities, context_length and capabilitySources
-// the instant herd learns them (ModelCapabilitiesChangedEvent pushed over
+// the instant bornite learns them (ModelCapabilitiesChangedEvent pushed over
 // SSE), so a feed payload with any enabled capability wins: badges render
 // with no round-trip. When the feed entry has no capability payload yet, the
 // debounced /v1/models refetch (refreshPlaygroundModels) supplies the data

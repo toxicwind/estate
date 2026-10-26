@@ -1,18 +1,18 @@
 #!/usr/bin/env bun
 /**
- * reasoning-router.ts — Routes requests to appropriate herd backends based on reasoning_effort
- * Integrates with herd :25100 config matrix
+ * reasoning-router.ts — Routes requests to appropriate bornite backends based on reasoning_effort
+ * Integrates with bornite :25100 config matrix
  */
 
 import { loadEstatePorts } from "../lib/ports.ts";
 
 loadEstatePorts();
 
-const HERD_BASE = `http://127.0.0.1:${process.env.HERD_PORT || process.env.HERD_PORT || "25100"}`;
-const _HERD_BASE = HERD_BASE; // alias for project-wide herd naming (tau: any pi/omp -> tau)
+const BORNITE_BASE = `http://127.0.0.1:${process.env.HERD_PORT || process.env.HERD_PORT || "25100"}`;
+const _BORNITE_BASE = BORNITE_BASE; // alias for project-wide bornite naming (tau: any pi/omp -> tau)
 // ──────────────────────────────────────────────────────────────
 // REASONING EFFORT → BACKEND MAPPING
-// Based on herd.yaml routing matrix
+// Based on bornite.yaml routing matrix
 // ──────────────────────────────────────────────────────────────
 
 interface BackendSpec {
@@ -323,10 +323,10 @@ const server = Bun.serve({
         // Select backend
         const route = selectBackend(effort, body.model);
 
-        // Also check herd for model availability
+        // Also check bornite for model availability
         let available = true;
         try {
-          const modelsRes = await fetch(`${HERD_BASE}/v1/models`, {
+          const modelsRes = await fetch(`${BORNITE_BASE}/v1/models`, {
             signal: AbortSignal.timeout(2000),
           });
           if (modelsRes.ok) {
@@ -364,7 +364,7 @@ const server = Bun.serve({
         const effort = extractReasoningEffort(body);
         const route = selectBackend(effort, body.model);
 
-        // Forward to herd with selected model
+        // Forward to bornite with selected model
         const forwardBody = {
           ...body,
           model: route.selected_model,
@@ -374,7 +374,7 @@ const server = Bun.serve({
         delete (forwardBody as any).chat_template_kwargs?.reasoning_effort;
         delete (forwardBody as any).reasoning_effort;
 
-        const response = await fetch(`${HERD_BASE}/v1/chat/completions`, {
+        const response = await fetch(`${BORNITE_BASE}/v1/chat/completions`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -433,7 +433,7 @@ const server = Bun.serve({
 });
 
 console.log(
-  `[reasoning-router] listening :${server.port} → herd=${HERD_BASE}`,
+  `[reasoning-router] listening :${server.port} → bornite=${BORNITE_BASE}`,
 );
 console.log(
   `[reasoning-router] Routing tiers: ${Object.keys(REASONING_ROUTES).join(", ")}`,

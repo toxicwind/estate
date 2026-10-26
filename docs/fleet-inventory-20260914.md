@@ -13,10 +13,10 @@ The stale 15:10 "STOP all new work" channel entry was treated as dead data per U
 | squawk_feed.py (pitchfork `estate/squawk-feed`) | 127.0.0.1:25135 | **UP (recovered 18:08)** | `GET /squawk-feed/seq` -> `200 {"seq": 10002}` both locally and via funnel (0.32s). Note: the documented `/seq` path is actually `/squawk-feed/seq` (bare `/seq` -> 404) |
 | awrawr-mcp (HTTPS) | :8377 | UP | pid 282976, uptime 15h |
 | awrawr-ws-exec (bridge WS) | :8379 | UP | pid 2315871 |
-| herd / herd | :25100 | UP | pid 2113115 |
+| bornite / bornite | :25100 | UP | pid 2113115 |
 | coyote | :25143 (0.0.0.0) | UP | pid 2094471 |
 | buildsrv | :25148 | UP | pid 2625628 |
-| shep, herd, nim-proxy, kimi-auto-resolver, estate-router | — | UP per `pitchfork status` | 9 daemons in `pitchfork list` |
+| shep, bornite, nim-proxy, kimi-auto-resolver, estate-router | — | UP per `pitchfork status` | 9 daemons in `pitchfork list` |
 
 ### Incident found and resolved during this recon (18:07–18:08 MDT)
 `squawk_feed.py` died silently ~18:07 (3rd silent death today; `ss` showed it LISTEN at 18:06, `ECONNREFUSED` at ~18:07:30, process gone). My manual `setsid run-feed.sh` restart FAILED with `OSError: [Errno 98] Address already in use` (dying socket not yet released). **pitchfork's own retry loop then started it successfully at 18:08:08** ("serving #fleet ... Bearer <redacted>"), verified 200. No verified reason to redeploy anything.

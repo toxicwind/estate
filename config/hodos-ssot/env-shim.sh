@@ -1,30 +1,30 @@
 #!/bin/bash
-# estate hodos SSOT. sourced by ranch/hodos/bin/hodos-run.sh before exec.
-# Aligns the daemon client list with HODOS_API_KEY. Does not print secrets.
+# estate rhodochrosite SSOT. sourced by ranch/rhodochrosite/bin/rhodochrosite-run.sh before exec.
+# Aligns the daemon client list with RHODOCHROSITE_API_KEY. Does not print secrets.
 set -euo pipefail
-SSOT="$HOME/estate/config/hodos-ssot"
+SSOT="$HOME/estate/config/rhodochrosite-ssot"
 set -a
 [ -f "$SSOT/ports.env" ] && . "$SSOT/ports.env"
 [ -f "$SSOT/route.env" ] && . "$SSOT/route.env"
-[ -f "$SSOT/hodos.env" ] && . "$SSOT/hodos.env"
+[ -f "$SSOT/rhodochrosite.env" ] && . "$SSOT/rhodochrosite.env"
 set +a
 export HOST="${HOST:-127.0.0.1}"
-export PORT="${PORT:-${HODOS_PORT:-25193}}"
-export HODOS_PORT="$PORT"
-export DATA_DIR="${DATA_DIR:-${HODOS_DATA_DIR:-$HOME/.hodos-data}}"
-export HODOS_BASE_URL="${HODOS_BASE_URL:-http://127.0.0.1:${HODOS_PORT}}"
-export HODOS_MODEL="${HODOS_MODEL:-nvidia/nemotron-3.5-super-vl-120b-a12b}"
-export NIM_BASE_URL="${NIM_BASE_URL:-${HODOS_BASE_URL}/v1}"
-export NIM_MODEL="${NIM_MODEL:-$HODOS_MODEL}"
-export ANTHROPIC_BASE_URL="${ANTHROPIC_BASE_URL:-$HODOS_BASE_URL}"
-if [ -z "${HODOS_API_KEY:-}" ] && [ -f "$HOME/.secrets" ]; then
-  HODOS_API_KEY="$(grep -m1 '^HODOS_API_KEY=' "$HOME/.secrets" | cut -d= -f2- || true)"
-  export HODOS_API_KEY
+export PORT="${PORT:-${RHODOCHROSITE_PORT:-25193}}"
+export RHODOCHROSITE_PORT="$PORT"
+export DATA_DIR="${DATA_DIR:-${RHODOCHROSITE_DATA_DIR:-$HOME/.rhodochrosite-data}}"
+export RHODOCHROSITE_BASE_URL="${RHODOCHROSITE_BASE_URL:-http://127.0.0.1:${RHODOCHROSITE_PORT}}"
+export RHODOCHROSITE_MODEL="${RHODOCHROSITE_MODEL:-nvidia/nemotron-3.5-super-vl-120b-a12b}"
+export NIM_BASE_URL="${NIM_BASE_URL:-${RHODOCHROSITE_BASE_URL}/v1}"
+export NIM_MODEL="${NIM_MODEL:-$RHODOCHROSITE_MODEL}"
+export ANTHROPIC_BASE_URL="${ANTHROPIC_BASE_URL:-$RHODOCHROSITE_BASE_URL}"
+if [ -z "${RHODOCHROSITE_API_KEY:-}" ] && [ -f "$HOME/.secrets" ]; then
+  RHODOCHROSITE_API_KEY="$(grep -m1 '^RHODOCHROSITE_API_KEY=' "$HOME/.secrets" | cut -d= -f2- || true)"
+  export RHODOCHROSITE_API_KEY
 fi
 python3 - "$DATA_DIR/config.json" << 'PY'
 import hashlib, json, os, pathlib, sys
 path = pathlib.Path(sys.argv[1])
-key = os.environ.get("HODOS_API_KEY", "").strip().strip('"').strip("'")
+key = os.environ.get("RHODOCHROSITE_API_KEY", "").strip().strip('"').strip("'")
 if not key or not path.exists():
     raise SystemExit(0)
 cfg = json.loads(path.read_text())

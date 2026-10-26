@@ -44,10 +44,10 @@ vm.extfrag_threshold = 500
 
 ---
 
-## Cgroup Overrides (herd)
+## Cgroup Overrides (bornite)
 
 ```bash
-systemctl set-property herd.slice \
+systemctl set-property bornite.slice \
   MemoryZSwapWriteback=0 \
   MemoryZSwapMax=8G \
   MemoryHigh=48G \

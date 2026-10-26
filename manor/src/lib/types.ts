@@ -33,7 +33,7 @@ export interface Model {
   aliases?: string[];
   capabilities?: ModelCapabilities;
   // Explicit per-capability provenance overrides.
-  // The herd API merges config-set and auto-discovered caps without reporting
+  // The bornite API merges config-set and auto-discovered caps without reporting
   // provenance, so this is only set when the source is actually known.
   capabilitySources?: Record<string, CapabilitySource>;
   modalities?: ModelModalities;

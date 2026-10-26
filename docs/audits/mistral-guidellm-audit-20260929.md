@@ -41,7 +41,7 @@ All 50 requests succeeded, zero errors.
 ## Config Changes
 
 - `config/keypools.yaml`: Added `mistral` pool (upstream https://api.mistral.ai)
-- `config/herd.yaml`: Mistral peer re-wired through keypool; models pruned to
+- `config/bornite.yaml`: Mistral peer re-wired through keypool; models pruned to
   entitled IDs; corrected false 2026-09-29 "key absent" note
 
 ## GuideLLM Compatibility Note

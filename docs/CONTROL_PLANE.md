@@ -8,7 +8,7 @@ Aesthetic map of live dashboards, APIs, and MCP surfaces (25xxx SSOT).
 |----|-----|--------|
 | Control Plane portal | http://127.0.0.1:25101/portal.html | Live service grid + API table |
 | Command Center | http://127.0.0.1:25101/ | rust-web YOTE ops |
-| Herd chat | http://127.0.0.1:25100/ui/ | Primary chat UI |
+| Bornite chat | http://127.0.0.1:25100/ui/ | Primary chat UI |
 | OpenFang | http://127.0.0.1:25103/ | Agent kernel web UI |
 | Grafana | http://127.0.0.1:25110/ | Prom dashboards |
 | HF Downloader | http://127.0.0.1:25106/ | GGUF fetch |
@@ -30,7 +30,7 @@ Aesthetic map of live dashboards, APIs, and MCP surfaces (25xxx SSOT).
 | Server | How |
 |--------|-----|
 | **ghas** | `ghas-mcp-stdio.sh` · HTTP health `:25113` |
-| **herd** | `bun run src/mcp/herd.ts` |
+| **bornite** | `bun run src/mcp/bornite.ts` |
 | **ast-grep** | structural search |
 | **filesystem / markitdown / prometheus / browserless** | see `~/.grok/config.toml` |
 
@@ -38,16 +38,16 @@ Zed: `context_servers` in `~/.config/zed/settings.json` (same commands).
 
 ## Runtime notes
 
-- **No vLLM** — herd is the only LLM front door.
+- **No vLLM** — bornite is the only LLM front door.
 - **null-g** is Bun-native (`Bun.serve` + Hono).
 - **Yote** talks to OpenFang only via HTTP APIs (not shared OF process env).
 - Orchestration: **mise + pitchfork** (process-compose retired).
 
-## Model catalog SSOT (herd)
+## Model catalog SSOT (bornite)
 
 | Source | Role |
 |--------|------|
-| `tools/herd/config.yaml` | Master list of what can run |
+| `tools/bornite/config.yaml` | Master list of what can run |
 | `GET :25100/v1/models` | Live IDs + load status |
 | `GET :25100/models/sse` | Load/unload events (Zed `llama.cpp` auto_discover contract) |
 
@@ -58,7 +58,7 @@ Zed: `context_servers` in `~/.config/zed/settings.json` (same commands).
 | **Zed** | `llama.cpp` + `auto_discover: true` → native `GET /models/sse` (no model list in settings) |
 | **OpenFang** | `provider_urls.llama = http://127.0.0.1:25100/v1` only; agent model ids are request-time |
 | **VS Code oaicopilot** | No native SSE; `code_insiders.ts` mirrors **live** `/v1/models` (optional `--watch` re-syncs on SSE) |
-| **Antigravity / shells** | `.state/client-llm.env` exports `HERD_MODELS_SSE` + base URLs |
+| **Antigravity / shells** | `.state/client-llm.env` exports `BORNITE_MODELS_SSE` + base URLs |
 
 ```bash
 bun run sync:ssot          # status JSON + OF + Zed guard
@@ -66,4 +66,4 @@ bun run sync:ssot:ides     # + VS Code / ide-test / antigravity env
 bun run deploy:insiders -- --watch   # SSE→oaicopilot refresh loop
 ```
 
-Helpers: `src/lib/herd_ssot.ts`, `src/deploy/sync_clients_from_swap.ts`.
+Helpers: `src/lib/bornite_ssot.ts`, `src/deploy/sync_clients_from_swap.ts`.

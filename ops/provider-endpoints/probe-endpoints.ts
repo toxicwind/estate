@@ -1,7 +1,7 @@
 /**
  * probe-endpoints — the LIVE truth about every provider's models endpoint.
  *
- * The provider catalog (ranch/pinax/generated/providers.json) says where a
+ * The provider catalog (ranch/mimetite/generated/providers.json) says where a
  * provider lives; this script says whether that endpoint actually answers and
  * which models it lists. It is the endpoint map the control plane and the
  * estate operators use instead of guessing a path per provider.
@@ -25,7 +25,7 @@ import { fileURLToPath } from "node:url";
 const here = dirname(fileURLToPath(import.meta.url));
 const PINAX_PROVIDERS =
   process.env.PINAX_PROVIDERS_JSON ??
-  "/home/toxic/estate/ranch/pinax/generated/providers.json";
+  "/home/toxic/estate/ranch/mimetite/generated/providers.json";
 const OUT_DIR = here;
 const PROBE_TIMEOUT_MS = 8000;
 const CONCURRENCY = 12;

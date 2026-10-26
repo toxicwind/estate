@@ -19,7 +19,7 @@ Generated 2026-10-03T07:22:51.621Z on `awrawr-pc`. Estate root `/home/toxic/esta
 | 🟢 **tau-config** | `.tau`                     | —                                       | —          | —                   | 0     | none          |
 
 - **estate** (`/home/toxic/estate`) — control plane: pitchfork.toml, config/, bin/, bridge/, agents/, docs/, projects/
-- **ranch** (`/home/toxic/estate/ranch`) — the inference estate monorepo: herd, hodos, thresher, squawk, oracle, and the mesh provider catalog
+- **ranch** (`/home/toxic/estate/ranch`) — the inference estate monorepo: bornite, rhodochrosite, thresher, squawk, oracle, and the mesh provider catalog
 - **ranch** (`/home/toxic/ranch`) — SECOND checkout of toxicwind/ranch — duplicate, not the daemon target
 - **tau-config** (`.tau`) — coding-agent engine config (config.yml, models.yml, model-router.json, mcp.json)
 
@@ -49,8 +49,8 @@ Generated 2026-10-03T07:22:51.621Z on `awrawr-pc`. Estate root `/home/toxic/esta
 | 20128 | VANSROUTER_PORT            | vansrouter            | ⚪️   | —                               |
 | 20128 | VANSROUTER_PORT            | vansrouter            | ⚪️   | —                               |
 | 22000 | —                          | —                     | 🟢   | syncthing                       |
-| 25100 | HERD_PORT                  | herd                  | ⚪️   | —                               |
-| 25100 | HERD_PORT                  | herd                  | ⚪️   | —                               |
+| 25100 | HERD_PORT                  | bornite                  | ⚪️   | —                               |
+| 25100 | HERD_PORT                  | bornite                  | ⚪️   | —                               |
 | 25101 | MODEL_GUARD_PORT           | model-guard           | 🟢   | python3                         |
 | 25101 | MODEL_GUARD_PORT           | model-guard           | 🟢   | python3                         |
 | 25102 | YOTE_PORT                  | yote                  | ⚪️   | —                               |
@@ -136,7 +136,7 @@ Generated 2026-10-03T07:22:51.621Z on `awrawr-pc`. Estate root `/home/toxic/esta
 | 25153 | KIMI_AUTO_SHIM_PORT        | kimi-auto-shim        | 🟢   | python3                         |
 | 25160 | FORENSICS_SRV_PORT         | —                     | 🟢   | python                          |
 | 25160 | FORENSICS_SRV_PORT         | —                     | 🟢   | python                          |
-| 25161 | HERD_RACE_PORT             | —                     | ⚪️   | —                               |
+| 25161 | BORNITE_RACE_PORT             | —                     | ⚪️   | —                               |
 | 25163 | NIM_KIMI_SIDECAR_PORT      | nim-kimi-sidecar      | 🟢   | python3                         |
 | 25163 | NIM_KIMI_SIDECAR_PORT      | nim-kimi-sidecar      | 🟢   | python3                         |
 | 25180 | ML_SERVE_PORT              | ml-serve              | ⚪️   | —                               |
@@ -147,8 +147,8 @@ Generated 2026-10-03T07:22:51.621Z on `awrawr-pc`. Estate root `/home/toxic/esta
 | 25190 | REASONING_ROUTER_PORT      | —                     | ⚪️   | —                               |
 | 25191 | NIM_VALIDATION_PORT        | —                     | ⚪️   | —                               |
 | 25192 | PI_WEB_DASHBOARD_PORT      | —                     | ⚪️   | —                               |
-| 25193 | HODOS_PORT                 | hodos                 | ⚪️   | —                               |
-| 25193 | HODOS_PORT                 | hodos                 | ⚪️   | —                               |
+| 25193 | RHODOCHROSITE_PORT                 | rhodochrosite                 | ⚪️   | —                               |
+| 25193 | RHODOCHROSITE_PORT                 | rhodochrosite                 | ⚪️   | —                               |
 | 25194 | RALPH_DASH_PORT            | ralph-dashboard       | 🟢   | uvicorn                         |
 | 25194 | RALPH_DASH_PORT            | ralph-dashboard       | 🟢   | uvicorn                         |
 | 25195 | CODEBASE_MEMORY_PORT       | codebase-memory       | 🟢   | codebase-memory                 |
@@ -160,8 +160,8 @@ Generated 2026-10-03T07:22:51.621Z on `awrawr-pc`. Estate root `/home/toxic/esta
 | 25198 | AWR_MCP_PORT               | awrawr-mcp            | 🟢   | python                          |
 | 25198 | AWR_MCP_PORT               | awrawr-mcp            | 🟢   | python                          |
 | 25203 | REDIS_PORT                 | redis                 | ⚪️   | — (moved 2026-10-14 off :25199) |
-| 25200 | CUTTINGGATE_PORT           | —                     | 🟢   | bun                             |
-| 25200 | CUTTINGGATE_PORT           | —                     | 🟢   | bun                             |
+| 25200 | CHALCOPYRITE_PORT           | —                     | 🟢   | bun                             |
+| 25200 | CHALCOPYRITE_PORT           | —                     | 🟢   | bun                             |
 | 25201 | RUST_WEB_BACKEND_PORT      | fleet-feed            | ⚪️   | —                               |
 | 25201 | RUST_WEB_BACKEND_PORT      | fleet-feed            | ⚪️   | —                               |
 | 25202 | GEMINI_MCP_PORT            | —                     | ⚪️   | —                               |
@@ -215,7 +215,7 @@ Config dir: `.tau`
 
 - **Model-router selectors use:** none
 - **MCP servers:** none
-- **Credentials present:** hodos client key: no
+- **Credentials present:** rhodochrosite client key: no
 
 ## Drift
 
@@ -248,7 +248,7 @@ something that looks wired and is not.
 | medium | `port-ssot-dead`     | ports.env claims 25142 (BUN_DEV_PORT) — no listener, no pitchfork daemon claims it                                                                     | start the daemon or drop the SSOT entry                            |
 | medium | `port-ssot-dead`     | ports.env claims 25145 (TAU_CODE_PORT) — no listener, no pitchfork daemon claims it                                                                    | start the daemon or drop the SSOT entry                            |
 | medium | `port-ssot-dead`     | ports.env claims 25147 (SQUAWK_WS_PORT) — no listener, no pitchfork daemon claims it                                                                   | start the daemon or drop the SSOT entry                            |
-| medium | `port-ssot-dead`     | ports.env claims 25161 (HERD_RACE_PORT) — no listener, no pitchfork daemon claims it                                                                   | start the daemon or drop the SSOT entry                            |
+| medium | `port-ssot-dead`     | ports.env claims 25161 (BORNITE_RACE_PORT) — no listener, no pitchfork daemon claims it                                                                   | start the daemon or drop the SSOT entry                            |
 | medium | `port-ssot-dead`     | ports.env claims 25189 (NIM_QUEUE_PORT) — no listener, no pitchfork daemon claims it                                                                   | start the daemon or drop the SSOT entry                            |
 | medium | `port-ssot-dead`     | ports.env claims 25190 (REASONING_ROUTER_PORT) — no listener, no pitchfork daemon claims it                                                            | start the daemon or drop the SSOT entry                            |
 | medium | `port-ssot-dead`     | ports.env claims 25191 (NIM_VALIDATION_PORT) — no listener, no pitchfork daemon claims it                                                              | start the daemon or drop the SSOT entry                            |

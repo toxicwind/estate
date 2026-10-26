@@ -7,9 +7,9 @@
 /home/toxic/.codex/.tmp/plugins/plugins/zoom/AGENTS.md
 /home/toxic/.config/zed/AGENTS.md
 /home/toxic/Downloads/AGENTS.md
-/home/toxic/Downloads/explor-20260718-182237/pdf_llama-swap-fork/herd-main/AGENTS.md
-/home/toxic/Downloads/explor-20260718-182237/pdf_llama-swap-main/herd-main/AGENTS.md
-/home/toxic/Downloads/explor-20260718-182237/pdf_estate-2026/estate/tools/herd/AGENTS.md
+/home/toxic/Downloads/explor-20260718-182237/pdf_llama-swap-fork/bornite-main/AGENTS.md
+/home/toxic/Downloads/explor-20260718-182237/pdf_llama-swap-main/bornite-main/AGENTS.md
+/home/toxic/Downloads/explor-20260718-182237/pdf_estate-2026/estate/tools/bornite/AGENTS.md
 /home/toxic/Downloads/manydifferent/ophel-main_extracted/ophel-main/AGENTS.md
 /home/toxic/.gemini/antigravity-ide/scratch/club-3090/AGENTS.md
 /home/toxic/go/pkg/mod/github.com/alecthomas/chroma/v2@v2.24.1/AGENTS.md
@@ -275,7 +275,7 @@
 /home/toxic/projects/kimi-code-estate/packages/klient/AGENTS.md
 /home/toxic/projects/kimi-code-estate/packages/pi-tui/AGENTS.md
 /home/toxic/projects/llama-cpp-turboquant/AGENTS.md
-/home/toxic/projects/herd-main/AGENTS.md
+/home/toxic/projects/bornite-main/AGENTS.md
 /home/toxic/projects/llm-bench-rig/AGENTS.md
 /home/toxic/projects/lucebox-hub/server/deps/llama.cpp/AGENTS.md
 /home/toxic/projects/mcpproxy-go/AGENTS.md

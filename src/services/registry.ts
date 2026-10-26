@@ -6,10 +6,10 @@ import type { ServiceDef } from "../types/index.ts";
 export const ALL_SERVICES: ServiceDef[] = [
   // ── CORE INFRASTRUCTURE ──
   {
-    id: "herd",
-    name: "herd",
+    id: "bornite",
+    name: "bornite",
     portKey: "HERD_PORT",
-    run: "exec /home/toxic/estate/stack/services/herd.sh",
+    run: "exec /home/toxic/estate/stack/services/bornite.sh",
     dir: ".",
     readyHttp: "/health",
     group: "core",
@@ -64,7 +64,7 @@ export const ALL_SERVICES: ServiceDef[] = [
     group: "core",
     autoStart: true,
     mise: true,
-    depends: ["herd"],
+    depends: ["bornite"],
     healthPath: "/health",
   },
   {

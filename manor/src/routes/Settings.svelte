@@ -33,11 +33,11 @@
   let modeLabel = $derived(modes.find((m) => m.value === $themeMode)?.label ?? "System");
 
   // --- CORS policy panel ---
-  // herd exposes no config API, so the active security.cors block can neither
+  // bornite exposes no config API, so the active security.cors block can neither
   // be read nor written from here. This panel probes the effective policy (a
-  // same-origin OPTIONS carries the page's Origin automatically and herd
+  // same-origin OPTIONS carries the page's Origin automatically and bornite
   // answers with the Access-Control-* headers it would send a browser) and
-  // builds the YAML snippet to paste into herd.yaml.
+  // builds the YAML snippet to paste into bornite.yaml.
   let corsCfg = $state<CorsConfig>(defaultCorsConfig());
   let maxAgeText = $state("");
   let probe = $state<CorsProbeResult | null>(null);
@@ -128,7 +128,7 @@
         </Button>
       </div>
     {:else}
-      <p class="text-muted-foreground text-xs">Empty — herd default applies.</p>
+      <p class="text-muted-foreground text-xs">Empty — bornite default applies.</p>
     {/each}
   </div>
 {/snippet}
@@ -211,10 +211,10 @@
     <div>
       <h4 class="text-sm font-semibold text-muted-foreground">CORS policy</h4>
       <p class="text-muted-foreground text-xs mt-1">
-        herd exposes no config API, so the active policy cannot be edited here.
+        bornite exposes no config API, so the active policy cannot be edited here.
         Probe the effective policy below, then build the
         <code class="font-mono">security.cors</code> snippet to paste into
-        <code class="font-mono">herd.yaml</code>.
+        <code class="font-mono">bornite.yaml</code>.
       </p>
     </div>
 
@@ -241,7 +241,7 @@
           {@render probeRow("Access-Control-Allow-Private-Network", probe.allowPrivateNetwork)}
         </dl>
       {:else}
-        <p class="text-muted-foreground text-xs">Probing herd…</p>
+        <p class="text-muted-foreground text-xs">Probing bornite…</p>
       {/if}
     </div>
 
@@ -279,7 +279,7 @@
           </div>
         {:else}
           <p class="text-muted-foreground text-xs">
-            No origins listed — herd allows any origin (legacy permissive).
+            No origins listed — bornite allows any origin (legacy permissive).
           </p>
         {/each}
       </div>
@@ -304,7 +304,7 @@
           <Label.Root for="cors-private-network" class="text-sm">Allow private network</Label.Root>
           <p class="text-muted-foreground text-xs">
             Answer Chrome's Private Network Access preflight so a page on a public
-            origin can reach herd on a private address. Cannot be combined with a "*" origin.
+            origin can reach bornite on a private address. Cannot be combined with a "*" origin.
           </p>
         </div>
         <Switch.Root
@@ -318,7 +318,7 @@
         <div>
           <span class="text-sm">Allowed methods</span>
           <p class="text-muted-foreground text-xs">
-            Empty advertises herd's default (GET, POST, PUT, PATCH, DELETE, OPTIONS).
+            Empty advertises bornite's default (GET, POST, PUT, PATCH, DELETE, OPTIONS).
           </p>
         </div>
         <ToggleGroup.Root
@@ -336,7 +336,7 @@
       {@render headerList(
         "Allowed headers",
         "allowedHeaders",
-        "Empty echoes the client's Access-Control-Request-Headers, falling back to herd's default.",
+        "Empty echoes the client's Access-Control-Request-Headers, falling back to bornite's default.",
         "X-Custom-Header",
       )}
 
@@ -351,7 +351,7 @@
         <div>
           <Label.Root for="cors-max-age" class="text-sm">Max age (seconds)</Label.Root>
           <p class="text-muted-foreground text-xs">
-            Preflight cache lifetime. Empty = herd default (86400).
+            Preflight cache lifetime. Empty = bornite default (86400).
           </p>
         </div>
         <Input
@@ -376,7 +376,7 @@
 
       <div class="space-y-2">
         <div class="flex items-center justify-between gap-4">
-          <span class="text-sm font-medium">herd.yaml snippet</span>
+          <span class="text-sm font-medium">bornite.yaml snippet</span>
           <Button variant="outline" size="sm" onclick={copyYaml} disabled={corsProblems.length > 0}>
             {#if copied}
               <Check class="size-3.5" /> Copied

@@ -4,10 +4,10 @@
 
 ### Parent: /home/toxic/estate
 - Git remote: `toxicwind/estate-projects` (origin)
-- npm workspaces: `herd`, `herd/ui-svelte`, `packages/*`
+- npm workspaces: `bornite`, `bornite/ui-svelte`, `packages/*`
 - **Submodules**: `shell/ii` (estate-end4), `tau/vendors` (kimi-cli)
 - **Symlinks** (top level):
-  - `config/herd.yaml` → `herd.yaml`
+  - `config/bornite.yaml` → `bornite.yaml`
   - `helpers` → `/home/toxic/estate/skills`
   - `models` → `/home/toxic/models`
   - `tau-skills` → `/home/toxic/.tau/skills`

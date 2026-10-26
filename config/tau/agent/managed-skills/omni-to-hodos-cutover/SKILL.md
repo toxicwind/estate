@@ -1,20 +1,20 @@
 ---
-name: omni-to-hodos-cutover
-description: Procedure for cutting over tau agent configuration from obsolete OmniRoute to VansRouter/hodos gateway system
+name: omni-to-rhodochrosite-cutover
+description: Procedure for cutting over tau agent configuration from obsolete OmniRoute to VansRouter/rhodochrosite gateway system
 ---
 
-# Omni→Hodos Cutover Procedure
+# Omni→Rhodochrosite Cutover Procedure
 
-This procedure cuts over the tau agent configuration from the obsolete OmniRoute system (:20130) to the new VansRouter/hodos gateway system (:20128).
+This procedure cuts over the tau agent configuration from the obsolete OmniRoute system (:20130) to the new VansRouter/rhodochrosite gateway system (:20128).
 
 ## Prerequisites
-- Verify hodos gateway (:20128) is healthy and responding
+- Verify rhodochrosite gateway (:20128) is healthy and responding
 - Have sudo/container management permissions (docker/podman)
 - Backup current configuration if desired
 
 ## Steps
 
-### 1. Verify Hodos Gateway Health
+### 1. Verify Rhodochrosite Gateway Health
 ```bash
 # Test that :20128 is working (should get valid response, not auth error)
 curl -s -m 5 http://127.0.0.1:20128/v1/models
@@ -61,12 +61,12 @@ grep -A2 "extensions:" ~/.tau/agent/config.yml
 grep -c "pi-omniroute-sync" ~/.tau/plugins/package.json
 # Should show: 0
 
-# Test that hodos gateway works with tau agent
+# Test that rhodochrosite gateway works with tau agent
 # (This will happen automatically on next tau start)
 ```
 
 ## Verification Points
-- ✅ omni provider baseUrl points to :20128 (hodos gateway)
+- ✅ omni provider baseUrl points to :20128 (rhodochrosite gateway)
 - ✅ extensions list contains tau-hodossync, not pi-omniroute-sync
 - ✅ pi-omniroute-sync removed from package.json dependencies
 - ✅ omniroute container stopped
@@ -74,7 +74,7 @@ grep -c "pi-omniroute-sync" ~/.tau/plugins/package.json
 - ✅ Tau agent should now work without omniroute authentication errors
 
 ## Notes
-- The hodos gateway on :20128 does not require authentication for basic model listing/chat
+- The rhodochrosite gateway on :20128 does not require authentication for basic model listing/chat
 - First tau start after cutover may trigger initial model sync via tau-hodossync
 - Monitor ~/.tau/agent/models.json for updated model list from :20128/v1/models
 - If needed, quarantined artifacts can be restored from the archive directory

@@ -69,7 +69,7 @@ const SKIP_PREFIXES = [
   "config/tau/agent/",
   "config/tau/extensions/",
   "config/tau/plugins/",
-  "config/herd.d/",
+  "config/bornite.d/",
   "config/router/",
   "config/tau/profiles/",
   "node_modules/",

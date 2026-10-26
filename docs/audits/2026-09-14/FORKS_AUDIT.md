@@ -11,7 +11,7 @@ This document provides a comprehensive structural audit of all 14 custom forks a
 | Fork ID               | Path                                              | Upstream Origin                        | Build Toolchain  | Key Custom Additions                                                                                                                                                                    |
 | --------------------- | ------------------------------------------------- | -------------------------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **`pi-agent`**        | `/home/toxic/projects/pi-agent`                   | `toxicwind/pi`                         | Bun / TS + Rust  | 1M context routing, CWD-aware launchers, unified RPC builder, full native/MCP tool integration, local SQLite state.                                                                     |
-| **`herd`**      | `/home/toxic/projects/herd`                 | `mostlygeek/herd`                | Go (1.24+)       | Go AST Matrix router (`internal/hodos/`), LIFO macro resolution, `normalize_sse` streaming adapter, `fuser -k` stale port cleanup, IPv4 defaults.                                   |
+| **`bornite`**      | `/home/toxic/projects/bornite`                 | `mostlygeek/bornite`                | Go (1.24+)       | Go AST Matrix router (`internal/rhodochrosite/`), LIFO macro resolution, `normalize_sse` streaming adapter, `fuser -k` stale port cleanup, IPv4 defaults.                                   |
 | **`mcpproxy-go`**     | `/home/toxic/projects/mcpproxy-go`                | `smart-mcp-proxy`                      | Go               | 231 tools federated across 18 MCP servers, Bleve search index, offline TPA scanner, zero-quarantine auto-approval.                                                                      |
 | **`ghas`**            | `/home/toxic/projects/github-advanced-search-mcp` | `toxicwind/github-advanced-search-mcp` | Bun / TS         | Dual-engine search (Blackbird web index + classic REST), Firefox profile session auth, high-recall intent router (`apps/api`, `apps/mcp`, `apps/frontend`).                             |
 | **`beellama`**        | `/home/toxic/projects/beellama.cpp`               | `ggerganov/llama.cpp`                  | C++ (CMake/CUDA) | DFlash speculative decoding (3.5-4.4x speedup on RTX 3090), MTP head support, `--kv-unified`.                                                                                           |
@@ -36,7 +36,7 @@ This document provides a comprehensive structural audit of all 14 custom forks a
           ┌────────────────────────────────┼────────────────────────────────┐
           ▼                                ▼                                ▼
   [Model Inference]                [Tool Federation]               [Search & Memory]
-  herd (:25100)              mcpproxy-go (:25127)             ghas-api (:25112)
+  bornite (:25100)              mcpproxy-go (:25127)             ghas-api (:25112)
     ├── beellama.cpp (DFlash)        ├── desktop-commander (stdio)  ghas-mcp (:25113)
     ├── ik_llama.cpp (Heretic)       ├── smarter-ast-mcp (stdio)    qdrant (:25133)
     └── turboquant (3-bit KV)        ├── codebase-memory (stdio)    redis (:25199)
@@ -54,5 +54,5 @@ This document provides a comprehensive structural audit of all 14 custom forks a
 ## Stash & Worktree Status
 
 1. **`github-advanced-search-mcp`**: Stash merged and committed (`feat(ghas): merge stash updates`). Conflict resolution verified with 20/20 test passes.
-2. **`herd`**: Macro hardening committed (`fix(config): harden Env slice macro validation`). All `internal/config/` and `internal/hodos/` tests pass.
+2. **`bornite`**: Macro hardening committed (`fix(config): harden Env slice macro validation`). All `internal/config/` and `internal/rhodochrosite/` tests pass.
 3. **`pi-agent`**: Verified 1M context models, unlocked advisor tool permissions, dynamic launcher in `/home/toxic/.local/bin/pi`.

@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 import { mkdirSync } from "node:fs";
 /**
- * Wire VS Code Insiders, Grok, Antigravity, ide-test → herd :25100 (Bun).
+ * Wire VS Code Insiders, Grok, Antigravity, ide-test → bornite :25100 (Bun).
  * Defaults come from live catalog; no hand-maintained GGUF inventories.
  * SSE URL is exported for clients that can auto-discover (Zed already does).
  */
@@ -14,7 +14,7 @@ import {
   swapBaseUrl,
   swapModelsSseUrl,
   swapV1Url,
-} from "../lib/herd_ssot.ts";
+} from "../lib/bornite_ssot.ts";
 import { loadEstatePorts, requireEnv } from "../lib/ports.ts";
 
 loadEstatePorts();
@@ -163,14 +163,14 @@ const out = {
   models_sse: SSE,
   default_model: defaultModel,
   list_ok: ok,
-  herd_models: models.length,
+  bornite_models: models.length,
   "oaicopilot.baseUrl": settings["oaicopilot.baseUrl"],
   "oaicopilot.models": (settings["oaicopilot.models"] || []).length,
   "estate.llamaSwap.modelsSse": settings["estate.llamaSwap.modelsSse"],
   utility: settings["chat.utilitySmallModel"],
   antigravity_env: antEnv,
   runtime: "bun",
-  ssot: "herd live /v1/models + /models/sse",
+  ssot: "bornite live /v1/models + /models/sse",
 };
 const evidence = join(SCRATCH, "ide-clients.json");
 await Bun.write(evidence, `${JSON.stringify(out, null, 2)}\n`);

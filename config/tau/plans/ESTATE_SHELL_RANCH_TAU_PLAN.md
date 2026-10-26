@@ -9,7 +9,7 @@ WezTerm tabs and window switching are broken due to `enable_tab_bar = false` in 
 
 ### 1. Section 1 (Direct Socket Task Runner & Egress) -> Ranch Transport Adapter
 - **Placement**: `estate/projects/range/ranch/stockyard/stream-broker` & `packages/estate-utils/src/transport/socket-stream.ts`.
-- **Role**: Ranch operates as the external provider multiplexer and inference front door (`herd` :25100, `hodos` :25193). Standard Node/Python fetch layers drop SSE streams during prolonged model thinking phases when middlebox TCP keepalive fails.
+- **Role**: Ranch operates as the external provider multiplexer and inference front door (`bornite` :25100, `rhodochrosite` :25193). Standard Node/Python fetch layers drop SSE streams during prolonged model thinking phases when middlebox TCP keepalive fails.
 - **Mechanism**: The Direct Socket Task Runner establishes OS-level keepalive (`SO_KEEPALIVE`, `TCP_KEEPIDLE=30`, `TCP_KEEPINTVL=10`, `TCP_KEEPCNT=3`, `TCP_NODELAY=1`) and exposes a local UNIX domain socket (`/run/user/1000/estate-stream-broker.sock`). When connection reset occurs mid-generation, it salvages validated reasoning tokens in an append-only ring buffer and performs assistant-prefix continuation instead of re-prompting from scratch.
 
 ### 2. Section 2 (Telemetric Runtime Oracle & Thermodynamic Loop Interception) -> Tau Agent Runtime
@@ -91,10 +91,10 @@ WezTerm tabs and window switching are broken due to `enable_tab_bar = false` in 
 ### Part 4: Inference Stack & Router Fleet Audit & Remediation
 1. **Audit & Fix Daemon Definitions in `pitchfork.toml`**:
    - **`squawk-feed`**: Update `/home/toxic/estate/hatch/agents/ember/squawk-relay/run-feed.sh` line 9 to execute `/home/toxic/estate/ranch/squawk/squawk_feed.py` instead of the nonexistent `/home/toxic/squawk/squawk_feed.py`. Restart `estate/squawk-feed`.
-   - **`model-guard`**: Edit `/home/toxic/estate/bin/herd-model-guard.py` to catch `ConnectionResetError` and `BrokenPipeError` in request handling without crashing the server thread. Restart `estate/model-guard`.
+   - **`model-guard`**: Edit `/home/toxic/estate/bin/bornite-model-guard.py` to catch `ConnectionResetError` and `BrokenPipeError` in request handling without crashing the server thread. Restart `estate/model-guard`.
    - **`estate-router`**: Add `auto = ["start"]` to `[daemons.estate-router]` in `estate/pitchfork.toml` and verify health on port 25104.
-   - **`herd` (:25100)**: Audit status (currently running, health OK).
-   - **`hodos` (:25193)**: Audit status (currently running, health ok).
+   - **`bornite` (:25100)**: Audit status (currently running, health OK).
+   - **`rhodochrosite` (:25193)**: Audit status (currently running, health ok).
    - **`rust-web` (:25201)**: Audit status (currently running, serving ops dashboard).
    - **`shep` (:25127)**: Audit status (currently running, MCP federation).
    - **`keypool` (:25109)**: Audit status (currently running).
@@ -104,7 +104,7 @@ WezTerm tabs and window switching are broken due to `enable_tab_bar = false` in 
 ### Part 5: Main README.md & Old Reference Consolidation
 1. **Revise `estate/README.md`**:
    - Replace legacy references to retired `scripts/generate.ts` with explicit documentation of hand-edited `pitchfork.toml` and `mise.toml`.
-   - Add architectural documentation for Ranch (`projects/range/ranch`), the Herd/Hodos inference contract, and the estate shell submodule (`projects/shell/ii`).
+   - Add architectural documentation for Ranch (`projects/range/ranch`), the Bornite/Rhodochrosite inference contract, and the estate shell submodule (`projects/shell/ii`).
    - Document the Socket Stream and Cognitive EKG specification in `docs/architecture/socket-stream-cognitive-ekg.md` and link from `README.md`.
    - Clarify the role of `projects/shell/ii` as the permanence controller for desktop configurations (`~/.config/hypr`, `~/.config/quickshell`, `~/.config/wezterm`).
 2. **Update Repo Documentation**:
@@ -137,8 +137,8 @@ WezTerm tabs and window switching are broken due to `enable_tab_bar = false` in 
    - Run `git -C /home/toxic/estate/ranch/shell/ii status`: verify `wezterm.lua` is tracked in git.
    - Run `git -C /home/toxic/estate/ranch/shell/ii remote -v`: verify both `origin` and `upstream` remotes are active.
 3. **Router & Service Health Audit**:
-   - Run `curl -fsS http://127.0.0.1:25100/health`: expect `OK` (herd).
-   - Run `curl -fsS http://127.0.0.1:25193/health`: expect `ok` (hodos).
+   - Run `curl -fsS http://127.0.0.1:25100/health`: expect `OK` (bornite).
+   - Run `curl -fsS http://127.0.0.1:25193/health`: expect `ok` (rhodochrosite).
    - Run `curl -fsS -I http://127.0.0.1:25201/`: expect `200 OK` (rust-web ops dashboard).
    - Run `curl -fsS http://127.0.0.1:25104/health`: expect `ok` or JSON status (estate-router).
    - Run `pitchfork status estate/squawk-feed`: expect `running`.

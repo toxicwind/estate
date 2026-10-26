@@ -21,7 +21,7 @@ stabilized the fleet.
    is verified (serves + survives `restart` + survives stop/start) before the
    next begins. ANY instability → roll back to pitchfork, document, stop.
 5. **Never migrate:** squawk-ws/squawk-feed (fleet comms), awrawr-ws-exec
-   (live bridge), herd, keypool, model-guard, or `mise = true` daemons until
+   (live bridge), bornite, keypool, model-guard, or `mise = true` daemons until
    PATH pinning is solved (pitchfork injects mise shims; systemd does not).
 
 ## Unit shape (generated)

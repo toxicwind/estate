@@ -10,7 +10,7 @@ import { loadEstatePorts, requirePort } from "./ports.ts";
 loadEstatePorts();
 
 export type MeshServiceId =
-  | "herd"
+  | "bornite"
   | "rust-web"
   | "yote"
   | "openfang"
@@ -86,7 +86,7 @@ export type ServiceMeta = {
 export function serviceCatalog(): ServiceMeta[] {
   return [
     {
-      id: "herd",
+      id: "bornite",
       portEnv: "HERD_PORT",
       healthPath: "/health",
       role: "llm-front-door",
@@ -337,14 +337,14 @@ export async function runFeature(
     case "deps": {
       // Link graph edges used by this service
       const edges: Record<MeshServiceId, MeshServiceId[]> = {
-        "herd": [],
-        "rust-web": ["herd", "hf-downloader", "prometheus"],
-        yote: ["openfang", "herd"],
-        openfang: ["herd"],
-        "estate-router": ["herd"],
+        "bornite": [],
+        "rust-web": ["bornite", "hf-downloader", "prometheus"],
+        yote: ["openfang", "bornite"],
+        openfang: ["bornite"],
+        "estate-router": ["bornite"],
         prometheus: [],
         "hf-downloader": [],
-        "null-g-proxy": ["herd", "estate-router"],
+        "null-g-proxy": ["bornite", "estate-router"],
         grafana: ["prometheus"],
         "ghas-api": ["ghas-mcp"],
         "ghas-mcp": [],
@@ -424,7 +424,7 @@ export async function runFeature(
             ghas_linked: true,
             hot_reload: true,
             openai_compat: [
-              "herd",
+              "bornite",
               "estate-router",
               "null-g-proxy",
               "yote",

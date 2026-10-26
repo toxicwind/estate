@@ -134,10 +134,10 @@ const suite: Array<{
     waitMs: 3000,
   },
   {
-    daemon: "herd",
+    daemon: "bornite",
     mechanism: "bun --hot",
     health: `http://127.0.0.1:${AM}/health`,
-    file: resolve(ROOT, "tools/herd/herd-ts/router.ts"),
+    file: resolve(ROOT, "tools/bornite/bornite-ts/router.ts"),
     kind: "ts",
     waitMs: 3000,
   },
@@ -182,7 +182,7 @@ const suite: Array<{
     waitMs: 2000,
   },
   {
-    daemon: "herd",
+    daemon: "bornite",
     mechanism: "binary (no source hot; config restart only) — health stability",
     health: `http://127.0.0.1:${SWAP}/health`,
     file: "",

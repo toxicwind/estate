@@ -42,7 +42,7 @@ MERGES=(
     # Agent OS / Framework
     "toxicwind/openfang:packages/os"
     "toxicwind/tau:packages/framework"
-    "toxicwind/herd:packages/orchestrator"
+    "toxicwind/bornite:packages/orchestrator"
     "toxicwind/yote:packages/messaging"
     "toxicwind/morphe:packages/hooks"
 
@@ -138,7 +138,7 @@ estate/                    ← ROOT (this repo)
 │   ├── rebrand/              ← Rebrand toolkit
 │   ├── os/                   ← Openfang agent OS
 │   ├── framework/            ← Tau agent framework
-│   ├── orchestrator/         ← Herd orchestrator
+│   ├── orchestrator/         ← Bornite orchestrator
 │   ├── messaging/            ← Yote messaging gateway
 │   ├── hooks/                ← Morphe hook framework
 │   ├── tools/                ← Utility tools

@@ -26,8 +26,8 @@ const ports = parsePortsEnv(ROOT);
 
 export const ESTATE_WEB_UIS: WebUISpec[] = [
   {
-    id: "herd",
-    name: "Herd / Llama-Swap",
+    id: "bornite",
+    name: "Bornite / Llama-Swap",
     portKey: "HERD_PORT",
     defaultPort: 25100,
     path: "/ui/",
@@ -252,7 +252,7 @@ Options:
   --active        Open all currently active / healthy Web UIs (default)
   --all, -a       Open all defined Web UIs (active or inactive)
   --list, -l      List all Web UIs with current status and URLs (no browser open)
-  --service <id>  Open a specific service by id (e.g. herd, mesh, grafana)
+  --service <id>  Open a specific service by id (e.g. bornite, mesh, grafana)
   --dry-run       Probe services and show what would be opened without launching
   --browser <bin> Custom browser executable (default: firefox-nightly)
   --help, -h      Show this help message

@@ -2,24 +2,24 @@
   "$schema": "https://app.kilo.ai/config.json",
   "plugin": [
     "file:///home/toxic/estate/.kilo/plugin/estate-thresher.ts",
-    "file:///home/toxic/estate/.kilo/plugin/estate-herd-models.ts",
-    "file:///home/toxic/estate/.kilo/plugin/estate-hodos-strategy.ts",
+    "file:///home/toxic/estate/.kilo/plugin/estate-bornite-models.ts",
+    "file:///home/toxic/estate/.kilo/plugin/estate-rhodochrosite-strategy.ts",
     "file:///home/toxic/estate/.kilo/plugin/estate-autofixer.ts"
   ],
   "provider": {
-    "hodos": {
+    "rhodochrosite": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "Hodos (estate router)",
+      "name": "Rhodochrosite (estate router)",
       "options": {
         "baseURL": "http://127.0.0.1:25193/v1",
-        "apiKey": "{env:HODOS_API_KEY}",
+        "apiKey": "{env:RHODOCHROSITE_API_KEY}",
         "timeout": false
       },
       "models": {
-        "z-ai/glm-5.3-flash": { "name": "GLM-5.3 Flash (hodos)" },
-        "nvidia/nemotron-3-ultra-550b-a55b": { "name": "Nemotron 3 Ultra (hodos)" },
-        "deepseek-ai/deepseek-v4.1-flash": { "name": "DeepSeek V4.1 Flash (hodos)" },
-        "openai/gpt-oss-20b": { "name": "GPT-OSS 20B (hodos)" }
+        "z-ai/glm-5.3-flash": { "name": "GLM-5.3 Flash (rhodochrosite)" },
+        "nvidia/nemotron-3-ultra-550b-a55b": { "name": "Nemotron 3 Ultra (rhodochrosite)" },
+        "deepseek-ai/deepseek-v4.1-flash": { "name": "DeepSeek V4.1 Flash (rhodochrosite)" },
+        "openai/gpt-oss-20b": { "name": "GPT-OSS 20B (rhodochrosite)" }
       }
     },
     "freeinference": {
@@ -40,7 +40,7 @@
         "deepseek-v4-flash": { "name": "DeepSeek V4 Flash" }
       }
     },
-    "cuttinggate": {
+    "chalcopyrite": {
       "options": {
         "baseURL": "http://127.0.0.1:25200/v1",
         "apiKey": "{env:CUTTINGGATE_CLIENT_KEY}"

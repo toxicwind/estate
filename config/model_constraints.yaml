@@ -3,9 +3,9 @@
 # =============================================================================
 # Source of truth for strict model API contracts (NIM model cards +
 # Hugging Face model cards, verified 2026-09-20). This file is ENFORCED,
-# not just documented: bin/herd-model-guard.py reads it and rewrites
+# not just documented: bin/bornite-model-guard.py reads it and rewrites
 # /v1/chat/completions request bodies for matching models before they
-# reach herd (:25100). Guard listens on 127.0.0.1:25101 -> 127.0.0.1:25100.
+# reach bornite (:25100). Guard listens on 127.0.0.1:25101 -> 127.0.0.1:25100.
 #
 # Schema per entry:
 #   match:        list of model IDs (exact, case-insensitive) this entry covers

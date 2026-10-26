@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
  * inkling_nim_fuzz_test.ts — Systematic parameter fuzz test for NVIDIA NIM Inkling
- * Uses herd :25100 (local router) via estate infrastructure
+ * Uses bornite :25100 (local router) via estate infrastructure
  * 
  * Tests ALL standard OpenAI parameters + NIM-specific extensions
  * Discovers what's actually supported vs rejected
@@ -10,7 +10,7 @@
  */
 
 import { describe, test, expect, beforeAll, afterAll } from "bun:test";
-import { llamaSwapHealth, llamaSwapModels, llamaSwapChat, llamaSwapChatStream, upstreamServers } from "../src/mcp/herd.ts";
+import { llamaSwapHealth, llamaSwapModels, llamaSwapChat, llamaSwapChatStream, upstreamServers } from "../src/mcp/bornite.ts";
 
 const INKLING_MODEL = "thinkingmachines/inkling";
 const TEST_PROMPT = "Hi";
@@ -102,7 +102,7 @@ describe("Inkling NIM Parameter Fuzz Test — Systematic Coverage", () => {
     healthCheck = await llamaSwapHealth();
     console.log("[HEALTH]", healthCheck);
     if (healthCheck.http_status !== 200) {
-      throw new Error("herd health check failed");
+      throw new Error("bornite health check failed");
     }
     
     const models = await llamaSwapModels();

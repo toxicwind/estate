@@ -57,4 +57,4 @@ Auditor: subagent 5a33059d (fleet audit lane, parent 67fcb771)
 - `estate/squawk-feed` — NOT running (blocked by manual PID 2097378)
 - `estate/awrawr-ws-exec` — errored (blocked by manual PID 2167511)
 - `estate/buildsrv` — running (new)
-- Others (coyote, herd, kimi-auto-resolver, nim-proxy, shep, etc.) — running
+- Others (coyote, bornite, kimi-auto-resolver, nim-proxy, shep, etc.) — running

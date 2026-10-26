@@ -2,9 +2,9 @@
 
 **DSU Mechanism**: The hotfix registry (`hotfix_registry.ts`) implements Dynamic Software Update via `fs.watch()` + `.unref()` on the persistent `patches/` directory (`startWatcher`, line 182-210). `loadPatch()` dynamically imports updated `.ts` modules into memory; `persistPatch()` writes them permanently. This is the DSU pattern: live reload without daemon restart, with rollback via `.disabled` rename.
 
-**Recursive Scheduling**: Pitchfork (`pitchfork.ts` generator) defines daemon lifecycle (`[daemons.*]`) and group orchestration (`[groups.core]`, `[groups.agents]`). The registry resolves service definitions (`ALL_SERVICES`) through `hotfixRegistry.resolve<ServiceDef>()`, creating a recursive scheduling layer: core services (herd, hindsight) feed health to agent runtimes (tau) through the same resolution mechanism.
+**Recursive Scheduling**: Pitchfork (`pitchfork.ts` generator) defines daemon lifecycle (`[daemons.*]`) and group orchestration (`[groups.core]`, `[groups.agents]`). The registry resolves service definitions (`ALL_SERVICES`) through `hotfixRegistry.resolve<ServiceDef>()`, creating a recursive scheduling layer: core services (bornite, hindsight) feed health to agent runtimes (tau) through the same resolution mechanism.
 
-**Estate Registry Synthesis**: The three arXiv streams converge in `patches/experimental_fusion.ts`: persistent file store (`persistPatch`), health-gated activation (`hindsight` port 25117 + `herd` daemon), and registry resolution (`resolve<T>`) without monkey-patching. The new hotfix (`TARGET = registry.emergent_sync`, `VERSION = 3.0.0`) binds these into one deliverable patch.
+**Estate Registry Synthesis**: The three arXiv streams converge in `patches/experimental_fusion.ts`: persistent file store (`persistPatch`), health-gated activation (`hindsight` port 25117 + `bornite` daemon), and registry resolution (`resolve<T>`) without monkey-patching. The new hotfix (`TARGET = registry.emergent_sync`, `VERSION = 3.0.0`) binds these into one deliverable patch.
 
 ---
 
@@ -12,5 +12,5 @@
 
 - **NVIDIA provider**: `NVIDIA_API_KEY` (configured via env / vault) → endpoint `https://integrate.api.nvidia.com/v1` (NIM catalog / model discovery).
 - **OpenRouter provider**: `OPENROUTER_API_KEY` (configured via env / vault) → model `openrouter/thinkingmachines/inkling:free` (fast tier), `high` reasoning tier supported.
-- **Herd (local)**: model `beellama/qwen-flash-64k` running locally on port `25100` (RTX 3090, 64K context, 119 tok/s, CUDA 86). Self-hosted, no external key.
-- **Hindsight API**: port `25117` (self-hosted, health endpoint `/health`, verified by registry health-guard). Independent from Herd; both must respond healthy for `registry.emergent_sync` activation.
+- **Bornite (local)**: model `beellama/qwen-flash-64k` running locally on port `25100` (RTX 3090, 64K context, 119 tok/s, CUDA 86). Self-hosted, no external key.
+- **Hindsight API**: port `25117` (self-hosted, health endpoint `/health`, verified by registry health-guard). Independent from Bornite; both must respond healthy for `registry.emergent_sync` activation.

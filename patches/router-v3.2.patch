@@ -38,7 +38,7 @@ Also: v3.2 version stamp on /health; isRoutableModelId exported for reuse.
 Tests: tests/hedge.test.ts, 8 pass (bun test) — hedge timing, loser-abort
 isolation, strike demotion, spec normalization, quarantine, latency EMA.
 
-Live evidence 2026-09-20: blackhole :25100 -> explicit herd request
+Live evidence 2026-09-20: blackhole :25100 -> explicit bornite request
 200 via nvidia (zero client failures); warm standby auto-quarantined the
 dead backend; prober healed on recovery (open->half->closed). Shim
 fail-fast: /home/toxic/kimi-auto/shim.py upstream timeout 120s -> 8s.
@@ -84,7 +84,7 @@ index 0000000000..a086adb63d
 +                └─ HealthDB (SQLite WAL) # requests, healing log, sticky sessions
 +```
 +
-+**Providers (9):** `herd` (local herd :25100, no auth), `kimi-auto`
++**Providers (9):** `bornite` (local bornite :25100, no auth), `kimi-auto`
 +(local shim :25105 → resolver's best Kimi, no auth), `nim-local` (local NIM
 +proxy :8000), `openrouter`, `nvidia` (multi-key rotation + per-key token
 +bucket), `groq`, `cerebras`, `google`, `mistral`.
@@ -170,7 +170,7 @@ index 0000000000..a086adb63d
 +  -d '{"model":"auto","messages":[{"role":"user","content":"hi"}],"max_tokens":32}'
 +
 +# Explicit provider (colon or slash form; also bare local ids)
-+# {"model":"herd:<model-id>"}  {"model":"nvidia/nvidia/nemotron-3-super-120b-a12b"}
++# {"model":"bornite:<model-id>"}  {"model":"nvidia/nvidia/nemotron-3-super-120b-a12b"}
 +
 +curl http://127.0.0.1:25104/health     # version, strategy, provider summary
 +curl http://127.0.0.1:25104/status     # full resilience dashboard
@@ -185,7 +185,7 @@ index 0000000000..a086adb63d
 +```
 +base_url = http://127.0.0.1:25104/v1
 +model    = auto            # router picks (Elo + latency + health)
-+# or model = "herd:<id>" / "kimi-auto" / "nvidia/..." for pinning
++# or model = "bornite:<id>" / "kimi-auto" / "nvidia/..." for pinning
 +```
 +
 +Known Openfang bug (worked around router-side): `openfang agent set` can
@@ -219,16 +219,16 @@ index 0000000000..a086adb63d
 +
 +## Failover demo (2026-09-20, live)
 +
-+1. Baseline explicit `herd:beellama/exaone-4-0-1-2b-iq4xs` → 200,
-+   `X-Routed-Via: herd/…` (1378ms).
++1. Baseline explicit `bornite:beellama/exaone-4-0-1-2b-iq4xs` → 200,
++   `X-Routed-Via: bornite/…` (1378ms).
 +2. `iptables DROP` on :25100 → identical request → **200** via
 +   `nvidia/nvidia/nemotron-3-super-120b-a12b`. Zero failed client requests.
-+3. Warm standby quarantined herd (3 strikes, circuit open, backoff);
++3. Warm standby quarantined bornite (3 strikes, circuit open, backoff);
 +   `/status` showed the strike trail.
 +4. Block removed → quarantine prober re-probed (open → half) → next real
-+   request succeeded → circuit closed, traffic returned to herd.
++   request succeeded → circuit closed, traffic returned to bornite.
 +5. Lesson applied: kimi-auto shim's 120s upstream timeout → 8s fail-fast so
-+   a dead herd surfaces 502 immediately instead of hanging the chain.
++   a dead bornite surfaces 502 immediately instead of hanging the chain.
 +
 +## Opportunities (running list)
 +
@@ -250,7 +250,7 @@ index 0d095e8909..8ffecfc9d6 100755
 + * Estate Router v3.2 (Bun/TypeScript)
   * Port of estate-router/router.py — same strategies, HealthDB WAL, circuit breakers.
   *
-  * Strategies: fifo_matrix (alias fifo_flock) | ast_race (alias hodos_race) | sticky_affinity | weighted_elo | circuit_chain | hybrid
+  * Strategies: fifo_matrix (alias fifo_flock) | ast_race (alias rhodochrosite_race) | sticky_affinity | weighted_elo | circuit_chain | hybrid
 @@ -11,13 +11,14 @@
   */
  
@@ -537,7 +537,7 @@ index 0d095e8909..8ffecfc9d6 100755
 +// for LOCAL providers only (no cloud spend). A dead local backend earns
 +// circuit strikes here so quarantine can engage before user traffic hits it;
 +// consecutive successes keep the TCP path warm.
-+const LOCAL_WARM = ["herd", "kimi-auto", "nim-local"];
++const LOCAL_WARM = ["bornite", "kimi-auto", "nim-local"];
 +function startWarmStandby(): void {
 +  const tick = async () => {
 +    for (const p of LOCAL_WARM) {
@@ -649,7 +649,7 @@ index 8a06d5b0c2..16069cddcd 100755
 +    key_env: "NIM_PROXY_API_KEY",
 +  },
 +  // kimi-auto sidecar shim (pitchfork daemon kimi-auto-shim): rewrites
-+  // model "kimi-auto" -> resolver's current best Kimi, forwards to herd.
++  // model "kimi-auto" -> resolver's current best Kimi, forwards to bornite.
 +  // Kimi-only by design (shim 503s when no Kimi candidate is healthy).
 +  "kimi-auto": {
 +    base:
@@ -664,7 +664,7 @@ index 8a06d5b0c2..16069cddcd 100755
 @@ -139,6 +188,8 @@ export const PROVIDERS: Record<
  // ---------------------------------------------------------------------------
  export const PROVIDER_MODELS: Record<string, string[]> = {
-   "herd": [LOCAL_ROLES.fast, LOCAL_ROLES.quality, LOCAL_ROLES.longctx],
+   "bornite": [LOCAL_ROLES.fast, LOCAL_ROLES.quality, LOCAL_ROLES.longctx],
 +  "nim-local": [],
 +  "kimi-auto": ["kimi-auto"],
    openrouter: [
@@ -673,7 +673,7 @@ index 8a06d5b0c2..16069cddcd 100755
 @@ -348,7 +399,7 @@ export function keyOk(p: string): boolean {
  
  export function firstModelFor(p: string): string {
-   if (p === "herd") return LOCAL_ROLES.quality;
+   if (p === "bornite") return LOCAL_ROLES.quality;
 -  return PROVIDER_MODELS[p]?.[0] || "";
 +  return PROVIDER_MODELS[p]?.[0] || LIVE_MODELS[p]?.[0] || "";
  }
@@ -750,8 +750,8 @@ index 8a06d5b0c2..16069cddcd 100755
 +  const norm = normalizeModelSpec(model);
 +  if (norm.provider) return [norm.provider, norm.model];
    if (model in CODING && CODING[model] != null) return CODING[model]!;
-   // Prefer herd for any local GGUF id so hybrid never sends GPU models to Gemini
-   if (isLocalSwapModelId(model)) return ["herd", model];
+   // Prefer bornite for any local GGUF id so hybrid never sends GPU models to Gemini
+   if (isLocalSwapModelId(model)) return ["bornite", model];
 diff --git a/tools/estate-router/estate-router-ts/router_health.ts b/tools/estate-router/estate-router-ts/router_health.ts
 index 4c50650e6a..ce7cde8395 100755
 --- a/tools/estate-router/estate-router-ts/router_health.ts
@@ -1512,7 +1512,7 @@ index d3d2a9fd7c..61346c9efb 100755
 +  body: ChatBody,
 +  session: string,
 +): Promise<RouteResult> {
-+  const localFirst = ["herd", "kimi-auto", "nim-local"];
++  const localFirst = ["bornite", "kimi-auto", "nim-local"];
 +  const order = Object.keys(PROVIDERS).sort((a, b) => {
 +    const la = localFirst.includes(a) ? 0 : 1;
 +    const lb = localFirst.includes(b) ? 0 : 1;
@@ -1697,8 +1697,8 @@ index 0000000000..e9d3e5ec39
 +
 +describe("normalizeModelSpec (router-side Openfang shim)", () => {
 +  test("provider:model colon form", () => {
-+    const r = normalizeModelSpec("herd:beellama/exaone-4-0-1-2b-iq4xs");
-+    expect(r.provider).toBe("herd");
++    const r = normalizeModelSpec("bornite:beellama/exaone-4-0-1-2b-iq4xs");
++    expect(r.provider).toBe("bornite");
 +    expect(r.model).toContain("exaone");
 +  });
 +  test("provider/model slash form", () => {

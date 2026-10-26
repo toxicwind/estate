@@ -2,9 +2,9 @@
 /**
  * nim-queue — first-class NIM rate-limit + cache-hit shared service.
  *
- * Sits in front of herd (or any NIM-compatible upstream) and:
- *   1. Looks up the prompt hash in herd's PromptCache → cache-hit
- *   2. Consults herd's rate-limit state before forwarding → no thundering herd
+ * Sits in front of bornite (or any NIM-compatible upstream) and:
+ *   1. Looks up the prompt hash in bornite's PromptCache → cache-hit
+ *   2. Consults bornite's rate-limit state before forwarding → no thundering bornite
  *   3. Records 429s with proper Retry-After → central backoff pool
  *   4. Mirrors successful responses back into the cache → every agent benefits
  *
@@ -14,8 +14,8 @@
  * Env:
  *   NIM_QUEUE_PORT         — bind (default 25189)
  *   NIM_QUEUE_UPSTREAM     — default "http://127.0.0.1:25100/v1"
- *   NIM_QUEUE_CACHE_URL    — herd admin cache endpoint (default http://127.0.0.1:25100)
- *   NIM_QUEUE_LLAMA_ADMIN  — herd admin base (default http://127.0.0.1:25100)
+ *   NIM_QUEUE_CACHE_URL    — bornite admin cache endpoint (default http://127.0.0.1:25100)
+ *   NIM_QUEUE_LLAMA_ADMIN  — bornite admin base (default http://127.0.0.1:25100)
  *   NIM_QUEUE_API_KEY      — NVIDIA_API_KEY (passed through)
  *   NIM_QUEUE_MAX_BACKOFF_MS — cap backoff (default 120000)
  */
@@ -270,7 +270,7 @@ const server = Bun.serve({
         stats.cacheMisses++;
       }
 
-      // 3. Forward to upstream; record 429s in herd via header echo.
+      // 3. Forward to upstream; record 429s in bornite via header echo.
       try {
         stats.forwarded++;
         const upRes = await forwardUpstream(req, JSON.stringify(body), model);
@@ -298,7 +298,7 @@ const server = Bun.serve({
             .catch(() => {});
         }
 
-        // Echo 429 telemetry back so herd records it via Record429
+        // Echo 429 telemetry back so bornite records it via Record429
         if (status === 429) {
           stats.rateLimited++;
           const retryAfterRaw = upRes.headers.get("retry-after") ?? "5";

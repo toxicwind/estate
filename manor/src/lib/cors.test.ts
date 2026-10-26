@@ -121,7 +121,7 @@ describe("validateCorsConfig", () => {
 describe("corsConfigToYaml", () => {
   it("renders an empty block as a commented placeholder", () => {
     const yaml = corsConfigToYaml(defaultCorsConfig());
-    expect(yaml).toBe("security:\n  cors:\n    # (empty — herd keeps the legacy permissive policy)\n");
+    expect(yaml).toBe("security:\n  cors:\n    # (empty — bornite keeps the legacy permissive policy)\n");
   });
 
   it("renders a full policy with lists and scalars", () => {

@@ -58,14 +58,14 @@ export const PERIPHERAL_SERVICES: ServiceDef[] = [
     mise: false,
   },
   {
-    id: "hodos",
-    name: "hodos",
-    portKey: "HODOS_PORT",
-    // Real daemon managed by pitchfork.d/hodos.toml on :25193.
-    // This peripheral entry is doc-only (not auto-started; real hodos
-    // is in [daemons.hodos] in pitchfork.toml via serve.sh).
-    run: "NOOP — managed by pitchfork.d/hodos.toml, see estate/pitchfork.toml [daemons.hodos]",
-    dir: "/home/toxic/pens/olympus/products/hodos/proxy",
+    id: "rhodochrosite",
+    name: "rhodochrosite",
+    portKey: "RHODOCHROSITE_PORT",
+    // Real daemon managed by pitchfork.d/rhodochrosite.toml on :25193.
+    // This peripheral entry is doc-only (not auto-started; real rhodochrosite
+    // is in [daemons.rhodochrosite] in pitchfork.toml via serve.sh).
+    run: "NOOP — managed by pitchfork.d/rhodochrosite.toml, see estate/pitchfork.toml [daemons.rhodochrosite]",
+    dir: "/home/toxic/pens/olympus/products/rhodochrosite/proxy",
     readyHttp: "/health",
     group: "aux",
     autoStart: false,

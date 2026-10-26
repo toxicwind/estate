@@ -54,4 +54,4 @@ Out of 464 models on OpenRouter, zero-cost models fall into three distinct opera
    - Feed terminal HUD snapshots, UI bug screenshots, or visual telemetry directly to `space-bunny-alpha` for automated visual triage.
 
 4. **Expiration Hardening (Oct 5 Milestone)**:
-   - Because `space-bunny-alpha` expires on October 5, 2026, fallback chains must automatically fail over to `google-antigravity/gemini-3.8-flash` and local GGUFs (`gemma-4-12b` via herd) once the stealth endpoint terminates.
+   - Because `space-bunny-alpha` expires on October 5, 2026, fallback chains must automatically fail over to `google-antigravity/gemini-3.8-flash` and local GGUFs (`gemma-4-12b` via bornite) once the stealth endpoint terminates.

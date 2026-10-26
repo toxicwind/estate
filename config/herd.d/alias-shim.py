@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
-"""alias-shim: fixed-target alias forwarder for herd.
+"""alias-shim: fixed-target alias forwarder for bornite.
 
-Started by herd (herd) as a models.<alias> cmd entry:
+Started by bornite (bornite) as a models.<alias> cmd entry:
     python3 alias-shim.py --port ${PORT} --target <peer-model-id> [--standby <peer-model-id>]... [--advance-on 5xx,conn,429,402,404] [--name <alias>]
 
 Rewrites incoming `model: "<alias>"` to the fixed target and forwards to
-herd, streaming the response back. The target (and optional standby chain)
+bornite, streaming the response back. The target (and optional standby chain)
 are fixed at config time -- the ROUTER CONFIG owns model selection; this
 shim never selects, ranks, probes, or prefers any model family. If every
 candidate is down the caller gets the last upstream error verbatim (fail
 loudly, never silently substitute).
 
 CRITICAL CONSTRAINT (learned 2026-09-21, oracle-judge-local incident): a
-shim hosted INSIDE herd as a cmd model MUST NOT target another
-herd cmd model. The swapper cannot swap to the target while the shim
+shim hosted INSIDE bornite as a cmd model MUST NOT target another
+bornite cmd model. The swapper cannot swap to the target while the shim
 holds the active slot for the in-flight outer request -- re-entrant
 deadlock: /health stays 200 (no swap on GET /v1/models) while completions
 hang until the connect/TTFT timeout fires. Targets must be proxy peers
@@ -32,7 +32,7 @@ verbatim so it stays visible. Without --advance-on, 4xx surfaces verbatim.
 Transport behavior:
 curl-like header layout (Pollinations bot-filter workaround), browser
 User-Agent, Authorization passthrough, verbatim SSE streaming, fail-fast
-8s herd connect/TTFT ceiling, self-loop rejection (508).
+8s bornite connect/TTFT ceiling, self-loop rejection (508).
 Timeout split (v3.1): the 8s ceiling covers connect + response headers
 only. Once headers arrive the socket timeout relaxes to READ_TIMEOUT
 (default 300s, env SHIM_READ_TIMEOUT) so a slow-but-alive upstream is
@@ -43,17 +43,17 @@ Health is honest: /health does one bounded catalog GET to the router's
 /v1/models on every call (event-driven -- no timers, no probes, no
 completions) and ALWAYS returns HTTP 200 (process liveness); the body
 carries "routable": true/false plus a detail string. A non-200 here
-would make supervisors (herd swap scheduler, pitchfork health)
+would make supervisors (bornite swap scheduler, pitchfork health)
 treat an unroutable-but-alive alias as dead and wedge dispatch -- the
 process must stay dispatchable so the chain can advance past dead
 candidates. Request failures surface as the upstream status, never a
 masked 200.
 
 Router-config ownership: to change what an alias serves, edit the --target
-/ --standby flags in the herd config (config/herd.yaml or the --config-dir
+/ --standby flags in the bornite config (config/bornite.yaml or the --config-dir
 fragment). No code changes, no timers, no probes.
 
-Usage (herd invokes it; never run by hand with a different target).
+Usage (bornite invokes it; never run by hand with a different target).
 """
 
 import argparse
@@ -67,7 +67,7 @@ from urllib.parse import urlparse
 ap = argparse.ArgumentParser()
 ap.add_argument("--port", type=int, required=True)
 ap.add_argument("--target", required=True,
-                help="primary model id -- set in ROUTER CONFIG (herd.yaml / config-dir fragment)")
+                help="primary model id -- set in ROUTER CONFIG (bornite.yaml / config-dir fragment)")
 ap.add_argument("--standby", action="append", default=[],
                 help="optional ordered failover model id -- repeat for a chain; "
                      "set in ROUTER CONFIG")
@@ -76,17 +76,17 @@ ap.add_argument("--advance-on", default="5xx,conn",
                      "402, 404 (401 never advances). Set in ROUTER CONFIG.")
 ap.add_argument("--name", default=None,
                 help="alias name advertised on /v1/models (optional)")
-ap.add_argument("--herd", default="http://127.0.0.1:25100")
+ap.add_argument("--bornite", default="http://127.0.0.1:25100")
 args = ap.parse_args()
-HERD = urlparse(args.herd)
+BORNITE = urlparse(args.bornite)
 
-# Timeout split: fail-fast on connect/first-byte (herd is localhost; a
+# Timeout split: fail-fast on connect/first-byte (bornite is localhost; a
 # stalled upstream must surface loudly, not hang the caller), generous
 # once the upstream proves alive (slow/cold models stream for minutes).
 CONNECT_TIMEOUT = float(os.environ.get("SHIM_CONNECT_TIMEOUT", "8"))
 READ_TIMEOUT = float(os.environ.get("SHIM_READ_TIMEOUT", "300"))
 
-# Browser UA for all herd traffic (Pollinations bot-filter workaround,
+# Browser UA for all bornite traffic (Pollinations bot-filter workaround,
 # verified 2026-09-14). Transport detail, not model selection.
 BROWSER_UA = ("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
               "Chrome/126.0 Safari/537.36")
@@ -140,7 +140,7 @@ class Handler(BaseHTTPRequestHandler):
         if self.path == "/health" or self.path.startswith("/health?"):
             # Process liveness is ALWAYS 200: the shim is up and serving.
             # Route health rides in the body ("routable" bool). A non-200
-            # here makes supervisors (herd swap, pitchfork health)
+            # here makes supervisors (bornite swap, pitchfork health)
             # treat an unroutable-but-alive alias as dead and wedge the
             # scheduler -- the process must stay dispatchable so the chain
             # can advance past dead candidates.
@@ -179,7 +179,7 @@ class Handler(BaseHTTPRequestHandler):
         """
         conn = None
         try:
-            conn = http.client.HTTPConnection(HERD.hostname, HERD.port or 80,
+            conn = http.client.HTTPConnection(BORNITE.hostname, BORNITE.port or 80,
                                               timeout=5)
             conn.request("GET", "/v1/models")
             resp = conn.getresponse()
@@ -201,7 +201,7 @@ class Handler(BaseHTTPRequestHandler):
                     pass
 
     def _forward(self, model_id, payload, auth):
-        """Forward one attempt to herd with model_id.
+        """Forward one attempt to bornite with model_id.
 
         Connect + response headers are fail-fast (CONNECT_TIMEOUT); once
         headers arrive the socket timeout relaxes to READ_TIMEOUT so a
@@ -211,7 +211,7 @@ class Handler(BaseHTTPRequestHandler):
         body = json.dumps(payload).encode("utf-8")
         conn = None
         try:
-            conn = http.client.HTTPConnection(HERD.hostname, HERD.port or 80,
+            conn = http.client.HTTPConnection(BORNITE.hostname, BORNITE.port or 80,
                                               timeout=CONNECT_TIMEOUT)
             conn.putrequest("POST", "/v1/chat/completions")
             conn.putheader("Accept", "*/*")
@@ -236,7 +236,7 @@ class Handler(BaseHTTPRequestHandler):
                     conn.close()
                 except Exception:
                     pass
-            return None, None, "upstream %s via herd %s: %s" % (model_id, args.herd, exc)
+            return None, None, "upstream %s via bornite %s: %s" % (model_id, args.bornite, exc)
 
     def _stream_back(self, resp, conn):
         """Relay the upstream response. Raises _UpstreamError if the body
@@ -328,7 +328,7 @@ class Handler(BaseHTTPRequestHandler):
                     conn.close()
                 except Exception:
                     pass
-                sys.stderr.write("[alias-shim:%s] %s -> herd HTTP %d; advancing chain\n"
+                sys.stderr.write("[alias-shim:%s] %s -> bornite HTTP %d; advancing chain\n"
                                  % (args.target, cand, st))
                 conn, resp = None, None
                 continue
@@ -336,7 +336,7 @@ class Handler(BaseHTTPRequestHandler):
             break
 
         if resp is None:
-            self._send_json(502, {"error": err or "herd unreachable",
+            self._send_json(502, {"error": err or "bornite unreachable",
                                   "chain": chain, "served": served})
             return
         try:
@@ -356,6 +356,6 @@ class Handler(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    sys.stderr.write("[alias-shim] target=%s standby=%s advance_on=%s alias=%s -> herd %s (selection: router-config)\n"
-                     % (args.target, args.standby or [], args.advance_on, args.name, args.herd))
+    sys.stderr.write("[alias-shim] target=%s standby=%s advance_on=%s alias=%s -> bornite %s (selection: router-config)\n"
+                     % (args.target, args.standby or [], args.advance_on, args.name, args.bornite))
     ThreadingHTTPServer(("127.0.0.1", args.port), Handler).serve_forever()

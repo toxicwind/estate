@@ -135,8 +135,8 @@ describe("hedgedChain (HFT redundant-feeds)", () => {
 
 describe("normalizeModelSpec (router-side Openfang shim)", () => {
   test("provider:model colon form", () => {
-    const r = normalizeModelSpec("herd:beellama/exaone-4-0-1-2b-iq4xs");
-    expect(r.provider).toBe("herd");
+    const r = normalizeModelSpec("bornite:beellama/exaone-4-0-1-2b-iq4xs");
+    expect(r.provider).toBe("bornite");
     expect(r.model).toContain("exaone");
   });
   test("provider/model slash form", () => {

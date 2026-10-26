@@ -23,7 +23,7 @@ From `diegovisk-pi-nvidia-nim`:
 - **lib/** — Router policy, event streams, retry helpers
 
 ### Models
-C++ implementations from herd engines:
+C++ implementations from bornite engines:
 - nemotron.cpp, nemotron-h.cpp, nemotron-h-moe.cpp
 
 ### Plans

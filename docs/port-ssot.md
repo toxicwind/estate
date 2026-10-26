@@ -45,7 +45,7 @@ exits 0, real conflicts exit 1, and bad usage exits 2.
 
 `projects/ops/bin/port-audit.sh` is a separate, complementary sweep. It
 answers the questions this one does not: dead `pitchfork.toml` claims,
-herd dynamic-pool slots, Tailscale Serve backends answering 502, and
+bornite dynamic-pool slots, Tailscale Serve backends answering 502, and
 EADDRINUSE failures scraped from the logs. Use both.
 
 Findings:
@@ -58,9 +58,9 @@ Findings:
 | EXPECTED BUT DARK | SSOT port with no listener | informational (many daemons optional) |
 
 Intentional multi-name ports live in `ALIAS_GROUPS` in the script
-(e.g. `HERD_PORT`/`HERD_PORT` — herd.sh launches the herd
-binary). Ports 25001–25099 are the herd dynamic backend pool
-(`herd.yaml` startPort) and are informational.
+(e.g. `HERD_PORT`/`HERD_PORT` — bornite.sh launches the bornite
+binary). Ports 25001–25099 are the bornite dynamic backend pool
+(`bornite.yaml` startPort) and are informational.
 
 **Protected (verify-only, never re-point or kill):** squawk ws `25147`,
 squawk feed `25135`, bridge exec-ws `8379`.
@@ -82,7 +82,7 @@ Fixed:
   (oracle-core), `AWR_MCP_PORT=25198` (MCP bridge).
 
 Left unregistered (non-estate / third-party, reported not fixed):
-`:25193` hodos, `:25194` ralph-dashboard, `:25195` codebase-memory-mcp
+`:25193` rhodochrosite, `:25194` ralph-dashboard, `:25195` codebase-memory-mcp
 (transient), `:25197` boundless.
 
 Known stale public routes (tailscale serve, out of SSOT scope — flagged

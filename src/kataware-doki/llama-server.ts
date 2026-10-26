@@ -1,6 +1,6 @@
 // llama-server.ts — First-class llama.cpp server provider
 // NOT an Ollama wrapper. Direct llama-server HTTP API.
-// Core primitive: herd (distributed node failover)
+// Core primitive: bornite (distributed node failover)
 
 export interface LlamaServerConfig {
   baseUrl: string; // e.g., http://awrawr-pc:8080
@@ -54,7 +54,7 @@ export class LlamaMesh {
     setInterval(() => this.evict(), this.heartbeatMs);
   }
 
-  // herd: pick best node for inference
+  // bornite: pick best node for inference
   swap(model?: string): LlamaNode | undefined {
     const candidates = Array.from(this.nodes.values())
       .filter((n) => n.status === "idle" && (!model || n.model === model))
@@ -172,7 +172,7 @@ export async function llamaChat(
   }
 }
 
-// herd: try nodes until one succeeds
+// bornite: try nodes until one succeeds
 export async function llamaSwap(
   configs: LlamaServerConfig[],
   prompt: string,

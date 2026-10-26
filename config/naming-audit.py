@@ -16,8 +16,8 @@ Dimensions:
   port-literal    literal --port N in pitchfork.toml run lines (convention:
                   literal + SSOT comment; ${} expansion proved unreliable
                   2026-09-20 toolcall-llm stoi crash)
-  herd-peer-case  peer names must be kebab-case
-  herd-route-dup  duplicate model alias under models:
+  bornite-peer-case  peer names must be kebab-case
+  bornite-route-dup  duplicate model alias under models:
   daemon-id       daemon ids use dashes, not underscores
 
 Exit 0 always (report, don't fail); --json for machine consumption.
@@ -83,7 +83,7 @@ for f in scoped_files(ENV_DECL_EXTS):
 defined = {}
 yaml_macro_keys = set()  # same-file YAML anchors/macros (e.g. SRV_PORT:)
 for name in ("config/ports.env", ".secrets.example", "profiles/default.yml",
-             "config/herd.yaml"):
+             "config/bornite.yaml"):
     p = os.path.join(ROOT, name)
     if not os.path.isfile(p):
         continue
@@ -97,7 +97,7 @@ for name in ("config/ports.env", ".secrets.example", "profiles/default.yml",
 # documented secret names (values live in /home/toxic/.secrets, never here)
 DOCUMENTED_SECRETS = {"HF_TOKEN", "MISTRAL_API_KEY", "MOONSHOT_API_KEY",
                       "OPENROUTER_API_KEY", "OPENROUTER_API_KEY_1",
-                      "OPENROUTER_API_KEY_FREE", "HODOS_API_KEY",
+                      "OPENROUTER_API_KEY_FREE", "RHODOCHROSITE_API_KEY",
                       "GEMINI_API_KEY", "NVIDIA_API_KEY", "GITHUB_TOKEN"}
 
 for v, locs in sorted(env_refs.items()):
@@ -245,10 +245,10 @@ if os.path.isfile(pt):
                  "without SSOT comment (convention: literal + SSOT comment)"
                  % (i, m.group(1)))
 
-# ---- 3. herd.yaml ------------------------------------------------------------
-herd = os.path.join(ROOT, "config/herd.yaml")
-if os.path.isfile(herd):
-    lines = open(herd, encoding="utf-8", errors="replace").read().split("\n")
+# ---- 3. bornite.yaml ------------------------------------------------------------
+bornite = os.path.join(ROOT, "config/bornite.yaml")
+if os.path.isfile(bornite):
+    lines = open(bornite, encoding="utf-8", errors="replace").read().split("\n")
     section = None
     peers, routes = [], []
     seen_routes = {}
@@ -268,14 +268,14 @@ if os.path.isfile(herd):
                 seen_routes[m.group(1)] = seen_routes.get(m.group(1), 0) + 1
     for p in peers:
         if not re.fullmatch(r"[a-z0-9][a-z0-9-]*", p):
-            note("warn", "herd-peer-case", "peer not kebab-case: %s" % p)
+            note("warn", "bornite-peer-case", "peer not kebab-case: %s" % p)
     for r, n in sorted(seen_routes.items()):
         if n > 1:
-            note("error", "herd-route-dup",
+            note("error", "bornite-route-dup",
                  "model alias %r defined %d times" % (r, n))
     for r in routes:
         if not re.fullmatch(r"[a-z0-9][a-z0-9_.-]*", r):
-            note("warn", "herd-route-case", "model alias not kebab/snake: %s"
+            note("warn", "bornite-route-case", "model alias not kebab/snake: %s"
                  % r)
 
 # ---- 4. pitchfork daemon ids ---------------------------------------------------

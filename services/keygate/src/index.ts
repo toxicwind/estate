@@ -1,5 +1,5 @@
 // @estate/keypool — main entrypoint.
-// Port of herd-keypool.py main(). Bun.serve replaces ThreadingHTTPServer.
+// Port of bornite-keypool.py main(). Bun.serve replaces ThreadingHTTPServer.
 
 import { Pool } from "./pool.js";
 import { loadKeypoolConfig } from "./config.js";
@@ -46,7 +46,7 @@ function loadPools(): void {
   );
 }
 
-// SIGHUP reload (parity with herd-keypool.py)
+// SIGHUP reload (parity with bornite-keypool.py)
 process.on("SIGHUP", () => {
   console.log(`[${SERVICE}] SIGHUP: reloading pools config`);
   try {

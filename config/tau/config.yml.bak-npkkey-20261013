@@ -1,10 +1,10 @@
 plugins:
-- name: herd
-  source: ./projects/range/ranch/stockyard/herd
+- name: bornite
+  source: ./projects/range/ranch/stockyard/bornite
   merged: estate-swap
   privileged: true
-- name: hodos
-  source: ./projects/range/ranch/stockyard/hodos
+- name: rhodochrosite
+  source: ./projects/range/ranch/stockyard/rhodochrosite
   privileged: true
 - name: gatehouse
   source: ./projects/range/ranch/barn/gatehouse
@@ -14,7 +14,7 @@ plugins:
   source: ./projects/range/ranch/stockyard/router-legacy
   merged:
   - router-legacy
-  - stockyard-hodos-router
+  - stockyard-rhodochrosite-router
   - estate-router
   privileged: true
 - name: barn-browser
@@ -282,8 +282,8 @@ retry:
     - openrouter/liquid/lfm-2.5-2.6b:free
     - openrouter/nvidia/nemotron-3-super-120b-a12b:free
     - openrouter/inclusionai/ling-3.0-flash-fin:free
-    # estate/free (:25104) and herd/qwen-flash-da-128k (:25100) are both
-    # down — herd's dependency gatehouse aborts startup on a missing
+    # estate/free (:25104) and bornite/qwen-flash-da-128k (:25100) are both
+    # down — bornite's dependency gatehouse aborts startup on a missing
     # projects/range/ranch/barn/gatehouse/bin/github-mcp.sh. These two are verified
     # 200 against openrouter and restore the chain's whole point.
     google-antigravity/*:

@@ -12,9 +12,9 @@ export ESTATE_PROFILE="toxic"
 # agent config (config/tau/agent/config.yml), not from the environment.
 export SCOUT_MODEL="local-fast"
 export SCOUT_BASE_URL="http://127.0.0.1:25100/v1"
-export SCOUT_API_KEY="herd"
+export SCOUT_API_KEY="bornite"
 export NIM_QUEUE_BASE_URL="http://127.0.0.1:8000/v1"
-export HERD_MODEL="beellama/qwen-flash-64k"
+export BORNITE_MODEL="beellama/qwen-flash-64k"
 
 # 2. Local Mesh & Gateway Ports (aligned with estate/config/ports.env)
 export HERD_PORT="25100"

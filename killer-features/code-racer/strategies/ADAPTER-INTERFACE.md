@@ -50,7 +50,7 @@ strategies/<name>/run <task-dir> <output-path>
 | `plan-then-code` | model writes plan → model writes code from plan | `fast` / tool depending on step |
 | `test-first` | model writes tests → code → self-repair loop vs its own tests | tool model |
 | `router-hedged` | ask estate-router-ts :25104 with hedgedChain | router decides |
-| `kimi-auto` | shim-resolved Kimi model via herd :25100 | kimi-auto |
+| `kimi-auto` | shim-resolved Kimi model via bornite :25100 | kimi-auto |
 | `oracle-consensus` | two models propose, third judges | fast + tool, judge tool |
 | `evolve` | N samples, behavioral self-consistency vote on spec-generated probes | tool |
 | `reviewer-rank` | N samples, reviewer scores 1-10, top wins (CoderReviewer idea, reimplemented — vendor CC-BY-NC) | tool samples + reviews |

@@ -12,8 +12,8 @@ parseable into these layers. If it isn't, it's a bug — run the validator.
 
 | # | Layer | What it is | Examples |
 |---|-------|-----------|----------|
-| 1 | **Lane** (execution source) | WHERE it runs. Tau provider name. Closed set: `herd`, `estate` | `herd/…`, `estate/free` |
-| 2 | **Source** (who serves it) | Local: the fork/builder. Cloud: the API provider (peer name) | `beellama`, `mradermacher`, `jackrong`, `mistral`, `moonshot`, `gemini`, `openrouter-free`, `hodos-direct`, `toolcall-local` |
+| 1 | **Lane** (execution source) | WHERE it runs. Tau provider name. Closed set: `bornite`, `estate` | `bornite/…`, `estate/free` |
+| 2 | **Source** (who serves it) | Local: the fork/builder. Cloud: the API provider (peer name) | `beellama`, `mradermacher`, `jackrong`, `mistral`, `moonshot`, `gemini`, `openrouter-free`, `rhodochrosite-direct`, `toolcall-local` |
 | 3 | **Identity** (upstream model) | The model family, no provider prefix | `exaone-4.0-1.2b`, `qwen3.5-9b-deepseek-v4-flash`, `gemma-4-12b`, `qwen-flash`, `ministral-8b-latest`, `kimi-k2.6` |
 | 4 | **Variant** (quant+ctx+build) | Quantization, context window, build flags | `iq4xs-32k`, `q4km-64k`, `da-128k`, `uncensored`, `i1` |
 | 5 | **Policy alias** (DEPRECATED) | Generic words kept ONLY as compat aliases | `fast`, `tiny`, `small`, `medium`, `code`, `long`, `uncensored` |
@@ -30,11 +30,11 @@ parseable into these layers. If it isn't, it's a bug — run the validator.
 - `exaone-1.2b-iq4xs-32k` → `beellama/exaone-4-0-1-2b-iq4xs`
 
 **Peer (cloud) model:** `{peer}/{upstream-id-verbatim}`
-- `mistral/ministral-8b-latest`, `moonshot/kimi-k2.6`, `hodos-direct/nvidia/nemotron-3.5-lightning-30b-a3b`
+- `mistral/ministral-8b-latest`, `moonshot/kimi-k2.6`, `rhodochrosite-direct/nvidia/nemotron-3.5-lightning-30b-a3b`
 - The upstream ID is sent VERBATIM to the provider proxy — never shortened.
 
 **Tau client ref:** `{lane}/{model-or-alias}`
-- `herd/qwen-flash-da-128k`, `herd/beellama/exaone-4-0-1-2b-iq4xs`, `estate/free`
+- `bornite/qwen-flash-da-128k`, `bornite/beellama/exaone-4-0-1-2b-iq4xs`, `estate/free`
 
 ## Rules
 
@@ -47,7 +47,7 @@ parseable into these layers. If it isn't, it's a bug — run the validator.
 2. **Double source qualification is inherent for peers, forbidden elsewhere.**
    `mistral/mistral-medium-latest` looks redundant but the upstream API ID
    really is `mistral-medium-latest` — the proxy needs it verbatim. What is
-   forbidden: inventing a THIRD level (tau refs are `herd/mistral/…`, never
+   forbidden: inventing a THIRD level (tau refs are `bornite/mistral/…`, never
    deeper) or adding a redundant prefix to a local model that already carries
    its builder.
 3. **One alias → one model, always.** Alias collisions fail validation.
@@ -58,10 +58,10 @@ parseable into these layers. If it isn't, it's a bug — run the validator.
 5. **Every consumer ref must resolve to a HEALTHY model.** Tau `modelRoles`,
    router profiles, matrix vars, fifo priorities — all validated against the
    live `/v1/models` catalog and `model-health.json`. (2026-09-20: the
-   `backup` router profile pointed at `herd/pollinations-free/openai`, a model
+   `backup` router profile pointed at `bornite/pollinations-free/openai`, a model
    that no longer exists — caught by this rule.)
 6. **Stale refs are bugs.** Quarantined/removed models MUST NOT appear in
-   matrix vars, evict_costs, scheduler, roles, or profiles. herd
+   matrix vars, evict_costs, scheduler, roles, or profiles. bornite
    fail-closes on dangling matrix refs (keeps serving the OLD config).
 7. **Duplicate upstream claims must be explicit variants.** Three builds of
    `qwen3.5-9b-deepseek-v4-flash` exist (`mradermacher` i1 q4_k_m/q4_k_s,

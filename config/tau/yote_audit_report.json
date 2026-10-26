@@ -116,9 +116,9 @@
   "top_swap_owners": [
     {
       "pid": 2425926,
-      "name": "hodos",
+      "name": "rhodochrosite",
       "swap_mb": 1075.3,
-      "cmd": "/home/toxic/estate/ranch/hodos/proxy/target/release/hodos"
+      "cmd": "/home/toxic/estate/ranch/rhodochrosite/proxy/target/release/rhodochrosite"
     },
     {
       "pid": 3263,
@@ -154,7 +154,7 @@
       "pid": 988933,
       "name": "llama-server",
       "swap_mb": 398.5,
-      "cmd": "/home/toxic/estate/engines/herd/beellama.cpp/build-cuda86/bin/llama-server --model /home/toxic/models/EXAONE-4.0-1.2B-IQ"
+      "cmd": "/home/toxic/estate/engines/bornite/beellama.cpp/build-cuda86/bin/llama-server --model /home/toxic/models/EXAONE-4.0-1.2B-IQ"
     },
     {
       "pid": 3460243,

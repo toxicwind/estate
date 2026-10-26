@@ -1,5 +1,5 @@
 <script lang="ts">
-	// ComfyUI, served by herd itself. The backend proxies /comfyui/ to the
+	// ComfyUI, served by bornite itself. The backend proxies /comfyui/ to the
 	// fixed local model comfyui_auto: an explicit request for the /comfyui/
 	// root starts the model, sub-paths 409 while it is not loaded. This route
 	// therefore renders from the model state the /api/events feed reports --
@@ -7,7 +7,7 @@
 	// covers the stopped state. No polling: the feed pushes state changes.
 	//
 	// The launch request is retried with backoff (immediate, 2s, 8s) because
-	// herd can be mid-start when it is first hit; and the mounted iframe is
+	// bornite can be mid-start when it is first hit; and the mounted iframe is
 	// guarded by a 15s load timer -- a model can report "ready" while ComfyUI
 	// itself is unreachable behind the proxy, which must show an error card
 	// rather than a blank page.
@@ -139,7 +139,7 @@
 			// The explicit root request is what starts the model on the
 			// backend; the events feed flips the phase to ready when it is
 			// up, which mounts the iframe below. Retried with backoff so a
-			// slow herd start does not surface as a one-shot failure.
+			// slow bornite start does not surface as a one-shot failure.
 			await launchWithRetry(
 				fetch,
 				url,
@@ -172,7 +172,7 @@
 		<div>
 			<h1 class="text-lg font-semibold">ComfyUI</h1>
 			<p class="text-muted-foreground text-sm">
-				Node-graph image generation, served through herd.
+				Node-graph image generation, served through bornite.
 			</p>
 		</div>
 		<div class="flex items-center gap-2">
@@ -257,7 +257,7 @@
 					>
 						<CircleAlert class="text-destructive size-7" />
 					</span>
-					<h2 class="text-base font-semibold">Cannot reach herd</h2>
+					<h2 class="text-base font-semibold">Cannot reach bornite</h2>
 					<p class="text-muted-foreground text-sm">
 						The backend is unreachable, so ComfyUI state is unknown. Check
 						the connection indicator in the sidebar.
@@ -270,8 +270,8 @@
 					</span>
 					<h2 class="text-base font-semibold">ComfyUI is not configured</h2>
 					<p class="text-muted-foreground text-sm">
-						This herd instance has no <span class="font-mono">{COMFYUI_MODEL_ID}</span>
-						model configured. Add one to the herd config to enable this tab.
+						This bornite instance has no <span class="font-mono">{COMFYUI_MODEL_ID}</span>
+						model configured. Add one to the bornite config to enable this tab.
 					</p>
 				{:else if phase === "starting"}
 					<span

@@ -7,5 +7,5 @@ dir = "ranch/yote"
 retry = true
 ready_http = "http://127.0.0.1:25102/health"
 
-env = { OPENFANG_URL = "http://127.0.0.1:25196", HODOS_URL = "http://127.0.0.1:25193/v1", YOTE_HODOS_FALLBACK_MODEL = "z-ai/glm-5.3-flash" }
+env = { OPENFANG_URL = "http://127.0.0.1:25196", RHODOCHROSITE_URL = "http://127.0.0.1:25193/v1", YOTE_RHODOCHROSITE_FALLBACK_MODEL = "z-ai/glm-5.3-flash" }
 auto = ["start"]

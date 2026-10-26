@@ -14,7 +14,7 @@ mkdirSync(outDir, { recursive: true });
 
 const pagesSpec = [
   { name: "rust-web", url: "http://127.0.0.1:25101/" },
-  { name: "herd-ui", url: "http://127.0.0.1:25100/ui/" },
+  { name: "bornite-ui", url: "http://127.0.0.1:25100/ui/" },
   { name: "hf-downloader", url: "http://127.0.0.1:25106/" },
   { name: "grafana", url: "http://127.0.0.1:25110/login" },
 ];

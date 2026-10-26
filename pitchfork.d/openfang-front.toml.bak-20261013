@@ -4,7 +4,7 @@
 
 [daemons.openfang-front]
 port = 25103
-run = "exec ./stack/services/_consolidated_herd_20260924/openfang.sh"
+run = "exec ./stack/services/_consolidated_bornite_20260924/openfang.sh"
 dir = "."
 mise = true
 retry = true

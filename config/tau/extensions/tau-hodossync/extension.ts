@@ -59,7 +59,7 @@ function modelLines(models: ProviderModelConfig[], query = "", limit = 80): stri
 		if (lines.length >= limit) break;
 	}
 	if (!filtered.length) lines.push("No models matched.");
-	else if (filtered.length > limit) lines.push(`... ${filtered.length} total; refine with /hodossync models <search>`);
+	else if (filtered.length > limit) lines.push(`... ${filtered.length} total; refine with /rhodochrositesync models <search>`);
 	return lines;
 }
 
@@ -69,12 +69,12 @@ async function showStatus(ctx: FlockContext, agentHome: string, config: FlockCon
 	const result = await probeHealth(probeConfig, ctx.signal);
 	ctx.ui.notify(
 		[
-			"hodos Status",
+			"rhodochrosite Status",
 			"",
 			`Server:     ${probeConfig.serverUrl}`,
 			`Provider:   ${config.providerName}`,
 			`Health:     ${result.ok ? "reachable" : result.unreachable ? "unreachable" : "health check failed"}`,
-			`Configured: ${isConfigured(agentHome) ? "yes" : "no — run /hodossync setup"}`,
+			`Configured: ${isConfigured(agentHome) ? "yes" : "no — run /rhodochrositesync setup"}`,
 			`On unreachable: ${hop.onUnreachable}${hop.fallbackModel ? ` → ${hop.fallbackModel}` : ""}`,
 		].join("\n"),
 		result.ok ? "info" : "warning",
@@ -83,17 +83,17 @@ async function showStatus(ctx: FlockContext, agentHome: string, config: FlockCon
 
 function helpText(): string {
 	return [
-		"hodos commands",
+		"rhodochrosite commands",
 		"",
-		"/hodossync             Status",
-		"/hodossync setup       Configure server URL and API key",
-		"/hodossync sync        Sync models to Ctrl+P / /model picker",
-		"/hodossync models [search]  Browse models",
-		"/hodossync test <model>     Smoke-test the configured hodos inference API",
-		"/hodossync dashboard   Show hodos dashboard URL",
-		"/hodossync config      Show config paths and current settings",
-		"/hodossync autosync [status|on|off|<seconds>]  Background catalog refresh while running",
-		"/hodossync help        Show this help",
+		"/rhodochrositesync             Status",
+		"/rhodochrositesync setup       Configure server URL and API key",
+		"/rhodochrositesync sync        Sync models to Ctrl+P / /model picker",
+		"/rhodochrositesync models [search]  Browse models",
+		"/rhodochrositesync test <model>     Smoke-test the configured rhodochrosite inference API",
+		"/rhodochrositesync dashboard   Show rhodochrosite dashboard URL",
+		"/rhodochrositesync config      Show config paths and current settings",
+		"/rhodochrositesync autosync [status|on|off|<seconds>]  Background catalog refresh while running",
+		"/rhodochrositesync help        Show this help",
 	].join("\n");
 }
 
@@ -168,13 +168,13 @@ async function showConfigDialog(
 	if (!saved) return;
 
 	const persisted: FlockSettings = { ...saved };
-	const envAction = process.env.HODOSSYNC_ON_UNREACHABLE ?? process.env.OMNIROUTE_ON_UNREACHABLE;
+	const envAction = process.env.RHODOCHROSITESYNC_ON_UNREACHABLE ?? process.env.OMNIROUTE_ON_UNREACHABLE;
 	if (envAction === "none" || envAction === "host-fallback") persisted.onUnreachable = storedSettings.onUnreachable;
-	if ((process.env.HODOSSYNC_FALLBACK_MODEL ?? process.env.OMNIROUTE_FALLBACK_MODEL) !== undefined) persisted.fallbackModel = storedSettings.fallbackModel;
+	if ((process.env.RHODOCHROSITESYNC_FALLBACK_MODEL ?? process.env.OMNIROUTE_FALLBACK_MODEL) !== undefined) persisted.fallbackModel = storedSettings.fallbackModel;
 	saveConfig(agentHome, persisted, storedSettings);
 	try {
 		const models = await registerFlockProvider(pi, agentHome, loadConfig(agentHome), persisted, ctx.signal);
-		ctx.ui.notify(`Settings saved; hodos synced ${models.length} model(s).`, "info");
+		ctx.ui.notify(`Settings saved; rhodochrosite synced ${models.length} model(s).`, "info");
 	} catch (error) {
 		ctx.ui.notify(`Settings saved, but sync failed: ${(error as Error).message}`, "error");
 	}
@@ -183,10 +183,10 @@ async function showConfigDialog(
 async function runSetup(ctx: FlockContext, pi: FlockPI, agentHome: string): Promise<FlockConfig | undefined> {
 	const storedSettings = loadSettings(agentHome);
 	const current = loadConfig(agentHome);
-	const serverUrl = await ctx.ui.input("hodos server URL", current.serverUrl);
+	const serverUrl = await ctx.ui.input("rhodochrosite server URL", current.serverUrl);
 	if (serverUrl === undefined) return undefined;
 	const apiKey = await ctx.ui.input(
-		"hodos API key",
+		"rhodochrosite API key",
 		current.apiKey ? "(press enter to keep current)" : "(optional — press enter to skip)",
 	);
 	if (apiKey === undefined) return undefined;
@@ -194,7 +194,7 @@ async function runSetup(ctx: FlockContext, pi: FlockPI, agentHome: string): Prom
 	const next = sanitizeConfig({ ...current, serverUrl, apiKey: apiKey || storedSettings.apiKey });
 	// Only HODOSSYNC_API_KEY can override the stored key; OMNIROUTE_API_KEY is
 	// a different product's token and must never be trusted here.
-	const runtimeConfig = { ...next, apiKey: process.env.HODOSSYNC_API_KEY ?? next.apiKey };
+	const runtimeConfig = { ...next, apiKey: process.env.RHODOCHROSITESYNC_API_KEY ?? next.apiKey };
 	if (!(await checkModelsEndpoint(runtimeConfig, ctx.signal))) {
 		ctx.ui.notify(`Cannot reach ${next.serverUrl}/v1/models.`, "error");
 		return undefined;
@@ -251,7 +251,7 @@ export async function createFlockExtension(pi: FlockPI, options: AgentHomeOption
 		if (!isFlockActiveModel(ctx.model, probeConfig.providerName)) return;
 		const result = await unreachable.probe(probeConfig, ctx.signal, true);
 		if (result.ok || !result.unreachable) return;
-		if (ctx.hasUI) ctx.ui.setStatus("hodossync", "hodos unreachable");
+		if (ctx.hasUI) ctx.ui.setStatus("hodossync", "rhodochrosite unreachable");
 		await maybeHop(ctx);
 	}
 
@@ -264,9 +264,9 @@ export async function createFlockExtension(pi: FlockPI, options: AgentHomeOption
 			const previous = lastSyncCount;
 			lastSyncCount = models.length;
 			const notifyCtx = ctx ?? sessionCtx;
-			if (!quiet) notifyCtx?.ui.notify(`hodos synced ${models.length} model(s).`, "info");
+			if (!quiet) notifyCtx?.ui.notify(`rhodochrosite synced ${models.length} model(s).`, "info");
 			else if (previous > 0 && previous !== models.length) {
-				notifyCtx?.ui.notify(`hodos auto-sync: catalog ${previous} → ${models.length} model(s).`, "info");
+				notifyCtx?.ui.notify(`rhodochrosite auto-sync: catalog ${previous} → ${models.length} model(s).`, "info");
 			}
 			return models.length;
 		})().finally(() => {
@@ -287,7 +287,7 @@ export async function createFlockExtension(pi: FlockPI, options: AgentHomeOption
 		if (intervalSeconds === 0) return;
 		autoSyncTimer = setInterval(() => {
 			void sync(undefined, { quiet: true }).catch((error) => {
-				sessionCtx?.ui.notify(`hodos auto-sync failed: ${(error as Error).message}`, "warning");
+				sessionCtx?.ui.notify(`rhodochrosite auto-sync failed: ${(error as Error).message}`, "warning");
 			});
 		}, intervalSeconds * 1000);
 	}
@@ -310,13 +310,13 @@ export async function createFlockExtension(pi: FlockPI, options: AgentHomeOption
 			try {
 				lastSyncCount = (await registerFlockProvider(pi, agentHome, config, settings, ctx.signal)).length;
 			} catch (error) {
-				if (ctx.hasUI) ctx.ui.notify(`hodos startup sync failed; using previous models: ${(error as Error).message}`, "warning");
+				if (ctx.hasUI) ctx.ui.notify(`rhodochrosite startup sync failed; using previous models: ${(error as Error).message}`, "warning");
 			}
 		}
-		if (!isConfigured(agentHome) && !process.env.HODOSSYNC_URL && !process.env.OMNIROUTE_URL) {
+		if (!isConfigured(agentHome) && !process.env.RHODOCHROSITESYNC_URL && !process.env.OMNIROUTE_URL) {
 			if (ctx.hasUI) {
-				ctx.ui.setStatus("hodossync", "hodos unconfigured");
-				ctx.ui.notify("hodos loaded. Run /hodossync setup to connect.", "warning");
+				ctx.ui.setStatus("hodossync", "rhodochrosite unconfigured");
+				ctx.ui.notify("rhodochrosite loaded. Run /rhodochrositesync setup to connect.", "warning");
 			}
 			return;
 		}
@@ -329,8 +329,8 @@ export async function createFlockExtension(pi: FlockPI, options: AgentHomeOption
 		ctx.ui.setStatus("hodossync", healthStatus(result));
 		if (!result.ok) {
 			const message = result.unreachable
-			? `hodos unreachable at ${probeConfig.serverUrl}. Run /hodossync sync after reconnecting.`
-			: `hodos health check failed at ${probeConfig.serverUrl}.`;
+			? `rhodochrosite unreachable at ${probeConfig.serverUrl}. Run /rhodochrositesync sync after reconnecting.`
+			: `rhodochrosite health check failed at ${probeConfig.serverUrl}.`;
 			ctx.ui.notify(message, "warning");
 		}
 		if (healthTimer) clearInterval(healthTimer);
@@ -378,7 +378,7 @@ export async function createFlockExtension(pi: FlockPI, options: AgentHomeOption
 		if (isUnreachableHttpStatus(event.status)) {
 			pendingRequestFailure = true;
 			unreachable.reset();
-			if (ctx.hasUI) ctx.ui.setStatus("hodossync", "hodos unreachable");
+			if (ctx.hasUI) ctx.ui.setStatus("hodossync", "rhodochrosite unreachable");
 			return;
 		}
 		pendingRequestFailure = false;
@@ -405,7 +405,7 @@ export async function createFlockExtension(pi: FlockPI, options: AgentHomeOption
 		pendingRequestFailure = false;
 		const probeConfig = loadProbeConfig(agentHome);
 		if (ctx.model?.provider !== probeConfig.providerName) return;
-		if (ctx.hasUI) ctx.ui.setStatus("hodossync", "hodos unreachable");
+		if (ctx.hasUI) ctx.ui.setStatus("hodossync", "rhodochrosite unreachable");
 		unreachable.reset();
 		await maybeHop(ctx);
 	});
@@ -417,7 +417,7 @@ export async function createFlockExtension(pi: FlockPI, options: AgentHomeOption
 	pi.registerTool({
 		name: "hodossync_status",
 		label: "hodossync Status",
-		description: "Return hodos gateway health and provider registration status.",
+		description: "Return rhodochrosite gateway health and provider registration status.",
 		parameters: { type: "object", properties: {} },
 		async execute(_id, _params, signal) {
 			const current = loadProbeConfig(agentHome);
@@ -428,7 +428,7 @@ export async function createFlockExtension(pi: FlockPI, options: AgentHomeOption
 				content: [
 					{
 						type: "text",
-						text: `hodos ${result.ok ? "reachable" : result.unreachable ? "unreachable" : "health check failed"}; configured: ${configured}; provider: ${current.providerName}.`,
+						text: `rhodochrosite ${result.ok ? "reachable" : result.unreachable ? "unreachable" : "health check failed"}; configured: ${configured}; provider: ${current.providerName}.`,
 					},
 				],
 				details: {
@@ -448,13 +448,13 @@ export async function createFlockExtension(pi: FlockPI, options: AgentHomeOption
 	pi.registerTool({
 		name: "hodossync_sync",
 		label: "hodossync Sync",
-		description: "Fetch /v1/models from the hodos gateway and register them as a provider.",
+		description: "Fetch /v1/models from the rhodochrosite gateway and register them as a provider.",
 		parameters: { type: "object", properties: {} },
 		async execute(_id, _params, signal) {
 			const current = loadConfig(agentHome);
 			const models = await registerFlockProvider(pi, agentHome, current, loadSettings(agentHome), signal);
 			return {
-				content: [{ type: "text", text: `hodos synced ${models.length} model(s).` }],
+				content: [{ type: "text", text: `rhodochrosite synced ${models.length} model(s).` }],
 				details: { count: models.length, provider: current.providerName },
 			};
 		},
@@ -462,7 +462,7 @@ export async function createFlockExtension(pi: FlockPI, options: AgentHomeOption
 
 
 	pi.registerCommand("hodossync", {
-		description: "hodos: /hodossync [setup|sync|models|test|dashboard|config|autosync|router|help]",
+		description: "rhodochrosite: /rhodochrositesync [setup|sync|models|test|dashboard|config|autosync|router|help]",
 		getArgumentCompletions(prefix) {
 			return ["setup", "sync", "models", "test", "dashboard", "config", "autosync", "help"]
 				.filter((value) => value.startsWith(prefix))
@@ -492,17 +492,17 @@ export async function createFlockExtension(pi: FlockPI, options: AgentHomeOption
 						return [];
 					});
 					return ctx.ui.notify(
-						[`hodos models (${models.length})`, "", ...modelLines(models, rest.join(" "))].join("\n"),
+						[`rhodochrosite models (${models.length})`, "", ...modelLines(models, rest.join(" "))].join("\n"),
 						"info",
 					);
 				}
 				if (sub === "test") {
 					const model = rest.join(" ");
-					if (!model) return ctx.ui.notify("Usage: /hodossync test <model>", "warning");
+					if (!model) return ctx.ui.notify("Usage: /rhodochrositesync test <model>", "warning");
 					return ctx.ui.notify(`Test ${model}: ${await testChat(config, model, ctx.signal)}`, "info");
 				}
 				if (sub === "dashboard" || sub === "dash") {
-					return ctx.ui.notify(`hodos dashboard: ${config.serverUrl}`, "info");
+					return ctx.ui.notify(`rhodochrosite dashboard: ${config.serverUrl}`, "info");
 				}
 				if (sub === "router") {
 					const routerCmd = pi.commands.get("router");
@@ -531,14 +531,14 @@ export async function createFlockExtension(pi: FlockPI, options: AgentHomeOption
 						const value = Number(arg);
 						if (Number.isSafeInteger(value)) seconds = value;
 					}
-					if (seconds === undefined) return ctx.ui.notify("Usage: /hodossync autosync [status|on|off|<seconds>]", "warning");
+					if (seconds === undefined) return ctx.ui.notify("Usage: /rhodochrositesync autosync [status|on|off|<seconds>]", "warning");
 					saveSettings(agentHome, { ...settings, autoSyncIntervalSeconds: Math.floor(seconds) });
 					startAutoSync(ctx);
-					return ctx.ui.notify(`hodos auto-sync ${seconds === 0 ? "disabled" : `set to every ${seconds}s`}.`, "info");
+					return ctx.ui.notify(`rhodochrosite auto-sync ${seconds === 0 ? "disabled" : `set to every ${seconds}s`}.`, "info");
 				}
-				ctx.ui.notify(`Unknown /hodossync command '${sub}'.\n\n${helpText()}`, "warning");
+				ctx.ui.notify(`Unknown /rhodochrositesync command '${sub}'.\n\n${helpText()}`, "warning");
 			} catch (error) {
-				ctx.ui.notify(`hodos error: ${(error as Error).message}`, "error");
+				ctx.ui.notify(`rhodochrosite error: ${(error as Error).message}`, "error");
 			}
 		},
 	});
@@ -546,7 +546,7 @@ export async function createFlockExtension(pi: FlockPI, options: AgentHomeOption
 	// Legacy alias: OmniRoute was the old product name. Kept so existing muscle
 	// memory and any scripted /omni invocations keep working.
 	pi.registerCommand("omni", {
-		description: "Alias for /hodossync (legacy OmniRoute name)",
+		description: "Alias for /rhodochrositesync (legacy OmniRoute name)",
 		async handler(args, ctx) {
 			const hodossyncCmd = pi.commands.get("hodossync");
 			if (hodossyncCmd) return hodossyncCmd.handler(args, ctx);

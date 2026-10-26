@@ -5,7 +5,7 @@ All work: permanent repo artifacts, committed, verified repeatedly.
 
 ## Impact-ordered additions
 
-### 1. Keypool concurrent first-valid-wins racing — `bin/herd-keypool.py`
+### 1. Keypool concurrent first-valid-wins racing — `bin/bornite-keypool.py`
 
 **Commits:** `ca0c6360d9` (racing) + `9cf22108ae` (recovery-semantics review fix)
 
@@ -53,7 +53,7 @@ primary → backup fired at ~150ms and won at ~0.18s.
 **Commit:** `f8241e90cf`
 
 `publish_scores.py` reads exact-output probe JSONL and writes an advisory
-score artifact. **Read-only by construction** — never touches `herd.yaml`,
+score artifact. **Read-only by construction** — never touches `bornite.yaml`,
 never parks peers, never alters selection (router-adjacent only, per lane
 carve). Method: reliability = observed exact-output rate; Wilson 95% lower
 bound penalizes small samples; latency P50/P95 from exact passes only;

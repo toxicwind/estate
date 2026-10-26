@@ -13,7 +13,7 @@ const ports = parsePortsEnv(ROOT);
 describe("Estate Web UI Registry", () => {
   test("ESTATE_WEB_UIS contains essential core dashboards", () => {
     const ids = ESTATE_WEB_UIS.map((u) => u.id);
-    expect(ids).toContain("herd");
+    expect(ids).toContain("bornite");
     expect(ids).toContain("mesh");
     expect(ids).toContain("prometheus");
     expect(ids).toContain("grafana");
@@ -50,8 +50,8 @@ describe("Estate Web UI Registry", () => {
     expect(["down", "timeout"]).toContain(result.statusText);
   });
 
-  test("probeUI detects live herd / herd endpoint", async () => {
-    const herdSpec = ESTATE_WEB_UIS.find((u) => u.id === "herd");
+  test("probeUI detects live bornite / bornite endpoint", async () => {
+    const herdSpec = ESTATE_WEB_UIS.find((u) => u.id === "bornite");
     expect(herdSpec).toBeDefined();
     if (herdSpec) {
       const result = await probeUI(herdSpec, 500);

@@ -84,7 +84,7 @@ struct IntegrationProbe {
 
 #[derive(Serialize)]
 struct IntegrationsResponse {
-    herd: IntegrationProbe,
+    bornite: IntegrationProbe,
     chat_ui: String,
     hf_downloader: IntegrationProbe,
     fleet_last: Option<serde_json::Value>,
@@ -132,7 +132,7 @@ async fn get_integrations() -> Json<IntegrationsResponse> {
     let hf_url = format!("http://127.0.0.1:{hf_port}/api/health");
     let swap_health = format!("{}/health", swap_base.trim_end_matches('/'));
 
-    let herd = probe_url("herd", &swap_health, "/health").await;
+    let bornite = probe_url("bornite", &swap_health, "/health").await;
     let hf_downloader = probe_url("hf-downloader", &hf_url, "/api/health").await;
 
     let fleet_last = std::fs::read_to_string(
@@ -146,14 +146,14 @@ async fn get_integrations() -> Json<IntegrationsResponse> {
         .and_then(|s| serde_json::from_str(&s).ok());
 
     Json(IntegrationsResponse {
-        herd,
+        bornite,
         chat_ui: format!("{}/ui/", swap_base.trim_end_matches('/')),
         hf_downloader,
         fleet_last,
         forks,
         notes: vec![
-            "Chat UI is herd /ui — not this dashboard".into(),
-            "LD paths for 4 forks live in tools/herd/config.yaml macros (*_ld)".into(),
+            "Chat UI is bornite /ui — not this dashboard".into(),
+            "LD paths for 4 forks live in tools/bornite/config.yaml macros (*_ld)".into(),
             "Fleet bench: tools/fleet/bench-forks.sh (graduated ctx; no 27B max first)".into(),
         ],
     })
@@ -391,7 +391,7 @@ async fn health() -> Json<Health> {
 async fn get_logs() -> Json<Vec<String>> {
     let mut logs = Vec::new();
 
-    if let Ok(content) = std::fs::read_to_string("/home/toxic/estate/.state/logs/herd.log")
+    if let Ok(content) = std::fs::read_to_string("/home/toxic/estate/.state/logs/bornite.log")
     {
         let lines: Vec<&str> = content.lines().collect();
         let start = if lines.len() > 15 {
@@ -403,11 +403,11 @@ async fn get_logs() -> Json<Vec<String>> {
             if let Ok(val) = serde_json::from_str::<serde_json::Value>(line) {
                 if let Some(msg) = val["message"].as_str() {
                     if !msg.contains("slot print_timing") && !msg.contains("srv  update_slots") {
-                        logs.push(format!("[Herd] {}", msg));
+                        logs.push(format!("[Bornite] {}", msg));
                     }
                 }
             } else {
-                logs.push(format!("[Herd] {}", line));
+                logs.push(format!("[Bornite] {}", line));
             }
         }
     }
@@ -440,7 +440,7 @@ async fn get_status() -> Json<HashMap<String, StatusResponse>> {
 
     if pc_running.is_empty() {
         let defaults = vec![
-            ("Herd", "herd", 25100),
+            ("Bornite", "bornite", 25100),
             ("OpenFang Core", "openfang", 25103),
             ("Ouroboros", "rust-web", 25101),
             ("Prometheus", "prometheus", 25105),
@@ -456,7 +456,7 @@ async fn get_status() -> Json<HashMap<String, StatusResponse>> {
     } else {
         for (name, is_running) in pc_running {
             let ui_name = match name.as_str() {
-                "herd" => "Herd",
+                "bornite" => "Bornite",
                 "openfang" => "OpenFang Core",
                 "rust-web" => "Ouroboros",
                 "prometheus" => "Prometheus",
@@ -468,7 +468,7 @@ async fn get_status() -> Json<HashMap<String, StatusResponse>> {
                 _ => &name,
             };
             let port = match name.as_str() {
-                "herd" => 25100,
+                "bornite" => 25100,
                 "openfang" => 25103,
                 "rust-web" => 25101,
                 "prometheus" => 25105,
@@ -535,7 +535,7 @@ async fn get_telemetry() -> Json<TelemetryResponse> {
 fn get_model_priorities() -> HashMap<String, u32> {
     let mut map = HashMap::new();
     if let Ok(content) =
-        std::fs::read_to_string("/home/toxic/estate/tools/herd/config.yaml")
+        std::fs::read_to_string("/home/toxic/estate/tools/bornite/config.yaml")
     {
         let mut in_priority = false;
         for line in content.lines() {
@@ -716,7 +716,7 @@ async fn main() {
         .route("/mesh/whoami", get(mesh_whoami))
         .route("/mesh/status", get(mesh_status))
         .route("/mesh/routes", get(mesh_routes))
-        // Chat UI is herd :25100/ui — no proxy chat on this dashboard
+        // Chat UI is bornite :25100/ui — no proxy chat on this dashboard
         .route("/ops/api/logs", get(get_logs))
         .route("/ops/api/status", get(get_status))
         .route("/ops/api/telemetry", get(get_telemetry))
@@ -769,10 +769,10 @@ async fn main() {
                 }
             }),
         )
-        // Single Svelte build mounted at /herd-ui only. The built herd UI
+        // Single Svelte build mounted at /bornite-ui only. The built bornite UI
         // is byte-identical to the former mesh UI source; mesh keeps its
         // Mesh Hub tab as a link-out to :25115 instead of a second build.
-        .nest_service("/herd-ui", ServeDir::new("static/herd-ui"))
+        .nest_service("/bornite-ui", ServeDir::new("static/bornite-ui"))
         .nest_service("/", s);
 
     let p: u16 = std::env::var("RUST_WEB_PORT")

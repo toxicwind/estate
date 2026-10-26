@@ -43,8 +43,8 @@ DEFAULT_ROUTER = "http://127.0.0.1:25104/v1"
 # lane identity and burning cloud inference. Direct pinning keeps each lane
 # on its own backend. Index-aligned with candidates.
 #   lane 1: fast (exaone 1.2B, dedicated llama-server :25122)
-#   lane 2: qwen-flash-64k via herd :25100 (9B-class mid)
-#   lane 3: qwen-flash-256k via herd :25100 (long context)
+#   lane 2: qwen-flash-64k via bornite :25100 (9B-class mid)
+#   lane 3: qwen-flash-256k via bornite :25100 (long context)
 # NOTE: lanes 2+3 share the swap backend -- a model swap between them is
 # possible; the per-hop timings log exposes it. Prefer 3 distinct backends
 # when available. Override with --lanes "url|model,..." or --router.

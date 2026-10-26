@@ -67,10 +67,10 @@ describe("surface registry", () => {
 		expect(new Set(origins).size).toBe(origins.length);
 	});
 
-	it("treats herd as same-origin rather than embedding an empty frame", () => {
-		const herd = SURFACES.find((surface) => surface.id === "herd");
-		expect(herd?.origin).toBe("");
-		expect(EMBEDDABLE_SURFACES.map((s) => s.id)).not.toContain("herd");
+	it("treats bornite as same-origin rather than embedding an empty frame", () => {
+		const bornite = SURFACES.find((surface) => surface.id === "bornite");
+		expect(bornite?.origin).toBe("");
+		expect(EMBEDDABLE_SURFACES.map((s) => s.id)).not.toContain("bornite");
 	});
 
 	it("keeps surfaces in registry order when probing", async () => {

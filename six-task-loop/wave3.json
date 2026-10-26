@@ -41,7 +41,7 @@
     },
     {
       "agent": "96788636-a70f-4f5e-a44b-2374fb2212f3",
-      "lane": "herd-e2e",
+      "lane": "bornite-e2e",
       "relaunch": "main-chat-lane-03dfcfce",
       "status": "refused-spawn"
     },
@@ -67,7 +67,7 @@
   "launched_at": "2026-10-01T07:55:00Z",
   "main_chat_lanes": {
     "chat": "d2a751ef-2a5a-4f69-9bda-d1084a160d1e",
-    "status": "6 lanes running as of 08:28 UTC: TAU (6f449a67), RANCH (98610559), HERD (03dfcfce), QED (f05449ba), SKILL-ROUTING (54a674a9), FLEET (c20cead6)"
+    "status": "6 lanes running as of 08:28 UTC: TAU (6f449a67), RANCH (98610559), BORNITE (03dfcfce), QED (f05449ba), SKILL-ROUTING (54a674a9), FLEET (c20cead6)"
   },
   "updated_at": "2026-10-01T08:50:00Z",
   "wave4": {

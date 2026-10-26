@@ -19,7 +19,7 @@ key_facts:
   - "RL software failure breakdown (Table 7): Generation engine failures/timeouts 56%, Sandbox/tool calling 36%, Other software issues 8% (generation + sandbox/tool ~92% of failures)."
   - "Infra optimization impacts (Table 8): Ray GCS startup 30+ min -> 10 min; Checkpoint blocking 60 sec -> <1 sec; Cold init (JIT) 38.8 min -> 0.4 min; Multi-node vLLM startup 25 min -> 9.5 min; Container extraction 2-3 min (with cascading failures) -> ~0s (warm)."
   - "Slurm launch: many serial srun RPCs scaled O(n) with node count; restructuring to a single multi-node srun reduced controller interactions to O(1); startup dropped from 30+ min to 10 min."
-  - "Ray GCS: at 3K+ GPU scale the single-threaded GCS was overwhelmed by actor registrations (startups 25-49 min, thundering-herd failures); eliminated 40% of actor registrations by converting short-lived actors to tasks and pooling init actors per node; Anyscale fixes shipped in Ray 2.55 public release."
+  - "Ray GCS: at 3K+ GPU scale the single-threaded GCS was overwhelmed by actor registrations (startups 25-49 min, thundering-bornite failures); eliminated 40% of actor registrations by converting short-lived actors to tasks and pooling init actors per node; Anyscale fixes shipped in Ray 2.55 public release."
   - "GB200 NVL72 NVLink domain spans an entire rack (72 GPUs across 18 nodes); topology-aware NVLink domain placement keeps EP all-to-all on NVLink, delivering 20% end-to-end throughput improvement."
   - "NUMA binding: GPUs 0,1 -> NUMA node 0; GPUs 2,3 -> NUMA node 1; binding policy and vLLM workers to the socket-local CPU delivered 10% end-to-end throughput improvement."
   - "Checkpoint save: synchronous saves blocked training ~60s/save; NVRx async checkpointing cut exposed blocking to ~6-8s; with Megatron Core Distributed Optimizer exposed save time reduces to <1 second."
@@ -67,7 +67,7 @@ Generation + sandbox/tool calling = ~92% of failures.
 
 ## Ray GCS scalability and Slurm launch overheads
 - Heterogeneous NeMo-RL job launches training, vLLM generation, gym, and judge workers. Original launch issued multiple separate srun invocations per node; each srun is a serial RPC to slurmctld, scaling O(n) with node count -> bottleneck. Restructured to a single multi-node srun -> O(1) controller interactions; startup 30+ min -> 10 min.
-- At 3K+ GPU scale, Ray's single-threaded GCS overwhelmed by actor registrations (startups 25-49 min, thundering-herd failures). Eliminated 40% of actor registrations (short-lived actors -> tasks, pooled init actors per node) plus aggressive GCS tuning. Anyscale resolved GCS regressions in Ray 2.55 public release.
+- At 3K+ GPU scale, Ray's single-threaded GCS overwhelmed by actor registrations (startups 25-49 min, thundering-bornite failures). Eliminated 40% of actor registrations (short-lived actors -> tasks, pooled init actors per node) plus aggressive GCS tuning. Anyscale resolved GCS regressions in Ray 2.55 public release.
 
 ## Topology-aware NVLink domain placement
 - GB200 NVL72 NVLink domain = an entire rack (72 GPUs across 18 nodes). Without topology awareness, Megatron EP groups can span racks, forcing MoE all-to-all over InfiniBand instead of NVLink.

@@ -1,0 +1,70 @@
+{
+  "$schema": "https://app.kilo.ai/config.json",
+  "plugin": [
+    "file:///home/toxic/estate/.kilo/plugin/estate-thresher.ts",
+    "file:///home/toxic/estate/.kilo/plugin/estate-herd-models.ts",
+    "file:///home/toxic/estate/.kilo/plugin/estate-hodos-strategy.ts",
+    "file:///home/toxic/estate/.kilo/plugin/estate-autofixer.ts"
+  ],
+  "provider": {
+    "hodos": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Hodos (estate router)",
+      "options": {
+        "baseURL": "http://127.0.0.1:25193/v1",
+        "apiKey": "{env:HODOS_API_KEY}"
+      },
+      "models": {
+        "z-ai/glm-5.3-flash": { "name": "GLM-5.3 Flash (hodos)" },
+        "nvidia/nemotron-3-ultra-550b-a55b": { "name": "Nemotron 3 Ultra (hodos)" },
+        "deepseek-ai/deepseek-v4.1-flash": { "name": "DeepSeek V4.1 Flash (hodos)" },
+        "openai/gpt-oss-20b": { "name": "GPT-OSS 20B (hodos)" }
+      }
+    },
+    "freeinference": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "FreeInference (HarvardMadSys Lab)",
+      "options": {
+        "baseURL": "https://freeinference.org/v1",
+        "apiKey": "{env:FREEINFERENCE_API_KEY}"
+      },
+      "models": {
+        "glm-5.3-flash": { "name": "GLM-5.3 Flash" },
+        "minimax-m3": { "name": "MiniMax M3" },
+        "qwen3.6-35b": { "name": "Qwen3.6 35B" },
+        "deepseek-v4-flash": { "name": "DeepSeek V4 Flash" }
+      }
+    },
+    "cuttinggate": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "CuttingGate",
+      "options": {
+        "baseURL": "http://127.0.0.1:25200/v1",
+        "apiKey": "{env:CUTTINGGATE_CLIENT_KEY}"
+      },
+      "models": {}
+    },
+    "nim": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "NVIDIA NIM FREE via nim-proxy",
+      "options": {
+        "baseURL": "http://127.0.0.1:8000/v1",
+        "apiKey": "{env:NIM_PROXY_KEY}"
+      },
+      "models": {
+        "z-ai/glm-5.3-flash-max": { "name": "GLM-5.3 Flash MAX", "limit": { "context": 131072, "output": 32768 }, "options": { "temperature": 0.6, "top_p": 0.95 } },
+        "nvidia/nemotron-3-super-120b-a12b": { "name": "Super 120B MAX", "limit": { "context": 131072, "output": 32768 }, "options": { "temperature": 0.6, "top_p": 0.95 } }
+      }
+    }
+  },
+  "model": "freeinference/glm-5.3-flash",
+  "small_model": "freeinference/deepseek-v4-flash",
+  "default_agent": "code",
+  "compaction": {
+    "auto": true,
+    "prune": true,
+    "reserved": 24000
+  },
+  "snapshot": true,
+  "autoupdate": true
+}

@@ -24,12 +24,12 @@ STATE_TOML = "/home/toxic/.local/state/pitchfork/state.toml"
 LEDGER = "/home/toxic/estate/agents/oracle-market/ledger/ledger.jsonl"
 
 KNOWN_PORTS = {
-    25100: "herd", 25101: "model-guard", 25102: "yote", 25103: "axiom",
+    25100: "bornite", 25101: "model-guard", 25102: "yote", 25103: "axiom",
     25105: "prometheus", 25106: "hf-downloader", 25107: "null-g",
     25109: "keypool", 25110: "grafana", 25127: "mesh-mcp",
     25135: "squawk-feed", 25146: "whatsapp-webhook", 25147: "squawk-ws",
     25148: "brand",
-    25193: "hodos", 25198: "mcp", 25201: "serve-root", 25202: "gemini-mcp",
+    25193: "rhodochrosite", 25198: "mcp", 25201: "serve-root", 25202: "gemini-mcp",
     25204: "exec-ws", 25205: "prom-backend", 25207: "status",
     25208: "nginx", 25209: "matter", 25210: "grafana-backend",
     25211: "node-exporter", 25213: "estate-exporter",

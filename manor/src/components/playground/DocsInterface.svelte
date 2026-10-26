@@ -21,7 +21,7 @@
   import { Button } from "$lib/components/ui/button/index.js";
 
   /**
-   * The Docs Agent: a fixed agentic client for herd's own documentation
+   * The Docs Agent: a fixed agentic client for bornite's own documentation
    * tools. This is the whole of the Help page; routes/Help.svelte only frames
    * it. It sits among the playground components because it is built from them
    * -- the same chat message, model selector and textarea -- not because Help
@@ -518,7 +518,7 @@
       {#if messages.length === 0}
         <EmptyState full>
           <div class="w-full max-w-xl px-4 text-center">
-            <p class="text-foreground text-sm font-medium">Ask herd about herd</p>
+            <p class="text-foreground text-sm font-medium">Ask bornite about bornite</p>
             <p class="mt-1 text-sm">
               Choose a topic below or ask a question to get started.
             </p>
@@ -614,7 +614,7 @@
       <ChatComposer
         bind:ref={inputRef}
         bind:value={userInput}
-        placeholder="Ask about herd..."
+        placeholder="Ask about bornite..."
         onkeydown={handleKeyDown}
         disabled={isStreaming || !$selectedModelStore}
         streaming={isStreaming}

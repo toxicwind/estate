@@ -7,7 +7,7 @@ guessed.**
 [![Answering](https://img.shields.io/badge/answering-24%20%2F%2046-brightgreen.svg)](provider-endpoints.json)
 [![With Qwen](https://img.shields.io/badge/with%20qwen-13-blue.svg)](provider-endpoints.json)
 [![Runtime](https://img.shields.io/badge/runtime-bun-ff69b4.svg)](probe-endpoints.ts)
-[![Catalog SSOT](https://img.shields.io/badge/catalog-pinax-orange.svg)](../../ranch/pinax)
+[![Catalog SSOT](https://img.shields.io/badge/catalog-mimetite-orange.svg)](../../ranch/mimetite)
 
 ---
 
@@ -43,7 +43,7 @@ Writes `provider-endpoints.json` (machine-readable) and
 
 ```mermaid
 graph LR
-  CAT["pinax providers.json<br/>(46 providers)"] --> PROBE[probe-endpoints.ts]
+  CAT["mimetite providers.json<br/>(46 providers)"] --> PROBE[probe-endpoints.ts]
   KEYS["process env<br/>keyEnv / keyEnvs"] --> PROBE
   PROBE --> CAND["candidate paths<br/>/v1/models/sse → /v1/models"]
   CAND --> HTTP[HTTP GET per candidate]
@@ -88,16 +88,16 @@ Notes that cost real time to learn:
 
 | Variable                   | Default                                       | Purpose              |
 | -------------------------- | --------------------------------------------- | -------------------- |
-| `PINAX_PROVIDERS_JSON`     | `estate/ranch/pinax/generated/providers.json` | the catalog to probe |
+| `PINAX_PROVIDERS_JSON`     | `estate/ranch/mimetite/generated/providers.json` | the catalog to probe |
 | `PROBE_TIMEOUT_MS` (const) | `8000`                                        | per-request deadline |
 | `CONCURRENCY` (const)      | `12`                                          | parallel probes      |
 
 ## Development
 
-- The artifact is a **snapshot**, not a source of truth: the catalog in Pinax
+- The artifact is a **snapshot**, not a source of truth: the catalog in Mimetite
   stays the SSOT for _what a provider is_; this file is the truth about
   _what it answers right now_.
-- Re-run it after adding a provider to Pinax, after a port migration, or when
+- Re-run it after adding a provider to Mimetite, after a port migration, or when
   a provider starts 404-ing in the dashboard.
 - Adding a provider whose model list is not under `/v1`? Add a
   `PATH_OVERRIDES` entry with the path — and say why in the comment.

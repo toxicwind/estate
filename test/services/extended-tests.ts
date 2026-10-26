@@ -118,11 +118,11 @@ export const extendedTests: ExtendedServiceTest[] = [
     ],
   },
   {
-    service: "hodos",
-    portKey: "HODOS_PORT",
+    service: "rhodochrosite",
+    portKey: "RHODOCHROSITE_PORT",
     tests: [
       {
-        name: "hodos-api",
+        name: "rhodochrosite-api",
         port: 8000,
         healthEndpoints: ["/health", "/v1/models"],
         skipHttpCheck: false,
@@ -130,12 +130,12 @@ export const extendedTests: ExtendedServiceTest[] = [
     ],
     specialChecks: [
       async () => {
-        // Check hodos binary presence
+        // Check rhodochrosite binary presence
         const proc = Bun.spawn({
           cmd: [
             "bash",
             "-c",
-            "test -x /home/toxic/.hodos/hodos && echo FOUND || echo MISSING",
+            "test -x /home/toxic/.rhodochrosite/rhodochrosite && echo FOUND || echo MISSING",
           ],
           stdout: "pipe",
           stderr: "pipe",
@@ -143,18 +143,18 @@ export const extendedTests: ExtendedServiceTest[] = [
         const stdout = await new Response(proc.stdout).text();
         await proc.exited;
         return {
-          name: "hodos-binary-present",
+          name: "rhodochrosite-binary-present",
           passed: stdout.trim() === "FOUND",
           details: { stdout: stdout.trim(), exitCode: proc.exitCode ?? null },
         };
       },
       async () => {
-        // Check hodos delegation config in herd config
+        // Check rhodochrosite delegation config in bornite config
         const proc = Bun.spawn({
           cmd: [
             "bash",
             "-c",
-            "grep -q '^hodos:' /home/toxic/estate/config/herd.yaml && echo FOUND || echo MISSING",
+            "grep -q '^rhodochrosite:' /home/toxic/estate/config/bornite.yaml && echo FOUND || echo MISSING",
           ],
           stdout: "pipe",
           stderr: "pipe",
@@ -162,19 +162,19 @@ export const extendedTests: ExtendedServiceTest[] = [
         const stdout = await new Response(proc.stdout).text();
         await proc.exited;
         return {
-          name: "hodos-config-present",
+          name: "rhodochrosite-config-present",
           passed: stdout.trim() === "FOUND",
           details: { stdout: stdout.trim(), exitCode: proc.exitCode ?? null },
         };
       },
       async () => {
-        // Check herd delegates cloud models to hodos (flockCloud in source)
+        // Check bornite delegates cloud models to rhodochrosite (flockCloud in source)
         const proc = Bun.spawn({
           cmd: [
             "grep",
             "-r",
             "flockCloud",
-            "/home/toxic/herd-phase3-retire/internal/",
+            "/home/toxic/bornite-phase3-retire/internal/",
             "--include=*.go",
           ],
           stdout: "pipe",
@@ -183,7 +183,7 @@ export const extendedTests: ExtendedServiceTest[] = [
         const stdout = await new Response(proc.stdout).text();
         await proc.exited;
         return {
-          name: "hodos-delegation-code",
+          name: "rhodochrosite-delegation-code",
           passed: stdout.trim().includes("flockCloud"),
           details: { stdout: stdout.trim() },
         };

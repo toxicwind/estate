@@ -14,7 +14,7 @@ CP_PORT="$HINDSIGHT_CP_PORT"
 
 # Resolve LLM credentials — prefer Hindsight-specific, fallback to OpenAI
 # 25+ providers supported via HINDSIGHT_API_LLM_PROVIDER (openai, anthropic, groq, ollama, etc.)
-LLM_KEY="${HINDSIGHT_API_LLM_API_KEY:-$(cat /home/toxic/.hodos-data/client-key.corral 2>/dev/null)}"
+LLM_KEY="${HINDSIGHT_API_LLM_API_KEY:-$(cat /home/toxic/.rhodochrosite-data/client-key.corral 2>/dev/null)}"
 LLM_PROVIDER="${HINDSIGHT_API_LLM_PROVIDER:-openai}"
 HINDSIGHT_API_LLM_BASE_URL="${HINDSIGHT_API_LLM_BASE_URL:-http://127.0.0.1:25193/v1}"
 LLM_MODEL="${HINDSIGHT_API_LLM_MODEL:-openai/gpt-oss-20b}"

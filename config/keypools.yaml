@@ -171,7 +171,7 @@ pools:
   # Key verified live 2026-09-29: /v1/models -> 200 (46 models), chat
   # completions -> 200 on ministral-3b/8b/14b-latest, codestral-latest,
   # mistral-code-latest. mistral-medium-*/magistral-*/mistral-small-* are
-  # 429 at 0 req/min on this key (no entitlement) — NOT listed in herd.yaml.
+  # 429 at 0 req/min on this key (no entitlement) — NOT listed in bornite.yaml.
   # mistral-large-latest is 403 (not entitled).
   mistral:
     upstream: https://api.mistral.ai

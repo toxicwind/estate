@@ -24,23 +24,23 @@ no reverse-proxy path soup, no Caddy.
 | Service                  | Port                      | Local URL                                | Over Tailscale            |
 | ------------------------ | ------------------------- | ---------------------------------------- | ------------------------- |
 | ranch dashboard          | `25218` (`RANCH_UI_PORT`) | `http://127.0.0.1:25218/`                | `https://<magicdns>:8444` |
-| herd (LLM API)           | `25100` (`HERD_PORT`)     | `http://127.0.0.1:25100/v1`              | `http://<magicdns>:25100` |
-| model-guard (herd proxy) | `25101` (`MODEL_GUARD_PORT`) | `http://127.0.0.1:25101/v1`           | `http://<magicdns>:25101` |
+| bornite (LLM API)           | `25100` (`HERD_PORT`)     | `http://127.0.0.1:25100/v1`              | `http://<magicdns>:25100` |
+| model-guard (bornite proxy) | `25101` (`MODEL_GUARD_PORT`) | `http://127.0.0.1:25101/v1`           | `http://<magicdns>:25101` |
 | yote                     | `25102` (`YOTE_PORT`)     | `http://127.0.0.1:25102/`                | `http://<magicdns>:25102` |
 | openfang                 | `25103` (`OPENFANG_PORT`) | `http://127.0.0.1:25103/`                | `http://<magicdns>:25103` |
 | everything else          | see `config/ports.env`    | 25xxx SSOT                               | same pattern              |
 
 The ranch dashboard is the consolidated UI (ranch/range/ui), served by the
-`ranch-ui` daemon: it fronts the built SPA and proxies the herd API
-same-origin, so the dashboard reaches herd exactly as it did when it was
-embedded. herd's `/` redirects there (`HERD_DASHBOARD_URL`). See
+`ranch-ui` daemon: it fronts the built SPA and proxies the bornite API
+same-origin, so the dashboard reaches bornite exactly as it did when it was
+embedded. bornite's `/` redirects there (`BORNITE_DASHBOARD_URL`). See
 `ranch/range/ui/CONSOLIDATION.md`.
 
 ```mermaid
 flowchart LR
     you[laptop / phone] -->|tailscale| dns[<magicdns>]
-    dns -->|:25100| herd[herd · LLM]
-    dns -->|:25101| guard[model-guard · herd proxy]
+    dns -->|:25100| bornite[bornite · LLM]
+    dns -->|:25101| guard[model-guard · bornite proxy]
     dns -->|:25102| yote[yote]
     dns -->|:25103| fang[openfang]
     dns -->|:8444| dash[ranch dashboard]

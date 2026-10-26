@@ -10,7 +10,7 @@ A bare line range (`SWAP 641..674:`) resolves by **position**. If any earlier op
 same patch adds or removes lines, every later op in that patch is off by the drift — and
 hashline applies it *silently*, shredding valid code. Observed three times in one session
 (2026-10-02) on `config/keypools.yaml`, `services/keypool/src/server.ts`, and
-`ranch/hodos/proxy/src/providers.rs` — each time a `keys.push(...)` block or a YAML
+`ranch/rhodochrosite/proxy/src/providers.rs` — each time a `keys.push(...)` block or a YAML
 `keys:` list was truncated mid-literal, surfacing only as a parser error or a Rust build
 failure much later.
 

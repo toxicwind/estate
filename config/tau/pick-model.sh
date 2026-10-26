@@ -13,11 +13,11 @@ CONCURRENCY="${PICK_CONCURRENCY:-8}"
 : > "$LOG"; rm -f "$WIN"; rm -rf "$LOCK"
 
 ENDPOINT='http://127.0.0.1:25193'
-KEY="${HODOS_API_KEY:-}"; [[ -z "$KEY" && -f ~/.tau/hodos.key ]] && KEY=$(<~/.tau/hodos.key)
-[[ -z "$KEY" ]] && { echo "NO HODOS KEY" >&2; exit 3; }
+KEY="${RHODOCHROSITE_API_KEY:-}"; [[ -z "$KEY" && -f ~/.tau/rhodochrosite.key ]] && KEY=$(<~/.tau/rhodochrosite.key)
+[[ -z "$KEY" ]] && { echo "NO RHODOCHROSITE KEY" >&2; exit 3; }
 
-# Only exclude non-hodos aliases. Everything else gets a fair shot.
-BLACKLIST='^local/|^herd/'
+# Only exclude non-rhodochrosite aliases. Everything else gets a fair shot.
+BLACKLIST='^local/|^bornite/'
 
 # ---------- discovery: pure ID list, no health filter ----------
 discover() {

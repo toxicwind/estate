@@ -74,7 +74,7 @@ const phase1 = await Promise.all(contestants.map(async (c) => {
 results.phases.merge = phase1;
 
 // ---------------- phase 2: parallel-edit conflict simulation ----------------
-// This is what killed the last attempt: committed merge-conflict markers in [daemons.hodos].
+// This is what killed the last attempt: committed merge-conflict markers in [daemons.rhodochrosite].
 console.log("== phase 2: parallel-edit conflict simulation (concurrent) ==");
 async function gitRepo(dir: string) {
   await Bun.$`rm -rf ${dir}`.quiet();
@@ -98,14 +98,14 @@ const simMonolithOverlap = (async () => {
   await Bun.$`cp ${WORK}/../pitchfork.toml.orig ${d}/pitchfork.toml`.quiet();
   await sh(["git", "add", "."], d); await sh(["git", "commit", "-qm", "base"], d);
   await sh(["git", "checkout", "-qb", "e1"], d);
-  await editDaemonKey(`${d}/pitchfork.toml`, "hodos", "port", "25194"); // agent 1: hodos port
-  await sh(["git", "commit", "-qam", "e1: hodos port"], d);
+  await editDaemonKey(`${d}/pitchfork.toml`, "rhodochrosite", "port", "25194"); // agent 1: rhodochrosite port
+  await sh(["git", "commit", "-qam", "e1: rhodochrosite port"], d);
   await sh(["git", "checkout", "-q", "main"], d);
   await sh(["git", "checkout", "-qb", "e2"], d);
-  await editDaemonKey(`${d}/pitchfork.toml`, "hodos", "run", '"exec /home/toxic/estate/projects/range/ranch/hodos/bin/hodos-run.sh --trace"'); // agent 2: hodos run
-  await sh(["git", "commit", "-qam", "e2: hodos run"], d);
+  await editDaemonKey(`${d}/pitchfork.toml`, "rhodochrosite", "run", '"exec /home/toxic/estate/projects/range/ranch/rhodochrosite/bin/rhodochrosite-run.sh --trace"'); // agent 2: rhodochrosite run
+  await sh(["git", "commit", "-qam", "e2: rhodochrosite run"], d);
   await sh(["git", "checkout", "-q", "e1"], d);
-  return { case: "monolith: two agents edit SAME section [daemons.hodos]", ...(await tryMerge(d)) };
+  return { case: "monolith: two agents edit SAME section [daemons.rhodochrosite]", ...(await tryMerge(d)) };
 })();
 
 const simMonolithAdjacent = (async () => {
@@ -129,10 +129,10 @@ const simModularDisjoint = (async () => {
   await gitRepo(d);
   await Bun.$`cp -r ${WORK}/a/pitchfork.toml ${WORK}/a/pitchfork.d ${d}/`.quiet();
   await sh(["git", "add", "."], d); await sh(["git", "commit", "-qm", "base"], d);
-  const flockF = (await sh(["bash", "-c", `ls ${d}/pitchfork.d/*-hodos.toml`], ".")).so.trim();
+  const flockF = (await sh(["bash", "-c", `ls ${d}/pitchfork.d/*-rhodochrosite.toml`], ".")).so.trim();
   const flickF = (await sh(["bash", "-c", `ls ${d}/pitchfork.d/*-flicker.toml | head -1`], ".")).so.trim();
   await sh(["git", "checkout", "-qb", "e1"], d);
-  await editDaemonKey(flockF, "hodos", "port", "25194");
+  await editDaemonKey(flockF, "rhodochrosite", "port", "25194");
   await sh(["git", "commit", "-qam", "e1"], d);
   await sh(["git", "checkout", "-q", "main"], d);
   await sh(["git", "checkout", "-qb", "e2"], d);
@@ -147,13 +147,13 @@ const simModularSameFile = (async () => {
   await gitRepo(d);
   await Bun.$`cp -r ${WORK}/a/pitchfork.toml ${WORK}/a/pitchfork.d ${d}/`.quiet();
   await sh(["git", "add", "."], d); await sh(["git", "commit", "-qm", "base"], d);
-  const flockF = (await sh(["bash", "-c", `ls ${d}/pitchfork.d/*-hodos.toml`], ".")).so.trim();
+  const flockF = (await sh(["bash", "-c", `ls ${d}/pitchfork.d/*-rhodochrosite.toml`], ".")).so.trim();
   await sh(["git", "checkout", "-qb", "e1"], d);
-  await editDaemonKey(flockF, "hodos", "port", "25194");
+  await editDaemonKey(flockF, "rhodochrosite", "port", "25194");
   await sh(["git", "commit", "-qam", "e1"], d);
   await sh(["git", "checkout", "-q", "main"], d);
   await sh(["git", "checkout", "-qb", "e2"], d);
-  await editDaemonKey(flockF, "hodos", "run", '"exec /home/toxic/estate/projects/range/ranch/hodos/bin/hodos-run.sh --trace"');
+  await editDaemonKey(flockF, "rhodochrosite", "run", '"exec /home/toxic/estate/projects/range/ranch/rhodochrosite/bin/rhodochrosite-run.sh --trace"');
   await sh(["git", "commit", "-qam", "e2"], d);
   await sh(["git", "checkout", "-q", "e1"], d);
   return { case: "modular (A): two agents edit the SAME daemon file", ...(await tryMerge(d)) };
@@ -173,8 +173,8 @@ const gran: any = {};
   await Bun.$`cp -r ${WORK}/a ${s}`.quiet();
   await sh(["bun", `${HERE}/design-a/merge-a.ts`, `${s}/pitchfork.toml`, `${s}/pitchfork.d`, "--out", `${s}/before.toml`]);
   const t0 = nsNow();
-  const flockF = (await sh(["bash", "-c", `ls ${s}/pitchfork.d/*-hodos.toml`], ".")).so.trim();
-  await editDaemonKey(flockF, "hodos", "port", "25993");
+  const flockF = (await sh(["bash", "-c", `ls ${s}/pitchfork.d/*-rhodochrosite.toml`], ".")).so.trim();
+  await editDaemonKey(flockF, "rhodochrosite", "port", "25993");
   await sh(["bun", `${HERE}/design-a/merge-a.ts`, `${s}/pitchfork.toml`, `${s}/pitchfork.d`, "--out", `${s}/after.toml`]);
   const ms = nsToMs(nsNow() - t0);
   const diff = daemonDiff(parseToml(await Bun.file(`${s}/before.toml`).text()), parseToml(await Bun.file(`${s}/after.toml`).text()));
@@ -185,7 +185,7 @@ const gran: any = {};
   await Bun.$`cp -r ${RACE}/b-full ${s}`.quiet();
   await sh(["bun", `${HERE}/design-b/gen-b.ts`, `${s}/base.toml`, `${s}/daemons.d`, `${s}/retired.toml`, "--out", `${s}/before.toml`]);
   const t0 = nsNow();
-  await editManifestKey(`${s}/daemons.d/hodos.toml`, "port", "25993");
+  await editManifestKey(`${s}/daemons.d/rhodochrosite.toml`, "port", "25993");
   await sh(["bun", `${HERE}/design-b/gen-b.ts`, `${s}/base.toml`, `${s}/daemons.d`, `${s}/retired.toml`, "--out", `${s}/after.toml`]);
   const ms = nsToMs(nsNow() - t0);
   const diff = daemonDiff(parseToml(await Bun.file(`${s}/before.toml`).text()), parseToml(await Bun.file(`${s}/after.toml`).text()));
@@ -196,7 +196,7 @@ const gran: any = {};
   await Bun.$`cp -r ${WORK}/c ${s}`.quiet();
   await sh(["bun", `${HERE}/design-c/compose-c.ts`, `${s}/fragments`, "--out", `${s}/before.toml`]);
   const t0 = nsNow();
-  await Bun.write(`${s}/fragments/99-local.toml`, `[daemons.hodos]\nport = 25993\n`);
+  await Bun.write(`${s}/fragments/99-local.toml`, `[daemons.rhodochrosite]\nport = 25993\n`);
   await sh(["bun", `${HERE}/design-c/compose-c.ts`, `${s}/fragments`, "--out", `${s}/after.toml`]);
   const ms = nsToMs(nsNow() - t0);
   const diff = daemonDiff(parseToml(await Bun.file(`${s}/before.toml`).text()), parseToml(await Bun.file(`${s}/after.toml`).text()));
@@ -230,15 +230,15 @@ async function rollback(design: "A" | "B" | "C") {
   // apply a bad change, then roll it back with a single-file checkout
   let changedRel: string;
   if (design === "C") {
-    await Bun.write(`${s}/fragments/99-local.toml`, `[daemons.hodos]\nport = 1\n`);
+    await Bun.write(`${s}/fragments/99-local.toml`, `[daemons.rhodochrosite]\nport = 1\n`);
     changedRel = "fragments/99-local.toml";
   } else if (design === "A") {
-    const f = (await sh(["bash", "-c", `ls ${s}/pitchfork.d/*-hodos.toml`], ".")).so.trim();
-    await editDaemonKey(f, "hodos", "port", "1");
+    const f = (await sh(["bash", "-c", `ls ${s}/pitchfork.d/*-rhodochrosite.toml`], ".")).so.trim();
+    await editDaemonKey(f, "rhodochrosite", "port", "1");
     changedRel = "pitchfork.d/" + f.split("/").pop()!;
   } else {
-    await editManifestKey(`${s}/daemons.d/hodos.toml`, "port", "1");
-    changedRel = "daemons.d/hodos.toml";
+    await editManifestKey(`${s}/daemons.d/rhodochrosite.toml`, "port", "1");
+    changedRel = "daemons.d/rhodochrosite.toml";
   }
   await sh(["git", "checkout", "--", changedRel], s);
   await withCeiling(sh(["bun", ...runArgs, "--out", `${s}/merged2.toml`]).then((r) => { if (r.code !== 0) throw new Error(r.se); }), CEIL, `roll-${design}-2`);

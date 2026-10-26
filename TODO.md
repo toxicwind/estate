@@ -6,7 +6,7 @@
 ## Session log 2026-10-16 (late) — DONE, keep for reference
 
 - [x] estate commits + pushes (consolidation, flicker→forge, architect sweep, gitleaks gate fixes)
-- [x] ranch: 54+64 dirty submodules forward-committed; VansRouter/mcpproxy-go/hodossync/pi_agent_rust/drover snapped; runtime configs untracked (mesh_config had real keys)
+- [x] ranch: 54+64 dirty submodules forward-committed; VansRouter/mcpproxy-go/rhodochrositesync/pi_agent_rust/drover snapped; runtime configs untracked (mesh_config had real keys)
 - [x] gitleaks SSOT allowlists: Edge TTS public token, anthropic beta strings, sk-machine test fixtures, conformance template artifacts
 - [x] pattern-forge: github_repos leg (repo finder), S2 secretsmith keychain, dblp retry
 - [x] corral: toxicwind naming, bun install fix, library import proven (SuperRalph/AgentRegistry)
@@ -25,8 +25,8 @@
       deleted `stack/services/omniroute.sh`, grasp-hub gitlink bump,
       skills/pattern-forge/{bun.lock,package.json,src/hf.ts},
       skills/guide-project-creator/ (new). Commit message ready:
-      "omniroute → hodos takeover + docker lane policy + forge hf".
-      Pre-existing drift NOT mine (leave): engines/herd/*, pi-skills, sigma,
+      "omniroute → rhodochrosite takeover + docker lane policy + forge hf".
+      Pre-existing drift NOT mine (leave): engines/bornite/*, pi-skills, sigma,
       work/tau-extensions, plugins/agentpluginzoo — independent checkouts
       coordinated by gitkb/meta (gitlinks swept 2026-10-20, see REPO_TOPOLOGY).
 - [ ] **estate/projects consolidation half-done**: 135 estate-only files already
@@ -143,7 +143,7 @@
 ## 5. Smaller queued items
 
 - [ ] omniroute-gateway row in `findings/prior-audits/docker-inventory-20261016.md`
-      → mark RETIRED (merged into hodos).
+      → mark RETIRED (merged into rhodochrosite).
 - [ ] estate/skills/flicker + grasp-hub flicker skill → fold/rename (item 1).
 - [ ] `ranch/projects/estate-core` oddity → consolidate (move to ranch/<name> or
       estate/projects — pick the non-weird one).
@@ -151,7 +151,7 @@
       under ranch/websites/effusionlabs or keep as the compose runtime dir with a
       documented pointer (running container references its compose path).
 - [ ] docker-inventory: hindsight container owner/origin still unknown.
-- [ ] omniroute-gateway container: Lane-A borderline → being retired via hodos
+- [ ] omniroute-gateway container: Lane-A borderline → being retired via rhodochrosite
       takeover (see §0); migrate any unique omniroute provider config before
       final `docker rm` if the 402-free path ever needs its upstreams.
 
@@ -168,10 +168,10 @@
   (~/.secrets). HF router (router.huggingface.co) = separate, 402 credit-gated.
 - ffs: refresh stale index with `ffs index --root <dir>` (a stale index caused
   missed files once). Full guide: `ffs guide` (288 lines).
-- hodos = first-class native router: pitchfork `estate/hodos`, :25193,
-  `~/.hodos/hodos` binary; canonical router per models.yml is cuttinggate
-  :25200 (hodos :25193 marked RETIRED there but daemon still serves).
-- ranch/mesh/hodossync: ANOTHER WORKER has staged WIP (circuitBreaker/
+- rhodochrosite = first-class native router: pitchfork `estate/rhodochrosite`, :25193,
+  `~/.rhodochrosite/rhodochrosite` binary; canonical router per models.yml is chalcopyrite
+  :25200 (rhodochrosite :25193 marked RETIRED there but daemon still serves).
+- ranch/mesh/rhodochrositesync: ANOTHER WORKER has staged WIP (circuitBreaker/
   upstreamGuard, release/v3.8.52) — do not touch that repo.
 - rustdesk: fixed 2026-10-16. Native pitchfork hbbs/hbbr on 25220-25224, key at
   `ranch/rustdesk-server/id_ed25519.pub`; docker containers + stale REDIRECT

@@ -78,7 +78,7 @@ boot_start = true
 dir = "/home/toxic/projects/bedrock/web"
 mise = true
 [daemons.beellama-fast]
-run = "exec /home/toxic/estate/stack/services/_consolidated_herd_20260924/beellama-fast.sh"
+run = "exec /home/toxic/estate/stack/services/_consolidated_bornite_20260924/beellama-fast.sh"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25122/health"
@@ -212,13 +212,13 @@ retries = 3
 timeout = "5s"
 
 [daemons.coyote]
-run = "exec ./stack/services/_consolidated_herd_20260924/coyote.sh"
+run = "exec ./stack/services/_consolidated_bornite_20260924/coyote.sh"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25143/health"
 port = 25143
 expected_port = [25143]
-depends = ["thresher", "herd"]
+depends = ["thresher", "bornite"]
 dir = "."
 mise = true
 
@@ -228,21 +228,21 @@ interval = "30s"
 timeout = "5s"
 retries = 3
 
-[daemons.cuttinggate]
-run = "exec /home/toxic/estate/ranch/forge/router/cuttinggate/cuttinggate-serve.sh"
+[daemons.chalcopyrite]
+run = "exec /home/toxic/estate/ranch/forge/router/chalcopyrite/chalcopyrite-serve.sh"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25200/health"
-dir = "/home/toxic/estate/ranch/forge/router/cuttinggate"
+dir = "/home/toxic/estate/ranch/forge/router/chalcopyrite"
 
-[daemons.cuttinggate.health_http]
+[daemons.chalcopyrite.health_http]
 url = "http://127.0.0.1:25200/health"
 interval = "30s"
 timeout = "5s"
 retries = 3
 
-[daemons.cuttinggate.env]
-CUTTINGGATE_PORT = "25200"
+[daemons.chalcopyrite.env]
+CHALCOPYRITE_PORT = "25200"
 CUTTINGGATE_LOG_LEVEL = "info"
 
 [daemons.delendai-control-api]
@@ -489,8 +489,8 @@ mise = true
 [daemons.hashline.env]
 HASHLINE_NO_UPDATE_CHECK = "1"
 
-[daemons.herd]
-run = "exec /home/toxic/estate/stack/services/herd.sh"
+[daemons.bornite]
+run = "exec /home/toxic/estate/stack/services/bornite.sh"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25100/health"
@@ -499,7 +499,7 @@ expected_port = [25100]
 depends = ["thresher"]
 dir = "."
 mise = true
-[daemons.herd.health_http]
+[daemons.bornite.health_http]
 url = "http://127.0.0.1:25100/health"
 interval = "30s"
 timeout = "5s"
@@ -548,24 +548,24 @@ retry = true
 interval = "5m"
 mise = false
 
-[daemons.hodos]
-run = "exec /home/toxic/pens/olympus/products/hodos/proxy/serve.sh"
+[daemons.rhodochrosite]
+run = "exec /home/toxic/pens/olympus/products/rhodochrosite/proxy/serve.sh"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25193/health"
 port = 25193
 expected_port = [25193]
-dir = "/home/toxic/pens/olympus/products/hodos/proxy"
+dir = "/home/toxic/pens/olympus/products/rhodochrosite/proxy"
 mise = true
-[daemons.hodos.health_http]
+[daemons.rhodochrosite.health_http]
 url = "http://127.0.0.1:25193/health"
 interval = "30s"
 timeout = "5s"
 retries = 3
 
-[daemons.hodos.env]
+[daemons.rhodochrosite.env]
 PORT = "25193"
-DATA_DIR = "/home/toxic/.hodos-data"
+DATA_DIR = "/home/toxic/.rhodochrosite-data"
 HOST = "127.0.0.1"
 
 [daemons.kafka]
@@ -638,14 +638,14 @@ retries = 3
 KIMI_AUDIT_DASH_PORT = "25116"
 
 [daemons.kimi-auto-shim]
-run = "exec python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${KIMI_AUTO_SHIM_PORT} --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --standby nim-kimi/moonshotai/kimi-k3 --advance-on 5xx,conn,429,402,404 --name kimi-auto"
+run = "exec python3 /home/toxic/estate/config/bornite.d/alias-shim.py --port ${KIMI_AUTO_SHIM_PORT} --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --standby nim-kimi/moonshotai/kimi-k3 --advance-on 5xx,conn,429,402,404 --name kimi-auto"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25153/health"
 port = 25153
 expected_port = [25153]
 boot_start = true
-dir = "/home/toxic/estate/config/herd.d"
+dir = "/home/toxic/estate/config/bornite.d"
 mise = true
 [daemons.kimi-auto-shim.health_http]
 url = "http://127.0.0.1:25153/health"
@@ -1053,8 +1053,8 @@ retries = 3
 [daemons.ranch-ui.env]
 RANCH_UI_PORT = "25218"
 RANCH_UI_DIST = "/home/toxic/estate/ranch/range/ui/dist"
-HERD_ORIGIN = "http://127.0.0.1:25100"
-HODOS_ORIGIN = "http://127.0.0.1:25193"
+BORNITE_ORIGIN = "http://127.0.0.1:25100"
+RHODOCHROSITE_ORIGIN = "http://127.0.0.1:25193"
 
 [daemons.range-ui]
 run = "exec /home/toxic/.bun/bin/bun run --cwd /home/toxic/estate/ranch/range/apps/delendai-control-plane dev"
@@ -1306,10 +1306,10 @@ dir = "/home/toxic/estate/ranch/squawk"
 env = { SQUAWK_FEED_TOKEN = "5a378d9aea8a965fcd633002772a2f47" }
 
 [groups.mesh]
-daemons = ["thresher", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "feedlot", "hindsight", "kimi-code", "nginx"]
+daemons = ["thresher", "mesh-hub", "bornite", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "feedlot", "hindsight", "kimi-code", "nginx"]
 
 [groups.core]
-daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "hodos", "matter-server"]
+daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "rhodochrosite", "matter-server"]
 
 [groups.agents]
 daemons = ["rig"]

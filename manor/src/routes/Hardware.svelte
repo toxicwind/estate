@@ -122,7 +122,7 @@
     <p class="text-sm text-muted-foreground">
       This is an experimental feature. Please share feedback in <a
         class="underline hover:text-foreground"
-        href="https://github.com/mostlygeek/herd/issues/977">issue 977</a
+        href="https://github.com/mostlygeek/bornite/issues/977">issue 977</a
       >.
     </p>
   </div>

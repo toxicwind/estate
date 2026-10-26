@@ -2,7 +2,7 @@
 
 > **Harness**: Tau Coding Agent (`/home/toxic/estate/agent`)
 > **Memory Backend**: Vectorize Hindsight (`ghcr.io/vectorize-io/hindsight:latest`)
-> **Inference Engine**: Herd (`github.com/mostlygeek/herd` Go binary on port 25100)
+> **Inference Engine**: Bornite (`github.com/mostlygeek/bornite` Go binary on port 25100)
 > **Model**: `beellama/qwen-flash-64k` (Qwen 3.5 9B DeepSeek-v4 Flash, 64K context, 119 tokens/sec)
 
 ---
@@ -31,7 +31,7 @@
 │                                    │ OpenAI API calls (port 25100)      │
 │                                    ▼                                    │
 │   ┌─────────────────────────────────────────────────────────────────┐   │
-│   │ Herd / Llama-Swap (Port 25100)                                  │   │
+│   │ Bornite / Llama-Swap (Port 25100)                                  │   │
 │   │ Engine: beellama.cpp (build-cuda86/bin/llama-server)            │   │
 │   │ Model: Qwen3.5-9B-DeepSeek-V4-Flash-IQ4_XS.gguf                 │   │
 │   │ Context: 65,536 tokens (64K)                                    │   │
@@ -47,7 +47,7 @@
 
 | Port | Service | Protocol | Role |
 |:---:|---|:---:|---|
-| **25100** | **Herd** (`herd`) | HTTP / OpenAI | Local LLM inference endpoint (`/v1/chat/completions`) |
+| **25100** | **Bornite** (`bornite`) | HTTP / OpenAI | Local LLM inference endpoint (`/v1/chat/completions`) |
 | **25117** | **Hindsight API** | HTTP / REST | Memory ingest, semantic recall, agentic reflection |
 | **25118** | **Hindsight Control Plane** | HTTP / Web | Interactive UI dashboard and bank management |
 
@@ -57,7 +57,7 @@ HINDSIGHT_API_PORT="25117"
 HINDSIGHT_CP_PORT="25118"
 HINDSIGHT_API_LLM_PROVIDER="openai"
 HINDSIGHT_API_LLM_BASE_URL="http://127.0.0.1:25100/v1"
-HINDSIGHT_API_LLM_API_KEY="herd-local-key"
+HINDSIGHT_API_LLM_API_KEY="bornite-local-key"
 HINDSIGHT_API_LLM_MODEL="beellama/qwen-flash-64k"
 ```
 
@@ -105,4 +105,4 @@ And the symlink at `~/.tau/agent/extensions/hindsight.js`.
    - Docker container runs with `--network host` and `--pull missing` to allow direct access to loopback port `25100` with zero NAT overhead.
 5. **Launcher Consolidation**:
    - `/home/toxic/estate/agent` is the canonical executable, with symlinks in `~/.local/bin/agent` and `~/.local/bin/tau`.
-   - Includes a non-blocking asynchronous health check that automatically ensures Herd and Hindsight are running upon launch.
+   - Includes a non-blocking asynchronous health check that automatically ensures Bornite and Hindsight are running upon launch.

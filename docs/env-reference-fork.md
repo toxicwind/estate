@@ -1,6 +1,6 @@
 # Estate / Ranch Fork Environment Variables Reference
 
-This reference documents custom, source-owned environment variables introduced specifically in the **Estate / Ranch** fork (`estate/projects/tau`, `brand`, `herd`, `shep`, and mesh infrastructure).
+This reference documents custom, source-owned environment variables introduced specifically in the **Estate / Ranch** fork (`estate/projects/tau`, `brand`, `bornite`, `shep`, and mesh infrastructure).
 
 ---
 

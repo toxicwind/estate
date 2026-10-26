@@ -30,7 +30,7 @@ is a defect.
    separate repo by simply not indexing it").
 
 2. **ranch** (`toxicwind/ranch`) is the _workshop monorepo_: one directory per
-   component (herd, hodos, thresher, cuttinggate, tau, forge, squawk, keryx,
+   component (bornite, rhodochrosite, thresher, chalcopyrite, tau, forge, squawk, keryx,
    roost, …). Every component is its own repo with its own origin
    (`toxicwind/<component>`), coordinated by the `gitkb/meta` manifest
    (`.meta.yaml`, generated from `.gitmodules`): **"repos are PEERS, not
@@ -61,8 +61,8 @@ ranch dir or archive.
   copy, the tree is silently a submodule again. Refuse the sync and clean up."
   **Baseline (2026-10-22): zero.** The desubmodule conversion removed all 8
   tracked mode-160000 gitlinks (`config/tau/agent/extensions/hashline-pi`,
-  `engines/herd/beellama.cpp`, `engines/herd/ik_llama.cpp`,
-  `engines/herd/llama-cpp-turboquant`, `packages/theta`,
+  `engines/bornite/beellama.cpp`, `engines/bornite/ik_llama.cpp`,
+  `engines/bornite/llama-cpp-turboquant`, `packages/theta`,
   `submodules/phone-sentinel`, `work/airspeak`, `work/tau-extensions`) and the
   `.gitmodules` declaration. All 8 remain as independent on-disk checkouts
   coordinated by `gitkb/meta`, ignored via `estate/.gitignore`. Re-adding any

@@ -1,12 +1,12 @@
-# Hodos 401 Authentication Fix Plan
+# Rhodochrosite 401 Authentication Fix Plan
 
 ## Context
-The hodos service is returning 401 Unauthorized errors. The issue appears to be related to key configuration or authentication. Need to investigate the key handling, API key configuration, and authentication logic in the hodos codebase.
+The rhodochrosite service is returning 401 Unauthorized errors. The issue appears to be related to key configuration or authentication. Need to investigate the key handling, API key configuration, and authentication logic in the rhodochrosite codebase.
 
 ## Approach
 
 ### Step 1: Discover key configuration locations
-- Search for API key, auth key, or credential configuration in the hodos codebase
+- Search for API key, auth key, or credential configuration in the rhodochrosite codebase
 - Identify where keys are loaded, validated, and used for authentication
 - Check for environment variables, config files, or hardcoded keys
 
@@ -21,22 +21,22 @@ The hodos service is returning 401 Unauthorized errors. The issue appears to be 
 - Add proper error handling and logging for authentication failures
 
 ### Step 4: Verify the fix
-- Test the hodos service with the corrected key
+- Test the rhodochrosite service with the corrected key
 - Confirm 401 errors are resolved
 - Check for any related errors or warnings
 
 ## Critical Files & Anchors
-- `/home/toxic/estate/ranch/herd/internal/hodos/` - main hodos implementation
-- `/home/toxic/estate/ranch/herd/mesh/hodos-pkg/estate_complete_pkg/hodos-dist/lib/llm_client/llm_client.py` - LLM client with authentication
-- `/home/toxic/estate/ranch/herd/mesh/hodos-pkg/estate_complete_pkg/hodos-dist/lib/orchestrator/orchestrator.py` - orchestration logic
-- `/home/toxic/estate/ranch/herd/internal/hodos/config.go` - configuration handling
-- `/home/toxic/estate/ranch/herd/internal/hodos/providers.go` - provider authentication
+- `/home/toxic/estate/ranch/bornite/internal/rhodochrosite/` - main rhodochrosite implementation
+- `/home/toxic/estate/ranch/bornite/mesh/rhodochrosite-pkg/estate_complete_pkg/rhodochrosite-dist/lib/llm_client/llm_client.py` - LLM client with authentication
+- `/home/toxic/estate/ranch/bornite/mesh/rhodochrosite-pkg/estate_complete_pkg/rhodochrosite-dist/lib/orchestrator/orchestrator.py` - orchestration logic
+- `/home/toxic/estate/ranch/bornite/internal/rhodochrosite/config.go` - configuration handling
+- `/home/toxic/estate/ranch/bornite/internal/rhodochrosite/providers.go` - provider authentication
 
 ## Verification
-1. Run `ffs_find -pattern "key" -root /home/toxic/estate/ranch/herd` to locate key configuration
-2. Run `ffs_find -pattern "401" -root /home/toxic/estate/ranch/herd` to find error handling
+1. Run `ffs_find -pattern "key" -root /home/toxic/estate/ranch/bornite` to locate key configuration
+2. Run `ffs_find -pattern "401" -root /home/toxic/estate/ranch/bornite` to find error handling
 3. Read the identified configuration files to understand the current state
-4. Apply the fix and test the hodos service
+4. Apply the fix and test the rhodochrosite service
 
 ## Assumptions & Contingencies
 - The 401 error is caused by an incorrect or missing API key

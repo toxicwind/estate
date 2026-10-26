@@ -9,7 +9,7 @@
 # Declared-vs-runtime contract:
 #   declared = this file + declared_configs below + pitchfork.toml: intent.
 #             Changes ONLY via commits or the content-hash-gated deploy scripts
-#             (bin/herd-deploy). A daemon or agent
+#             (bin/bornite-deploy). A daemon or agent
 #             rewriting declared state by hand is drift, not an edit.
 #   runtime  = process table, /proc/*/exe, runtime_paths below: fact. The
 #             reconciler reads it; it never converges toward it. Daemons may
@@ -29,33 +29,33 @@
 version: 1
 
 binaries:
-  herd:
-    path: /home/toxic/pens/ranch/mesh/router/herd/herd
+  bornite:
+    path: /home/toxic/pens/ranch/mesh/router/bornite/bornite
     sha256: "dddef255acb059eb00055700557b87b327c3aa911a9ae40d04139c1d1d69e543"
-    immutable_copy: /home/toxic/pens/ranch/mesh/router/herd/herd.20261003-211200
+    immutable_copy: /home/toxic/pens/ranch/mesh/router/bornite/bornite.20261003-211200
     source: toxicwind/ranch
     commit: 152e87375481671bb9d0af139830bf8fcd11db86
     upstream_base: 7a14664d98f0e66bc68bba08548290ca0b469f98
     built_at: "2026-10-04T03:35:00Z"
-    daemon: herd
+    daemon: bornite
     note: warden takeover 2026-10-04 - blessed live rebuild (builder unknown, 2026-10-03 21:12 MDT, unchanged source, /health OK); sha verified dddef255acb0
-  herd-keypool:
-    path: /home/toxic/estate/bin/herd-keypool.py
+  bornite-keypool:
+    path: /home/toxic/estate/bin/bornite-keypool.py
     sha256: "078f3aacdf0550ae75c3219f0d53b3f4f9ebd7b6ce6d3c3e88614f269d059f16"
     source: toxicwind/estate
     commit: e4a383cad849f80dec832251e159ac8c7839c5da
-    git_path: bin/herd-keypool.py
+    git_path: bin/bornite-keypool.py
     daemon: keypool
-    immutable_copy: /home/toxic/estate/bin/herd-keypool.py.20261002-184500
+    immutable_copy: /home/toxic/estate/bin/bornite-keypool.py.20261002-184500
     note: blessed 2026-10-02 (warden) — live matches estate HEAD; the Architect: "Bless live obv wtf"
-  herd-model-guard:
-    path: /home/toxic/estate/bin/herd-model-guard.py
+  bornite-model-guard:
+    path: /home/toxic/estate/bin/bornite-model-guard.py
     sha256: "7ff038184434e52e6a0200b7d48fea80975f1d00e5d8b2ffb1ea10a67627f829"
     source: toxicwind/estate
     commit: e4a383cad849f80dec832251e159ac8c7839c5da
-    git_path: bin/herd-model-guard.py
+    git_path: bin/bornite-model-guard.py
     daemon: model-guard
-    immutable_copy: /home/toxic/estate/bin/herd-model-guard.py.20261002-184500
+    immutable_copy: /home/toxic/estate/bin/bornite-model-guard.py.20261002-184500
     note: blessed 2026-10-02 (warden) — live matches estate HEAD; the Architect: "Bless live"
   progress-watchdog:
     path: /home/toxic/estate/bin/progress-watchdog.py
@@ -82,7 +82,7 @@ binaries:
     port: 25148
     note: direct Rust binary, built through mise; filesystem CAS under var/runtime/mbx-cache; loopback-only.
 declared_configs:
-  - config/herd.yaml
+  - config/bornite.yaml
   - pitchfork.toml
   - config/ports.env
 
@@ -90,4 +90,4 @@ runtime_paths:
   - /home/toxic/.openfang/runtime/
   - /home/toxic/.openfang/backups/
   - /home/toxic/estate/log/
-  - /home/toxic/kimi-auto/herd.d/
+  - /home/toxic/kimi-auto/bornite.d/

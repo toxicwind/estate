@@ -23,16 +23,16 @@ type CatalogProviderDef struct {
 	ModelsPath     string
 	NoModelsReason string
 	NoAuth         bool // auth === "none": no API key needed
-	RouterLocal    bool // TS-router-local concept; herd skips these
+	RouterLocal    bool // TS-router-local concept; bornite skips these
 	Enabled        bool
 }
 
 // ProviderCatalogDefs is the canonical provider table.
 var ProviderCatalogDefs = []CatalogProviderDef{
 	{
-		Name:           "herd",
+		Name:           "bornite",
 		BaseURL:        "http://127.0.0.1:25100/v1",
-		KeyEnv:         "HERD_API_KEY",
+		KeyEnv:         "BORNITE_API_KEY",
 		KeyEnvAlt:      "",
 		Adapter:        "openai",
 		Auth:           "none",
@@ -171,7 +171,7 @@ var ProviderCatalogDefs = []CatalogProviderDef{
 // membership — never add live models here. Seeds may name dead IDs; the
 // catalog filters deadIds everywhere (cold start included).
 var ProviderCatalogSeeds = map[string][]string{
-	"herd": []string{
+	"bornite": []string{
 		"local-fast",
 		"local-quality",
 		"local-longctx",

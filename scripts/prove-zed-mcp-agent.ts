@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
  * Prove REAL Zed MCP usage (Content-Length MCP stdio = same transport Zed uses)
- * for ghas + herd, plus agent turns on both models.
+ * for ghas + bornite, plus agent turns on both models.
  */
 import {
   appendFileSync,
@@ -214,7 +214,7 @@ async function agentTurn(model: string, prompt: string, maxTokens: number) {
         {
           role: "system",
           content:
-            "You are the Zed agent. GHAS MCP and herd MCP are enabled in context_servers. Be terse.",
+            "You are the Zed agent. GHAS MCP and bornite MCP are enabled in context_servers. Be terse.",
         },
         { role: "user", content: prompt },
       ],
@@ -237,7 +237,7 @@ async function agentTurn(model: string, prompt: string, maxTokens: number) {
     content: visible.slice(0, 800),
     content_visible: content.slice(0, 800),
     usage: json?.usage,
-    path: "Zed language_models → http://127.0.0.1:25100 (llama.cpp + estate-herd)",
+    path: "Zed language_models → http://127.0.0.1:25100 (llama.cpp + estate-bornite)",
   };
 }
 
@@ -249,25 +249,25 @@ const ghasMcp = await runMcp(
 );
 
 const llamaMcp = await runMcp(
-  "herd",
+  "bornite",
   [
     "/home/toxic/.bun/bin/bun",
     "run",
-    "/home/toxic/estate/src/mcp/herd.ts",
+    "/home/toxic/estate/src/mcp/bornite.ts",
   ],
-  "herd_health",
+  "bornite_health",
   {},
 );
 
-// Also call herd_models as second tool use evidence
+// Also call bornite_models as second tool use evidence
 const llamaModels = await runMcp(
-  "herd-models",
+  "bornite-models",
   [
     "/home/toxic/.bun/bin/bun",
     "run",
-    "/home/toxic/estate/src/mcp/herd.ts",
+    "/home/toxic/estate/src/mcp/bornite.ts",
   ],
-  "herd_models",
+  "bornite_models",
   {},
 );
 
@@ -318,7 +318,7 @@ const settingsRaw = readFileSync(
 const settingsProof = {
   ghas_enabled: settingsRaw.includes("ghas-mcp-stdio"),
   llama_cpp_25100: settingsRaw.includes("127.0.0.1:25100"),
-  estate_herd: settingsRaw.includes("estate-herd"),
+  estate_herd: settingsRaw.includes("estate-bornite"),
   model_a: settingsRaw.includes(MODEL_A),
   model_b: settingsRaw.includes(MODEL_B),
   enable_all_context_servers: settingsRaw.includes(
@@ -346,7 +346,7 @@ const report = {
   zed_mcp_children: children,
   mcp_ghas: ghasMcp,
   mcp_herd: llamaMcp,
-  mcp_herd_models: llamaModels,
+  mcp_bornite_models: llamaModels,
   settings: settingsProof,
   ui,
   model_a: turnA,
@@ -367,8 +367,8 @@ writeFileSync(
   JSON.stringify(
     {
       ghas_health: ghasMcp.tool_result_preview,
-      herd_health: llamaMcp.tool_result_preview,
-      herd_models: llamaModels.tool_result_preview,
+      bornite_health: llamaMcp.tool_result_preview,
+      bornite_models: llamaModels.tool_result_preview,
     },
     null,
     2,

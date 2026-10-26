@@ -208,4 +208,4 @@ Results extracted per-model:
 - `/home/toxic/estate/config/tau/config.yml:464` — `enableEffort: true` (ALREADY SET)
 - `/home/toxic/estate/config/tau/config.yml:472` — `maxEffort: high` (ALREADY SET)
 - `/home/toxic/estate/config/tau/config.yml:268-270` — `modelRoles.smol` and `modelRoles.task` point to `qwen3.6-35b` (THE PROBLEM)
-- `/home/toxic/estate/config/tau/models.yml` — no `modelOverrides` section (auto-generated from pinax)
+- `/home/toxic/estate/config/tau/models.yml` — no `modelOverrides` section (auto-generated from mimetite)

@@ -282,19 +282,19 @@ plan:
   enabled: true
 plugins:
   - merged: estate-swap
-    name: herd
+    name: bornite
     privileged: true
-    source: ./projects/range/ranch/stockyard/herd
-  - name: hodos
+    source: ./projects/range/ranch/stockyard/bornite
+  - name: rhodochrosite
     privileged: true
-    source: ./projects/range/ranch/stockyard/hodos
+    source: ./projects/range/ranch/stockyard/rhodochrosite
   - name: thresher
     privileged: true
     role: MCP federation gateway
     source: ./ranch/barn/thresher
   - merged:
       - router-legacy
-      - stockyard-hodos-router
+      - stockyard-rhodochrosite-router
       - estate-router
     name: router
     privileged: true
@@ -481,7 +481,7 @@ temperature: -1
 terminal:
   showImages: true
   showProgress: true
-textVerbosity: medium
+textVerbosity: high
 theme:
   dark: dark-sakura
   light: light

@@ -108,7 +108,7 @@ describe("buildGatewayArgv", () => {
 
 describe("KEYRING_SPECS", () => {
   test("covers the retireed .sh spec_of() mappings", () => {
-    expect(KEYRING_SPECS.HODOS_API_KEY).toEqual({ service: "hodos" });
+    expect(KEYRING_SPECS.RHODOCHROSITE_API_KEY).toEqual({ service: "rhodochrosite" });
     expect(KEYRING_SPECS.NIM_PROXY_API_KEY).toEqual({
       service: "nim",
       provider: "nvidia",
@@ -121,7 +121,7 @@ describe("KEYRING_SPECS", () => {
     expect(KEYRING_SPECS.OPENROUTER_API_KEY).toEqual({ service: "openrouter" });
   });
   test("exposes the secret var names", () => {
-    expect(SECRET_VAR_NAMES).toContain("HODOS_API_KEY");
+    expect(SECRET_VAR_NAMES).toContain("RHODOCHROSITE_API_KEY");
     expect(SECRET_VAR_NAMES).toContain("ANTHROPIC_API_KEY");
   });
 });

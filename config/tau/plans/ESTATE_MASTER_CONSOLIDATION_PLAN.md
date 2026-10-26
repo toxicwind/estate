@@ -19,7 +19,7 @@ The workstation (CachyOS / BTRFS on NVMe, 820GB used across /home/toxic) contain
 ### Phase 2: Estate Master Worktree & Repo Consolidation
 1. **Worktree Audit & Inventory**:
    - Query all registered git worktrees using `git -C /home/toxic/estate worktree list`.
-   - For each worktree (`estate-503`, `estate-clean`, `estate-sweep-main`, `dash-main`, `herd-healer`, `estate-wt-*`):
+   - For each worktree (`estate-503`, `estate-clean`, `estate-sweep-main`, `dash-main`, `bornite-healer`, `estate-wt-*`):
      - Check `git status --porcelain` for uncommitted changes.
      - Check `git log -1` against `origin/main` and `forge/gate-retire-final`.
 2. **Safe Merge & Prune Protocol**:

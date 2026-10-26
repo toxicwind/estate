@@ -319,7 +319,7 @@ app.post("/v1/chat/completions", async (c) => {
     `[proxy] chat/completions model="${modelDef.openaiName}" stream=${body.stream ?? false} agentic=${agenticMode} cascade_id=${body.cascade_id ?? "new"}\n`,
   );
 
-  // Local herd fallback when Antigravity is down OR model looks like a estate-scripts GGUF id
+  // Local bornite fallback when Antigravity is down OR model looks like a estate-scripts GGUF id
   const LLAMA_SWAP_V1 =
     process.env.LLM_BASE_URL ||
     process.env.LLAMA_SWAP_V1 ||
@@ -339,7 +339,7 @@ app.post("/v1/chat/completions", async (c) => {
             ? process.env.LLAMA_SWAP_LONGCTX_MODEL || "beellama/qwen-flash-256k"
             : String(requestedModel);
     process.stderr.write(
-      `[proxy] herd fallback model=${upstreamModel} via ${LLAMA_SWAP_V1}\n`,
+      `[proxy] bornite fallback model=${upstreamModel} via ${LLAMA_SWAP_V1}\n`,
     );
     const res = await fetch(
       `${LLAMA_SWAP_V1.replace(/\/$/, "")}/chat/completions`,
@@ -362,7 +362,7 @@ app.post("/v1/chat/completions", async (c) => {
       status: res.status,
       headers: {
         "Content-Type": res.headers.get("Content-Type") || "application/json",
-        "X-Routed-Via": `herd/${upstreamModel}`,
+        "X-Routed-Via": `bornite/${upstreamModel}`,
       },
     });
   };
@@ -381,7 +381,7 @@ app.post("/v1/chat/completions", async (c) => {
         return c.json(
           {
             error: {
-              message: `Antigravity not available: ${msg}; herd fallback failed: ${fe}`,
+              message: `Antigravity not available: ${msg}; bornite fallback failed: ${fe}`,
               type: "service_unavailable",
             },
           },

@@ -1,9 +1,9 @@
-// model-guard — card-derived per-model request enforcement for herd.
+// model-guard — card-derived per-model request enforcement for bornite.
 //
-// Listens on 127.0.0.1:${MODEL_GUARD_PORT} (required), reverse-proxies to herd
+// Listens on 127.0.0.1:${MODEL_GUARD_PORT} (required), reverse-proxies to bornite
 // (MODEL_GUARD_UPSTREAM, required -- no default; see requiredUpstream).
 // For POST <any>/v1/chat/completions with a constrained model ID, rewrites
-// the request body per config/model_constraints.yaml BEFORE it reaches herd:
+// the request body per config/model_constraints.yaml BEFORE it reaches bornite:
 //
 //   force              params are set unconditionally (e.g. K3 top_p=0.95)
 //   clamp              out-of-range/missing values -> card default
@@ -26,7 +26,7 @@
 // Run under pitchfork as estate/model-guard. Fail-open: if the constraints
 // file is unreadable, traffic passes through untouched and the error is logged.
 //
-// TypeScript/Bun port of bin/herd-model-guard.py — behavior-identical.
+// TypeScript/Bun port of bin/bornite-model-guard.py — behavior-identical.
 
 import { appendFileSync, mkdirSync, readFileSync, renameSync, statSync } from "node:fs";
 import { dirname } from "node:path";

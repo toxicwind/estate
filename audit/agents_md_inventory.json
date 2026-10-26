@@ -32,10 +32,10 @@
       "hash": "ab0f75d6c5a08403dca2ddb1e553f0f0",
       "count": 4,
       "paths": [
-        "/home/toxic/projects/herd-main/AGENTS.md",
-        "/home/toxic/Downloads/explor-20260718-182237/pdf_llama-swap-main/herd-main/AGENTS.md",
-        "/home/toxic/Downloads/explor-20260718-182237/pdf_llama-swap-fork/herd-main/AGENTS.md",
-        "/home/toxic/Downloads/explor-20260718-182237/pdf_estate-2026/estate/tools/herd/AGENTS.md"
+        "/home/toxic/projects/bornite-main/AGENTS.md",
+        "/home/toxic/Downloads/explor-20260718-182237/pdf_llama-swap-main/bornite-main/AGENTS.md",
+        "/home/toxic/Downloads/explor-20260718-182237/pdf_llama-swap-fork/bornite-main/AGENTS.md",
+        "/home/toxic/Downloads/explor-20260718-182237/pdf_estate-2026/estate/tools/bornite/AGENTS.md"
       ]
     },
     {
@@ -169,7 +169,7 @@
       "isThirdParty": false
     },
     {
-      "path": "/home/toxic/Downloads/explor-20260718-182237/pdf_llama-swap-fork/herd-main/AGENTS.md",
+      "path": "/home/toxic/Downloads/explor-20260718-182237/pdf_llama-swap-fork/bornite-main/AGENTS.md",
       "size": 1948,
       "mtime": 1783486726,
       "md5": "ab0f75d6c5a08403dca2ddb1e553f0f0",
@@ -177,7 +177,7 @@
       "isThirdParty": false
     },
     {
-      "path": "/home/toxic/Downloads/explor-20260718-182237/pdf_llama-swap-main/herd-main/AGENTS.md",
+      "path": "/home/toxic/Downloads/explor-20260718-182237/pdf_llama-swap-main/bornite-main/AGENTS.md",
       "size": 1948,
       "mtime": 1783482545,
       "md5": "ab0f75d6c5a08403dca2ddb1e553f0f0",
@@ -185,7 +185,7 @@
       "isThirdParty": false
     },
     {
-      "path": "/home/toxic/Downloads/explor-20260718-182237/pdf_estate-2026/estate/tools/herd/AGENTS.md",
+      "path": "/home/toxic/Downloads/explor-20260718-182237/pdf_estate-2026/estate/tools/bornite/AGENTS.md",
       "size": 1948,
       "mtime": 1783700405,
       "md5": "ab0f75d6c5a08403dca2ddb1e553f0f0",
@@ -737,7 +737,7 @@
       "isThirdParty": false
     },
     {
-      "path": "/home/toxic/projects/herd-main/AGENTS.md",
+      "path": "/home/toxic/projects/bornite-main/AGENTS.md",
       "size": 1948,
       "mtime": 1783632991,
       "md5": "ab0f75d6c5a08403dca2ddb1e553f0f0",

@@ -19,7 +19,7 @@ daemon names that are kept because renaming them breaks live state:
 
 | daemon | reality |
 |---|---|
-| `estate-router` `:25104` | live and healthy (`estate-router-ts v3.2`). **Not** merged into hodos — `ports.env` claimed that and it was wrong; hodos `:25193` is stopped. Two different routers. Owned by `ranch/mesh/router/`, so it is ranch, not estate. |
+| `estate-router` `:25104` | live and healthy (`estate-router-ts v3.2`). **Not** merged into rhodochrosite — `ports.env` claimed that and it was wrong; rhodochrosite `:25193` is stopped. Two different routers. Owned by `ranch/mesh/router/`, so it is ranch, not estate. |
 | `estate-exporter` `:25213` | a prometheus textfile collector. estate-owned. |
 | `estate-chat` `:25120` | `tools/estate-chat`, a real tool directory. |
 | `estate-stream-broker` `:25215` | `ranch/stream-broker`. ranch-owned. |
@@ -41,14 +41,14 @@ EXEC_WS_PORT / WS_EXEC_PORT.
 ## 1. Estate — core services (19)
 
 The request path. A chat request goes `null-g-proxy → thresher → mesh-hub →
-herd → hodos`.
+bornite → rhodochrosite`.
 
 | daemon | port | why it exists |
 |---|---|---|
-| `herd` | 25100 | The local model router. ELO-ranks providers, enforces the circuit breaker, owns the 25xxx model path. |
-| `estate-router` | 25104 | The older TS router, still serving. Runs *beside* herd, not behind it. Superseded but not retired — killing it is a separate decision. |
-| `hodos` | 25193 | The cloud/paid provider router. Holds the `VANSROUTER_API_KEY` namespace vansrouter used to own. |
-| `cuttinggate` | 25200 | The guard plane in front of herd and hodos: quarantine, circuit breaker, credential rotation, winner ledger. Its project overlay (`ranch/mesh/proxy/cuttinggate/pitchfork.d/cuttinggate.toml`) supplies `CUTTINGGATE_PORT=25200` and the readiness URL, so the top-level daemon object has no `port =` field. Not in `groups.*` because it fronts everything else. |
+| `bornite` | 25100 | The local model router. ELO-ranks providers, enforces the circuit breaker, owns the 25xxx model path. |
+| `estate-router` | 25104 | The older TS router, still serving. Runs *beside* bornite, not behind it. Superseded but not retired — killing it is a separate decision. |
+| `rhodochrosite` | 25193 | The cloud/paid provider router. Holds the `VANSROUTER_API_KEY` namespace vansrouter used to own. |
+| `chalcopyrite` | 25200 | The guard plane in front of bornite and rhodochrosite: quarantine, circuit breaker, credential rotation, winner ledger. Its project overlay (`ranch/mesh/proxy/chalcopyrite/pitchfork.d/chalcopyrite.toml`) supplies `CHALCOPYRITE_PORT=25200` and the readiness URL, so the top-level daemon object has no `port =` field. Not in `groups.*` because it fronts everything else. |
 | `mesh-hub` | 25115 | MCP registry. Answers "which MCPs exist". |
 | `thresher` | 25127 | MCP meta-tool layer — the thresher MCP endpoint itself. The SSOT still names this port `MCPPROXY_GO_PORT`. |
 | `null-g-proxy` | 25107 | Edge proxy that returns null for blocked traffic. |
@@ -118,7 +118,7 @@ Everything a browser can reach. These are the tabs in the master UI.
 |---|---|---|
 | `beellama-fast` | 25122 | The main local llama.cpp build. |
 | `toolcall-llm` | 25152 | Tool-calling model (qwen3.5-9b), OpenAI-compatible. |
-| `kimi-auto-shim` | 25153 | Alias forwarder for the kimi-auto stack. Model selection lives in `herd.d/kimi-auto.yaml`, never in tool code. |
+| `kimi-auto-shim` | 25153 | Alias forwarder for the kimi-auto stack. Model selection lives in `bornite.d/kimi-auto.yaml`, never in tool code. |
 | `nim-kimi-sidecar` | 25163 | NVIDIA NIM sidecar. |
 | `feedlot` | 25121 | Vision inference. |
 | `hf-downloader` | 25106 | HuggingFace model fetches. |
@@ -158,9 +158,9 @@ services the estate runs for itself, they are the bidding machinery.
 ## 8. Ranch-owned (not estate) (24)
 
 `ranch/` is its own git repo. These are composed into the parent config but the
-project owns the code: `thresher`, `cuttinggate`, `fleet-ui`, `fleet-feed`,
+project owns the code: `thresher`, `chalcopyrite`, `fleet-ui`, `fleet-feed`,
 `nats`, `nats-tail`, the six oracle daemons, `estate-stream-broker`,
-`windmill`, `task-launch`, `yote`, `hodos`, `mesh-landing`,
+`windmill`, `task-launch`, `yote`, `rhodochrosite`, `mesh-landing`,
 `squawk-relay-*`, `keypool`. `mbx-cache` is estate-owned under `ops/`, not a
 ranch project.
 
@@ -168,7 +168,7 @@ ranch project.
 
 | daemon | port | status |
 |---|---|---|
-| `vansrouter` | 20128 | **Dead.** `projects/range/ranch/stockyard/vansrouter/` is gone; `stack/services/vansrouter.sh:41` resolves to that missing path and prints `VansRouter source build missing`. Nothing listens on 20128. The migration to hodos already happened — hodos holds the `VANSROUTER_API_KEY` namespace. Kept in `pitchfork.toml` rather than deleted because the launcher is the evidence; retiring it is a one-line change once someone confirms hodos is the replacement. |
+| `vansrouter` | 20128 | **Dead.** `projects/range/ranch/stockyard/vansrouter/` is gone; `stack/services/vansrouter.sh:41` resolves to that missing path and prints `VansRouter source build missing`. Nothing listens on 20128. The migration to rhodochrosite already happened — rhodochrosite holds the `VANSROUTER_API_KEY` namespace. Kept in `pitchfork.toml` rather than deleted because the launcher is the evidence; retiring it is a one-line change once someone confirms rhodochrosite is the replacement. |
 
 ## Rules this catalog encodes
 
@@ -178,8 +178,8 @@ ranch project.
    so they never errored — they just made the group claim services it does not
    run.
 2. **A daemon port must be in `config/ports.env`.** Verified 0 uncovered.
-3. **A renamed service keeps its port.** `HERD_PORT` exists because herd is the
-   rename of herd and 38 files still read the old name.
+3. **A renamed service keeps its port.** `HERD_PORT` exists because bornite is the
+   rename of bornite and 38 files still read the old name.
 4. **Do not retire a daemon because its launcher looks wrong.** vansrouter's
    launcher points at a deleted tree, and the daemon behind :25148 turned
    out to be `flicker`, live the whole time (it has since been replaced by

@@ -43,7 +43,7 @@ multi-op patch, any earlier op that adds or removes lines shifts every later
 op, and hashline applies the drift SILENTLY — it deletes lines the patch never
 mentioned and exits 0. Cost three shredded files on 2026-10-02
 (`config/keypools.yaml`, `services/keypool/src/server.ts`,
-`ranch/hodos/proxy/src/providers.rs`).
+`ranch/rhodochrosite/proxy/src/providers.rs`).
 
 - **ALWAYS** carry the anchor from `hashline read`: `SWAP 641:3f2a..674:9b1c:`.
 - **NEVER** mix a bare op after a line-count-changing op in the same patch.
@@ -97,7 +97,7 @@ The `estate` namespace was renamed to `estate` (ranch commit `6af2094`).
 | Pitchfork CLI | `/home/toxic/estate/bin/pitchfork` | bash wrapper, works. `bin/pf` is bun-script content with a bun shebang (fixed 2026-10-14); `pf check` runs and reports real drift |
 | Qdrant | `127.0.0.1:25133` (HTTP) `:25134` (gRPC) | v1.19.1, restarted 2026-10-14 by this agent |
 | Redis (valkey) | `127.0.0.1:25203` | running (migrated 2026-10-14 off :25199, squatted by hatch/shim_mcp.py) |
-| nvidia-nim completions | `127.0.0.1:25100` | OpenAI-compatible, herd/herd models — NOT an MCP server |
+| nvidia-nim completions | `127.0.0.1:25100` | OpenAI-compatible, bornite/bornite models — NOT an MCP server |
 | Flicker build daemon | `127.0.0.1:25148` | ranch build daemon (`POST /api/jobs`). NOT "mbx-cache" |
 | awrawr-mcp | `127.0.0.1:25198` | pitchfork says "errored" but is LIVE and auth-gated (stale-definition bug) |
 | deep-paper-reader | `/home/toxic/src/local/deep-paper-reader` | NOT `/home/toxic/deep-paper-reader` (does not exist) |

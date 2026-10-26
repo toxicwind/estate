@@ -43,7 +43,7 @@
       "catalog_drift_note": "benched 2026-09-20; catalog rotated 2026-09-21; prior is lane-level, live Elo corrects per model",
       "basis": "guidellm"
     },
-    "herd": {
+    "bornite": {
       "elo": 1025,
       "healthy_frac": 0.627,
       "healthy_n": 47,

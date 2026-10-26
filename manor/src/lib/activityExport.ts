@@ -221,7 +221,7 @@ export function buildActivityMarkdown(
   generatedAt: Date = new Date()
 ): string {
   const attribution =
-    "Exported from [herd](https://github.com/mostlygeek/herd) at " +
+    "Exported from [bornite](https://github.com/mostlygeek/bornite) at " +
     formatAbsoluteTime(generatedAt.toISOString());
 
   return [summaryMarkdown(summarizeActivity(rows)), toMarkdownTable(rows, columns), attribution]

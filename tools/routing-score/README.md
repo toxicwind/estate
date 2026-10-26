@@ -12,7 +12,7 @@ Repo: [toxicwind/estate-projects](https://github.com/toxicwind/estate-projects)
 
 An advisory signal for routing decisions, computed from exact-output probe
 results. **Read-only by construction**: this tool reads one probe JSONL
-file and writes one score artifact. It never reads or writes `herd.yaml`,
+file and writes one score artifact. It never reads or writes `bornite.yaml`,
 never parks peers, never hardcodes model choices into router config, and
 never alters selection logic. Router-adjacent only.
 
@@ -24,7 +24,7 @@ flowchart LR
     pub --> err[error-class breakdown]
     wilson & lat & err --> score[scores-<ts>.json · ranking]
     score -.->|advisory only| router[router decisions]
-    note[never touches herd.yaml]
+    note[never touches bornite.yaml]
     pub -.-> note
 ```
 
@@ -80,8 +80,8 @@ Treat them as routing signal, not truth.
 
 - Probe format + exact-output scoring:
   [`projects/openrouter-probe/probe_reliability.py`](../../projects/openrouter-probe/probe_reliability.py)
-- Live probing (separate concern): [`tools/herd-ranker.py`](../herd-ranker.py)
-- Keypool racing telemetry: [`bin/herd-keypool.py`](../../bin/herd-keypool.py)
+- Live probing (separate concern): [`tools/bornite-ranker.py`](../bornite-ranker.py)
+- Keypool racing telemetry: [`bin/bornite-keypool.py`](../../bin/bornite-keypool.py)
   (`/status` → `race`)
 
 ## Dev / contributing

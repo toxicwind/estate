@@ -40,10 +40,10 @@
       ],
       "sizeBytes": 1459
     },
-    "plans/free-pollinations-herd-hotfix-plan.md": {
-      "path": "plans/free-pollinations-herd-hotfix-plan.md",
-      "filename": "free-pollinations-herd-hotfix-plan.md",
-      "title": "Free Pollinations via Herd — Maximal Hotfix Plan (Tester + Live)",
+    "plans/free-pollinations-bornite-hotfix-plan.md": {
+      "path": "plans/free-pollinations-bornite-hotfix-plan.md",
+      "filename": "free-pollinations-bornite-hotfix-plan.md",
+      "title": "Free Pollinations via Bornite — Maximal Hotfix Plan (Tester + Live)",
       "category": "plans",
       "tags": [
         "plans",
@@ -3438,7 +3438,7 @@
       "Meta/Muse AI/README.md"
     ],
     "plans": [
-      "plans/free-pollinations-herd-hotfix-plan.md",
+      "plans/free-pollinations-bornite-hotfix-plan.md",
       "plans/mesh-tau-verified-plan.md",
       "plans/wezterm-shell-integration-plan.md",
       "plans/master/MASTER_PLAN.md",
@@ -3770,7 +3770,7 @@
       "agents/CONVENTION.md"
     ],
     "plans": [
-      "plans/free-pollinations-herd-hotfix-plan.md",
+      "plans/free-pollinations-bornite-hotfix-plan.md",
       "plans/mesh-tau-verified-plan.md",
       "plans/wezterm-shell-integration-plan.md",
       "plans/master/MASTER_PLAN.md",
@@ -3780,7 +3780,7 @@
       "plans/verified/mesh-tau-verified-plan.md"
     ],
     "pitchfork": [
-      "plans/free-pollinations-herd-hotfix-plan.md",
+      "plans/free-pollinations-bornite-hotfix-plan.md",
       "plans/master/MASTER_PLAN.md",
       "plans/master/REORG-PLAN.md",
       "plans/master/TASKS.md",
@@ -3813,7 +3813,7 @@
       "env-reference-fork.md"
     ],
     "ports": [
-      "plans/free-pollinations-herd-hotfix-plan.md",
+      "plans/free-pollinations-bornite-hotfix-plan.md",
       "plans/wezterm-shell-integration-plan.md",
       "plans/master/MASTER_PLAN.md",
       "plans/master/REORG-PLAN.md",
@@ -4015,7 +4015,7 @@
       "agents/CONVENTION.md"
     ],
     "mcp": [
-      "plans/free-pollinations-herd-hotfix-plan.md",
+      "plans/free-pollinations-bornite-hotfix-plan.md",
       "plans/master/MASTER_PLAN.md",
       "plans/master/REORG-PLAN.md",
       "plans/master/TASKS.md",
@@ -4077,7 +4077,7 @@
       "upstream/porting-from-oh-my-pi.md"
     ],
     "router": [
-      "plans/free-pollinations-herd-hotfix-plan.md",
+      "plans/free-pollinations-bornite-hotfix-plan.md",
       "plans/wezterm-shell-integration-plan.md",
       "plans/master/MASTER_PLAN.md",
       "plans/master/REORG-PLAN.md",

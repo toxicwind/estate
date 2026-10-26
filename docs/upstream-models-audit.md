@@ -4,9 +4,9 @@ Reference for the estate's OpenAI-compatible model surface: how to find each
 upstream provider's `/v1/models`, what vision-capable models each exposes, and
 how to dip a screenshot through them for agent-display (`:99`) verification.
 
-Source of truth: the AST of the hodos gateway at
-`ranch/hodos/proxy/src/pinax_providers.rs` (the canonical provider catalog) and
-`~/.hodos/nim-data/config.json` (the live 9-provider federation).
+Source of truth: the AST of the rhodochrosite gateway at
+`ranch/rhodochrosite/proxy/src/pinax_providers.rs` (the canonical provider catalog) and
+`~/.rhodochrosite/nim-data/config.json` (the live 9-provider federation).
 
 ## 1. The upstream provider catalog (from `pinax_providers.rs`)
 
@@ -29,12 +29,12 @@ depending on whether `base_url` already ends in `/v1`.
 | kimi-auto (shim)  | `http://127.0.0.1:25153/v1`           | `.../v1/models`        | (local shim)            |
 | omniroute (local) | `http://127.0.0.1:20130/v1`           | `.../v1/models`        | (local gateway)         |
 
-Plus the live federation in `~/.hodos/nim-data/config.json` (9 providers): nvidia,
+Plus the live federation in `~/.rhodochrosite/nim-data/config.json` (9 providers): nvidia,
 groq, together, cerebras, github (`https://models.github.ai/inference`), openai,
 siliconflow (`https://api.siliconflow.com/v1`), **freeinference**, and a local
 google/Gemini-EAP socket at `127.0.0.1:25109`.
 
-## 2. The hodos gateway (`:25193`) — single federated `/v1/models`
+## 2. The rhodochrosite gateway (`:25193`) — single federated `/v1/models`
 
 The gateway proxies all of the above behind ONE endpoint:
 
@@ -43,7 +43,7 @@ GET http://127.0.0.1:25193/v1/models
 Authorization: Bearer <proxy-api-key>
 ```
 
-The proxy key is in `~/.hodos/nim-data/config.json` (the federation's own
+The proxy key is in `~/.rhodochrosite/nim-data/config.json` (the federation's own
 `Authorization` token, distinct from the per-provider keys). A missing/invalid
 key returns `{"error":{"code":"unauthorized",...}}` (observed 2026-10-22).
 

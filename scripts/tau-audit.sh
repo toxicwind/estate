@@ -81,9 +81,9 @@ case "$RESOLVED" in
 esac
 
 # --- bridge (3) ---
-# hodos :25193 is the live fleet router (auth-gated /v1/models, open /health).
+# rhodochrosite :25193 is the live fleet router (auth-gated /v1/models, open /health).
 # Estate-router :25104 retired — no daemon defined, nothing listens (verified 2026-10-15).
-for spec in "herd:25100:/v1/models:200" "hodos:25193:/health:200" "vansrouter:20128:/v1/models:200"; do
+for spec in "bornite:25100:/v1/models:200" "rhodochrosite:25193:/health:200" "vansrouter:20128:/v1/models:200"; do
   IFS=: read -r name port path want <<<"$spec"
   code=$(curl -s -m 8 -o /dev/null -w "%{http_code}" "http://127.0.0.1:${port}${path}" 2>/dev/null || echo "000")
   [ "$code" = "$want" ] \

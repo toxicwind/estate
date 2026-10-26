@@ -11,18 +11,18 @@
 
 | Tag / Collection | Document Count | Deep Permalinks |
 |---|---|---|
-| **`#ports`** | 200 | [`free-pollinations-herd-hotfix-plan.md`](plans/free-pollinations-herd-hotfix-plan.md) · [`wezterm-shell-integration-plan.md`](plans/wezterm-shell-integration-plan.md) · [`MASTER_PLAN.md`](plans/master/MASTER_PLAN.md) · [`REORG-PLAN.md`](plans/master/REORG-PLAN.md) *(+196 more)* |
+| **`#ports`** | 200 | [`free-pollinations-bornite-hotfix-plan.md`](plans/free-pollinations-bornite-hotfix-plan.md) · [`wezterm-shell-integration-plan.md`](plans/wezterm-shell-integration-plan.md) · [`MASTER_PLAN.md`](plans/master/MASTER_PLAN.md) · [`REORG-PLAN.md`](plans/master/REORG-PLAN.md) *(+196 more)* |
 | **`#general`** | 126 | [`ARCHITECTURE.md`](ARCHITECTURE.md) · [`ARXIV_EMERGENCE_SURVEY.md`](ARXIV_EMERGENCE_SURVEY.md) · [`CONTROL_PLANE.md`](CONTROL_PLANE.md) · [`GPU_COOLING.md`](GPU_COOLING.md) *(+122 more)* |
-| **`#router`** | 63 | [`free-pollinations-herd-hotfix-plan.md`](plans/free-pollinations-herd-hotfix-plan.md) · [`wezterm-shell-integration-plan.md`](plans/wezterm-shell-integration-plan.md) · [`MASTER_PLAN.md`](plans/master/MASTER_PLAN.md) · [`REORG-PLAN.md`](plans/master/REORG-PLAN.md) *(+59 more)* |
-| **`#mcp`** | 60 | [`free-pollinations-herd-hotfix-plan.md`](plans/free-pollinations-herd-hotfix-plan.md) · [`MASTER_PLAN.md`](plans/master/MASTER_PLAN.md) · [`REORG-PLAN.md`](plans/master/REORG-PLAN.md) · [`TASKS.md`](plans/master/TASKS.md) *(+56 more)* |
+| **`#router`** | 63 | [`free-pollinations-bornite-hotfix-plan.md`](plans/free-pollinations-bornite-hotfix-plan.md) · [`wezterm-shell-integration-plan.md`](plans/wezterm-shell-integration-plan.md) · [`MASTER_PLAN.md`](plans/master/MASTER_PLAN.md) · [`REORG-PLAN.md`](plans/master/REORG-PLAN.md) *(+59 more)* |
+| **`#mcp`** | 60 | [`free-pollinations-bornite-hotfix-plan.md`](plans/free-pollinations-bornite-hotfix-plan.md) · [`MASTER_PLAN.md`](plans/master/MASTER_PLAN.md) · [`REORG-PLAN.md`](plans/master/REORG-PLAN.md) · [`TASKS.md`](plans/master/TASKS.md) *(+56 more)* |
 | **`#audit`** | 51 | [`runtime-cell.md`](Meta/Muse AI/runtime-cell.md) · [`MASTER_PLAN.md`](plans/master/MASTER_PLAN.md) · [`REORG-PLAN.md`](plans/master/REORG-PLAN.md) · [`TASKS.md`](plans/master/TASKS.md) *(+47 more)* |
 | **`#fleet`** | 39 | [`README.md`](fleet/personas/README.md) · [`AGENTS.md`](fleet/personas/cinder/AGENTS.md) · [`IDENTITY.md`](fleet/personas/cinder/IDENTITY.md) · [`SOUL.md`](fleet/personas/cinder/SOUL.md) *(+35 more)* |
 | **`#personas`** | 38 | [`README.md`](fleet/personas/README.md) · [`AGENTS.md`](fleet/personas/cinder/AGENTS.md) · [`IDENTITY.md`](fleet/personas/cinder/IDENTITY.md) · [`SOUL.md`](fleet/personas/cinder/SOUL.md) *(+34 more)* |
 | **`#tools`** | 33 | [`ask.md`](tools/ask.md) · [`ast-edit.md`](tools/ast-edit.md) · [`ast-grep.md`](tools/ast-grep.md) · [`bash.md`](tools/bash.md) *(+29 more)* |
-| **`#pitchfork`** | 31 | [`free-pollinations-herd-hotfix-plan.md`](plans/free-pollinations-herd-hotfix-plan.md) · [`MASTER_PLAN.md`](plans/master/MASTER_PLAN.md) · [`REORG-PLAN.md`](plans/master/REORG-PLAN.md) · [`TASKS.md`](plans/master/TASKS.md) *(+27 more)* |
+| **`#pitchfork`** | 31 | [`free-pollinations-bornite-hotfix-plan.md`](plans/free-pollinations-bornite-hotfix-plan.md) · [`MASTER_PLAN.md`](plans/master/MASTER_PLAN.md) · [`REORG-PLAN.md`](plans/master/REORG-PLAN.md) · [`TASKS.md`](plans/master/TASKS.md) *(+27 more)* |
 | **`#toolconv`** | 12 | [`anthropic.md`](toolconv/anthropic.md) · [`deepseek.md`](toolconv/deepseek.md) · [`gemini.md`](toolconv/gemini.md) · [`gemma.md`](toolconv/gemma.md) *(+8 more)* |
 | **`#audits`** | 9 | [`bedf89a9-post-recovery-audit-bid.md`](audits/bedf89a9-post-recovery-audit-bid.md) · [`nim-oracle-research.md`](audits/nim-oracle-research.md) · [`pi-conversion-summary.md`](audits/pi-conversion-summary.md) · [`MCP_AUDIT.md`](audits/2026-09-20/MCP_AUDIT.md) *(+5 more)* |
-| **`#plans`** | 8 | [`free-pollinations-herd-hotfix-plan.md`](plans/free-pollinations-herd-hotfix-plan.md) · [`mesh-tau-verified-plan.md`](plans/mesh-tau-verified-plan.md) · [`wezterm-shell-integration-plan.md`](plans/wezterm-shell-integration-plan.md) · [`MASTER_PLAN.md`](plans/master/MASTER_PLAN.md) *(+4 more)* |
+| **`#plans`** | 8 | [`free-pollinations-bornite-hotfix-plan.md`](plans/free-pollinations-bornite-hotfix-plan.md) · [`mesh-tau-verified-plan.md`](plans/mesh-tau-verified-plan.md) · [`wezterm-shell-integration-plan.md`](plans/wezterm-shell-integration-plan.md) · [`MASTER_PLAN.md`](plans/master/MASTER_PLAN.md) *(+4 more)* |
 | **`#skills`** | 6 | [`README.md`](skills/examples/hello-extension/README.md) · [`README.md`](skills/examples/mini-marketplace/README.md) · [`README.md`](skills/examples/safety-hook/README.md) · [`authoring-extensions.md`](skills/authoring-extensions.md) *(+2 more)* |
 | **`#Meta`** | 3 | [`open-questions.md`](Meta/Muse AI/open-questions.md) · [`runtime-cell.md`](Meta/Muse AI/runtime-cell.md) · [`README.md`](Meta/Muse AI/README.md) |
 | **`#Muse AI`** | 3 | [`open-questions.md`](Meta/Muse AI/open-questions.md) · [`runtime-cell.md`](Meta/Muse AI/runtime-cell.md) · [`README.md`](Meta/Muse AI/README.md) |
@@ -255,7 +255,7 @@
 
 ### 📁 `plans/`
 
-- **[Free Pollinations via Herd — Maximal Hotfix Plan (Tester + Live)](plans/free-pollinations-herd-hotfix-plan.md)** `(plans/free-pollinations-herd-hotfix-plan.md)`
+- **[Free Pollinations via Bornite — Maximal Hotfix Plan (Tester + Live)](plans/free-pollinations-bornite-hotfix-plan.md)** `(plans/free-pollinations-bornite-hotfix-plan.md)`
 - **[Estate Pi Fork — Master Execution Plan](plans/master/MASTER_PLAN.md)** `(plans/master/MASTER_PLAN.md)`
 - **[ESTATE REORG PLAN — shingle → hatch/agents/ember, shingle-workspace collision resolved](plans/master/REORG-PLAN.md)** `(plans/master/REORG-PLAN.md)`
 - **[Estate Fix Tasks - Live Tracker](plans/master/TASKS.md)** `(plans/master/TASKS.md)`

@@ -99,8 +99,8 @@ strategies ──race──▶ candidates ──judge FIFO──▶ first ALL-te
 | class | gen ceiling | judge ceiling | notes |
 |---|---|---|---|
 | `llm-fast` (≤2B local, e.g. `fast` @ :25122) | 60 | 30 | TTFT p50 ~47ms; gen 380–440 tok/s measured |
-| `llm-mid` (4–15B, herd/beellama, e.g. qwen-flash, gemma-4-12b) | 120 | 45 | |
-| `llm-cloud` (kimi-k2/k3, nemotron, deepseek via herd/NIM) | 180 | 60 | connect ceiling 8s (router rule) |
+| `llm-mid` (4–15B, bornite/beellama, e.g. qwen-flash, gemma-4-12b) | 120 | 45 | |
+| `llm-cloud` (kimi-k2/k3, nemotron, deepseek via bornite/NIM) | 180 | 60 | connect ceiling 8s (router rule) |
 | `repo` (cloned codegen tools) | 300 | 60 | tools do their own internal loops |
 | `prompt-exotic` (self-repair, debate) | 240 | 60 | |
 | global race ceiling | 600 | — | wall clock for the whole task |
@@ -194,17 +194,17 @@ surfaces for single-shot codegen tools.
 
 | source | endpoint | models (code-relevant) | status |
 |---|---|---|---|
-| herd herd | `http://127.0.0.1:25100` | 199 models incl. `bigcode/starcoder2-15b`, `deepseek-ai/deepseek-coder-6.7b-instruct`, `google/codegemma-1.1-7b`, `mistralai/codestral-22b-instruct-v0.1`, `ibm/granite-8b-code-instruct`, `meta/codellama-70b`, `kimi-k2`, `kimi-k3-nim`, `beellama/qwen-flash-*`, `gemma-4-12b` | 200, 0.7ms |
+| bornite bornite | `http://127.0.0.1:25100` | 199 models incl. `bigcode/starcoder2-15b`, `deepseek-ai/deepseek-coder-6.7b-instruct`, `google/codegemma-1.1-7b`, `mistralai/codestral-22b-instruct-v0.1`, `ibm/granite-8b-code-instruct`, `meta/codellama-70b`, `kimi-k2`, `kimi-k3-nim`, `beellama/qwen-flash-*`, `gemma-4-12b` | 200, 0.7ms |
 | beellama fast | `http://127.0.0.1:25122` | `fast` (exaone-4.0-1.2b, 380–440 tok/s) | 200, 0.3ms |
 | toolcall-llm | `http://127.0.0.1:25152` | `qwen3.5-9b-tool` | 200, 0.2ms |
 | prompt variants | — | plain / cot / fewshot / role-constrained / self-repair | t1-impl-strategies |
 | cloned repos | — | t1-repos adapts codegen tools → `cr-repo` wrapper | t1-repos |
 
-`:25001` is dead (was herd dynamic slot) — do not route there.
+`:25001` is dead (was bornite dynamic slot) — do not route there.
 
-### D10 — Herd first-class model (feeds ranker-audit + race-port teams)
+### D10 — Bornite first-class model (feeds ranker-audit + race-port teams)
 
-`code-racer` becomes a selectable herd model `code-racer/<task-class>` whose
+`code-racer` becomes a selectable bornite model `code-racer/<task-class>` whose
 "inference" = race the candidate pool for that task class. The ledger schema
 (D6) is the ranker input: per-model pass-rate + latency per task class feeds
 the six provider rankers and the race-port selectable model. t1-e2e verifies
@@ -242,7 +242,7 @@ the ledger → ranker path.
   `cr-llm` + 2 prompt templates; t1-e2e races the sample task live.
 - **Phase 2:** t1-repos lands first `cr-repo` tool; `--cascade` mode;
   optimizer-driven ceiling tightening; 3+ real tasks (algorithms, parsing, API glue).
-- **Phase 3:** `code-racer/<task-class>` as herd selectable model; ledger →
+- **Phase 3:** `code-racer/<task-class>` as bornite selectable model; ledger →
   ranker-audit scoring; Mixture-of-Schedulers lane scheduling.
 
 ## 6. Open questions (for fleet)

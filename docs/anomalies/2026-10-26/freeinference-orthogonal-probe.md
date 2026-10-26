@@ -22,7 +22,7 @@ Session: `probe-20261026-083426Z` + reruns (`run2.log`, `run3.log`) · All HTTP 
 
 ## Confirmed contract updates vs estate doctrine
 
-1. **New model in catalog**: `minimax-m3.1-flash` — not in estate models.yml yet. Candidate for pinax catalog regen.
+1. **New model in catalog**: `minimax-m3.1-flash` — not in estate models.yml yet. Candidate for mimetite catalog regen.
 2. **Embeddings route exists**: `/v1/embeddings` with `BAAI/bge-m3` (dim 1024) — estate has no embeddings consumer wired.
 3. **Anthropic wire translator live** at `/anthropic/v1/messages` — usable for Claude-compatible clients, but **silent model fallback applies** (minimax-m3 → qwen3.6-35b). Never trust requested==served.
 4. **User-agent doctrine**: site explicitly bans fake UAs; keep real UA on all FI traffic.

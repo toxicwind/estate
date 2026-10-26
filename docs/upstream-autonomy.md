@@ -24,7 +24,7 @@ To maintain a clean fork basis while retaining estate autonomy and seamless upst
 ## 2. Isolating Custom Fork Features
 
 To prevent merge conflicts during upstream pulls, estate-specific enhancements are organized into:
-- **Dedicated Plugins / Extensions** (`projects/ranch/herd`, `hodos`, `shep`, `router`).
+- **Dedicated Plugins / Extensions** (`projects/ranch/bornite`, `rhodochrosite`, `shep`, `router`).
 - **Custom Helper Scripts** (`estate/helpers/`).
 - **Config Overrides** (`~/.tau/config.yml`, `~/.tau/estate-env.sh`).
 - **Isolated Documentation** (`projects/tau/docs/upstream/` vs custom fork docs).

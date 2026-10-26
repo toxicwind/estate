@@ -1,5 +1,5 @@
 {
-  "$comment": "Reconstructed 2026-10-19 — original lost with /tmp/kimiclaw-repair staging (see RECONCILIATION.md). Minimal valid config; routing defaults to openfang :25196 + herd :25100.",
+  "$comment": "Reconstructed 2026-10-19 — original lost with /tmp/kimiclaw-repair staging (see RECONCILIATION.md). Minimal valid config; routing defaults to openfang :25196 + bornite :25100.",
   "instanceId": "kimiclaw-a",
   "bridge": { "outboundTransport": "im_rpc" },
   "gateway": {

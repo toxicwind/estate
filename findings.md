@@ -41,14 +41,14 @@ Repairs landed this session are marked [FIXED]; open items marked [OPEN].
 - `GHAS_API_PORT=25112` and `GHAS_MCP_PORT=25113` — both DEAD (connection
   refused, 000). AGENTS.md already flags :25113; the SSOT still carries them.
   [OPEN — scrub or mark dead]
-- Sampled rest (herd 25100 dual-alias, awrawr-mcp 25198, thresher 25127):
+- Sampled rest (bornite 25100 dual-alias, awrawr-mcp 25198, thresher 25127):
   consistent with live listeners.
 
 ## 4. Tau (engine) — the deep findings
 
 - Runtime/config fusion: `~/.tau → estate/config/tau` = **28 GiB inside the
   control-plane repo** (sessions 22G, agent/cache 3.6G, plugins 1.8G,
-  natives 176M, logs 240M, reports 112M). Secrets (auth.json, hodos.key,
+  natives 176M, logs 240M, reports 112M). Secrets (auth.json, rhodochrosite.key,
   kimi-device-id) gitignored but physically co-located — one `git clean -xd`
   in estate destroys all credentials + runtime state. [OPEN — highest-risk item]
 - **Root defect found: uncapped bash tool logs.** Sessions hold per-call
@@ -113,8 +113,8 @@ Repairs landed this session are marked [FIXED]; open items marked [OPEN].
 
 ## 8. In flight at time of writing
 
-- roundup herd sweep (bgp_13d0fedc5001MWwOtHw3MOPHOw) →
-  ranch/roundup/results/herd-20261014/ — first full-herd ranking since
+- roundup bornite sweep (bgp_13d0fedc5001MWwOtHw3MOPHOw) →
+  ranch/roundup/results/bornite-20261014/ — first full-bornite ranking since
   2026-10-02 (last one covered only 4 exaone quantizations; Oct 3 realworld
   sweep silently produced 0-byte results + empty weights).
 
@@ -125,11 +125,11 @@ Repairs landed this session are marked [FIXED]; open items marked [OPEN].
   "legacy variant". Estate copy now correctly declares itself a mirror of the
   authoritative /home/toxic/AGENTS.md.
 - **Mesh truth**: `ranch/mesh/README.md` is the live-verified routing doc
-  (cuttinggate :25200 canonical, estate-router :25104 LIVE, herd :25100,
-  hodos :25193 retired, keypool :25109, thresher :25127 fronts MCP).
+  (chalcopyrite :25200 canonical, estate-router :25104 LIVE, bornite :25100,
+  rhodochrosite :25193 retired, keypool :25109, thresher :25127 fronts MCP).
   Estate-level docs contradict it: CONTROL_PLANE.md + MASTER_PLAN.md still
   cite "estate-router :25104 stopped"/"mcpproxy :25109 as MCP federation
-  gateway" (wrong service), MASTER_PLAN.md:8 "herd DOWN" vs mesh README's
+  gateway" (wrong service), MASTER_PLAN.md:8 "bornite DOWN" vs mesh README's
   live check. [OPEN — rewrite CONTROL_PLANE.md/MASTER_PLAN.md against mesh
   README]
 - **Dead-path docs**: plans/master/REORG-PLAN.md (assumes ~/estate exists),

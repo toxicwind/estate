@@ -15,7 +15,7 @@ Agent `completed` status was treated as "process ended", not "outcome succeeded"
 
 | Crew | Repos | Landed | Notes |
 |---|---|---|---|
-| Rusty `4a399f6f` | 7 | 7/7 | ranch `7cbcce9a`, hodos `3e9e1ba3`, herd `c6a07ba9`, fleetd `759d113e`, squawk `054aea21`, mcpproxy-go `36055d90`, secretsmith `b78e2454` |
+| Rusty `4a399f6f` | 7 | 7/7 | ranch `7cbcce9a`, rhodochrosite `3e9e1ba3`, bornite `c6a07ba9`, fleetd `759d113e`, squawk `054aea21`, mcpproxy-go `36055d90`, secretsmith `b78e2454` |
 | Tarnish `4953ef2b` | 7 | 5/7 crew + 2 remediated | guidellm `483838e3`, super-ralph `4e5cd2b7`, tau `c446f284`, tau-extensions `1c898e3d`, estate `07ff1847` landed. ralph-dashboard had no README commit (HEAD was 2026-09-21) — remediated `b2df3ecb`. estate-projects had no README commit — root README was already a 456-line maximal doc, only the badge block needed the skill's right-aligned for-the-badge treatment — remediated `20dad721` |
 | Volt `8fcad960` | 7 | 7/7 | nvidia-alive `e81c8ff5`, nvidia-kernel-guard `1dbf2c06`, nvidia-nim-model-probe `b95a5903`, nvidia-swarm-lens `0cd562ec`, nim-inkling-api-research `822e5431` (master), entropy-gpu `f166073b`, k3-capacity-hack `bfa4740c` |
 | Pip `5cbfc612` | 7 | 7/7 | codeflux `f6b9f106`, codeflux-moulti `ac2aeaf2` (master), codeflux-patchling `3b02f321`, codeflux-python-patch `3683d5f4` (master), codeflux-watchfiles `61c0a09f`, ast-grep `4daad14e`, agent-dashboard `00bde8db` (default branch `canary`, not main) |
@@ -83,4 +83,4 @@ drops the last line if it lacks a trailing newline; append one first).
 - Skill: `workspace/skills/readme/SKILL.md` (canonical readme-maximal aesthetic)
 - Linter: `~/workspace/bin/readme-lint.ts` (cell-side; both remediated READMEs pass)
 - GPU policy broadcast 2026-09-30 (fleet + OpenFang lane): no NVIDIA-only lock;
-  external/non-local GPU avoided unless directly herd-related.
+  external/non-local GPU avoided unless directly bornite-related.

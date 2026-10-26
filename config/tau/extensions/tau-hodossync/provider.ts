@@ -175,8 +175,8 @@ export interface HealthProbeResult {
 
 export async function probeHealth(config: FlockConfig, signal?: AbortSignal): Promise<HealthProbeResult> {
 	try {
-		// hodos's own client-key-gated liveness probe (client_api.rs). The
-		// OmniRoute /api/health/ping path does not exist on hodos; the
+		// rhodochrosite's own client-key-gated liveness probe (client_api.rs). The
+		// OmniRoute /api/health/ping path does not exist on rhodochrosite; the
 		// session-gated operator surface 401s a Bearer client key.
 		const res = await fetch(`${config.serverUrl}/api/health/ping`, {
 			headers: authHeaders(config),
@@ -355,9 +355,9 @@ export function usableProviderAliases(connections: ProviderConnection[], pricing
 async function fetchUsableProviders(config: FlockConfig, signal?: AbortSignal): Promise<Set<string> | undefined> {
 	try {
 		const [providers, pricing] = await Promise.all([
-			// hodos client-key endpoints (client_api.rs): /api/client/providers
+			// rhodochrosite client-key endpoints (client_api.rs): /api/client/providers
 			// and /api/pricing/models. The OmniRoute /api/providers path is
-			// session-gated on hodos and 401s a Bearer client key.
+			// session-gated on rhodochrosite and 401s a Bearer client key.
 			requestJson<{ connections?: ProviderConnection[] }>(config, "/api/client/providers", {}, 10_000, signal),
 			requestJson<Record<string, PricingProvider>>(config, "/api/pricing/models", {}, 10_000, signal),
 		]);
@@ -370,7 +370,7 @@ async function fetchUsableProviders(config: FlockConfig, signal?: AbortSignal): 
 
 async function fetchPricing(config: FlockConfig, signal?: AbortSignal): Promise<Record<string, ModelPricing>> {
 	try {
-		// hodos's client-key-gated cost catalog (client_api.rs).
+		// rhodochrosite's client-key-gated cost catalog (client_api.rs).
 		const result: Record<string, ModelPricing> = {};
 		const providers = await requestJson<Record<string, Record<string, ModelPricing>>>(
 			config,

@@ -4,10 +4,10 @@
 import type { ServiceDef } from "../types/index.ts";
 export const CORE_SERVICES: ServiceDef[] = [
   {
-    id: "herd",
-    name: "herd",
+    id: "bornite",
+    name: "bornite",
     portKey: "HERD_PORT",
-    run: "exec ./stack/services/herd.sh --host 127.0.0.1 --port ${HERD_PORT}",
+    run: "exec ./stack/services/bornite.sh --host 127.0.0.1 --port ${HERD_PORT}",
     dir: "/home/toxic/estate",
     readyHttp: "/health",
     group: "core",

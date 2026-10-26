@@ -31,7 +31,7 @@ type Daemon = {
 
 const DAEMONS: Daemon[] = [
   {
-    id: "herd",
+    id: "bornite",
     health: "http://127.0.0.1:25100/health",
     mechanism: "pitchfork-restart",
   },
@@ -52,9 +52,9 @@ const DAEMONS: Daemon[] = [
     mechanism: "pitchfork-restart",
   },
   {
-    id: "herd",
+    id: "bornite",
     health: "http://127.0.0.1:25100/health",
-    touch: "/home/toxic/estate/tools/herd/herd-ts/router.ts",
+    touch: "/home/toxic/estate/tools/bornite/bornite-ts/router.ts",
     mechanism: "bun-hot",
   },
   {

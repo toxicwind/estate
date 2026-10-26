@@ -10,7 +10,7 @@
 ## Observed refusal incidents (facts, not theory)
 1. 2026-10-01 ~07:52Z — six wave-3 helper subagents returned an identical
    generic refusal and produced no artifacts: tau e520690d, ranch 919d996a,
-   herd 0cd90cbc, skill-routing df94ce5b, paper-gathering 724e070c,
+   bornite 0cd90cbc, skill-routing df94ce5b, paper-gathering 724e070c,
    capability-inventory e5076e86. Correlated wave, cause undetermined.
 2. 2026-10-01 19:20–19:22Z — wave-4 lanes oracle-settle, tau-logpath,
    emergent refused on re-dispatch; parked. Same window also refused a

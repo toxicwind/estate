@@ -43,7 +43,7 @@ both staying path-compatible.
 ## The Greek pen (olympus)
 
 olympus is the **registry of the Greek-coded lineage**: τ tau, κ kappa, skopos,
-kilo, muse, keryx, hodos, kairos, kryptos, agele, pinax, agon, antilogos,
+kilo, muse, keryx, rhodochrosite, kairos, kryptos, agele, mimetite, agon, antilogos,
 pylae, propylon, opsis, didymos, chronos-forge, arroyo. Each Greek product
 physically lives in `ranch/` (its workspace pen) and is mapped by the
 `estate/ranch` path next to its codename in olympus. olympus is the index, not

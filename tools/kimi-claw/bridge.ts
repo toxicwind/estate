@@ -2,8 +2,8 @@
 /**
  * Estate Kimi-Claw Bridge — repaired 2026-09-20 (kimiclaw-deployer);
  *   model-agnostic rewire 2026-09-21 (relay): ZERO hardcoded model IDs.
- *   Model selection lives ONLY in router config: KIMICLAW_HERD_MODEL env,
- *   instance routing.herdModel, or herd's own aliases (e.g. "fast") — the
+ *   Model selection lives ONLY in router config: KIMICLAW_BORNITE_MODEL env,
+ *   instance routing.borniteModel, or bornite's own aliases (e.g. "fast") — the
  *   bridge never picks a provider or model itself. Dead :4200 OpenFang
  *   default is now :25196 (live kernel API); :25103/:25143 mentions below
  *   are historical repair notes only.
@@ -198,12 +198,12 @@ function loadKimiConfig(inst: InstanceDef): KimiBridgeConfig {
   const openfangUrl =
     process.env.OPENFANG_URL || routing.openfangUrl || "http://127.0.0.1:25196";
   const herdUrl =
-    process.env.HERD_URL || routing.herdUrl || "http://127.0.0.1:25100/v1";
+    process.env.BORNITE_URL || routing.borniteUrl || "http://127.0.0.1:25100/v1";
   // Model selection lives in router config ONLY: explicit arg, then
-  // KIMICLAW_HERD_MODEL env, then instance routing.herdModel. Empty means
+  // KIMICLAW_BORNITE_MODEL env, then instance routing.borniteModel. Empty means
   // the bridge refuses to pick — it never selects a model itself.
   const herdModel =
-    process.env.KIMICLAW_HERD_MODEL || routing.herdModel || "";
+    process.env.KIMICLAW_BORNITE_MODEL || routing.borniteModel || "";
   const bridgeCfg = (file.bridge || {}) as Record<string, unknown>;
   const gatewayCfg = (file.gateway || {}) as Record<string, unknown>;
   const sessionCfg = (file.session || {}) as Record<string, string>;
@@ -324,7 +324,7 @@ export async function dispatchToOpenFang(
   } catch (err) {
     console.warn(
       `[Kimi-Claw] OpenFang dispatch to agent "${target}" failed: ${err}; ` +
-        `falling back to Herd`,
+        `falling back to Bornite`,
     );
   }
   return dispatchToHerd(cfg, message);
@@ -343,15 +343,15 @@ export async function dispatchToHerd(
   prompt: string,
   model?: string,
 ): Promise<string> {
-  const resolved = model || cfg.herdModel;
+  const resolved = model || cfg.borniteModel;
   if (!resolved) {
     return (
-      "[Herd Error: no model configured — set KIMICLAW_HERD_MODEL env or " +
-      "routing.herdModel in the instance JSON. The bridge never picks a " +
+      "[Bornite Error: no model configured — set KIMICLAW_BORNITE_MODEL env or " +
+      "routing.borniteModel in the instance JSON. The bridge never picks a " +
       "model itself; selection belongs to router config.]"
     );
   }
-  const res = await fetch(`${cfg.herdUrl}/chat/completions`, {
+  const res = await fetch(`${cfg.borniteUrl}/chat/completions`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -361,11 +361,11 @@ export async function dispatchToHerd(
     }),
     signal: AbortSignal.timeout(60000),
   });
-  if (!res.ok) return `[Herd Error: HTTP ${res.status}]`;
+  if (!res.ok) return `[Bornite Error: HTTP ${res.status}]`;
   const data = (await res.json()) as {
     choices?: Array<{ message?: { content?: string } }>;
   };
-  return data.choices?.[0]?.message?.content || "[No output from Herd]";
+  return data.choices?.[0]?.message?.content || "[No output from Bornite]";
 }
 
 // ---------------------------------------------------------------------------
@@ -424,21 +424,21 @@ export async function checkRoutes(cfg: KimiBridgeConfig): Promise<ProbeResult[]>
       if (found.ready !== true) return `agent "${agent}" not ready`;
       return null;
     }),
-    probe("herd-models", `${cfg.herdUrl}/models`, 5000, (res) =>
+    probe("bornite-models", `${cfg.borniteUrl}/models`, 5000, (res) =>
       res.ok ? null : `HTTP ${res.status}`,
     ),
     (async (): Promise<ProbeResult> => {
       const t0 = Date.now();
-      const resolved = cfg.herdModel;
+      const resolved = cfg.borniteModel;
       if (!resolved)
         return {
-          route: "herd-model-live",
+          route: "bornite-model-live",
           ok: false,
           ms: Date.now() - t0,
-          detail: "no herdModel configured (KIMICLAW_HERD_MODEL / routing.herdModel)",
+          detail: "no herdModel configured (KIMICLAW_BORNITE_MODEL / routing.borniteModel)",
         };
       try {
-        const res = await fetch(`${cfg.herdUrl}/chat/completions`, {
+        const res = await fetch(`${cfg.borniteUrl}/chat/completions`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -451,14 +451,14 @@ export async function checkRoutes(cfg: KimiBridgeConfig): Promise<ProbeResult[]>
         });
         const ms = Date.now() - t0;
         if (!res.ok)
-          return { route: "herd-model-live", ok: false, ms, detail: `HTTP ${res.status}` };
+          return { route: "bornite-model-live", ok: false, ms, detail: `HTTP ${res.status}` };
         const data = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
         const text = (data.choices?.[0]?.message?.content || "").trim();
         return text.length > 0
-          ? { route: "herd-model-live", ok: true, ms, detail: `model=${resolved} answered` }
-          : { route: "herd-model-live", ok: false, ms, detail: `model=${resolved} empty completion` };
+          ? { route: "bornite-model-live", ok: true, ms, detail: `model=${resolved} answered` }
+          : { route: "bornite-model-live", ok: false, ms, detail: `model=${resolved} empty completion` };
       } catch (err) {
-        return { route: "herd-model-live", ok: false, ms: Date.now() - t0, detail: `exception: ${String(err).slice(0, 120)}` };
+        return { route: "bornite-model-live", ok: false, ms: Date.now() - t0, detail: `exception: ${String(err).slice(0, 120)}` };
       }
     })(),
   ]);
@@ -563,7 +563,7 @@ export async function runDaemon(cfg: KimiBridgeConfig): Promise<void> {
     `[Kimi-Claw] daemon up: instance=${cfg.instance.instanceId} ` +
       `transport=${cfg.instance.outboundTransport}->${cfg.bridge.effectiveOutboundTransport} ` +
       `agent=${cfg.instance.openfangAgent} session=${cfg.sessionKey} ` +
-      `herdModel=${cfg.herdModel || "(unset)"} watching=${FLEET_DIR}`,
+      `herdModel=${cfg.borniteModel || "(unset)"} watching=${FLEET_DIR}`,
   );
   const scan = async () => {
     if (!existsSync(FLEET_DIR)) return;
@@ -590,10 +590,10 @@ function usage(): never {
   console.log(
     `Usage: bun bridge.ts [--instance a|b] [--check-route] [--send "text" [--agent NAME]] [--daemon]\n` +
       `  --instance a|b   select instance (default: a, or KIMICLAW_INSTANCE)\n` +
-      `  --check-route    fail-fast probe of OpenFang + Herd routes\n` +
+      `  --check-route    fail-fast probe of OpenFang + Bornite routes\n` +
       `  --send TEXT      dispatch TEXT via the instance's OpenFang agent\n` +
       `  --agent NAME     override target agent for --send (e.g. coyote)\n` +
-      `  --model MODEL    route --send through herd with MODEL (any router model/alias)\n` +
+      `  --model MODEL    route --send through bornite with MODEL (any router model/alias)\n` +
       `  --daemon         run the squawk fleet relay loop`,
   );
   process.exit(2);
@@ -640,7 +640,7 @@ if (import.meta.main) {
       `[config] instance=${cfg.instance.instanceId} ` +
         `transport=${cfg.instance.outboundTransport}->${cfg.bridge.effectiveOutboundTransport} ` +
         `agent=${cfg.instance.openfangAgent} openfang=${cfg.openfangUrl} ` +
-        `herd=${cfg.herdUrl} herdModel=${cfg.herdModel || "(unset)"} session=${cfg.sessionKey}`,
+        `bornite=${cfg.borniteUrl} herdModel=${cfg.borniteModel || "(unset)"} session=${cfg.sessionKey}`,
     );
     process.exit(failed > 0 ? 1 : 0);
   } else if (sendText !== undefined) {
@@ -652,7 +652,7 @@ if (import.meta.main) {
     console.log(
       `[Kimi-Claw Bridge] instance=${cfg.instance.instanceId} ` +
         `openfang=${cfg.openfangUrl} agent=${cfg.instance.openfangAgent} ` +
-        `herd=${cfg.herdUrl}`,
+        `bornite=${cfg.borniteUrl}`,
     );
   }
 }

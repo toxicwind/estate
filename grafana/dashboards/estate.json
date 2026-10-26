@@ -228,7 +228,7 @@
    "targets": [
     {
      "expr": "llamaswap_cpu_util_percent",
-     "legendFormat": "herd CPU %"
+     "legendFormat": "bornite CPU %"
     }
    ],
    "fieldConfig": {

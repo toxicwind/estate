@@ -39,7 +39,7 @@ dead direct Coyote route on :25143, and imported a stale client path.
 5. Redaction-safe `.secrets` parsing: presence validated, values never
    logged.
 6. Fail-fast AbortController validation: `--check-route` probes
-   openfang /api/health, openfang /api/agents (agent present+ready), herd
+   openfang /api/health, openfang /api/agents (agent present+ready), bornite
    /v1/models — 5s timeouts each, zero retries, non-zero exit on failure.
 7. CLI: `--instance a|b`, `--check-route`, `--send TEXT [--agent NAME]`,
    `--daemon` (squawk fleet relay: fs.watch on the fleet dir, responds to

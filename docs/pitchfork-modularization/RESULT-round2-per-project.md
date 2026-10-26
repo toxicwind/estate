@@ -37,7 +37,7 @@ beellama-fast 12h stale-definition incident, thresher self-heal notes,
 (reproduces the committed `=======`/`>>>>>>>` incident); A with different-daemon
 files → no conflict; same-daemon → conflict (honest limit).
 
-**Phase 3 (hot-reload granularity):** one port change → exactly `["hodos"]`
+**Phase 3 (hot-reload granularity):** one port change → exactly `["rhodochrosite"]`
 re-registers under all three (supervisord two-phase: parse+validate all, diff
 per-daemon, restart only changed).
 
@@ -61,7 +61,7 @@ where things run; 30 projects, 82 daemons):
 
 | Project | Daemons | Notes |
 |---|---|---|
-| `estate` (the parent itself) | 37 | estate infra: herd, mesh-hub, keypool, model-guard, … |
+| `estate` (the parent itself) | 37 | estate infra: bornite, mesh-hub, keypool, model-guard, … |
 | `ranch/oracle` | 6 | oracle-market/core/chat, market-watchdog + 2 stale |
 | `ranch/squawk` | 4 | squawk-feed, fleet-ui, nats, nats-tail |
 | `ranch/squawk-ws` | 2 | squawk-ws, squawk-ws-client |

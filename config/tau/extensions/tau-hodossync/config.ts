@@ -23,7 +23,7 @@ export interface FlockSettings {
 	modelCacheTtlMinutes: number;
 	/** Background catalog refresh while the host is running. 0 disables. Default 300 seconds. */
 	autoSyncIntervalSeconds: number;
-	/** Display gateway-reported tok/s after hodos turns. */
+	/** Display gateway-reported tok/s after rhodochrosite turns. */
 	showGatewayTokensPerSecond: boolean;
 	lastSuccessfulSyncAt: number;
 	onUnreachable: OnUnreachable;
@@ -34,18 +34,18 @@ export interface FlockSettings {
 
 /**
  * Default gateway URL. The host port is owned by the estate SSOT
- * (config/ports.env; retired 2026-10-16 — hodos/cuttinggate :25200 is canonical) and is deliberately NOT VansRouter's :20128;
+ * (config/ports.env; retired 2026-10-16 — rhodochrosite/chalcopyrite :25200 is canonical) and is deliberately NOT VansRouter's :20128;
  * reading it here keeps the extension from hardcoding another service's port.
  */
 function defaultServerUrl(): string {
-	const port = process.env.HODOSSYNC_PORT ?? "25193";
+	const port = process.env.RHODOCHROSITESYNC_PORT ?? "25193";
 	return `http://127.0.0.1:${port}`;
 }
 
 export const EXTENSION_STATE_DIR = "tau-hodossync";
 const DEFAULT_SETTINGS: FlockSettings = {
 	serverUrl: defaultServerUrl(),
-	providerName: "hodos",
+	providerName: "rhodochrosite",
 	onlyShowUsableModels: true,
 	showGlobalRoutingModels: true,
 	includeModels: [],
@@ -137,8 +137,8 @@ export function loadProbeConfig(agentHome: string): FlockConfig {
 
 export function loadHopSettings(agentHome: string): Pick<FlockSettings, "onUnreachable" | "fallbackModel"> {
 	const settings = loadSettings(agentHome);
-	const onUnreachable = process.env.HODOSSYNC_ON_UNREACHABLE;
-	const fallbackModel = process.env.HODOSSYNC_FALLBACK_MODEL;
+	const onUnreachable = process.env.RHODOCHROSITESYNC_ON_UNREACHABLE;
+	const fallbackModel = process.env.RHODOCHROSITESYNC_FALLBACK_MODEL;
 	return {
 		onUnreachable: ON_UNREACHABLE_VALUES.includes(onUnreachable as OnUnreachable)
 			? (onUnreachable as OnUnreachable)
@@ -156,14 +156,14 @@ export function loadConfig(agentHome: string): FlockConfig {
 	const settings = loadSettings(agentHome);
 	return sanitizeConfig({
 		...settings,
-		serverUrl: process.env.HODOSSYNC_URL ?? settings.serverUrl,
+		serverUrl: process.env.RHODOCHROSITESYNC_URL ?? settings.serverUrl,
 		// Only HODOSSYNC_API_KEY can override the stored key. The legacy
 		// Legacy OMNIROUTE_API_KEY is not consulted (provider retired 2026-10-16): it was a different
 		// system's management token (OmniRoute on :20130), it cannot
-		// authenticate against hodos's client-key gate, and a stale export
+		// authenticate against rhodochrosite's client-key gate, and a stale export
 		// of it in ~/.env silently broke every auto-sync with 401s.
-		apiKey: process.env.HODOSSYNC_API_KEY ?? settings.apiKey,
-		providerName: process.env.HODOSSYNC_PROVIDER_NAME ?? settings.providerName,
+		apiKey: process.env.RHODOCHROSITESYNC_API_KEY ?? settings.apiKey,
+		providerName: process.env.RHODOCHROSITESYNC_PROVIDER_NAME ?? settings.providerName,
 	});
 }
 

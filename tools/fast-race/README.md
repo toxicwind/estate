@@ -16,7 +16,7 @@ every hop — first valid response wins.
 flowchart LR
     p[prompt] --> r{race}
     r --> l1[:25122 · pitchfork-supervised · permanent]
-    r --> l2[:25001 · herd dynamic slot · best-effort]
+    r --> l2[:25001 · bornite dynamic slot · best-effort]
     l1 & l2 -->|first valid wins| win[winner]
     l1 -.->|TTFT miss > ceiling| cut[lane cut · fallback fires]
 ```
@@ -26,7 +26,7 @@ flowchart LR
 | Doctrine | Implementation |
 | --- | --- |
 | Hot persistent connections | One keep-alive `HTTPConnection` per lane, dial once; silent re-dial on stale keep-alive |
-| Redundant raced lanes | `:25122` (pitchfork-supervised, permanent) vs `:25001` (herd dynamic slot, auto-discovered, best-effort); first valid wins |
+| Redundant raced lanes | `:25122` (pitchfork-supervised, permanent) vs `:25001` (bornite dynamic slot, auto-discovered, best-effort); first valid wins |
 | Fail-fast ceilings | Per-lane TTFT deadline (default 2s); a miss cuts the lane, fallback fires |
 | Measure every hop | JSONL race log + `--bench` P50/P95/P99 tables, warm-ups, hot-vs-cold |
 
@@ -53,7 +53,7 @@ race: mode, attempts with ttft_ms/gen_tps per lane, winner).
 ## Architecture
 
 Single stdlib-only script (`fast_race.py`), no dependencies. Lane health is
-probed at startup; dead lanes are excluded from the race (herd may evict
+probed at startup; dead lanes are excluded from the race (bornite may evict
 `:25001` at any time — that's why the race exists, not a failure to fix).
 
 Complements the `race` skill (`~/workspace/skills/race/`): that races

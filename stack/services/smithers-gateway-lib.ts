@@ -44,7 +44,7 @@ export const IDLE_TIMEOUT = "0";
 
 /** VAR -> keyring attribute spec. Mirrors the retired .sh spec_of() mappings. */
 export const KEYRING_SPECS: Record<string, Record<string, string>> = {
-  HODOS_API_KEY: { service: "hodos" },
+  RHODOCHROSITE_API_KEY: { service: "rhodochrosite" },
   NIM_PROXY_API_KEY: { service: "nim", provider: "nvidia" },
   NVIDIA_API_KEY: { service: "nim", provider: "nvidia" },
   ANTHROPIC_API_KEY: { service: "anthropic" },

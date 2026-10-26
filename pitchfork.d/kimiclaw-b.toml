@@ -4,5 +4,5 @@ run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/tools/kimi-claw/bridge.t
 dir = "/home/toxic/estate/tools/kimi-claw"
 retry = true
 auto = ["start"]
-# --- herd-deployer 2026-09-20: key-pool rotation sidecar for herd cloud peers.
+# --- bornite-deployer 2026-09-20: key-pool rotation sidecar for bornite cloud peers.
 # Cheap health probes, first-valid-wins per call, 401/402/429 = routing signal.

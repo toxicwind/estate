@@ -2,21 +2,21 @@ import { api } from "./apiBase";
 import { modelServerPath } from "./modelUtils";
 import type { Model } from "./types";
 
-// ComfyUI is served by herd itself: the backend proxies /comfyui/ to the
+// ComfyUI is served by bornite itself: the backend proxies /comfyui/ to the
 // fixed local model comfyui_auto. An explicit request for the /comfyui/ root
 // starts the model; sub-paths 409 while it is not loaded. The UI therefore
 // treats the model state (from the /api/events modelStatus feed) as the
 // source of truth and only mounts the iframe once the model is ready.
 
-/** The fixed local model id herd proxies under /comfyui/. */
+/** The fixed local model id bornite proxies under /comfyui/. */
 export const COMFYUI_MODEL_ID = "comfyui_auto";
 
-/** The herd URL that serves the ComfyUI web app. Requesting it starts the model. */
+/** The bornite URL that serves the ComfyUI web app. Requesting it starts the model. */
 export function comfyuiUrl(): string {
 	return api(modelServerPath(COMFYUI_MODEL_ID));
 }
 
-/** Find the ComfyUI model in a model list, if herd has it configured. */
+/** Find the ComfyUI model in a model list, if bornite has it configured. */
 export function findComfyUIModel(models: Model[]): Model | undefined {
 	return models.find((m) => m.id === COMFYUI_MODEL_ID);
 }
@@ -52,7 +52,7 @@ export function comfyuiPhase(model: Model | undefined, connected: boolean): Comf
 export function comfyuiPhaseLabel(phase: ComfyUIPhase): string {
 	switch (phase) {
 		case "disconnected":
-			return "herd unreachable";
+			return "bornite unreachable";
 		case "unconfigured":
 			return "not configured";
 		case "not-loaded":
@@ -93,7 +93,7 @@ function sleepAbortable(ms: number, signal: AbortSignal): Promise<void> {
 /**
  * Fire the /comfyui/ root request (which starts the model on the backend)
  * with retries across the delay slots (default: immediate, 2s, 8s). A
- * non-2xx herd response counts as a failure and is retried; the response
+ * non-2xx bornite response counts as a failure and is retried; the response
  * body is drained so a slow proxy start does not leave the connection
  * hanging. Resolves with the number of attempts made (1..slots); throws the
  * last error when every attempt fails, or AbortError when `signal` aborts.
@@ -116,7 +116,7 @@ export async function launchWithRetry(
 		onAttempt?.(i + 1);
 		try {
 			const res = await fetchImpl(url, { signal });
-			if (!res.ok) throw new Error(`herd answered ${res.status}`);
+			if (!res.ok) throw new Error(`bornite answered ${res.status}`);
 			// Drain the body so a slow proxy start does not leave the
 			// connection hanging; UI state comes from the events feed.
 			await res.arrayBuffer();

@@ -1,11 +1,11 @@
 # ranch dashboard (`ui/`)
 
-The ranch control UI: one Svelte single-page app over **herd** (local models)
-and **hodos** (cloud providers). Pure client — no backend, no database, no
-server of its own. It talks to a herd-shaped HTTP API over a single
+The ranch control UI: one Svelte single-page app over **bornite** (local models)
+and **rhodochrosite** (cloud providers). Pure client — no backend, no database, no
+server of its own. It talks to a bornite-shaped HTTP API over a single
 configurable base URL.
 
-> **Read the provenance first.** This is herd's web UI, adopted into the
+> **Read the provenance first.** This is bornite's web UI, adopted into the
 > ranch. It is not a UI written for the ranch, and its route names, vocabulary
 > and API surface are upstream's.
 
@@ -16,34 +16,34 @@ configurable base URL.
 Two hops, both verifiable in git:
 
 ```
-  mostlygeek/herd  ──►  herd  ──►  ranch/ui
+  mostlygeek/bornite  ──►  bornite  ──►  ranch/ui
         (the UI)          (carried it)   commit d39a6f8
 ```
 
-`d39a6f8` — *"ranch: adopt herd UI as the ranch dashboard (apiBase-configurable,
-vite outDir dist)"*. It created `ui/` at the top of this repo; the dashboard sits at the ranch root as a sibling of `herd/`, not
+`d39a6f8` — *"ranch: adopt bornite UI as the ranch dashboard (apiBase-configurable,
+vite outDir dist)"*. It created `ui/` at the top of this repo; the dashboard sits at the ranch root as a sibling of `bornite/`, not
 a child of it. The upstream fingerprints are still everywhere in `src/`:
 
 | Evidence | Where |
 | :--- | :--- |
-| `<title>herd</title>` | `index.html` |
-| `appTitle` defaults to `"herd"` | `src/stores/theme.ts` |
-| MCP client for "herd's own `/api/mcp`" | `src/lib/agentTools.ts` |
-| Docs agent answering questions *about herd* | `src/lib/prompts/docsAgent.ts`, `src/cli/` |
-| `Exported from [herd](…)` | `src/lib/activityExport.ts` |
-| Links to mostlygeek/herd issues & discussions | `src/routes/Performance.svelte` |
-| Dev proxy defaults to herd's `localhost:8080` | `vite.config.ts` |
+| `<title>bornite</title>` | `index.html` |
+| `appTitle` defaults to `"bornite"` | `src/stores/theme.ts` |
+| MCP client for "bornite's own `/api/mcp`" | `src/lib/agentTools.ts` |
+| Docs agent answering questions *about bornite* | `src/lib/prompts/docsAgent.ts`, `src/cli/` |
+| `Exported from [bornite](…)` | `src/lib/activityExport.ts` |
+| Links to mostlygeek/bornite issues & discussions | `src/routes/Performance.svelte` |
+| Dev proxy defaults to bornite's `localhost:8080` | `vite.config.ts` |
 
 The upstream commit this forked from is **not recorded anywhere in the tree**.
-If a herd feature matters to you, check upstream release notes rather
+If a bornite feature matters to you, check upstream release notes rather
 than assuming a version.
 
 The ranch-specific delta is genuinely small and concentrated in two files:
 `src/lib/apiBase.ts` (detach the API base from the origin) and `vite.config.ts`
 (`base: "/ui/"`, `outDir: dist`). Everything else is upstream. In particular the
-roadmap the earlier README listed — a hodos panel, a unified local+cloud model
-view — is **not implemented**; `/models` and `/playground` are herd's and
-know nothing about hodos. Treat those as open, not pending.
+roadmap the earlier README listed — a rhodochrosite panel, a unified local+cloud model
+view — is **not implemented**; `/models` and `/playground` are bornite's and
+know nothing about rhodochrosite. Treat those as open, not pending.
 
 ---
 
@@ -82,7 +82,7 @@ the dev server is `start`.
 
 ```sh
 bun install
-VITE_HERD_API=http://127.0.0.1:25100 bun run start
+VITE_BORNITE_API=http://127.0.0.1:25100 bun run start
 ```
 
 The dev server binds `0.0.0.0` with `allowedHosts: true` — `vite.config.ts`
@@ -96,22 +96,22 @@ jokes about it. Fine on a tailnet; do not expose it.
 
 | Order | Source | Set by |
 | :---: | :--- | :--- |
-| 1 | `window.__HERD_API__` | a script tag before the bundle loads |
-| 2 | `import.meta.env.VITE_HERD_API` | the build environment |
-| 3 | `""` — same origin | default; the old embedded-in-herd behaviour |
+| 1 | `window.__BORNITE_API__` | a script tag before the bundle loads |
+| 2 | `import.meta.env.VITE_BORNITE_API` | the build environment |
+| 3 | `""` — same origin | default; the old embedded-in-bornite behaviour |
 
 ```js
-window.__HERD_API__ = "http://127.0.0.1:25100";
+window.__BORNITE_API__ = "http://127.0.0.1:25100";
 ```
 
 Everything goes through the exported `api(path)` helper, so this one value
 redirects the whole app.
 
-**Do not confuse it with `HERD_URL`.** That is dev-server plumbing: Vite
+**Do not confuse it with `BORNITE_URL`.** That is dev-server plumbing: Vite
 proxies `/api`, `/logs`, `/upstream`, `/unload`, `/v1` and `/sdapi` to
-`HERD_URL` (default `http://localhost:8080`), which is what lets the dev
-server work with no `VITE_HERD_API` build. It has no effect on a production
-bundle; `VITE_HERD_API` / `__HERD_API__` is what the bundle actually calls.
+`BORNITE_URL` (default `http://localhost:8080`), which is what lets the dev
+server work with no `VITE_BORNITE_API` build. It has no effect on a production
+bundle; `VITE_BORNITE_API` / `__BORNITE_API__` is what the bundle actually calls.
 
 ---
 
@@ -201,12 +201,12 @@ bun run src/cli/docsAgent.ts ask "how do I configure a model?"
 Its default case and results directories resolve to
 `ranch/evals/docs-agent/{cases,runs}` — **that directory does not exist in this
 tree**, so `eval` and `judge` have no defaults to work from until it is
-restored. It reads `HERD_URL`, `DOCS_AGENT_MODEL` and
+restored. It reads `BORNITE_URL`, `DOCS_AGENT_MODEL` and
 `DOCS_AGENT_JUDGE_MODEL`.
 
 ---
 
 ## See also
 
-- [`../herd/`](../herd/) — where this UI came from
-- [`../hodos/`](../hodos/) — the cloud side it does not yet reach
+- [`../bornite/`](../bornite/) — where this UI came from
+- [`../rhodochrosite/`](../rhodochrosite/) — the cloud side it does not yet reach

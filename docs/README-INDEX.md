@@ -161,7 +161,7 @@ docs/estate-map.md
 docs/fleet/crews/anvil.md
 docs/fleet/crews/bramble.md
 docs/fleet/crews/cinder.md
-docs/fleet/crews/hodos-consolidation.md
+docs/fleet/crews/rhodochrosite-consolidation.md
 docs/fleet/crews/kestrel.md
 docs/fleet/crews/lane-dispatcher.md
 docs/fleet/crews/lumen.md
@@ -210,7 +210,7 @@ docs/gemini-key-conventions.md
 docs/gemini-tool-retrieval-reference.md
 docs/gemini-tool-retrieval.md
 docs/hashline-patch-contract.md
-docs/hodossync-baseline.md
+docs/rhodochrositesync-baseline.md
 docs/hooks.md
 docs/mbx.md
 docs/mcp-protocol-transports.md
@@ -228,7 +228,7 @@ docs/pitchfork-modularization/RESULT-round2-per-project.md
 docs/pitchfork-modularization/RESULT.md
 docs/pitchfork-modularization/research/phase1-papers.md
 docs/pitchfork-modularization/research/phase2-patterns.md
-docs/plans/free-pollinations-herd-hotfix-plan.md
+docs/plans/free-pollinations-bornite-hotfix-plan.md
 docs/plans/master/MASTER_PLAN.md
 docs/plans/master/REORG-PLAN.md
 docs/plans/master/TASKS.md

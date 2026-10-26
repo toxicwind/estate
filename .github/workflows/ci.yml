@@ -17,7 +17,7 @@ jobs:
     steps:
       - name: Checkout Repository
         # NOTE: submodules intentionally NOT fetched — the tree carries engine
-        # gitlinks (engines/herd/*, sigma, skills-hub, tools/pd-mcp-standalone)
+        # gitlinks (engines/bornite/*, sigma, skills-hub, tools/pd-mcp-standalone)
         # with no .gitmodules URL (estate policy: declare a submodule only when
         # the checkout is on disk with its own .git).
         uses: actions/checkout@v4

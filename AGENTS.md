@@ -146,7 +146,7 @@ style is MONADIC PRIMITIVES + bun-forward, not ad-hoc imperative bash:
 
 ## Providers & orchestration
 
-- **Pinax** (`@toxicwind/pinax`) is the provider SSOT. **FreeInference**
+- **Mimetite** (`@toxicwind/mimetite`) is the provider SSOT. **FreeInference**
   (`freeinference.org/v1`: qwen3.6-35b, glm-5.3-flash, deepseek-v4-flash,
   minimax-m3) is primary fast inference. **No hard provider concurrency cap** —
   a 429 with retry-after is a local Thresher/limiter shed, not the provider.
@@ -182,9 +182,9 @@ style is MONADIC PRIMITIVES + bun-forward, not ad-hoc imperative bash:
 ## Naming (2026-10-22)
 
 - EAP/Gemini Tool Retrieval = **@estate/theta** (private). Merged provider
-  gateway = **atlas** (ex-cuttinggate). Key-pool router = **keygate**.
+  gateway = **atlas** (ex-chalcopyrite). Key-pool router = **keygate**.
 - **olympus** holds the Greek codename lineage (τ tau, κ kappa, skopos, kilo,
-  muse, keryx, hodos, kairos, kryptos). ranch/barn are NOT Greek; only Greek
+  muse, keryx, rhodochrosite, kairos, kryptos). ranch/barn are NOT Greek; only Greek
   products join olympus.
 
 ## Emergent rig doctrine
@@ -205,7 +205,7 @@ _Codified from 2026-10-23 anomalies (endpoint probes, fleet recovery, funnel for
 - **DECLARED ≠ OBSERVED.** Never trust a catalog (`supported_sampling_parameters`), model card, or SDK type definition as behavioral fact. Validate with a live probe (HTTP status + body + finish_reason + token accounting) before relying on it. Examples: minimax-m3 advertises `thinking` → HTTP 400; qwen3.6-35b shows `"reasoning": false` in catalog while `reasoning_effort` silently does nothing.
 - **REASONING BUDGET CONTRACT.** Reasoning tokens and content tokens share ONE ceiling. If `finish_reason=length` AND `reasoning_tokens ≥ ~0.95 × max_tokens` AND content is empty → classify as `reasoning_budget_starvation` (NOT an infinite loop, NOT provider failure). Rule: with reasoning on, `max_tokens ≥ 2500` (or record the per-model content-safe budget before choosing). Never diagnose "endless" from streaming deltas alone.
 - **OBSERVER EFFECT / SINGLE LANE.** The provider key is a single-server queue (advertised limit 2, de facto 1). A probe's 429/403 is NOT evidence of model failure if workers succeeded on the same key+model in the same window. Probes serialize (LeaseScheduler: one lease per key; workers > probes) and record concurrent-worker count in every probe row. Never conclude "key lacks access" while production turns run the same model.
-- **MODEL IDENTITY CHAIN.** The model that executes is a provenance chain, NOT the CLI tag: catalog → models.yml (pinax-generated, DO NOT EDIT BY HAND — regenerate from mesh/catalog/src/data.ts) → task.agentModelOverrides → modelRoles → agent frontmatter model list → parent active/default fallback. The roster's resolved model is ground truth. Effort: gated by `task.enableEffort` + the selected model's `thinking` metadata; `vibe_spawn` has no effort field, so pin via modelRoles/agentModelOverrides. **deepseek-v4-flash via freeinference is a live primary model (kappa-session audit: 19,648 calls, incl. the current session) — earlier line claiming it is "BANNED" contradicted observed reality and is removed; it is NOT banned, do not treat it as banned.**
+- **MODEL IDENTITY CHAIN.** The model that executes is a provenance chain, NOT the CLI tag: catalog → models.yml (mimetite-generated, DO NOT EDIT BY HAND — regenerate from mesh/catalog/src/data.ts) → task.agentModelOverrides → modelRoles → agent frontmatter model list → parent active/default fallback. The roster's resolved model is ground truth. Effort: gated by `task.enableEffort` + the selected model's `thinking` metadata; `vibe_spawn` has no effort field, so pin via modelRoles/agentModelOverrides. **deepseek-v4-flash via freeinference is a live primary model (kappa-session audit: 19,648 calls, incl. the current session) — earlier line claiming it is "BANNED" contradicted observed reality and is removed; it is NOT banned, do not treat it as banned.**
 - **ROUTE CONTRACT.** A route can be "alive" at the front door (health/models/OAuth 401 wall) and dead at the exec lane (empty/502 chat completions). Every served route declares its expected end-to-end contract: `GET /health`, `GET /v1/models`, `POST /v1/chat/completions`, auth class, expected status (`401` = auth wall OK, `502` = dead backend, empty body = exec-lane defect). Tailscale serve state is mutable/distributed — a declarative routes SSOT with drift check is the standing pattern; never assume serve config from kite's or any external port legend.
 - **TWO TRUTHS ARE A BUG.** `pitchfork.toml` (monolith) SHADOWS `pitchfork.d` fragments (103 dead fragments exist; monolith is the only live truth; `generate.ts` retired 2026-09-14 because it destroyed config). When editing a daemon, edit the MAIN config; check both, keep consistent, never treat `pitchfork.d` as authoritative. Fleet substrate: one malformed toolchain token (`bun:path@true`) mass-killed 65 daemons — per-daemon toolchain isolation (per-daemon mise env, no global `bun:path`) is doctrine; before daemon restarts, gate on disk > 90% free, mise resolves, ports free, health passes.
 - **EXTERNAL BOUNDARY.** Scheduled browser readers (architect's MacBook Claude Desktop tasks) hold persistent tunnel grants to `estate.tailc9ac71.ts.net` with NO on-box inventory. Observability stops at the box; the grant inventory lives outside it. Treat recurring 502 reports from external readers as route-contract drift until proven otherwise, and keep a kill-switch/revoke path per grant. Unreachable remote hosts and flooded SSH are not evidence of backend state — probe the box directly.

@@ -477,6 +477,6 @@ def test_natives_cache_shares_artifacts_across_slot_workspaces(
     assert cached_companion.read_text() == "export const X: number;\n"
 
     # --- Recapture from ws2 (different key now — but same key here since
-    #     tree didn't change) is idempotent under the hodos. ---
+    #     tree didn't change) is idempotent under the rhodochrosite. ---
     again = natives_cache.capture(_REPO, key, native_dir2, source_workspace=ws2.workspace_key)
     assert again is not None and again == stored, "second capture must reuse the same entry"

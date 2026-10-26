@@ -122,7 +122,7 @@ $ hotfix status
 
 **File**: `/home/toxic/estate/patches/emergent_registry_sync.ts`
 **Target**: `registry.emergent_sync`
-**Purpose**: Connects Hindsight health (`port 25117`) with Pitchfork daemon lifecycle (`herd`, `hindsight`) through the registry resolution mechanism, only activating when both services report healthy.
+**Purpose**: Connects Hindsight health (`port 25117`) with Pitchfork daemon lifecycle (`bornite`, `hindsight`) through the registry resolution mechanism, only activating when both services report healthy.
 
 ```typescript
 export const TARGET = "registry.emergent_sync";
@@ -133,7 +133,7 @@ export const impl = {
   syncActive: true,
   guardrails: [
     "health_check: hindsight_port_25117_responds",
-    "health_check: pitchfork_herd_healthy",
+    "health_check: pitchfork_bornite_healthy",
     "registry_resolution: uses_hotfixRegistry_resolve_not_monkey_patch",
     "persistent_store: file_written_to_patches_directory_for_restart_survival",
     "live_reload: fs_watch_with_unref_on_patch_directory_for_dsu",
@@ -153,12 +153,12 @@ The persistent store mechanism (`persistPatch` in `hotfix_registry.ts`) works as
 3. **Live reload (`fs.watch` + `unref`)**: `startWatcher()` creates a `fs.watch()` observer that listens for changes. When a file is edited, added, or removed, the observer calls `loadPatch()` (or deletes the override). The `.unref()` call ensures the watcher does not keep the event loop alive if it is the last active handle — this is critical for clean shutdown.
 4. **Rollback**: `disablePatch()` renames the file to `.disabled` and sets `ENABLED = false`. `enablePatch()` reverses the rename and reloads.
 
-This mechanism enables **Dynamic Software Update (DSU)**: patches apply continuously without restarting Pitchfork or any background daemon. The health-gated activation (`hindsight` port 25117 + `herd` daemon healthy) ensures partial activation never corrupts the registry state.
+This mechanism enables **Dynamic Software Update (DSU)**: patches apply continuously without restarting Pitchfork or any background daemon. The health-gated activation (`hindsight` port 25117 + `bornite` daemon healthy) ensures partial activation never corrupts the registry state.
 
 ---
 
 **Provider / Model References (connected to registry health-guard)**:
 - **NVIDIA**: `NVIDIA_API_KEY` (configured via env / vault) → endpoint `https://integrate.api.nvidia.com/v1`.
 - **OpenRouter**: `OPENROUTER_API_KEY` (configured via env / vault) → `openrouter/thinkingmachines/inkling:free` (fast tier).
-- **Herd (local)**: `beellama/qwen-flash-64k` (port 25100, RTX 3090, 64K context, 119 tok/s, CUDA 86). Self-hosted, no external key.
-- **Hindsight API**: `port 25117` (`/health` endpoint), verified by registry health-check guard. Independent from Herd; both must respond healthy for `registry.emergent_sync` activation.
+- **Bornite (local)**: `beellama/qwen-flash-64k` (port 25100, RTX 3090, 64K context, 119 tok/s, CUDA 86). Self-hosted, no external key.
+- **Hindsight API**: `port 25117` (`/health` endpoint), verified by registry health-check guard. Independent from Bornite; both must respond healthy for `registry.emergent_sync` activation.

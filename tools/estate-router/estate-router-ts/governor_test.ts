@@ -1,5 +1,5 @@
 // Deterministic tests for the model-pressure governor port
-// (hodos proxy/src/governor.rs -> router_matrix.ts Governor).
+// (rhodochrosite proxy/src/governor.rs -> router_matrix.ts Governor).
 // Run: bun governor_test.ts
 import { Governor, ModelPermit, isWorkerExhausted } from "./router_matrix.ts";
 import * as fs from "node:fs";

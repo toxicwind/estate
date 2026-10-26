@@ -153,7 +153,7 @@ timer suspects read line-by-line, live PIDs + CPU verified)
 8. **estate-router warm standby — every 30s** —
    `tools/estate-router/estate-router-ts/router.ts` L608–633:
    `setInterval(..., 30000)` pings `/models` on 3 **local-only** providers
-   (herd, kimi-auto, nim-local), feeding circuit-strike records + warm TCP.
+   (bornite, kimi-auto, nim-local), feeding circuit-strike records + warm TCP.
    Circuit-breaker input; zero cloud spend.
 9. **estate-router live discovery — every 30m** —
    `tools/estate-router/estate-router-ts/router_live_models.ts` L158–167
@@ -190,7 +190,7 @@ timer suspects read line-by-line, live PIDs + CPU verified)
 19. **squawk-ws-client** — push client, no sleeps; exits on failure for pitchfork retry.
 20. **nats-tail** (`projects/range/ranch/squawk/nats/squawk_nats_tail.py`) — NATS
     subscribe; single `asyncio.sleep(backoff)` (L265) is reconnect backoff.
-21. **herd-keypool.py** `time.sleep(0.01/0.4)` hits (L1127–1188) — inside **test
+21. **bornite-keypool.py** `time.sleep(0.01/0.4)` hits (L1127–1188) — inside **test
     scaffolding** (FakeResp race test), not production.
 22. **nim-kimi-sidecar.py:211** — reconnect backoff delay, not a poll loop.
 
@@ -218,7 +218,7 @@ fixed-cadence wake source on the box.
 
 - **Stuck interactive rebase in the shared worktree** (observed 2026-09-21
   ~16:25 MDT): an interactive rebase of `main` onto `dcfdc651cb` (commit
-  `612463113d` "herd: rip UI out to ranch", author Ember, 16:21 MDT) is stopped
+  `612463113d` "bornite: rip UI out to ranch", author Ember, 16:21 MDT) is stopped
   with conflicts (`UU docs/fleet-knowledgebase.md` et al). As a side effect,
   `projects/range/ranch/squawk/seq_alloc.py` is absent from the worktree (present on
   `origin/main`), which breaks the `~/workspace/bin/squawk send` CLI path

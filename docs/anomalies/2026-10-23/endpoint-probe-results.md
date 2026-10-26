@@ -44,7 +44,7 @@ All data is from real inference requests. No catalog inference.
 
 **Conclusions for minimax-m3:**
 - **`thinking=true` in request body returns HTTP 400** — `{"error":{"code":400,"message":"Invalid JSON or schema in request body"}}`. The provider rejects the thinking parameter.
-- The `thinking` field in pinax catalog (supported_sampling_parameters) appears **incorrect** — minimax-m3 does NOT accept `thinking`.
+- The `thinking` field in mimetite catalog (supported_sampling_parameters) appears **incorrect** — minimax-m3 does NOT accept `thinking`.
 - Without thinking: completion_tokens ≈ reasoning_tokens (e.g. 500/499, 1000/999), meaning minimax-m3's "completion" IS reasoning by default. The entire output is chain-of-thought.
 - **TTFB ≈ total latency** — same heavy server-side processing pattern.
 - At max_tokens=5000 (off): immediately rate-limited to 429. Key concurrency limit was exhausted.
@@ -54,7 +54,7 @@ All data is from real inference requests. No catalog inference.
 
 - All 4 tiers → persistent 429 rate-limit. The API key **does not appear to have qwen3.6-35b authorized** (or model is unavailable).
 - The first run (bg_66) returned 403 `error code: 1010` which suggests auth key doesn't cover this model.
-- Pinax catalog lists it but the key lacks access.
+- Mimetite catalog lists it but the key lacks access.
 - **RESOLVED 2026-10-25:** The key previously lacked access. The current key (`hyi-…`, service=`freeinference-api-key`) is authorized for `qwen3.6-35b` — verified live (`POST /v1/chat/completions` on `qwen3.6-35b` → 200, `finish_reason=stop`). The 403/429 was a key-access, not a model, defect.
 
 ### diffusiongemma (freeinference)

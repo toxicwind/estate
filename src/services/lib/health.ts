@@ -32,7 +32,7 @@ export interface HealthStatus {
 const TO = 2000;
 const RT = 2;
 const RD = 500;
-// Estate 25xxx map: herd :25100, openfang :25103
+// Estate 25xxx map: bornite :25100, openfang :25103
 const LP = Number(
   process.env.HERD_PORT ?? process.env.LLAMA_PORT ?? "25100",
 );
@@ -110,9 +110,9 @@ export async function checkLlamaSwap(
   url = env("LLAMA_HEALTH_URL", u(LP, "/v1/models")),
   o: any = {},
 ) {
-  const r = await checkService("herd", url, o);
+  const r = await checkService("bornite", url, o);
   if (!r.healthy) {
-    const f = await checkService("herd", u(LP, "/v1/models"), {
+    const f = await checkService("bornite", u(LP, "/v1/models"), {
       ...o,
       timeoutMs: (o.timeoutMs ?? TO) / 2,
       retries: 0,

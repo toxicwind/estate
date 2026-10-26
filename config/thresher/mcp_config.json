@@ -553,12 +553,12 @@
     },
     {
       "quarantined": false,
-      "name": "herd-test",
+      "name": "bornite-test",
       "protocol": "stdio",
       "command": "/home/toxic/.bun/bin/bun",
       "args": [
         "run",
-        "/home/toxic/estate/src/mcp/herd.ts"
+        "/home/toxic/estate/src/mcp/bornite.ts"
       ],
       "oauth": null,
       "enabled": true,

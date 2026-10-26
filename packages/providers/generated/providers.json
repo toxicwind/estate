@@ -12,10 +12,10 @@
   ],
   "providers": [
     {
-      "name": "herd",
-      "displayName": "herd (local)",
+      "name": "bornite",
+      "displayName": "bornite (local)",
       "baseUrl": "http://127.0.0.1:25100/v1",
-      "keyEnv": "HERD_API_KEY",
+      "keyEnv": "BORNITE_API_KEY",
       "adapter": "openai",
       "auth": "none"
     },
@@ -85,7 +85,7 @@
     }
   ],
   "seeds": {
-    "herd": [
+    "bornite": [
       "local-fast",
       "local-quality",
       "local-longctx"

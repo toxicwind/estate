@@ -130,9 +130,9 @@ estate (`pitchfork start mcpproxy` / `mise run restart-mcpproxy` -> `mcpproxy se
 --config=/home/toxic/.mcpproxy/mcp_config.json`). 43 real upstreams (ghas + 42 others).
 - **pi MUST list ONLY `mcpproxy`** in `~/.pi/agent/mcp.json` (no duplicate direct `ghas`/
   `nvidia-nim` entries). All MCP tools reach pi through the proxy via `retrieve_tools`.
-- **nvidia-nim is NOT an MCP server.** It is a herd/Estate-router **completions API**
+- **nvidia-nim is NOT an MCP server.** It is a bornite/Estate-router **completions API**
   (OpenAI-compatible, on `:25100`). NVIDIA models are first-class via pi-agent's `nvidia`
-  provider (`packages/ai/src/providers/`) -> Estate-router/herd, not an MCP upstream.
+  provider (`packages/ai/src/providers/`) -> Estate-router/bornite, not an MCP upstream.
 - **Subagents**: `config.yaml` `can_spawn_subagents:true` + whitelist + `subagents.defaultModel:
   opencode/hy3-free`. The `subagent` spawn tool is a LIVE-PI builtin (not callable from a
   plain assistant context) — fanout only works inside an interactive pi session.

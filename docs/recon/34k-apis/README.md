@@ -26,10 +26,10 @@ api-evangelist is an **API-surface index**, not a product org:
 | `nvidia-nim` | 1 | https://github.com/api-evangelist/nvidia-nim (openapi + rate-limits) |
 | `nvidia` | 0 | https://github.com/api-evangelist/nvidia |
 
-## Probing link to Hodos
+## Probing link to Rhodochrosite
 
-Hodos vendors the probing-relevant subset as **submodules** under
-`pens/olympus/products/hodos/reference/`: `nvidia-nim`, `nvidia`, `monitoring`,
+Rhodochrosite vendors the probing-relevant subset as **submodules** under
+`pens/olympus/products/rhodochrosite/reference/`: `nvidia-nim`, `nvidia`, `monitoring`,
 `observability`. The merged prober (`proxy/tools/probe-catalogs.ts`) consumes
 them (rate limits + SyntheticCheck schema).
 

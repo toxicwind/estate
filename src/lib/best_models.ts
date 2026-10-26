@@ -1,6 +1,6 @@
 /**
  * Consume ranked best-models SSOT produced by scripts/model-rank-and-route.ts
- * and optionally refresh via herd /models/sse (no hand inventories).
+ * and optionally refresh via bornite /models/sse (no hand inventories).
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
@@ -10,7 +10,7 @@ import {
   pickDefaultModel,
   swapBaseUrl,
   watchSwapModelsSseRefresh,
-} from "./herd_ssot.ts";
+} from "./bornite_ssot.ts";
 
 export type BestRoles = {
   fast?: {

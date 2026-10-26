@@ -1,6 +1,6 @@
 {
   "serverUrl": "http://127.0.0.1:25193",
-  "providerName": "hodos",
+  "providerName": "rhodochrosite",
   "onlyShowUsableModels": true,
   "showGlobalRoutingModels": true,
   "includeModels": [],

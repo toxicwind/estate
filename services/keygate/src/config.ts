@@ -1,5 +1,5 @@
 // @estate/keypool — config: minimal YAML parser, secrets file.
-// Port of herd-keypool.py's custom simple YAML parser (strict subset).
+// Port of bornite-keypool.py's custom simple YAML parser (strict subset).
 
 import type { PoolConfig } from "./types.js";
 import { readFileSync, existsSync } from "node:fs";

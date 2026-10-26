@@ -114,7 +114,7 @@ describe("fetchToolDefinitions", () => {
     tools: [
       {
         name: "get_doc",
-        title: "Read a herd document",
+        title: "Read a bornite document",
         description: "Read one document by id.",
         inputSchema: { type: "object", properties: { id: { type: "string" } }, required: ["id"] },
         annotations: { readOnlyHint: true },
@@ -134,7 +134,7 @@ describe("fetchToolDefinitions", () => {
           // inputSchema becomes the OpenAI `parameters` schema unchanged.
           parameters: { type: "object", properties: { id: { type: "string" } }, required: ["id"] },
           // The MCP `title` is kept as UI-only display metadata.
-          title: "Read a herd document",
+          title: "Read a bornite document",
         },
       },
     ]);
@@ -282,8 +282,8 @@ describe("isUsableToolName", () => {
 
 describe("friendlyToolName", () => {
   it("prefers the MCP title when present", () => {
-    expect(friendlyToolName("docs__search_docs", "Search herd documentation")).toBe(
-      "Search herd documentation"
+    expect(friendlyToolName("docs__search_docs", "Search bornite documentation")).toBe(
+      "Search bornite documentation"
     );
   });
 

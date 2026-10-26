@@ -12,7 +12,7 @@ import json, os, re, shutil, subprocess, sys, tempfile, time, urllib.request
 # ---- backend defaults (live on yote, verified 2026-09-20) -----------------
 FAST_URL   = os.environ.get("CODERACER_FAST_URL",   "http://127.0.0.1:25122/v1")
 TOOL_URL   = os.environ.get("CODERACER_TOOL_URL",   "http://127.0.0.1:25152/v1")
-HERD_URL   = os.environ.get("CODERACER_HERD_URL",   "http://127.0.0.1:25100/v1")
+BORNITE_URL   = os.environ.get("CODERACER_BORNITE_URL",   "http://127.0.0.1:25100/v1")
 ROUTER_URL = os.environ.get("CODERACER_ROUTER_URL", "http://127.0.0.1:25104/v1")
 
 FAST_MODEL   = os.environ.get("CODERACER_FAST_MODEL",   "fast")

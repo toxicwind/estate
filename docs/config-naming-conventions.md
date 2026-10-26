@@ -31,7 +31,7 @@ These look wrong but are deliberate or bridge-critical — do not "clean"
 them without reading this first:
 
 - `HERD_PORT=25100` vs `HERD_PORT=25100`: two names, one listener.
-  `herd.sh`/`rust-web*.sh` use the first, `herd.sh` and the herd
+  `bornite.sh`/`rust-web*.sh` use the first, `bornite.sh` and the bornite
   health scripts use the second. Unifying is a semantic change for the
   daemon-repair lane, not a rename.
 - `QDRANT_PORT=25133` vs `QDRANT_HTTP_PORT=25133`: canonical + protocol
@@ -47,10 +47,10 @@ them without reading this first:
   `profiles/default.yml`, or a documented secret name (values live in
   `/home/toxic/.secrets`, never in the repo). Secret names the tree uses:
   `HF_TOKEN`, `MISTRAL_API_KEY`, `MOONSHOT_API_KEY`, `OPENROUTER_API_KEY`,
-  `OPENROUTER_API_KEY_1`, `OPENROUTER_API_KEY_FREE`, `HODOS_API_KEY`,
+  `OPENROUTER_API_KEY_1`, `OPENROUTER_API_KEY_FREE`, `RHODOCHROSITE_API_KEY`,
   `GEMINI_API_KEY`, `NVIDIA_API_KEY`, `GITHUB_TOKEN`.
 
-## 4. herd.yaml naming
+## 4. bornite.yaml naming
 
 - Peer names: kebab-case (`openrouter-free`, `toolcall-local`, …).
 - Model aliases under `models:`: kebab-case (`kimi-k3-nim`,

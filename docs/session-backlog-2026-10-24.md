@@ -5,7 +5,7 @@ endlessly/autonomously. Each item is scoped, current-state, and next-action.
 
 ## A. THETA / EAP / GOOGLE BILLING (SUPER IMPORTANT — the user's top manual test)
 
-Goal: theta end-to-end = caller → hodos(:25193) → keypool(:25109) → theta engine
+Goal: theta end-to-end = caller → rhodochrosite(:25193) → keypool(:25109) → theta engine
 → Google Interactions API returns 200 tool-search steps.
 
 STATE:
@@ -33,7 +33,7 @@ NEXT ACTION (the ONE remaining step):
 1. Get a valid **Standard `AIzaSy` EAP key** for project `654595778272`
    (existing `gem-forensic/ff` + `load_browser_cookies.py` give the session;
    mint a STANDARD key in AI Studio, or find a Standard key in the estate).
-2. Persist it: secretsmith `service=hodos` (and/or gemini-eap) + the keypool's
+2. Persist it: secretsmith `service=rhodochrosite` (and/or gemini-eap) + the keypool's
    `GEMINI_EAP_KEY_N` source.
 3. `keypool` reload → all `gemini-eap*` pools go **healthy** (not down).
 4. `bun estate/packages/theta/src/eap-smoke.ts` → **200 with tool-search steps**
@@ -46,23 +46,23 @@ from a CDP-attached logged-in browser (browserless chrome :25233 is NOT logged
 into the EAP project; the live firefox session jar IS, but its exact spend
 endpoint was 404 — capture the real XHR URL, don't guess).
 
-## B. NIM / API-evangelist / hodos catalog merge (DONE + local)
+## B. NIM / API-evangelist / rhodochrosite catalog merge (DONE + local)
 
 - Added `api-evangelist/nvidia-nim` + `nvidia` + `monitoring` + `observability`
-  as hodos submodules (`reference/`).
-- Merged prober (`hodos/proxy/tools/probe-catalogs.ts`): pinax providers +
+  as rhodochrosite submodules (`reference/`).
+- Merged prober (`rhodochrosite/proxy/tools/probe-catalogs.ts`): mimetite providers +
   both catalogs, probes to live truth, emits `SyntheticCheck` per provider,
   marks rate-limits advisory (May-2026 generated stubs ≠ durable).
 - **90% coverage target**: prober pure fns (`parseRateLimits`, `candidatesFor`,
   `keyFor`, `toSyntheticCheck`) — 12 tests PASS (probe-catalogs.test.ts).
-  Remaining: hodos RUST resolver coverage (model_map / free-lane).
-- Auth fix (stale GH_TOKEN) → hodos/estate/delendai all PUSHED to main.
-- hodos rename → keep `hodos`, assert merge (README frame). Done.
-- **DONE-PUSHED**: hodos `5e2d935/7956bb7/a45bc59/be4aee2/33f0ace`; delendai
+  Remaining: rhodochrosite RUST resolver coverage (model_map / free-lane).
+- Auth fix (stale GH_TOKEN) → rhodochrosite/estate/delendai all PUSHED to main.
+- rhodochrosite rename → keep `rhodochrosite`, assert merge (README frame). Done.
+- **DONE-PUSHED**: rhodochrosite `5e2d935/7956bb7/a45bc59/be4aee2/33f0ace`; delendai
   `6e0486a`/`ea987fe`; estate `4adf2a4/2e34b371/2546e5ac`.
 
-NEXT ACTION: add hodos Rust tests for providers/model_map resolver (free-lane →
-:free, advisory parsing) to complete the 90% coverage; ensure hodos cargo test
+NEXT ACTION: add rhodochrosite Rust tests for providers/model_map resolver (free-lane →
+:free, advisory parsing) to complete the 90% coverage; ensure rhodochrosite cargo test
 green (was: missing `mod roost_providers` in lib.rs — I added it; re-verify).
 
 ## C. RECON 34k-apis (api-evangelist org) — DONE + pushed
@@ -81,21 +81,21 @@ green (was: missing `mod roost_providers` in lib.rs — I added it; re-verify).
   (rate_limited outcome + retryAfterMs); **multi-model fallback walk**
   (target-them-all: super-vl primary + lightning/nano-omni/gpt-oss/step-5/ultra:free).
 - code-race `autoFix`: aggressive persona ("WTF is this shitty junior dev code"),
-  "why sleep at all", secretsmith key resolution for HODOS.
+  "why sleep at all", secretsmith key resolution for RHODOCHROSITE.
 - `parseRateLimitHeaders` → core retryAfterMs.
 - Caveat: delendai `drift-check` regen (gen:all) needed before pushes.
 
 ## E. SUPER-RALPH→CORRAL / VansRouter+OmniRoute merge (DONE locally, needs push)
 
 - corral/delendai index: fixed 20 stale plugin re-export paths (→ canonical).
-- VansRouter+OmniRoute folders DELETED (merged into hodos); pitchfork daemon
+- VansRouter+OmniRoute folders DELETED (merged into rhodochrosite); pitchfork daemon
   defs removed. Ensure nothing broke in the running estate router.
 - Whether corral/estate delendai index files were pushed: verify + push.
 
 ## F. 2s-GUARD / delend-code-race autonomy (DONE)
 
 - 2s-guard passes `--2s` real budget; delend-code-race local-resolved + runs
-  standalone; resolves key via secretsmith (service=hodos).
+  standalone; resolves key via secretsmith (service=rhodochrosite).
 
 ## G. ESTATE MISC
 
@@ -108,4 +108,4 @@ Pursue A: mint/find a Standard `AIzaSy` EAP key ⇒ secretsmith + keypool ⇒
 eap-smoke 200 (the theta E2E manual test). Then B rust coverage. Then verify+push
 E. Report each with evidence.
 
-## H. (2026-10-24 late) hodos rust: [DONE] reverted generated-file hand-edit (pinax_providers KEY_ENV stays via overlay); added mod roost_providers so crate compiles; 308/309 tests pass; the 1 fail (roost_providers_copy_in_sync) needs the EXTERNAL pinax/generated/providers.rs (mesh/catalog) which is absent from this checkout — pre-existing env test, not a regression. hodos commit 698380f pushed.
+## H. (2026-10-24 late) rhodochrosite rust: [DONE] reverted generated-file hand-edit (pinax_providers KEY_ENV stays via overlay); added mod roost_providers so crate compiles; 308/309 tests pass; the 1 fail (roost_providers_copy_in_sync) needs the EXTERNAL mimetite/generated/providers.rs (mesh/catalog) which is absent from this checkout — pre-existing env test, not a regression. rhodochrosite commit 698380f pushed.

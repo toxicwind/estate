@@ -4,7 +4,7 @@
 Doctrine borrowed from shingle-workspace/squawk-hft-latency.md (non-trading HFT):
   1. Hot persistent connections  - one keep-alive HTTPConnection per lane, dial once.
   2. Redundant raced lanes        - primary :25122 (pitchfork-supervised) vs
-                                   herd dynamic slot :25001 (best-effort, auto-
+                                   bornite dynamic slot :25001 (best-effort, auto-
                                    discovered). First valid wins.
   3. Fail-fast ceilings          - a lane that misses its TTFT deadline loses;
                                    fallback lane(s) planned BEFORE the primary.

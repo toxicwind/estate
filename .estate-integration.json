@@ -8,9 +8,9 @@
     "portsEnv": "/home/toxic/estate/config/ports.env"
   },
   "subdirIntegrations": {
-    "herd": {
-      "path": "/home/toxic/projects/estate-projects/herd",
-      "estatePort": "herd=25100",
+    "bornite": {
+      "path": "/home/toxic/projects/estate-projects/bornite",
+      "estatePort": "bornite=25100",
       "engines": true
     },
     "zedra": {

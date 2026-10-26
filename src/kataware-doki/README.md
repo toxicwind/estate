@@ -11,7 +11,7 @@
 
 > **Why care? Inference without a single point of failure: workers run llama-server, register with a coordinator over WebSocket, and requests swap to the lowest-latency idle node automatically. A dead node is a retry, not an outage.**
 
-- **herd — distributed node failover, transparent to the caller**
+- **bornite — distributed node failover, transparent to the caller**
 - **Direct llama.cpp HTTP — `/completion`, `/v1/chat/completions`, `/tokenize`, `/embedding`, `/props`, `/health`**
 - **Coordinator-tracked — latency, VRAM, model, slots per node; 30s heartbeat, 120s eviction**
 - **RTX 3090-tuned registry — Qwen 3.6 27B + drafter, Llama 4 Maverick, edge models for CDP nodes**
@@ -43,7 +43,7 @@ LLAMA_BASE_URL=http://localhost:8080 LLAMA_MODEL=qwen3.6-27b-q5 bun run worker.t
 
 NOT an Ollama wrapper. Direct llama.cpp HTTP API.
 
-## Core Primitive: herd
+## Core Primitive: bornite
 
 Distributed node failover. When one llama-server dies, requests automatically
 route to the next available node. No single point of failure.

@@ -48,7 +48,7 @@ Original probe falsely marked groq/cerebras "stale" (HTTP 403). Root cause: Pyth
 
 Backup verification: groq/cerebras keys byte-identical across all 8 backups (0 differ). The 6 missing providers (together, fireworks, hyperbolic, openai, perplexity, siliconflow) are absent in every backup — never stored, not lost.
 
-Live: herd, openrouter, nvidia, groq, cerebras, github, mistral (7/13). Missing: 6 (no key in store or any backup). Moonshot: live (200, auth OK; completions 429 — account suspended for insufficient balance; no funding action taken).
+Live: bornite, openrouter, nvidia, groq, cerebras, github, mistral (7/13). Missing: 6 (no key in store or any backup). Moonshot: live (200, auth OK; completions 429 — account suspended for insufficient balance; no funding action taken).
 
 Run-receipt: corrected probe output 2026-10-01 14:05 MDT; backup comparison counts.
 

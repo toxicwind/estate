@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
-# herd Autoscan - Dynamic model discovery and configuration generation
-# Scans for GGUF models in ~/projects/models and HF cache, generates herd config.yaml
+# bornite Autoscan - Dynamic model discovery and configuration generation
+# Scans for GGUF models in ~/projects/models and HF cache, generates bornite config.yaml
 
 set -euo pipefail
 
 # Configuration
 MODELS_DIR="/home/toxic/projects/models"
 HF_CACHE_DIR="/home/toxic/.cache/huggingface/hub"
-CONFIG_TEMPLATE="/home/toxic/estate/tools/herd/config.yaml"
-CONFIG_OUTPUT="/home/toxic/estate/tools/herd/config.yaml"
-AUTOSCAN_STATE="/home/toxic/.local/share/herd/autoscan-state.json"
+CONFIG_TEMPLATE="/home/toxic/estate/tools/bornite/config.yaml"
+CONFIG_OUTPUT="/home/toxic/estate/tools/bornite/config.yaml"
+AUTOSCAN_STATE="/home/toxic/.local/share/bornite/autoscan-state.json"
 
 # Colors
 RED='\033[0;31m'
@@ -309,7 +309,7 @@ EOY
 
 # Main
 main() {
-    log "Starting herd autoscan..."
+    log "Starting bornite autoscan..."
     
     mkdir -p "$(dirname "$AUTOSCAN_STATE")"
     
@@ -379,7 +379,7 @@ print('Config written successfully')
     echo "$models_json" | jq '{timestamp: now | todateiso8601, models: .}' > "$AUTOSCAN_STATE"
     
     log "Autoscan complete! Config written to $CONFIG_OUTPUT"
-    log "Run 'herd -config $CONFIG_OUTPUT -watch-config' to start"
+    log "Run 'bornite -config $CONFIG_OUTPUT -watch-config' to start"
 }
 
 main "$@"

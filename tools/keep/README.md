@@ -73,7 +73,7 @@ All routes except `/health` require `Authorization: Bearer $KEEP_API_TOKEN`.
 
 ```bash
 curl -H "Authorization: Bearer $KEEP_API_TOKEN" -X PUT \
-  -d '{"value":"gsk_live_...","purpose":"groq key for herd lane"}' \
+  -d '{"value":"gsk_live_...","purpose":"groq key for bornite lane"}' \
   http://127.0.0.1:25900/secrets/groq-main
 
 curl -H "Authorization: Bearer $KEEP_API_TOKEN" \

@@ -37,7 +37,7 @@ function sampleInput(): CodegenInput {
     defs: [
       sampleDef(),
       sampleDef({
-        name: "herd",
+        name: "bornite",
         baseUrl: "http://127.0.0.1:25100",
         keyEnv: "",
         adapter: "static",
@@ -86,7 +86,7 @@ describe("providers.go", () => {
     expect(go).toContain('"seed-a"');
     expect(go).toContain('"alias-a": {"groq", "live-a"},');
     expect(go).toContain('"dead-1"');
-    // The generated type must not collide with herd registry.go's ProviderDef.
+    // The generated type must not collide with bornite registry.go's ProviderDef.
     expect(go).toMatch(/type CatalogProviderDef struct/);
     expect(go).not.toMatch(/type ProviderDef struct/);
     expect(go).toContain("RouterLocal:");
@@ -140,15 +140,15 @@ describe("generated-artifact sync", () => {
     }
   });
 
-  test("herd consumer copy of providers.go matches canonical codegen", async () => {
-    // The Go herd consumes the generated artifact as a checked-in copy at
-    // <herd-astmatrix-dir>/providers_generated.go. It must be byte-identical
+  test("bornite consumer copy of providers.go matches canonical codegen", async () => {
+    // The Go bornite consumes the generated artifact as a checked-in copy at
+    // <bornite-astmatrix-dir>/providers_generated.go. It must be byte-identical
     // to the canonical generated/providers.go (modulo the Generated-at stamp)
-    // — never hand-edited. Skips when no herd checkout is present.
+    // — never hand-edited. Skips when no bornite checkout is present.
     const candidates = [
-      process.env.HERD_ASTMATRIX_DIR,
-      "/home/toxic/.worktrees/ranch-providers/stockyard/herd/internal/astmatrix",
-      "/home/toxic/estate/projects/range/ranch/stockyard/herd/internal/astmatrix",
+      process.env.BORNITE_ASTMATRIX_DIR,
+      "/home/toxic/.worktrees/ranch-providers/stockyard/bornite/internal/astmatrix",
+      "/home/toxic/estate/projects/range/ranch/stockyard/bornite/internal/astmatrix",
     ].filter((p): p is string => typeof p === "string" && p.length > 0);
     let consumerPath = "";
     let consumer = "";
@@ -162,14 +162,14 @@ describe("generated-artifact sync", () => {
       }
     }
     if (!consumerPath) {
-      console.log("skip: no herd checkout present");
+      console.log("skip: no bornite checkout present");
       return;
     }
     const canonical = await readFile(join(generatedDir, "providers.go"), "utf8");
     const norm = (s: string) => s.replace(/\/\/ Generated at: .*\n/, "");
     expect(
       norm(consumer),
-      `herd providers_generated.go is stale or hand-edited — copy generated/providers.go to ${consumerPath}`,
+      `bornite providers_generated.go is stale or hand-edited — copy generated/providers.go to ${consumerPath}`,
     ).toBe(norm(canonical));
   });
 });

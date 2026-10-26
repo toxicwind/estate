@@ -4,7 +4,7 @@
 # Four checks, in order; the first failure wins and prints the exact error:
 #   0. secret scan        -- high-confidence secret patterns (API keys, tokens,
 #                            private-key headers) in ADDED diff lines. Backstop
-#                            for the 2026-09-17 hodos key-pool leak (29 GitHub
+#                            for the 2026-09-17 rhodochrosite key-pool leak (29 GitHub
 #                            secret-scanning alerts from committed API keys).
 #                            Prints only the file name, never the match.
 #                            Reviewed paths are remembered in the ignore memory
@@ -15,7 +15,7 @@
 #   2. gofmt (exact)      -- Go parse errors AND unformatted files. The naive
 #                            `gofmt -l . | wc -l` pattern misses parse errors
 #                            (gofmt prints them to stderr, exits 2, lists nothing).
-#                            This is exactly what broke herd's Linux CI on
+#                            This is exactly what broke bornite's Linux CI on
 #                            2026-09-18 (runs 35400989022 / 35401074912: conflict
 #                            markers left in mesh/gateway/astmatrix.go:93-104).
 #   3. go vet             -- scoped to changed packages, run per enclosing Go module.

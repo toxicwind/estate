@@ -21,7 +21,7 @@ export interface Surface {
 	label: string;
 	/** Grouping section in the tab strip. */
 	group: string;
-	/** Absolute origin. Same-origin for herd, which this app already proxies. */
+	/** Absolute origin. Same-origin for bornite, which this app already proxies. */
 	origin: string;
 	kind: SurfaceKind;
 	/** The pitchfork daemon that serves it, when there is one. */
@@ -54,24 +54,24 @@ export type SurfaceGroup = (typeof SURFACE_GROUPS)[number];
 export const SURFACES: readonly Surface[] = [
 	// ── Models & inference ────────────────────────────────────────────────
 	{
-		id: "herd",
-		label: "Herd",
+		id: "bornite",
+		label: "Bornite",
 		group: "Models",
-		// herd is the herd-shaped API this dashboard already talks to
+		// bornite is the bornite-shaped API this dashboard already talks to
 		// through apiBase, so it has no separate page to embed.
 		origin: "",
 		kind: "api",
-		daemon: "herd",
+		daemon: "bornite",
 		healthPath: "/health",
-		description: "herd: the local model gateway this dashboard drives.",
+		description: "bornite: the local model gateway this dashboard drives.",
 	},
 	{
-		id: "hodos",
-		label: "Hodos",
+		id: "rhodochrosite",
+		label: "Rhodochrosite",
 		group: "Models",
 		origin: loopback(25193),
 		kind: "api",
-		daemon: "hodos",
+		daemon: "rhodochrosite",
 		healthPath: "/health",
 		description: "Cloud provider gateway — the other half of the model plane.",
 	},
@@ -575,7 +575,7 @@ const PROBE_CONCURRENCY = 12;
 export async function probeSurface(surface: Surface): Promise<SurfaceHealth> {
 	if (surface.origin === "") {
 		// Same-origin surfaces are already covered by the dashboard's own
-		// connection state; probing them here would double-count herd.
+		// connection state; probing them here would double-count bornite.
 		return { status: "up", detail: "same origin" };
 	}
 	const url = `${surface.origin}${surface.healthPath ?? "/"}`;

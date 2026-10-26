@@ -15,7 +15,7 @@ Master provider catalog for the estate estate. Single source of truth for:
 ## Why this exists
 
 Every consumer used to hand-maintain its own provider→models list
-(`PROVIDER_MODELS` in the router, hardcoded tables in herd's Go, model lists
+(`PROVIDER_MODELS` in the router, hardcoded tables in bornite's Go, model lists
 in Python research scripts). Live discovery could only *add* — nothing ever
 removed a dead id. Result: 4 of 6 groq ids 404'd in production until a human
 noticed. This package makes the **live listing the source of truth** and
@@ -27,7 +27,7 @@ demotes curation to cold-start seeds.
 |---|---|
 | `tools/Estate-router/Estate-router-ts` | imports `@Estate/providers` directly (same repo, bun workspace) |
 | `projects/tau-extensions/omp-model-router` | imports `@estate/providers` directly |
-| herd (Go, `stockyard/herd`) | `generated/providers.go` — generated, checked in, never hand-edited |
+| bornite (Go, `stockyard/bornite`) | `generated/providers.go` — generated, checked in, never hand-edited |
 | Python research scripts | `generated/providers.json` — canonical data artifact |
 
 ## Layout
@@ -43,7 +43,7 @@ src/
 scripts/build.ts  `bun run build` — regenerates generated/
 generated/
   providers.json  canonical data artifact (Python consumers)
-  providers.go    drop-in Go data file for herd (package astmatrix)
+  providers.go    drop-in Go data file for bornite (package astmatrix)
 tests/          adapter shapes, prune/quarantine paths, artifact sync
 ```
 

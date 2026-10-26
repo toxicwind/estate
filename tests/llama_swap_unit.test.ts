@@ -1,5 +1,5 @@
 /**
- * herd.ts unit tests — covers httpJson, llamaSwapHealth, llamaSwapModels,
+ * bornite.ts unit tests — covers httpJson, llamaSwapHealth, llamaSwapModels,
  * llamaSwapChat, llamaSwapChatStream, upstreamServers without hitting a live service.
  *
  * Strategy: mock globalThis.fetch to intercept all HTTP calls.
@@ -25,7 +25,7 @@ import {
   llamaSwapHealth,
   llamaSwapModels,
   upstreamServers,
-} from "../src/mcp/herd.ts";
+} from "../src/mcp/bornite.ts";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function mockFetchJson(data: unknown, status = 200) {

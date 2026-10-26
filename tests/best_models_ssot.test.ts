@@ -10,9 +10,9 @@ import {
   modelForRole,
   validateBestModelsAgainstCatalog,
 } from "../src/lib/best_models.ts";
-import { listSwapModels, swapV1Url } from "../src/lib/herd_ssot.ts";
+import { listSwapModels, swapV1Url } from "../src/lib/bornite_ssot.ts";
 
-// Skip integration tests if herd is not running (top-level await)
+// Skip integration tests if bornite is not running (top-level await)
 let live = false;
 try {
   const { ok } = await listSwapModels(3000);
@@ -148,7 +148,7 @@ describe.skipIf(!live)("best_models SSOT", () => {
   );
 
   test(
-    "herd local alias fast routes to local herd model not gemini",
+    "bornite local alias fast routes to local bornite model not gemini",
     async () => {
       const r = await chatContent("fast", "http://127.0.0.1:25100/v1");
       expect(r.status).toBe(200);

@@ -254,7 +254,7 @@ export function getServiceTests(): ServiceTestConfig[] {
 
   return [
     {
-      name: "herd",
+      name: "bornite",
       port: ports.HERD_PORT,
       healthEndpoints: ["/health", "/v1/models"],
       expectedResponse: (body) =>

@@ -63,7 +63,7 @@ function parseEnvFile(file: string): Record<string, string> {
  * The vault MUST come last, and it MUST be able to overwrite a key that is
  * already in process.env. Bun auto-loads a dotfile from the cwd before any
  * user code runs, so a service launched from $HOME/estate starts with
- * 14-character placeholder values already in process.env (HODOS_API_KEY,
+ * 14-character placeholder values already in process.env (RHODOCHROSITE_API_KEY,
  * SCOUT_API_KEY, SCOUT_MODEL, the *_BASE_URLs). A "already set, skip it"
  * loader then never applies ~/.secrets and every consumer authenticates with
  * the placeholder; the same service launched from any other directory has no

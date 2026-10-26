@@ -1,5 +1,5 @@
 // @estate/keypool — audit: JSONL with recursive secret fingerprinting.
-// Port of herd-keypool.py audit(). Raw keys never touch the log.
+// Port of bornite-keypool.py audit(). Raw keys never touch the log.
 
 import type { AuditEvent } from "./types.js";
 import { appendFileSync, existsSync, statSync, renameSync } from "node:fs";

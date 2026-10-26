@@ -58,17 +58,17 @@ export function shouldAttemptHop(
 	options: Pick<UnreachableHopOptions, "onUnreachable" | "flockProviderName" | "currentProvider" | "currentModelId" | "fallbackModel">,
 ): boolean {
 	if (options.onUnreachable !== "host-fallback") return false;
-	if (options.currentProvider && options.currentProvider !== options.hodosProviderName) return false;
+	if (options.currentProvider && options.currentProvider !== options.rhodochrositeProviderName) return false;
 	const target = parseFallbackModel(options.fallbackModel);
-	if (!target || target.provider === options.hodosProviderName) return false;
+	if (!target || target.provider === options.rhodochrositeProviderName) return false;
 	return !(options.currentProvider === target.provider && options.currentModelId === target.id);
 }
 
 export async function hopOnUnreachable(event: UnreachableEvent, options: UnreachableHopOptions): Promise<boolean> {
 	const target = parseFallbackModel(options.fallbackModel);
 	if (!shouldAttemptHop(options)) {
-		const activeOmni = !options.currentProvider || options.currentProvider === options.hodosProviderName;
-		if (options.onUnreachable === "host-fallback" && activeOmni && (!target || target.provider === options.hodosProviderName)) {
+		const activeOmni = !options.currentProvider || options.currentProvider === options.rhodochrositeProviderName;
+		if (options.onUnreachable === "host-fallback" && activeOmni && (!target || target.provider === options.rhodochrositeProviderName)) {
 			options.notify?.(
 				`OmniRoute unreachable at ${event.serverUrl}. Configure fallbackModel as an authenticated host provider/id, or use /model <provider/id> manually.`,
 				"warning",

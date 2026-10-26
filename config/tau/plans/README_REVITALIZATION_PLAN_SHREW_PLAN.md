@@ -4,7 +4,7 @@
 NORTH STAR (estate/README.md) verified 10/10 claims vs pitchfork.toml, config/ports.env, live services (:25100 up, :25117/:25127 up), session evidence — 0 mismatches; no diff needed. SUBSYSTEM (squawk, mesh, oracle-market) accurate per user directive, unchanged. Only live bug separate: corrupt 100644: files from old worktree dirs (cleaned, verified PASS).
 
 ## Approach
-1. Audit NORTH STAR: claims vs pitchfork.toml lines, ports.env keys (HINDSIGHT_API_PORT=25117, MCP_PROXY_PORT=25127), mise.toml, running herd/tau/shep. Log mismatches file+line.
+1. Audit NORTH STAR: claims vs pitchfork.toml lines, ports.env keys (HINDSIGHT_API_PORT=25117, MCP_PROXY_PORT=25127), mise.toml, running bornite/tau/shep. Log mismatches file+line.
 2. Audit SUBSYSTEM READMEs (hatch/agents/ember/, projects/mesh/, agents/, tools/): open described code, diff claims (cadence, ports, line numbers). Accurate → unchanged; wrong → unified diff only.
 3. Classify: NORTH STAR may restructure top-thesis opening (system purpose before folder refs, per squawk model); SUBSYSTEM patch only.
 4. Preserve provenance/incident tables verbatim unless factually wrong.

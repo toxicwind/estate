@@ -32,7 +32,7 @@ pitchfork's own surface, unverified port)
 
 The answer, as committed here:
 
-- **A model-routing layer** that treats local and cloud inference as one fabric. `herd` (:25100) fronts the on-box GGUFs through llama.cpp engines; anything it can't serve overflows to `hodos` (:25193), a Rust proxy that routes across cloud providers with key pools, 429 rotation, circuit breakers, and health/Elo scoring. A key-pool router (`keygate`), a merged provider gateway (`atlas`, auth+keys+routing), and EAP tool-retrieval (`theta`) sit in front.
+- **A model-routing layer** that treats local and cloud inference as one fabric. `bornite` (:25100) fronts the on-box GGUFs through llama.cpp engines; anything it can't serve overflows to `rhodochrosite` (:25193), a Rust proxy that routes across cloud providers with key pools, 429 rotation, circuit breakers, and health/Elo scoring. A key-pool router (`keygate`), a merged provider gateway (`atlas`, auth+keys+routing), and EAP tool-retrieval (`theta`) sit in front.
 - **A fleet, not a script.** [squawk](https://github.com/toxicwind/ranch/tree/main/squawk) is a real multi-agent chat plane — signed, sequenced message files over a websocket (:25147) and feed (:25135). Named agents with real personas join it, argue, bid on work, and narrate what they're doing. The fleet channel is the live operations log. Root paths 302-redirect to their real endpoints.
 - **A decision engine.** The oracle (:25151) runs a Vickrey prediction-market work loop: biddable tasks, evidence-backed yes/no verdicts, a tamper-evident ledger. When a call needs the user's authority and the user isn't around, the oracle's verdict _is_ the approval.
 - **Supervision as a first-class citizen.** 103 top-level daemons live in `pitchfork.toml`, each health-checked, each restartable through its owning project's manifest. "Works until restart" is not a fix here — every fix lands in real committed files and survives a full restart.
@@ -67,8 +67,8 @@ pitchfork start all         # bring the fleet up
 The **30-second tour** (curl probes against the live box, reachable over the tailnet):
 
 ```bash
-curl -s http://127.0.0.1:25100/v1/models | head -c 300   # what's awake on herd
-curl -s http://127.0.0.1:25193/health                     # hodos cloud router (auth-gated)
+curl -s http://127.0.0.1:25100/v1/models | head -c 300   # what's awake on bornite
+curl -s http://127.0.0.1:25193/health                     # rhodochrosite cloud router (auth-gated)
 curl -s http://127.0.0.1:25135/health                     # squawk fleet feed
 curl -s http://127.0.0.1:25151/health                     # oracle decision market
 curl -s http://127.0.0.1:25127/                           # thresher MCP gateway (302)
@@ -94,13 +94,13 @@ The estate's numbered services live in the **25xxx range**, pinned in the **port
 25224 25225 25226 25229 25231 25280
 ```
 
-> **110 unique 25xxx slot-values** are pinned. `25001–25099` is the **herd-dynamic pool** (llama.cpp + alias shims, allocated at runtime). `25170`, `25178`, `25180` are reserved/reserved-ish slots. The remaining tail (`25280+`) is the **Smithers gateway** and the DelendAI dashboards. Platform ports outside 25xxx (also SSOT-pinned): `20128` vansrouter, `4747` keeper-floaty, `5900`/`6080` agent-display/viewer, `34567` files.
+> **110 unique 25xxx slot-values** are pinned. `25001–25099` is the **bornite-dynamic pool** (llama.cpp + alias shims, allocated at runtime). `25170`, `25178`, `25180` are reserved/reserved-ish slots. The remaining tail (`25280+`) is the **Smithers gateway** and the DelendAI dashboards. Platform ports outside 25xxx (also SSOT-pinned): `20128` vansrouter, `4747` keeper-floaty, `5900`/`6080` agent-display/viewer, `34567` files.
 
 ### Known-important ports (annotated from config/ports.env)
 
 | Port            | SSOT name                   | Owner / role                                                         | Role changed since old README?                                                                               |
 | --------------- | --------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `25100`         | `HERD_PORT`                 | **herd** — local model front door (`/v1/models`)                     | —                                                                                                            |
+| `25100`         | `HERD_PORT`                 | **bornite** — local model front door (`/v1/models`)                     | —                                                                                                            |
 | `25101`         | `MODEL_GUARD_PORT`          | model-guard inference safety layer                                   | —                                                                                                            |
 | `25102`         | `YOTE_RELAY_PORT`           | yote messaging gateway (Telegram / Overlord)                         | moved-off-25104 alias legacy                                                                                 |
 | `25104`         | `ESTATE_ROUTER_PORT`        | **RETIRED** estate-router-ts — no listener, no daemon                | —                                                                                                            |
@@ -139,13 +139,13 @@ The estate's numbered services live in the **25xxx range**, pinned in the **port
 | `25178`         | `PHONE_SENTINEL_PORT`       | phone-sentinel (was DOWN in old README)                              | —                                                                                                            |
 | `25181`         | `BENCH_RADAR_PORT`          | bench-radar nightly regression                                       | —                                                                                                            |
 | `25189`–`25191` | `NIM_*`                     | NIM queue / reasoning router / validation                            | —                                                                                                            |
-| `25193`         | `HODOS_PORT`                | **hodos** cloud provider router                                      | —                                                                                                            |
+| `25193`         | `RHODOCHROSITE_PORT`                | **rhodochrosite** cloud provider router                                      | —                                                                                                            |
 | `25194`         | `RALPH_DASH_PORT`           | ralph-dashboard backend                                              | —                                                                                                            |
 | `25195`         | `CODEBASE_MEMORY_PORT`      | codebase-memory-mcp graph UI                                         | —                                                                                                            |
 | `25196`         | `OPENFANG_KERNEL_PORT`      | openfang kernel                                                      | —                                                                                                            |
 | `25197`         | `DELENDAI_WEB_PORT`         | **DelendAI web app** (Astro; alias boundless)                        | new                                                                                                          |
 | `25198`         | `AWR_MCP_PORT`              | awrawr-mcp connector                                                 | —                                                                                                            |
-| `25200`         | `CUTTINGGATE_PORT`          | cuttinggate guard plane (in front of herd/hodos)                     | —                                                                                                            |
+| `25200`         | `CHALCOPYRITE_PORT`          | chalcopyrite guard plane (in front of bornite/rhodochrosite)                     | —                                                                                                            |
 | `25201`         | `RUST_WEB_PORT`             | rust web / estate_web                                                | —                                                                                                            |
 | `25202`         | `GEMINI_MCP_PORT`           | gemini-mcp server                                                    | new (see note)                                                                                               |
 | `25203`         | `REDIS_PORT`                | valkey/redis                                                         | —                                                                                                            |
@@ -193,7 +193,7 @@ A family of first-class, zero-friction operational helpers in `bin/` (all verifi
 
 ## 🔁 The forever-loop C2 rig (squawk)
 
-The estate's heartbeat orchestrator: **[`ranch/estate-brain/agents/forever-loop/`](ranch/estate-brain/agents/forever-loop/)**. It's a **C2 forever-goal coordinator** — supervised by pitchfork as `estate/forever-loop`, scheduled every **3 minutes** (`agent.toml`, `schedule = "interval:3m"`, Nemotron-3-Super via hodos :25193). Each tick (`run-loop.ts`):
+The estate's heartbeat orchestrator: **[`ranch/estate-brain/agents/forever-loop/`](ranch/estate-brain/agents/forever-loop/)**. It's a **C2 forever-goal coordinator** — supervised by pitchfork as `estate/forever-loop`, scheduled every **3 minutes** (`agent.toml`, `schedule = "interval:3m"`, Nemotron-3-Super via rhodochrosite :25193). Each tick (`run-loop.ts`):
 
 1. Scans the **oracle market** + hindsight + the estate board for awarded/surfaced work.
 2. Applies any market-awarded task via `delend-experimental` / `delend-iterate`.
@@ -215,7 +215,7 @@ All estate skills (kappa **and** tau) load from **one registry**: [`grasp-hub/`]
 - **tau** → `config/tau/skills` → `grasp-hub/skills` symlink.
 - Clusters: `00_inbox`, `01_orchestration`, `02_research_intel`, `03_systems_runtime`, `04_code_intelligence`, `05_data_hardware`, `06_knowledge_authoring`, plus `archive`.
 
-**Agent-paradigm-audit** is a first-class skill here: [`grasp-hub/skills/06_knowledge_authoring/agent-paradigm-audit/SKILL.md`](grasp-hub/skills/06_knowledge_authoring/agent-paradigm-audit/SKILL.md). It runs a neutral, evidence-backed audit of the 2026 "openclaw-era" agent paradigms (deterministic / infra-aware / self-grading / settlement) grounded in the real October-2026 orchestration literature (Jasper OS, INFRAMIND, WorkflowOps, OrchRM, the MAS orchestration survey) **and** in concrete estate reality (oracle-market, corral/delendai, forever-loop+squawk C2, hodos/EAP/theta routing, delend-experimental self-healing). Output is a scored Oracle-Decision-Table, not a vendor cheerleading sheet — and it is itself the estate's documented evidence for how it chooses orchestration.
+**Agent-paradigm-audit** is a first-class skill here: [`grasp-hub/skills/06_knowledge_authoring/agent-paradigm-audit/SKILL.md`](grasp-hub/skills/06_knowledge_authoring/agent-paradigm-audit/SKILL.md). It runs a neutral, evidence-backed audit of the 2026 "openclaw-era" agent paradigms (deterministic / infra-aware / self-grading / settlement) grounded in the real October-2026 orchestration literature (Jasper OS, INFRAMIND, WorkflowOps, OrchRM, the MAS orchestration survey) **and** in concrete estate reality (oracle-market, corral/delendai, forever-loop+squawk C2, rhodochrosite/EAP/theta routing, delend-experimental self-healing). Output is a scored Oracle-Decision-Table, not a vendor cheerleading sheet — and it is itself the estate's documented evidence for how it chooses orchestration.
 
 Add or edit a skill once in grasp-hub and both consumers pick it up — no per-agent copies. Keep the `name == directory` contract and parseable frontmatter. Register a new skill by dropping it in `skills/<name>/` (SKILL.md frontmatter required), symlinking into `grasp-hub/skills/<cluster>/<name>`, then proving pickup (`node bin/grasp-hub.js list | grep <name>` and `validate` must be green).
 
@@ -237,9 +237,9 @@ The fleet is not a metaphor. Named agents — each with a species, a personality
 | ----------------------------------------------------------------------------------------------------------------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [`toxicwind/estate`](https://github.com/toxicwind/estate)                                                         | PUBLIC     | This repo — the control plane / deploy plane.                                                                                                                                                                                                                                                                                                                           |
 | [`toxicwind/pens`](https://github.com/toxicwind/pens)                                                              | PUBLIC     | Pointer superproject (`*` in `.gitignore`) organizing `olympus/`, `ranch/`, and `archive/` with generators in `toolkit/`.                                                                                                                                                                                                                                                |
-| [`toxicwind/olympus`](https://github.com/toxicwind/olympus)                                                       | PUBLIC     | The Greek pantheon pen — registry of Greek-coded products (`tau`, `kappa`, `skopos`, `kilo`, `muse`, `keryx`, `hodos`, `kairos`, `kryptos`, `agele`, `pinax`, `agon`, `antilogos`, `pylae`, `propylon`, `opsis`, `didymos`, `chronos-forge`, `arroyo`). `pens/toolkit/` and `ranch/toolkit/` hold the Bun README/manifest generators. |
+| [`toxicwind/olympus`](https://github.com/toxicwind/olympus)                                                       | PUBLIC     | The Greek pantheon pen — registry of Greek-coded products (`tau`, `kappa`, `skopos`, `kilo`, `muse`, `keryx`, `rhodochrosite`, `kairos`, `kryptos`, `agele`, `mimetite`, `agon`, `antilogos`, `pylae`, `propylon`, `opsis`, `didymos`, `chronos-forge`, `arroyo`). `pens/toolkit/` and `ranch/toolkit/` hold the Bun README/manifest generators. |
 | [`toxicwind/ranch`](https://github.com/toxicwind/ranch)                                                            | PUBLIC     | The workshop — 222-component peer workspace pen (`.meta.yaml` + `toolkit/`).                                                                                                                                                                                                                                                                                              |
-| [`toxicwind/agele`](https://github.com/toxicwind/agele)                                                            | PUBLIC     | The herd — local LLM inference front door (`llama.cpp` :25100; renamed from `herd`).                                                                                                                                                                                                                                                                                    |
+| [`toxicwind/agele`](https://github.com/toxicwind/agele)                                                            | PUBLIC     | The bornite — local LLM inference front door (`llama.cpp` :25100; renamed from `bornite`).                                                                                                                                                                                                                                                                                    |
 | (former `hatch`, now `kite`)                                                                                      | —          | The control-cell repo split out of this tree (live checkout `/home/toxic/kite/kite`); dodge name `hatch`, real identity `kite`. No longer inside the estate tree.                                                                                                                                                                                                       |
 
 _(The old README carried verified `main` SHAs here; those SHAs are mutable and were dated 2026-10-15. They've been dropped in favor of `git ls-remote origin` for current truth.)_
@@ -262,7 +262,7 @@ Distributed under the **MIT License** — see [LICENSE](LICENSE). Security polic
 
 ## 📬 Contact & Acknowledgments
 
-Maintainer: **User** ([@toxicwind](https://github.com/toxicwind)). The herd/hodos/tau lineage builds on outstanding open-source work (llama.cpp, the Bun and Rust ecosystems, the many provider APIs the routers perch on); the fleet's culture owes a debt to every agent that ever posted a hello in its own voice. Full third-party notices: [`THIRD-PARTY-NOTICES.txt`](THIRD-PARTY-NOTICES.txt).
+Maintainer: **User** ([@toxicwind](https://github.com/toxicwind)). The bornite/rhodochrosite/tau lineage builds on outstanding open-source work (llama.cpp, the Bun and Rust ecosystems, the many provider APIs the routers perch on); the fleet's culture owes a debt to every agent that ever posted a hello in its own voice. Full third-party notices: [`THIRD-PARTY-NOTICES.txt`](THIRD-PARTY-NOTICES.txt).
 
 ---
 

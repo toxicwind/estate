@@ -10,17 +10,17 @@ Three separate implementations have carried similar routing DNA:
    pitchfork daemon on `:25104`. Live provider `/models` discovery, 7
    strategies, streaming, sticky sessions, ELO, circuits, HealthDB, free
    racing, `/ui` dashboard.
-2. **Go cloud-router module** (`projects/herd/internal/hodos/`) — a
-   herd library module, not a version of #1. 13 providers,
+2. **Go cloud-router module** (`projects/bornite/internal/rhodochrosite/`) — a
+   bornite library module, not a version of #1. 13 providers,
    per-provider rate limits, request coalescing, least-latency and
    round-robin strategies, richer status surface. No live discovery, no
    streaming-first design.
-3. **Mesh gateway cloud-router** (`projects/range/ranch/barn/shep/hodos.go`) —
+3. **Mesh gateway cloud-router** (`projects/range/ranch/barn/shep/rhodochrosite.go`) —
    routes tool-call/MCP traffic, a different domain entirely (not model
    inference).
 
 Stale copies of the TS tree exist at `projects/range/ranch/stockyard/router-legacy/`,
-`projects/herd/mesh/router/`, and a nested duplicate
+`projects/bornite/mesh/router/`, and a nested duplicate
 `estate-router-ts/estate-router-ts/` — the live daemon runs from
 `tools/estate-router/estate-router-ts/` only. The old TS User-Agent
 and `[matrix]` log prefix were renamed to `Estate-Router/3.1` /
@@ -31,33 +31,33 @@ router.
 
 | | estate-router-ts (LIVE) | Go module |
 |---|---|---|
-| Location | `tools/estate-router/estate-router-ts/` | `projects/herd/internal/hodos/` |
-| Status | **Production** — pitchfork daemon `:25104` | Library, compiled into herd herd builds |
-| Providers | 7: herd (herd main port `:25100`), openrouter, nvidia (direct multi-key), groq, cerebras, google, mistral | 13: herd, openrouter, nvidia, groq, together, cerebras, fireworks, hyperbolic, github, mistral, openai, perplexity, siliconflow |
-| Strategies | 7 canonical: fifo_matrix, free, sticky_affinity, weighted_elo, circuit_chain, hybrid, hodos_race (`fifo_flock` / `hodos_race` aliases live; legacy `ast_race` / `fifo_matrix` still accepted) | 8: hybrid, hodos_race (alias `ast_race`), sticky_affinity, weighted_elo, least_latency, round_robin, free, circuit_chain |
+| Location | `tools/estate-router/estate-router-ts/` | `projects/bornite/internal/rhodochrosite/` |
+| Status | **Production** — pitchfork daemon `:25104` | Library, compiled into bornite bornite builds |
+| Providers | 7: bornite (bornite main port `:25100`), openrouter, nvidia (direct multi-key), groq, cerebras, google, mistral | 13: bornite, openrouter, nvidia, groq, together, cerebras, fireworks, hyperbolic, github, mistral, openai, perplexity, siliconflow |
+| Strategies | 7 canonical: fifo_matrix, free, sticky_affinity, weighted_elo, circuit_chain, hybrid, rhodochrosite_race (`fifo_flock` / `rhodochrosite_race` aliases live; legacy `ast_race` / `fifo_matrix` still accepted) | 8: hybrid, rhodochrosite_race (alias `ast_race`), sticky_affinity, weighted_elo, least_latency, round_robin, free, circuit_chain |
 | Model discovery | **Live** — `GET {base}/models` per key at startup + every 30 min; union with curated | YAML-configured static lists |
 | Health | SQLite WAL HealthDB, EMA latency, ELO, circuit breakers, sticky sessions | SQLite health DB, EMA latency, circuit breakers w/ half-open probes, sticky sessions |
 | Rate limiting | NVIDIA multi-key token buckets (40 rpm/key, round-robin) | Per-provider token buckets (all providers) |
 | Extra | SSE streaming, `/ui` dashboard, flap tracker, Prometheus `/metrics`, optional client-key auth | Request coalescing, latency histograms, richer status/metrics |
 
-## Full form inventory (all hodos/astmatrix forms, 2026-09-17)
+## Full form inventory (all rhodochrosite/astmatrix forms, 2026-09-17)
 
-Everything that has ever carried the astmatrix/hodos routing DNA, with its
+Everything that has ever carried the astmatrix/rhodochrosite routing DNA, with its
 canonical status. The old name "astmatrix" no longer makes sense: the thing
-is a *hodos* of providers raced/managed together, so every active surface is
+is a *rhodochrosite* of providers raced/managed together, so every active surface is
 renamed. Archives and frozen snapshots are documented, not renamed.
 
 | # | Form | Location | Kind | Status |
 |---|---|---|---|---|
 | 1 | estate-router-ts | `tools/estate-router/estate-router-ts/` | Bun/TS multi-provider model router | **LIVE** - pitchfork daemon `estate-router` on `:25104` |
-| 2 | hodos (proxy) | `/home/toxic/projects/hodos`, daemon `/home/toxic/.hodos/hodos` on `:8000` | Rust NVIDIA NIM OpenAI-compatible proxy | **LIVE** - separate repo; NIM-side consolidation owned by main chat |
-| 3 | Go hodos module | `projects/herd/internal/hodos/` | herd library module (13 providers) | Active source; NOT the running `:25100` binary (built 2026-09-12 from an incomplete tree) |
-| 4 | mesh gateway router | `projects/range/ranch/barn/shep/hodos.go`, `projects/herd/mesh/gateway/hodos.go` | Go MCP/tool-call router | Reference copies; live `:25115` is the Bun mesh-hub |
-| 5 | hodos-py | `projects/range/ranch/stockyard/router-legacy/hodos-py/`, `projects/herd/mesh/router/hodos-py/` | Python reference router | Frozen reference |
-| 6 | hodos-router | `projects/range/ranch/stockyard/router-legacy/hodos-router/` | TS reference router | Frozen reference |
-| 7 | hodos-pkg | `projects/range/hodos-pkg/`, `projects/herd/mesh/hodos-pkg/` | Semantic/AST extraction snapshots | Frozen snapshots (not request routers) |
+| 2 | rhodochrosite (proxy) | `/home/toxic/projects/rhodochrosite`, daemon `/home/toxic/.rhodochrosite/rhodochrosite` on `:8000` | Rust NVIDIA NIM OpenAI-compatible proxy | **LIVE** - separate repo; NIM-side consolidation owned by main chat |
+| 3 | Go rhodochrosite module | `projects/bornite/internal/rhodochrosite/` | bornite library module (13 providers) | Active source; NOT the running `:25100` binary (built 2026-09-12 from an incomplete tree) |
+| 4 | mesh gateway router | `projects/range/ranch/barn/shep/rhodochrosite.go`, `projects/bornite/mesh/gateway/rhodochrosite.go` | Go MCP/tool-call router | Reference copies; live `:25115` is the Bun mesh-hub |
+| 5 | rhodochrosite-py | `projects/range/ranch/stockyard/router-legacy/rhodochrosite-py/`, `projects/bornite/mesh/router/rhodochrosite-py/` | Python reference router | Frozen reference |
+| 6 | rhodochrosite-router | `projects/range/ranch/stockyard/router-legacy/rhodochrosite-router/` | TS reference router | Frozen reference |
+| 7 | rhodochrosite-pkg | `projects/range/rhodochrosite-pkg/`, `projects/bornite/mesh/rhodochrosite-pkg/` | Semantic/AST extraction snapshots | Frozen snapshots (not request routers) |
 | 8 | tau archive | `projects/tau/archive/from-estate-swap/internal/astmatrix` | Old Go copy | **Frozen archive - do not edit** |
-| 9 | tau-hodos extension | `projects/tau/extensions/hodos/` (`@toxicwind/tau-hodos`) | Tau extension: hodos client + slash commands + LLM tools | **LIVE-registered** - linked in `~/.tau/plugins`, `plugin list` shows it |
+| 9 | tau-rhodochrosite extension | `projects/tau/extensions/rhodochrosite/` (`@toxicwind/tau-rhodochrosite`) | Tau extension: rhodochrosite client + slash commands + LLM tools | **LIVE-registered** - linked in `~/.tau/plugins`, `plugin list` shows it |
 | 10 | stray NIM implementations | various | NVIDIA NIM clients | Owned by main chat - out of this lane |
 
 Canonicality: exactly two live daemons (form 1 on `:25104`, form 2 on `:8000`).
@@ -70,12 +70,12 @@ Everything else is reference, snapshot, or frozen archive.
   IDs (was ~50 aliases); every provider-keyed model is directly addressable —
   no more curated-alias-only routing.
 - **NVIDIA direct multi-key**: 4 keys, round-robin, 40-rpm token buckets per
-  key. The old `hodos` daemon (`:8000`, still running) is bypassed for NVIDIA
+  key. The old `rhodochrosite` daemon (`:8000`, still running) is bypassed for NVIDIA
   by the router; other consumers unaudited so far.
 - **Flap tracker**: 3 empty completions in 10 min benches a model from the
   free pool; strikes decay and re-probe. Visible at `/metrics`
   (`estate_router_model_empty_strikes`). Already striking flapping Ling
-  variants on openrouter and herd paths.
+  variants on openrouter and bornite paths.
 - **Substance guard on every path**: HTTP 200 with empty content (and no
   tool_calls) is a failure at every routing layer — never served, never
   sticky-pinned. Closed the circuit-chain/free fallback hole that served
@@ -84,15 +84,15 @@ Everything else is reference, snapshot, or frozen archive.
   circuit state, empty-strike count, plus raw provider objects where live.
 - **Operational**: Prometheus `/metrics`, optional `ESTATE_CLIENT_KEYS`
   auth, neutral naming (UA `Estate-Router/3.1`, `[router]` logs).
-- **Local path preserved**: herd provider routes through the herd main
+- **Local path preserved**: bornite provider routes through the bornite main
   port `:25100`; the router has not bypassed it.
 
-- **Strategy names hodos-aligned** (2026-09-17): `ast_race` -> `hodos_race`,
+- **Strategy names rhodochrosite-aligned** (2026-09-17): `ast_race` -> `rhodochrosite_race`,
   `fifo_matrix` keeps working with new alias `fifo_flock`. Additive only:
   legacy names still accepted (switch cases match both, ROUTERS map holds
-  both keys). Proven live: `X-Estate-Strategy: hodos_race` returned a
+  both keys). Proven live: `X-Estate-Strategy: rhodochrosite_race` returned a
   non-empty completion through the restarted `:25104` daemon. Go module
-  default strategy is now `hodos_race`; yaml accepts `flockStrategy` with
+  default strategy is now `rhodochrosite_race`; yaml accepts `flockStrategy` with
   legacy `astStrategy` still honored via custom UnmarshalYAML.
 
 - **Free pool is live-metadata derived** (2026-09-17, User): `freeCandidates()`
@@ -101,7 +101,7 @@ Everything else is reference, snapshot, or frozen archive.
   completion priced `"0"` = free), with deterministic fallback to the `:free`
   suffix convention only when a provider exposes no pricing metadata at all.
   Filters: circuit state, flap strikes (substance-guard failures feed the
-  strike counter), local herd roles always join. `/v1/models`
+  strike counter), local bornite roles always join. `/v1/models`
   `x-estate.free` is the same function, so the catalog and the router
   agree. 4 live-free models the static list missed (`stealth/union-alpha`,
   `google/lyria-3-pro-preview`, `google/lyria-3-clip-preview`,
@@ -136,7 +136,7 @@ Everything else is reference, snapshot, or frozen archive.
 
 | Provider | Curated | Live | Union served |
 |---|---|---|---|
-| herd | 3 | 102 | 102 |
+| bornite | 3 | 102 | 102 |
 | openrouter | 11 | 444 | 451 |
 | nvidia | 12 | 82 | 92 |
 | groq | 6 | 13 | 17 |

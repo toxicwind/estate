@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""kimi-auto: single-shot codegen via the kimi-auto resolver lane (herd :25100).
+"""kimi-auto: single-shot codegen via the kimi-auto resolver lane (bornite :25100).
 
 Different model class entirely: best live model (Kimi-family preferred,
 any healthy family as fallback) resolved by kimi-auto's audited resolver.
@@ -20,8 +20,8 @@ def main(task_dir, output_path):
     arm_timeout(CEILING)
     spec = read_task(task_dir)
     lang = spec.get("language", "python")
-    log(f"kimi-auto: {spec.get('id')} -> {KIMI_MODEL}@{HERD_URL}")
-    text = chat(HERD_URL, KIMI_MODEL, spec_prompt(spec),
+    log(f"kimi-auto: {spec.get('id')} -> {KIMI_MODEL}@{BORNITE_URL}")
+    text = chat(BORNITE_URL, KIMI_MODEL, spec_prompt(spec),
                 max_tokens=4096, temperature=0.2, timeout=270)
     code = extract_code(text, lang)
     if not code:

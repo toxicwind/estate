@@ -3,7 +3,7 @@
  * consumers get GENERATED artifacts, never hand-maintained copies.
  *
  * - generated/providers.json — canonical data artifact (Python scripts, docs).
- * - generated/providers.go  — drop-in data file for herd (Go cannot import TS).
+ * - generated/providers.go  — drop-in data file for bornite (Go cannot import TS).
  *
  * Both are checked in. `bun run build` regenerates them; the sync test
  * regenerates into a temp dir and diffs byte-for-byte, so a stale artifact
@@ -84,11 +84,11 @@ export function buildProvidersJson(input: CodegenInput): string {
 }
 
 /**
- * Generated Go data file for herd. Package name and exported symbols are
- * chosen to be a drop-in data replacement for herd's hardcoded tables; herd's
+ * Generated Go data file for bornite. Package name and exported symbols are
+ * chosen to be a drop-in data replacement for bornite's hardcoded tables; bornite's
  * own merge/selection LOGIC stays hand-written and reads these tables.
  *
- * The type is CatalogProviderDef (not ProviderDef) — herd's registry.go
+ * The type is CatalogProviderDef (not ProviderDef) — bornite's registry.go
  * already declares ProviderDef for the extended 9Router registry.
  */
 export function buildProvidersGo(input: CodegenInput): string {
@@ -152,7 +152,7 @@ type CatalogProviderDef struct {
 	ModelsPath     string
 	NoModelsReason string
 	NoAuth         bool // auth === "none": no API key needed
-	RouterLocal    bool // TS-router-local concept; herd skips these
+	RouterLocal    bool // TS-router-local concept; bornite skips these
 	Enabled        bool
 }
 

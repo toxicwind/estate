@@ -1,5 +1,5 @@
 /**
- * herd_ssot.ts unit tests — covers utility functions, URL builders,
+ * bornite_ssot.ts unit tests — covers utility functions, URL builders,
  * pickDefaultModel logic, and oaicopilotModelsFromSwap without live service.
  */
 import { afterEach, beforeEach, describe, expect, test, vi } from "bun:test";
@@ -26,11 +26,11 @@ import {
   swapModelsSseUrl,
   swapV1Url,
   watchSwapModelsSseRefresh,
-} from "../src/lib/herd_ssot.ts";
+} from "../src/lib/bornite_ssot.ts";
 
 // ── URL builders ─────────────────────────────────────────────────────────────
 
-describe("herd_ssot URL builders", () => {
+describe("bornite_ssot URL builders", () => {
   test("swapBaseUrl returns http://127.0.0.1:${port}", () => {
     const url = swapBaseUrl();
     expect(url).toMatch(/^http:\/\/127\.0\.0\.1:\d+$/);
@@ -191,17 +191,17 @@ describe("pickDefaultModel", () => {
     expect(result).toBe("actual-model");
   });
 
-  test("uses HERD_MODEL env as preferred (line 63)", async () => {
-    const orig = process.env.HERD_MODEL;
-    process.env.HERD_MODEL = "env-model";
+  test("uses BORNITE_MODEL env as preferred (line 63)", async () => {
+    const orig = process.env.BORNITE_MODEL;
+    process.env.BORNITE_MODEL = "env-model";
     mockFetch.mockResolvedValueOnce({
       ok: true,
       json: () => Promise.resolve({ data: [{ id: "env-model" }] }),
     });
     const result = await pickDefaultModel();
     expect(result).toBe("env-model");
-    if (orig !== undefined) process.env.HERD_MODEL = orig;
-    else delete process.env.HERD_MODEL;
+    if (orig !== undefined) process.env.BORNITE_MODEL = orig;
+    else delete process.env.BORNITE_MODEL;
   });
 });
 
@@ -217,7 +217,7 @@ describe("oaicopilotModelsFromSwap", () => {
     expect(result).toHaveLength(2);
     expect(result[0].id).toBe("beellama/qwen-flash-64k");
     expect(result[0].displayName).toBe("local/qwen-flash-64k");
-    expect(result[0].owned_by).toBe("herd");
+    expect(result[0].owned_by).toBe("bornite");
     expect(result[0].context_length).toBe(65536);
     expect(result[0].vision).toBe(false);
   });
@@ -278,15 +278,15 @@ describe("clientEnvExports", () => {
   test("returns shell exports with all env vars", () => {
     const output = clientEnvExports();
     expect(output).toContain("export OPENAI_BASE_URL=");
-    expect(output).toContain("export HERD_URL=");
+    expect(output).toContain("export BORNITE_URL=");
     expect(output).toContain("export LLAMA_CHAT_URL=");
     expect(output).toContain("export ESTATE_LLM=");
     expect(output).toContain("export LLAMA_MODELS_SSE_URL=");
   });
 
-  test("uses custom default model in HERD_MODEL", () => {
+  test("uses custom default model in BORNITE_MODEL", () => {
     const output = clientEnvExports("custom-model");
-    expect(output).toContain("export HERD_MODEL=custom-model");
+    expect(output).toContain("export BORNITE_MODEL=custom-model");
   });
 
   test("contains do-not-edit comment", () => {
@@ -339,7 +339,7 @@ describe("watchSwapModelsSse — SSE reader loop", () => {
     const received: any[] = [];
     // Import watchSwapModelsSse directly
     const { watchSwapModelsSse } = await import(
-      "../src/lib/herd_ssot.ts"
+      "../src/lib/bornite_ssot.ts"
     );
     const h = watchSwapModelsSse((ev) => received.push(ev));
 
@@ -359,7 +359,7 @@ describe("watchSwapModelsSse — SSE reader loop", () => {
     });
     let errorCaught: any = null;
     const { watchSwapModelsSse } = await import(
-      "../src/lib/herd_ssot.ts"
+      "../src/lib/bornite_ssot.ts"
     );
     watchSwapModelsSse(
       () => {},
@@ -376,7 +376,7 @@ describe("watchSwapModelsSse — SSE reader loop", () => {
     mockFetch.mockRejectedValueOnce(new Error("network fail"));
     let errorCaught: any = null;
     const { watchSwapModelsSse } = await import(
-      "../src/lib/herd_ssot.ts"
+      "../src/lib/bornite_ssot.ts"
     );
     watchSwapModelsSse(
       () => {},
@@ -407,7 +407,7 @@ describe("watchSwapModelsSse — SSE reader loop", () => {
 
     const received: any[] = [];
     const { watchSwapModelsSse } = await import(
-      "../src/lib/herd_ssot.ts"
+      "../src/lib/bornite_ssot.ts"
     );
     const h = watchSwapModelsSse((ev) => received.push(ev));
     await new Promise((r) => setTimeout(r, 100));
@@ -432,7 +432,7 @@ describe("watchSwapModelsSse — SSE reader loop", () => {
 
     const received: any[] = [];
     const { watchSwapModelsSse } = await import(
-      "../src/lib/herd_ssot.ts"
+      "../src/lib/bornite_ssot.ts"
     );
     const h = watchSwapModelsSse((ev) => received.push(ev));
     await new Promise((r) => setTimeout(r, 100));

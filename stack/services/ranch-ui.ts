@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 // ranch-ui: the consolidated ranch dashboard entry point.
 //
-// It serves the dashboard SPA and proxies the herd API so the dashboard
+// It serves the dashboard SPA and proxies the bornite API so the dashboard
 // reaches it same-origin, the way the embedded build used to.
 //
 // 2026-10-21 FIX (the "dist missing" 503): the old hardcoded dist path
@@ -16,22 +16,22 @@
 //   2. ranch/range/apps/delendai-control-plane/dist   (a real production build)
 //   3. proxy the running SPA origin        ($SPA_ORIGIN, default :25156)
 //
-// The dashboard calls herd at its ROOT paths (/v1/models, /api/profiles,
-// /api/mcp, /logs/stream/…, /upstream/…, /comfyui/…), not under /api/herd.
+// The dashboard calls bornite at its ROOT paths (/v1/models, /api/profiles,
+// /api/mcp, /logs/stream/…, /upstream/…, /comfyui/…), not under /api/bornite.
 // So the proxy rule is: everything that is not a built asset or the SPA shell
-// goes to herd. That is the old embedded behaviour, restored.
+// goes to bornite. That is the old embedded behaviour, restored.
 //
 // Routes:
 //   /health      liveness for pitchfork ready_http/health_http (never proxied)
 //   /assets/*    hashed build assets (exact-match only)
 //   /ui/*        the vite `base` the build emits; stripped before resolving
-//   everything else → herd (API, SSE, upstream, comfyui)
+//   everything else → bornite (API, SSE, upstream, comfyui)
 import { existsSync, statSync } from "node:fs";
 import { join, normalize, extname } from "node:path";
 
-// Herd API surface the dashboard calls at ROOT paths. Everything else with no
+// Bornite API surface the dashboard calls at ROOT paths. Everything else with no
 // file extension is a client-side route of the SPA and gets the shell.
-const HERD_API_PREFIXES = [
+const BORNITE_API_PREFIXES = [
   "/v1/",
   "/api/",
   "/models/sse",
@@ -41,7 +41,7 @@ const HERD_API_PREFIXES = [
   "/metrics",
   "/running",
   "/unload",
-  "/health-on-herd",
+  "/health-on-bornite",
 ];
 
 const DIST_CANDIDATES = [
@@ -50,7 +50,7 @@ const DIST_CANDIDATES = [
 ].filter((p): p is string => Boolean(p));
 
 const PORT = Number.parseInt(process.env.RANCH_UI_PORT ?? "", 10) || 25205;
-const HERD_ORIGIN = process.env.HERD_ORIGIN ?? "http://127.0.0.1:25100";
+const BORNITE_ORIGIN = process.env.BORNITE_ORIGIN ?? "http://127.0.0.1:25100";
 // The live control-plane SPA (Vite dev server).
 const SPA_ORIGIN =
   process.env.SPA_ORIGIN ??
@@ -156,9 +156,9 @@ async function proxy(
   }
 }
 
-/** Is this path part of the herd API surface the dashboard calls? */
+/** Is this path part of the bornite API surface the dashboard calls? */
 function isHerdApiPath(path: string): boolean {
-  return HERD_API_PREFIXES.some((p) => path === p || path.startsWith(p));
+  return BORNITE_API_PREFIXES.some((p) => path === p || path.startsWith(p));
 }
 
 Bun.serve({
@@ -179,7 +179,7 @@ Bun.serve({
         requestedMode: RANCH_UI_MODE,
         spa: SPA_ORIGIN,
         spaReachable: SPA_REACHABLE,
-        herd: HERD_ORIGIN,
+        bornite: BORNITE_ORIGIN,
       });
     }
 
@@ -189,9 +189,9 @@ Bun.serve({
 
     // Live mode (proxied Vite dev server): the dev server owns module and
     // HMR URLs (/src/main.tsx, /@vite/client, /@react-refresh, /node_modules/…)
-    // and they all carry file extensions -- routing them to the herd API by
+    // and they all carry file extensions -- routing them to the bornite API by
     // "has an extension" would 404 every module and render a blank page.
-    // In live mode the SPA origin serves everything that is not a herd API
+    // In live mode the SPA origin serves everything that is not a bornite API
     // path, so the whole dev-server surface stays reachable through :25218.
     if (!SERVE_DIST_DIR && !isHerdApiPath(path)) {
       return proxy(req, SPA_ORIGIN + path, SPA_ORIGIN);
@@ -211,7 +211,7 @@ Bun.serve({
 
     // The SPA shell lives at / and /ui/. Client-side routes have no file
     // extension, so anything file-like that resolved above was an asset;
-    // anything else reaching here is an API path heading to herd.
+    // anything else reaching here is an API path heading to bornite.
     if (rel === "/" || rel === "/ui" || rel === "/ui/") {
       const file = SERVE_DIST_DIR ? resolve("/index.html") : null;
       if (file) {
@@ -226,7 +226,7 @@ Bun.serve({
     }
 
     // Deep links into the SPA (e.g. /chats) must resolve to the shell, not
-    // to the herd API. A client route has no file extension; the herd API
+    // to the bornite API. A client route has no file extension; the bornite API
     // paths below all do, or are explicit prefixes. Without this the Chats
     // view (and every other client route) 404s when pasted into a browser.
     if (!isHerdApiPath(path) && !extname(path)) {
@@ -239,13 +239,13 @@ Bun.serve({
       return proxy(req, SPA_ORIGIN + path, SPA_ORIGIN);
     }
 
-    // Everything else is the herd API surface the dashboard expects
+    // Everything else is the bornite API surface the dashboard expects
     // same-origin: /v1/*, /api/*, /models/sse, /logs/stream/*, /upstream/*,
-    // /comfyui/*, /metrics, /running, /unload, /health-on-herd.
-    return proxy(req, HERD_ORIGIN + path, HERD_ORIGIN);
+    // /comfyui/*, /metrics, /running, /unload, /health-on-bornite.
+    return proxy(req, BORNITE_ORIGIN + path, BORNITE_ORIGIN);
   },
 });
 
 console.log(
-  `ranch-ui on :${PORT} serving ${SERVE_DIST_DIR ? DIST : `${SPA_ORIGIN} (live — hot-reloads)`} (mode ${RANCH_UI_MODE}, spa ${SPA_ORIGIN}, herd ${HERD_ORIGIN})`,
+  `ranch-ui on :${PORT} serving ${SERVE_DIST_DIR ? DIST : `${SPA_ORIGIN} (live — hot-reloads)`} (mode ${RANCH_UI_MODE}, spa ${SPA_ORIGIN}, bornite ${BORNITE_ORIGIN})`,
 );

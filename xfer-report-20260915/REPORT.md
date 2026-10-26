@@ -66,7 +66,7 @@ concurrency lock, 64 KiB default frame (race winner).
    window (both restored by me from `refs/heads/main`). Something is
    deleting HEAD files — worth hunting.
 2. **Working-tree deletions I did not make**: `git status` in both repos
-   shows deleted files under `herd/`, `docs/`, `.opencode/`, and several
+   shows deleted files under `bornite/`, `docs/`, `.opencode/`, and several
    skill dirs (another worker's doing). I committed only my own files.
 3. `/tmp/bridgesave` on the cell vanished mid-session (fratricide or cell
    wipe) — nothing durable lost, everything was already pushed.

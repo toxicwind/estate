@@ -1,6 +1,6 @@
 // ============================================================================
 // ESTATE — Yote ↔ Overlord ↔ OpenFang Integration Tests
-// Verifies the full Telegram chat → Overlord → OpenFang → Herd chain
+// Verifies the full Telegram chat → Overlord → OpenFang → Bornite chain
 // ============================================================================
 
 import { loadEstatePorts } from "../../src/lib/ports.ts";
@@ -8,7 +8,7 @@ loadEstatePorts();
 
 const OF_URL = process.env.OPENFANG_URL ?? "http://127.0.0.1:25103";
 const YOTE_URL = process.env.YOTE_URL ?? "http://127.0.0.1:25102";
-const HERD_URL = process.env.HERD_URL ?? "http://127.0.0.1:25100";
+const BORNITE_URL = process.env.BORNITE_URL ?? "http://127.0.0.1:25100";
 const HAL_URL = process.env.HAL_URL ?? "http://127.0.0.1:25143";
 const KIMI_CODE_URL = process.env.KIMI_CODE_URL ?? "http://127.0.0.1:25126";
 const MCPPROXY_PORT = process.env.MCPPROXY_GO_PORT ?? "25127";
@@ -131,18 +131,18 @@ export async function testOpenFangHealth(): Promise<ChainResult> {
 export async function testHerdHealth(): Promise<ChainResult> {
   const start = Date.now();
   try {
-    const res = await fetch(`${HERD_URL}/health`);
+    const res = await fetch(`${BORNITE_URL}/health`);
     const passed = res.ok;
     return {
-      name: "herd-health",
+      name: "bornite-health",
       passed,
       latencyMs: Date.now() - start,
       details: { status: res.status },
-      error: passed ? undefined : `Herd health failed: HTTP ${res.status}`,
+      error: passed ? undefined : `Bornite health failed: HTTP ${res.status}`,
     };
   } catch (e) {
     return {
-      name: "herd-health",
+      name: "bornite-health",
       passed: false,
       latencyMs: Date.now() - start,
       error: String(e),
@@ -247,16 +247,16 @@ export async function testYoteHerdFallback(): Promise<ChainResult> {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         model: "llama",
-        messages: [{ role: "user", content: "Reply with: YOTE_HERD_OK" }],
+        messages: [{ role: "user", content: "Reply with: YOTE_BORNITE_OK" }],
         max_tokens: 32,
       }),
       signal: AbortSignal.timeout(30000),
     });
     const body = (await res.json()) as Record<string, any>;
-    // Chain works if we got any response — even an error means yote→herd is reachable
+    // Chain works if we got any response — even an error means yote→bornite is reachable
     const passed = res.ok || body.error != null || body.id != null;
     return {
-      name: "yote-herd-fallback",
+      name: "yote-bornite-fallback",
       passed,
       latencyMs: Date.now() - start,
       details: {
@@ -267,11 +267,11 @@ export async function testYoteHerdFallback(): Promise<ChainResult> {
       },
       error: passed
         ? undefined
-        : `Herd fallback: ${JSON.stringify(body).slice(0, 200)}`,
+        : `Bornite fallback: ${JSON.stringify(body).slice(0, 200)}`,
     };
   } catch (e) {
     return {
-      name: "yote-herd-fallback",
+      name: "yote-bornite-fallback",
       passed: false,
       latencyMs: Date.now() - start,
       error: String(e),
@@ -294,7 +294,7 @@ export async function testKimiClawBridge(): Promise<ChainResult> {
     const content = fs.readFileSync(bridgePath, "utf8");
     const hasOpenFang =
       content.includes("OPENFANG_URL") || content.includes("25103");
-    const hasHerd = content.includes("HERD_URL") || content.includes("25100");
+    const hasHerd = content.includes("BORNITE_URL") || content.includes("25100");
     const hasHal = content.includes("HAL_URL") || content.includes("25143");
     const passed = hasOpenFang && hasHerd && hasHal;
     return {
