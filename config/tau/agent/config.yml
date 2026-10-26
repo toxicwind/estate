@@ -258,23 +258,23 @@ model:
     threshold: 5
 modelRoleStorage: global
 modelRoles:
-  advisor: freeinference/qwen3.6-35b:low
+  advisor: openai-compatible/deepseek-v4-flash:low
   bodybuilder: custom/bodybuilder
-  commit: freeinference/qwen3.6-35b
+  commit: openai-compatible/qwen3.6-35b
   dots: custom/dots
-  fallback: freeinference/qwen3.6-35b
+  fallback: openai-compatible/deepseek-v4-flash
   image: google-antigravity/gemini-3.1-flash-image:auto
-  judge: freeinference/qwen3.6-35b
-  memory: freeinference/qwen3.6-35b
-  plan: freeinference/qwen3.6-35b
-  slow: freeinference/qwen3.6-35b:xhigh
-  smol: freeinference/minimax-m3:auto
-  task: freeinference/qwen3.6-35b
-  tiny: freeinference/qwen3.6-35b
-  verification: freeinference/qwen3.6-35b
-  vision: freeinference/minimax-m3:xhigh
+  judge: openai-compatible/qwen3.6-35b
+  memory: openai-compatible/qwen3.6-35b
+  plan: openai-compatible/deepseek-v4-flash:low
+  slow: openai-compatible/deepseek-v4-flash:max
+  smol: openai-compatible/minimax-m3
+  task: openai-compatible/qwen3.6-35b
+  tiny: openai-compatible/qwen3.6-35b
+  verification: openai-compatible/deepseek-v4-flash:low
+  vision: openai-compatible/minimax-m3:xhigh
   web: web/exa
-  default: openrouter/nvidia/nemotron-3-super-120b-a12b:free:medium
+  default: rhodochrosite.secure-nim/nvidia/nemotron-3.5-bolt-e4b
 omitThinking: false
 paste:
   largeMenuThreshold: 100
@@ -329,7 +329,7 @@ providers:
   fireworksTier: standard
   kimiApiFormat: auto
   maxInFlightRequests:
-    freeinference: 2
+    openai-compatible: 2
   ollama-cloud:
     maxConcurrency: 3
   openai-codex:
@@ -372,9 +372,9 @@ repetitionPenalty: -1
 retry:
   fallbackChains:
     fallback:
-      - freeinference/qwen3.6-35b
-      - freeinference/minimax-m3
-      - freeinference/deepseek-v4-flash
+      - openai-compatible/qwen3.6-35b
+      - openai-compatible/minimax-m3
+      - openai-compatible/deepseek-v4-flash
     web:
       - web/tavily
       - web/firecrawl
@@ -448,7 +448,7 @@ stt:
   submitTrigger: never
 subagents:
   can_spawn_subagents: true
-  defaultModel: freeinference/qwen3.6-35b
+  defaultModel: openai-compatible/deepseek-v4-flash
   subagent: inherit
   whitelist:
     - task

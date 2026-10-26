@@ -261,24 +261,31 @@ modelRoleStorage: global
 # none/low/max) with 1M ctx @ ~80t/s; glm-5.3-flash always-thinks and barely
 # scales (31->29->52). Effort-bearing roles -> deepseek-v4-flash; bare
 # no-effort roles stay on qwen3.6-35b.
+# modelRoles — 2026-10-26 probe-verified remap (kappa session), TAKE 2.
+# Coordinate truth: tau has NO freeinference provider ("unknown model"
+# warnings); freeinference reaches tau THROUGH rhodochrosite as the
+# openai-compatible lane (:25193, corral JWT). Probed: deepseek-v4-flash
+# honors reasoning_effort (19->88->130 tok), qwen3.6-35b does not; glm-5.3-
+# flash always-thinks and barely scales. effort roles -> openai-compatible/
+# deepseek-v4-flash; bare roles -> openai-compatible/qwen3.6-35b.
 modelRoles:
-  advisor: freeinference/deepseek-v4-flash:low
+  advisor: openai-compatible/deepseek-v4-flash:low
   bodybuilder: custom/bodybuilder
-  commit: freeinference/qwen3.6-35b
+  commit: openai-compatible/qwen3.6-35b
   dots: custom/dots
-  fallback: freeinference/deepseek-v4-flash
+  fallback: openai-compatible/deepseek-v4-flash
   image: google-antigravity/gemini-3.1-flash-image:auto
-  judge: freeinference/qwen3.6-35b
-  memory: freeinference/qwen3.6-35b
-  plan: freeinference/deepseek-v4-flash:low
-  slow: freeinference/deepseek-v4-flash:max
-  smol: freeinference/qwen3.6-35b
-  task: freeinference/qwen3.6-35b
-  tiny: freeinference/qwen3.6-35b
-  verification: freeinference/deepseek-v4-flash:low
-  vision: freeinference/minimax-m3:xhigh
+  judge: openai-compatible/qwen3.6-35b
+  memory: openai-compatible/qwen3.6-35b
+  plan: openai-compatible/deepseek-v4-flash:low
+  slow: openai-compatible/deepseek-v4-flash:max
+  smol: openai-compatible/qwen3.6-35b
+  task: openai-compatible/qwen3.6-35b
+  tiny: openai-compatible/qwen3.6-35b
+  verification: openai-compatible/deepseek-v4-flash:low
+  vision: openai-compatible/minimax-m3:xhigh
   web: web/exa
-  default: freeinference/deepseek-v4-flash
+  default: openai-compatible/deepseek-v4-flash
 omitThinking: false
 paste:
   largeMenuThreshold: 100
@@ -333,7 +340,7 @@ providers:
   fireworksTier: standard
   kimiApiFormat: auto
   maxInFlightRequests:
-    freeinference: 2
+    openai-compatible: 2
   ollama-cloud:
     maxConcurrency: 3
   openai-codex:
@@ -375,9 +382,9 @@ repetitionPenalty: -1
 retry:
   fallbackChains:
     fallback:
-      - freeinference/qwen3.6-35b
-      - freeinference/minimax-m3
-      - freeinference/deepseek-v4-flash
+      - openai-compatible/qwen3.6-35b
+      - openai-compatible/minimax-m3
+      - openai-compatible/deepseek-v4-flash
     web:
       - web/tavily
       - web/firecrawl
@@ -451,7 +458,7 @@ stt:
   submitTrigger: never
 subagents:
   can_spawn_subagents: true
-  defaultModel: freeinference/qwen3.6-35b
+  defaultModel: openai-compatible/qwen3.6-35b
   subagent: inherit
   whitelist:
     - task
