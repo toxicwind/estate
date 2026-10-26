@@ -18,7 +18,7 @@ import {
   rankPatternRows,
   collectTopPatternRepos,
   renderPatternBorrow,
-} from "../grasp-hub/skills/04_code_intelligence/code-patterns/src/providers/pattern-borrow";
+} from "/home/toxic/pens/geode/grasp-hub/skills/04_code_intelligence/code-patterns/src/providers/pattern-borrow";
 
 export {
   DEFAULT_PATTERN_WEIGHTS,
