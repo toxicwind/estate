@@ -304,7 +304,7 @@ timeout = "5s"
 retries = 3
 
 [daemons.estate-reconcile-watch]
-run = "exec /home/toxic/pens/barn/estate-ops/estate-reconcile watch"
+run = "exec /home/toxic/pens/estate/products/estate-ops/estate-reconcile watch"
 auto = ["start"]
 retry = true
 dir = "/home/toxic/estate"
@@ -520,14 +520,14 @@ HINDSIGHT_API_WORKER_CONSOLIDATION_RESERVED_SLOTS = "1"
 # On FAIL the daemon goes unhealthy — a product move that breaks a link shows
 # up within 5 minutes instead of at next use.
 [daemons.bin-contract-audit]
-run = "exec /home/toxic/pens/barn/estate-ops/bin-contract-audit.sh"
+run = "exec /home/toxic/pens/estate/products/estate-ops/bin-contract-audit.sh"
 auto = ["start"]
 retry = true
 interval = "5m"
 mise = false
 
 [daemons.maximal-audit]
-run = "exec /home/toxic/pens/barn/estate-ops/maximal-audit.sh"
+run = "exec /home/toxic/pens/estate/products/estate-ops/maximal-audit.sh"
 auto = ["start"]
 retry = true
 interval = "30m"
@@ -563,7 +563,7 @@ dir = "."
 mise = true
 
 [daemons.kappa-acp]
-run = "exec /home/toxic/pens/barn/estate-ops/kappa-serve.sh"
+run = "exec /home/toxic/pens/estate/products/estate-ops/kappa-serve.sh"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25159/"
@@ -627,7 +627,7 @@ KIMI_AUTO_SHIM_PORT = "25153"
 SHIM_CONNECT_TIMEOUT = "240"
 
 [daemons.kimi-code]
-run = "exec /home/toxic/pens/barn/estate-ops/claim-port 25126 /home/toxic/kimi-code-npm/node_modules/@moonshot-ai/kimi-code/dist/main.mjs web --no-open --port 25126"
+run = "exec /home/toxic/pens/estate/products/estate-ops/claim-port 25126 /home/toxic/kimi-code-npm/node_modules/@moonshot-ai/kimi-code/dist/main.mjs web --no-open --port 25126"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25126/health"
@@ -664,7 +664,7 @@ boot_start = true
 dir = "/home/toxic/pens/ranch/hatch/kite-cli"
 mise = true
 [daemons.kitty-mcp]
-run = "exec /home/toxic/pens/barn/estate-ops/kitty-mcp-instance.sh"
+run = "exec /home/toxic/pens/estate/products/estate-ops/kitty-mcp-instance.sh"
 auto = ["start"]
 retry = true
 port = 25211
@@ -854,7 +854,7 @@ depends = ["thresher"]
 dir = "."
 mise = true
 [daemons.nim-kimi-sidecar]
-run = "exec python3 /home/toxic/pens/barn/estate-ops/nim-kimi-sidecar.py"
+run = "exec python3 /home/toxic/pens/estate/products/estate-ops/nim-kimi-sidecar.py"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25163/health"
@@ -1215,7 +1215,7 @@ mise = true
 CHUTE_PORT = "25111"
 
 [daemons.tmp-reaper]
-run = "exec /home/toxic/pens/barn/estate-ops/tmp-reaper/reap-loop.sh 3600"
+run = "exec /home/toxic/pens/estate/products/estate-ops/tmp-reaper/reap-loop.sh 3600"
 auto = ["start"]
 retry = true
 dir = "/home/toxic/estate"
