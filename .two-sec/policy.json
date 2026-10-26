@@ -1,10 +1,8 @@
 {
   "deadlineS": 4,
   "disableBans": [
-    "pipeline truncation (head/tail/wc)",
     "'2>&1' merges stderr into stdout",
     "output discarded to /dev/null",
-    "byte/slice truncation in output",
     "blocking sleep"
   ],
   "extraBans": []
