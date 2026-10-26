@@ -1,0 +1,17 @@
+{
+  "os": "Linux 7.2.10-1-cachyos-bore (linux)",
+  "arch": "x64",
+  "cpu": "AMD Ryzen 7 8700F 8-Core Processor",
+  "memory": {
+    "total": 66996977664,
+    "free": 26915627008
+  },
+  "versions": {
+    "app": "18.8.4+estate-scripts.tau.f6baf040",
+    "bun": "1.4.2",
+    "node": "v26.3.0"
+  },
+  "cwd": "/home/toxic/tmp",
+  "shell": "/usr/bin/bash",
+  "terminal": "linux"
+}
