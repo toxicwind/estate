@@ -394,14 +394,14 @@ WOODPECKER_AGENT_SECRET = "c6eee4c1bce957ae19638a330efe5fc3c561f18ea58e3468fe224
 [daemons.forge]
 run = "exec /home/toxic/pens/ranch/forge/flicker/bin/flicker-server"
 retry = true
-ready_http = "http://127.0.0.1:25237/api/health"
-port = 25237
-expected_port = [25237]
+ready_http = "http://127.0.0.1:20128/api/health"
+port = 20128
+expected_port = [20128]
 boot_start = true
 dir = "/home/toxic/pens/ranch/forge/flicker"
 mise = true
 [daemons.forge.health_http]
-url = "http://127.0.0.1:25237/api/health"
+url = "http://127.0.0.1:20128/api/health"
 interval = "30s"
 timeout = "5s"
 retries = 3
