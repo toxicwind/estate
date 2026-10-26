@@ -26,7 +26,7 @@ bash:
     enabled: true
   direnv: auto
   direnvLoadTimeoutMs: 30000
-  enabled: false
+  enabled: true
   patterns:
     []
 bashInterceptor:
@@ -121,7 +121,7 @@ edit:
   enforceSeenLines: false
   fuzzyMatch: true
   fuzzyThreshold: 0.95
-  mode: hashline
+  mode: patch
   streamingAbort: false
 effort:
   high: 0.9
@@ -274,7 +274,7 @@ modelRoles:
   verification: freeinference/qwen3.6-35b
   vision: freeinference/minimax-m3:xhigh
   web: web/exa
-  default: openrouter/nvidia/nemotron-3.5-super-vl:free:medium
+  default: rhodochrosite.secure-nim/deepseek-ai/deepseek-v4.1-flash
 omitThinking: false
 paste:
   largeMenuThreshold: 100
