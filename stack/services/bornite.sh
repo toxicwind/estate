@@ -43,6 +43,7 @@ export BORNITE_DASHBOARD_URL="${BORNITE_DASHBOARD_URL:-http://127.0.0.1:25218/}"
 # because that is where the current build actually lives (pens/ranch was a
 # pre-2026-10-08 reorg path; bornite's canonical source moved to pens/ranch/forge).
 for BIN in \
+  "$PENS/geode/products/bornite/bin/bornite/bornite" \
   "$PENS/ranch/forge/router/bornite/bornite" \
   "$SOV/ranch/mesh/router/bornite/bornite" \
   "$SOV/ranch/bornite/bornite" \
