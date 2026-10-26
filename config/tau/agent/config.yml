@@ -266,17 +266,12 @@ modelRoles:
   memory: freeinference/qwen3.6-35b
   plan: freeinference/qwen3.6-35b
   slow: freeinference/qwen3.6-35b:xhigh
-  smol: freeinference/qwen3.6-35b:auto
+  smol: freeinference/minimax-m3:auto
   task: freeinference/qwen3.6-35b
   tiny: freeinference/qwen3.6-35b
   verification: freeinference/qwen3.6-35b
   vision: freeinference/minimax-m3:xhigh
   web: web/exa
-  default: freeinference/minimax-m3:low
-  # Stashed WIP wanted nvidia/z-ai/glm-5.3-flash:off as the default. Not
-  # taken: AGENTS.md records that glm-5.3 always reasons and rejects a
-  # disabled-thinking mode, and the live agent runs minimax-m3.
-  # default: nvidia/z-ai/glm-5.3-flash:off
 omitThinking: false
 paste:
   largeMenuThreshold: 100
@@ -331,7 +326,7 @@ providers:
   fireworksTier: standard
   kimiApiFormat: auto
   maxInFlightRequests:
-    freeinference: 8
+    freeinference: 2
   ollama-cloud:
     maxConcurrency: 3
   openai-codex:
