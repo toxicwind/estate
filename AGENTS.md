@@ -19,17 +19,20 @@
 - **Join the squawk fleet** — every tau/kappa session should be a first-class
   fleet citizen, not a lone process:
   1. Fleet bus is the squawk daemon — fleet coordination server
-     `http://127.0.0.1:25122`: `POST /v1/join` (Bearer) registers a
+     `http://127.0.0.1:25120` (pitchfork daemon `estate-chat`; env
+     `SQUAWK_CHAT_PORT`, token file `~/.config/estate-chat-token`):
+     `POST /v1/join` (Bearer) registers a
      4-namespace identity; `POST /v1/presence` heartbeats; `GET /v1/state`
-     shows the roster; `POST /v1/rooms/<id>/messages` posts; WebSocket push
+     shows the roster; `POST /v1/rooms/<id>/messages` posts (schema:
+     `from_agent` + `body` + `kind`); WebSocket push
      on :25147 (`core/ws.py`). Use the daemon FIRST for all fleet traffic.
   2. File bus `~/.squawk-bus/squawk-root` is the FALLBACK for when the
      daemon is down — hash-linked `NNNN-<from>-<slug>.md` message files,
      readable by anything. Do not treat it as primary; when the daemon is
      healthy, it owns the traffic.
   3. To become an OpenFang agent: `bun pens/ranch/squawk/join/fleet-join.ts
-     --name <name> --species <species> --personality "<text>" --lane <lane>
-     --task "<task>" [--sigil <emoji>]` — renders agent.toml + system.md,
+--name <name> --species <species> --personality "<text>" --lane <lane>
+--task "<task>" [--sigil <emoji>]` — renders agent.toml + system.md,
      writes estate/agents/<name>/ + ~/.openfang/agents/<name>/, hyper-races
      activation against :25196, verifies, commits.
 
@@ -259,9 +262,9 @@ One rule: **products own their entrypoints; bins merely point at them.**
 
 ## Scope split (nested AGENTS.md)
 
-| Path                                   | Owner                                                     |
-| -------------------------------------- | --------------------------------------------------------- |
+| Path                                   | Owner                                                   |
+| -------------------------------------- | ------------------------------------------------------- |
 | `/home/toxic/estate/AGENTS.md`         | estate control-plane: repos, skills, azurite, pitchfork |
-| `/home/toxic/estate/ranch/*/AGENTS.md` | each ranch component repo's own contract                  |
+| `/home/toxic/estate/ranch/*/AGENTS.md` | each ranch component repo's own contract                |
 
 Nested files declare what they refine and where; none repeat or contradict these.
