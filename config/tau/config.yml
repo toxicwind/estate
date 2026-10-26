@@ -327,7 +327,7 @@ providers:
   fireworksTier: standard
   kimiApiFormat: auto
   maxInFlightRequests:
-    freeinference: 8
+    freeinference: 2
   ollama-cloud:
     maxConcurrency: 3
   openai-codex:
