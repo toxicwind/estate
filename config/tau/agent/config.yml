@@ -274,7 +274,7 @@ modelRoles:
   verification: freeinference/qwen3.6-35b
   vision: freeinference/minimax-m3:xhigh
   web: web/exa
-  default: rhodochrosite.secure-nim/deepseek-ai/deepseek-v4.1-flash
+  default: rhodochrosite.secure-nim/poolside/laguna-xs-2.1
 omitThinking: false
 paste:
   largeMenuThreshold: 100

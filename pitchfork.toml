@@ -570,22 +570,6 @@ ready_http = "http://127.0.0.1:25159/"
 boot_start = true
 dir = "/home/toxic/estate"
 mise = true
-[daemons.skopos-floaty]
-run = "exec /home/toxic/pens/barn/estate-ops/skopos-floaty.sh"
-auto = ["start"]
-retry = true
-ready_http = "http://127.0.0.1:25238/"
-port = 25238
-boot_start = true
-depends = ["agent-display"]
-dir = "/home/toxic/estate"
-mise = true
-[daemons.skopos-floaty.health_http]
-url = "http://127.0.0.1:25238/"
-interval = "30s"
-timeout = "5s"
-retries = 3
-
 [daemons.keypool]
 run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/olympus/products/kryptos/keypool/src/index.ts"
 auto = ["start"]
@@ -1419,15 +1403,6 @@ env = { DISPLAY = ":99", XDG_RUNTIME_DIR = "/run/user/1000", BROWSER_KEEPER_CDP_
 # server binds at a time. boot_start true so the probe loop is always supervised.
 boot_start = true
 auto = ["start"]
-
-# skopos-floaty — supervised combined agent floaty stack.
-# Why: the estate's combined browser/agent control surface (ego + signalhead +
-# browserless + keeper) needs an always-on floaty that a) gives the agent a
-# full monitor/control surface via ego-browser, b) keeps the human-visible
-# signal lamp (signalhead) hidden when idle and floating-red when the agent
-# needs the user, c) never steals the user's mouse (agent drives a parallel
-# CDP page + AX-snapshot-as-text). Depends on agent-display (Xvnc :99) for the
-# overlay and on the estate browser lanes.
 
 [daemons.olympus]
 health_http = { url = "http://127.0.0.1:25144/health", interval = "30s", timeout = "5s", retries = 3 }
