@@ -95,7 +95,7 @@ A swarm of boxes. Run heavy work on yote / dedicated iron; keep hatch light.
 | 25118                 | control-plane (/app/control-plane, next-server)                                                           |
 | 25120                 | estate-chat (bun chat.ts; tailnet + loopback)                                                             |
 | 25121                 | feedlot-mock (health stub)                                                                                |
-| 25127                 | gatehouse (MCP gateway; also the /mesh-mcp funnel backend)                                                |
+| 25127                 | thresher (MCP gateway; also the /mesh-mcp funnel backend)                                                |
 | 25133 / 25134         | qdrant                                                                                                    |
 | 25137                 | bedrock web (`/home/toxic/projects/bedrock/web/server.ts`; tailnet)                                       |
 | 25142                 | cell-files UI (bun --hot)                                                                                 |

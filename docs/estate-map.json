@@ -22,7 +22,7 @@
     {
       "name": "ranch",
       "path": "/home/toxic/estate/ranch",
-      "role": "the inference estate monorepo: herd, hodos, gatehouse, squawk, oracle, and the mesh provider catalog",
+      "role": "the inference estate monorepo: herd, hodos, thresher, squawk, oracle, and the mesh provider catalog",
       "exists": true,
       "isRepo": true,
       "gitKind": "nested",
@@ -756,7 +756,7 @@
       "port": 25127,
       "ssot": "MCPPROXY_GO_PORT",
       "daemons": [
-        "gatehouse"
+        "thresher"
       ],
       "live": false,
       "addr": null,
@@ -767,7 +767,7 @@
       "port": 25127,
       "ssot": "MCPPROXY_GO_PORT",
       "daemons": [
-        "gatehouse"
+        "thresher"
       ],
       "live": false,
       "addr": null,

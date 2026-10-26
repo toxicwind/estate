@@ -40,7 +40,7 @@ EXEC_WS_PORT / WS_EXEC_PORT.
 
 ## 1. Estate — core services (19)
 
-The request path. A chat request goes `null-g-proxy → gatehouse → mesh-hub →
+The request path. A chat request goes `null-g-proxy → thresher → mesh-hub →
 herd → hodos`.
 
 | daemon | port | why it exists |
@@ -50,7 +50,7 @@ herd → hodos`.
 | `hodos` | 25193 | The cloud/paid provider router. Holds the `VANSROUTER_API_KEY` namespace vansrouter used to own. |
 | `cuttinggate` | 25200 | The guard plane in front of herd and hodos: quarantine, circuit breaker, credential rotation, winner ledger. Its project overlay (`ranch/mesh/proxy/cuttinggate/pitchfork.d/cuttinggate.toml`) supplies `CUTTINGGATE_PORT=25200` and the readiness URL, so the top-level daemon object has no `port =` field. Not in `groups.*` because it fronts everything else. |
 | `mesh-hub` | 25115 | MCP registry. Answers "which MCPs exist". |
-| `gatehouse` | 25127 | MCP meta-tool layer — the gatehouse MCP endpoint itself. The SSOT still names this port `MCPPROXY_GO_PORT`. |
+| `thresher` | 25127 | MCP meta-tool layer — the thresher MCP endpoint itself. The SSOT still names this port `MCPPROXY_GO_PORT`. |
 | `null-g-proxy` | 25107 | Edge proxy that returns null for blocked traffic. |
 | `keypool` | 25109 | Key lifecycle for the paid providers. `estate-router` depends on it. |
 | `model-guard` | 25101 | Card-derived model request-contract enforcement. |
@@ -158,7 +158,7 @@ services the estate runs for itself, they are the bidding machinery.
 ## 8. Ranch-owned (not estate) (24)
 
 `ranch/` is its own git repo. These are composed into the parent config but the
-project owns the code: `gatehouse`, `cuttinggate`, `fleet-ui`, `fleet-feed`,
+project owns the code: `thresher`, `cuttinggate`, `fleet-ui`, `fleet-feed`,
 `nats`, `nats-tail`, the six oracle daemons, `estate-stream-broker`,
 `windmill`, `task-launch`, `yote`, `hodos`, `mesh-landing`,
 `squawk-relay-*`, `keypool`. `mbx-cache` is estate-owned under `ops/`, not a

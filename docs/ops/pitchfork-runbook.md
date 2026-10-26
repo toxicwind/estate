@@ -97,7 +97,7 @@ for p in 25100 25121 25127 25148 25155 25193; do curl -s -o /dev/null -w "$p:%{h
 ```
 ## 6. kitty is NOT a daemon (2026-10-19)
 
-`estate/kitty-mcp` was a contract instance giving the gatehouse kitty MCP
+`estate/kitty-mcp` was a contract instance giving the thresher kitty MCP
 server a stable `KITTY_MCP_SOCKET=tcp:127.0.0.1:25211`. Problem: kitty is a
 **user terminal**, not a service — every supervisor cycle respawned it and it
 popped terminal windows on the desktop. Decommissioned 2026-10-19:

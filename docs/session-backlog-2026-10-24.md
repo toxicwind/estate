@@ -100,7 +100,7 @@ green (was: missing `mod roost_providers` in lib.rs — I added it; re-verify).
 ## G. ESTATE MISC
 
 - keypool → canonical olympus path (fix pitchfork.toml + pitchfork.d) — DONE.
-- setup_accessibility (gatehouse computer-use AT-SPI) — DONE.
+- setup_accessibility (thresher computer-use AT-SPI) — DONE.
 
 ## Immediate next action (priority 1)
 

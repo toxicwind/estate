@@ -13,7 +13,7 @@ function writeRpc(res: object) {
 }
 
 // Dual-framing reader: accepts both Content-Length framed (LSP-style) and
-// newline-delimited JSON (gatehouse style) on stdin.
+// newline-delimited JSON (thresher style) on stdin.
 let buf = Buffer.alloc(0);
 function tryExtract(): object | null {
   // 1) newline-delimited JSON: a line starting with '{' ending at '\n'

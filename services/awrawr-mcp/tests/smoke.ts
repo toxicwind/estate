@@ -2,7 +2,7 @@
 /**
  * tests/smoke.ts — stdio transport smoke test for awrawr-mcp.
  *
- * Spawns the server EXACTLY as gatehouse does:
+ * Spawns the server EXACTLY as thresher does:
  *   /usr/bin/bash -l -c '/home/toxic/.bun/bin/bun <abs>/src/index.ts --stdio'
  * Runs: initialize -> notifications/initialized -> tools/list -> tools/call
  * (read-only) -> unknown-tool error, in BOTH framed (Content-Length) and

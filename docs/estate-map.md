@@ -19,7 +19,7 @@ Generated 2026-10-03T07:22:51.621Z on `awrawr-pc`. Estate root `/home/toxic/esta
 | 🟢 **tau-config** | `.tau`                     | —                                       | —          | —                   | 0     | none          |
 
 - **estate** (`/home/toxic/estate`) — control plane: pitchfork.toml, config/, bin/, bridge/, agents/, docs/, projects/
-- **ranch** (`/home/toxic/estate/ranch`) — the inference estate monorepo: herd, hodos, gatehouse, squawk, oracle, and the mesh provider catalog
+- **ranch** (`/home/toxic/estate/ranch`) — the inference estate monorepo: herd, hodos, thresher, squawk, oracle, and the mesh provider catalog
 - **ranch** (`/home/toxic/ranch`) — SECOND checkout of toxicwind/ranch — duplicate, not the daemon target
 - **tau-config** (`.tau`) — coding-agent engine config (config.yml, models.yml, model-router.json, mcp.json)
 
@@ -94,8 +94,8 @@ Generated 2026-10-03T07:22:51.621Z on `awrawr-pc`. Estate root `/home/toxic/esta
 | 25125 | PI_AGENT_PORT              | —                     | ⚪️   | —                               |
 | 25126 | KIMI_CODE_PORT             | kimi-code             | ⚪️   | —                               |
 | 25126 | KIMI_CODE_PORT             | kimi-code             | ⚪️   | —                               |
-| 25127 | MCPPROXY_GO_PORT           | gatehouse             | ⚪️   | —                               |
-| 25127 | MCPPROXY_GO_PORT           | gatehouse             | ⚪️   | —                               |
+| 25127 | MCPPROXY_GO_PORT           | thresher             | ⚪️   | —                               |
+| 25127 | MCPPROXY_GO_PORT           | thresher             | ⚪️   | —                               |
 | 25128 | ANTIGRAVITY_GATEWAY_PORT   | —                     | ⚪️   | —                               |
 | 25129 | ZED_PORT                   | —                     | ⚪️   | —                               |
 | 25130 | BROWSERLESS_PORT           | browserless           | ⚪️   | —                               |

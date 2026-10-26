@@ -4,7 +4,7 @@
 <!-- Regenerate: bun run tools/estate-layout/layout.ts --write -->
 <!-- Drift gate: bun run tools/estate-layout/layout.ts --check -->
 
-Root: `/home/toxic/estate` — 230 top-level entries.
+Root: `/home/toxic/estate` — 236 top-level entries.
 
 This file is the estate's folder-layout SSOT. It is generated from the tree, so it
 cannot drift from reality: the `--check` mode fails when the tree and this document
@@ -23,31 +23,31 @@ directory with thousands of untracked files is scratch, whatever its size.
 - **packages** — 1 entry
 - **operations** — 3 entries
 - **integration** — 1 entry
-- **agents** — 2 entries
+- **agents** — 1 entry
 - **config** — 1 entry
-- **root** — 118 entries
+- **root** — 123 entries
 - **docs** — 1 entry
 - **peers** — 1 entry
 - **scratch** — 1 entry
 - **runtime** — 1 entry
-- **other** — 93 entries
+- **other** — 95 entries
 
 ## services
 
 | entry | kind | git | tracked | untracked | daemon-referenced | note |
 |---|---|---|---|---|---|---|
-| `pitchfork.d` | dir | tracked | 101 | 0 | — | Pitchfork daemon fragments (estate root project). |
-| `services` | dir | tracked | 29 | 0 | `pitchfork.d/model-guard.toml`, `pitchfork.toml` | Second service home — canonical target for stack/services merge. |
-| `stack` | dir | tracked | 31 | 0 | — | Service launchers + per-daemon supervisors. Daemon-referenced. |
+| `pitchfork.d` | dir | tracked | 110 | 0 | — | Pitchfork daemon fragments (estate root project). |
+| `services` | dir | tracked | 30 | 0 | `pitchfork.d/model-guard.toml`, `pitchfork.toml` | Second service home — canonical target for stack/services merge. |
+| `stack` | dir | tracked | 33 | 0 | — | Service launchers + per-daemon supervisors. Daemon-referenced. |
 
 ## tooling/cli
 
 | entry | kind | git | tracked | untracked | daemon-referenced | note |
 |---|---|---|---|---|---|---|
-| `bin` | dir | tracked | 64 | 0 | — | Executable entry points. Daemon-referenced; do not move. |
+| `bin` | dir | tracked | 130 | 0 | — | Executable entry points. Daemon-referenced; do not move. |
 | `mise` | dir | tracked | 30 | 0 | — | Mise task definitions (tooling side). |
 | `scripts` | dir | tracked | 122 | 0 | — | Repo maintenance + CI scripts. |
-| `tools` | dir | tracked | 123 | 0 | `pitchfork.d/bench-radar.toml`, `pitchfork.d/kimiclaw-a.toml`, `pitchfork.d/kimiclaw-b.toml`, `pitchfork.d/ml-serve.toml`, `pitchfork.d/null-g-proxy.toml`, `pitchfork.toml` | CLI tools and MCP servers. Daemon-referenced. |
+| `tools` | dir | tracked | 122 | 0 | `pitchfork.d/bench-radar.toml`, `pitchfork.d/kimiclaw-a.toml`, `pitchfork.d/kimiclaw-b.toml`, `pitchfork.d/ml-serve.toml`, `pitchfork.d/null-g-proxy.toml`, `pitchfork.toml` | CLI tools and MCP servers. Daemon-referenced. |
 
 ## packages
 
@@ -73,14 +73,13 @@ directory with thousands of untracked files is scratch, whatever its size.
 
 | entry | kind | git | tracked | untracked | daemon-referenced | note |
 |---|---|---|---|---|---|---|
-| `agents` | dir | tracked | 73 | 0 | `pitchfork.d/market-loop.toml`, `pitchfork.toml` | Agent homes. Daemon-referenced. |
-| `crews` | dir | tracked | 224 | 0 | — | Crew registry: personas + roster. |
+| `agents` | dir | tracked | 1 | 0 | `pitchfork.d/market-loop.toml`, `pitchfork.toml` | Agent homes. Daemon-referenced. |
 
 ## config
 
 | entry | kind | git | tracked | untracked | daemon-referenced | note |
 |---|---|---|---|---|---|---|
-| `config` | dir | tracked | 1838 | 0 | `pitchfork.d/kimi-auto-shim.toml`, `pitchfork.toml` | CONFIG SSOT (ports.env, hermes, tau, kappa, routers). |
+| `config` | dir | tracked | 1837 | 0 | `pitchfork.d/kimi-auto-shim.toml`, `pitchfork.toml` | CONFIG SSOT (ports.env, hermes, tau, kappa, routers). |
 
 ## root
 
@@ -101,7 +100,6 @@ directory with thousands of untracked files is scratch, whatever its size.
 | `.gitattributes` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `.gitignore` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `.gitignore-estate-forge` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
-| `.gitmodules` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `.merge-state.json` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `.mise.toml` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `.oxfmtrc.json` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
@@ -112,10 +110,9 @@ directory with thousands of untracked files is scratch, whatever its size.
 | `.qdrant-initialized` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `.recursive-verified` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `.three-folder-wire.json` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
-| `AGENT.json` | file | untracked | 0 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
+| `1` | file | untracked | 0 | 1 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `AGENTS.md` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `AUDIT.md` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
-| `BOOTSTRAP.md` | file | untracked | 0 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `BUILD.bazel` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `CHANGELOG.md` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `CODE_OF_CONDUCT.md` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
@@ -132,11 +129,11 @@ directory with thousands of untracked files is scratch, whatever its size.
 | `IDENTITY.md` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `LICENSE` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `MASTER_PLAN.md` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
-| `MEMORY.md` | file | untracked | 0 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `MERGE-DECISIONS-ROOT.md` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `MERGE-DECISIONS.md` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `MODULE.bazel` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `MODULE.bazel.lock` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
+| `PENS.md` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `README-estate-forge.md` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `README.md` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `REORG-EXECUTE.sh` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
@@ -146,8 +143,6 @@ directory with thousands of untracked files is scratch, whatever its size.
 | `TASKS.md` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `THIRD-PARTY-NOTICES.txt` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `TODO.md` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
-| `TOOLS.md` | file | untracked | 0 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
-| `USER.md` | file | untracked | 0 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `about.toml` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `agent` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `appinfo.json` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
@@ -160,10 +155,16 @@ directory with thousands of untracked files is scratch, whatever its size.
 | `checkpoint.json` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `commitlint.config.js` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `delendai.config.json` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
+| `delendai.config.json.bak-1792721679` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `deny.toml` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `doorbell.tailc9ac71.ts.net.crt` | file | untracked | 0 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `doorbell.tailc9ac71.ts.net.key` | file | untracked | 0 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `dump.rdb` | file | untracked | 0 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
+| `fi_thresher_bypass.py` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
+| `fi_thresher_live.py` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
+| `fi_thresher_local.py` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
+| `emergent_work.json` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
+| `env-reference.md` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `fi_gatehouse_bypass.py` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `fi_gatehouse_live.py` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `fi_gatehouse_local.py` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
@@ -181,12 +182,16 @@ directory with thousands of untracked files is scratch, whatever its size.
 | `mise.toml` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `mise.toml.pre-keypool-modular` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `nim-oracle-research.md` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
+| `oracle_market.json` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `package-lock.json` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `package.json` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `package.json.tmp` | file | untracked | 0 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `parent.toml` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `pi-conversion-summary.md` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `pitchfork.toml` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
+| `pitchfork.toml.bak-20261023-223622` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
+| `pitchfork.toml.bak-20261024-123039` | file | untracked | 0 | 1 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
+| `pitchfork.toml.bak-20261024-squawk` | file | untracked | 0 | 1 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `pitchfork.toml.example` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `projects.toml` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `prometheus.yml` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
@@ -194,7 +199,10 @@ directory with thousands of untracked files is scratch, whatever its size.
 | `rust-analyzer.toml` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `rust-toolchain.toml` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `rustfmt.toml` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
+| `session-ses_e90d.md` | file | untracked | 0 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `smithers.db` | file | untracked | 0 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
+| `smithers.db-shm` | file | untracked | 0 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
+| `smithers.db-wal` | file | untracked | 0 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `suffix.` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `tau-session-2026-10-20T10-41-09-220Z_01a158e6-9664-728a-bb6d-e05b45879c9c.html` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
 | `test-estate-stack.ts` | file | tracked | 1 | 0 | — | Top-level file (dotfile/config) — lives beside the tree it configures. |
@@ -209,13 +217,14 @@ directory with thousands of untracked files is scratch, whatever its size.
 
 | entry | kind | git | tracked | untracked | daemon-referenced | note |
 |---|---|---|---|---|---|---|
-| `docs` | dir | tracked | 355 | 0 | — | Documentation, ADRs, plans, audits. |
+| `docs` | dir | tracked | 378 | 0 | — | Documentation, ADRs, plans, audits. |
 
 ## peers
 
 | entry | kind | git | tracked | untracked | daemon-referenced | note |
 |---|---|---|---|---|---|---|
-| `ranch` | dir | repo | 0 | 0 | `mise.toml`, `pitchfork.d/bidder-finch.toml`, `pitchfork.d/bidder-forge.toml`, `pitchfork.d/bidder-raccoon.toml`, `pitchfork.d/bidder-scout.toml`, `pitchfork.d/bidder-vesper.toml`, `pitchfork.d/bidder-warden.toml`, `pitchfork.d/cuttinggate.toml`, `pitchfork.d/delendai-control-api.toml`, `pitchfork.d/delendai-web.toml`, `pitchfork.d/doorbell-mcp.toml`, `pitchfork.d/doorbell-oauth-edge.toml`, `pitchfork.d/estate-chat.toml`, `pitchfork.d/estate-stream-broker.toml`, `pitchfork.d/fleet-feed.toml`, `pitchfork.d/fleet-ui.toml`, `pitchfork.d/forge-agent.toml`, `pitchfork.d/forge.toml`, `pitchfork.d/gatehouse.toml`, `pitchfork.d/gibber-mcp.toml`, `pitchfork.d/hodos.toml`, `pitchfork.d/kite-daemon.toml`, `pitchfork.d/market-watchdog.toml`, `pitchfork.d/mesh-landing.toml`, `pitchfork.d/nats-tail.toml`, `pitchfork.d/nats.toml`, `pitchfork.d/oracle-chat.toml`, `pitchfork.d/oracle-core.toml`, `pitchfork.d/oracle-market.toml`, `pitchfork.d/phone-sentinel.toml`, `pitchfork.d/ralph-dashboard.toml`, `pitchfork.d/range-ui.toml`, `pitchfork.d/rustdesk-hbbr.toml`, `pitchfork.d/rustdesk-hbbs.toml`, `pitchfork.d/search-api.toml`, `pitchfork.d/squawk-history.toml`, `pitchfork.d/task-launch.toml`, `pitchfork.d/tau-chute.toml`, `pitchfork.d/windmill.toml`, `pitchfork.toml` | Peer component repos (gitkb). Not part of this repo's index. |
+| `ranch` | dir | repo | 0 | 0 | `mise.toml`, `pitchfork.d/bidder-finch.toml`, `pitchfork.d/bidder-forge.toml`, `pitchfork.d/bidder-raccoon.toml`, `pitchfork.d/bidder-scout.toml`, `pitchfork.d/bidder-vesper.toml`, `pitchfork.d/bidder-warden.toml`, `pitchfork.d/cuttinggate.toml`, `pitchfork.d/delendai-control-api.toml`, `pitchfork.d/delendai-web.toml`, `pitchfork.d/doorbell-mcp.toml`, `pitchfork.d/doorbell-oauth-edge.toml`, `pitchfork.d/estate-chat.toml`, `pitchfork.d/estate-stream-broker.toml`, `pitchfork.d/fleet-feed.toml`, `pitchfork.d/fleet-ui.toml`, `pitchfork.d/forge-agent.toml`, `pitchfork.d/forge.toml`, `pitchfork.d/thresher.toml`, `pitchfork.d/gibber-mcp.toml`, `pitchfork.d/hodos.toml`, `pitchfork.d/kite-daemon.toml`, `pitchfork.d/market-watchdog.toml`, `pitchfork.d/mesh-landing.toml`, `pitchfork.d/nats-tail.toml`, `pitchfork.d/nats.toml`, `pitchfork.d/oracle-chat.toml`, `pitchfork.d/oracle-core.toml`, `pitchfork.d/oracle-market.toml`, `pitchfork.d/phone-sentinel.toml`, `pitchfork.d/ralph-dashboard.toml`, `pitchfork.d/range-ui.toml`, `pitchfork.d/rustdesk-hbbr.toml`, `pitchfork.d/rustdesk-hbbs.toml`, `pitchfork.d/search-api.toml`, `pitchfork.d/squawk-history.toml`, `pitchfork.d/task-launch.toml`, `pitchfork.d/tau-chute.toml`, `pitchfork.d/windmill.toml`, `pitchfork.toml` | Peer component repos (gitkb). Not part of this repo's index. |
+| `ranch` | symlink | repo | 1 | 0 | `mise.toml`, `pitchfork.d/archguard-api.toml`, `pitchfork.d/archguard-falkordb.toml`, `pitchfork.d/bidder-finch.toml`, `pitchfork.d/bidder-forge.toml`, `pitchfork.d/bidder-raccoon.toml`, `pitchfork.d/bidder-scout.toml`, `pitchfork.d/bidder-vesper.toml`, `pitchfork.d/bidder-warden.toml`, `pitchfork.d/cuttinggate.toml`, `pitchfork.d/delendai-control-api.toml`, `pitchfork.d/delendai-web.toml`, `pitchfork.d/doorbell-mcp.toml`, `pitchfork.d/doorbell-oauth-edge.toml`, `pitchfork.d/estate-stream-broker.toml`, `pitchfork.d/fleet-feed.toml`, `pitchfork.d/fleet-ui.toml`, `pitchfork.d/forever-loop.toml`, `pitchfork.d/forge-agent.toml`, `pitchfork.d/forge.toml`, `pitchfork.d/gibber-mcp.toml`, `pitchfork.d/kite-daemon.toml`, `pitchfork.d/market-watchdog.toml`, `pitchfork.d/mesh-landing.toml`, `pitchfork.d/nats-tail.toml`, `pitchfork.d/nats.toml`, `pitchfork.d/oracle-chat.toml`, `pitchfork.d/oracle-core.toml`, `pitchfork.d/oracle-market.toml`, `pitchfork.d/phone-sentinel.toml`, `pitchfork.d/ralph-dashboard.toml`, `pitchfork.d/range-ui.toml`, `pitchfork.d/rustdesk-hbbr.toml`, `pitchfork.d/rustdesk-hbbs.toml`, `pitchfork.d/search-api.toml`, `pitchfork.d/squawk-history.toml`, `pitchfork.d/task-launch.toml`, `pitchfork.d/windmill.toml` | symlink ->  |
 
 ## scratch
 
@@ -274,7 +283,7 @@ directory with thousands of untracked files is scratch, whatever its size.
 | `completion-audit` | dir | tracked | 4 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
 | `data` | dir | untracked | 0 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
 | `devices` | dir | tracked | 487 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
-| `engines` | dir | tracked | 35 | 0 | `pitchfork.d/toolcall-llm.toml`, `pitchfork.toml` | Unclassified top-level entry — give it a home or a bucket. |
+| `engines` | dir | tracked | 32 | 0 | `pitchfork.d/toolcall-llm.toml`, `pitchfork.toml` | Unclassified top-level entry — give it a home or a bucket. |
 | `estate-scripts` | dir | tracked | 3 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
 | `estate-skills` | dir | tracked | 3 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
 | `findings` | dir | tracked | 13 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
@@ -289,16 +298,15 @@ directory with thousands of untracked files is scratch, whatever its size.
 | `hf-downloader` | dir | untracked | 0 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
 | `hooks` | dir | tracked | 2 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
 | `hotreload` | dir | tracked | 6 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
-| `keypool` | dir | tracked | 24 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
 | `killer-features` | dir | tracked | 169 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
 | `lib` | dir | tracked | 1 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
 | `log` | dir | untracked | 0 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
 | `logs` | dir | untracked | 0 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
 | `manor` | dir | tracked | 319 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
-| `memory` | dir | untracked | 0 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
 | `migration` | dir | tracked | 2 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
 | `nix` | dir | tracked | 5 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
 | `node_modules` | dir | untracked | 0 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
+| `olympus` | symlink | repo | 1 | 0 | — | symlink ->  |
 | `output` | dir | untracked | 0 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
 | `patches` | dir | tracked | 10 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
 | `pi-conversion` | dir | tracked | 3 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
@@ -306,23 +314,26 @@ directory with thousands of untracked files is scratch, whatever its size.
 | `profiles` | dir | tracked | 4 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
 | `python` | dir | tracked | 149 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
 | `qdrant_data` | dir | tracked | 2 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
+| `reasoning-audit` | dir | tracked | 1 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
 | `research` | dir | tracked | 7 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
+| `rigs` | dir | tracked | 5 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
 | `runs` | dir | untracked | 0 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
 | `rust_algo_web` | dir | tracked | 23 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
 | `salvage` | dir | tracked | 327 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
-| `sessions` | dir | untracked | 0 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
 | `sigma` | dir | repo | 0 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
 | `six-task-loop` | dir | tracked | 10 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
-| `skills` | dir | untracked | 0 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
-| `src` | dir | tracked | 115 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
+| `skills` | dir | tracked | 4 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
+| `src` | dir | tracked | 116 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
 | `standalone` | dir | tracked | 6 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
-| `submodules` | dir | tracked | 1 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
-| `tailscale` | dir | tracked | 3 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
+| `stress-lab` | dir | tracked | 48 | 0 | `pitchfork.d/tailscale-keepalive.toml`, `pitchfork.toml` | Unclassified top-level entry — give it a home or a bucket. |
+| `submodules` | dir | untracked | 0 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
+| `tailscale` | dir | tracked | 4 | 0 | `pitchfork.toml` | Unclassified top-level entry — give it a home or a bucket. |
 | `test` | dir | tracked | 3 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
 | `tests` | dir | tracked | 13 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
 | `tmp` | dir | untracked | 0 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
 | `trail-runner` | dir | tracked | 1 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
 | `ts` | dir | tracked | 1 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
 | `types` | dir | tracked | 1 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
-| `work` | dir | tracked | 2 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
+| `vendored` | dir | untracked | 0 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
+| `work` | dir | untracked | 0 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
 | `xfer-report-20260915` | dir | tracked | 1 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |

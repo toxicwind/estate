@@ -30,7 +30,7 @@ is a defect.
    separate repo by simply not indexing it").
 
 2. **ranch** (`toxicwind/ranch`) is the _workshop monorepo_: one directory per
-   component (herd, hodos, gatehouse, cuttinggate, tau, forge, squawk, keryx,
+   component (herd, hodos, thresher, cuttinggate, tau, forge, squawk, keryx,
    roost, …). Every component is its own repo with its own origin
    (`toxicwind/<component>`), coordinated by the `gitkb/meta` manifest
    (`.meta.yaml`, generated from `.gitmodules`): **"repos are PEERS, not

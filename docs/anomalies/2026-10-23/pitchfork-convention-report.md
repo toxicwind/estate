@@ -80,7 +80,7 @@ The D2 infrastructure (`parent.toml`, `projects.toml`) exists but is **stale and
 ### Dead/stale fragments in estate/pitchfork.d
 | File | Status |
 |------|--------|
-| `gatehouse.toml` | **DORMANT** — `gatehouse` daemon renamed to `thresher` in monolith (line 438-452), but gatehouse.toml fragment still references old `/home/toxic/pens/barn/thresher` dir and `gatehouse-serve.ts`. Not in monolith. |
+| `thresher.toml` | **DORMANT** — `thresher` daemon renamed to `thresher` in monolith (line 438-452), but thresher.toml fragment still references old `/home/toxic/pens/barn/thresher` dir and `thresher-serve.ts`. Not in monolith. |
 | `thresher.toml.off` | In `pens/ranch/thresher/pitchfork.d` and `pens/barn/thresher/pitchfork.d` — correctly marked as disabled. Source of truth moved to monolith. |
 | `omniroute.toml.off` | **DEAD** — product retired, never in live monolith. |
 | `omniroute.toml` | In `.hashes` as `"omniroute": "f64157c95be4939f"` but no fragment or daemon block. |
@@ -93,7 +93,7 @@ The D2 infrastructure (`parent.toml`, `projects.toml`) exists but is **stale and
 | Project Key | Manifest Path | Exists? | Files |
 |-------------|---------------|---------|-------|
 | estate | `pitchfork.d` | YES | 103 active + 5 dead/stale |
-| ranch/barn/thresher | `ranch/barn/thresher/pitchfork.d` | **MISSING** | gatehouse→thresher rename killed this |
+| ranch/barn/thresher | `ranch/barn/thresher/pitchfork.d` | **MISSING** | thresher→thresher rename killed this |
 | ranch/flicker | `ranch/flicker/pitchfork.d` | YES | flicker.toml (1 file) |
 | ranch/squawk | `ranch/squawk/pitchfork.d` | YES | 0 files (.off only) |
 | ranch/squawk/oracle | `ranch/squawk/oracle/pitchfork.d` | YES | 0 files (not shown) |
@@ -152,14 +152,14 @@ These directories exist in `pens/ranch/*` and `pens/barn/*` but are NOT referenc
 ## 4. Dead/Dormant Fragment Analysis
 
 ### Definitely dead (product moved/renamed/retired)
-1. **gatehouse** → renamed to **thresher** in monolith (line 438). Fragment at `estate/pitchfork.d/gatehouse.toml` references old `/home/toxic/pens/barn/thresher` dir and `gatehouse-serve.ts` — path does not exist. The monolith has `thresher` with `dir = "/home/toxic/pens/barn/thresher"` (line 443).
+1. **thresher** → renamed to **thresher** in monolith (line 438). Fragment at `estate/pitchfork.d/thresher.toml` references old `/home/toxic/pens/barn/thresher` dir and `thresher-serve.ts` — path does not exist. The monolith has `thresher` with `dir = "/home/toxic/pens/barn/thresher"` (line 443).
 2. **search-ui** — referenced in `groups.mesh` (parent.toml and monolith) but has NO `[daemons.search-ui]` block. Fragment missing. `thresher.toml.off` was renamed but search-ui has no fragment anywhere.
 3. **openfang-front** — same pattern as search-ui. In groups.mesh, no daemon block. Fragment `openfang-front.toml.bak-20261013` exists as backup only.
 4. **omniroute** — `.off` fragment, not in monolith, only in `.hashes`.
 5. **bidder-forge, bidder-scout** — listed as STALE in `pitchfork-split` source (line 22), referenced in groups but no blocks in monolith.
 
 ### Stale duplicates
-- `gatehouse.toml` in estate/pitchfork.d — duplicates dead gatehouse daemon that was renamed to thresher
+- `thresher.toml` in estate/pitchfork.d — duplicates dead thresher daemon that was renamed to thresher
 - `.hashes` references 93 daemon names, only 188 are blocks in monolith, and many names in .hashes don't correspond to any block
 
 ### Orphaned project paths
@@ -174,11 +174,11 @@ These directories exist in `pens/ranch/*` and `pens/barn/*` but are NOT referenc
 > **⚠️ NEEDS ARCHITECT SIGN-OFF BEFORE ANY CHANGE**
 
 ### A. Remove dead .hashes
-The `.hashes` file in `estate/pitchfork.d/` tracks ~93 daemon names, ~30 of which are dead (gatehouse, search-ui, openfang-front, omniroute, etc.) or never existed. This is a source of confusion. **Delete** `estate/pitchfork.d/.hashes`.
+The `.hashes` file in `estate/pitchfork.d/` tracks ~93 daemon names, ~30 of which are dead (thresher, search-ui, openfang-front, omniroute, etc.) or never existed. This is a source of confusion. **Delete** `estate/pitchfork.d/.hashes`.
 
 ### B. Remove dead fragment files
 These fragments have no corresponding daemon in the monolith and are never used:
-- `estate/pitchfork.d/gatehouse.toml` — gatehouse renamed to thresher
+- `estate/pitchfork.d/thresher.toml` — thresher renamed to thresher
 - `estate/pitchfork.d/omniroute.toml.off` — dead product
 - `estate/pitchfork.d/openfang-front.toml.bak-20261013` — archived backup
 - `estate/pitchfork.d/hodos.toml.bak-20261018-flockdown` — archived backup
@@ -187,12 +187,12 @@ These fragments have no corresponding daemon in the monolith and are never used:
 **Action:** Delete all of the above.
 
 ### C. Fix groups.mesh in parent.toml
-`groups.mesh` references `gatehouse` (renamed to `thresher`) and two non-existent daemons (`search-ui`, `openfang-front`). Update to:
+`groups.mesh` references `thresher` (renamed to `thresher`) and two non-existent daemons (`search-ui`, `openfang-front`). Update to:
 ```toml
 [groups.mesh]
 daemons = ["thresher", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "rust-web", "hf-downloader", "null-g-proxy", "feedlot", "hindsight", "kimi-code", "nginx"]
 ```
-**Note:** The monolith's groups.mesh already has `thresher` (not `gatehouse`), but `parent.toml` still has `gatehouse`. This is an inconsistency that would cause `pf build` to break if ever used.
+**Note:** The monolith's groups.mesh already has `thresher` (not `thresher`), but `parent.toml` still has `thresher`. This is an inconsistency that would cause `pf build` to break if ever used.
 
 ### D. Clean up projects.toml
 Remove entries for projects whose manifest directories don't exist or whose paths are wrong:
@@ -254,7 +254,7 @@ Remove entries for projects whose manifest directories don't exist or whose path
 2. **The monolith was hand-edited**, never composed. It contains custom readiness commands, env blocks, and explanatory comments that automated generators would destroy.
 3. **`pitchfork.d/` is a dead convention** — 103 fragment files exist but were never fed through any composer. They appear to be an abandoned intermediate step between the monolith and D2 layout.
 4. **projects.toml is broken** — 17 of 31 project paths don't exist on disk. The D2 registry is stale and unusable.
-5. **Thresher→thresher rename created stale references** — `gatehouse.toml` fragment still references old paths; `groups.mesh` in parent.toml still lists `gatehouse` (monolith uses `thresher`).
+5. **Thresher→thresher rename created stale references** — `thresher.toml` fragment still references old paths; `groups.mesh` in parent.toml still lists `thresher` (monolith uses `thresher`).
 6. **Two competing composer tools exist** (`pf` and `pitchfork-compose`) with different designs but neither is active. This is dead weight.
 7. **Standalone peers** (phone-sentinel, fleetd) maintain their own independent `pitchfork.toml` files — these are correct and unrelated to the estate monolith.
 
@@ -285,12 +285,12 @@ grep -c '\[\[project\]\]' /home/toxic/estate/projects.toml  # → 31
 head -5 /home/toxic/estate/pitchfork.toml  # → starts with [daemons.agent-display]
 # (no "# GENERATED by" header, no schema URL)
 
-# gatehouse→thresher rename
-grep -c 'daemons\.gatehouse' /home/toxic/estate/pitchfork.toml  # → 0 (not in monolith)
+# thresher→thresher rename
+grep -c 'daemons\.thresher' /home/toxic/estate/pitchfork.toml  # → 0 (not in monolith)
 grep -c 'daemons\.thresher' /home/toxic/estate/pitchfork.toml   # → 1
 
 # Parent.toml groups.mesh stale
-grep -A1 groups.mesh /home/toxic/estate/parent.toml | grep gatehouse  # still lists gatehouse!
+grep -A1 groups.mesh /home/toxic/estate/parent.toml | grep thresher  # still lists thresher!
 
 # Dead fragment files
 find /home/toxic/estate/pitchfork.d -name '*.off' -o -name '*.bak*' -o -name '*.stale*'  # 5 files

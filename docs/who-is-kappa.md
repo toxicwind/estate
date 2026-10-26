@@ -24,7 +24,7 @@ I ignore — it's me, Kappa, running Kappa, tripping over Kappa's own doctrine.
    classic Unix: `grep` / `find` / `cat` / `head` / `tail` / `sed` / `awk` /
    `2>&1` / `cd` / `$()` / pipelines. The estate doctrine explicitly replaces
    these with **ffs** (search/read), **ast-grep→bm25→paper** (unknown-things),
-   gatehouse-MCP, and time-bound 2s/4s races. When I act fast, I fall back to the
+   thresher-MCP, and time-bound 2s/4s races. When I act fast, I fall back to the
    reflex, not the doctrine.
 
 2. **I conflate "ffs" with plain search.** FFS is a persistent on-disk index
@@ -48,7 +48,7 @@ I ignore — it's me, Kappa, running Kappa, tripping over Kappa's own doctrine.
    the universal escape hatch for behavior — is _why_ a `bash -c` with
    `2>&1/grep/head` feels so available and so cheap to reach for: my
    tool-access pattern is wired to the shell-first reflex it codifies. The
-   doctrine's counter-contract (ffs-first, gatehouse) is the discipline on top
+   doctrine's counter-contract (ffs-first, thresher) is the discipline on top
    of that reflex. Recognizing the ADR makes the WHY structural, not just
    personal-sloppiness.
 

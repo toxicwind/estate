@@ -31,7 +31,7 @@ export GHAS_FRONTEND_PORT="25114"
 export MESH_HUB_PORT="25115"
 export HINDSIGHT_API_PORT="25117"
 export HINDSIGHT_CP_PORT="25118"
-# MCP_GATEWAY_PORT is a compatibility alias for gatehouse :25127, the same
+# MCP_GATEWAY_PORT is a compatibility alias for thresher :25127, the same
 # daemon MCPPROXY_GO_PORT names. :25120 belongs to ESTATE_CHAT_PORT; it was
 # never this gateway. See config/ports.env.
 export MCP_GATEWAY_PORT="25127"

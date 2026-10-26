@@ -30,7 +30,7 @@ Three designs, five phases, all against the sandbox 82-daemon file.
 **Tie** — cell variance (~2–6× run-to-run) exceeds the design gap. Parse time is
 **not** a differentiator. Byte counts matter more: only A preserves comments
 byte-for-byte (the live config's comments are incident documentation — the
-beellama-fast 12h stale-definition incident, gatehouse self-heal notes,
+beellama-fast 12h stale-definition incident, thresher self-heal notes,
 `retry = 5 # was infinite; flappy daemon churned 125+ retries`).
 
 **Phase 2 (conflicts, real git branches):** monolith same-section edits CONFLICT

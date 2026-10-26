@@ -1,17 +1,17 @@
 import { describe, expect, it } from "bun:test";
-import gatehouseExtension from "./index";
+import thresherExtension from "./index";
 
-describe("gatehouse extension", () => {
+describe("thresher extension", () => {
   it("registers federation discovery and execution tools", () => {
     const tools: Record<string, any> = {};
     const mockPi: any = {
       registerTool: (t: any) => { tools[t.name] = t; },
     };
-    gatehouseExtension(mockPi);
+    thresherExtension(mockPi);
 
-    expect(tools.gatehouse_discover).toBeDefined();
-    expect(tools.gatehouse_retrieve_tools).toBeDefined();
-    expect(tools.gatehouse_call_tool).toBeDefined();
-    expect(tools.gatehouse_activity).toBeDefined();
+    expect(tools.thresher_discover).toBeDefined();
+    expect(tools.thresher_retrieve_tools).toBeDefined();
+    expect(tools.thresher_call_tool).toBeDefined();
+    expect(tools.thresher_activity).toBeDefined();
   });
 });

@@ -45,12 +45,6 @@ expected_port = [25198]
 boot_start = true
 dir = "/home/toxic"
 mise = true
-[daemons.awrawr-mcp.health_port]
-port = 25198
-interval = "30s"
-retries = 3
-timeout = "5s"
-
 [daemons.awrawr-mcp.env]
 AWR_MCP_PORT = "25198"
 MCP_FUNNEL_HOST = "github-mcp-host.tailc9ac71.ts.net"
@@ -195,12 +189,6 @@ expected_port = [25195]
 boot_start = true
 dir = "/home/toxic"
 mise = true
-[daemons.codebase-memory.health_port]
-port = 25195
-interval = "30s"
-retries = 3
-timeout = "5s"
-
 [daemons.coyote]
 run = "exec ./stack/services/_consolidated_herd_20260924/coyote.sh"
 auto = ["start"]
@@ -1124,12 +1112,6 @@ expected_port = [25196]
 boot_start = true
 dir = "/home/toxic"
 mise = true
-[daemons.rig.health_port]
-port = 25196
-interval = "30s"
-retries = 3
-timeout = "5s"
-
 [daemons.rig.env]
 RIG_CONFIG = "/home/toxic/.rig/config.toml"
 
@@ -1422,36 +1404,6 @@ retry = true
 boot_start = true
 auto = ["start"]
 ready_cmd = "redis-cli -h 127.0.0.1 -p 6379 ping | grep -q PONG"
-
-[daemons.flicker]
-port = 25148
-run = "exec /home/toxic/estate/var/reconciliation/flicker/bin/flicker-server"
-dir = "/home/toxic/estate/var/reconciliation/flicker"
-mise = false
-retry = true
-boot_start = true
-ready_http = "http://127.0.0.1:25148/api/health"
-health_http = { url = "http://127.0.0.1:25148/api/health", interval = "30s", timeout = "5s", retries = 3 }
-# SECRET-SCRUBBED 2026-10-22: WOODPECKER_GRPC_SECRET -> keyring FLICKER_GRPC_SECRET;
-# WOODPECKER_AGENT_SECRET -> keyring FLICKER_AGENT_SECRET (retired daemon; not committed).
-env = { FLICKER_ROOT = "/home/toxic/flicker", WOODPECKER_HOST = "http://127.0.0.1:25148", WOODPECKER_GRPC_ADDR = ":25240", WOODPECKER_SERVER_ADDR = ":25148" }
-
-[daemons.flicker-agent]
-run = "exec /home/toxic/estate/var/reconciliation/flicker/bin/flicker-agent"
-dir = "/home/toxic/estate/var/reconciliation/flicker"
-mise = false
-retry = true
-boot_start = true
-# SECRET-SCRUBBED 2026-10-22: WOODPECKER_AGENT_SECRET moved to secretsmith keyring
-# label FLICKER_AGENT_SECRET (retired daemon; value no longer committed).
-env = { WOODPECKER_SERVER = "127.0.0.1:25240" }
-auto = ["start"]
-
-# SUPERSEDED 2026-09-30 (peregrine): brand-watchdog retired with brand.
-# Flicker has its own health_http checks; no external watchdog needed.
-
-# ranch/flicker — project-owned daemon manifest. Source of truth for 'flicker'.
-# Owned by the ranch/flicker project; the parent only composes it.
 
 [daemons.skopos-failover]
 mise = true

@@ -222,7 +222,7 @@ as tabs (several are already in the registry, some are not yet):
 `engines/herd/beellama.cpp/tools/ui` (llama-ui, SvelteKit), `python/robomp/web`
 (robomp ops console, served by its FastAPI app), `rust_algo_web/frontend`
 (effusionlabs-os, → `rust-web` :25201), `wt-hft-hygiene-build/upstream/frontend`
-(mcpproxy-frontend, Vue, gatehouse's control panel), `estate-github-search/apps/frontend`
+(mcpproxy-frontend, Vue, thresher's control panel), `estate-github-search/apps/frontend`
 (Next.js), `ranch/android-fleet/nuvio/nuvio-platform/submodules/subtitle-translator/app/frontend` (srt-translator), plus the
 static `scratch/squawk-ui/ui.html` and
 `hatch/agents/ember/var/openfang-health/openfang-health.html`.

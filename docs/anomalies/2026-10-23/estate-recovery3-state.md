@@ -22,8 +22,8 @@
 | `pitchfork.d/forge.toml` | Already had port 25150 | ✅ |
 | `pitchfork.d/oracle-core.toml` | Port reverted 25151→25149 (collision with paper-poller), then updated in Phase 2 to 25235 | ✅ run-oracle-core.sh exists |
 | `pitchfork.toml` oracle-core | Port updated 25151→25235 + env ORACLE_CORE_LISTEN | ✅ |
-| `pitchfork.d/gatehouse.toml` | run: `/home/toxic/estate/ranch/range/bin/` → `/home/toxic/estate/var/workspaces/layout/ranch/range/bin/` | ✅ exists; gatehouse NOT started (live PID on :25128) |
-| `pitchfork.d/herd.toml` | Already correct: depends=[thresher] (not gatehouse) | ✅ |
+| `pitchfork.d/thresher.toml` | run: `/home/toxic/estate/ranch/range/bin/` → `/home/toxic/estate/var/workspaces/layout/ranch/range/bin/` | ✅ exists; thresher NOT started (live PID on :25128) |
+| `pitchfork.d/herd.toml` | Already correct: depends=[thresher] (not thresher) | ✅ |
 | `pitchfork.toml` phone-sentinel | run: `bun run` → `exec /home/toxic/.bun/bin/bun run` (pin correct bun) | ✅ |
 | `pitchfork.toml` browser-keeper | Port 25157→25233 (25157 taken by nativelink), health/ready/env updated | ✅ |
 | `pitchfork.d/browser-keeper.toml` | Port updated 25157→25233 | ✅ |

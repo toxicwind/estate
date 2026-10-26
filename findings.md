@@ -14,21 +14,21 @@ Repairs landed this session are marked [FIXED]; open items marked [OPEN].
 
 ## 2. Thresher / MCP mesh
 
-- gatehouse = the **mcpproxy-go gateway binary** (rebrand), listening on
-  :25127, running under pitchfork `estate/gatehouse`. [FIXED: understood]
+- thresher = the **mcpproxy-go gateway binary** (rebrand), listening on
+  :25127, running under pitchfork `estate/thresher`. [FIXED: understood]
 - Bizarre-by-naming, not by behavior [OPEN — rename debt]:
-  - binary lives in `ranch/range/bin/` as THREE files: `gatehouse`,
-    `gatehouse.bak-20261011T104142Z`, `gatehouse-v0.51.0` (version soup;
+  - binary lives in `ranch/range/bin/` as THREE files: `thresher`,
+    `thresher.bak-20261011T104142Z`, `thresher-v0.51.0` (version soup;
     unclear which the serve script would pick if re-run — it execs the
     unversioned one)
   - port SSOT calls it `MCPPROXY_GO_PORT=25127` (old brand), config+data live
-    in `ranch/barn/thresher/`, a data dir sits in `ranch/gatehouse-staging/`
+    in `ranch/barn/thresher/`, a data dir sits in `ranch/barn/thresher-staging/`
     (config.db + index.bleve + logs)
-  - `ranch/mcpproxy-go` repo is the source; `daemons.gatehouse` bootstrap
+  - `ranch/mcpproxy-go` repo is the source; `daemons.thresher` bootstrap
     logic (mcp_config.json from .dist, secrets injected from ~/.secrets) is
     load-bearing: direct-run crash-loops without it
 - **This agent harness has no MCP servers attached** — the estate's mesh
-  (awrawr-mcp :25198, gatehouse :25127, mcpproxy :25109, keypool) is not
+  (awrawr-mcp :25198, thresher :25127, mcpproxy :25109, keypool) is not
   wired into agent sessions; all MCP work goes through bash probes. [OPEN]
 - MCP server census in ranch: mcpproxy-go, rsync-mcp, mcp-prompt-injection-
   detector, wezterm-agent-mcp, kitty-mcp-server, fleet-bus-mcp, hatch-mcp,
@@ -41,7 +41,7 @@ Repairs landed this session are marked [FIXED]; open items marked [OPEN].
 - `GHAS_API_PORT=25112` and `GHAS_MCP_PORT=25113` — both DEAD (connection
   refused, 000). AGENTS.md already flags :25113; the SSOT still carries them.
   [OPEN — scrub or mark dead]
-- Sampled rest (herd 25100 dual-alias, awrawr-mcp 25198, gatehouse 25127):
+- Sampled rest (herd 25100 dual-alias, awrawr-mcp 25198, thresher 25127):
   consistent with live listeners.
 
 ## 4. Tau (engine) — the deep findings
@@ -126,7 +126,7 @@ Repairs landed this session are marked [FIXED]; open items marked [OPEN].
   authoritative /home/toxic/AGENTS.md.
 - **Mesh truth**: `ranch/mesh/README.md` is the live-verified routing doc
   (cuttinggate :25200 canonical, estate-router :25104 LIVE, herd :25100,
-  hodos :25193 retired, keypool :25109, gatehouse :25127 fronts MCP).
+  hodos :25193 retired, keypool :25109, thresher :25127 fronts MCP).
   Estate-level docs contradict it: CONTROL_PLANE.md + MASTER_PLAN.md still
   cite "estate-router :25104 stopped"/"mcpproxy :25109 as MCP federation
   gateway" (wrong service), MASTER_PLAN.md:8 "herd DOWN" vs mesh README's
@@ -147,7 +147,7 @@ Repairs landed this session are marked [FIXED]; open items marked [OPEN].
 
 ## 10. Kilo MCP wiring [FIXED]
 
-- `~/.config/kilo/kilo.json` created: `mcp.gatehouse` → remote streamable-HTTP
+- `~/.config/kilo/kilo.json` created: `mcp.thresher` → remote streamable-HTTP
   at http://127.0.0.1:25127/mcp (server confirmed: mcpproxy-go v0.1.0,
   initialize round-trip 200 with Mcp-Session-Id), Authorization via
   ${MCPPROXY_API_KEY} env interpolation — no secret literal in config.
@@ -159,7 +159,7 @@ Repairs landed this session are marked [FIXED]; open items marked [OPEN].
 - **GitHub stays primary** — Copilot subscription + provenance/contribution
   history are assets; account is too good to lose.
 - **Forgejo self-hosted joins as secondary mirror/redundancy** (free tier,
-  one Go binary + sqlite, pitchfork daemon beside gatehouse/forge build
+  one Go binary + sqlite, pitchfork daemon beside thresher/forge build
   daemon). Private repos mirrored to Forgejo; public repos dual-push
   (`git remote set-url --add --push` fan-out).
 - Cleanup ladder still applies first: tarball-monster slimming

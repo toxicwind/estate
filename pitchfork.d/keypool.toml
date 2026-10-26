@@ -2,8 +2,9 @@
 health_http = { url = "http://127.0.0.1:25109/health", interval = "30s", timeout = "5s", retries = 3 }
 mise = true
 port = 25109
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/var/workspaces/layout/ranch/mesh/keypool/src/index.ts"
-# Python fallback (pre-cutover 2026-10-02): exec python3 /home/toxic/estate/bin/herd-keypool.py
+# Canonical source: kryptos/keypool (olympus product). Replaces the stale
+# var/workspaces/layout/ranch/mesh/keypool path that moved in the pens reorg.
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/olympus/products/kryptos/keypool/src/index.ts"
 env = { KEYPOOL_PORT = "25109" }
 dir = "/home/toxic/estate"
 retry = true

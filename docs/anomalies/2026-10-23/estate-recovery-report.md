@@ -21,7 +21,7 @@
 | **delendai-control-plane** | Stopped | Intentionally stopped — control plane not needed |
 | **delendai-web** | Stopped | Intentionally stopped — web UI not needed |
 | **files** | Stopped | Intentionally stopped; health endpoint (:34567) would work if started |
-| **gatehouse** | Stopped — do NOT start | Stale rename leftover; PID may be on :25128 from prior run; DO NOT START |
+| **thresher** | Stopped — do NOT start | Stale rename leftover; PID may be on :25128 from prior run; DO NOT START |
 | **hodos** | Stopped | Runs outside pitchfork — managed separately |
 | **kafka** | Stopped | Intentionally stopped |
 | **kitty-mcp** | Stopped + disabled | Disabled in config — kitty-mcp per architect decision |
@@ -125,5 +125,5 @@
 | **herd** | ❌ BLOCKED | Go binary segfaults on exec (ABI incompatibility) |
 | **browser-keeper** | ❌ BLOCKED | Crash loop — no HTTP on :25233, processes restart every ~2 min |
 | **ml-serve** | ❌ BLOCKED | Exit code 1 — needs investigation |
-| **gatehouse** | ⚠️ STOPPED | Do not start — stale rename leftover, live PID on :25128 |
+| **thresher** | ⚠️ STOPPED | Do not start — stale rename leftover, live PID on :25128 |
 | **files** | ⚠️ STOPPED | Intentionally stopped; :34567 would respond 200 if started |

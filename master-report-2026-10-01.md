@@ -69,7 +69,7 @@ Applied the audit's merge-tier absorptions to the top-11 KEEP skills:
 - `fleet-spawn` ← `fleet-push`: subscription registry, dispatch plan, chat-scope rule.
 - `hashline` ← `surgical-edit`: checks-before-writes doctrine.
 
-Sources archived to `~/workspace/skills/archive/`. The other 8 (gatehouse-mcp, context7, race, github-mcp, ast-bm25-racer, deep-research, smithers, github) had zero flagged defects; no overlay applied. Cell mirror updated; yote source tree (`/home/toxic/estate/skills/`) still pre-merge — sync pending.
+Sources archived to `~/workspace/skills/archive/`. The other 8 (thresher-mcp, context7, race, github-mcp, ast-bm25-racer, deep-research, smithers, github) had zero flagged defects; no overlay applied. Cell mirror updated; yote source tree (`/home/toxic/estate/skills/`) still pre-merge — sync pending.
 
 Run-receipt: `~/workspace/skill-improvement-overlay-2026-10-01.md`.
 

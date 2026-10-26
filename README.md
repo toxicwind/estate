@@ -71,7 +71,7 @@ curl -s http://127.0.0.1:25100/v1/models | head -c 300   # what's awake on herd
 curl -s http://127.0.0.1:25193/health                     # hodos cloud router (auth-gated)
 curl -s http://127.0.0.1:25135/health                     # squawk fleet feed
 curl -s http://127.0.0.1:25151/health                     # oracle decision market
-curl -s http://127.0.0.1:25127/                           # gatehouse MCP gateway (302)
+curl -s http://127.0.0.1:25127/                           # thresher MCP gateway (302)
 ```
 
 **Go deeper:** [`docs/`](docs/) holds the architecture contracts — start with [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md), [`docs/REPO_TOPOLOGY.md`](docs/REPO_TOPOLOGY.md), and [`docs/estate-map.md`](docs/estate-map.md). `ranch/` (sibling repo) holds the projects.
@@ -115,7 +115,7 @@ The estate's numbered services live in the **25xxx range**, pinned in the **port
 | `25120`         | `ESTATE_CHAT_PORT`          | estate-chat (tailnet+loopback)                                       | —                                                                                                            |
 | `25121`         | `FEEDLOT_PORT`              | feedlot (outer MCP hop edge)                                         | —                                                                                                            |
 | `25126`         | `KIMI_CODE_PORT`            | kimi-code                                                            | —                                                                                                            |
-| `25127`         | `MCPPROXY_GO_PORT`          | **gatehouse** MCP gateway (tool federation, :25127/mcp)              | —                                                                                                            |
+| `25127`         | `MCPPROXY_GO_PORT`          | **thresher** MCP gateway (tool federation, :25127/mcp)              | —                                                                                                            |
 | `25133`/`25134` | `QDRANT_*_PORT`             | Qdrant HTTP + gRPC                                                   | —                                                                                                            |
 | `25135`         | `SQUAWK_FEED_PORT`          | **squawk fleet feed** (302 → /squawk-feed/seq)                       | —                                                                                                            |
 | `25136`         | `FLEET_UI_PORT`             | fleet web UI                                                         | —                                                                                                            |
@@ -163,7 +163,7 @@ The estate's numbered services live in the **25xxx range**, pinned in the **port
 | `25231`         | `NODE_EXPORTER_PORT`        | node_exporter (was :9100)                                            | moved                                                                                                        |
 | `25280`         | `SMITHERS_GATEWAY_PORT`     | **Smithers gateway** (estate control plane, 302)                     | new                                                                                                          |
 
-> **Port-role notes.** Three roles changed since the old README: **:25147 squawk-ws** (was DOWN, now live), **:25155 nativelink** (was DOWN, now live as forge REAPI), and **:25148** (old "flicker" is retired; mbx/mise task-cache is the build dispatch). The gatehouse MCP gateway did **not** move off :25127; it binds loopback + tailnet. The port SSOT (`config/ports.env`) is read-only source here — never renumber a pinned service without editing the SSOT first.
+> **Port-role notes.** Three roles changed since the old README: **:25147 squawk-ws** (was DOWN, now live), **:25155 nativelink** (was DOWN, now live as forge REAPI), and **:25148** (old "flicker" is retired; mbx/mise task-cache is the build dispatch). The thresher MCP gateway did **not** move off :25127; it binds loopback + tailnet. The port SSOT (`config/ports.env`) is read-only source here — never renumber a pinned service without editing the SSOT first.
 
 ## ⚙️ Orchestration — corral/delendai, work-refs, and the shared-checkout guard
 

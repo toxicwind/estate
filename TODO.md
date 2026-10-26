@@ -102,7 +102,7 @@
       `forge pattern-borrow|pb` CLI + forge_pattern_borrow MCP + scripts/
       pattern-borrow.ts delegate; ranch/forge/bin/forge unifies triad +
       pattern-forge; estate/bin/forge + pattern-borrow linked on PATH.
-- [ ] Follow-up: register the 10 plugins' MCP tools in gatehouse :25127 and
+- [ ] Follow-up: register the 10 plugins' MCP tools in thresher :25127 and
       run them through the proxy (MCP-first doctrine).
 - [ ] GitHub auth: dead fine-grained PAT rotated/revoked 2026-10-23 — all
       stores cleaned (`~/.secrets`, `~/.git-credentials`, gh hosts.yml,

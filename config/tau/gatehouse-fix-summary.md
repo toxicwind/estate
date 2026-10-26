@@ -1,13 +1,13 @@
 # Thresher MCP Auth Fix
 
 ## Problem
-MCP gatehouse on port 25127 returning `{"error":"Authentication required. Provide an API key or agent token."}` (HTTP 401), preventing mesh-gateway connections.
+MCP thresher on port 25127 returning `{"error":"Authentication required. Provide an API key or agent token."}` (HTTP 401), preventing mesh-gateway connections.
 
 ## Root Cause
-The gatehouse config file `/home/toxic/estate/ranch/barn/thresher/mcp_config.json` had `"require_mcp_auth": true`, which overrides the `--require-mcp-auth false` command-line flag. This forces all `/mcp` endpoint connections to require authentication.
+The thresher config file `/home/toxic/estate/ranch/barn/thresher/mcp_config.json` had `"require_mcp_auth": true`, which overrides the `--require-mcp-auth false` command-line flag. This forces all `/mcp` endpoint connections to require authentication.
 
 ## Fix
-Changed `"require_mcp_auth": true` to `"require_mcp_auth": false` in the gatehouse config file.
+Changed `"require_mcp_auth": true` to `"require_mcp_auth": false` in the thresher config file.
 
 File: `/home/toxic/estate/ranch/barn/thresher/mcp_config.json`
 - Line with `"require_mcp_auth": true` → `"require_mcp_auth": false`

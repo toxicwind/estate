@@ -198,12 +198,12 @@ export const SURFACES: readonly Surface[] = [
 
 	// ── Mesh & routing ────────────────────────────────────────────────────
 	{
-		id: "gatehouse",
+		id: "thresher",
 		label: "Thresher",
 		group: "Mesh",
 		origin: loopback(25127),
 		kind: "ui",
-		daemon: "gatehouse",
+		daemon: "thresher",
 		healthPath: "/health",
 		description: "MCP gateway and its web control panel.",
 	},

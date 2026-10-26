@@ -14,7 +14,7 @@ This consolidates Spark’s Funnel + hardcore-cleanup brief with the Grok Bot hy
 | Funnel root cause: CLI parsed `on` as target → tailnet-only | Wrong ports in Spark READMEs (`herd :25104`, hodos as sole cloud door) |
 | Archive-then-purge scratch / tack | Aggressive `.gitmodules` wipe to one github/gitignore entry |
 | Roost sole provider authority; delete `ranch/tack/` | Four-pillar “toxicwind/herd” as separate GitHub face (herd lives in ranch) |
-| Abolish rotting submodules; prefer independent checkouts + sync | Spark README omission of gatehouse, doorbell, cuttinggate, squawk, **arroyo** |
+| Abolish rotting submodules; prefer independent checkouts + sync | Spark README omission of thresher, doorbell, cuttinggate, squawk, **arroyo** |
 | `ops/sync.sh` idea | Buggy script (`{REPOS[@]}`, `"CHANGES"` string, commits ranch README into estate) |
 
 **Canonical mental model (Grok + corrected Spark):**
@@ -56,7 +56,7 @@ curl -sS -o /dev/null -w '%{http_code}\n' https://github-mcp-host.tailc9ac71.ts.
 curl -sS -o /dev/null -w '%{http_code}\n' https://github-mcp-host.tailc9ac71.ts.net/gemini-mcp
 ```
 
-Then gatehouse upstream patch (`patch-upstreams.sh` @ `0ac68ff5…`) to real ranch/tools paths — no bad symlinks. Port `:25204` stays awrawr-ws-exec.
+Then thresher upstream patch (`patch-upstreams.sh` @ `0ac68ff5…`) to real ranch/tools paths — no bad symlinks. Port `:25204` stays awrawr-ws-exec.
 
 ---
 
@@ -104,7 +104,7 @@ Do **not** `tar` absolute paths without `-C` (Spark’s script did). Prefer `tar
 **ranch/README.md** — animals by plane:
 
 - Inference: herd · hodos · cuttinggate · roost · keypool  
-- MCP: gatehouse · doorbell · switchboard · lasso  
+- MCP: thresher · doorbell · switchboard · lasso  
 - Fleet: squawk · campfire · corral  
 - **Bot: arroyo** (overlord · coyote · discord)  
 - Agent: tau via chute  
@@ -130,7 +130,7 @@ ranch/arroyo/
   overlord/   # GramJS MTProto — puppertrix / BotFather control
   coyote/     # Bun bot path (ex product name "yote")
   discord/
-  mcp/        # thin shim → gatehouse :25127
+  mcp/        # thin shim → thresher :25127
 ```
 
 - Host machine stays **yote**; product rename only  
@@ -148,7 +148,7 @@ ranch/arroyo/
 | **B** Archive → purge tack/scratch → sanitize gitmodules → sync.sh | yes | estate + ranch `main` |
 | **C** README plane maps + kill ESTATE-PROJECTS fiction | yes | `main` |
 | **D** `ranch/arroyo/` skeleton + MOVE from current yote paths | yes | ranch `main` |
-| **E** gatehouse upstreams + shell prove | yes | as needed |
+| **E** thresher upstreams + shell prove | yes | as needed |
 | **F** Overlord live prove (BotFather mint/rotate) | yes | when green |
 
 Default autonomy: A→C without waiting; pause before destructive purge if archive size looks wrong; pause before force-push; pause before Overlord actions that mint tokens.

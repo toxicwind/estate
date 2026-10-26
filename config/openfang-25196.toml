@@ -34,7 +34,7 @@ provider = "openai"
 # (:25200) retiring. google/gemini-3.8-flash died on OpenRouter 402 (credits).
 # nvidia/nemotron-3-ultra-550b-a55b via hodos verified live 2026-10-14
 # (chat completion 200, same route the four working rig agents use).
-model = "nvidia/nemotron-3-ultra-550b-a55b"
+model = "nvidia/nemotron-3.5-super-vl-120b-a12b"
 api_key_env = "HODOS_API_KEY"
 base_url = "http://127.0.0.1:25193/v1"
 fallback_models = [

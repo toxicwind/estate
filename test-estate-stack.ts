@@ -22,7 +22,7 @@ describe("Estate Core Stack Verification", () => {
     expect(text.trim()).toBe("ok");
   });
 
-  test("Gatehouse (:25127) health check", async () => {
+  test("Thresher (:25127) health check", async () => {
     const res = await fetch("http://127.0.0.1:25127/health");
     expect(res.status).toBe(200);
     const data = await res.json();

@@ -65,7 +65,7 @@ manifest. Never `rm -rf` a repo directory.
 Edit `/home/toxic/estate/ranch/.meta-themes.yaml` (DATA, not code):
 
 - Add a list item under the right holder (the bounded-context column the repo
-  is responsible for — `olympus`, `ranch-structure`, `gatehouse-mcp`, etc.).
+  is responsible for — `olympus`, `ranch-structure`, `thresher-mcp`, etc.).
 - `submodules`, `tools`, `vendor` are NEVER holders — those are tracking, not
   domain. Use a real domain holder or the honest `general` fallback.
 - Exact path beats top-level: `map[path] ?? map[topLevel] ?? general`.

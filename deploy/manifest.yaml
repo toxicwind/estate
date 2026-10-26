@@ -71,8 +71,8 @@ binaries:
     commit: 50fda68
     build_artifact: /home/toxic/projects/rig/target/debug/rig
     immutable_copy: /home/toxic/.local/bin/openfang.bak-20261003
-    daemon: openfang (spawned by gatehouse as MCP backend; restart via pitchfork estate/gatehouse)
-    note: rebuilt 2026-10-03 post-rename via mbx-cache mise task (rig 0.6.9); Q1 bless superseded by fresh build; deployed, gatehouse restarted, child verified on new SHA
+    daemon: openfang (spawned by thresher as MCP backend; restart via pitchfork estate/thresher)
+    note: rebuilt 2026-10-03 post-rename via mbx-cache mise task (rig 0.6.9); Q1 bless superseded by fresh build; deployed, thresher restarted, child verified on new SHA
 
   mbx-cache:
     path: /home/toxic/estate/vendored/mr-boxington-cache/target/release/mise-cache

@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
  * smithers-gateway.ts — real TypeScript runner for the estate Smithers Gateway,
- * replacing the fragile `smithers-gateway.sh` bash shim (gatehouse-serve.ts
+ * replacing the fragile `smithers-gateway.sh` bash shim (thresher-serve.ts
  * precedent). Pure TypeScript; no bash indirection.
  *
  * Responsibilities, in order:

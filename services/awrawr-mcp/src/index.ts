@@ -1189,14 +1189,14 @@ async function tool_exa_answer(args: Record<string, unknown>): Promise<string> {
 }
 
 // ---------------------------------------------------------------------------
-// mesh (mcpproxy/gatehouse) connector tools
+// mesh (mcpproxy/thresher) connector tools
 // Lane: HTTP JSON-RPC to the live daemon (warm upstream connections, no
 // per-call process spawn). Each connector call does initialize -> session ->
 // tools/call over localhost.
 // ---------------------------------------------------------------------------
 
 const MESH_MCP_URL = process.env["MESH_MCP_URL"] ?? "http://127.0.0.1:25127/mcp";
-const MESH_SHEP_BIN = process.env["MESH_SHEP_BIN"] ?? `${HOME}/estate/ranch/mesh/bin/gatehouse`;
+const MESH_SHEP_BIN = process.env["MESH_SHEP_BIN"] ?? `${HOME}/estate/ranch/mesh/bin/thresher`;
 const MESH_SHEP_CONFIG = process.env["MESH_SHEP_CONFIG"] ?? `${HOME}/estate/ranch/barn/thresher/mcp_config.json`;
 const MESH_OUT_CAP = 20000;
 const MESH_INTENTS: Record<string, string> = {
@@ -1264,7 +1264,7 @@ async function meshCall(toolName: string, args: Record<string, unknown>, timeout
     const sid = await meshSession(Math.min(15, timeoutS));
     if (!sid) {
       audit({ ...base, status: "error", reason: "no mcp session", elapsed_ms: elapsedMs(t0) });
-      return "error: mcpproxy daemon did not issue a session (is gatehouse serve running on 25127?)";
+      return "error: mcpproxy daemon did not issue a session (is thresher serve running on 25127?)";
     }
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), timeoutS * 1000);
@@ -1852,7 +1852,7 @@ const TOOLS: ToolDef[] = [
   },
   {
     name: "mesh_upstream_servers",
-    description: "List all MCP servers proxied by the mesh gateway (gatehouse/mcpproxy): name, connection status, health for each of the ~33 upstreams.",
+    description: "List all MCP servers proxied by the mesh gateway (thresher/mcpproxy): name, connection status, health for each of the ~33 upstreams.",
     inputSchema: { type: "object", properties: {} },
     handler: tool_mesh_upstream_servers,
   },
@@ -2112,16 +2112,16 @@ async function handleMcp(req: Request): Promise<Response> {
 }
 
 // ---------------------------------------------------------------------------
-// stdio transport (gatehouse/mcpproxy stdio spawn)
+// stdio transport (thresher/mcpproxy stdio spawn)
 // ---------------------------------------------------------------------------
 
 /**
- * Serve MCP over stdio for gatehouse (mcpproxy-go, mark3labs/mcp-go client).
+ * Serve MCP over stdio for thresher (mcpproxy-go, mark3labs/mcp-go client).
  * Reads BOTH framings: Content-Length headers when present, otherwise one
  * JSON object per line (blank/non-JSON lines skipped). Writes
  * `Content-Length: N\r\n\r\n{...}\n` — the trailing \n is mandatory
  * because mcp-go reads with ReadString('\n'). No token auth here: the
- * transport is a local pipe from gatehouse, which owns auth at its own
+ * transport is a local pipe from thresher, which owns auth at its own
  * layer. One session per process, created on initialize.
  */
 async function runStdio(): Promise<void> {

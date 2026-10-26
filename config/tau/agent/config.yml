@@ -272,7 +272,11 @@ modelRoles:
   verification: freeinference/qwen3.6-35b
   vision: freeinference/minimax-m3:xhigh
   web: web/exa
-  default: freeinference/deepseek-v4-flash:off
+  default: freeinference/minimax-m3:low
+  # Stashed WIP wanted nvidia/z-ai/glm-5.3-flash:off as the default. Not
+  # taken: AGENTS.md records that glm-5.3 always reasons and rejects a
+  # disabled-thinking mode, and the live agent runs minimax-m3.
+  # default: nvidia/z-ai/glm-5.3-flash:off
 omitThinking: false
 paste:
   largeMenuThreshold: 100
@@ -316,7 +320,7 @@ prewalk:
   enabled: false
 proseOnlyThinking: true
 provider:
-  appendOnlyContext: auto
+  appendOnlyContext: "on"
 providers:
   anthropic:
     serverSideFallback: true

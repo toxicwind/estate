@@ -46,7 +46,7 @@ function projectKey(dir: string, daemon: string): string {
   const ranch = SOV + "/projects/range/ranch/";
   if (d.startsWith(ranch)) {
     const rest = d.slice(ranch.length).split("/").filter(Boolean);
-    if (rest[0] === "barn" && rest[1]) return `ranch/barn/${rest[1]}`; // barn/gatehouse stays distinct
+    if (rest[0] === "barn" && rest[1]) return `ranch/barn/${rest[1]}`; // barn/thresher stays distinct
     return `ranch/${rest[0]}`;
   }
   if (d === SOV + "/projects/range") return "range";

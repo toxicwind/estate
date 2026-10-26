@@ -11,7 +11,7 @@
 #
 # Bound loopback; tailscale fronts it if a network surface is ever needed.
 # The gateway's env is what every smithers-spawned agent inherits, so the
-# model/routing keys are resolved here at boot. (gatehouse/ranch-ui precedent.)
+# model/routing keys are resolved here at boot. (thresher/ranch-ui precedent.)
 [daemons.smithers-gateway]
 mise = true
 port = 25280
