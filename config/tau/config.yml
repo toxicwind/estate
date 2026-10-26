@@ -338,8 +338,8 @@ providers:
     baseUrl: http://127.0.0.1:25193/v1
   openaiWebsockets: auto
   openrouterVariant: default
-  streamFirstEventTimeoutSeconds: 300
-  streamIdleTimeoutSeconds: 120
+  streamFirstEventTimeoutSeconds: 60
+  streamIdleTimeoutSeconds: 30
   tinyModelDevice: auto
   tinyModelDtype: auto
   unboundedRetryAfter:
