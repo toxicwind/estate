@@ -26,7 +26,7 @@ bash:
     enabled: true
   direnv: auto
   direnvLoadTimeoutMs: 30000
-  enabled: true
+  enabled: false
   patterns:
     []
 bashInterceptor:
@@ -170,7 +170,7 @@ goal:
 grep:
   contextAfter: 3
   contextBefore: 3
-  enabled: false
+  enabled: true
 hideThinkingBlock: true
 hindsight:
   apiToken: ""
