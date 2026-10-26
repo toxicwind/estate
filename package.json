@@ -1,5 +1,5 @@
 {
-  "description": "Estate control plane — the ranch monorepo and its config",
+  "description": "Estate control plane \u2014 the ranch monorepo and its config",
   "devDependencies": {
     "bun-types": "^1.1.0",
     "jscpd": "5.4.0",
@@ -17,7 +17,9 @@
     "health": "curl -s http://127.0.0.1:25100/v1/models | python3 -c 'import sys,json;print(len(json.load(sys.stdin)[\"data\"]),\"models\")'",
     "ui:check": "bun run --cwd ranch/range/ui check",
     "ui:test": "bun run --cwd ranch/range/ui test",
-    "ui:build": "bun run --cwd ranch/range/ui build"
+    "ui:build": "bun run --cwd ranch/range/ui build",
+    "resect": "resect",
+    "resect:audit": "resect audit src/"
   },
   "packageManager": "bun@1.4.2",
   "version": "18.1.14",

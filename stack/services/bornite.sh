@@ -21,13 +21,7 @@ if command -v secretsmith-env >/dev/null 2>&1; then
   set -a
   eval "$(secretsmith-env 2>/dev/null)" || true
   set +a
-elif [[ -f /home/toxic/.secrets ]]; then
-  set -a
-  set +u
-  source /home/toxic/.secrets
-  set -u
-  set +a
-fi
+fi  # ~/.secrets deleted 2026-10-26 — keyring is the only source
 PORT="$HERD_PORT"
 
 # The dashboard is served separately from bornite now (see

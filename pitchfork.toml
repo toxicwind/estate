@@ -516,7 +516,7 @@ HINDSIGHT_API_WORKER_RETAIN_RESERVED_SLOTS = "2"
 HINDSIGHT_API_WORKER_CONSOLIDATION_RESERVED_SLOTS = "1"
 
 # Bin contract canary (AGENTS.md Layout, 2026-10-23): verifies every product
-# symlink in ~/.local/bin + pens/barn/estate-ops resolves to its pens/sovereign target.
+# symlink in ~/.local/bin + pens/estate/products/estate-ops resolves to its pens target.
 # On FAIL the daemon goes unhealthy — a product move that breaks a link shows
 # up within 5 minutes instead of at next use.
 [daemons.bin-contract-audit]
@@ -551,7 +551,7 @@ retries = 3
 
 [daemons.rhodochrosite.env]
 PORT = "25193"
-DATA_DIR = "/home/toxic/.rhodochrosite-data"
+DATA_DIR = "/home/toxic/.hodos-data"
 HOST = "127.0.0.1"
 
 [daemons.kafka]

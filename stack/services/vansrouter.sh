@@ -6,24 +6,8 @@ SOV="${ESTATE_ROOT:-/home/toxic/estate}"
 source "$SOV/stack/lib-ports.sh"
 require_port VANSROUTER_PORT
 
-VANS_SECRETS_FILE="${VANSROUTER_SECRETS_FILE:-$HOME/.secrets}"
-if [[ -f "$VANS_SECRETS_FILE" ]]; then
-  _vans_had_u=0
-  [[ "$-" == *u* ]] && _vans_had_u=1
-  set +u
-  set -a
-  # The canonical shell secret store may contain forward references.
-  if ! source "$VANS_SECRETS_FILE" >/dev/null 2>&1; then
-    set +a
-    (( _vans_had_u )) && set -u
-    unset _vans_had_u
-    echo "VansRouter failed to load secrets file: $VANS_SECRETS_FILE" >&2
-    exit 1
-  fi
-  set +a
-  (( _vans_had_u )) && set -u
-  unset _vans_had_u
-fi
+# Secrets live in the secretsmith keyring (SSOT); ~/.secrets is deleted (2026-10-26).
+_kr_env="$(mktemp)" && secretsmith env > "$_kr_env" 2>/dev/null; [[ -s "$_kr_env" ]] && . "$_kr_env"; rm -f "$_kr_env"
 
 VANS_ENV_FILE="${VANSROUTER_ENV_FILE:-$HOME/.config/vansrouter/env}"
 if [[ -f "$VANS_ENV_FILE" ]]; then
