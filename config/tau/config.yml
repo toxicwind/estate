@@ -255,24 +255,30 @@ model:
       - hub
     threshold: 5
 modelRoleStorage: global
+# modelRoles — 2026-10-26 AST/probe-verified remap (kappa session).
+# Probed live: qwen3.6-35b does NOT honor reasoning_effort/thinking (dead
+# suffixes); deepseek-v4-flash DOES (19->88->130 reasoning tokens across
+# none/low/max) with 1M ctx @ ~80t/s; glm-5.3-flash always-thinks and barely
+# scales (31->29->52). Effort-bearing roles -> deepseek-v4-flash; bare
+# no-effort roles stay on qwen3.6-35b.
 modelRoles:
-  advisor: freeinference/qwen3.6-35b:low
+  advisor: freeinference/deepseek-v4-flash:low
   bodybuilder: custom/bodybuilder
   commit: freeinference/qwen3.6-35b
   dots: custom/dots
-  fallback: freeinference/qwen3.6-35b
+  fallback: freeinference/deepseek-v4-flash
   image: google-antigravity/gemini-3.1-flash-image:auto
   judge: freeinference/qwen3.6-35b
   memory: freeinference/qwen3.6-35b
-  plan: freeinference/qwen3.6-35b
-  slow: freeinference/qwen3.6-35b:xhigh
-  smol: freeinference/qwen3.6-35b:auto
+  plan: freeinference/deepseek-v4-flash:low
+  slow: freeinference/deepseek-v4-flash:max
+  smol: freeinference/qwen3.6-35b
   task: freeinference/qwen3.6-35b
   tiny: freeinference/qwen3.6-35b
-  verification: freeinference/qwen3.6-35b
+  verification: freeinference/deepseek-v4-flash:low
   vision: freeinference/minimax-m3:xhigh
   web: web/exa
-  default: freeinference/qwen3.6-35b:off
+  default: freeinference/deepseek-v4-flash
 omitThinking: false
 paste:
   largeMenuThreshold: 100
