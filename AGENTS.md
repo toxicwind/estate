@@ -18,17 +18,20 @@
   work that landed on a pushed ref; fix forward if it's wrong.
 - **Join the squawk fleet** — every tau/kappa session should be a first-class
   fleet citizen, not a lone process:
-  1. Fleet bus is `~/.squawk-bus/squawk-root` (file-based chat; no daemon).
-  2. Fleet coordination server: `http://127.0.0.1:25122` — `POST /v1/join`
-     (Bearer) registers a 4-namespace identity; `POST /v1/presence` heartbeats;
-     `GET /v1/state` shows the roster.
+  1. Fleet bus is the squawk daemon — fleet coordination server
+     `http://127.0.0.1:25122`: `POST /v1/join` (Bearer) registers a
+     4-namespace identity; `POST /v1/presence` heartbeats; `GET /v1/state`
+     shows the roster; `POST /v1/rooms/<id>/messages` posts; WebSocket push
+     on :25147 (`core/ws.py`). Use the daemon FIRST for all fleet traffic.
+  2. File bus `~/.squawk-bus/squawk-root` is the FALLBACK for when the
+     daemon is down — hash-linked `NNNN-<from>-<slug>.md` message files,
+     readable by anything. Do not treat it as primary; when the daemon is
+     healthy, it owns the traffic.
   3. To become an OpenFang agent: `bun pens/ranch/squawk/join/fleet-join.ts
      --name <name> --species <species> --personality "<text>" --lane <lane>
      --task "<task>" [--sigil <emoji>]` — renders agent.toml + system.md,
      writes estate/agents/<name>/ + ~/.openfang/agents/<name>/, hyper-races
      activation against :25196, verifies, commits.
-  4. Post/read via `POST /v1/rooms/<id>/messages` or the file bus; WebSocket
-     push on :25147 (`core/ws.py`).
 
 - **The estate is the deploy plane.** push → `forge` (:25155) → `pitchfork`
   (mise-managed daemons, health-checked) → live. Anything stood up gets a real
