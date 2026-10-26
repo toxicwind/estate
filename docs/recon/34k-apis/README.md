@@ -29,7 +29,7 @@ api-evangelist is an **API-surface index**, not a product org:
 ## Probing link to Rhodochrosite
 
 Rhodochrosite vendors the probing-relevant subset as **submodules** under
-`pens/olympus/products/rhodochrosite/reference/`: `nvidia-nim`, `nvidia`, `monitoring`,
+`pens/geode/products/rhodochrosite/reference/`: `nvidia-nim`, `nvidia`, `monitoring`,
 `observability`. The merged prober (`proxy/tools/probe-catalogs.ts`) consumes
 them (rate limits + SyntheticCheck schema).
 

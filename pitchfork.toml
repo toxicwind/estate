@@ -212,6 +212,7 @@ auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25200/health"
 dir = "/home/toxic/pens/geode/products/chalcopyrite"
+mise = true
 
 [daemons.chalcopyrite.health_http]
 url = "http://127.0.0.1:25200/health"
@@ -457,15 +458,15 @@ mise = true
 HASHLINE_NO_UPDATE_CHECK = "1"
 
 [daemons.bornite]
-run = "exec /home/toxic/estate/stack/services/bornite.sh"
+run = "exec ./stack/services/bornite.sh"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25100/health"
 port = 25100
 expected_port = [25100]
-depends = ["thresher"]
-dir = "."
+dir = "/home/toxic/estate"
 mise = true
+
 [daemons.bornite.health_http]
 url = "http://127.0.0.1:25100/health"
 interval = "30s"
@@ -539,8 +540,9 @@ retry = true
 ready_http = "http://127.0.0.1:25193/health"
 port = 25193
 expected_port = [25193]
-dir = "/home/toxic/pens/geode/products/rhodochrosite/proxy"
+dir = "/home/toxic/pens/geode/products/rhodochrosite"
 mise = true
+
 [daemons.rhodochrosite.health_http]
 url = "http://127.0.0.1:25193/health"
 interval = "30s"
@@ -1322,10 +1324,10 @@ dir = "/home/toxic/pens/ranch/squawk/relay"
 env = { SQUAWK_FEED_TOKEN = "5a378d9aea8a965fcd633002772a2f47", SQUAWK_CHAT_ROOT = "/home/toxic/.squawk-bus/squawk-root" }
 
 [groups.mesh]
-daemons = ["thresher", "mesh-hub", "bornite", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "feedlot", "hindsight", "kimi-code", "nginx"]
+daemons = ["thresher", "mesh-hub", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "feedlot", "hindsight", "kimi-code", "nginx"]
 
 [groups.core]
-daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "rhodochrosite", "matter-server"]
+daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "matter-server"]
 
 [groups.agents]
 daemons = ["rig"]

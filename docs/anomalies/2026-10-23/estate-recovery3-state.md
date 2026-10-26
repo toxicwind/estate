@@ -41,7 +41,7 @@
 | **toolcall-llm** | ❌ BLOCKED on model | `MODEL=/home/toxic/estate/ranch/models/qwen3.5-9b-dflash-Q5_K_M.gguf` missing. No matching GGUF found in estate/ranch/models. |
 | **market-loop** | ❌ blocked on missing module | `Cannot find module '/home/toxic/projects/trading-post/src/market/index.ts'` — depends on `projects/trading-post` workspace which doesn't exist. Module resolution failure loops. |
 | **oracle-core** | ❌ blocked on port collision | `OSError: Address already in use` on 25235 — something holds that port. The env ORACLE_CORE_LISTEN env var is set correctly but the daemon keeps retrying and failing. Need to find what's on 25235. |
-| **bornite** | ❌ blocked on binary crash | Go binary at `pens/ranch/forge/router/bornite/bornite` segfaults on start (exit code 139). Binary is corrupted or built for wrong architecture. Config and bornite.sh path are correct. |
+| **bornite** | ❌ blocked on binary crash | Go binary at `pens/geode/products/bornite/bornite` segfaults on start (exit code 139). Binary is corrupted or built for wrong architecture. Config and bornite.sh path are correct. |
 | **forge** | ❌ blocked on port collision | Port 25234 taken by something (unknown process). The health check `http://127.0.0.1:25234/api/health` never returns 2xx. Need to check what occupies 25234. |
 | **forge-agent** | ❌ unknown | Binary exists at `pens/ranch/forge/flicker/bin/flicker-agent` but daemon exits with "unknown exit code" and no delay completes. May be blocked on WOODPECKER_SERVER connection. |
 | **chalcopyrite** | ❌ blocked on missing deps | `Cannot find package 'memoirist'` — had pino installed but also needs `memoirist`. More deps missing. |

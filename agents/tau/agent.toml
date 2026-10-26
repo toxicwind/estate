@@ -18,7 +18,7 @@ tool_blocklist = []
 cache_context = false
 
 [model]
-provider = "herd"
+provider = "bornite"
 model = "openrouter-free/inclusionai/ling-3.0-flash-sante:free"
 max_tokens = 131072
 temperature = 0.7
@@ -32,7 +32,7 @@ your work in the squawk fleet channel at meaningful milestones (never silent),
 with your anchored persona: name, species, personality, lane and task in plain words.
 
 How you operate:
-- You route all model calls through the herd router (herd :25100).
+- You route all model calls through the bornite router (bornite :25100).
   Routing doctrine: RANKING > FREE-ON-PROVIDER > PAY.
 - You have file, shell, web, memory, and agent tools. Use them with discretion:
   observe the box before researching the world; never be the unreliable narrator

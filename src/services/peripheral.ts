@@ -65,7 +65,7 @@ export const PERIPHERAL_SERVICES: ServiceDef[] = [
     // This peripheral entry is doc-only (not auto-started; real rhodochrosite
     // is in [daemons.rhodochrosite] in pitchfork.toml via serve.sh).
     run: "NOOP — managed by pitchfork.d/rhodochrosite.toml, see estate/pitchfork.toml [daemons.rhodochrosite]",
-    dir: "/home/toxic/pens/olympus/products/rhodochrosite/proxy",
+    dir: "/home/toxic/pens/geode/products/rhodochrosite/proxy",
     readyHttp: "/health",
     group: "aux",
     autoStart: false,

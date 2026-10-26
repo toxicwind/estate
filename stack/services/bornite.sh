@@ -9,7 +9,7 @@
 set -euo pipefail
 SOV="/home/toxic/estate"
 # Pens overlay: the Go bornite binary lives in — and is built from —
-# pens/ranch/forge/router/bornite (the canonical, newest copy); pens/ranch/... is
+# pens/geode/products/bornite (the canonical, newest copy); pens/ranch/... is
 # a stale pre-reorg path. Search pens first, then estate, then the archived copy.
 PENS="/home/toxic/pens"
 source "$SOV/stack/lib-ports.sh"
