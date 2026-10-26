@@ -819,6 +819,41 @@ port = 25155
 expected_port = [25155]
 dir = "/home/toxic/estate"
 
+# Forge (nativelink) web surfaces — the REAPI build-cache UI and its docs.
+# Source: pens/barn/nativelink/web (bun workspace; @forge/web = Next.js app,
+# @forge/docs = fumadocs). Both serve their production build.
+[daemons.forge-web]
+run = "exec /home/toxic/.bun/bin/bun run --cwd /home/toxic/pens/barn/nativelink/web/apps/web start --port 25164"
+auto = ["start"]
+retry = true
+ready_http = "http://127.0.0.1:25164/"
+port = 25164
+expected_port = [25164]
+boot_start = true
+dir = "/home/toxic/pens/barn/nativelink/web/apps/web"
+mise = true
+[daemons.forge-web.health_http]
+url = "http://127.0.0.1:25164/"
+interval = "30s"
+timeout = "5s"
+retries = 3
+
+[daemons.forge-docs]
+run = "exec /home/toxic/.bun/bin/bun run --cwd /home/toxic/pens/barn/nativelink/web/apps/docs start --port 25165"
+auto = ["start"]
+retry = true
+ready_http = "http://127.0.0.1:25165/"
+port = 25165
+expected_port = [25165]
+boot_start = true
+dir = "/home/toxic/pens/barn/nativelink/web/apps/docs"
+mise = true
+[daemons.forge-docs.health_http]
+url = "http://127.0.0.1:25165/"
+interval = "30s"
+timeout = "5s"
+retries = 3
+
 [daemons.nats-tail]
 run = "exec /home/toxic/pens/ranch/squawk/nats/run-tail.sh"
 auto = ["start"]
