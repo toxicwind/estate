@@ -41,7 +41,6 @@ TUI, and any apps spawned via `skopos open`. The viewer is interactive
 | ---------------------------------------------------- | ------------------------------------------------------------------------------------------- | -------------------------- |
 | `estate/skopos`                                      | keeper supervisor (headed Chromium)                                                         | CDP `25233`, ready `25236` |
 | `estate/skopos-failover`                             | on-demand takeover drop-in (probes :25233, spawns chromium only if primary down past grace) | —                          |
-| `estate/skopos-floaty`                               | signalhead lamp (busy/waiting/idle)                                                         | `25238`                    |
 | `estate/browserless`                                 | **headed** browserless server (REST + WS-CDP sessions)                                      | `25130`                    |
 | `estate/agent-display` / `agent-wm` / `agent-viewer` | the `:99` desktop stack                                                                     | `5900` / `6080`            |
 
@@ -77,7 +76,7 @@ bun pens/olympus/products/skopos/bin/skopos.ts failover # takeover drop-in
 
 `estate/bin/keeper-open` now **delegates** to `skopos open` (one implementation).
 `skopos open` pins `DISPLAY=:99`, setsid-detaches, pings the floaty lamp
-(`/set/busy` → signalhead `:25238`), and lists `:99` windows.
+(`/set/busy` → floaty lamp), and lists `:99` windows.
 
 `estate/bin/keeper-open <command...>` still works unchanged for legacy hooks.
 
