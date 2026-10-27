@@ -1164,6 +1164,29 @@
       "trust_mode": "auto",
       "created": "2026-10-18T02:33:02.266710048-06:00",
       "updated": "2026-10-23T04:33:27.875688892-06:00"
+    },
+    {
+      "quarantined": false,
+      "name": "rclone",
+      "protocol": "stdio",
+      "command": "/home/toxic/.local/bin/rclone-mcp",
+      "args": [
+        "stdio"
+      ],
+      "env": {
+        "RCLONE_URL": "http://127.0.0.1:5572"
+      },
+      "oauth": null,
+      "enabled": true,
+      "auto_approve_tool_changes": true,
+      "trust_mode": "auto",
+      "created": "2026-10-27T00:35:16.641502-06:00",
+      "updated": "2026-10-27T00:35:16.641502-06:00",
+      "isolation": {
+        "enabled": false
+      },
+      "health_check_interval": "15s",
+      "tool_discovery_interval": "2m0s"
     }
   ],
   "oauth_expiry_warning_hours": 4,
