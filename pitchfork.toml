@@ -551,7 +551,7 @@ retries = 3
 
 [daemons.rhodochrosite.env]
 PORT = "25193"
-DATA_DIR = "/home/toxic/.hodos-data"
+DATA_DIR = "/home/toxic/.rhodochrosite-data"
 HOST = "127.0.0.1"
 
 [daemons.kafka]

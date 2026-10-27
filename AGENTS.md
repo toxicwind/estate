@@ -185,7 +185,7 @@ style is MONADIC PRIMITIVES + bun-forward, not ad-hoc imperative bash:
 ## Naming (2026-10-22)
 
 - EAP/Gemini Tool Retrieval = **@estate/theta** (private). Merged provider
-  gateway = **atlas** (ex-cuttinggate; renamed chalcopyrite). Key-pool router = **keygate**.
+  gateway = **atlas** (ex-chalcopyrite; renamed chalcopyrite). Key-pool router = **keygate**.
 - **olympus** holds the Greek codename lineage (τ tau, κ kappa, skopos, kilo,
   muse, keryx, rhodochrosite, kairos, kryptos). ranch/barn are NOT Greek; only Greek
   products join olympus.

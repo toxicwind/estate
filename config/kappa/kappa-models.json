@@ -191,9 +191,8 @@
     ],
     "freeinference": [
       "glm-5.3-flash",
-      "minimax-m3",
+      "minimax-m3.1-flash",
       "qwen3.6-35b",
-      "diffusiongemma",
       "deepseek-v4-flash"
     ],
     "openrouter": [
@@ -812,22 +811,15 @@
             "output": 8192
           }
         },
-        "minimax-m3": {
-          "name": "minimax-m3",
+        "minimax-m3.1-flash": {
+          "name": "minimax-m3.1-flash",
           "limit": {
-            "context": 1000000,
+            "context": 1048576,
             "output": 8192
           }
         },
         "qwen3.6-35b": {
           "name": "qwen3.6-35b",
-          "limit": {
-            "context": 262000,
-            "output": 8192
-          }
-        },
-        "diffusiongemma": {
-          "name": "diffusiongemma",
           "limit": {
             "context": 262000,
             "output": 8192
@@ -1643,8 +1635,14 @@
       "keyEnvs": [
         "FREEINFERENCE_API_KEY"
       ],
-      "adapter": "openai",
-      "auth": "bearer"
+      "adapter": "static",
+      "auth": "bearer",
+      "staticModels": [
+        "glm-5.3-flash",
+        "minimax-m3.1-flash",
+        "qwen3.6-35b",
+        "deepseek-v4-flash"
+      ]
     },
     {
       "name": "openrouter",

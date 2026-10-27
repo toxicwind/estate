@@ -71,8 +71,15 @@ providers:
     baseUrl: https://freeinference.org/v1
     api: openai-completions
     apiKey: "!cat /home/toxic/.tau/freeinference.key"
-    discovery:
-      type: openai-models-list
+    models:
+      - id: glm-5.3-flash
+        contextWindow: 1000000
+      - id: minimax-m3.1-flash
+        contextWindow: 1048576
+      - id: qwen3.6-35b
+        contextWindow: 262000
+      - id: deepseek-v4-flash
+        contextWindow: 1000000
   openrouter:
     baseUrl: https://openrouter.ai/api/v1
     api: openai-completions

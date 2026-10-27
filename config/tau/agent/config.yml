@@ -268,11 +268,11 @@ modelRoles:
   memory: freeinference/qwen3.6-35b
   plan: freeinference/qwen3.6-35b:low
   slow: freeinference/qwen3.6-35b:max
-  smol: freeinference/minimax-m3
+  smol: freeinference/minimax-m3.1-flash
   task: freeinference/qwen3.6-35b
   tiny: freeinference/qwen3.6-35b
   verification: freeinference/qwen3.6-35b:low
-  vision: freeinference/minimax-m3:xhigh
+  vision: freeinference/minimax-m3.1-flash:xhigh
   web: web/exa
   default: google-antigravity/gemini-3.5-flash-lite
 omitThinking: false
@@ -373,7 +373,7 @@ retry:
   fallbackChains:
     fallback:
       - freeinference/qwen3.6-35b
-      - freeinference/minimax-m3
+      - freeinference/minimax-m3.1-flash
       - freeinference/qwen3.6-35b
     web:
       - web/tavily
