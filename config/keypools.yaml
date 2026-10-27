@@ -43,13 +43,8 @@ pools:
     protocol: gemini-interactions
     interactions_path: /v1beta/interactions
     upstream: https://generativelanguage.googleapis.com
-    # Gemini rejects `Authorization: Bearer` with 403 "unregistered callers":
-    # it needs x-goog-api-key AND x-goog-user-project (<quota project>) to
-    # establish caller identity. Without both, every key probes down. See
-    # estate/docs/gemini-key-conventions.md.
     auth_headers:
       x-goog-api-key: "{key}"
-      x-goog-user-project: "654595778272"
     health:
       method: GET
       path: /v1beta/models
@@ -73,6 +68,7 @@ pools:
     # Every other Google key 401s, including the GEMINI_API_KEY* family and
     # the GEMINI_API_KEY_2 that .secrets.json still flagged eap=1.
     keys:
+      - GEMINI_EAP_KEY
       - GEMINI_EAP_KEY_1
       - GEMINI_EAP_KEY_2
       - GEMINI_EAP_KEY_3
@@ -83,7 +79,6 @@ pools:
     upstream: https://generativelanguage.googleapis.com/v1beta/openai
     auth_headers:
       x-goog-api-key: "{key}"
-      x-goog-user-project: "654595778272"
     health:
       method: GET
       path: /v1/models
@@ -101,6 +96,7 @@ pools:
     # Same six-key EAP set: every GEMINI_API_KEY* 401s on this upstream too,
     # so drawing from gen-lang-client is the only way this pool has members.
     keys:
+      - GEMINI_EAP_KEY
       - GEMINI_EAP_KEY_1
       - GEMINI_EAP_KEY_2
       - GEMINI_EAP_KEY_3
@@ -111,7 +107,6 @@ pools:
     upstream: https://generativelanguage.googleapis.com
     auth_headers:
       x-goog-api-key: "{key}"
-      x-goog-user-project: "654595778272"
     health:
       method: GET
       path: /v1beta/models
@@ -131,6 +126,7 @@ pools:
     # "rotate across projects" is not available. Rotation is across the six
     # keys of that project instead; see docs/gemini-key-conventions.md.
     keys:
+      - GEMINI_EAP_KEY
       - GEMINI_EAP_KEY_1
       - GEMINI_EAP_KEY_2
       - GEMINI_EAP_KEY_3
@@ -142,7 +138,6 @@ pools:
     upstream: https://generativelanguage.googleapis.com/v1beta/openai
     auth_headers:
       x-goog-api-key: "{key}"
-      x-goog-user-project: "654595778272"
     health:
       method: GET
       path: /v1/models
