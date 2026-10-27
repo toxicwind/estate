@@ -298,30 +298,30 @@ plugins:
   - merged: estate-swap
     name: bornite
     privileged: true
-    source: ./projects/range/ranch/stockyard/bornite
+    source: ../pens/geode/products/bornite
   - name: rhodochrosite
     privileged: true
-    source: ./projects/range/ranch/stockyard/rhodochrosite
+    source: ../pens/geode/products/rhodochrosite
   - name: thresher
     privileged: true
     role: MCP federation gateway
-    source: ./ranch/barn/thresher
+    source: ../pens/ranch/barn/thresher
   - merged:
       - router-legacy
       - stockyard-rhodochrosite-router
       - estate-router
     name: router
     privileged: true
-    source: ./projects/range/ranch/stockyard/router-legacy
+    source: ../pens/ranch/identity-router
   - name: barn-browser
     privileged: false
-    source: ./projects/range/ranch/barn/browserless
+    source: ../pens/ranch/vendored/browserless-mcp
   - name: barn-gemini
     privileged: false
-    source: ./projects/range/ranch/barn/gemini-mcp
+    source: ../pens/ranch/barn/gemini-mcp
   - name: secretsmith
     privileged: true
-    source: ./projects/range/ranch/barn/secretsmith
+    source: ../pens/barn/secretsmith
 power:
   sleepPrevention: idle
 presencePenalty: -1
