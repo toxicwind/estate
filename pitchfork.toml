@@ -53,12 +53,12 @@ MCP_FUNNEL_HOST = "github-mcp-host.tailc9ac71.ts.net"
 run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/estate/bridge/awrawr_ws_exec.py"
 auto = ["start"]
 retry = true
-port = 25204
-expected_port = [25204]
+port = 25214
+expected_port = [25214]
 dir = "/home/toxic"
 mise = true
 [daemons.awrawr-ws-exec.env]
-WS_EXEC_PORT = "25204"
+WS_EXEC_PORT = "25214"
 
 [daemons.bedrock-ui]
 run = "exec /home/toxic/.bun/bin/bun /home/toxic/projects/bedrock/web/server.ts"
@@ -735,7 +735,7 @@ retries = 3
 MESH_LANDING_PORT = "25207"
 
 [daemons.ml-serve]
-run = "exec /home/toxic/.local/share/mise/installs/python/3.12.13/bin/python /home/toxic/estate/tools/ml-serve/server.py"
+run = "exec /home/toxic/.local/share/mise/installs/python/3.14.7/bin/python /home/toxic/estate/tools/ml-serve/server.py"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25180/health"
@@ -1238,6 +1238,19 @@ port = 8787
 expected_port = [8787]
 dir = "/home/toxic/pens/olympus/products/sigma"
 mise = false
+
+[daemons.morphe]
+# morphe v2 — fingerprint-matched transport-morphing router (obtuse HTTP->WS
+# conversion + HFT lane racing). Owns :25204/:25215 entrypoints; the real
+# ws-exec daemon lives on :25214 (green-blue). Control: /tmp/morphe.sock.
+run = "exec python3 /home/toxic/estate/bridge/morphe.py"
+auto = ["start"]
+retry = true
+boot_start = true
+dir = "/home/toxic"
+mise = false
+port = 25204
+expected_port = [25204, 25215]
 
 [daemons.toolcall-llm]
 # 2026-10-27: the llama.cpp-b11059 build is stale against its own libs
