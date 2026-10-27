@@ -1,0 +1,70 @@
+
+[08:34:26Z] 1. Probing /site-updates, /auth/accounts, /user/me, /user/usage, /user/api-keys/all
+{"banner":{"id":"cefc3899-438b-48df-8a46-0909bec0af85","title":"Account using fake user agent will be banned.  ","body":"","link_url":null,"link_label":null,"created_at":"2026-07-30T06:15:33.209725Z"},"updates":[{"id":"b675c118-075b-47b3-bde7-d5d27e904880","title":"New account onboarding is paused for now! ","body":"We are at capacity, to provide a smooth user experience, we have stopped onboarding new users. ","link_url":null,"link_label":null,"created_at":"2026-08-11T19:56:55.228303Z"}]}{"active_user_id":null,"accounts":[],"max_accounts":5}{"error":{"type":"unknown","message":"Invalid authentication token.","code":401,"model":null,"retry_after":null,"tokens_requested":null,"queue_size":null}}{"error":{"type":"unknown","message":"Invalid authentication token.","code":401,"model":null,"retry_after":null,"tokens_requested":null,"queue_size":null}}{"error":{"type":"unknown","message":"Invalid authentication token.","code":401,"model":null,"retry_after":null,"tokens_requested":null,"queue_size":null}}
+[08:34:26Z] 2. Testing /v1/models schema switch (OpenAI default vs Anthropic-Version: 2023-06-01)
+glm-5.3-flash
+minimax-m3
+qwen3.6-35b
+deepseek-v4-flash
+minimax-m3.1-flash
+bge-m3
+
+[08:34:27Z] 2b. Testing doc-label 'glm-5.3' (404) vs actual ID 'glm-5.3-flash' (200) vs 'bge-m3' on chat route (404)
+{"error":{"type":"unknown","message":"Model 'glm-5.3' not found","code":404,"model":null,"retry_after":null,"tokens_requested":null,"queue_size":null}}{"id": "chatcmpl-0ce413496a004871800e0dcb", "object": "chat.completion", "created": 1793003667, "model": "glm-5.3-flash", "choices": [{"index": 0, "message": {"role": "assistant", "content": "", "reasoning_content": "Hmm"}, "finish_reason": "length"}], "usage": {"prompt_tokens": 13, "completion_tokens": 1, "total_tokens": 14, "reasoning_tokens": 1, "cache_read_tokens": 0, "cached_tokens": 0, "prompt_tokens_details": {"cached_tokens": 0}}}{"error":{"type":"unknown","message":"Model 'bge-m3' not found","code":404,"model":null,"retry_after":null,"tokens_requested":null,"queue_size":null}}{
+  "object": "list",
+  "model": "BAAI/bge-m3",
+  "dim": 1024
+}
+
+[08:34:27Z] 3. Probing Anthropic wire translator (/anthropic/v1/messages with anthropic-version: 2023-06-01)
+{"id":"msg_chatcmpl-ddad3e89bfce481995735479","type":"message","role":"assistant","model":"qwen3.6-35b","content":[{"type":"text","text":"ok"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":15,"output_tokens":2}}
+[08:34:28Z] 4. Probing X-Reasoning-Passthrough (default passthrough vs 'false' strip mode) + X-Request-ID echo
+{
+  "passthrough_default_message_keys": [
+    "role",
+    "content"
+  ],
+  "passthrough_false_message_keys": [
+    "role",
+    "content"
+  ],
+  "usage_on": {
+    "prompt_tokens": 8,
+    "completion_tokens": 9,
+    "total_tokens": 17,
+    "cache_read_tokens": 0,
+    "cached_tokens": 0,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  },
+  "usage_off": {
+    "prompt_tokens": 8,
+    "completion_tokens": 9,
+    "total_tokens": 17,
+    "cache_read_tokens": 0,
+    "cached_tokens": 0,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}
+
+[08:34:29Z] 5. Auditing /user/recent-requests for provider split, routewise, and 16-token cache block alignment
+{
+  "rows_inspected": 0,
+  "provider_distribution": {},
+  "all_cached_reads_16_token_aligned": true,
+  "non_16_aligned_exceptions": []
+}
+
+[08:34:29Z] 6. Pulling live OpenInfra DCGM GPU & SGLang speculative-decoding snapshot (/api/dashboard)
+{
+  "top_level_keys": [],
+  "sglang_servers_count": 0,
+  "gpu_nodes_count": 0
+}
+
+[08:34:30Z] 7. Writing consolidated report to /tmp/fi_orthogonal/out/anomaly_report.md
+
+[08:34:30Z] Done. Report written to /tmp/fi_orthogonal/out/anomaly_report.md

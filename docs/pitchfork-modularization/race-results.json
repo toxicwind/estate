@@ -1,0 +1,168 @@
+{
+  "metrics": {
+    "M1_compose_ms": {
+      "A": {
+        "median": 104.77,
+        "p95": 247.02,
+        "runs": 20
+      },
+      "B": {
+        "median": 125.7,
+        "p95": 318.7,
+        "runs": 20
+      },
+      "C": {
+        "median": 111.2,
+        "p95": 287.12,
+        "runs": 20
+      }
+    },
+    "M2_single_daemon_change": {
+      "A": {
+        "target": "mesh-landing",
+        "fragment_touched": "proto-a/pitchfork.d/10-group0.toml",
+        "recompose_ms": 94.92,
+        "composed_diff_lines": 1,
+        "other_daemons_byte_identical": true
+      },
+      "B": {
+        "target": "mesh-landing",
+        "fragment_touched": "proto-b/daemons.d/mesh-landing.toml",
+        "recompose_ms": 119.52,
+        "composed_diff_lines": 1,
+        "other_daemons_byte_identical": true
+      },
+      "C": {
+        "target": "mesh-landing",
+        "fragment_touched": "proto-c/proj-projects-range/.daemon.toml",
+        "recompose_ms": 62.15,
+        "composed_diff_lines": 1,
+        "other_daemons_byte_identical": true
+      }
+    },
+    "M3_merge_conflicts": {
+      "MONO": {
+        "far": {
+          "conflicted": false,
+          "conflictFiles": 0,
+          "conflictHunks": 0
+        },
+        "adjacent": {
+          "conflicted": false,
+          "conflictFiles": 0,
+          "conflictHunks": 0
+        }
+      },
+      "A": {
+        "far": {
+          "conflicted": false,
+          "conflictFiles": 0,
+          "conflictHunks": 0
+        },
+        "adjacent": {
+          "conflicted": false,
+          "conflictFiles": 0,
+          "conflictHunks": 0
+        }
+      },
+      "B": {
+        "far": {
+          "conflicted": false,
+          "conflictFiles": 0,
+          "conflictHunks": 0
+        },
+        "adjacent": {
+          "conflicted": false,
+          "conflictFiles": 0,
+          "conflictHunks": 0
+        }
+      },
+      "C": {
+        "far": {
+          "conflicted": false,
+          "conflictFiles": 0,
+          "conflictHunks": 0
+        },
+        "adjacent": {
+          "conflicted": false,
+          "conflictFiles": 0,
+          "conflictHunks": 0
+        }
+      }
+    },
+    "M3b_concurrent_add": {
+      "MONO": {
+        "conflicted": true,
+        "conflict_files": 1,
+        "conflict_hunks": 1
+      },
+      "A": {
+        "conflicted": false,
+        "conflict_files": 0,
+        "conflict_hunks": 0
+      },
+      "B": {
+        "conflicted": false,
+        "conflict_files": 0,
+        "conflict_hunks": 0
+      },
+      "C": {
+        "conflicted": true,
+        "conflict_files": 1,
+        "conflict_hunks": 1
+      }
+    },
+    "M4_rollback": {
+      "MONO": {
+        "bad_daemon": "bench-radar",
+        "bad_file": "pitchfork.toml",
+        "stanzas_in_bad_file_diff": 6,
+        "foreign_stanzas_in_same_file": 5,
+        "over_reverted_good_daemons": 5,
+        "revert_cmds": 7,
+        "revert_ms": 42.16
+      },
+      "A": {
+        "bad_daemon": "bench-radar",
+        "bad_file": "pitchfork.d/15-group5.toml",
+        "stanzas_in_bad_file_diff": 3,
+        "foreign_stanzas_in_same_file": 2,
+        "over_reverted_good_daemons": 2,
+        "revert_cmds": 4,
+        "revert_ms": 100.53
+      },
+      "B": {
+        "bad_daemon": "bench-radar",
+        "bad_file": "daemons.d/bench-radar.toml",
+        "stanzas_in_bad_file_diff": 1,
+        "foreign_stanzas_in_same_file": 0,
+        "over_reverted_good_daemons": 0,
+        "revert_cmds": 2,
+        "revert_ms": 16.45
+      },
+      "C": {
+        "bad_daemon": "bench-radar",
+        "bad_file": "proj-tools-bench-radar/.daemon.toml",
+        "stanzas_in_bad_file_diff": 1,
+        "foreign_stanzas_in_same_file": 0,
+        "over_reverted_good_daemons": 0,
+        "revert_cmds": 2,
+        "revert_ms": 94.43
+      }
+    }
+  },
+  "validity": {
+    "A": {
+      "ok": true,
+      "detail": "82 daemons, stanzas identical"
+    },
+    "B": {
+      "ok": true,
+      "detail": "82 daemons, stanzas identical"
+    },
+    "C": {
+      "ok": true,
+      "detail": "82 daemons, stanzas identical"
+    }
+  }
+}

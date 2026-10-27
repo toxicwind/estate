@@ -1,0 +1,9 @@
+# Herd rename pairs: herd -> herd
+# Rules: exact token renames for the project identity.
+# Excludes: none (herd is a distinctive project name, no common-word collisions).
+
+substr: herd => herd
+substr: herd => herd
+substr: llamaswap => herd
+substr: Herd => Herd
+substr: HERD => HERD

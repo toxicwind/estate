@@ -1,0 +1,38 @@
+== P1-P4: UA matrix on GET /v1/models ==
+P1 honest tau UA           : 200  (want 200)
+P2 chrome-spoof UA         : 200  (200 = no UA gate today)
+P3 empty UA                : 200  (200)
+P4 curl default, no auth   : 200  (200 = models list is public)
+== P5-P7: UA matrix on POST /v1/chat/completions ==
+P5 honest UA  chat        : 200  (want 200)
+P6 chrome-spoof chat      : 200  (200)
+P7 empty UA chat          : 200  (200)
+== P8: 2-slot concurrency (4 parallel chats; expect exactly 2x200 + 2x429) ==
+req4: 429 .153777538s
+req3: 429 .170264817s
+req2: 200 .214391042s
+req1: 200 .214442891s
+== P9: subagent-style burst (4 agents x 3 sequential calls) ==
+agent2/r1: 429
+agent1/r1: 429
+agent4/r1: 200
+agent3/r1: 200
+agent4/r2: 429
+agent2/r2: 200
+agent1/r2: 200
+agent3/r2: 200
+agent1/r3: 429
+agent4/r3: 200
+agent2/r3: 200
+agent3/r3: 200
+== P10: 429 carries retry-after (headers of a saturated 3rd request) ==
+HTTP/2 429 
+retry-after: 1
+x-request-id: 9253ed390a96c554aeb5c1b0
+== P11: pricing from GET /v1/models (USD/1M) ==
+glm-5.3-flash          in=0.3 out=1.0 cacheR=0.06 cacheW=0 ctx=1000000 out_len=131072
+minimax-m3             in=0.5 out=2 cacheR=0.3 cacheW=0.0 ctx=1048576 out_len=131072
+qwen3.6-35b            in=0.08 out=0.28 cacheR=0.01 cacheW=0 ctx=262144 out_len=8192
+diffusiongemma         in=0.02 out=0.08 cacheR=0.01 cacheW=0 ctx=262144 out_len=8192
+deepseek-v4-flash      in=0.44 out=1.32 cacheR=0.014 cacheW=0 ctx=1000000 out_len=393216
+bge-m3                 in=0 out=0 cacheR=None cacheW=None ctx=8192 out_len=0

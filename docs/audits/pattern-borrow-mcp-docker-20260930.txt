@@ -1,0 +1,14 @@
+  scanned 'mcp server docker': 8 repos, 200 stars
+  scanned 'docker mcp tools': 8 repos, 231 stars
+  scanned 'container management mcp': 8 repos, 34 stars
+
+=== RANKED PATTERNS (GitHub-wide) ===
+score  bug  repos  stars   iss  test  term
+ 64.7   0     8     231    36 0.25  docker mcp tools
+ 23.5   0     8     200    25 0.13  mcp server docker
+ 16.0   0     8      34     9 0.25  container management mcp
+
+TOP 3 TO MERGE:
+  - docker mcp tools
+  - mcp server docker
+  - container management mcp

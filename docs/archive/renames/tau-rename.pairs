@@ -1,0 +1,21 @@
+# tau full fork rename: oh-my-pi / omp / pi-* -> tau
+# Chris: "Tau is our whole fork of omp" — one brand, no confusion.
+# URL anchors FIRST (before the bare token rule rewrites the path).
+substr: github.com/can1357/oh-my-pi => github.com/toxicwind/tau
+# npm scope: @oh-my-pi/pi-utils -> @tau/tau-utils
+substr: @oh-my-pi => @tau
+# brand token (distinctive, substring-safe)
+substr: oh-my-pi => tau
+substr: OhMyPi => Tau
+# binary/command/config identifiers as word prefixes:
+# omp, OMP, OMP_*, OmpError, omptype, omp_rpc — all ours (inventoried).
+# Never touches complete/prompt/component/compact (no word boundary there).
+prefix: omp => tau
+# package/crate/tool prefixes: pi-shell -> tau-shell, pi-uu-grep -> tau-uu-grep
+prefix: pi- => tau-
+# composites
+substr: mnemopi => mnemotau
+substr: robomp => robtau
+# the real OpenMP variables inside vendored uutils — never rewritten
+exclude: OMP_NUM_THREADS
+exclude: OMP_THREAD_LIMIT

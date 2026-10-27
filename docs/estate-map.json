@@ -1,0 +1,2089 @@
+{
+  "generatedAt": "2026-10-03T07:22:51.621Z",
+  "host": {
+    "hostname": "awrawr-pc",
+    "home": "/home/toxic",
+    "estateRoot": "/home/toxic/estate",
+    "tauConfigDir": ".tau"
+  },
+  "repos": [
+    {
+      "name": "estate",
+      "path": "/home/toxic/estate",
+      "role": "control plane: pitchfork.toml, config/, bin/, bridge/, agents/, docs/, projects/",
+      "exists": true,
+      "isRepo": true,
+      "gitKind": "nested",
+      "remote": "https://github.com/toxicwind/estate.git",
+      "head": "4505f36bef",
+      "committedAt": "2026-10-03T00:11:06-06:00",
+      "dirtyPaths": 43
+    },
+    {
+      "name": "ranch",
+      "path": "/home/toxic/estate/ranch",
+      "role": "the inference estate monorepo: bornite, rhodochrosite, thresher, squawk, oracle, and the mesh provider catalog",
+      "exists": true,
+      "isRepo": true,
+      "gitKind": "nested",
+      "remote": "https://github.com/toxicwind/ranch",
+      "head": "3c1a4a5",
+      "committedAt": "2026-10-02T23:57:58-06:00",
+      "dirtyPaths": 1716
+    },
+    {
+      "name": "ranch",
+      "path": "/home/toxic/ranch",
+      "role": "SECOND checkout of toxicwind/ranch — duplicate, not the daemon target",
+      "exists": true,
+      "isRepo": true,
+      "gitKind": "nested",
+      "remote": "https://github.com/toxicwind/ranch",
+      "head": "3c1a4a5",
+      "committedAt": "2026-10-02T23:57:58-06:00",
+      "dirtyPaths": 1716
+    },
+    {
+      "name": "tau-config",
+      "path": ".tau",
+      "role": "coding-agent engine config (config.yml, models.yml, model-router.json, mcp.json)",
+      "exists": true,
+      "isRepo": false,
+      "gitKind": "none",
+      "remote": null,
+      "head": null,
+      "committedAt": null,
+      "dirtyPaths": 0
+    }
+  ],
+  "ports": [
+    {
+      "port": 22,
+      "ssot": null,
+      "daemons": [],
+      "live": true,
+      "addr": "[::]",
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 53,
+      "ssot": null,
+      "daemons": [],
+      "live": true,
+      "addr": "127.0.0.53%lo",
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 443,
+      "ssot": null,
+      "daemons": [],
+      "live": true,
+      "addr": "[fd7a:115c:a1e0::c233:c75d]",
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 631,
+      "ssot": null,
+      "daemons": [],
+      "live": true,
+      "addr": "[::1]",
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 5000,
+      "ssot": "FLEET_POWER_INTERVAL",
+      "daemons": [],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 5037,
+      "ssot": null,
+      "daemons": [],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "adb",
+      "pid": 1086
+    },
+    {
+      "port": 5355,
+      "ssot": null,
+      "daemons": [],
+      "live": true,
+      "addr": "[::]",
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 5432,
+      "ssot": null,
+      "daemons": [],
+      "live": true,
+      "addr": "[::1]",
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 5900,
+      "ssot": "AGENT_DISPLAY_PORT",
+      "daemons": [
+        "agent-display"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 5900,
+      "ssot": "AGENT_DISPLAY_PORT",
+      "daemons": [
+        "agent-display"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 6080,
+      "ssot": "AGENT_VIEWER_PORT",
+      "daemons": [
+        "agent-viewer"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 6080,
+      "ssot": "AGENT_VIEWER_PORT",
+      "daemons": [
+        "agent-viewer"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 8000,
+      "ssot": null,
+      "daemons": [],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 8443,
+      "ssot": null,
+      "daemons": [],
+      "live": true,
+      "addr": "[fd7a:115c:a1e0::c233:c75d]",
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 9223,
+      "ssot": "BROWSER_KEEPER_CDP_PORT",
+      "daemons": [
+        "browser-keeper"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 9223,
+      "ssot": "BROWSER_KEEPER_CDP_PORT",
+      "daemons": [
+        "browser-keeper"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 18384,
+      "ssot": null,
+      "daemons": [],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "syncthing",
+      "pid": 525588
+    },
+    {
+      "port": 18789,
+      "ssot": null,
+      "daemons": [],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "MainThread",
+      "pid": 1254081
+    },
+    {
+      "port": 18924,
+      "ssot": null,
+      "daemons": [],
+      "live": true,
+      "addr": "0.0.0.0",
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 20128,
+      "ssot": "VANSROUTER_PORT",
+      "daemons": [
+        "vansrouter"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 20128,
+      "ssot": "VANSROUTER_PORT",
+      "daemons": [
+        "vansrouter"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 22000,
+      "ssot": null,
+      "daemons": [],
+      "live": true,
+      "addr": "*",
+      "process": "syncthing",
+      "pid": 525588
+    },
+    {
+      "port": 25100,
+      "ssot": "HERD_PORT",
+      "daemons": [
+        "bornite"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25100,
+      "ssot": "HERD_PORT",
+      "daemons": [
+        "bornite"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25101,
+      "ssot": "MODEL_GUARD_PORT",
+      "daemons": [
+        "model-guard"
+      ],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "python3",
+      "pid": 936577
+    },
+    {
+      "port": 25101,
+      "ssot": "MODEL_GUARD_PORT",
+      "daemons": [
+        "model-guard"
+      ],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "python3",
+      "pid": 936577
+    },
+    {
+      "port": 25102,
+      "ssot": "YOTE_PORT",
+      "daemons": [
+        "yote"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25102,
+      "ssot": "YOTE_PORT",
+      "daemons": [
+        "yote"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25103,
+      "ssot": "OPENFANG_PORT — openfang-front (mesh-front proxy -> :25196 kernel; pitchfork daemons.openfang-front)",
+      "daemons": [
+        "openfang-front"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25103,
+      "ssot": "OPENFANG_PORT — openfang-front (mesh-front proxy -> :25196 kernel; pitchfork daemons.openfang-front)",
+      "daemons": [
+        "openfang-front"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25104,
+      "ssot": "ESTATE_ROUTER_PORT",
+      "daemons": [
+        "Estate-router"
+      ],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "bun",
+      "pid": 3872168
+    },
+    {
+      "port": 25104,
+      "ssot": "ESTATE_ROUTER_PORT",
+      "daemons": [
+        "Estate-router"
+      ],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "bun",
+      "pid": 3872168
+    },
+    {
+      "port": 25105,
+      "ssot": "PROMETHEUS_PORT",
+      "daemons": [
+        "prometheus"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25105,
+      "ssot": "PROMETHEUS_PORT",
+      "daemons": [
+        "prometheus"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25106,
+      "ssot": "HF_DOWNLOADER_PORT",
+      "daemons": [
+        "hf-downloader"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25106,
+      "ssot": "HF_DOWNLOADER_PORT",
+      "daemons": [
+        "hf-downloader"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25107,
+      "ssot": "NULL_G_PORT",
+      "daemons": [
+        "null-g-proxy"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25107,
+      "ssot": "NULL_G_PORT",
+      "daemons": [
+        "null-g-proxy"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25108,
+      "ssot": "WATCHDOG_PORT",
+      "daemons": [],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25109,
+      "ssot": "KEYPOOL_PORT",
+      "daemons": [
+        "keypool"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25109,
+      "ssot": "KEYPOOL_PORT",
+      "daemons": [
+        "keypool"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25110,
+      "ssot": "GRAFANA_PORT",
+      "daemons": [
+        "grafana"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25110,
+      "ssot": "GRAFANA_PORT",
+      "daemons": [
+        "grafana"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25111,
+      "ssot": "TAU_CHUTE_PORT",
+      "daemons": [
+        "tau"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25111,
+      "ssot": "TAU_CHUTE_PORT",
+      "daemons": [
+        "tau"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25112,
+      "ssot": "GHAS_API_PORT",
+      "daemons": [
+        "search-api"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25112,
+      "ssot": "GHAS_API_PORT",
+      "daemons": [
+        "search-api"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25113,
+      "ssot": "GHAS_MCP_PORT",
+      "daemons": [],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25114,
+      "ssot": "GHAS_FRONTEND_PORT",
+      "daemons": [
+        "search-ui"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25114,
+      "ssot": "GHAS_FRONTEND_PORT",
+      "daemons": [
+        "search-ui"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25115,
+      "ssot": "MESH_HUB_PORT",
+      "daemons": [
+        "mesh-hub"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25115,
+      "ssot": "MESH_HUB_PORT",
+      "daemons": [
+        "mesh-hub"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25116,
+      "ssot": "KIMI_AUDIT_DASH_PORT",
+      "daemons": [],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25117,
+      "ssot": "HINDSIGHT_API_PORT",
+      "daemons": [
+        "hindsight"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25117,
+      "ssot": "HINDSIGHT_API_PORT",
+      "daemons": [
+        "hindsight"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25118,
+      "ssot": "HINDSIGHT_CP_PORT",
+      "daemons": [],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25120,
+      "ssot": "ESTATE_CHAT_PORT",
+      "daemons": [
+        "estate-chat"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25120,
+      "ssot": "ESTATE_CHAT_PORT",
+      "daemons": [
+        "estate-chat"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25121,
+      "ssot": "FEEDLOT_PORT",
+      "daemons": [
+        "feedlot"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25121,
+      "ssot": "FEEDLOT_PORT",
+      "daemons": [
+        "feedlot"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25122,
+      "ssot": "BEELLAMA_PORT",
+      "daemons": [
+        "beellama-fast"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25122,
+      "ssot": "BEELLAMA_PORT",
+      "daemons": [
+        "beellama-fast"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25123,
+      "ssot": "IK_LLAMA_PORT",
+      "daemons": [],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25124,
+      "ssot": "TURBO_PORT",
+      "daemons": [],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25125,
+      "ssot": "PI_AGENT_PORT",
+      "daemons": [],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25126,
+      "ssot": "KIMI_CODE_PORT",
+      "daemons": [
+        "kimi-code"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25126,
+      "ssot": "KIMI_CODE_PORT",
+      "daemons": [
+        "kimi-code"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25127,
+      "ssot": "MCPPROXY_GO_PORT",
+      "daemons": [
+        "thresher"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25127,
+      "ssot": "MCPPROXY_GO_PORT",
+      "daemons": [
+        "thresher"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25128,
+      "ssot": "ANTIGRAVITY_GATEWAY_PORT",
+      "daemons": [],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25129,
+      "ssot": "ZED_PORT",
+      "daemons": [],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25130,
+      "ssot": "BROWSERLESS_PORT",
+      "daemons": [
+        "browserless"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25130,
+      "ssot": "BROWSERLESS_PORT",
+      "daemons": [
+        "browserless"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25131,
+      "ssot": "SOV_GHAS_PORT",
+      "daemons": [],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25132,
+      "ssot": "SYS_MONITOR_PORT",
+      "daemons": [],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25133,
+      "ssot": "QDRANT_HTTP_PORT",
+      "daemons": [],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25134,
+      "ssot": "QDRANT_GRPC_PORT",
+      "daemons": [],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25135,
+      "ssot": "SQUAWK_FEED_PORT",
+      "daemons": [],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25136,
+      "ssot": "FLEET_UI_PORT",
+      "daemons": [],
+      "live": true,
+      "addr": "0.0.0.0",
+      "process": "bun",
+      "pid": 4046238
+    },
+    {
+      "port": 25136,
+      "ssot": "FLEET_UI_PORT",
+      "daemons": [],
+      "live": true,
+      "addr": "0.0.0.0",
+      "process": "bun",
+      "pid": 4046238
+    },
+    {
+      "port": 25137,
+      "ssot": "BEDROCK_UI_PORT",
+      "daemons": [
+        "bedrock-ui"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25137,
+      "ssot": "BEDROCK_UI_PORT",
+      "daemons": [
+        "bedrock-ui"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25138,
+      "ssot": "SSHX_PORT",
+      "daemons": [],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25139,
+      "ssot": "MISE_PORT",
+      "daemons": [],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25140,
+      "ssot": "ANTIGRAVITY_CLI_PORT",
+      "daemons": [],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25141,
+      "ssot": "BUN_RUNTIME_PORT",
+      "daemons": [],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25142,
+      "ssot": "BUN_DEV_PORT",
+      "daemons": [],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25143,
+      "ssot": "COYOTE_PORT",
+      "daemons": [
+        "coyote"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25143,
+      "ssot": "COYOTE_PORT",
+      "daemons": [
+        "coyote"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25144,
+      "ssot": "KAFKA_PORT",
+      "daemons": [
+        "kafka"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25144,
+      "ssot": "KAFKA_PORT",
+      "daemons": [
+        "kafka"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25145,
+      "ssot": "TAU_CODE_PORT",
+      "daemons": [],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25146,
+      "ssot": "WHATSAPP_MCP_PORT",
+      "daemons": [
+        "whatsapp-mcp"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25146,
+      "ssot": "WHATSAPP_MCP_PORT",
+      "daemons": [
+        "whatsapp-mcp"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25147,
+      "ssot": "SQUAWK_WS_PORT",
+      "daemons": [],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25148,
+      "ssot": "MBX_CACHE_PORT",
+      "daemons": [
+        "mbx-cache"
+      ],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "mise-cache",
+      "pid": 353740
+    },
+    {
+      "port": 25148,
+      "ssot": "MBX_CACHE_PORT",
+      "daemons": [
+        "mbx-cache"
+      ],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "mise-cache",
+      "pid": 353740
+    },
+    {
+      "port": 25149,
+      "ssot": "PAPER_POLLER_PORT",
+      "daemons": [
+        "paper-poller"
+      ],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "python3",
+      "pid": 944996
+    },
+    {
+      "port": 25149,
+      "ssot": "PAPER_POLLER_PORT",
+      "daemons": [
+        "paper-poller"
+      ],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "python3",
+      "pid": 944996
+    },
+    {
+      "port": 25150,
+      "ssot": "PAPER_POLLER_WATCHDOG_PORT",
+      "daemons": [
+        "paper-poller-watchdog"
+      ],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "python3",
+      "pid": 3872092
+    },
+    {
+      "port": 25150,
+      "ssot": "PAPER_POLLER_WATCHDOG_PORT",
+      "daemons": [
+        "paper-poller-watchdog"
+      ],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "python3",
+      "pid": 3872092
+    },
+    {
+      "port": 25151,
+      "ssot": "ORACLE_CORE_PORT",
+      "daemons": [
+        "oracle-core"
+      ],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "python3",
+      "pid": 3872024
+    },
+    {
+      "port": 25151,
+      "ssot": "ORACLE_CORE_PORT",
+      "daemons": [
+        "oracle-core"
+      ],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "python3",
+      "pid": 3872024
+    },
+    {
+      "port": 25152,
+      "ssot": "TOOLCALL_PORT",
+      "daemons": [
+        "toolcall-llm"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25152,
+      "ssot": "TOOLCALL_PORT",
+      "daemons": [
+        "toolcall-llm"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25153,
+      "ssot": "KIMI_AUTO_SHIM_PORT",
+      "daemons": [
+        "kimi-auto-shim"
+      ],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "python3",
+      "pid": 3865196
+    },
+    {
+      "port": 25153,
+      "ssot": "KIMI_AUTO_SHIM_PORT",
+      "daemons": [
+        "kimi-auto-shim"
+      ],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "python3",
+      "pid": 3865196
+    },
+    {
+      "port": 25160,
+      "ssot": "FORENSICS_SRV_PORT",
+      "daemons": [],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "python",
+      "pid": 1035
+    },
+    {
+      "port": 25160,
+      "ssot": "FORENSICS_SRV_PORT",
+      "daemons": [],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "python",
+      "pid": 1035
+    },
+    {
+      "port": 25161,
+      "ssot": "BORNITE_RACE_PORT",
+      "daemons": [],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25163,
+      "ssot": "NIM_KIMI_SIDECAR_PORT",
+      "daemons": [
+        "nim-kimi-sidecar"
+      ],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "python3",
+      "pid": 3871987
+    },
+    {
+      "port": 25163,
+      "ssot": "NIM_KIMI_SIDECAR_PORT",
+      "daemons": [
+        "nim-kimi-sidecar"
+      ],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "python3",
+      "pid": 3871987
+    },
+    {
+      "port": 25180,
+      "ssot": "ML_SERVE_PORT",
+      "daemons": [
+        "ml-serve"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25180,
+      "ssot": "ML_SERVE_PORT",
+      "daemons": [
+        "ml-serve"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25181,
+      "ssot": "BENCH_RADAR_PORT",
+      "daemons": [
+        "bench-radar"
+      ],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "bun",
+      "pid": 3865104
+    },
+    {
+      "port": 25181,
+      "ssot": "BENCH_RADAR_PORT",
+      "daemons": [
+        "bench-radar"
+      ],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "bun",
+      "pid": 3865104
+    },
+    {
+      "port": 25189,
+      "ssot": "NIM_QUEUE_PORT",
+      "daemons": [],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25190,
+      "ssot": "REASONING_ROUTER_PORT",
+      "daemons": [],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25191,
+      "ssot": "NIM_VALIDATION_PORT",
+      "daemons": [],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25192,
+      "ssot": "PI_WEB_DASHBOARD_PORT",
+      "daemons": [],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25193,
+      "ssot": "RHODOCHROSITE_PORT",
+      "daemons": [
+        "rhodochrosite"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25193,
+      "ssot": "RHODOCHROSITE_PORT",
+      "daemons": [
+        "rhodochrosite"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25194,
+      "ssot": "RALPH_DASH_PORT",
+      "daemons": [
+        "ralph-dashboard"
+      ],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "uvicorn",
+      "pid": 3872126
+    },
+    {
+      "port": 25194,
+      "ssot": "RALPH_DASH_PORT",
+      "daemons": [
+        "ralph-dashboard"
+      ],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "uvicorn",
+      "pid": 3872126
+    },
+    {
+      "port": 25195,
+      "ssot": "CODEBASE_MEMORY_PORT",
+      "daemons": [
+        "codebase-memory"
+      ],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "codebase-memory",
+      "pid": 3884997
+    },
+    {
+      "port": 25195,
+      "ssot": "CODEBASE_MEMORY_PORT",
+      "daemons": [
+        "codebase-memory"
+      ],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "codebase-memory",
+      "pid": 3884997
+    },
+    {
+      "port": 25196,
+      "ssot": "OPENFANG_KERNEL_PORT",
+      "daemons": [
+        "openfang"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25196,
+      "ssot": "OPENFANG_KERNEL_PORT",
+      "daemons": [
+        "openfang"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25197,
+      "ssot": "BOUNDLESS_PORT",
+      "daemons": [
+        "boundless"
+      ],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "python",
+      "pid": 3865123
+    },
+    {
+      "port": 25197,
+      "ssot": "BOUNDLESS_PORT",
+      "daemons": [
+        "boundless"
+      ],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "python",
+      "pid": 3865123
+    },
+    {
+      "port": 25198,
+      "ssot": "AWR_MCP_PORT",
+      "daemons": [
+        "awrawr-mcp"
+      ],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "python",
+      "pid": 3859478
+    },
+    {
+      "port": 25198,
+      "ssot": "AWR_MCP_PORT",
+      "daemons": [
+        "awrawr-mcp"
+      ],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "python",
+      "pid": 3859478
+    },
+    {
+      "port": 25199,
+      "ssot": "REDIS_PORT",
+      "daemons": [
+        "redis"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25199,
+      "ssot": "REDIS_PORT",
+      "daemons": [
+        "redis"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25200,
+      "ssot": "CHALCOPYRITE_PORT",
+      "daemons": [],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "bun",
+      "pid": 3865144
+    },
+    {
+      "port": 25200,
+      "ssot": "CHALCOPYRITE_PORT",
+      "daemons": [],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "bun",
+      "pid": 3865144
+    },
+    {
+      "port": 25201,
+      "ssot": "RUST_WEB_BACKEND_PORT",
+      "daemons": [
+        "fleet-feed"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25201,
+      "ssot": "RUST_WEB_BACKEND_PORT",
+      "daemons": [
+        "fleet-feed"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25202,
+      "ssot": "GEMINI_MCP_PORT",
+      "daemons": [],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25204,
+      "ssot": "WS_EXEC_PORT",
+      "daemons": [
+        "awrawr-ws-exec"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25204,
+      "ssot": "WS_EXEC_PORT",
+      "daemons": [
+        "awrawr-ws-exec"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25205,
+      "ssot": "PROMETHEUS_BACKEND_PORT",
+      "daemons": [],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25206,
+      "ssot": "HF_DOWNLOADER_BACKEND_PORT",
+      "daemons": [],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25207,
+      "ssot": "MESH_LANDING_PORT",
+      "daemons": [
+        "mesh-landing"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25207,
+      "ssot": "MESH_LANDING_PORT",
+      "daemons": [
+        "mesh-landing"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25208,
+      "ssot": "NGINX_PORT",
+      "daemons": [
+        "nginx"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25208,
+      "ssot": "NGINX_PORT",
+      "daemons": [
+        "nginx"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25209,
+      "ssot": "MATTER_SERVER_PORT",
+      "daemons": [
+        "matter-server"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25209,
+      "ssot": "MATTER_SERVER_PORT",
+      "daemons": [
+        "matter-server"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25210,
+      "ssot": "GRAFANA_BACKEND_PORT",
+      "daemons": [],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25211,
+      "ssot": "NODE_EXPORTER_PORT",
+      "daemons": [
+        "node-exporter"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25211,
+      "ssot": "NODE_EXPORTER_PORT",
+      "daemons": [
+        "node-exporter"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25212,
+      "ssot": "COCKPIT_PORT",
+      "daemons": [],
+      "live": true,
+      "addr": "*",
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25212,
+      "ssot": "COCKPIT_PORT",
+      "daemons": [],
+      "live": true,
+      "addr": "*",
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25213,
+      "ssot": "ESTATE_EXPORTER_PORT",
+      "daemons": [
+        "Estate-exporter"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25213,
+      "ssot": "ESTATE_EXPORTER_PORT",
+      "daemons": [
+        "Estate-exporter"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25214,
+      "ssot": "ZEDRA_HOST_PORT",
+      "daemons": [],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25215,
+      "ssot": "STREAM_BROKER_PORT",
+      "daemons": [
+        "Estate-stream-broker"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25215,
+      "ssot": "STREAM_BROKER_PORT",
+      "daemons": [
+        "Estate-stream-broker"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25216,
+      "ssot": "TTYD_PORT",
+      "daemons": [],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 25219,
+      "ssot": "WINDMILL_PORT",
+      "daemons": [
+        "windmill"
+      ],
+      "live": true,
+      "addr": "*",
+      "process": "bun",
+      "pid": 4046338
+    },
+    {
+      "port": 25219,
+      "ssot": "WINDMILL_PORT",
+      "daemons": [
+        "windmill"
+      ],
+      "live": true,
+      "addr": "*",
+      "process": "bun",
+      "pid": 4046338
+    },
+    {
+      "port": 33035,
+      "ssot": null,
+      "daemons": [],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 34213,
+      "ssot": null,
+      "daemons": [],
+      "live": true,
+      "addr": "172.19.0.1",
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 34501,
+      "ssot": null,
+      "daemons": [],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "MainThread",
+      "pid": 2189701
+    },
+    {
+      "port": 34567,
+      "ssot": "FILES_PORT",
+      "daemons": [
+        "files"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 34567,
+      "ssot": "FILES_PORT",
+      "daemons": [
+        "files"
+      ],
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 35017,
+      "ssot": null,
+      "daemons": [],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 35789,
+      "ssot": null,
+      "daemons": [],
+      "live": true,
+      "addr": "172.17.0.1",
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 38141,
+      "ssot": null,
+      "daemons": [],
+      "live": true,
+      "addr": "100.72.199.93",
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 39481,
+      "ssot": null,
+      "daemons": [],
+      "live": true,
+      "addr": "10.0.0.218",
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 43000,
+      "ssot": null,
+      "daemons": [],
+      "live": true,
+      "addr": "0.0.0.0",
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 58050,
+      "ssot": null,
+      "daemons": [],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 58051,
+      "ssot": null,
+      "daemons": [],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 59818,
+      "ssot": null,
+      "daemons": [],
+      "live": true,
+      "addr": "100.72.199.93",
+      "process": null,
+      "pid": null
+    },
+    {
+      "port": 60955,
+      "ssot": null,
+      "daemons": [],
+      "live": true,
+      "addr": "[fd7a:115c:a1e0::c233:c75d]",
+      "process": null,
+      "pid": null
+    }
+  ],
+  "agent": {
+    "plugins": [],
+    "providers": [],
+    "selectors": [],
+    "mcpServers": [],
+    "creds": [
+      {
+        "name": "rhodochrosite client key",
+        "present": false
+      }
+    ]
+  },
+  "drift": [
+    {
+      "severity": "high",
+      "kind": "duplicate-checkout",
+      "detail": "https://github.com/toxicwind/ranch checked out 2x — newest 3c1a4a5 @ /home/toxic/estate/ranch; /home/toxic/ranch @ 3c1a4a5 (2026-10-02T23:57:58-06:00)",
+      "fix": "keep /home/toxic/estate/ranch; delete or archive /home/toxic/ranch"
+    },
+    {
+      "severity": "medium",
+      "kind": "port-ssot-dead",
+      "detail": "ports.env claims 5000 (FLEET_POWER_INTERVAL) — no listener, no pitchfork daemon claims it",
+      "fix": "start the daemon or drop the SSOT entry"
+    },
+    {
+      "severity": "medium",
+      "kind": "port-ssot-dead",
+      "detail": "ports.env claims 25108 (WATCHDOG_PORT) — no listener, no pitchfork daemon claims it",
+      "fix": "start the daemon or drop the SSOT entry"
+    },
+    {
+      "severity": "medium",
+      "kind": "port-ssot-dead",
+      "detail": "ports.env claims 25113 (GHAS_MCP_PORT) — no listener, no pitchfork daemon claims it",
+      "fix": "start the daemon or drop the SSOT entry"
+    },
+    {
+      "severity": "medium",
+      "kind": "port-ssot-dead",
+      "detail": "ports.env claims 25116 (KIMI_AUDIT_DASH_PORT) — no listener, no pitchfork daemon claims it",
+      "fix": "start the daemon or drop the SSOT entry"
+    },
+    {
+      "severity": "medium",
+      "kind": "port-ssot-dead",
+      "detail": "ports.env claims 25118 (HINDSIGHT_CP_PORT) — no listener, no pitchfork daemon claims it",
+      "fix": "start the daemon or drop the SSOT entry"
+    },
+    {
+      "severity": "medium",
+      "kind": "port-ssot-dead",
+      "detail": "ports.env claims 25123 (IK_LLAMA_PORT) — no listener, no pitchfork daemon claims it",
+      "fix": "start the daemon or drop the SSOT entry"
+    },
+    {
+      "severity": "medium",
+      "kind": "port-ssot-dead",
+      "detail": "ports.env claims 25124 (TURBO_PORT) — no listener, no pitchfork daemon claims it",
+      "fix": "start the daemon or drop the SSOT entry"
+    },
+    {
+      "severity": "medium",
+      "kind": "port-ssot-dead",
+      "detail": "ports.env claims 25125 (PI_AGENT_PORT) — no listener, no pitchfork daemon claims it",
+      "fix": "start the daemon or drop the SSOT entry"
+    },
+    {
+      "severity": "medium",
+      "kind": "port-ssot-dead",
+      "detail": "ports.env claims 25128 (ANTIGRAVITY_GATEWAY_PORT) — no listener, no pitchfork daemon claims it",
+      "fix": "start the daemon or drop the SSOT entry"
+    },
+    {
+      "severity": "medium",
+      "kind": "port-ssot-dead",
+      "detail": "ports.env claims 25129 (ZED_PORT) — no listener, no pitchfork daemon claims it",
+      "fix": "start the daemon or drop the SSOT entry"
+    },
+    {
+      "severity": "medium",
+      "kind": "port-ssot-dead",
+      "detail": "ports.env claims 25131 (SOV_GHAS_PORT) — no listener, no pitchfork daemon claims it",
+      "fix": "start the daemon or drop the SSOT entry"
+    },
+    {
+      "severity": "medium",
+      "kind": "port-ssot-dead",
+      "detail": "ports.env claims 25132 (SYS_MONITOR_PORT) — no listener, no pitchfork daemon claims it",
+      "fix": "start the daemon or drop the SSOT entry"
+    },
+    {
+      "severity": "medium",
+      "kind": "port-ssot-dead",
+      "detail": "ports.env claims 25133 (QDRANT_HTTP_PORT) — no listener, no pitchfork daemon claims it",
+      "fix": "start the daemon or drop the SSOT entry"
+    },
+    {
+      "severity": "medium",
+      "kind": "port-ssot-dead",
+      "detail": "ports.env claims 25134 (QDRANT_GRPC_PORT) — no listener, no pitchfork daemon claims it",
+      "fix": "start the daemon or drop the SSOT entry"
+    },
+    {
+      "severity": "medium",
+      "kind": "port-ssot-dead",
+      "detail": "ports.env claims 25135 (SQUAWK_FEED_PORT) — no listener, no pitchfork daemon claims it",
+      "fix": "start the daemon or drop the SSOT entry"
+    },
+    {
+      "severity": "medium",
+      "kind": "port-ssot-dead",
+      "detail": "ports.env claims 25138 (SSHX_PORT) — no listener, no pitchfork daemon claims it",
+      "fix": "start the daemon or drop the SSOT entry"
+    },
+    {
+      "severity": "medium",
+      "kind": "port-ssot-dead",
+      "detail": "ports.env claims 25139 (MISE_PORT) — no listener, no pitchfork daemon claims it",
+      "fix": "start the daemon or drop the SSOT entry"
+    },
+    {
+      "severity": "medium",
+      "kind": "port-ssot-dead",
+      "detail": "ports.env claims 25140 (ANTIGRAVITY_CLI_PORT) — no listener, no pitchfork daemon claims it",
+      "fix": "start the daemon or drop the SSOT entry"
+    },
+    {
+      "severity": "medium",
+      "kind": "port-ssot-dead",
+      "detail": "ports.env claims 25141 (BUN_RUNTIME_PORT) — no listener, no pitchfork daemon claims it",
+      "fix": "start the daemon or drop the SSOT entry"
+    },
+    {
+      "severity": "medium",
+      "kind": "port-ssot-dead",
+      "detail": "ports.env claims 25142 (BUN_DEV_PORT) — no listener, no pitchfork daemon claims it",
+      "fix": "start the daemon or drop the SSOT entry"
+    },
+    {
+      "severity": "medium",
+      "kind": "port-ssot-dead",
+      "detail": "ports.env claims 25145 (TAU_CODE_PORT) — no listener, no pitchfork daemon claims it",
+      "fix": "start the daemon or drop the SSOT entry"
+    },
+    {
+      "severity": "medium",
+      "kind": "port-ssot-dead",
+      "detail": "ports.env claims 25147 (SQUAWK_WS_PORT) — no listener, no pitchfork daemon claims it",
+      "fix": "start the daemon or drop the SSOT entry"
+    },
+    {
+      "severity": "medium",
+      "kind": "port-ssot-dead",
+      "detail": "ports.env claims 25161 (BORNITE_RACE_PORT) — no listener, no pitchfork daemon claims it",
+      "fix": "start the daemon or drop the SSOT entry"
+    },
+    {
+      "severity": "medium",
+      "kind": "port-ssot-dead",
+      "detail": "ports.env claims 25189 (NIM_QUEUE_PORT) — no listener, no pitchfork daemon claims it",
+      "fix": "start the daemon or drop the SSOT entry"
+    },
+    {
+      "severity": "medium",
+      "kind": "port-ssot-dead",
+      "detail": "ports.env claims 25190 (REASONING_ROUTER_PORT) — no listener, no pitchfork daemon claims it",
+      "fix": "start the daemon or drop the SSOT entry"
+    },
+    {
+      "severity": "medium",
+      "kind": "port-ssot-dead",
+      "detail": "ports.env claims 25191 (NIM_VALIDATION_PORT) — no listener, no pitchfork daemon claims it",
+      "fix": "start the daemon or drop the SSOT entry"
+    },
+    {
+      "severity": "medium",
+      "kind": "port-ssot-dead",
+      "detail": "ports.env claims 25192 (PI_WEB_DASHBOARD_PORT) — no listener, no pitchfork daemon claims it",
+      "fix": "start the daemon or drop the SSOT entry"
+    },
+    {
+      "severity": "medium",
+      "kind": "port-ssot-dead",
+      "detail": "ports.env claims 25202 (GEMINI_MCP_PORT) — no listener, no pitchfork daemon claims it",
+      "fix": "start the daemon or drop the SSOT entry"
+    },
+    {
+      "severity": "medium",
+      "kind": "port-ssot-dead",
+      "detail": "ports.env claims 25205 (PROMETHEUS_BACKEND_PORT) — no listener, no pitchfork daemon claims it",
+      "fix": "start the daemon or drop the SSOT entry"
+    },
+    {
+      "severity": "medium",
+      "kind": "port-ssot-dead",
+      "detail": "ports.env claims 25206 (HF_DOWNLOADER_BACKEND_PORT) — no listener, no pitchfork daemon claims it",
+      "fix": "start the daemon or drop the SSOT entry"
+    },
+    {
+      "severity": "medium",
+      "kind": "port-ssot-dead",
+      "detail": "ports.env claims 25210 (GRAFANA_BACKEND_PORT) — no listener, no pitchfork daemon claims it",
+      "fix": "start the daemon or drop the SSOT entry"
+    },
+    {
+      "severity": "medium",
+      "kind": "port-ssot-dead",
+      "detail": "ports.env claims 25214 (ZEDRA_HOST_PORT) — no listener, no pitchfork daemon claims it",
+      "fix": "start the daemon or drop the SSOT entry"
+    },
+    {
+      "severity": "medium",
+      "kind": "port-ssot-dead",
+      "detail": "ports.env claims 25216 (TTYD_PORT) — no listener, no pitchfork daemon claims it",
+      "fix": "start the daemon or drop the SSOT entry"
+    },
+    {
+      "severity": "high",
+      "kind": "daemon-path-dead",
+      "detail": "pitchfork daemon 'bedrock-ui' references /home/toxic/projects/bedrock/web — absent",
+      "fix": "update pitchfork.toml [daemons.bedrock-ui]"
+    }
+  ]
+}

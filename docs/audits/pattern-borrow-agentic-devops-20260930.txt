@@ -1,0 +1,14 @@
+  scanned 'agentic devops': 8 repos, 19634 stars
+  scanned 'ai agent infrastructure': 8 repos, 97 stars
+  scanned 'llm infrastructure orchestration': 8 repos, 114 stars
+
+=== RANKED PATTERNS (GitHub-wide) ===
+score  bug  repos  stars   iss  test  term
+ 55.7   0     8   19634    72 0.00  agentic devops
+ 32.0   0     8     114    24 0.75  llm infrastructure orchestration
+  2.2   0     8      97     8 0.25  ai agent infrastructure
+
+TOP 3 TO MERGE:
+  - agentic devops
+  - llm infrastructure orchestration
+  - ai agent infrastructure

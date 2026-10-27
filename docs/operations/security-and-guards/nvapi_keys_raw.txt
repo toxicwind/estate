@@ -1,0 +1,228 @@
+GBM_BACKEND=nvidia-drm
+/home/toxic/.env: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
+/home/toxic/.env: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
+/home/toxic/.env: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
+/home/toxic/.env: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
+/home/toxic/.secrets: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
+/home/toxic/.secrets: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
+/home/toxic/.secrets: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
+/home/toxic/.config/Code - Insiders/User/History/3a94ea3/gui1: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
+/home/toxic/.config/Code - Insiders/User/History/3a94ea3/gui1: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
+/home/toxic/.config/Code - Insiders/User/History/3a94ea3/gui1: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
+/home/toxic/.config/Code - Insiders/User/History/3a94ea3/xtp6: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
+/home/toxic/.config/Code - Insiders/User/History/3a94ea3/xtp6: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
+/home/toxic/.config/Code - Insiders/User/History/3a94ea3/xtp6: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
+/home/toxic/.config/Code - Insiders/User/History/3a94ea3/kBpS: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
+/home/toxic/.config/Code - Insiders/User/History/3a94ea3/kBpS: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
+/home/toxic/.config/Code - Insiders/User/History/3a94ea3/kBpS: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
+/home/toxic/.config/Code - Insiders/User/History/3a94ea3/kBpS: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
+/home/toxic/.config/Code - Insiders/User/History/3a94ea3/kBpS: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
+/home/toxic/.config/Code - Insiders/User/History/3a94ea3/kBpS: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
+/home/toxic/.config/Code - Insiders/User/workspaceStorage/1791274639868/state.vscdb.backup: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
+/home/toxic/.config/Code - Insiders/User/workspaceStorage/1791274639868/state.vscdb.backup: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
+/home/toxic/.config/Code - Insiders/User/workspaceStorage/1791274639868/state.vscdb.backup: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
+/home/toxic/.config/Code - Insiders/User/workspaceStorage/1791274639868/state.vscdb.backup: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790632041: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790632041: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790632041: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790632041: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790632041: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790632041: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790632041: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790630610: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790630610: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790630610: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790630610: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790630610: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790630610: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790630610: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790630175: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790630175: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790630175: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790630175: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790630175: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790630175: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790630175: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790630097: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790630097: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790630097: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790630097: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790630097: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790630097: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790630097: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790630060: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790630060: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790630060: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790630060: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790630060: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790630060: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790630060: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790629974: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790629974: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790629974: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790629974: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790629974: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790629974: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790629974: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790629881: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790629881: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790629881: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790629881: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790629881: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790629881: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790629881: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790629794: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790629794: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790629794: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790629794: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790629794: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790629794: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790629794: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/globalStorage/emptyWindowChatSessions/6f1d838c-84d9-4f79-9b6a-a22d99d832a0.jsonl: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/globalStorage/a-man-sharma-04.modelpilot/config.json.bak.1790307146155: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/globalStorage/a-man-sharma-04.modelpilot/config.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/globalStorage/a-man-sharma-04.modelpilot/config.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/globalStorage/a-man-sharma-04.modelpilot/config.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/globalStorage/a-man-sharma-04.modelpilot/config.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790312533100: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/settings.json.bak.1790312533100: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/1bc63a63/Ley8.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/1bc63a63/Ley8.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/1bc63a63/Ley8.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/1bc63a63/Ley8.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/1bc63a63/Ley8.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/1bc63a63/Ley8.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/1bc63a63/Ley8.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/oDPR.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/oDPR.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/oDPR.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/oDPR.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/oDPR.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/oDPR.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/oDPR.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/jn1K.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/jn1K.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/jn1K.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/jn1K.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/jn1K.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/jn1K.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/jn1K.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/i7pZ.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/i7pZ.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/i7pZ.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/i7pZ.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/i7pZ.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/i7pZ.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/i7pZ.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/dXbH.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/dXbH.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/dXbH.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/dXbH.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/dXbH.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/dXbH.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/dXbH.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/XVH0.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/XVH0.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/XVH0.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/XVH0.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/XVH0.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/XVH0.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/XVH0.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/Tiwn.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/Tiwn.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/Tiwn.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/Tiwn.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/Tiwn.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/Tiwn.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/Tiwn.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/Qim8.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/Qim8.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/Qim8.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/Qim8.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/Qim8.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/Qim8.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/Qim8.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/QVbf.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/QVbf.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/QVbf.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/ORsC.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/ORsC.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/ORsC.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/ORsC.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/ORsC.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/ORsC.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/ORsC.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/MtAR.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/MtAR.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/MtAR.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/MtAR.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/MtAR.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/MtAR.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/MtAR.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/MpHz.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/MpHz.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/MpHz.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/MpHz.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/MpHz.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/MpHz.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/MpHz.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/L0cT.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/L0cT.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/L0cT.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/L0cT.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/L0cT.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/L0cT.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/L0cT.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/EK42.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/EK42.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/EK42.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/EK42.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/EK42.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/EK42.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/EK42.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/BXp2.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/BXp2.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/BXp2.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/BXp2.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/BXp2.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/BXp2.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/BXp2.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/0ynM.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/0ynM.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/0ynM.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/0ynM.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/0ynM.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/0ynM.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-7b7ab908/0ynM.json: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
+/home/toxic/.config/Code - Insiders/Code - Insiders/User/History/-43156a1f/dra4.json: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
+/home/toxic/.config/vansrouter/env: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
+/home/toxic/.config/vansrouter/env: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
+/home/toxic/.config/vansrouter/env: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
+/home/toxic/.config/vansrouter/env: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
+/home/toxic/.config/vansrouter/env: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
+/home/toxic/.config/vansrouter/env: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
+/home/toxic/.config/mozilla-backup-20260914/firefox/7c8v85fg.default-nightly/places.sqlite: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
+/home/toxic/.config/mozilla-backup-20260914/firefox/7c8v85fg.default-nightly/places.sqlite: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
+/home/toxic/.config/mozilla-backup-20260914/firefox/7c8v85fg.default-nightly/places.sqlite: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
+/home/toxic/.config/mozilla-backup-20260914/firefox/7c8v85fg.default-nightly/places.sqlite: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
+/home/toxic/.config/mozilla-backup-20260914/firefox/7c8v85fg.default-nightly/places.sqlite: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
+/home/toxic/.config/mozilla-backup-20260914/firefox/7c8v85fg.default-nightly/places.sqlite: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
+/home/toxic/.config/mozilla-backup-20260914/firefox/7c8v85fg.default-nightly/places.sqlite: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
+/home/toxic/.config/mozilla-backup-20260914/firefox/7c8v85fg.default-nightly/places.sqlite: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
+/home/toxic/.config/mozilla-backup-20260914/firefox/7c8v85fg.default-nightly/places.sqlite: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
+/home/toxic/.config/mozilla-backup-20260914/firefox/7c8v85fg.default-nightly/places.sqlite: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
+/home/toxic/.config/mozilla-backup-20260914/firefox/7c8v85fg.default-nightly/places.sqlite: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
+/home/toxic/.config/mozilla-backup-20260914/firefox/7c8v85fg.default-nightly/places.sqlite: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
+/home/toxic/.config/mozilla-backup-20260914/firefox/7c8v85fg.default-nightly/places.sqlite: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
+/home/toxic/.config/mozilla-backup-20260914/firefox/7c8v85fg.default-nightly/places.sqlite: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
+/home/toxic/.config/mozilla-backup-20260914/firefox/7c8v85fg.default-nightly/places.sqlite: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
+/home/toxic/.config/mozilla-backup-20260914/firefox/7c8v85fg.default-nightly/places.sqlite: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
+/home/toxic/.config/mozilla-backup-20260914/firefox/7c8v85fg.default-nightly/places.sqlite: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
+/home/toxic/.config/mozilla-backup-20260914/firefox/7c8v85fg.default-nightly/places.sqlite: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
+/home/toxic/.config/mozilla-backup-20260914/firefox/7c8v85fg.default-nightly/places.sqlite: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
+/home/toxic/.config/mozilla-backup-20260914/firefox/7c8v85fg.default-nightly/places.sqlite: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
+/home/toxic/.config/mozilla-backup-20260914/firefox/7c8v85fg.default-nightly/places.sqlite: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
+/home/toxic/.config/mozilla-backup-20260914/firefox/7c8v85fg.default-nightly/places.sqlite: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
+/home/toxic/.config/mozilla-backup-20260914/firefox/7c8v85fg.default-nightly/places.sqlite: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
+/home/toxic/.config/mozilla-backup-20260914/firefox/7c8v85fg.default-nightly/places.sqlite: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
+/home/toxic/.config/mozilla-backup-20260914/firefox/7c8v85fg.default-nightly/places.sqlite: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

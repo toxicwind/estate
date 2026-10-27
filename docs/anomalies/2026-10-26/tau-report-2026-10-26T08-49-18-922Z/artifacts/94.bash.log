@@ -1,0 +1,14 @@
+─── fetch endpoints:
+fetch("".concat(e.replace(/\/+$/,""),"/api/v1/session/me"),{credentials:"include",signal:AbortSignal.time
+fetch("".concat(e.replace(/\/+$/,""),"/api/v1/session/logout"),{method:"POST",mode:"no-cors",credentials:
+─── /v1 refs:
+"/api/v1/session/logout"
+"/api/v1/session/me"
+"m6.75 7.5 3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0 0 21 18V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v12a2.25 2.25 0 0 0 2.25 2.25Z"
+"M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 0 0 2.25-2.25V6.75a2.25 2.25 0 0 0-2.25-2.25H6.75A2.25 2.25 0 0 0 4.5 6.75v10.5a2.25 2.25 0 0 0 2.25 2.25Zm.75-12h9v9h-9v-9Z"
+",(t,n)=>{if(n.version){let t={v1:1,v2:2,v3:3,v4:4,v5:5,v6:6,v7:7,v8:8}[n.version];if(void 0===t)throw Error(`Invalid UUID version: "
+"/v1/chat/completions"
+"/v1/models"
+─── stats endpoint:
+200 5475B
+<!DOCTYPE html><html lang="en" class="h-full __variable_71022b"><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="/_next/static/css/8732e130fef0c34a.css" data-precedence="next"/><link rel="stylesheet" href="/_next/static/css/df3fe7d1b6707321.css" data-precedence="next"/><link rel="preload" as="script" fetchPriority="low" href="/_next/static/chunks/webpack-1dba126f33951b90.js"/><script src="/_next/static/chunks/4bd1b696-100b9d70ed4e49c1.js" async=""></script><script src="/_next/static/chunks/1255-a85690d352f4f8fd.js" async=""></script><script src="/_next/static/chunks/main-app-234525b5e3ddebfb.js" async=""></script><script src="/_next/static/chunks/1077-36fcfc2961ba223d.js" async=""></script><script src="/_next/sta

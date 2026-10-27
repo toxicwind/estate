@@ -1,0 +1,11 @@
+  scanned 'portainer alternative': 8 repos, 15810 stars
+  scanned 'docker web ui api 2026': 8 repos, 224 stars
+
+=== RANKED PATTERNS (GitHub-wide) ===
+score  bug  repos  stars   iss  test  term
+ 34.7   0     8   15810   245 0.13  portainer alternative
+ 30.0   0     8     224    60 0.50  docker web ui api 2026
+
+TOP 3 TO MERGE:
+  - portainer alternative
+  - docker web ui api 2026
