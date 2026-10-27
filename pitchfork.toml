@@ -735,7 +735,7 @@ retries = 3
 MESH_LANDING_PORT = "25207"
 
 [daemons.ml-serve]
-run = "exec /home/toxic/.local/share/mise/installs/python/3.12.13/bin/python /home/toxic/estate/tools/ml-serve/server.py"
+run = "exec /home/toxic/.local/share/mise/installs/python/3.14.7/bin/python /home/toxic/estate/tools/ml-serve/server.py"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25180/health"

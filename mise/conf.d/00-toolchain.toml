@@ -1,6 +1,6 @@
 # Toolchain versions. Hand-edited; mise installs these on demand.
 [tools]
-python = "3.12.13"
+python = "3.14.7"
 node = "22.12.0"
 # bun: we run the CANARY channel (bleeding-edge, like rust=nightly). mise's
 # upstream stable index tops out at ~1.4; `bun upgrade` yields canary builds
