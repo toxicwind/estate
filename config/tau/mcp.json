@@ -15,7 +15,7 @@
     "browserless": {
       "command": "bun",
       "args": [
-        "/home/toxic/estate/ranch/barn/browserless/dist/index.js"
+        "/home/toxic/pens/ranch/vendored/browserless-mcp/dist/index.js"
       ],
       "env": {
         "BROWSER_KEEPER_CDP": "http://127.0.0.1:9223"
