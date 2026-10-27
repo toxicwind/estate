@@ -1223,6 +1223,22 @@ expected_port = [25122]
 dir = "/home/toxic/estate"
 mise = true
 
+[daemons.sigma-guard]
+# 2026-10-27: sigma was an ORPHANED product — nothing served it, and the
+# SIGMA_GUARD_URL keyring entry pointed at grafana's :25210/mcp (not an MCP
+# server). One proxy, one shared stdio entry, consumed by BOTH tau
+# extensions and kappa plugins (see config/tau/mcp.json + ~/.config/kappa/
+# kappa.json). This daemon keeps the proxy alive; the guard entry talks to
+# it.
+run = "exec /home/toxic/pens/olympus/products/sigma/dist/index.js start"
+auto = ["start"]
+retry = true
+ready_http = "http://127.0.0.1:8787/__bili/stats"
+port = 8787
+expected_port = [8787]
+dir = "/home/toxic/pens/olympus/products/sigma"
+mise = false
+
 [daemons.toolcall-llm]
 # 2026-10-27: the llama.cpp-b11059 build is stale against its own libs
 # (wants the pre-rename gml-base.so.0, and libllama.so.0 has an ABI
