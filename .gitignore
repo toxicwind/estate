@@ -1521,3 +1521,6 @@ packages/theta/
 submodules/phone-sentinel/
 work/airspeak/
 work/tau-extensions/
+
+# shim artifacts (live_all.sh file-limit shim output)
+.krabby/
