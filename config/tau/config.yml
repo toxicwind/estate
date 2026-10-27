@@ -24,6 +24,8 @@ autolearn:
 bash:
   autoBackground:
     enabled: true
+  # Default shell/tool working directory: the home root, not a product dir.
+  cwd: /home/toxic
   direnv: auto
   direnvLoadTimeoutMs: 30000
   enabled: true
@@ -419,8 +421,7 @@ showHardwareCursor: true
 skillful: true
 skills:
   customDirectories:
-    - /home/toxic/estate/azurite/skills
-    - /home/toxic/estate/projects/range/ranch/gear
+    - /home/toxic/pens/geode/products/azurite/skills
   enableSkillCommands: true
 snapcompact:
   shape: auto
