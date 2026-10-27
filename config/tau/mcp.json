@@ -21,6 +21,16 @@
         "BROWSER_KEEPER_CDP": "http://127.0.0.1:9223"
       },
       "enabled": true
+    },
+    "sigma-guard": {
+      "command": "bun",
+      "args": [
+        "/home/toxic/pens/olympus/products/sigma/dist/sigma-guard.js"
+      ],
+      "env": {
+        "SIGMA_MCP_PROXY": "http://127.0.0.1:8787"
+      },
+      "enabled": true
     }
   }
 }
