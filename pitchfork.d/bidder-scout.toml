@@ -1,6 +1,0 @@
-[daemons.bidder-scout]
-mise = true
-run = "exec /home/toxic/pens/ranch/squawk/oracle/bin/bidder-scout.sh"
-dir = "/home/toxic/pens/ranch/squawk/oracle"
-retry = true
-auto = ["start"]

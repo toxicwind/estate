@@ -1,8 +1,0 @@
-[daemons.doorbell-oauth-edge]
-mise = true
-port = 25217
-run = "/home/toxic/.local/share/mise/installs/bun/1.4.2/bin/bun run ./src/oauth-edge.ts"
-dir = "/home/toxic/pens/ranch/doorbell"
-retry = true
-ready_http = "http://127.0.0.1:25217/health"
-env = { OAUTH_EDGE_PORT = "25217", DOORBELL_UPSTREAM = "http://127.0.0.1:25202", PUBLIC_ISSUER = "https://github-mcp-host.tailc9ac71.ts.net" }

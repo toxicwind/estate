@@ -446,17 +446,6 @@ interval = "30s"
 timeout = "5s"
 retries = 3
 
-[daemons.hashline]
-run = "exec /home/toxic/.local/bin/hashline serve --socket /home/toxic/.hashline/hashline.sock --pid-file /home/toxic/.hashline/hashline.pid"
-auto = ["start"]
-retry = true
-ready_cmd = "ss -lx | grep -q /home/toxic/.hashline/hashline.sock"
-dir = "/home/toxic"
-mise = true
-
-[daemons.hashline.env]
-HASHLINE_NO_UPDATE_CHECK = "1"
-
 [daemons.bornite]
 run = "exec ./stack/services/bornite.sh"
 auto = ["start"]
@@ -718,7 +707,7 @@ ready_http = "http://127.0.0.1:25115/health"
 port = 25115
 expected_port = [25115]
 depends = ["thresher"]
-dir = "."
+dir = "/home/toxic/pens/barn"
 mise = true
 
 [daemons.mesh-hub.health_http]
@@ -1404,20 +1393,6 @@ env = { DISPLAY = ":99", XDG_RUNTIME_DIR = "/run/user/1000", BROWSER_KEEPER_CDP_
 boot_start = true
 auto = ["start"]
 
-[daemons.olympus]
-health_http = { url = "http://127.0.0.1:25144/health", interval = "30s", timeout = "5s", retries = 3 }
-mise = true
-port = 25144
-# Olympus — consolidated estate knowledge hub (API + web). Serves the registry
-# of every scattered knowledge location and the recovered artifacts
-# (github sort algorithm, recursive-agents study) as one first-class surface.
-# MCP tools are provided by ranch/olympus/mcp.ts (stdio) for the gateway.
-run = "exec bun /home/toxic/pens/ranch/olympus/api.ts"
-dir = "/home/toxic/estate"
-retry = true
-boot_start = true
-ready_http = "http://127.0.0.1:25144/health"
-auto = ["start"]
 
 [daemons.tailscale-keepalive]
 mise = true
