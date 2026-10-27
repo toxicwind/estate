@@ -9,10 +9,11 @@ source "$SOV/stack/lib-ports.sh"
 # 2026-09-20: default the SSOT port so a spawn without env (pitchfork retry path) cannot hit llama-server --port stoi
 BEELLAMA_PORT="${BEELLAMA_PORT:-25122}"
 require_port BEELLAMA_PORT
-ENGINE="/home/toxic/estate/engines/bornite/beellama.cpp/build-cuda86/bin"
+ENGINE="${BEELLAMA_ENGINE:-/home/toxic/estate/engines/bornite/beellama.cpp/build-cuda86/bin}"
 BIN="$ENGINE/llama-server"
 [[ -x "$BIN" ]] || { echo "beellama-fast: bin not found at $BIN" >&2; exit 1; }
-MODEL="$HOME/models/EXAONE-4.0-1.2B-IQ4_XS.gguf"
+# 2026-10-27: the model cache moved to the ranch pen; $HOME/models is gone.
+MODEL="${BEELLAMA_MODEL:-/home/toxic/pens/ranch/models/EXAONE-4.0-1.2B-IQ4_XS.gguf}"
 [[ -f "$MODEL" ]] || { echo "beellama-fast: model not found at $MODEL" >&2; exit 1; }
 export LD_LIBRARY_PATH="$ENGINE${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 export CUDA_VISIBLE_DEVICES=0

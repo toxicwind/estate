@@ -1209,14 +1209,34 @@ auto = ["start"]
 retry = true
 dir = "/home/toxic/estate"
 mise = true
+[daemons.beellama-fast]
+# exaone-4.0-1.2b-iq4xs ("fast" alias) via the beellama.cpp CUDA build.
+# 2026-10-27: re-added as a real daemon — the engine and model are both
+# present and verified serving; it had been lost as a "ghost" entry while
+# the model cache was being relocated.
+run = "exec /home/toxic/estate/stack/services/_consolidated_bornite_20260924/beellama-fast.sh"
+auto = ["start"]
+retry = 3
+ready_http = "http://127.0.0.1:25122/health"
+port = 25122
+expected_port = [25122]
+dir = "/home/toxic/estate"
+mise = true
+
 [daemons.toolcall-llm]
-run = "exec /home/toxic/estate/engines/llama.cpp-b11059/llama-b11059/llama-server -m /home/toxic/pens/ranch/models/qwen3.5-9b-dflash-Q5_K_M.gguf --host 127.0.0.1 --port 25152 -ngl 99 -c 32768 --alias qwen3.5-9b-tool"
+# 2026-10-27: the llama.cpp-b11059 build is stale against its own libs
+# (wants the pre-rename gml-base.so.0, and libllama.so.0 has an ABI
+# mismatch) so it exited 127. Use the beellama.cpp CUDA build.
+# The DFlash GGUF is a speculative DRAFT model (it refuses to load alone:
+# "dflash requires ctx_other to be set"), so serve the standard
+# Qwen3.5-9B Q5_K_M instead.
+run = "exec /home/toxic/estate/engines/bornite/beellama.cpp/build-cuda86/bin/llama-server -m /home/toxic/pens/ranch/models/qwen3.5-9b-Q5_K_M.gguf --host 127.0.0.1 --port 25152 -ngl 99 -c 32768 --alias qwen3.5-9b-tool"
 auto = []
 retry = 5
 ready_http = "http://127.0.0.1:25152/health"
 port = 25152
 expected_port = [25152]
-dir = "/home/toxic/estate/engines/llama.cpp-b11059/llama-b11059"
+dir = "/home/toxic/estate/engines/bornite/beellama.cpp/build-cuda86/bin"
 mise = true
 boot_start = false
 [daemons.toolcall-llm.env]
