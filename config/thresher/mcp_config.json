@@ -1118,6 +1118,27 @@
       },
       "health_check_interval": "15s",
       "tool_discovery_interval": "2m0s"
+    },
+    {
+      "name": "sigma-guard",
+      "protocol": "stdio",
+      "command": "bun",
+      "args": [
+        "/home/toxic/pens/olympus/products/sigma/dist/sigma-guard.js"
+      ],
+      "env": {
+        "SIGMA_MCP_PROXY": "http://127.0.0.1:8787"
+      },
+      "oauth": null,
+      "enabled": true,
+      "quarantined": false,
+      "trust_mode": "auto",
+      "auto_approve_tool_changes": true,
+      "created": "2026-10-27T09:37:18.978323-06:00",
+      "updated": "2026-10-27T09:37:18.978323-06:00",
+      "isolation": {
+        "enabled": false
+      }
     }
   ],
   "oauth_expiry_warning_hours": 4,
