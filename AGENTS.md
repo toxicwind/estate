@@ -332,3 +332,16 @@ One rule: **products own their entrypoints; bins merely point at them.**
 | `/home/toxic/estate/ranch/*/AGENTS.md` | each ranch component repo's own contract                |
 
 Nested files declare what they refine and where; none repeat or contradict these.
+
+## Fleet todo board loop (2026-10-27, tau)
+
+Every kappa/tau session MUST participate in the fleet todo board:
+
+- Read: `GET http://127.0.0.1:25120/v1/todo` (Bearer token `~/.config/estate-chat-token`)
+- Claim: work the top NOT-STARTED todo for your agent name, one at a time.
+- Implement end-to-end, commit, PUSH MAIN.
+- Mark done: `POST /v1/todo/done` with `{"file": "<todo filename>"}`.
+- When idle or blocked, RE-READ the board — the board is the persistent task
+  queue; sessions are stateless-safe because of it.
+- Write new todos as markdown files in `pens/ranch/squawk/todo/` using the
+  naming convention `YYYYMMDDThhmmZ-<agent>-<slug>.md`; the index auto-regenerates.
