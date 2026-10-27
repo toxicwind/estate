@@ -274,7 +274,7 @@ modelRoles:
   verification: freeinference/qwen3.6-35b:low
   vision: freeinference/minimax-m3:xhigh
   web: web/exa
-  default: openrouter/openrouter/free
+  default: google-antigravity/gemini-3.5-flash-lite
 omitThinking: false
 paste:
   largeMenuThreshold: 100
