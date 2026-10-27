@@ -14,3 +14,9 @@
 !bin/**
 !docs/
 !docs/**
+# Live control-plane config: pitchfork loads this namespace's pitchfork.toml
+# (see ~/.config/pitchfork/config.toml -> [namespaces.estate]). Track it so the
+# running supervisor's source of truth is versioned, not orphaned on disk.
+!pitchfork.toml
+!config/
+!config/ports.env
