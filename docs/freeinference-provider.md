@@ -154,3 +154,17 @@ Consequence for us:
   line, unrelated to kappa.
 - Corollary: `estate/kimi-code` + `estate/kimi-audit-dash` pitchfork daemons
   reference deleted paths — disabled 2026-10-19 (corpse-marked, not removed).
+
+## Re-audit 2026-10-27 (tau, live probes)
+
+- `thinking: {"type":"disabled"}` on glm-5.3-flash now **accepted** (200, stop) — the
+  "always reasons" note above is stale as of this date; upstream relaxed it.
+- `max_reasoning_tokens: N` is an **accepted, working param** (200) — not previously
+  documented; caps reasoning spend without 400.
+- `reasoning_effort=max` works, ~2x baseline completion tokens (138 vs 66).
+- SSE: no `/sse` or `/v1/sse` endpoint (404). `/v1/messages` = 405 Method Not Allowed
+  (Anthropic lane present but not enabled). Chat completions only.
+- `/health` (unauthenticated): 200 `{status:healthy, routes_configured:33, db connected}`.
+- qwen3.6-35b measured 152ms/16 tokens finish=stop; glm-5.3-flash 3500ms for 40 tokens
+  finish=length at max_tokens=40 — glm is the contended lane right now (2026-10-27 ~20:15Z).
+- kappa default pinned back to qwen3.6-35b accordingly (config kappa.json model key).
