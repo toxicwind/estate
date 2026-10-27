@@ -173,7 +173,16 @@ style is MONADIC PRIMITIVES + bun-forward, not ad-hoc imperative bash:
   deployables): docker compose, ports pinned in `config/ports.env`, bound to
   127.0.0.1/tailnet. One supervisor per service.
 - Stage scratch under `/home/toxic/` unique per-task dirs (`mktemp -d`); never
-  `rm -rf` a shared hardcoded path.
+  `rm -rf` a shared hardcoded path. **Never `rm` anything under `/tmp/kappa`
+  either — including your own session's artifacts** (other agents may still be
+  consuming them). Before cleanup of any scratch, ARCHIVE-what-is-useful first
+  (see next rule); delete only provably disposable junk after a provenance
+  triage (`tmp-triage` skill), and say what you removed.
+- **Archive before delete.** Useful session artifacts (test pages, extract
+  trees, probe JSONs, scripts that worked) get moved to a durable reuse home —
+  not deleted. Default: `~/sovereign/scratch-archive/<date>-<agent>-<slug>/`.
+  Anything worth re-running becomes a committed file in the owning repo when a
+  home exists. `/tmp` is a staging area, not a landfill.
 - **Max-collab, not lanes.** There is no "someone else's lane" to defer to. If
   you see an LSP error, an anomaly, or anything broken, FIX IT directly in a real
   committed file — do not leave it "for the owner." Unknown WIP on the tree folds
