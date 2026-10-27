@@ -268,3 +268,58 @@ One rule: **products own their entrypoints; bins merely point at them.**
 | `/home/toxic/estate/ranch/*/AGENTS.md` | each ranch component repo's own contract                |
 
 Nested files declare what they refine and where; none repeat or contradict these.
+
+## Anomaly program D-2026-10-27 (fleet restoration — verified live)
+
+_Verified 2026-10-27 with real traffic; dossier: `/home/toxic/estate/docs/anomalies/2026-10-27/fleet-restoration.md`._
+
+| #    | Anomaly                          | Essence                                                                                                                                    | Fix (committed)                                                              |
+| ---- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
+| 10   | **Namespace drift**              | Estate clone (SSOT) and pens namespace (what pitchfork loads) both hold control-plane files; scripts resolve `./stack/...` against the pen  | `sync-estate-ns.sh` + `sync-stack.sh` + estate post-commit hook              |
+| 11   | **Pitchfork state resurrection** | `state.toml` is a THIRD truth — retired daemons persist there and are respawned on restart even after removal from pitchfork.toml          | delete the `[daemons."ns/name"]` blocks (incl. `.status`/`.env`) with the supervisor STOPPED |
+| 12   | **Effect 4.0.6 NetAddress rename** | Resolved TCP address tag is `InetAddressV4/V6` (was `TcpAddress`) — `kappa serve` died before bind on every invocation                   | kappa-code 1e61eaf702                                                        |
+| 13   | **Schema.TaggedError factory**   | `Schema.TaggedError` is a generic factory: calling it with no identifier yields `(void 0) is not a function` — vendored deps hit this too | regenerated drizzle patch (incl. cache-effect.{js,cjs})                      |
+| 14   | **Cloudflare 1010 UA block**     | Library-default UAs get 403 from CF-fronted upstreams (freeinference, groq) — surfaced as a bare router 502                               | rhodochrosite forwards caller UA / defaults to desktop UA                    |
+| 15   | **Per-model credit strikes**     | 402/401/403 are PER-MODEL (one exhausted key), not provider failures — dead pairs kept their weight share and were retried first, always  | router `record_model_strikes` (3 strikes, 15 min decay) gates selection      |
+| 16   | **secretsmith --app exact match** | `env --app kappa` dropped KAPPA_SERVER_PASSWORD (no `service` attr) → kappa booted unsecured; also `set` was broken (`Invalid object path: [object Promise]`) | label/key-prefix match; await ReadAlias before String() |
+| 17   | **cwd/env-dependent daemons**    | browserless resolved playwright-core via process.cwd() (died pre-bind); rhodochrosite sourced keys without `set -a` (dropped at exec)     | run.sh `cd app`; serve.sh `set -a` wrap                                       |
+| 18   | **Peer file snapshot fork**      | Ranch's index held a 277-file snapshot of squawk at v0.8.1 while the peer repo was at v0.10.2 — two owners, two truths, phantom dirt       | untrack peer roots; ignore their runtime WAL state                           |
+
+_Per-model strike rule (2026-10-27 architect order): routing priority is FREE > FAST > instruction-following; credit/key exhaustion is quarantined per (provider, model), never per provider._
+
+
+## Layout (2026-10-23) — the bin contract
+
+One rule: **products own their entrypoints; bins merely point at them.**
+
+- **Products live in `/home/toxic/pens/{barn,ranch,olympus}/<product>/`.** Their
+  real entrypoints (scripts, binaries, `bin/` dirs) are the source of truth.
+  The old `estate/ranch` and `estate/olympus` mirrors are GONE (deleted in the
+  reorg; they were symlinks into `pens/`). Nothing stores product code under
+  `estate/`, ever.
+- **`/home/toxic/.local/bin` is the PATH surface.** Every product link there is
+  a symlink straight into `pens/` (e.g. `forge -> pens/barn/forge/bin/forge.ts`,
+  `corral -> pens/barn/corral/src/cli/index.ts`). Never a second copy.
+- **`/home/toxic/pens/barn/estate-ops` is the ops product** (pitchfork, hooks,
+  estate tooling, shims). The old `estate/bin` was dissolved into it.
+- **Skills scripts live in `/home/toxic/sovereign/skills/scripts/`** — `syntax-guard`,
+  `vansrouter`, etc. resolve there, not to `estate/skills`.
+- **The manifest is the canary.** `pens/barn/estate-ops/bin-verify.sh` (generated
+  manifest) pins every symlink in `~/.local/bin` to its exact pens/sovereign
+  target. A broken symlink is a FAIL, never a WARN. When a product moves, fix the
+  manifest first, then the link.
+- **No hardcoded product paths inside shims.** A shim resolves its target
+  through the manifest or `pens/`; a literal `/home/toxic/estate/...` path to a
+  product is a bug, not a fallback.
+- **Retired products are deleted, not relinked** (super-ralph, roost, shep,
+  flock). No backup-binary repointing: dead link = remove + manifest archived
+  entry.
+
+## Scope split (nested AGENTS.md)
+
+| Path                                   | Owner                                                   |
+| -------------------------------------- | ------------------------------------------------------- |
+| `/home/toxic/estate/AGENTS.md`         | estate control-plane: repos, skills, azurite, pitchfork |
+| `/home/toxic/estate/ranch/*/AGENTS.md` | each ranch component repo's own contract                |
+
+Nested files declare what they refine and where; none repeat or contradict these.
