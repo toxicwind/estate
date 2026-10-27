@@ -1,0 +1,33 @@
+{
+  "fingerprints": [
+    {
+      "name": "exec-ws-native-ws-client",
+      "ports": [25204],
+      "contains": ["websocket"],
+      "lane": "exec-ws-raw",
+      "note": "client already speaks WS: replay head verbatim, passthrough (never re-upgrade)"
+    },
+    {
+      "name": "exec-ws-http-client",
+      "ports": [25204],
+      "path_pattern": "^/exec",
+      "requires_payload": true,
+      "lane": "exec-ws-convert",
+      "note": "plain HTTP POST /exec-ws {cmd,workdir,timeout}: body becomes the WS frame; reply frame becomes the HTTP body"
+    },
+    {
+      "name": "exec-funnel-h1-fallback",
+      "ports": [25215],
+      "path_pattern": "^/exec-ws",
+      "requires_payload": true,
+      "lane": "exec-ws-funnel",
+      "note": "h1.1 tls lane through the github-mcp-host funnel (verified 101 with x-mcp-token)"
+    }
+  ],
+  "lanes": {
+    "exec-ws-raw":      {"kind": "raw",   "host": "127.0.0.1", "port": 25214, "note": "real awrawr-ws-exec daemon (green-blue moved); WS clients passthrough"},
+    "exec-ws-convert":  {"kind": "ws",    "host": "127.0.0.1", "port": 25214, "path": "/exec-ws", "note": "HTTP->WS conversion lane; body<->frame"},
+    "exec-ws-funnel":   {"kind": "tls-ws","host": "github-mcp-host.tailc9ac71.ts.net", "port": 443, "path": "/exec-ws", "note": "funnel h1.1 lane"},
+    "exec-ws-edge":     {"kind": "ws",    "host": "127.0.0.1", "port": 25217, "path": "/exec-ws", "note": "doorbell oauth-edge fast lane"}
+  }
+}
