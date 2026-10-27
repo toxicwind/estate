@@ -387,20 +387,6 @@
     },
     {
       "quarantined": false,
-      "name": "estate-brain-mcp",
-      "protocol": "stdio",
-      "command": "/home/toxic/.bun/bin/bun",
-      "args": [
-        "/home/toxic/estate/ranch/estate-brain/src/mcp-server.ts"
-      ],
-      "oauth": null,
-      "enabled": true,
-      "trust_mode": "auto",
-      "created": "2026-10-23T04:33:22.504029957-06:00",
-      "updated": "2026-10-23T04:33:27.881125913-06:00"
-    },
-    {
-      "quarantined": false,
       "name": "exa",
       "protocol": "stdio",
       "command": "/home/toxic/.local/bin/exa-mcp-server",
@@ -523,13 +509,13 @@
       "protocol": "stdio",
       "command": "/home/toxic/.bun/bin/bun",
       "args": [
-        "/home/toxic/estate/azurite/mcp/server.ts"
+        "/home/toxic/pens/geode/products/azurite/mcp/server.ts"
       ],
       "oauth": null,
       "enabled": true,
       "trust_mode": "auto",
       "created": "2026-10-16T11:33:29.44631535-06:00",
-      "updated": "2026-10-23T06:54:41.311466652-06:00"
+      "updated": "2026-10-27T01:48:12.627092-06:00"
     },
     {
       "quarantined": false,
@@ -769,14 +755,14 @@
       "protocol": "http",
       "command": "/usr/bin/python3",
       "args": [
-        "/home/toxic/estate/projects/range/bin/openfang-mcp-shim.py"
+        "/home/toxic/pens/ranch/propylon/openfang-mcp-shim.py"
       ],
       "oauth": null,
       "enabled": true,
       "auto_approve_tool_changes": true,
       "trust_mode": "auto",
       "created": "2026-09-19T02:46:46.338368942-06:00",
-      "updated": "2026-10-23T04:33:27.787815798-06:00"
+      "updated": "2026-10-27T01:48:12.627092-06:00"
     },
     {
       "quarantined": false,
@@ -917,27 +903,6 @@
     },
     {
       "quarantined": false,
-      "name": "safurrier-filesystem-smart",
-      "protocol": "stdio",
-      "command": "/home/toxic/estate/ranch/vendored/organized-lattice-v3/adhoc-mcp-servers/mcp-filesystem/.venv/bin/python",
-      "args": [
-        "/home/toxic/estate/ranch/vendored/organized-lattice-v3/adhoc-mcp-servers/mcp-filesystem/run_server.py",
-        "/home/toxic"
-      ],
-      "oauth": null,
-      "enabled": true,
-      "auto_approve_tool_changes": true,
-      "trust_mode": "auto",
-      "created": "2026-07-19T02:33:58.727152765-06:00",
-      "updated": "2026-10-23T04:33:27.823276325-06:00",
-      "isolation": {
-        "enabled": false
-      },
-      "health_check_interval": "15s",
-      "tool_discovery_interval": "2m0s"
-    },
-    {
-      "quarantined": false,
       "name": "sequential-thinking-thin",
       "protocol": "stdio",
       "command": "npx",
@@ -1066,26 +1031,6 @@
     },
     {
       "quarantined": false,
-      "name": "tpc-thought-ledger",
-      "protocol": "stdio",
-      "command": "node",
-      "args": [
-        "/home/toxic/estate/ranch/vendored/organized-lattice-v3/adhoc-mcp-servers/mcp-installs/tpc-server/mcp-server.js"
-      ],
-      "oauth": null,
-      "enabled": true,
-      "auto_approve_tool_changes": true,
-      "trust_mode": "auto",
-      "created": "2026-07-19T02:33:58.727152915-06:00",
-      "updated": "2026-10-23T04:33:27.853218892-06:00",
-      "isolation": {
-        "enabled": false
-      },
-      "health_check_interval": "15s",
-      "tool_discovery_interval": "2m0s"
-    },
-    {
-      "quarantined": false,
       "name": "vram-mcp",
       "protocol": "stdio",
       "command": "/home/toxic/.local/bin/vram-mcp",
@@ -1113,20 +1058,6 @@
       "trust_mode": "auto",
       "created": "2026-09-20T16:50:00-06:00",
       "updated": "2026-10-23T04:33:27.866777299-06:00"
-    },
-    {
-      "name": "brave-search-mcp",
-      "protocol": "stdio",
-      "command": "bun",
-      "args": [
-        "/home/toxic/pens/barn/estate-ops/brave-search-mcp.ts"
-      ],
-      "oauth": null,
-      "enabled": true,
-      "auto_approve_tool_changes": true,
-      "trust_mode": "auto",
-      "created": "2026-10-25T05:00:00-06:00",
-      "updated": "2026-10-25T05:00:00-06:00"
     },
     {
       "quarantined": false,
