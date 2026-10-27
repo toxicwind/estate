@@ -240,7 +240,7 @@ Debug log evidence:
 - `nvidia/nemotron-4-340b-instruct` (404)
 - `freeinference: qwen3.6-35b, diffusiongemma` — no longer key-blocked (403/429 resolved on 2026-10-25 with current key; keep `max_tokens ≥ 2500` to avoid reasoning budget trap)
 - `flock local: all 4 models` (404 — model files removed)
-- `deepseek-v4-flash` — architect banned; also requires max_tokens ≥ 2500 to avoid reasoning budget trap
+- `deepseek-v4-flash` — NOT banned (CORRECTION 2026-10-27: architect order — it is a live primary model, 19,648 calls in kappa-session audit; an earlier line here claimed banned and was wrong). Still requires max_tokens ≥ 2500 to avoid reasoning budget trap.
 
 ### FreeInference concurrency behavior:
 - Key-level limit: `{"limit": 2}` in error response, but **de facto 1 concurrent** in practice (second request 429s while first still in-flight)
