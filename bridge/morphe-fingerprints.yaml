@@ -1,0 +1,39 @@
+# morphe-fingerprints.yaml — bun lane config (zod-validated at boot)
+# Semver compat gate: bump compatibleWith ONLY with a morphe.ts migration.
+compatibleWith: ">=1.0.0 <3.0.0"
+listen: { host: 0.0.0.0, port: 25204 }
+chaos_enabled: false
+
+lanes:
+  - name: exec-ws-raw
+    host: 127.0.0.1
+    port: 25214
+    kind: ws
+    path: /exec-ws
+    token: ""
+  - name: exec-ws-funnel
+    host: 127.0.0.1
+    port: 25217
+    kind: tls-ws
+    path: /exec-ws
+
+fingerprints:
+  # WS-native clients: Upgrade header present -> raw passthrough (101)
+  - name: exec-ws-native-ws-client
+    lane: exec-ws-raw
+    port: 25204
+    contains: ["websocket"]
+    kind: pass
+  # plain HTTP POST bodies -> body<->frame conversion (the obtuse conversion)
+  - name: exec-ws-http-client
+    lane: exec-ws-raw
+    port: 25204
+    path_pattern: "^/exec-ws*"
+    requires_payload: true
+    kind: convert
+  # funnel fast lane (doorbell tls h1.1)
+  - name: exec-ws-funnel-http
+    lane: exec-ws-funnel
+    port: 25215
+    path_pattern: "^/exec-ws*"
+    kind: convert

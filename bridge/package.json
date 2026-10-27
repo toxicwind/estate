@@ -1,0 +1,51 @@
+{
+  "name": "bridge",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "typecheck": "bun check"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^7"
+  },
+  "dependencies": {
+    "@duckdb/node-api": "^2.0.0-r.1",
+    "bottleneck": "^2.19.5",
+    "croner": "^11.0.0",
+    "dayjs": "^1.11.23",
+    "debug": "^4.4.3",
+    "hyperid": "^4.0.0",
+    "immer": "^11.2.9",
+    "lru-cache": "^11.5.3",
+    "mitt": "^3.0.1",
+    "nanoid": "^6.0.2",
+    "picomatch": "^4.0.7",
+    "pino": "^10.4.0",
+    "quick-lru": "^7.3.0",
+    "semver": "^7.8.5",
+    "systeminformation": "^5.33.16",
+    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.52.0",
+    "undici": "^8.12.3",
+    "ws": "^8.22.0",
+    "yaml": "^2.9.1",
+    "zod": "^4.6.7"
+  },
+  "morphe": {
+    "telemetry": {
+      "prometheus": {
+        "port": 25305,
+        "path": "/metrics"
+      },
+      "service": "morphe-bun",
+      "connectors": {
+        "prometheus": 25105,
+        "estate-exporter": 25213,
+        "grafana": 25110
+      }
+    }
+  }
+}
