@@ -1,0 +1,28 @@
+3:# dedup-weekly (standing, Chris 2026-10-04): weekly btrfs extent dedup via fclones (content-hash verified, extent-level, never deletes files). Script: /home/toxic/estate/ops/dedup-weekly.sh ; log: /home/toxic/estate/var/log/dedup-weekly.log
+4:23 5 * * 0 /home/toxic/estate/ops/dedup-weekly.sh
+--- TAU/KAPPA SKILL SOURCES ---
+/home/toxic/.config/kappa/AGENTS.md:227:  `vansrouter`, etc. resolve there, not to `estate/skills`.
+/home/toxic/.config/kappa/kappa.jsonc:475:      "/home/toxic/pens/estate/grasp-hub/skills",
+--- RUNNING DAEMON CWDS IN ESTATE ---
+2403379 
+1248891 /home/toxic
+1136592 /home/toxic/estate
+2314879 /home/toxic/estate/config/bornite.d
+2353612 /home/toxic/estate/engines/bornite/beellama.cpp/build-cuda86/bin
+233292 /home/toxic/estate/forensics-srv
+2315175 /home/toxic/estate/services/model-guard
+2316173 /home/toxic/estate/tailscale
+2314237 /home/toxic/estate/tools/bench-radar
+2364178 /home/toxic/estate/tools/kimi-claw
+2315114 /home/toxic/estate/tools/ml-serve
+2362346 /home/toxic/pens/estate
+2403367 /home/toxic/pens/estate/audit/2026-10-27-estate-cutover
+235391 /home/toxic/pens/ranch/android-fleet/phone-backup
+1809622 /home/toxic/pens/ranch/lasso
+2315672 /home/toxic/pens/ranch/ralph-dashboard/backend
+552646 /home/toxic/pens/ranch/squawk/oracle
+435582 /home/toxic/pens/ranch/thresher
+--- COUNT ---
+════ [kairos GUARD — URGENT, CANCELLED] ════
+  pipeline truncation (wc) — persist FULL output
+  MUST DO: run the upstream fully; read the result via ffs — never pipe wc

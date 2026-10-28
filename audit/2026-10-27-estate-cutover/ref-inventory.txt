@@ -1,0 +1,27 @@
+     14 /home/toxic/estate
+     11 /home/toxic/estate/tool
+      9 /home/toxic/estate/
+      2 /home/toxic/estate/engine
+      1 /home/toxic/estate/var/work
+      1 /home/toxic/estate/tail
+      1 /home/toxic/estate/op
+      1 /home/toxic/estate --deep --interval 90
+      1 /home/toxic/estate/config/bornite.d/alia
+      1 /home/toxic/estate/config/bornite.d
+      1 /home/toxic/estate/bridge/morphe.py
+      1 /home/toxic/estate/bridge/awrawr_w
+      1 /home/toxic/estate/agent
+--- SYSTEMD USER UNITS ---
+/home/toxic/.config/systemd/user/pitchfork.service.bak-20260920
+/home/toxic/.config/systemd/user/skills-watch.service
+/home/toxic/.config/systemd/user/arrival-classifier.service
+/home/toxic/.config/systemd/user/depend-refire.service
+/home/toxic/.config/systemd/user/gemini-sdk-refresh.service
+/home/toxic/.config/systemd/user/pitchfork-reconcile.service
+/home/toxic/.config/systemd/user/quickshell-ii.service
+/home/toxic/.config/systemd/user/metaaivm-profile-verify.service
+/home/toxic/.config/systemd/user/metaaivm-profile-verify.path
+/home/toxic/.config/systemd/user/estate-forensics-srv.service
+/home/toxic/.config/systemd/user/forge-server.service
+/etc/systemd/system/hw-audit.service
+--- KAIROS SHIM ---
