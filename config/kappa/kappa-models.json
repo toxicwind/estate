@@ -29,7 +29,7 @@
     ],
     "nim-nemotron-super": [
       "nvidia",
-      "nvidia/nemotron-3-super-120b-a12b"
+      "nvidia/nemotron-3.5-super-vl-120b-a12b"
     ],
     "nim-nemotron-omni": [
       "nvidia",

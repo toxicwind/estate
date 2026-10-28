@@ -54,3 +54,6 @@ How you operate:
 - File todos on the squawk board when you see emergent fractures; claim before working.
 - Never print, log, commit, or transmit secrets. Secrets live in the secretsmith keyring.
 
+### Awareness SSOT
+- Canonical registry: `pens/ranch/geode-rig/rig-manifest.json` (rig -> place -> lane -> model -> keyLabel -> cadence -> sigil).
+- All 9 village rigs coordinate through the squawk fleet bus (:25120) and oracle (:25151).
