@@ -8,7 +8,7 @@ appearance:
 ask:
   enabled: true
   notify: "on"
-  timeout: 15
+  timeout: 60
 astEdit:
   enabled: true
 astGrep:
@@ -23,11 +23,13 @@ autolearn:
   enabled: true
 bash:
   autoBackground:
-    enabled: true
+    enabled: false
   direnv: auto
   direnvLoadTimeoutMs: 30000
   enabled: false
   patterns: []
+  tiktokenShim:
+    enabled: false
 bashInterceptor:
   enabled: false
 branchSummary:
@@ -184,7 +186,7 @@ images:
   autoResize: true
   blockImages: false
   describeForTextModels: true
-  questionTimeoutMs: 300000
+  questionTimeoutMs: 120000
   urls:
     backends:
       - provider-files
@@ -256,23 +258,23 @@ model:
     threshold: 5
 modelRoleStorage: global
 modelRoles:
-  advisor: nvidia/nemotron-3-super-120b-a12b
+  advisor: freeinference/glm-5.3-flash
   bodybuilder: custom/bodybuilder
-  commit: nvidia/nemotron-3-super-120b-a12b
+  commit: freeinference/glm-5.3-flash
   dots: custom/dots
-  fallback: nvidia/nemotron-3-ultra-550b-a55b
+  fallback: nvidia/nemotron-3.5-super-vl-120b-a12b
   image: google-antigravity/gemini-3.1-flash-image:auto
-  judge: nvidia/nemotron-3-super-120b-a12b
-  memory: nvidia/nemotron-3-super-120b-a12b
-  plan: nvidia/nemotron-3-super-120b-a12b
-  slow: nvidia/nemotron-3-ultra-550b-a55b
-  smol: nvidia/nemotron-3-super-120b-a12b
-  task: nvidia/nemotron-3-ultra-550b-a55b
-  tiny: nvidia/nemotron-3-super-120b-a12b
-  verification: nvidia/nemotron-3-super-120b-a12b
+  judge: freeinference/glm-5.3-flash
+  memory: freeinference/glm-5.3-flash
+  plan: freeinference/glm-5.3-flash
+  slow: nvidia/nemotron-3.5-super-vl-120b-a12b
+  smol: freeinference/glm-5.3-flash
+  task: nvidia/nemotron-3.5-super-vl-120b-a12b
+  tiny: freeinference/glm-5.3-flash
+  verification: freeinference/glm-5.3-flash
   vision: google-antigravity/gemini-3.1-flash-image:auto
   web: web/exa
-  default: freeinference/glm-5.3-flash
+  default: rhodochrosite.azurite/models/gemini-flash-tool-retrieval
 omitThinking: false
 paste:
   largeMenuThreshold: 100
@@ -348,7 +350,7 @@ providers:
   webSearchTimeoutSeconds: 60
 python:
   interpreter: /home/toxic/.local/share/mise/installs/python/3.14.7/bin/python
-  kernelMode: per-call
+  kernelMode: session
 read:
   defaultLimit: 5000
   renderMarkdown: true
@@ -512,7 +514,7 @@ tools:
   artifactTailLines: 500
   format: auto
   intentTracing: true
-  maxTimeout: 0
+  maxTimeout: 60
   outputMaxColumns: 768
   speculativeExecution:
     enabled: true
