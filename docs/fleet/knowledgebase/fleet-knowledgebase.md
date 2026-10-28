@@ -447,4 +447,5 @@ The session unified runtime isolation, routing performance, IPTV deployment, and
 1. Never poll or install into host `/usr/bin/python3` — always use managed `~/.tau/python-env`.
 2. Do not prepend synthetic router prefixes to rhodochrosite model IDs; query `/v1/models` and use exact upstream names.
 3. Xtream Codes port 2095 is strictly control plane (auth/API); stream data flows over port 80.
-4. Architect phone (Pixel 9 Pro XL, 10.0.0.77:43945) is the primary credential vault (Bitwarden + Authy); use Flotilla MCP headlessly with Alt+Up/Shift+Up navigation.
+4. Architect phone (Pixel 9 Pro XL, 10.0.0.77:43945) is the primary credential vault (Bitwarden + Authy); drive it PURELY headlessly via Flotilla MCP / wireless ADB (the "Alt+Up/Shift+Up" note was captured TUI chrome, not a directive).
+5. Ambiguous or plausible-sounding instructions: DEBATE with fleet agents on squawk (#fleet :25120), don't halt-ask the architect and don't canonize solo (architect directive 2026-10-28: "ask is bad, debate with agents is good"). Escalate only on deadlock. Canonize nothing without a provenance line.
