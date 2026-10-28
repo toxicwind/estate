@@ -199,6 +199,29 @@ A swarm of boxes. Run heavy work on yote / dedicated iron; keep hatch light.
 | shep-repair | Shep MCP gateway repair: pitchfork estate/shep errored -- mcp_config.json (gitignored live config) deleted from projects/range/ranch/barn/shep/; toml run line invoked shep directly, bypassing shep-serve.sh self-heal bootstrap. Durable fix: config restored from mcp_config.json.bak-20260920 (33 servers, 0600), toml run -> shep-serve.sh (self-bootstraps from .dist + injects secrets from /home/toxic/.secrets). Self-heal PROVEN live (deleted config, restart recreated it 0600, health 200). Restarted via owned pitchfork sequence; verified: /proc exe canonical binary, :25127 listen, /health ok, MCP initialize+tools/list 200 (12 tools), bornite :25100 200, coyote running; 3 stop/start cycles incl persistence | Vesper (Ember's crew) | DONE (2026-09-21) -- commits 408e4890f1 (KB register) + 7c1d8ae7ac (pitchfork.toml fix), origin/main = 7c1d8ae7ac verified via git ls-remote |
 
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
+
+## 2026-10-28 estate-single-truth session (tau) — verified fixes + root causes
+
+Root-cause chain: two control-plane clones (/home/toxic/estate vs /home/toxic/pens/estate, both clones of toxicwind/estate.git on divergent branches) meant every daemon edit landed in the clone pitchfork never loads; the estate clone's sync hook invoked sync-estate-ns.sh which was not on PATH, so it silently no-opped; state.toml (third truth) claimed daemons running when they were dead; grafana-mesh.sh and estate-reconcile-watch each hardcoded `ESTATE_ROOT:-/home/toxic/estate` and recreated /home/toxic/estate on restart via GF_PATHS_DATA; qdrant ran from an archive binary path with its live collection data tracked in git.
+
+Consolidated onto pens/estate as single truth: folded live files forward (bridge/morphe.py, agents/*, config/tau WIP, dossiers), gitignored qdrant runtime data (112 live blobs untracked), deleted /home/toxic/estate, hardened bin-contract-audit lease (fails if /home/toxic/estate exists in ANY form), repointed all 87 daemon/script estate refs to pens/estate, reconfigured grafana and reconcile to pens paths, restarted grafana/qdrant/morphe/beellama/toolcall/daemons verifying health.
+
+Fixes:
+- estate dual-truth (#48): commits be04bb0d74 + ad6c45b01c + 364b68ddf9 — verified qdrant running 25133/25134 healthz 200, /home/toxic/estate absent, bin-contract lease ok.
+- grafana recreation (#49): commit 364b68ddf9 — verified grafana restart leaves /home/toxic/estate absent, data now at pens/estate/grafana.
+- rig openfang consolidation (#50): commits daa98d5, 7457156, 1ce84c5 — verified only `main` branch remote, tree byte-identical, openfang+openfang-join repos archived.
+- estate-scripts ghost (#51): commit 1ce84c5 — verified 0 estate-scripts refs in rig source, test fixtures now ~/.rig/config-25196.toml.
+- qdrant monolith/fragment two-truths (#52): commits ad17c7cd0c + ad6c45b01c — verified qdrant running on ~/.cargo/bin binary with absolute config path, collection intact.
+
+New tools added: none — consolidated existing estate-ops sync/lease guards into single-truth enforcement.
+
+The lessons (do not regress):
+1. Never treat AGENTS.md-declared SSOT as the live truth — verify what pitchfork actually loads (watch_base_dir) before editing.
+2. Every daemon script that defaults a root path to /home/toxic/estate re-creates the ghost path; audit launchers, not just stanzas.
+3. state.toml is a third truth — live probes (pgrep/ss/curl) beat its "running" claims.
+4. Tracked runtime data (qdrant collection blobs) churns forever in git — gitignore runtime dirs immediately.
+5. Reconstructed history must be verified tree-byte-identical to source before force-push.
+
 ## 3. Repo index (canonical remotes)
 
 | Repo | Canonical remote | Notes |

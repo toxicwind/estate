@@ -1456,3 +1456,7 @@ snapshots/
 grafana/plugins/*/*.js
 grafana/plugins/*/*.js.map
 grafana/logs/
+
+# secrets recovery stash lives OUTSIDE the repo (rule 3: never commit secrets)
+products/backup-recovery/
+estate-secrets-recovery/
