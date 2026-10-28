@@ -18,7 +18,7 @@ import { loadEstatePorts, requireEnv } from "../lib/ports.ts";
 
 loadEstatePorts();
 const HOME = homedir();
-const OF = join(HOME, ".openfang");
+const OF = join(HOME, ".rig");
 const BACKUP = join(
   HOME,
   "estate/backup/reorg_2026-07-11_bun/openfang_pre_llama_provider",

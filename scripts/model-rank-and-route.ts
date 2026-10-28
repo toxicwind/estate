@@ -327,7 +327,7 @@ const routeCases: RouteCase[] = [
   },
 ];
 
-// OpenFang agent message — try several API shapes used by this host
+// Rig agent message — try several API shapes used by this host
 async function ofAgent(name: string, message: string) {
   const t0 = performance.now();
   const headers = {
@@ -355,7 +355,7 @@ async function ofAgent(name: string, message: string) {
     let tomlModel: string | null = null;
     try {
       const toml = await Bun.file(
-        `/home/toxic/.openfang/agents/${name}/agent.toml`,
+        `/home/toxic/.rig/agents/${name}/agent.toml`,
       ).text();
       const mm = toml.match(/^model\s*=\s*"([^"]+)"/m);
       if (mm) tomlModel = mm[1];
@@ -497,8 +497,8 @@ for (const name of ["dealigner", "coder-max", "coyote"]) {
   const r = await ofAgent(name, "Reply with exactly one word: OK");
   const line = {
     ts: new Date().toISOString(),
-    class: `openfang_${name}`,
-    surface: "openfang/api",
+    class: `rig_${name}`,
+    surface: "rig/api",
     requested_model: null,
     chosen_model: r.chosen_model,
     http_status: r.status,

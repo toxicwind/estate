@@ -65,7 +65,7 @@ writeFileSync(
 );
 writeFileSync(join(outDir, "client-llm.env"), clientEnvExports(defaultModel));
 
-// OpenFang: ensure provider_urls.llama → :25100/v1 (do not rewrite agent model tables here)
+// Rig: ensure provider_urls.llama → :25100/v1 (do not rewrite agent model tables here)
 const ofConfig = join(HOME, ".openfang/config.toml");
 if (existsSync(ofConfig)) {
   let t = readFileSync(ofConfig, "utf8");
@@ -81,7 +81,7 @@ if (existsSync(ofConfig)) {
     t = t.replace(/vllm\s*=\s*"[^"]*"/, `vllm = "${swapV1Url()}"`);
   }
   writeFileSync(ofConfig, t);
-  console.log("[ssot] openfang provider_urls.llama →", swapV1Url());
+  console.log("[ssot] rig provider_urls.llama →", swapV1Url());
 }
 
 // Zed: ensure llama.cpp auto_discover only — never rewrite whole JSONC.
