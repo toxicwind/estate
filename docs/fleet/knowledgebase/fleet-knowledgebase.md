@@ -369,3 +369,11 @@ workflows.json has a buildsrv row.
 New-toolchain rule: persistent config in projects/yote/host/home/, daemon
 env in pitchfork.toml, then a REAL buildsrv compile with nonzero cache-hit
 proof. Proven 2026-09-21: 2 hits, 50 percent hit rate on a real job.
+
+## 2026-10-28 estate-single-truth-consolidation evening arc (tau) — verified fixes + root causes
+
+One paragraph: /home/toxic/estate kept resurrecting because MULTIPLE systems rooted on it (grafana-mesh GF_PATHS_DATA, estate-reconcile ESTATE_ROOT, .bashrc kairos shim, keypool ghost defaults) while the repo itself was dual-homed with ~/.tau and ~/.config living INSIDE the checkout; the sweep caught grafana recreating it live at 15:27:59. After relocation (tau 87G→~/.tau real, dots 4.9G→~/.config real, models/kite inode-identical), every launcher was perl-swept to pens, the lease-guard rewritten to FAIL if estate exists in ANY form, and the rig/openfang cutover completed (~/.rig SSOT, .openfang archived, /usr/local/bin/kappa + kappa state_dir fixed). Secrets consolidated: kryptos = SSOT (v1.0.0), keypool boots from keyring alone, quota tracker live on :25109/quota.
+
+Fixes: estate 364b68ddf9 (88-file pens-root sweep) + 7cee2060c6 (ports RIG_*) + 7f451eb2b5 (de-secret) + be04bb0d (AGENTS sovereign→azurite) + e84e8f89c3/21ef281f51/ccc43442a3/89013f4cdb (rig cutover chain) + 651d99c5b1/8430b96 (retro+draft); rig 9341a9b+1ce84c5 (estate-scripts ghost); squawk 43b2f12+cd90cfa; kryptos f6e7ef7+e19f114+a411783+e9ba53d+54a9d17+0d1a329; barn 495d58e; rhodochrosite 99aa4dd; azurite 93eeff3 (cyoa-router skill, 5/5 TDD); mimetite db80751.
+
+Lessons (do not regress): (1) any launcher with SOV= or ESTATE_ROOT= default is a potential ghost-path recreator — grep the literal before trusting the lease; (2) GitHub push-protection is the real secret canary — read its rejection, never bypass; (3) divergent git copies: compare mtimes+log DIRECTION before choosing the master; (4) dbus-next 0.10: namespace import, sessionBus(), Variant-wrap SetAttributes values; (5) env-var audits must match the tool's actual emission shape (NAME='v' not export NAME=v); (6) moved agent manifests carry absolute state_dirs that resurrect retired homes.

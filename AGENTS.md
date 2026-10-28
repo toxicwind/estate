@@ -457,3 +457,18 @@ _Verified 2026-10-28; dossier: `pens/estate/docs/anomalies/2026-10-28/estate-sin
 |50|**Kryptos mastership**|3 secret-service copies, no master|barn code → kryptos; keygate/ranch/barn copies retired; v1.0.0 (f6e7ef7)|
 |51|**loadSecrets merge order**|process.env overrode file before quote-strip observable|env→file→keyring-gapfill (e19f114, 41/41 TDD)|
 |52|**Git credential helper unconfigured**|mid-session https pushes died|`gh auth setup-git` permanent (ranch b47c454bc)|
+
+## Anomaly program D-2026-10-28 (estate single-truth evening arc — verified live)
+
+_Verified 2026-10-28; dossier: pens/estate/docs/anomalies/2026-10-28/estate-single-truth-consolidation.md._
+
+|#|Anomaly|Essence|Fix (committed)|
+|---|---|---|---|
+|53|**Secrets-in-repo push catch**|backup-recovery stash (GEMINI keys) folded into estate main; GitHub push-protection rejected the push|stash → ~/estate-secrets-recovery (outside repo), history rewritten clean 7f451eb2b5|
+|54|**Secrets triple-truth**|kryptos master stale since init; barn held newer features; keygate a third copy|cherry-pick barn→kryptos v1.0.0; copies retired f6e7ef7|
+|55|**Orphan keypool**|:25109 served by deleted-exe bun from archived clone cwd with ghost defaults|pens defaults + pitchfork restart; 7 pools keyring-SSOT a411783|
+|56|**~/.openfang resurrected by moved manifests**|kappa state_dir pointed at retired path; rig spawn recreated it|retarget → ~/.rig/workspaces; 0 refs|
+|57|**Kairos inert via ghost bashrc source**|.bashrc sourced estate/bin shim; BASH_ENV disabled pre-fix|product-SSOT shim rewired; bash -i SHIM-LOADED|
+|58|**--app keypool: 0 keys**|pool keys lacked service attrs|Variant-wrapped SetAttributes stamp; 12 keys; stanza wired|
+|59|**loadSecrets merge order**|ambient env overrode file before quote-strip observable|file-wins reorder; 46/46 green e19f114|
+|60|**Quota-blind routing**|no $160/day pro ledger; reasoning-budget trap on long loops|QuotaTracker TDD 5 tests + GET /quota live e9ba53d|
