@@ -262,10 +262,10 @@ One rule: **products own their entrypoints; bins merely point at them.**
   `corral -> pens/barn/corral/src/cli/index.ts`). Never a second copy.
 - **`/home/toxic/pens/barn/estate-ops` is the ops product** (pitchfork, hooks,
   estate tooling, shims). The old `estate/bin` was dissolved into it.
-- **Skills scripts live in `/home/toxic/sovereign/skills/scripts/`** — `syntax-guard`,
-  `vansrouter`, etc. resolve there, not to `estate/skills`.
+- **Skills live in the azurite product** — `/home/toxic/pens/geode/products/azurite/skills`
+  (what `~/.tau/skills ->` resolves to). NOT estate/skills, NOT the retired `~/sovereign`.
 - **The manifest is the canary.** `pens/barn/estate-ops/bin-verify.sh` (generated
-  manifest) pins every symlink in `~/.local/bin` to its exact pens/sovereign
+  manifest) pins every symlink in `~/.local/bin` to its exact pens
   target. A broken symlink is a FAIL, never a WARN. When a product moves, fix the
   manifest first, then the link.
 - **No hardcoded product paths inside shims.** A shim resolves its target
@@ -390,10 +390,10 @@ One rule: **products own their entrypoints; bins merely point at them.**
   `corral -> pens/barn/corral/src/cli/index.ts`). Never a second copy.
 - **`/home/toxic/pens/barn/estate-ops` is the ops product** (pitchfork, hooks,
   estate tooling, shims). The old `estate/bin` was dissolved into it.
-- **Skills scripts live in `/home/toxic/sovereign/skills/scripts/`** — `syntax-guard`,
-  `vansrouter`, etc. resolve there, not to `estate/skills`.
+- **Skills live in the azurite product** — `/home/toxic/pens/geode/products/azurite/skills`
+  (what `~/.tau/skills ->` resolves to). NOT estate/skills, NOT the retired `~/sovereign`.
 - **The manifest is the canary.** `pens/barn/estate-ops/bin-verify.sh` (generated
-  manifest) pins every symlink in `~/.local/bin` to its exact pens/sovereign
+  manifest) pins every symlink in `~/.local/bin` to its exact pens
   target. A broken symlink is a FAIL, never a WARN. When a product moves, fix the
   manifest first, then the link.
 - **No hardcoded product paths inside shims.** A shim resolves its target
