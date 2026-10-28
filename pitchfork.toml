@@ -594,21 +594,19 @@ retries = 3
 KIMI_AUTO_SHIM_PORT = "25153"
 SHIM_CONNECT_TIMEOUT = "240"
 
-# NOT BUILT 2026-10-28: src/local/kimi-code is a TRIMMED CLONE — missing
-# pnpm-workspace.yaml + scripts/fix-node-pty-perms.mjs, so pnpm install/build
-# cannot produce apps/kimi-code/dist/main.mjs (dossier: pitchfork-ref-mass-repair #45 gap).
-# Ref re-pointed to the live monorepo; parked until workspace scaffold restored.
-[daemons.kimi-code]
-run = "exec /home/toxic/pens/barn/estate-ops/claim-port 25126 /home/toxic/src/local/kimi-code/apps/kimi-code/dist/main.mjs web --no-open --port 25126"
-auto = []
+# RESTORED 2026-10-28 as olympus product `lambda` (λ — between κ and τ):
+# upstream MoonshotAI/kimi-code 2.4.0 rebuilt at pens/olympus/products/lambda;
+# old parked block (trimmed clone at src/local/kimi-code) replaced by daemon rename.
+[daemons.lambda]
+run = "exec /home/toxic/pens/barn/estate-ops/claim-port 25126 /home/toxic/pens/olympus/products/lambda/apps/kimi-code/dist/main.mjs web --no-open --port 25126"
+auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25126/health"
 port = 25126
 depends = ["thresher"]
-dir = "/home/toxic/src/local/kimi-code"
-mise = true
+dir = "/home/toxic/pens/olympus/products/lambda"
 
-[daemons.kimi-code.health_http]
+[daemons.lambda.health_http]
 url = "http://127.0.0.1:25126/health"
 interval = "30s"
 timeout = "5s"
