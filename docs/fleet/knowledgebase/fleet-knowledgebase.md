@@ -406,3 +406,27 @@ proof. Proven 2026-09-21: 2 hits, 50 percent hit rate on a real job.
 8. Never poll: capture the named deadline and wait on the barrier.
 9. Binaries on PATH are symlinks into pens/, never copies; a copy is a ghost deployment.
 10. Names are API: sentence-names and upstream marketing copy rot the public face — sweep periodically.
+
+## 2026-10-28 flotilla-mcp ship session (tau) — verified fixes + root causes
+
+**Root-cause chain (one paragraph):** the session started as a Telegram-hijack forensics (the estate's @crawlspace_coyote_bot replies "Powered by ZUZMOD Network" — a BotFather-shaped squatter funnels the account to t.me/ZUZMOD; zero estate code contains ZUZMOD and no local pid holds the coyote token, so the bot is operated externally), hardened taas with an official-BotFather-id guard, then the phone could not reach the login endpoint — and the chain of "small" causes was the real session: taas bound only 127.0.0.1 while the nft LAN allowlist lacked :25243 (two independent walls, each passing its own local tests), gramJS's `authorizationState` is not a client property (permanent 502) and `connect()` resolves void (success looked like failure), the high-level `sendCode` helper shape-drifts across versions (raw `Api.auth.SendCode` TL invoke is stable), the keepalive daemon was dead because `isleep` was removed and `|| break` killed the loop after one iteration, thresher "looked broken" because `/api/v1/servers` and router-only `tools/list` both lie by design (real proof is sessioned `retrieve_tools`), and finally repeated code-sends triggered a 3370s Telegram flood-wait that hung every signin POST. Out of that grew **flotilla-mcp**: the phone as a first-class, fully headless MCP surface federated through thresher — any agent can screenshot/tap/type/open on the Pixel via `flotilla:pixel_*` tools, proven end-to-end with a real 447 KB screenshot delivered through the gateway.
+
+### Retrospective board (agile, 4 columns)
+
+| ✅ Went well (receipts) | ⚠️ Drifted (what slowed us) | 📌 Lessons (do not regress) | 🔁 Next recursion |
+|---|---|---|---|
+| flotilla-mcp live: `/health` → thresher `retrieve_tools("pixel")` → real phone screenshot, zero human steps | ~6 sendCode calls flooded the number → 3370s Telegram lockout (wasted the architect's 41663) | Client-side reachability is the only reachability — probe from the REAL client (`adb shell nc -z`), never the server's own stack | Nagram code lands → MTProto session stored to keyring → real BotFather /revoke for coyote (user-gated) |
+| Federation proof method encoded in `docs/mcp-guide-thresher.md` §6 (sessioned retrieve_tools) | "Thresher broken" mirage: `/api/v1/servers` empty + 12 router tools looked like failure while 10 flotilla tools were live | `/api/v1/servers` + router `tools/list` lie by design — verify federation via sessioned `retrieve_tools`, never tool counts | MCP drop-in pattern: next surface (mic/TV) reuses the flotilla template |
+| Squawk anon joins legalized (summoner auto-"anon"); fleet-join ran first-class (`tau-pixelmcp`) | Keepalive dead loops: `isleep` gone + `|| break` + pitchfork `log` subcommand missing | A daemon's re-scan loop is its job — plain `sleep`, never a removed helper's `|| break` | pixel-mic-capture + Google TV as the next headless surfaces |
+| All 4 repos pushed forward-only; sibling tau's WIP folded + announced on fleet bus | First-code loss: architect typed 41663 into Nagram while the daemon slept in flood | Login codes: one send, then WAIT — cooldown (60s) is now enforced server-side | Keyring TELEGRAM_USER_SESSION rotation check after first successful signIn |
+
+### The lessons (do not regress)
+
+1. Never probe a LAN service from the server's own stack — the phone's `nc -z` is the contract; ping OK + box-OK can both mask an nft drop.
+2. A daemon's own loop must not `|| break` on a helper binary that may not exist — plain `sleep`.
+3. gramJS liveness = `client.connected`; `authorizationState` is not a property and `connect()` resolves void — check `ok === false`, not `!ok`.
+4. Raw TL `Api.auth.SendCode` beats the high-level helper across gramJS versions.
+5. Telegram login codes are a rate budget: one send per client, then wait — a 3370s flood hangs every signin POST and expires the code in hand.
+6. Thresher federation is proven by sessioned `retrieve_tools` (SSE-framed, namespaced results); `/api/v1/servers` and router `tools/list` will always look empty — that is by design.
+7. Anon squawk joins are legal and must be asked to summon, never rejected.
+8. Firewall edits live in `/etc/nftables.conf` (idempotent self-flush), then `nft -f`; the live rule is proof only if the phone connects.

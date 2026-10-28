@@ -314,6 +314,25 @@ _Session sweep receipts: village heartbeat 58 sessions/317 msgs; IRC 9 nicks in 
 
 _Per-model strike rule (2026-10-27 architect order): routing priority is FREE > FAST > instruction-following; credit/key exhaustion is quarantined per (provider, model), never per provider._
 
+## Anomaly program D-2026-10-28 (flotilla-mcp ship — verified live)
+
+_Verified 2026-10-28; dossier: `/home/toxic/estate/docs/anomalies/2026-10-28/telegram-zuzmod-hijack.md`._
+
+|#|Anomaly|Essence|Fix (committed)|
+|---|---|---|---|
+|27|**Telegram presence operated externally (ZUZMOD)**|@crawlspace_coyote_bot replies "Powered by ZUZMOD Network"; BotFather-shaped squatter funnels to t.me/ZUZMOD; zero estate source + no local pid holds the bot — externally operated|taas.ts `OFFICIAL_BOTFATHER_ID=93372553` guard; revoke/create flow user-gated|
+|28|**Loopback bind = phone invisible**|taas bound 127.0.0.1; phone "Unable to connect" while box-local health passed — two clients, two truths|`hostname: "0.0.0.0"`; contract = probe from REAL client (`adb shell nc -z`)|
+|29|**nft LAN allowlist gap**|`awrawr_filter` policy drop; LAN tcp set lacked 25243; ping+box-OK masked the drop|25243 added in `/etc/nftables.conf` (idempotent self-flush) + live `nft -f`; phone `nc` rc=0|
+|30|**Ghost gramJS property = permanent 502**|`client.authorizationState` isn't a property (falsy forever); `connect()` resolves void → `!ok` treated success as failure|liveness = `client.connected`; `ok === false` guard|
+|31|**gramJS helper shape drift**|high-level `sendCode` threw `data.constructor` errors on 2.26.21|raw TL `new Api.auth.SendCode({...})` — version-stable; code delivered to phone|
+|32|**Verification-method mirage (thresher)**|`/api/v1/servers` empty + router `tools/list`=12 looked broken while 10 flotilla tools live|real proof = sessioned `retrieve_tools` (§6 of docs/mcp-guide-thresher.md)|
+|33|**Daemon died after one loop**|keepalive's `"${ISLEEP}" ... || break` — isleep binary gone → first iteration broke|plain `sleep 60`; daemon verified running|
+|34|**morphe deprecated-key WARN spam**|both `port` and deprecated `expected_port`/`auto_bump_port`/`port_bump_attempts` set — shadow-logged every invocation|deprecated keys removed from `[daemons.morphe]`; 0 warns|
+|35|**Squawk rejected anon joins**|`/v1/join` without summoner → 400; doctrine says anon joins fine if asked to summon|summoner optional → `"anon"`; response carries the summon ask|
+|36|**Telegram code flood = 56-min lockout**|~6 sendCodes in minutes → `A wait of 3370 seconds is required` hung every signin POST|`sendCodeAllowed()` 60s cooldown (429 beyond it); restart recovers send path|
+
+_Session sweep receipts: flotilla-mcp 10 tools federated (`flotilla:pixel_*`); full agent→thresher→phone screenshot chain 447 KB live; 4 repos pushed; fleet-join `tau-pixelmcp` first-class; Nagram login code delivery `ok:true` (2×); phone `nc -z` rc=0._
+
 
 ## Layout (2026-10-23) — the bin contract
 
