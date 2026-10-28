@@ -1468,3 +1468,10 @@ boot_start = true
 env = { FLEET_FEED_PORT = "25158" }
 ready_cmd = "ss -ltn 'sport = :25158' | grep -q LISTEN"
 auto = ["start"]
+
+[daemons.loggy-bridge]
+run = "exec /home/toxic/.local/share/mise/installs/python/3.14.7/bin/python /home/toxic/pens/ranch/hatch/kite/agents/ember/readme-op/work/kestrel/gear/emergent-enrich/bin/loggy_bridge.py"
+auto = ["start"]
+retry = true
+dir = "/home/toxic/pens/ranch/hatch/kite/agents/ember/readme-op/work/kestrel/gear/emergent-enrich"
+mise = true
