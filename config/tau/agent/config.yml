@@ -1,5 +1,5 @@
 advisor:
-  enabled: false
+  enabled: true
   immuneTurns: 3
   syncBacklog: "off"
 appearance:
@@ -8,7 +8,7 @@ appearance:
 ask:
   enabled: true
   notify: "on"
-  timeout: 15
+  timeout: 60
 astEdit:
   enabled: true
 astGrep:
@@ -23,12 +23,13 @@ autolearn:
   enabled: true
 bash:
   autoBackground:
-    enabled: true
+    enabled: false
   direnv: auto
   direnvLoadTimeoutMs: 30000
-  enabled: true
-  patterns:
-    []
+  enabled: false
+  patterns: []
+  tiktokenShim:
+    enabled: false
 bashInterceptor:
   enabled: false
 branchSummary:
@@ -92,7 +93,7 @@ cycleOrder:
   - slow
 debug:
   enabled: true
-defaultThinkingLevel: auto
+defaultThinkingLevel: xhigh # 2026-10-28: was "auto" — the per-turn judge classifier added a queue round trip on the single-lane lane (53s stalls). Concrete xhigh = no judge call, max depth always; price/latency is not a design input (architect 2026-10-28).
 dev:
   autoqa: true
   autoqaConsent: granted
@@ -100,8 +101,7 @@ dev:
     endpoint: https://qa.omp.sh/v1/grievances
 disabledExtensions:
   - airspeak
-disabledProviders:
-  []
+disabledProviders: []
 display:
   cacheMissMarker: true
   collapseCompacted: true
@@ -121,7 +121,7 @@ edit:
   enforceSeenLines: false
   fuzzyMatch: true
   fuzzyThreshold: 0.95
-  mode: patch
+  mode: hashline
   streamingAbort: false
 effort:
   high: 0.9
@@ -133,7 +133,7 @@ eval:
   autoBackground:
     enabled: true
   jl: true
-  js: false
+  js: true
   py: true
   rb: true
   workpool:
@@ -186,7 +186,7 @@ images:
   autoResize: true
   blockImages: false
   describeForTextModels: true
-  questionTimeoutMs: 300000
+  questionTimeoutMs: 120000
   urls:
     backends:
       - provider-files
@@ -258,23 +258,23 @@ model:
     threshold: 5
 modelRoleStorage: global
 modelRoles:
-  advisor: freeinference/qwen3.6-35b:low
+  advisor: freeinference/qwen3.6-35b
   bodybuilder: custom/bodybuilder
   commit: freeinference/qwen3.6-35b
   dots: custom/dots
-  fallback: freeinference/qwen3.6-35b
+  fallback: nvidia/nemotron-3.5-super-vl-120b-a12b
   image: google-antigravity/gemini-3.1-flash-image:auto
   judge: freeinference/qwen3.6-35b
   memory: freeinference/qwen3.6-35b
-  plan: freeinference/qwen3.6-35b:low
-  slow: freeinference/qwen3.6-35b:max
-  smol: freeinference/minimax-m3
-  task: freeinference/qwen3.6-35b
+  plan: freeinference/qwen3.6-35b
+  slow: nvidia/nemotron-3.5-super-vl-120b-a12b
+  smol: freeinference/qwen3.6-35b
+  task: nvidia/nemotron-3.5-super-vl-120b-a12b
   tiny: freeinference/qwen3.6-35b
-  verification: freeinference/qwen3.6-35b:low
-  vision: freeinference/minimax-m3:xhigh
+  verification: freeinference/qwen3.6-35b
+  vision: google-antigravity/gemini-3.1-flash-image:auto
   web: web/exa
-  default: openrouter/openrouter/free
+  default: freeinference/deepseek-v4-flash
 omitThinking: false
 paste:
   largeMenuThreshold: 100
@@ -323,19 +323,18 @@ providers:
   anthropic:
     serverSideFallback: true
   antigravityEndpoint: auto
-  autoThinkingMaxEffort: xhigh
+  autoThinkingMaxEffort: xhigh # uncapped — price is not a design input (architect 2026-10-28); the fix for judge latency is killing the auto classifier, never throttling depth
   cacheRetention: auto
   fetch: auto
   fireworksTier: standard
   kimiApiFormat: auto
   maxInFlightRequests:
-    openai-compatible: 2
+    openai-compatible: 16 # 2026-10-28 TAKE ALL LANES (architect) — matches mimetite uncapped lane policy
   ollama-cloud:
     maxConcurrency: 3
   openai-codex:
     codeMode: "on"
-    codeModeDirectTools:
-      []
+    codeModeDirectTools: []
   openai-compatible:
     apiKey: eyJhbGciOiAibm9uZSIsICJ0eXAiOiAiSldUIn0.eyJzdWIiOiAiZmxvY2stY2xpZW50IiwgIm5hbWUiOiAiY29ycmFsLWp3dGZtdCIsICJpYXQiOiAxNzkxOTAwMDAwfQ.d0391d5d684102b1ef80140f9920381b08aa43b417976ed1528618c7b76b60df
     baseUrl: http://127.0.0.1:25193/v1
@@ -350,7 +349,7 @@ providers:
     - opencode-zen
   webSearchTimeoutSeconds: 60
 python:
-  interpreter: ""
+  interpreter: /home/toxic/.local/share/mise/installs/python/3.14.7/bin/python
   kernelMode: session
 read:
   defaultLimit: 5000
@@ -372,9 +371,21 @@ repetitionPenalty: -1
 retry:
   fallbackChains:
     fallback:
+      - freeinference/glm-5.3-flash
+      - freeinference/deepseek-v4-flash
       - freeinference/qwen3.6-35b
-      - freeinference/minimax-m3
-      - freeinference/qwen3.6-35b
+      - freeinference/minimax-m3.1-flash
+      - rhodochrosite.secure-nim/nvidia/nemotron-3.5-super-vl-120b-a12b
+      - rhodochrosite.secure-nim/nvidia/nemotron-3.5-lightning-30b-a3b
+      - rhodochrosite.chalcopyrite/nvidia/nemotron-3-ultra-550b-a55b
+      - rhodochrosite.chalcopyrite/openai/gpt-oss-20b
+      - rhodochrosite.azurite/models/gemini-flash-tool-retrieval
+      - google/models/gemini-flash-tool-retrieval
+      - google/models/gemini-3.8-flash
+      - google/models/gemini-2.5-flash
+      - deepseek/deepseek-chat
+      - openrouter/deepseek/deepseek-chat
+      - openrouter/google/gemini-2.5-flash
     web:
       - web/tavily
       - web/firecrawl
@@ -404,7 +415,7 @@ shell:
   env:
     PI_DISABLE_UUTILS_BUILTINS: "1"
 shellMinimizer:
-  enabled: true
+  enabled: false
   sourceOutlineLevel: default
 showHardwareCursor: true
 skillful: true
@@ -505,7 +516,9 @@ todo:
 tools:
   abortOnFabricatedResult: true
   approval:
-    {}
+    bash: deny
+    grep: deny
+    find: deny
   approvalMode: yolo
   artifactHeadBytes: 20
   artifactSpillThreshold: 50
@@ -513,14 +526,13 @@ tools:
   artifactTailLines: 500
   format: auto
   intentTracing: true
-  maxTimeout: 0
+  maxTimeout: 60
   outputMaxColumns: 768
   speculativeExecution:
     enabled: true
   xdev: true
   xdevDocs: builtins
-  xdevInlineDevices:
-    []
+  xdevInlineDevices: []
 topK: -1
 topP: -1
 treeFilterMode: default
@@ -529,8 +541,7 @@ tts:
 ttsr:
   builtinRules: true
   contextMode: discard
-  disabledRules:
-    []
+  disabledRules: []
   enabled: false
   interruptMode: never
   repeatGap: 10
@@ -552,5 +563,4 @@ vault:
 web_search:
   enabled: true
 workspace:
-  additionalDirectories:
-    []
+  additionalDirectories: []

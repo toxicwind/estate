@@ -29,7 +29,10 @@ import { fileURLToPath } from "node:url";
 // keysmith Bun drop-in — keyring-first secret resolution. Relative import so it
 // resolves regardless of node_modules linkage. From stack/services/ the estate
 // ranch/ tree is TWO levels up.
-import { get } from "../../ranch/secretsmith/bun/src/index.ts";
+// secretsmith Bun drop-in — keyring-first secret resolution. The original
+// `bun/src/index.ts` `get()` was consolidated into secretsmith.ts:
+// SecretService.search(filters) finds exact-attr items, getSecret() reads one.
+import { SecretService } from "/home/toxic/pens/barn/secretsmith/secretsmith.ts";
 import {
   loadEnvFileInto,
   resolvePort,
@@ -52,11 +55,16 @@ const PORT = resolvePort(process.env as Record<string, string | undefined>);
 // 3) keyring overlay — inject ONLY vars with an exact-one keyring match so the
 //    already-sourced vault fallback stands otherwise (mirrors .sh spec_of).
 const secrets: Record<string, string> = {};
+const keyring = new SecretService();
 for (const [varName, attrs] of Object.entries(KEYRING_SPECS)) {
   if (process.env[varName]) continue; // vault/shell already provided it
   try {
-    const item = await get(attrs); // exact-one-or-null
-    if (item?.secret) secrets[varName] = item.secret;
+    const matches = await keyring.search(attrs); // exact-attr items
+    const item = matches.length === 1 ? matches[0] : null;
+    if (item) {
+      const [buf] = await keyring.getSecret(item.path);
+      secrets[varName] = buf.toString("utf8");
+    }
   } catch {
     // keyring unavailable (no DBus, locked, etc.) -> let the vault fallback stand
   }

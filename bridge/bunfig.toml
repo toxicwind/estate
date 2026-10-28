@@ -1,0 +1,21 @@
+# bunfig.toml — bridge runtime config (October 2026 emergent profile)
+# telemetry: wired to the ESTATE's real connectors, not a fake off-switch:
+#   prometheus scrape  :25105  <- morphe /metrics (prometheus text format)
+#   estate-exporter    :25213  bridge lane up/down (extends BRIDGE_LANES)
+#   pino JSON logs     journald (pitchfork captures stdout)
+#   winners parquet    ~/.cache/morphe/winners.parquet (HFT analytics)
+[install]
+# supply-chain guard: packages must be >= 3 days old unless exempted below.
+# Emergent 2026-10 exceptions (verified upstreams, estate-critical):
+exact = true
+minimumReleaseAge = 259200
+
+[install.scopes]
+# uWS ships prebuilt binaries via github; exempt from the age gate.
+"github:uNetworking" = { minimumReleaseAge = 0 }
+# @duckdb/node-api 2.0.0-r.* release candidates move fast (parquet ledger).
+"@duckdb" = { minimumReleaseAge = 0 }
+
+[run]
+# bun-native router must never fall back to node silently.
+bun = true

@@ -1,562 +1,618 @@
-advisor:
-  enabled: false
-  immuneTurns: 3
-  syncBacklog: "off"
-appearance:
-  compact: true
-  theme: dark-midnight
-ask:
-  enabled: true
-  notify: "on"
-  timeout: 15
-astEdit:
-  enabled: true
-astGrep:
-  enabled: true
-async:
-  enabled: true
-  pollWaitDuration: smart
-autoResume: false
-autocompleteMaxVisible: 20
-autolearn:
-  autoContinue: true
-  enabled: true
-bash:
-  autoBackground:
+plugins:
+- name: bornite
+  source: ./projects/range/ranch/stockyard/bornite
+  merged: estate-swap
+  privileged: true
+- name: rhodochrosite
+  source: ./projects/range/ranch/stockyard/rhodochrosite
+  privileged: true
+- name: gatehouse
+  source: ./projects/range/ranch/barn/gatehouse
+  privileged: true
+  role: MCP federation gateway
+- name: router
+  source: ./projects/range/ranch/stockyard/router-legacy
+  merged:
+  - router-legacy
+  - stockyard-rhodochrosite-router
+  - estate-router
+  privileged: true
+- name: barn-browser
+  source: ./projects/range/ranch/barn/browserless
+  privileged: false
+- name: barn-gemini
+  source: ./projects/range/ranch/barn/gemini-mcp
+  privileged: false
+- name: secretsmith
+  source: ./projects/range/ranch/barn/secretsmith
+  privileged: true
+providers:
+  anthropic:
+    serverSideFallback: true
+  autoThinkingMaxEffort: xhigh
+  maxInFlightRequests: {}
+  openai-codex:
+    codeMode: 'on'
+    codeModeDirectTools: []
+  ollama-cloud:
+    maxConcurrency: 3
+  openai-compatible:
+    baseUrl: http://127.0.0.1:25193/v1
+    apiKey: npk_05b0363e2282615b0376351522ab1857
+  webSearchTimeoutSeconds: 60
+  antigravityEndpoint: auto
+  fireworksTier: standard
+  tinyModelDevice: auto
+  tinyModelDtype: auto
+  kimiApiFormat: auto
+  openaiWebsockets: auto
+  cacheRetention: auto
+  streamFirstEventTimeoutSeconds: 300
+  streamIdleTimeoutSeconds: 120
+  unboundedRetryAfter:
+  - opencode-go
+  - opencode-zen
+  openrouterVariant: default
+  fetch: auto
+modelRoles:
+  # Estate custom routes (2026-10-13): custom/dots (Dots-3-Note coercion
+  # layer neutralizing ghost outputs, content=null replay crashes, strict tools),
+  # custom/bodybuilder (POST /v1/custom/bodybuilder parallel job decomposer),
+  # custom/zen, custom/copilot, custom/openfang-resolve.
+  default: openrouter/dots-studio/dots-3-note-preview:free
+  dots: custom/dots
+  bodybuilder: custom/bodybuilder
+  # smol was never defined here, but two things reference it: cycleOrder is
+  # [smol, default, slow], and the skill-description compressor resolves the
+  # "smol" role (skill-descriptions.ts:30). With it undefined, resolution fell
+  # through to priority.json's MODEL_PRIO.smol, whose first entry is
+  # google-antigravity/gemini-3.8-flash. That answers 402, and the compressor
+  # runs once per skill at startup, so every session opened made ~100 failing
+  # model calls and could not exit until they drained. 2.6B, 200 in 0.33s.
+  smol: openrouter/liquid/lfm-2.5-2.6b:free
+  # slow was undefined too, and cycleOrder is [smol, default, slow]. Undefined
+  # roles fall through to priority.json's MODEL_PRIO.slow, whose first entry is
+  # anthropic/claude-opus-5-5. With no working anthropic credential every turn
+  # ended "agent turn ended with provider error: Connection error." on the
+  # largest model in the free tier, verified 200.
+  slow: openrouter/nvidia/nemotron-3-ultra-550b-a55b:free
+  # The other 9 chat roles were undefined too. An undefined role falls through
+  # to priority.json's MODEL_PRIO.<role>, and every entry in those lists is a
+  # paid model from a provider this account has no working credential for, so
+  # every one of them ended in a provider error. All verified 200.
+  vision: openrouter/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free
+  plan: openrouter/nvidia/nemotron-3-super-120b-a12b:free
+  advisor: openrouter/nvidia/nemotron-3-super-120b-a12b:free
+  judge: openrouter/nvidia/nemotron-3-super-120b-a12b:free
+  task: openrouter/nvidia/nemotron-3.5-lightning:free
+  commit: openrouter/liquid/lfm-2.5-2.6b:free
+  tiny: openrouter/liquid/lfm-2.5-2.6b:free
+  memory: openrouter/liquid/lfm-2.5-2.6b:free
+  verification: openrouter/nvidia/nemotron-3.5-lightning:free
+  # ling-3.0-flash-vl:free is gone upstream — 404 "unavailable for free. The
+  # paid version is available now". This one answers 200.
+  fallback: openrouter/inclusionai/ling-3.0-flash-fin:free
+  web: web/exa
+  # image, speech and dictation are deliberately left unset. The free tier has
+  # no image-output and no audio model at all (checked against the live
+  # catalog: 17 free models, 8 accept image input, 0 emit image, 0 touch audio),
+  # so there is no honest free mapping. Leaving them unset keeps them falling
+  # through to the paid priority list, which fails loudly rather than routing
+  # image generation to a text model.
+subagents:
+  can_spawn_subagents: true
+  whitelist:
+  - task
+  - plan
+  - review
+  - auditor
+  - critic
+  - explorer
+  - analyst
+  - debugger
+  # Was estate/free — provider baseUrl http://127.0.0.1:25104/v1, which has
+  # no daemon in pitchfork.toml at all and nothing listening. Every subagent
+  # dispatch resolved to a dead endpoint. Same live default as modelRoles.
+  defaultModel: openrouter/nvidia/nemotron-3.5-lightning:free
+  subagent: inherit
+tools:
+  approvalMode: yolo
+  intentTracing: true
+  xdev: true
+  xdevDocs: builtins
+  approval: {}
+  format: auto
+  artifactSpillThreshold: 50
+  artifactTailBytes: 20
+  artifactHeadBytes: 20
+  outputMaxColumns: 768
+  artifactTailLines: 500
+  abortOnFabricatedResult: true
+  maxTimeout: 0
+  xdevInlineDevices: []
+  speculativeExecution:
     enabled: true
-  direnv: auto
-  direnvLoadTimeoutMs: 30000
-  enabled: true
-  patterns: []
-bashInterceptor:
-  enabled: false
-branchSummary:
-  enabled: true
-browser:
-  cmux: true
-  enabled: true
-  headless: true
-  relay: false
-  screenshotDir: ~/screenshots/
-checkpoint:
-  enabled: true
-codexResets:
-  autoRedeem: "yes"
-  keepCredits: 0
-  minBlockedMinutes: 60
-  salvageHorizonHours: 12
-collab:
-  displayName: ""
-  relayUrl: wss://my.omp.sh
-  webUrl: ""
-colorBlindMode: false
-commands:
-  enableClaudeProject: true
-  enableClaudeUser: true
-  enableOpencodeProject: true
-  enableOpencodeUser: true
-compaction:
-  asyncEnabled: true
-  dropUseless: false
-  enabled: false
-  experimentalContextManagement: true
-  handoffSaveToDisk: true
-  idleEnabled: false
-  idleThresholdTokens: 200000
-  idleTimeoutSeconds: 300
-  methodOrder:
-    - shake
-    - soft
-    - remote
-    - handoff
-  midTurnEnabled: true
-  remoteStreamingV2Enabled: true
-  supersedeReads: true
-  thresholdPercent: 95
-  thresholdTokens: -1
-completion:
-  notify: "on"
+task:
+  batch: true
+  maxConcurrency: 4
+  enableLsp: true
+  showResolvedModelBadge: true
+  isolation:
+    apply: true
+    merge: patch
+    commits: generic
+    enabled: false
+  eager: preferred
+  enableEffort: true
+  maxRecursionDepth: 1
+  maxRuntimeMs: 0
+  agentIdleTtlMs: 420000
+  softRequestBudget: 200
+  softRequestBudgetNotice: true
+  maxEffort: high
+  prewalk: true
+interruptMode: wait
+steeringMode: all
+followUpMode: all
+appearance:
+  theme: dark-midnight
+  compact: true
+symbolPreset: nerd
 composer:
   shape: box
-computer:
-  display: all
-  enabled: true
-  maxHeight: 2400
-  maxWidth: 3840
-contextPromotion:
-  enabled: true
-cycleOrder:
-  - smol
-  - default
-  - slow
-debug:
-  enabled: true
+theme:
+  dark: dark-sakura
+  light: light
+setupVersion: 2
 defaultThinkingLevel: auto
-dev:
-  autoqa: true
-  autoqaConsent: granted
-  autoqaPush:
-    endpoint: https://qa.omp.sh/v1/grievances
-disabledExtensions:
-  - airspeak
-disabledProviders: []
-display:
-  cacheMissMarker: true
-  collapseCompacted: true
-  hideToolActivity: false
-  pinnedAgents: full
-  shimmer: kitt
-  showTokenUsage: true
-  showTurnTime: true
-  smoothStreaming: true
-doubleEscapeAction: none
-edit:
-  autoRepair:
-    enabled: false
-  blackbox:
-    enabled: true
-  blockAutoGenerated: false
-  enforceSeenLines: false
-  fuzzyMatch: true
-  fuzzyThreshold: 0.95
-  mode: hashline
-  streamingAbort: false
+hideThinkingBlock: false
+memory:
+  backend: hindsight
+hindsight:
+  apiUrl: http://127.0.0.1:25117
+  scoping: global
+  autoRecall: true
+  autoRetain: true
+  retainMode: full-session
+  mentalModelsEnabled: true
+  mentalModelAutoSeed: true
+  bankId: ''
+  apiToken: ''
+temperature: -1
 effort:
   high: 0.9
   ultrathink: 0.99
-emojiAutocomplete: true
-error:
-  notify: "on"
-eval:
-  autoBackground:
-    enabled: true
-  jl: true
-  js: false
-  py: true
-  rb: true
-  workpool:
-    freshAgents: true
-exa:
-  enabled: true
-  searchDelayMs: 1000
-extendedContext: true
-extensionHandlers:
-  toolCallTimeoutMs: 30000
-externalThinking: false
-features:
-  unexpectedStopDetection: smart
-fetch:
-  enabled: true
-followUpMode: all
-generate_image:
-  enabled: false
-git:
-  enabled: true
-github:
-  cache:
-    enabled: true
-    hardTtlSec: 604800
-    softTtlSec: 300
-  enabled: true
-glob:
-  enabled: true
-goal:
-  continuationModes:
-    - interactive
-  enabled: true
-  statusInFooter: true
-grep:
-  contextAfter: 3
-  contextBefore: 3
-  enabled: false
-hideThinkingBlock: false
-hindsight:
-  apiToken: ""
-  apiUrl: http://127.0.0.1:25117
-  autoRecall: true
-  autoRetain: true
-  bankId: ""
-  mentalModelAutoSeed: true
-  mentalModelsEnabled: true
-  retainMode: full-session
-  scoping: global
+colorBlindMode: false
+statusLine:
+  preset: nerd
+  separator: powerline
+  contextLine: embedded
+  sessionAccent: true
+  transparent: false
+  compactThinkingLevel: true
+  showHookStatus: true
+terminal:
+  showImages: true
+  showProgress: true
 images:
   autoResize: true
   blockImages: false
   describeForTextModels: true
-  questionTimeoutMs: 300000
   urls:
-    backends:
-      - provider-files
-      - tailscale
-      - cloudflared
-      - litterbox
-    bindHost: 127.0.0.1
     enabled: false
-    sshRemotePort: 8787
+    backends:
+    - provider-files
+    - tailscale
+    - cloudflared
+    - litterbox
     ttlHours: 72
-includeModelInPrompt: true
-includeWorkspaceTree: false
-inlineToolDescriptors: "off"
-interruptMode: wait
-irc:
-  timeoutMs: 120000
-isolation:
-  backend: auto
-julia:
-  interpreter: ""
-launch:
-  enabled: true
-live:
-  voice: sol
-loop:
-  mode: prompt
-lsp:
-  diagnosticsDeduplicate: true
-  diagnosticsOnEdit: true
-  diagnosticsOnWrite: true
-  enabled: true
-  formatOnWrite: false
-  lazy: true
-  shared: true
-magicKeywords:
+    bindHost: 127.0.0.1
+    sshRemotePort: 8787
+  questionTimeoutMs: 300000
+tui:
+  resizeScrollback: rebuild
+  textSizing: false
+  renderMermaid: true
+  codexResetFireworks: false
+  titleState: true
+  hyperlinks: auto
+  tight: true
+  imeSafeCursor: false
+display:
+  shimmer: kitt
+  smoothStreaming: true
+  hideToolActivity: false
+  showTokenUsage: true
+  showTurnTime: true
+  cacheMissMarker: true
+  collapseCompacted: true
+  pinnedAgents: full
+showHardwareCursor: true
+advisor:
   enabled: false
-  orchestrate: true
-  ultrathink: true
-  workflow: true
-marketplace:
-  autoUpdate: notify
-mcp:
-  enableProjectConfig: true
-  notificationDebounceMs: 500
-  notifications: true
-  renderMarkdownResults: true
-memory:
-  backend: hindsight
-minP: -1
-mnemopi:
-  autoRecall: true
-  autoRetain: true
-  embeddingVariant: en
-  enhancedRecall: false
-  llmMode: smol
-  noEmbeddings: false
-  polyphonicRecall: false
-  proactiveLinking: false
-  scoping: per-project
+  syncBacklog: 'off'
+  immuneTurns: 3
+prewalk:
+  enabled: false
+modelRoleStorage: global
+proseOnlyThinking: true
+omitThinking: false
+externalThinking: false
 model:
   loopGuard:
-    checkAssistantContent: true
     enabled: true
+    checkAssistantContent: true
     toolCallReminder: true
   toolCallLoopGuard:
     enabled: true
-    exemptTools:
-      - hub
     threshold: 5
-modelRoleStorage: global
-# modelRoles — 2026-10-26 AST/probe-verified remap (kappa session).
-# Probed live: qwen3.6-35b does NOT honor reasoning_effort/thinking (dead
-# suffixes); deepseek-v4-flash DOES (19->88->130 reasoning tokens across
-# none/low/max) with 1M ctx @ ~80t/s; glm-5.3-flash always-thinks and barely
-# scales (31->29->52). Effort-bearing roles -> deepseek-v4-flash; bare
-# no-effort roles stay on qwen3.6-35b.
-# modelRoles — 2026-10-26 probe-verified remap (kappa session), TAKE 2.
-# Coordinate truth: tau has NO freeinference provider ("unknown model"
-# warnings); freeinference reaches tau THROUGH rhodochrosite as the
-# openai-compatible lane (:25193, corral JWT). Probed: deepseek-v4-flash
-# honors reasoning_effort (19->88->130 tok), qwen3.6-35b does not; glm-5.3-
-# flash always-thinks and barely scales. effort roles -> openai-compatible/
-# deepseek-v4-flash; bare roles -> freeinference/qwen3.6-35b.
-modelRoles:
-  advisor: freeinference/qwen3.6-35b:low
-  bodybuilder: custom/bodybuilder
-  commit: freeinference/qwen3.6-35b
-  dots: custom/dots
-  fallback: freeinference/qwen3.6-35b
-  image: google-antigravity/gemini-3.1-flash-image:auto
-  judge: freeinference/qwen3.6-35b
-  memory: freeinference/qwen3.6-35b
-  plan: freeinference/qwen3.6-35b:low
-  slow: freeinference/qwen3.6-35b:max
-  smol: freeinference/qwen3.6-35b
-  task: freeinference/qwen3.6-35b
-  tiny: freeinference/qwen3.6-35b
-  verification: freeinference/qwen3.6-35b:low
-  vision: freeinference/minimax-m3:xhigh
-  web: web/exa
-  default: freeinference/qwen3.6-35b
-omitThinking: false
-paste:
-  largeMenuThreshold: 100
+    exemptTools:
+    - hub
+inlineToolDescriptors: 'off'
+includeModelInPrompt: true
+includeWorkspaceTree: false
 personality: friendly
-plan:
-  autosave: true
-  defaultOnStartup: false
-  enabled: true
-plugins:
-  - merged: estate-swap
-    name: bornite
-    privileged: true
-    source: ./projects/range/ranch/stockyard/bornite
-  - name: rhodochrosite
-    privileged: true
-    source: ./projects/range/ranch/stockyard/rhodochrosite
-  - name: thresher
-    privileged: true
-    role: MCP federation gateway
-    source: ./ranch/barn/thresher
-  - merged:
-      - router-legacy
-      - stockyard-rhodochrosite-router
-      - estate-router
-    name: router
-    privileged: true
-    source: ./projects/range/ranch/stockyard/router-legacy
-  - name: barn-browser
-    privileged: false
-    source: ./projects/range/ranch/barn/browserless
-  - name: barn-gemini
-    privileged: false
-    source: ./projects/range/ranch/barn/gemini-mcp
-  - name: secretsmith
-    privileged: true
-    source: ./projects/range/ranch/barn/secretsmith
+topP: -1
+topK: -1
+minP: -1
+presencePenalty: -1
+repetitionPenalty: -1
+textVerbosity: medium
+tier:
+  openai: auto
+  anthropic: priority
+  google: flex
+  subagent: auto
+  advisor: flex
+retry:
+  maxRetries: 3
+  maxDelayMs: 300000
+  modelFallback: true
+  usageAwareFallback: true
+  usageReservePct: 10
+  usageReservePolicy: confirm
+  fallbackChains:
+    # Every free model here answered HTTP 200 in under 2.5s on 2026-09-27. All
+    # :free models share one per-key rate limit, so a throttle usually hits
+    # several at once — but rotating still beats backing off on a model that is
+    # not coming back, and it is what keeps a stalled turn from going silent
+    # for 90s+ (maxDelayMs is a fail-fast cap the engine only sleeps past when
+    # there is no chain to rotate into).
+    openrouter/*:
+    - openrouter/liquid/lfm-2.5-2.6b:free
+    - openrouter/nvidia/nemotron-3-super-120b-a12b:free
+    - openrouter/inclusionai/ling-3.0-flash-fin:free
+    # estate/free (:25104) and bornite/qwen-flash-da-128k (:25100) are both
+    # down — bornite's dependency gatehouse aborts startup on a missing
+    # projects/range/ranch/barn/gatehouse/bin/github-mcp.sh. These two are verified
+    # 200 against openrouter and restore the chain's whole point.
+    google-antigravity/*:
+    - openrouter/inclusionai/ling-3.0-flash-fin:free
+    - openrouter/nvidia/nemotron-3-super-120b-a12b:free
+    # Live web providers first. The four chat models that used to sit directly
+    # after web/perplexity all 402 (no credits) or 400 (`claude-haiku-4-5` is
+    # not a valid id), so every fallback burned a doomed attempt before
+    # reaching the next working provider. They are kept, and kept last, per
+    # the standing rule against removing models: an unreachable last resort is
+    # better than a hot path that cannot fail forward.
+    web:
+    - web/perplexity
+    - web/zai
+    - web/tinyfish
+    - web/jina
+    - web/kagi
+    - web/tavily
+    - web/firecrawl
+    - web/brave
+    - web/kimi
+    - web/parallel
+    - web/synthetic
+    - web/searxng
+    - web/startpage
+    - web/duckduckgo
+    - web/ecosia
+    - web/google
+    - web/mojeek
+    - web/public
+    - web/ollama
+    - google/gemini-2.5-flash
+    - anthropic/claude-haiku-4-5
+    - openai-codex/gpt-5.6-luna
+    - openai-codex/gpt-5.6
+    - openai-codex/gpt-5.5
+    - xai/grok-4.5
+    - xai-oauth/grok-4.5
+    - google-antigravity/gemini-2.5-flash
+  fallbackRevertPolicy: cooldown-expiry
+autoResume: false
 power:
   sleepPrevention: idle
-presencePenalty: -1
-prewalk:
+git:
+  enabled: true
+loop:
+  mode: prompt
+doubleEscapeAction: none
+treeFilterMode: default
+autocompleteMaxVisible: 20
+spelling:
+  typoDetection: true
+  autocomplete: true
+  autocorrect: false
+emojiAutocomplete: true
+paste:
+  largeMenuThreshold: 100
+startup:
+  quiet: false
+  showSplash: false
+  setupWizard: true
+  checkUpdate: true
+  changelogMode: expanded
+update:
+  auto: false
+  channel: stable
+marketplace:
+  autoUpdate: notify
+magicKeywords:
   enabled: false
-proseOnlyThinking: true
-provider:
-  appendOnlyContext: auto
-providers:
-  anthropic:
-    serverSideFallback: true
-  antigravityEndpoint: auto
-  autoThinkingMaxEffort: xhigh
-  cacheRetention: auto
-  fetch: auto
-  fireworksTier: standard
-  kimiApiFormat: auto
-  maxInFlightRequests:
-    openai-compatible: 2
-  ollama-cloud:
-    maxConcurrency: 3
-  openai-codex:
-    codeMode: "on"
-    codeModeDirectTools: []
-  openai-compatible:
-    apiKey: eyJhbGciOiAibm9uZSIsICJ0eXAiOiAiSldUIn0.eyJzdWIiOiAiZmxvY2stY2xpZW50IiwgIm5hbWUiOiAiY29ycmFsLWp3dGZtdCIsICJpYXQiOiAxNzkxOTAwMDAwfQ.d0391d5d684102b1ef80140f9920381b08aa43b417976ed1528618c7b76b60df
-    baseUrl: http://127.0.0.1:25193/v1
-  openaiWebsockets: auto
-  openrouterVariant: default
-  streamFirstEventTimeoutSeconds: 300
-  streamIdleTimeoutSeconds: 120
-  tinyModelDevice: auto
-  tinyModelDtype: auto
-  unboundedRetryAfter:
-    - opencode-go
-    - opencode-zen
-  webSearchTimeoutSeconds: 60
-python:
-  interpreter: ""
-  kernelMode: session
+  ultrathink: true
+  orchestrate: true
+  workflow: true
+completion:
+  notify: 'on'
+error:
+  notify: 'on'
+ask:
+  timeout: 15
+  notify: 'on'
+  enabled: true
+recap:
+  enabled: false
+  idleSeconds: 240
+collab:
+  relayUrl: wss://my.omp.sh
+  webUrl: ''
+  displayName: ''
+share:
+  serverUrl: https://my.omp.sh/s
+  store: blob
+  redactSecrets: true
+stt:
+  enabled: false
+  submitTrigger: never
+features:
+  unexpectedStopDetection: smart
+workspace:
+  additionalDirectories: []
+contextPromotion:
+  enabled: true
+extendedContext: true
+compaction:
+  enabled: false
+  midTurnEnabled: true
+  methodOrder:
+  - shake
+  - soft
+  - remote
+  - handoff
+  thresholdPercent: 95
+  thresholdTokens: -1
+  handoffSaveToDisk: true
+  remoteStreamingV2Enabled: true
+  asyncEnabled: true
+  idleEnabled: false
+  idleThresholdTokens: 200000
+  idleTimeoutSeconds: 300
+  supersedeReads: true
+  dropUseless: false
+  experimentalContextManagement: true
+snapcompact:
+  systemPrompt: none
+  toolResults: false
+  shape: auto
+branchSummary:
+  enabled: true
+ttsr:
+  enabled: false
+  contextMode: discard
+  interruptMode: never
+  repeatMode: after-gap
+  repeatGap: 10
+  builtinRules: true
+  disabledRules: []
+autolearn:
+  enabled: true
+  autoContinue: true
+mnemopi:
+  scoping: per-project
+  embeddingVariant: en
+  autoRecall: true
+  autoRetain: true
+  polyphonicRecall: false
+  enhancedRecall: false
+  proactiveLinking: false
+  noEmbeddings: false
+  llmMode: smol
+edit:
+  mode: hashline
+  fuzzyMatch: true
+  fuzzyThreshold: 0.95
+  streamingAbort: true
+  blockAutoGenerated: false
+  enforceSeenLines: false
+  blackbox:
+    enabled: true
+  autoRepair:
+    enabled: false
+readLineNumbers: true
 read:
   defaultLimit: 5000
   renderMarkdown: true
   summarize:
     enabled: false
+    prose: false
     minBodyLines: 4
     minCommentLines: 6
     minTotalLines: 100
-    prose: false
-    unfoldLimit: 100
     unfoldUntil: 50
+    unfoldLimit: 100
   toolResultPreview: true
-readLineNumbers: true
-recap:
+lsp:
+  enabled: true
+  lazy: true
+  shared: true
+  formatOnWrite: false
+  diagnosticsOnWrite: true
+  diagnosticsOnEdit: true
+  diagnosticsDeduplicate: true
+bash:
+  enabled: true
+  autoBackground:
+    enabled: true
+  patterns: []
+  direnv: auto
+  direnvLoadTimeoutMs: 30000
+bashInterceptor:
   enabled: false
-  idleSeconds: 240
-repetitionPenalty: -1
-retry:
-  fallbackChains:
-    fallback:
-      - freeinference/qwen3.6-35b
-      - freeinference/minimax-m3
-      - freeinference/qwen3.6-35b
-    web:
-      - web/tavily
-      - web/firecrawl
-      - web/brave
-      - web/parallel
-      - web/synthetic
-      - google-antigravity/gemini-3.8-flash
-  fallbackRevertPolicy: cooldown-expiry
-  maxDelayMs: 300000
-  maxRetries: 3
-  modelFallback: true
-  usageAwareFallback: true
-  usageReservePct: 10
-  usageReservePolicy: confirm
-ruby:
-  interpreter: ""
-secrets:
-  enabled: false
-security:
-  enabled: false
-setupVersion: 2
-share:
-  redactSecrets: true
-  serverUrl: https://my.omp.sh/s
-  store: blob
-shell:
-  env:
-    PI_DISABLE_UUTILS_BUILTINS: "1"
 shellMinimizer:
   enabled: true
   sourceOutlineLevel: default
-showHardwareCursor: true
-skillful: true
-skills:
-  customDirectories:
-    - /home/toxic/estate/azurite/skills
-    - /home/toxic/estate/projects/range/ranch/gear
-  enableSkillCommands: true
-snapcompact:
-  shape: auto
-  systemPrompt: none
-  toolResults: false
-speech:
-  enabled: false
-  enhanced: false
-  mode: assistant
-  voice: af_heart
-speechgen:
-  enabled: false
-spelling:
-  autocomplete: true
-  autocorrect: false
-  typoDetection: true
-startup:
-  changelogMode: expanded
-  checkUpdate: true
-  quiet: false
-  setupWizard: true
-  showSplash: false
-statusLine:
-  compactThinkingLevel: true
-  contextLine: embedded
-  preset: nerd
-  separator: powerline
-  sessionAccent: true
-  showHookStatus: true
-  transparent: false
-steeringMode: all
-stt:
-  enabled: false
-  submitTrigger: never
-subagents:
-  can_spawn_subagents: true
-  defaultModel: freeinference/qwen3.6-35b
-  subagent: inherit
-  whitelist:
-    - task
-    - plan
-    - review
-    - auditor
-    - critic
-    - explorer
-    - analyst
-    - debugger
-symbolPreset: nerd
-task:
-  agentIdleTtlMs: 420000
-  batch: true
-  eager: preferred
-  enableEffort: true
-  enableLsp: true
-  isolation:
-    apply: true
-    commits: generic
+eval:
+  py: true
+  js: false
+  rb: true
+  jl: true
+  autoBackground:
     enabled: true
-    merge: patch
-  maxConcurrency: 2
-  maxEffort: high
-  maxRecursionDepth: 0
-  maxRuntimeMs: 300000
-  prewalk: true
-  showResolvedModelBadge: true
-  softRequestBudget: 90
-  softRequestBudgetNotice: true
-tasks:
-  todoClearDelay: 60
-temperature: -1
-terminal:
-  showImages: true
-  showProgress: true
-textVerbosity: high
-theme:
-  dark: dark-sakura
-  light: light
-tier:
-  advisor: flex
-  anthropic: priority
-  google: flex
-  openai: auto
-  subagent: inherit
-title:
-  refreshOnReplan: true
+python:
+  kernelMode: session
+  interpreter: ''
+ruby:
+  interpreter: ''
+julia:
+  interpreter: ''
 todo:
-  eager: preferred
   enabled: true
   reminders: true
   remindersMax: 5
-tools:
-  abortOnFabricatedResult: true
-  approval: {}
-  approvalMode: yolo
-  artifactHeadBytes: 20
-  artifactSpillThreshold: 50
-  artifactTailBytes: 20
-  artifactTailLines: 500
-  format: auto
-  intentTracing: true
-  maxTimeout: 0
-  outputMaxColumns: 768
-  speculativeExecution:
-    enabled: true
-  xdev: true
-  xdevDocs: builtins
-  xdevInlineDevices: []
-topK: -1
-topP: -1
-treeFilterMode: default
-tts:
-  localVoice: af_heart
-ttsr:
-  builtinRules: true
-  contextMode: discard
-  disabledRules: []
+  eager: preferred
+glob:
+  enabled: true
+grep:
   enabled: false
-  interruptMode: never
-  repeatGap: 10
-  repeatMode: after-gap
-tui:
-  codexResetFireworks: false
-  hyperlinks: auto
-  imeSafeCursor: false
-  renderMermaid: true
-  resizeScrollback: rebuild
-  textSizing: false
-  tight: true
-  titleState: true
-update:
-  auto: false
-  channel: stable
+  contextBefore: 3
+  contextAfter: 3
+astGrep:
+  enabled: true
+astEdit:
+  enabled: true
+debug:
+  enabled: true
+launch:
+  enabled: true
+speechgen:
+  enabled: false
+generate_image:
+  enabled: false
+computer:
+  enabled: true
+  display: all
+  maxWidth: 3840
+  maxHeight: 2400
+checkpoint:
+  enabled: true
+fetch:
+  enabled: true
 vault:
   enabled: true
+github:
+  enabled: true
+  cache:
+    enabled: true
+    softTtlSec: 300
+    hardTtlSec: 604800
 web_search:
   enabled: true
-workspace:
-  additionalDirectories: []
+security:
+  enabled: false
+browser:
+  enabled: true
+  relay: false
+  headless: true
+  cmux: true
+  screenshotDir: ~/screenshots/
+async:
+  enabled: true
+  pollWaitDuration: smart
+irc:
+  timeoutMs: 120000
+mcp:
+  enableProjectConfig: true
+  renderMarkdownResults: true
+  notifications: true
+  notificationDebounceMs: 500
+tasks:
+  todoClearDelay: 60
+extensionHandlers:
+  toolCallTimeoutMs: 30000
+dev:
+  autoqa: true
+  autoqaPush:
+    endpoint: https://qa.omp.sh/v1/grievances
+  autoqaConsent: granted
+plan:
+  enabled: true
+  defaultOnStartup: false
+  autosave: true
+goal:
+  enabled: true
+  statusInFooter: true
+  continuationModes:
+  - interactive
+title:
+  refreshOnReplan: true
+skills:
+  enableSkillCommands: true
+  customDirectories:
+  - /home/toxic/estate/skills
+  # Register a flat skill repo by its root. The loader reads <dir>/<name>/SKILL.md
+  # at depth 1 only, so a repo whose skills sit directly at the root works as-is.
+  # Nothing is copied or symlinked: each skill keeps its own code, its relative
+  # refs into the parent repo, and the parent repo itself, so the skill stays
+  # repo-aware. This is the universal rule -- any flat skill repo registers this
+  # way. toxicwind/gear (486 skills) holds the *-swarm family, including
+  # webapp-building-swarm, vibecoding-webapp-swarm and backend-building-swarm.
+  - /home/toxic/estate/projects/range/ranch/gear
+commands:
+  enableClaudeUser: true
+  enableClaudeProject: true
+  enableOpencodeUser: true
+  enableOpencodeProject: true
+secrets:
+  enabled: false
+live:
+  voice: sol
+tts:
+  localVoice: af_heart
+speech:
+  enabled: false
+  mode: assistant
+  enhanced: false
+  voice: af_heart
+codexResets:
+  autoRedeem: 'yes'
+  minBlockedMinutes: 60
+  keepCredits: 0
+  salvageHorizonHours: 12
+provider:
+  appendOnlyContext: auto
+exa:
+  enabled: true
+  searchDelayMs: 1000
+cycleOrder:
+- smol
+- default
+- slow
+disabledProviders: []
+disabledExtensions:
+  - airspeak
+skillful: true
