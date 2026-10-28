@@ -43,7 +43,7 @@ wsock() {
 # Declare both public routes. Idempotent: passing --set-path again replaces the
 # existing backend for that path; if the route is gone it is recreated.
 funnel_up() {
-  mkdir -p /home/toxic/estate/.state/logs
+  mkdir -p /home/toxic/pens/estate/.state/logs  # legacy: keep for funnel.sh; SSOT is pens/estate
   if [ -f /home/toxic/estate/config/ports.env ]; then
     set -a
     # shellcheck disable=SC1091
