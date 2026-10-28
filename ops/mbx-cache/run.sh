@@ -7,8 +7,8 @@
 # (nothing outside the host can reach it).
 set -euo pipefail
 
-BASE="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-BIN="${MBX_CACHE_BIN:-$BASE/ranch/vendored/mr-boxington-cache/target/release/mbx-cache}"
+BASE="/home/toxic/pens/ranch"
+BIN="${MBX_CACHE_BIN:-$BASE/vendored/mr-boxington-cache/target/release/mbx-cache}"
 PORT="${MBX_CACHE_PORT:-25148}"
 DATA="${MBX_CACHE_DATA:-$BASE/var/runtime/mbx-cache}"
 LISTEN="127.0.0.1:${PORT}"

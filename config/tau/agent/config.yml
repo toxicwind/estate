@@ -258,23 +258,23 @@ model:
     threshold: 5
 modelRoleStorage: global
 modelRoles:
-  advisor: freeinference/glm-5.3-flash
+  advisor: freeinference/qwen3.6-35b
   bodybuilder: custom/bodybuilder
-  commit: freeinference/glm-5.3-flash
+  commit: freeinference/qwen3.6-35b
   dots: custom/dots
   fallback: nvidia/nemotron-3.5-super-vl-120b-a12b
   image: google-antigravity/gemini-3.1-flash-image:auto
-  judge: freeinference/glm-5.3-flash
-  memory: freeinference/glm-5.3-flash
-  plan: freeinference/glm-5.3-flash
+  judge: freeinference/qwen3.6-35b
+  memory: freeinference/qwen3.6-35b
+  plan: freeinference/qwen3.6-35b
   slow: nvidia/nemotron-3.5-super-vl-120b-a12b
-  smol: freeinference/glm-5.3-flash
+  smol: freeinference/qwen3.6-35b
   task: nvidia/nemotron-3.5-super-vl-120b-a12b
-  tiny: freeinference/glm-5.3-flash
-  verification: freeinference/glm-5.3-flash
+  tiny: freeinference/qwen3.6-35b
+  verification: freeinference/qwen3.6-35b
   vision: google-antigravity/gemini-3.1-flash-image:auto
   web: web/exa
-  default: rhodochrosite.azurite/models/gemini-flash-tool-retrieval
+  default: freeinference/deepseek-v4-flash
 omitThinking: false
 paste:
   largeMenuThreshold: 100
@@ -371,9 +371,21 @@ repetitionPenalty: -1
 retry:
   fallbackChains:
     fallback:
+      - freeinference/glm-5.3-flash
+      - freeinference/deepseek-v4-flash
       - freeinference/qwen3.6-35b
       - freeinference/minimax-m3.1-flash
-      - freeinference/qwen3.6-35b
+      - rhodochrosite.secure-nim/nvidia/nemotron-3.5-super-vl-120b-a12b
+      - rhodochrosite.secure-nim/nvidia/nemotron-3.5-lightning-30b-a3b
+      - rhodochrosite.chalcopyrite/nvidia/nemotron-3-ultra-550b-a55b
+      - rhodochrosite.chalcopyrite/openai/gpt-oss-20b
+      - rhodochrosite.azurite/models/gemini-flash-tool-retrieval
+      - google/models/gemini-flash-tool-retrieval
+      - google/models/gemini-3.8-flash
+      - google/models/gemini-2.5-flash
+      - deepseek/deepseek-chat
+      - openrouter/deepseek/deepseek-chat
+      - openrouter/google/gemini-2.5-flash
     web:
       - web/tavily
       - web/firecrawl
