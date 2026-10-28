@@ -430,3 +430,21 @@ proof. Proven 2026-09-21: 2 hits, 50 percent hit rate on a real job.
 6. Thresher federation is proven by sessioned `retrieve_tools` (SSE-framed, namespaced results); `/api/v1/servers` and router `tools/list` will always look empty — that is by design.
 7. Anon squawk joins are legal and must be asked to summon, never rejected.
 8. Firewall edits live in `/etc/nftables.conf` (idempotent self-flush), then `nft -f`; the live rule is proof only if the phone connects.
+
+## 2026-10-28 fleet-restoration-and-phone-auth session (tau & hephaistos) — verified fixes + root causes
+
+**Root-cause chain:**
+The session unified runtime isolation, routing performance, IPTV deployment, and hardware authentication. Eval runners previously risked system python contamination, resolved by monadic bootstrap of `~/.tau/python-env`. Routing through rhodochrosite (:25193) was proven ultra-fast (172ms) once bare upstream IDs were used rather than prefixed aliases. On the fleet edge, the legacy TV app was uninstalled and replaced with `com.nuvio.livetv`, seeded with verified Xtream credentials, and separated from port 80 video delivery. Finally, the Architect's Pixel 9 Pro XL was formally codified as the primary authentication SSOT via Flotilla MCP (:25245) with headless fast-key editing.
+
+**The fixes list:**
+- `pens/olympus/products/tau`: `ensureManagedPythonEnv()` and kernel re-enumeration in runtime.ts / kernel.ts.
+- `estate/config/ports.env` & `pitchfork.toml`: verified pens-ui daemon on :25232, gemini-mcp on :25227, rhodochrosite on :25193.
+- `pens/ranch/android-fleet`: uninstalled legacy `com.nuvio.tv`, seeded portal to `com.nuvio.livetv`, verified running pid 5620.
+- `pens/ranch/squawk/todo`: authored `20261028T120500Z-tau-phone-auth-headless-keys.md` establishing Bitwarden/Authy phone SSOT.
+- `pens/barn/estate-ops`: regenerated `manifest.yaml` (111 links, 308 bins) and verified `bin-verify.sh`.
+
+**The lessons (do not regress):**
+1. Never poll or install into host `/usr/bin/python3` — always use managed `~/.tau/python-env`.
+2. Do not prepend synthetic router prefixes to rhodochrosite model IDs; query `/v1/models` and use exact upstream names.
+3. Xtream Codes port 2095 is strictly control plane (auth/API); stream data flows over port 80.
+4. Architect phone (Pixel 9 Pro XL, 10.0.0.77:43945) is the primary credential vault (Bitwarden + Authy); use Flotilla MCP headlessly with Alt+Up/Shift+Up navigation.

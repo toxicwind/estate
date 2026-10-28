@@ -333,6 +333,20 @@ _Verified 2026-10-28; dossier: `/home/toxic/estate/docs/anomalies/2026-10-28/tel
 
 _Session sweep receipts: flotilla-mcp 10 tools federated (`flotilla:pixel_*`); full agent→thresher→phone screenshot chain 447 KB live; 4 repos pushed; fleet-join `tau-pixelmcp` first-class; Nagram login code delivery `ok:true` (2×); phone `nc -z` rc=0._
 
+## Anomaly program D-2026-10-28 (tau & hephaistos session — verified live)
+
+_Verified 2026-10-28; dossier: `/home/toxic/estate/docs/anomalies/2026-10-28/session-retrospective.md`._
+
+|#|Anomaly|Essence|Fix (committed)|
+|---|---|---|---|
+|37|**Eval-subprocess boundary escape**|Subprocess execution inside Python eval cells bypassed tool hooks; unmanaged venv caused system interpreter pollution|`ensureManagedPythonEnv()` creates isolated `~/.tau/python-env`; re-enumeration in `kernel.ts`|
+|38|**Rhodochrosite router prefix trap**|Prefixing model IDs caused 404s while bare IDs on `:25193` execute in 172ms–185ms (ultra-fast)|Sourced bare IDs from `/v1/models` (`openai/gpt-oss-20b`, `nvidia/nemotron-3.5-super-vl-120b-a12b`)|
+|39|**Xtream Codes port split**|Probing stream on port 2095 yielded 407 Proxy Auth Required; 2095 is API-only while port 80 serves video|DataStore seeded to `com.nuvio.livetv`, legacy collision `com.nuvio.tv` uninstalled|
+|40|**Phone auth & headless keys SSOT**|Architect's Pixel 9 Pro XL is the primary hardware authenticator (Bitwarden, Authy, keys) via Flotilla MCP|Squawk todo board codified; Alt+Up/Shift+Up headless navigation preferred|
+
+_Session sweep receipts: managed python venv isolated; rhodochrosite 172ms completions verified; com.nuvio.livetv live on Hisense TV; Pixel 9 Pro XL Bitwarden/Authy verified via flotilla MCP; pens-ui master dashboard running on :25232._
+
+
 
 ## Layout (2026-10-23) — the bin contract
 
