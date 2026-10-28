@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# mise run doctor — verify pitchfork stack sanity. Checks reality, not aspirations.
+# Rewritten 2026-09-20: the old doctor hard-failed on ast-grep != 0.44.1,
+# checked daemons that do not exist (ghas-api, ghas-mcp), and demanded
+# bun --hot/--watch on daemons that never used it (openfang, yote, ...).
+set -euo pipefail
+cd "${ESTATE_ROOT:-$(cd "$(dirname "$0")/../.." && pwd)}"
+FAIL=0
+
+command -v pitchfork >/dev/null || { echo "FAIL: pitchfork not on PATH" >&2; FAIL=1; }
+test -f pitchfork.toml || { echo "FAIL: missing pitchfork.toml" >&2; FAIL=1; }
+test -f config/ports.env || { echo "FAIL: missing config/ports.env" >&2; FAIL=1; }
+test -x stack/services/beellama-fast.sh || echo "WARN: missing stack/services/beellama-fast.sh" >&2
+test -x bin/pitchfork-restart || { echo "FAIL: missing bin/pitchfork-restart (canonical restart path)" >&2; FAIL=1; }
+
+if command -v ast-grep >/dev/null; then
+  echo "INFO: ast-grep $(ast-grep --version | awk "{print \$2}") present"
+else
+  echo "WARN: ast-grep not on PATH" >&2
+fi
+
+if grep -q "process-compose" mise/tasks/up 2>/dev/null; then
+  echo "FAIL: mise/tasks/up still references process-compose" >&2; FAIL=1
+fi
+
+if ! pitchfork list >/dev/null 2>&1; then
+  echo "FAIL: supervisor not responding (pitchfork list)" >&2; FAIL=1
+fi
+
+# Desync check: tracked PID must match the actual port holder.
+for spec in kimi-auto-shim:25153 beellama-fast:25122 whatsapp-mcp:25146 toolcall-llm:25152; do
+  d="${spec%%:*}"; port="${spec##*:}"
+  tracked=$(pitchfork status --json "Estate/$d" 2>/dev/null | python3 -c "import json,sys; print(json.load(sys.stdin).get(\"pid\") or \"\")" 2>/dev/null || true)
+  holder=$(ss -tlnp 2>/dev/null | grep -E "127\.0\.0\.1:${port}([^0-9]|\$)" | grep -oP "pid=\K[0-9]+" | head -1 || true)
+  if [[ -n "$tracked" && -n "$holder" && "$tracked" != "$holder" ]]; then
+    echo "FAIL: desync $d tracked=$tracked holder=$holder (run bin/pitchfork-restart Estate/$d)" >&2; FAIL=1
+  fi
+done
+
+# delendai recursive-swarm gate: the self-recreating loop must stay bounded,
+# de-duped and ffs-checked. Fail closed when the door breaks; WARN if the
+# delendai CLI (or ffs) is absent so doctor never hard-fails on a clean box.
+if command -v delendai >/dev/null && command -v ffs >/dev/null; then
+  if ! bun run tools/delendai-swarm.ts --check >/dev/null 2>&1; then
+    echo "FAIL: delendai recursion door broken (run 'mise run delendai-swarm --check')" >&2; FAIL=1
+  else
+    echo "INFO: delendai recursive swarm: bounded + de-duped"
+  fi
+else
+  echo "WARN: delendai/ffs not on PATH; recursion gate skipped" >&2
+fi
+
+if ((FAIL)); then echo "doctor: FAIL" >&2; exit 1; fi
+echo "doctor ok: pitchfork=$(pitchfork --version | head -1)"

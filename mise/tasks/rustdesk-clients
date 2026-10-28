@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Print the RustDesk client connection info for this server (awrawr-pc).
+set -euo pipefail
+WORKDIR=/home/toxic/pens/ranch/rustdesk-server
+PORTS=/home/toxic/estate/config/ports.env
+source "$PORTS"
+HOST=100.72.199.93
+PUBKEY="$WORKDIR/id_ed25519.pub"
+KEY=$(cat "$PUBKEY" 2>/dev/null | awk '{print $1}') || KEY="(key not generated yet — start rustdesk-hbbs once)"
+cat <<EOF
+RustDesk server (estate / awrawr-pc), rustdesk-server 1.1.16
+  ID server : ${HOST}:${RUSTDESK_HBBS_PORT}
+  Relay     : ${HOST}:${RUSTDESK_HBBR_PORT}
+  Key       : ${KEY}
+  Tailscale host must be reachable; UDP ${RUSTDESK_HBBS_PORT} used for hole punching.
+In the RustDesk client (Settings -> Network -> ID/Relay Server):
+  ID Server: ${HOST}:${RUSTDESK_HBBS_PORT}
+  Relay    : ${HOST}:${RUSTDESK_HBBR_PORT}
+  Key      : ${KEY}
+EOF

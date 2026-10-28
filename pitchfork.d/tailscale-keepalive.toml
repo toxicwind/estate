@@ -1,0 +1,10 @@
+# tailscale-keepalive — prevents tailscaled's ~2m15s idle-close of the derp-1
+# (nyc) relay that causes the recurring kite bridge flap. Sub-idle-interval
+# pings keep the cell path warm. Registered 2026-10-22.
+[daemons.tailscale-keepalive]
+mise = true
+dir = "/home/toxic/estate/stress-lab/conn"
+run = "exec bun keepalive-tailscale.ts --interval-ms 90000"
+retry = true
+boot_start = true
+env = { }

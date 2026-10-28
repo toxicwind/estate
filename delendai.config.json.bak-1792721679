@@ -1,0 +1,261 @@
+{
+  "$schema": "./ranch/borrowed/delendai/packages/core/schema/delendai.config.schema.json",
+  "validationMatrix": {
+    "scopes": {
+      "estate-health": [
+        {
+          "command": "command -v tsgo >/dev/null 2>&1 && tsgo --version && git -C /home/toxic/estate status --porcelain=1 >/dev/null",
+          "expect": "0"
+        },
+        {
+          "command": "code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 5 http://127.0.0.1:25127/health); test \"$code\" = 200",
+          "expect": "0"
+        },
+        {
+          "command": "code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 5 http://127.0.0.1:25127/mcp); test \"$code\" = 200",
+          "expect": "0"
+        }
+      ]
+    }
+  },
+  "development": {
+    "profile": "shared-checkout-merge",
+    "branches": {
+      "integration": "main",
+      "release": "main"
+    },
+    "governance": {
+      "strategy": "MAXIMAL never-yield: a wall is never a stop; it is the trigger to spawn an emergent sub-goal (or the next six disparate tangents) and continue. Report blockers only when literally no scheduled wait or alternate can carry the work. Verbose, forward-only, additive.",
+      "failClosedOnUnverifiable": false
+    },
+    "coordination": {
+      "strategy": "event-derived swarm: agents register via agent-orchestration and delendai derives the roster from units/leases/refs. Swarm agents carry unique EXTERNAL model picks (1 FreeInference for kappa-owner, alternates external). Keep live todo on every change; spawn emergent tasks.",
+      "leaseTtlMinutes": 20
+    },
+    "persistence": {
+      "strategy": "checkpoint + push every unit",
+      "autoCommitOnTask": true,
+      "autoPushAfterCommit": true
+    },
+    "recovery": {
+      "strategy": "reset-and-forward; never discard unmerged work",
+      "neverDiscardUnmergedWork": true
+    }
+  },
+  "providers": [
+    {
+      "id": "freeinference-owner",
+      "kind": "api",
+      "invoke": {
+        "kind": "api",
+        "url": "https://freeinference.org/v1",
+        "method": "POST",
+        "envVar": "FREEINFERENCE_KEY"
+      },
+      "modelId": "glm-5.3-flash",
+      "contextWindow": 128000,
+      "costTier": 1,
+      "strengths": [
+        "fast-iteration",
+        "code-edit",
+        "reasoning"
+      ],
+      "weaknesses": []
+    },
+    {
+      "id": "deepseek-reasoner",
+      "kind": "api",
+      "invoke": {
+        "kind": "api",
+        "url": "https://api.deepseek.com/v1",
+        "method": "POST",
+        "envVar": "DEEPSEEK_KEY"
+      },
+      "modelId": "deepseek-chat",
+      "contextWindow": 64000,
+      "costTier": 1,
+      "strengths": [
+        "reasoning",
+        "code-edit"
+      ],
+      "weaknesses": [
+        "vision"
+      ]
+    },
+    {
+      "id": "nim-glm-arch",
+      "kind": "api",
+      "invoke": {
+        "kind": "api",
+        "url": "https://integrate.api.nvidia.com/v1",
+        "method": "POST",
+        "envVar": "NVIDIA_NIM_KEY"
+      },
+      "modelId": "glm-5.2",
+      "contextWindow": 128000,
+      "costTier": 3,
+      "strengths": [
+        "architecture",
+        "long-context"
+      ],
+      "weaknesses": [
+        "vision"
+      ]
+    },
+    {
+      "id": "nim-qwen-122b",
+      "kind": "api",
+      "invoke": {
+        "kind": "api",
+        "url": "https://integrate.api.nvidia.com/v1",
+        "method": "POST",
+        "envVar": "NVIDIA_NIM_KEY"
+      },
+      "modelId": "qwen3.5-122b-a10b",
+      "contextWindow": 64000,
+      "costTier": 3,
+      "strengths": [
+        "agentic",
+        "long-context"
+      ],
+      "weaknesses": []
+    },
+    {
+      "id": "nim-qwen-397b",
+      "kind": "api",
+      "invoke": {
+        "kind": "api",
+        "url": "https://integrate.api.nvidia.com/v1",
+        "method": "POST",
+        "envVar": "NVIDIA_NIM_KEY"
+      },
+      "modelId": "qwen3.5-397b-a17b",
+      "contextWindow": 128000,
+      "costTier": 4,
+      "strengths": [
+        "reasoning",
+        "very-long-context"
+      ],
+      "weaknesses": []
+    },
+    {
+      "id": "qwen3.6-27b-agent",
+      "kind": "api",
+      "invoke": {
+        "kind": "api",
+        "url": "https://api.deepseek.com/v1",
+        "method": "POST",
+        "envVar": "QWEN_AGENT_KEY"
+      },
+      "modelId": "qwen3.6-27b",
+      "contextWindow": 32000,
+      "costTier": 2,
+      "strengths": [
+        "agentic",
+        "code-edit"
+      ],
+      "weaknesses": [
+        "vision"
+      ]
+    },
+    {
+      "id": "groq-qwen-fast",
+      "kind": "api",
+      "invoke": {
+        "kind": "api",
+        "url": "https://api.groq.com/openai/v1",
+        "method": "POST",
+        "envVar": "GROQ_KEY"
+      },
+      "modelId": "qwen3.8-27b",
+      "contextWindow": 64000,
+      "costTier": 1,
+      "strengths": [
+        "fast-iteration",
+        "json-strict"
+      ],
+      "weaknesses": []
+    },
+    {
+      "id": "glm-5.2-reason",
+      "kind": "api",
+      "invoke": {
+        "kind": "api",
+        "url": "https://api.z.ai/ng/v1",
+        "method": "POST",
+        "envVar": "ZAI_KEY"
+      },
+      "modelId": "glm-5.2",
+      "contextWindow": 128000,
+      "costTier": 2,
+      "strengths": [
+        "reasoning",
+        "agentic"
+      ],
+      "weaknesses": [
+        "vision"
+      ]
+    },
+    {
+      "id": "deepseek-code",
+      "kind": "api",
+      "invoke": {
+        "kind": "api",
+        "url": "https://api.deepseek.com/v1",
+        "method": "POST",
+        "envVar": "DEEPSEEK_KEY"
+      },
+      "modelId": "deepseek-coder",
+      "contextWindow": 64000,
+      "costTier": 1,
+      "strengths": [
+        "code-edit",
+        "fast-iteration"
+      ],
+      "weaknesses": [
+        "vision"
+      ]
+    },
+    {
+      "id": "skyserve-arch",
+      "kind": "api",
+      "invoke": {
+        "kind": "api",
+        "url": "https://api.skyserve.ai/v1",
+        "method": "POST",
+        "envVar": "SKYSERVE_KEY"
+      },
+      "modelId": "architect-3",
+      "contextWindow": 128000,
+      "costTier": 3,
+      "strengths": [
+        "architecture",
+        "security-audit"
+      ],
+      "weaknesses": []
+    }
+  ],
+  "featureFlags": {
+    "agent-controls.desktop": true,
+    "agent-controls.browser": true,
+    "agent-controls.stoplight": true,
+    "agent-controls.swarm-10": true,
+    "agent-controls.computer-use-linux": true,
+    "agent-controls.ax-snapshot-imagefree": true,
+    "agent-controls.never-steal-mouse": true,
+    "agent-controls.external-models-only": true,
+    "agent-controls.single-freeinference-owner": true,
+    "agent-controls.generate-next-six-on-every-unit": true
+  },
+  "plugins": {
+    "agent-controls": {
+      "enabled": true,
+      "origin": "bundled",
+      "prefix": "ac"
+    },
+    "auto-agent-selector": {
+      "enabled": true,
+      "origin": "bundled"
+    }
+  }
+}

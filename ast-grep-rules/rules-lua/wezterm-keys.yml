@@ -1,0 +1,7 @@
+id: wezterm-key-binding
+language: lua
+rule:
+  pattern: |
+    { key = $KEY, mods = $MODS, action = $ACTION }
+message: "Key binding: {{KEY}}+{{MODS}} → {{ACTION}}"
+severity: info

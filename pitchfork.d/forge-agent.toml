@@ -1,0 +1,12 @@
+# forge-agent — execution agent for the forge build daemon (gRPC :25240; renamed from estate/flicker-agent 2026-10-13).
+
+[daemons.forge-agent]
+mise = true
+run = "exec /home/toxic/pens/ranch/forge/flicker/bin/flicker-agent"
+dir = "/home/toxic/pens/ranch/forge/flicker"
+retry = true
+boot_start = true
+env = { WOODPECKER_SERVER = "127.0.0.1:25240", WOODPECKER_AGENT_SECRET = "c6eee4c1bce957ae19638a330efe5fc3c561f18ea58e3468fe224a60416faf4f" }
+auto = ["start"]
+# SUPERSEDED 2026-09-30 (peregrine): brand-watchdog retired with brand.
+# Flicker has its own health_http checks; no external watchdog needed.

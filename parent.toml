@@ -1,0 +1,30 @@
+#:schema https://pitchfork.jdx.dev/schema.json
+# ESTATE PITCHFORK CONFIG — HAND-EDITED (generator retired 2026-09-14 per estate/AGENTS.md;
+# never run bun run scripts/generate.ts — it would destroy live daemons). Port SSOT: config/ports.env.
+env_file = "config/ports.env"
+# CONFIG RELOAD RULE (2026-09-20, incident: beellama-fast errored 12h):
+# pitchfork does NOT hot-reload this file. Editing a [daemons.*] section
+# changes nothing for the running daemon - it keeps serving its stale
+# persisted definition until re-registered. After ANY daemon edit run:
+#   bin/pitchfork-restart estate/<name>
+# which re-runs pitchfork start from this dir, reaps desynced port holders,
+# and verifies /health. Stale-definition symptom: pitchfork shows "errored"
+# while the old orphaned binary still answers /health 200 (Hearth then
+# reports pitchfork=errored, health=200 for the same daemon).
+
+
+[groups.mesh]
+daemons = ["thresher", "mesh-hub", "bornite", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "feedlot", "hindsight", "kimi-code", "nginx"]
+
+
+[groups.core]
+daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "rhodochrosite", "matter-server"]
+
+
+[groups.agents]
+daemons = ["rig"]
+
+# groups.all REMOVED 2026-10-18: redundant with `pitchfork start -a` (starts every
+# daemon in this file). It was a hand-maintained duplicate of 41 daemon names that
+# drifted every time a daemon was added. Use `pitchfork start -a` for everything,
+# `pitchfork start --group <name>` for a subset.

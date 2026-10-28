@@ -1,0 +1,7 @@
+[daemons.refusal-watchdog]
+mise = true
+run = "exec python3 /home/toxic/refusal-hunt/refusal-watchdog.py"
+dir = "/home/toxic/refusal-hunt"
+retry = true
+boot_start = true
+auto = ["start"]

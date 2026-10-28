@@ -1,0 +1,37 @@
+{
+  "timestamp": "2026-09-08T01:50:17.542Z",
+  "estateProjectsPath": "/home/toxic/projects/estate-projects",
+  "symlinkFrom": "/home/toxic/estate-projects",
+  "linkedToEstate": {
+    "healthAudit": "/home/toxic/estate/helpers/health-audit.ts",
+    "gitMutator": "/home/toxic/estate/helpers/git-mutator/cli.ts",
+    "portsEnv": "/home/toxic/estate/config/ports.env"
+  },
+  "subdirIntegrations": {
+    "bornite": {
+      "path": "/home/toxic/projects/estate-projects/bornite",
+      "estatePort": "bornite=25100",
+      "engines": true
+    },
+    "zedra": {
+      "path": "/home/toxic/projects/estate-projects/zedra",
+      "estateLink": "zed integration via estate-zed"
+    },
+    "boundless": {
+      "path": "/home/toxic/projects/estate-projects/boundless",
+      "estateLink": "openfang/yote services"
+    },
+    "extensions": {
+      "path": "/home/toxic/projects/estate-projects/extensions",
+      "estateLink": "semantouch/engram"
+    },
+    "tau": {
+      "path": "/home/toxic/projects/estate-projects/tau",
+      "estateLink": "tau packages/coding-agent"
+    },
+    "estate-internal": {
+      "path": "/home/toxic/projects/estate-projects/estate-internal",
+      "estateLink": "AGENTS.md mirror"
+    }
+  }
+}

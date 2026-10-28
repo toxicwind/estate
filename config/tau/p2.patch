@@ -1,0 +1,14 @@
+SWAP 1478:e8..1483:2c:
++								if (matchingToolCall) {
++									matchingToolCall.thoughtSignature = mergeStoredGeminiSignature(
++										matchingToolCall.thoughtSignature,
++										{ perCall: detailObject },
++									);
++								} else {
++									// No tool call owns this detail (reasoning-only turn, or the
++									// detail raced ahead of its tool call). Preserve it at message
++									// level so replay returns it verbatim instead of dropping it —
++									// providers that validate reasoning history kill the
++									// continuation otherwise (Dots 3 recon: finish=length, 0 content).
++									(output.messageReasoningDetails ??= []).push(detailObject);
++								}

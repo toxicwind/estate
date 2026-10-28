@@ -1,0 +1,91 @@
+{
+  "generatedAt": "2026-09-24T15:42:09.734Z",
+  "providers": {
+    "openrouter": {
+      "prefix": "OPENROUTER_API_KEY",
+      "alive": [
+        "OPENROUTER_API_KEY",
+        "OPENROUTER_API_KEY_1",
+        "OPENROUTER_API_KEY_FREE"
+      ],
+      "total": 3
+    },
+    "nvidia-nim": {
+      "prefix": "NVIDIA_NIM_API_KEY",
+      "alive": [
+        "NVIDIA_NIM_API_KEY",
+        "NVIDIA_NIM_API_KEY_1"
+      ],
+      "total": 2
+    },
+    "nvidia": {
+      "prefix": "NVIDIA_API_KEY",
+      "alive": [
+        "NVIDIA_API_KEY"
+      ],
+      "total": 1
+    },
+    "deepseek": {
+      "prefix": "DEEPSEEK_API_KEY",
+      "alive": [
+        "DEEPSEEK_API_KEY"
+      ],
+      "total": 1
+    },
+    "groq": {
+      "prefix": "GROQ_API_KEY",
+      "alive": [
+        "GROQ_API_KEY"
+      ],
+      "total": 1
+    },
+    "cerebras": {
+      "prefix": "CEREBRAS_API_KEY",
+      "alive": [
+        "CEREBRAS_API_KEY"
+      ],
+      "total": 1
+    },
+    "mistral": {
+      "prefix": "MISTRAL_API_KEY",
+      "alive": [
+        "MISTRAL_API_KEY"
+      ],
+      "total": 1
+    },
+    "moonshot": {
+      "prefix": "MOONSHOT_API_KEY",
+      "alive": [
+        "MOONSHOT_API_KEY"
+      ],
+      "total": 1
+    },
+    "opencode": {
+      "prefix": "OPENCODE_API_KEY",
+      "alive": [
+        "OPENCODE_API_KEY"
+      ],
+      "total": 1
+    },
+    "gemini": {
+      "prefix": "GEMINI_API_KEY",
+      "alive": [
+        "GEMINI_API_KEY",
+        "GEMINI_API_KEY_1",
+        "GEMINI_API_KEY_2",
+        "GEMINI_API_KEY_3",
+        "GEMINI_API_KEY_4",
+        "GEMINI_API_KEY_5"
+      ],
+      "total": 6
+    },
+    "huggingface": {
+      "prefix": "HF_TOKEN",
+      "alive": [
+        "HF_TOKEN",
+        "HF_TOKEN_1"
+      ],
+      "total": 2
+    }
+  }
+}

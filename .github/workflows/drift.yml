@@ -1,0 +1,47 @@
+name: Estate Drift Detection
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  drift:
+    name: Detect estate drift
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch gitignore templates
+        # NOTE: same pinned-SHA tarball fetch as .github/workflows/ci.yml —
+        # submodules are intentionally not fetched in estate CI (see ci.yml
+        # comment), so the scheduled drift run must fetch the templates itself.
+        run: |
+          rm -rf ops/gitignore/templates
+          mkdir -p ops/gitignore/templates
+          curl -sL https://github.com/github/gitignore/archive/62f3997f1917b30f6eaee0c53ac2d791426513f2.tar.gz \
+            | tar -xz -C ops/gitignore/templates --strip-components=1
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: gitignore manifest drift
+        run: bun ops/bin/gitignore-sync.ts --check
+      - name: Shell syntax sweep
+        run: find scripts ops -name "*.sh" -not -path "*/node_modules/*" -exec bash -n {} +
+      - name: No unexpected nested gitlinks
+        run: |
+          dirty=$(git submodule --quiet foreach --recursive "echo dirty" 2>/dev/null || true)
+          [ -z "$dirty" ] || echo "::warning::nested gitlinks present: $dirty"
+      # Local estate-gate (layout/daemon-gate/fragment-clean) is pure-Bun and
+      # bash — it runs here in cloud CI. delendai-swarm + pitchfork-compose
+      # need the local delendai/ffs/pitchfork CLIs, so they stay local:
+      # `mise run estate-gate` on the estate host covers the full set.
+      - name: Layout doc drift
+        run: bun tools/estate-layout/layout.ts --check
+      - name: Daemon registry gate (ports SSOT)
+        run: bun tools/estate-layout/daemon-gate.ts --root .
+      - name: Fragment ownership gate
+        run: bun tools/estate-layout/fragment-clean.ts --check

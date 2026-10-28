@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+# mise run up — start core daemons via pitchfork
+set -euo pipefail
+export SOV="${ESTATE_ROOT:-$PWD}"
+cd "$SOV"
+
+if ! command -v pitchfork >/dev/null; then
+  echo '{"error":"pitchfork missing","fix":"mise install"}'
+  exit 1
+fi
+
+# Source ports
+set -a
+[[ -f "$SOV/config/ports.env" ]] && source "$SOV/config/ports.env"
+set +a
+
+# ── START SUPERVISOR IF DEAD ──
+if ! pitchfork list >/dev/null 2>&1; then
+  echo "Supervisor not running — starting it..."
+  nohup pitchfork supervisor start > /tmp/pitchfork-supervisor.log 2>&1 &
+  # 2026-09-20: poll for supervisor liveness instead of blind sleep.
+  for _ in $(seq 1 30); do pitchfork list >/dev/null 2>&1 && break; sleep 0.5; done
+  if ! pitchfork list >/dev/null 2>&1; then
+    echo "ERROR: supervisor failed to start. Check /tmp/pitchfork-supervisor.log"
+    exit 1
+  fi
+  echo "Supervisor started."
+fi
+
+# ── START CORE ──
+echo "Starting core daemon group..."
+pitchfork start --group core
+
+# ── HEALTH PROBES ──
+echo "=== health ==="
+ok=0; fail=0; total=0
+
+_probe() {
+  local name=$1 url=$2
+  total=$((total+1))
+  if curl -sf --max-time 2 "$url" >/dev/null 2>&1; then
+    printf '✓ %-22s %s\n' "$name" "$url"
+    ok=$((ok+1))
+  else
+    printf '✗ %-22s %s\n' "$name" "$url"
+    fail=$((fail+1))
+  fi
+}
+
+# Reported, but never counted. These two have a ports.env entry and real
+# consumers, yet pitchfork does not start them: `ghas-mcp` (:25113) has no
+# launcher anywhere in this tree, and `antigravity-gw` (:25128) lives in its
+# own fork at /home/toxic/projects/antigravity-gateway-master. Counting them
+# as failures would make "ALL HEALTHY" unreachable, so they are informational.
+_info() {
+  local name=$1 url=$2
+  if curl -sf --max-time 2 "$url" >/dev/null 2>&1; then
+    printf '· %-22s %s (up, unmanaged)\n' "$name" "$url"
+  else
+    printf '· %-22s %s (not started — no pitchfork daemon)\n' "$name" "$url"
+  fi
+}
+
+# Probe the critical ones. Names match the pitchfork daemon that owns the port:
+# :25100 is `bornite` (the bornite fork) and :25112 is `search-api` (renamed
+# from ghas-api). A label naming a daemon that no longer exists sends you
+# hunting for a service that was never broken.
+_probe "bornite"              "http://127.0.0.1:25100/health"
+_probe "qdrant"            "http://127.0.0.1:25133/"
+_probe "keypool"           "http://127.0.0.1:25109/health"
+_probe "search-api"        "http://127.0.0.1:25112/health"
+_probe "prometheus"        "http://127.0.0.1:25105/-/healthy"
+_probe "gatehouse"         "http://127.0.0.1:25127/health"
+_probe "kimi-code"         "http://127.0.0.1:25126/health"
+
+_info "ghas-mcp"           "http://127.0.0.1:25113/health"
+_info "antigravity-gw"     "http://127.0.0.1:25128/health"
+
+echo
+echo "=== summary ==="
+echo "up: $ok  down: $fail  total: $total"
+[[ $fail -eq 0 ]] && echo "ALL HEALTHY" || echo "DEGRADED — $fail service(s) down"

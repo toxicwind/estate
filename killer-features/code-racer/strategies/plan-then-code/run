@@ -1,0 +1,51 @@
+#!/usr/bin/env python3
+"""plan-then-code: two-stage decomposition.
+
+Stage 1 (fast model, cheap): write a numbered plan, NO code allowed.
+Stage 2 (tool model): implement the plan as code.
+Genuinely different from single-shot: forces explicit decomposition before
+token generation, which small models need and big models benefit from.
+Ceiling: 300s (plan 90s + code 180s).
+"""
+import os, sys
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "lib"))
+from cr import *
+
+CEILING = 300
+
+def ext(lang):
+    return {"python": "py", "javascript": "js", "typescript": "ts",
+            "rust": "rs", "go": "go"}.get(lang.lower(), "txt")
+
+PLAN_SYS = ("You are a precise planning assistant. Output a numbered plan only. "
+            "No code, no code fences, no explanations beyond the steps.")
+
+def main(task_dir, output_path):
+    arm_timeout(CEILING)
+    spec = read_task(task_dir)
+    lang = spec.get("language", "python")
+    log(f"plan-then-code: {spec.get('id')}: stage 1 plan <- {FAST_MODEL}")
+    plan_prompt = (f"Task: {spec.get('title', spec.get('id',''))}\n\n"
+                   f"{spec.get('description','')}\n\n"
+                   "Write a numbered implementation plan for this task in "
+                   f"{lang}. Steps only, no code.")
+    plan = chat(FAST_URL, FAST_MODEL, plan_prompt, max_tokens=1024,
+                temperature=0.3, timeout=80, system=PLAN_SYS)
+    log(f"plan ({len(plan)} chars): {plan[:160]!r}...")
+    log(f"plan-then-code: stage 2 code <- {TOOL_MODEL}")
+    code_prompt = (f"Task: {spec.get('title', spec.get('id',''))}\n\n"
+                   f"{spec.get('description','')}\n\n"
+                   f"Implementation plan:\n{plan}\n\n"
+                   f"Implement the plan above as {lang} code. Output ONLY the "
+                   f"code in a single ```{lang} fence, no explanations.")
+    text = chat(TOOL_URL, TOOL_MODEL, code_prompt, max_tokens=4096,
+                temperature=0.2, timeout=170)
+    code = extract_code(text, lang)
+    if not code:
+        log("empty response"); return 1
+    dest = write_solution(output_path, f"solution.{ext(lang)}", code)
+    log(f"wrote {dest} ({len(code)} chars)")
+    return 0
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1], sys.argv[2]))

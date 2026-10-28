@@ -1,0 +1,6 @@
+id: wezterm-status-bar
+language: lua
+rule:
+  pattern: window:set_right_status($STATUS)
+message: "Status bar configured with custom format"
+severity: hint

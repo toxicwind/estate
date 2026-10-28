@@ -1,0 +1,107 @@
+[
+  {
+    "slug": "bloom-filter",
+    "lane": "mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_m",
+    "ok": false,
+    "latency_s": null,
+    "error": "__TRANSPORT_ERROR__: HTTP Error 503: Service Unavailable"
+  },
+  {
+    "slug": "bloom-filter",
+    "lane": "deepseek-ai/deepseek-coder-6.7b-instruct",
+    "ok": false,
+    "latency_s": null,
+    "error": "__TRANSPORT_ERROR__: HTTP Error 503: Service Unavailable"
+  },
+  {
+    "slug": "bloom-filter",
+    "lane": "beellama/exaone-4-0-1-2b-iq4xs",
+    "ok": true,
+    "latency_s": 3.78,
+    "error": null
+  },
+  {
+    "slug": "expr-eval",
+    "lane": "mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_m",
+    "ok": false,
+    "latency_s": null,
+    "error": "__TRANSPORT_ERROR__: HTTP Error 503: Service Unavailable"
+  },
+  {
+    "slug": "expr-eval",
+    "lane": "deepseek-ai/deepseek-coder-6.7b-instruct",
+    "ok": false,
+    "latency_s": null,
+    "error": "__TRANSPORT_ERROR__: HTTP Error 503: Service Unavailable"
+  },
+  {
+    "slug": "expr-eval",
+    "lane": "beellama/exaone-4-0-1-2b-iq4xs",
+    "ok": false,
+    "latency_s": null,
+    "error": "__TRANSPORT_ERROR__: HTTP Error 503: Service Unavailable"
+  },
+  {
+    "slug": "lru-cache",
+    "lane": "mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_m",
+    "ok": false,
+    "latency_s": null,
+    "error": "__TRANSPORT_ERROR__: HTTP Error 503: Service Unavailable"
+  },
+  {
+    "slug": "lru-cache",
+    "lane": "deepseek-ai/deepseek-coder-6.7b-instruct",
+    "ok": false,
+    "latency_s": null,
+    "error": "__TRANSPORT_ERROR__: HTTP Error 503: Service Unavailable"
+  },
+  {
+    "slug": "lru-cache",
+    "lane": "beellama/exaone-4-0-1-2b-iq4xs",
+    "ok": false,
+    "latency_s": null,
+    "error": "__TRANSPORT_ERROR__: HTTP Error 503: Service Unavailable"
+  },
+  {
+    "slug": "token-bucket",
+    "lane": "mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_m",
+    "ok": false,
+    "latency_s": null,
+    "error": "__TRANSPORT_ERROR__: HTTP Error 503: Service Unavailable"
+  },
+  {
+    "slug": "token-bucket",
+    "lane": "deepseek-ai/deepseek-coder-6.7b-instruct",
+    "ok": false,
+    "latency_s": null,
+    "error": "__TRANSPORT_ERROR__: HTTP Error 503: Service Unavailable"
+  },
+  {
+    "slug": "token-bucket",
+    "lane": "beellama/exaone-4-0-1-2b-iq4xs",
+    "ok": false,
+    "latency_s": null,
+    "error": "__TRANSPORT_ERROR__: HTTP Error 503: Service Unavailable"
+  },
+  {
+    "slug": "toposort",
+    "lane": "mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_m",
+    "ok": false,
+    "latency_s": null,
+    "error": "__TRANSPORT_ERROR__: HTTP Error 503: Service Unavailable"
+  },
+  {
+    "slug": "toposort",
+    "lane": "deepseek-ai/deepseek-coder-6.7b-instruct",
+    "ok": false,
+    "latency_s": null,
+    "error": "__TRANSPORT_ERROR__: HTTP Error 503: Service Unavailable"
+  },
+  {
+    "slug": "toposort",
+    "lane": "beellama/exaone-4-0-1-2b-iq4xs",
+    "ok": false,
+    "latency_s": null,
+    "error": "__TRANSPORT_ERROR__: HTTP Error 503: Service Unavailable"
+  }
+]

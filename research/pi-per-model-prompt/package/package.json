@@ -1,0 +1,51 @@
+{
+  "name": "pi-per-model-prompt",
+  "version": "0.3.1",
+  "description": "Model-scoped system prompt correction layers for pi-coding-agent",
+  "keywords": [
+    "pi-package",
+    "pi",
+    "pi-extension",
+    "extension",
+    "prompt",
+    "model",
+    "gpt-5"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RimuruW/pi-per-model-prompt"
+  },
+  "homepage": "https://github.com/RimuruW/pi-per-model-prompt#readme",
+  "bugs": {
+    "url": "https://github.com/RimuruW/pi-per-model-prompt/issues"
+  },
+  "files": [
+    "index.ts",
+    "src",
+    "docs",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "vitest run"
+  },
+  "pi": {
+    "extensions": [
+      "./index.ts"
+    ]
+  },
+  "peerDependencies": {
+    "@mariozechner/pi-coding-agent": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  }
+}

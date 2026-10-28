@@ -1,0 +1,6 @@
+id: avoid-unwrap
+language: rust
+rule:
+  pattern: $X.unwrap()
+message: "Avoid unwrap() - use ? or unwrap_or instead"
+severity: info

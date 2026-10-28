@@ -1,0 +1,24 @@
+{
+  "$comment": "Reconstructed 2026-10-19 — original lost with /tmp/kimiclaw-repair staging (see RECONCILIATION.md). Minimal valid config; routing defaults to openfang :25196 + bornite :25100.",
+  "instanceId": "kimiclaw-a",
+  "bridge": { "outboundTransport": "im_rpc" },
+  "gateway": {
+    "url": "http://127.0.0.1:25103",
+    "clientId": "kimiclaw-a",
+    "clientMode": "agent",
+    "agentId": "kimiclaw-a",
+    "protocol": 1
+  },
+  "session": {
+    "agentSessionSegment": "kimiclaw-a",
+    "channelSegment": "kimi-claw",
+    "accountId": "main"
+  },
+  "routing": {
+    "openfangUrl": "http://127.0.0.1:25196",
+    "herdUrl": "http://127.0.0.1:25100/v1"
+  },
+  "deliveryContext": { "channel": "im", "to": "kimiclaw-a", "accountId": "main" },
+  "sessionKey": "kimiclaw-a:main",
+  "terminalWs": { "enabled": false }
+}

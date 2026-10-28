@@ -1,0 +1,11 @@
+storage:
+  storage_path: ./qdrant_data/storage
+  snapshots_path: ./qdrant_data/snapshots
+  on_disk_payload: true
+service:
+  host: 127.0.0.1
+  http_port: 25133
+  grpc_port: 25134
+  enable_cors: true
+cluster:
+  enabled: false

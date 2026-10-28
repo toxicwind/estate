@@ -1,0 +1,10 @@
+# kappa-serve daemon — connectable kappa server (ACP/attach) + thresher upstream.
+# Port SSOT: config/ports.env KAPPA_ACP_PORT=25159.
+[daemons.kappa-acp]
+mise = true
+run = "exec /home/toxic/estate/bin/kappa-serve.sh"
+dir = "/home/toxic/estate"
+retry = true
+boot_start = true
+auto = ["start"]
+ready_http = "http://127.0.0.1:25159/"

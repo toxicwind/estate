@@ -1,0 +1,9 @@
+[daemons.nginx]
+mise = true
+port = 25208
+run = "exec /usr/bin/nginx -c /home/toxic/pens/ranch/forge/ops/nginx/nginx.conf -g 'daemon off; pid /tmp/nginx-pitchfork.pid;'"
+dir = "."
+retry = true
+ready_cmd = "ss -ltn 'sport = :25208' | grep -q LISTEN"
+depends = ["thresher"]
+auto = ["start"]

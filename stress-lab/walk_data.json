@@ -1,0 +1,1664 @@
+{
+  "results": [
+    {
+      "path": "linear",
+      "pathName": "Conservative Linear",
+      "color": "#4ade80",
+      "step": 0,
+      "T": 0.2,
+      "token": "compiler",
+      "dist": 0.429,
+      "baseDist": 3.9,
+      "scaleOffset": 0.11,
+      "jitter": 2.57,
+      "P": 31.53,
+      "X": 152.2,
+      "Y": 154.4,
+      "dPdDelta": 0,
+      "dDist": 0,
+      "loadBearing": false,
+      "visual": {
+        "radius": 3,
+        "outerRing": 0,
+        "color": "#4ade80"
+      },
+      "neighbors": [
+        {
+          "token": "LOAD",
+          "dist": 5.38101123484022
+        },
+        {
+          "token": "YIELD",
+          "dist": 5.734962737416756
+        },
+        {
+          "token": "LOAD_SUB",
+          "dist": 5.750480310457106
+        }
+      ],
+      "isPseudoBoundary": false,
+      "jump": null
+    },
+    {
+      "path": "linear",
+      "pathName": "Conservative Linear",
+      "color": "#4ade80",
+      "step": 1,
+      "T": 0.327,
+      "token": "JMP_TABLE",
+      "dist": 0.746,
+      "baseDist": 4.146,
+      "scaleOffset": 0.18,
+      "jitter": 1.38,
+      "P": 32.9,
+      "X": 156.9,
+      "Y": 181.4,
+      "dPdDelta": 4.328,
+      "dDist": 0.317,
+      "loadBearing": false,
+      "visual": {
+        "radius": 3,
+        "outerRing": 0,
+        "color": "#4ade80"
+      },
+      "neighbors": [
+        {
+          "token": "CONTENT",
+          "dist": 5.322729251525036
+        },
+        {
+          "token": "LOAD_SUB",
+          "dist": 5.600144005324495
+        },
+        {
+          "token": "LOAD",
+          "dist": 5.702567493007498
+        }
+      ],
+      "isPseudoBoundary": false,
+      "jump": {
+        "from": "compiler",
+        "to": "JMP_TABLE"
+      }
+    },
+    {
+      "path": "linear",
+      "pathName": "Conservative Linear",
+      "color": "#4ade80",
+      "step": 2,
+      "T": 0.455,
+      "token": "CONTENT",
+      "dist": 1.074,
+      "baseDist": 4.297,
+      "scaleOffset": 0.25,
+      "jitter": 3.88,
+      "P": 37.98,
+      "X": 161.6,
+      "Y": 159.2,
+      "dPdDelta": 15.475,
+      "dDist": 0.328,
+      "loadBearing": false,
+      "visual": {
+        "radius": 3,
+        "outerRing": 0,
+        "color": "#4ade80"
+      },
+      "neighbors": [
+        {
+          "token": "JMP_TABLE",
+          "dist": 5.322729251525036
+        },
+        {
+          "token": "bytecode",
+          "dist": 5.555988353719859
+        },
+        {
+          "token": "LOAD",
+          "dist": 5.838993655867371
+        }
+      ],
+      "isPseudoBoundary": false,
+      "jump": {
+        "from": "JMP_TABLE",
+        "to": "CONTENT"
+      }
+    },
+    {
+      "path": "linear",
+      "pathName": "Conservative Linear",
+      "color": "#4ade80",
+      "step": 3,
+      "T": 0.582,
+      "token": "YIELD",
+      "dist": 1.324,
+      "baseDist": 4.137,
+      "scaleOffset": 0.32,
+      "jitter": 2.75,
+      "P": 39.35,
+      "X": 165.9,
+      "Y": 106.7,
+      "dPdDelta": 5.503,
+      "dDist": 0.25,
+      "loadBearing": false,
+      "visual": {
+        "radius": 3,
+        "outerRing": 0,
+        "color": "#4ade80"
+      },
+      "neighbors": [
+        {
+          "token": "LOAD_SUB",
+          "dist": 5.336394354829015
+        },
+        {
+          "token": "bytecode",
+          "dist": 5.493050325558051
+        },
+        {
+          "token": "compiler",
+          "dist": 5.734962737416756
+        }
+      ],
+      "isPseudoBoundary": false,
+      "jump": {
+        "from": "CONTENT",
+        "to": "YIELD"
+      }
+    },
+    {
+      "path": "linear",
+      "pathName": "Conservative Linear",
+      "color": "#4ade80",
+      "step": 4,
+      "T": 0.709,
+      "token": "CONTRA",
+      "dist": 1.426,
+      "baseDist": 3.657,
+      "scaleOffset": 0.39,
+      "jitter": 2.37,
+      "P": 41.34,
+      "X": 1019.4,
+      "Y": 107.7,
+      "dPdDelta": 19.484,
+      "dDist": 0.102,
+      "loadBearing": false,
+      "visual": {
+        "radius": 3,
+        "outerRing": 0,
+        "color": "#4ade80"
+      },
+      "neighbors": [
+        {
+          "token": "JMP",
+          "dist": 4.700060088450059
+        },
+        {
+          "token": "slot[4]",
+          "dist": 5.0190753558422
+        },
+        {
+          "token": "JMP_TABLE[2]",
+          "dist": 5.129075100378464
+        }
+      ],
+      "isPseudoBoundary": false,
+      "jump": {
+        "from": "YIELD",
+        "to": "CONTRA"
+      }
+    },
+    {
+      "path": "linear",
+      "pathName": "Conservative Linear",
+      "color": "#4ade80",
+      "step": 5,
+      "T": 0.836,
+      "token": "JMP_TABLE[2]",
+      "dist": 1.712,
+      "baseDist": 3.721,
+      "scaleOffset": 0.46,
+      "jitter": 2.61,
+      "P": 44.12,
+      "X": 1023.9,
+      "Y": 153.5,
+      "dPdDelta": 9.725,
+      "dDist": 0.286,
+      "loadBearing": false,
+      "visual": {
+        "radius": 3,
+        "outerRing": 0,
+        "color": "#4ade80"
+      },
+      "neighbors": [
+        {
+          "token": "slot[4]",
+          "dist": 4.92001960469347
+        },
+        {
+          "token": "CONTRA",
+          "dist": 5.129075100378464
+        },
+        {
+          "token": "JMP",
+          "dist": 5.148584120607453
+        }
+      ],
+      "isPseudoBoundary": false,
+      "jump": {
+        "from": "CONTRA",
+        "to": "JMP_TABLE[2]"
+      }
+    },
+    {
+      "path": "linear",
+      "pathName": "Conservative Linear",
+      "color": "#4ade80",
+      "step": 6,
+      "T": 0.964,
+      "token": "POINTER",
+      "dist": 1.933,
+      "baseDist": 3.647,
+      "scaleOffset": 0.53,
+      "jitter": 3.79,
+      "P": 47.78,
+      "X": 628.1,
+      "Y": 235.1,
+      "dPdDelta": 16.522,
+      "dDist": 0.221,
+      "loadBearing": false,
+      "visual": {
+        "radius": 3,
+        "outerRing": 0,
+        "color": "#4ade80"
+      },
+      "neighbors": [
+        {
+          "token": "PLAN_TRACE",
+          "dist": 4.985024486350369
+        },
+        {
+          "token": "PSEUDO",
+          "dist": 5.064622918168111
+        },
+        {
+          "token": "ADJACENT",
+          "dist": 5.2318779098712564
+        }
+      ],
+      "isPseudoBoundary": true,
+      "jump": {
+        "from": "JMP_TABLE[2]",
+        "to": "POINTER"
+      }
+    },
+    {
+      "path": "linear",
+      "pathName": "Conservative Linear",
+      "color": "#4ade80",
+      "step": 7,
+      "T": 1.091,
+      "token": "ADJACENT",
+      "dist": 2.39,
+      "baseDist": 3.983,
+      "scaleOffset": 0.6,
+      "jitter": 2.82,
+      "P": 49.49,
+      "X": 633.4,
+      "Y": 235.2,
+      "dPdDelta": 3.752,
+      "dDist": 0.457,
+      "loadBearing": false,
+      "visual": {
+        "radius": 3,
+        "outerRing": 0,
+        "color": "#4ade80"
+      },
+      "neighbors": [
+        {
+          "token": "POINTER",
+          "dist": 5.2318779098712564
+        },
+        {
+          "token": "PLAN_TRACE",
+          "dist": 5.4943013482930825
+        },
+        {
+          "token": "PSEUDO",
+          "dist": 5.658703544098903
+        }
+      ],
+      "isPseudoBoundary": false,
+      "jump": {
+        "from": "POINTER",
+        "to": "ADJACENT"
+      }
+    },
+    {
+      "path": "linear",
+      "pathName": "Conservative Linear",
+      "color": "#4ade80",
+      "step": 8,
+      "T": 1.218,
+      "token": "LOAD_SUB",
+      "dist": 2.735,
+      "baseDist": 4.082,
+      "scaleOffset": 0.67,
+      "jitter": 1.4,
+      "P": 50.65,
+      "X": 188.2,
+      "Y": 124.7,
+      "dPdDelta": 3.344,
+      "dDist": 0.346,
+      "loadBearing": true,
+      "visual": {
+        "radius": 5,
+        "outerRing": 9,
+        "color": "#ff3344"
+      },
+      "neighbors": [
+        {
+          "token": "PTR_DEREF",
+          "dist": 5.324342503996284
+        },
+        {
+          "token": "YIELD",
+          "dist": 5.336394354829015
+        },
+        {
+          "token": "LOAD",
+          "dist": 5.545105564921756
+        }
+      ],
+      "isPseudoBoundary": false,
+      "jump": {
+        "from": "ADJACENT",
+        "to": "LOAD_SUB"
+      }
+    },
+    {
+      "path": "linear",
+      "pathName": "Conservative Linear",
+      "color": "#4ade80",
+      "step": 9,
+      "T": 1.345,
+      "token": "RESOLVE",
+      "dist": 2.857,
+      "baseDist": 3.861,
+      "scaleOffset": 0.74,
+      "jitter": 1.41,
+      "P": 53.06,
+      "X": 1041.9,
+      "Y": 84.5,
+      "dPdDelta": 19.721,
+      "dDist": 0.122,
+      "loadBearing": true,
+      "visual": {
+        "radius": 5,
+        "outerRing": 9,
+        "color": "#ff3344"
+      },
+      "neighbors": [
+        {
+          "token": "JMP",
+          "dist": 5.246775910736965
+        },
+        {
+          "token": "CONTRA",
+          "dist": 5.300656311473912
+        },
+        {
+          "token": "JMP_TABLE[2]",
+          "dist": 5.475349096398384
+        }
+      ],
+      "isPseudoBoundary": false,
+      "jump": {
+        "from": "LOAD_SUB",
+        "to": "RESOLVE"
+      }
+    },
+    {
+      "path": "linear",
+      "pathName": "Conservative Linear",
+      "color": "#4ade80",
+      "step": 10,
+      "T": 1.473,
+      "token": "compiler",
+      "dist": 3.159,
+      "baseDist": 3.9,
+      "scaleOffset": 0.81,
+      "jitter": 3.11,
+      "P": 57.3,
+      "X": 196.4,
+      "Y": 92.6,
+      "dPdDelta": 14.079,
+      "dDist": 0.301,
+      "loadBearing": true,
+      "visual": {
+        "radius": 5,
+        "outerRing": 9,
+        "color": "#ff3344"
+      },
+      "neighbors": [
+        {
+          "token": "LOAD",
+          "dist": 5.38101123484022
+        },
+        {
+          "token": "YIELD",
+          "dist": 5.734962737416756
+        },
+        {
+          "token": "LOAD_SUB",
+          "dist": 5.750480310457106
+        }
+      ],
+      "isPseudoBoundary": false,
+      "jump": {
+        "from": "RESOLVE",
+        "to": "compiler"
+      }
+    },
+    {
+      "path": "linear",
+      "pathName": "Conservative Linear",
+      "color": "#4ade80",
+      "step": 11,
+      "T": 1.6,
+      "token": "JMP_TABLE",
+      "dist": 3.648,
+      "baseDist": 4.146,
+      "scaleOffset": 0.88,
+      "jitter": 2.52,
+      "P": 59.42,
+      "X": 202,
+      "Y": 183.7,
+      "dPdDelta": 4.336,
+      "dDist": 0.489,
+      "loadBearing": true,
+      "visual": {
+        "radius": 5,
+        "outerRing": 9,
+        "color": "#ff3344"
+      },
+      "neighbors": [
+        {
+          "token": "CONTENT",
+          "dist": 5.322729251525036
+        },
+        {
+          "token": "LOAD_SUB",
+          "dist": 5.600144005324495
+        },
+        {
+          "token": "LOAD",
+          "dist": 5.702567493007498
+        }
+      ],
+      "isPseudoBoundary": true,
+      "jump": {
+        "from": "compiler",
+        "to": "JMP_TABLE"
+      }
+    },
+    {
+      "path": "linear",
+      "pathName": "Conservative Linear",
+      "color": "#ff3344",
+      "step": 6,
+      "T": 0.964,
+      "token": "__PSEUDO_SLOT4__",
+      "note": "slot[4]=JMP_TABLE[2] pseudo-embedding (not in vocab)",
+      "dist": 0.9,
+      "P": 54.11,
+      "X": 1004.7,
+      "Y": 197.1,
+      "dPdDelta": 0,
+      "loadBearing": true,
+      "visual": {
+        "radius": 5,
+        "outerRing": 9,
+        "color": "#ff3344",
+        "persistent": true
+      },
+      "neighbors": [
+        {
+          "token": "JMP_TABLE[2]",
+          "dist": 0.2
+        },
+        {
+          "token": "CONTRA",
+          "dist": 0.44
+        }
+      ],
+      "isPseudoBox": true
+    },
+    {
+      "path": "exponential",
+      "pathName": "Aggressive Exponential",
+      "color": "#f97316",
+      "step": 0,
+      "T": 0.2,
+      "token": "LOAD",
+      "dist": 0.62,
+      "baseDist": 3.865,
+      "scaleOffset": 0.16,
+      "jitter": 6.69,
+      "P": 35.81,
+      "X": 153.2,
+      "Y": 154.4,
+      "dPdDelta": 0,
+      "dDist": 0,
+      "loadBearing": false,
+      "visual": {
+        "radius": 3,
+        "outerRing": 0,
+        "color": "#f97316"
+      },
+      "neighbors": [
+        {
+          "token": "compiler",
+          "dist": 5.38101123484022
+        },
+        {
+          "token": "LOAD_SUB",
+          "dist": 5.545105564921756
+        },
+        {
+          "token": "bytecode",
+          "dist": 5.680996195665129
+        }
+      ],
+      "isPseudoBoundary": false,
+      "jump": null
+    },
+    {
+      "path": "exponential",
+      "pathName": "Aggressive Exponential",
+      "color": "#f97316",
+      "step": 1,
+      "T": 0.327,
+      "token": "PTR_DEREF",
+      "dist": 1.163,
+      "baseDist": 4.2,
+      "scaleOffset": 0.277,
+      "jitter": 6.6,
+      "P": 38.48,
+      "X": 159,
+      "Y": 181.4,
+      "dPdDelta": 4.901,
+      "dDist": 0.544,
+      "loadBearing": false,
+      "visual": {
+        "radius": 3,
+        "outerRing": 0,
+        "color": "#f97316"
+      },
+      "neighbors": [
+        {
+          "token": "LOAD_SUB",
+          "dist": 5.324342503996284
+        },
+        {
+          "token": "bytecode",
+          "dist": 5.384639207591067
+        },
+        {
+          "token": "LOAD",
+          "dist": 5.75450886176502
+        }
+      ],
+      "isPseudoBoundary": false,
+      "jump": {
+        "from": "LOAD",
+        "to": "PTR_DEREF"
+      }
+    },
+    {
+      "path": "exponential",
+      "pathName": "Aggressive Exponential",
+      "color": "#f97316",
+      "step": 2,
+      "T": 0.455,
+      "token": "subconscious",
+      "dist": 1.587,
+      "baseDist": 3.904,
+      "scaleOffset": 0.407,
+      "jitter": 7.47,
+      "P": 42,
+      "X": 614.3,
+      "Y": 199.2,
+      "dPdDelta": 8.313,
+      "dDist": 0.424,
+      "loadBearing": false,
+      "visual": {
+        "radius": 3,
+        "outerRing": 0,
+        "color": "#f97316"
+      },
+      "neighbors": [
+        {
+          "token": "EXEC",
+          "dist": 5.196416072383795
+        },
+        {
+          "token": "POINTER",
+          "dist": 5.455854387760704
+        },
+        {
+          "token": "PLAN_TRACE",
+          "dist": 5.6902455216040275
+        }
+      ],
+      "isPseudoBoundary": false,
+      "jump": {
+        "from": "PTR_DEREF",
+        "to": "subconscious"
+      }
+    },
+    {
+      "path": "exponential",
+      "pathName": "Aggressive Exponential",
+      "color": "#f97316",
+      "step": 3,
+      "T": 0.582,
+      "token": "slot[4]",
+      "dist": 2.073,
+      "baseDist": 3.767,
+      "scaleOffset": 0.55,
+      "jitter": 4.09,
+      "P": 41.32,
+      "X": 1019.8,
+      "Y": 126.7,
+      "dPdDelta": -1.395,
+      "dDist": 0.486,
+      "loadBearing": false,
+      "visual": {
+        "radius": 3,
+        "outerRing": 0,
+        "color": "#f97316"
+      },
+      "neighbors": [
+        {
+          "token": "JMP_TABLE[2]",
+          "dist": 4.92001960469347
+        },
+        {
+          "token": "CONTRA",
+          "dist": 5.0190753558422
+        },
+        {
+          "token": "JMP",
+          "dist": 5.1705816969228735
+        }
+      ],
+      "isPseudoBoundary": false,
+      "jump": {
+        "from": "subconscious",
+        "to": "slot[4]"
+      }
+    },
+    {
+      "path": "exponential",
+      "pathName": "Aggressive Exponential",
+      "color": "#f97316",
+      "step": 4,
+      "T": 0.709,
+      "token": "PLAN_TRACE",
+      "dist": 2.634,
+      "baseDist": 3.71,
+      "scaleOffset": 0.71,
+      "jitter": 4.54,
+      "P": 44.54,
+      "X": 625.7,
+      "Y": 127.7,
+      "dPdDelta": 5.737,
+      "dDist": 0.561,
+      "loadBearing": false,
+      "visual": {
+        "radius": 3,
+        "outerRing": 0,
+        "color": "#f97316"
+      },
+      "neighbors": [
+        {
+          "token": "POINTER",
+          "dist": 4.985024486350369
+        },
+        {
+          "token": "PSEUDO",
+          "dist": 5.352772590894366
+        },
+        {
+          "token": "ADJACENT",
+          "dist": 5.4943013482930825
+        }
+      ],
+      "isPseudoBoundary": false,
+      "jump": {
+        "from": "slot[4]",
+        "to": "PLAN_TRACE"
+      }
+    },
+    {
+      "path": "exponential",
+      "pathName": "Aggressive Exponential",
+      "color": "#f97316",
+      "step": 5,
+      "T": 0.836,
+      "token": "PSEUDO",
+      "dist": 3.426,
+      "baseDist": 3.863,
+      "scaleOffset": 0.887,
+      "jitter": 7.13,
+      "P": 50.1,
+      "X": 632.8,
+      "Y": 173.5,
+      "dPdDelta": 7.01,
+      "dDist": 0.793,
+      "loadBearing": true,
+      "visual": {
+        "radius": 5,
+        "outerRing": 9,
+        "color": "#ff3344"
+      },
+      "neighbors": [
+        {
+          "token": "POINTER",
+          "dist": 5.064622918168111
+        },
+        {
+          "token": "PLAN_TRACE",
+          "dist": 5.352772590894366
+        },
+        {
+          "token": "ADJACENT",
+          "dist": 5.658703544098903
+        }
+      ],
+      "isPseudoBoundary": false,
+      "jump": {
+        "from": "PLAN_TRACE",
+        "to": "PSEUDO"
+      }
+    },
+    {
+      "path": "exponential",
+      "pathName": "Aggressive Exponential",
+      "color": "#f97316",
+      "step": 6,
+      "T": 0.964,
+      "token": "EXEC",
+      "dist": 4.183,
+      "baseDist": 3.861,
+      "scaleOffset": 1.083,
+      "jitter": 8.78,
+      "P": 54.68,
+      "X": 639.8,
+      "Y": 235.1,
+      "dPdDelta": 6.054,
+      "dDist": 0.757,
+      "loadBearing": true,
+      "visual": {
+        "radius": 5,
+        "outerRing": 9,
+        "color": "#ff3344"
+      },
+      "neighbors": [
+        {
+          "token": "subconscious",
+          "dist": 5.196416072383795
+        },
+        {
+          "token": "PLAN_TRACE",
+          "dist": 5.573780471098321
+        },
+        {
+          "token": "ADJACENT",
+          "dist": 5.664618142844887
+        }
+      ],
+      "isPseudoBoundary": true,
+      "jump": {
+        "from": "PSEUDO",
+        "to": "EXEC"
+      }
+    },
+    {
+      "path": "exponential",
+      "pathName": "Aggressive Exponential",
+      "color": "#f97316",
+      "step": 7,
+      "T": 1.091,
+      "token": "ADJ_EDGE",
+      "dist": 5.048,
+      "baseDist": 3.878,
+      "scaleOffset": 1.302,
+      "jitter": 3.03,
+      "P": 51.95,
+      "X": 1047.2,
+      "Y": 215.2,
+      "dPdDelta": -3.152,
+      "dDist": 0.865,
+      "loadBearing": true,
+      "visual": {
+        "radius": 5,
+        "outerRing": 9,
+        "color": "#ff3344"
+      },
+      "neighbors": [
+        {
+          "token": "JMP",
+          "dist": 5.123438003153734
+        },
+        {
+          "token": "slot[4]",
+          "dist": 5.294264434186392
+        },
+        {
+          "token": "CONTRA",
+          "dist": 5.3942505552739615
+        }
+      ],
+      "isPseudoBoundary": false,
+      "jump": {
+        "from": "EXEC",
+        "to": "ADJ_EDGE"
+      }
+    },
+    {
+      "path": "exponential",
+      "pathName": "Aggressive Exponential",
+      "color": "#f97316",
+      "step": 8,
+      "T": 1.218,
+      "token": "JMP",
+      "dist": 5.424,
+      "baseDist": 3.514,
+      "scaleOffset": 1.544,
+      "jitter": 4.13,
+      "P": 55.67,
+      "X": 1052.2,
+      "Y": 144.7,
+      "dPdDelta": 9.881,
+      "dDist": 0.376,
+      "loadBearing": true,
+      "visual": {
+        "radius": 5,
+        "outerRing": 9,
+        "color": "#ff3344"
+      },
+      "neighbors": [
+        {
+          "token": "CONTRA",
+          "dist": 4.700060088450059
+        },
+        {
+          "token": "ADJ_EDGE",
+          "dist": 5.123438003153734
+        },
+        {
+          "token": "JMP_TABLE[2]",
+          "dist": 5.148584120607453
+        }
+      ],
+      "isPseudoBoundary": false,
+      "jump": {
+        "from": "ADJ_EDGE",
+        "to": "JMP"
+      }
+    },
+    {
+      "path": "exponential",
+      "pathName": "Aggressive Exponential",
+      "color": "#f97316",
+      "step": 9,
+      "T": 1.345,
+      "token": "bytecode",
+      "dist": 7.332,
+      "baseDist": 4.045,
+      "scaleOffset": 1.813,
+      "jitter": 6.64,
+      "P": 62.09,
+      "X": 215.1,
+      "Y": 64.5,
+      "dPdDelta": 3.367,
+      "dDist": 1.907,
+      "loadBearing": true,
+      "visual": {
+        "radius": 5,
+        "outerRing": 9,
+        "color": "#ff3344"
+      },
+      "neighbors": [
+        {
+          "token": "PTR_DEREF",
+          "dist": 5.384639207591067
+        },
+        {
+          "token": "YIELD",
+          "dist": 5.493050325558051
+        },
+        {
+          "token": "CONTENT",
+          "dist": 5.555988353719859
+        }
+      ],
+      "isPseudoBoundary": false,
+      "jump": {
+        "from": "JMP",
+        "to": "bytecode"
+      }
+    },
+    {
+      "path": "exponential",
+      "pathName": "Aggressive Exponential",
+      "color": "#f97316",
+      "step": 10,
+      "T": 1.473,
+      "token": "LOAD",
+      "dist": 8.158,
+      "baseDist": 3.865,
+      "scaleOffset": 2.111,
+      "jitter": 5.61,
+      "P": 64.06,
+      "X": 222.4,
+      "Y": 92.6,
+      "dPdDelta": 2.375,
+      "dDist": 0.827,
+      "loadBearing": true,
+      "visual": {
+        "radius": 5,
+        "outerRing": 9,
+        "color": "#ff3344"
+      },
+      "neighbors": [
+        {
+          "token": "compiler",
+          "dist": 5.38101123484022
+        },
+        {
+          "token": "LOAD_SUB",
+          "dist": 5.545105564921756
+        },
+        {
+          "token": "bytecode",
+          "dist": 5.680996195665129
+        }
+      ],
+      "isPseudoBoundary": false,
+      "jump": {
+        "from": "bytecode",
+        "to": "LOAD"
+      }
+    },
+    {
+      "path": "exponential",
+      "pathName": "Aggressive Exponential",
+      "color": "#f97316",
+      "step": 11,
+      "T": 1.6,
+      "token": "PTR_DEREF",
+      "dist": 10.256,
+      "baseDist": 4.2,
+      "scaleOffset": 2.442,
+      "jitter": 2.28,
+      "P": 64.8,
+      "X": 236.3,
+      "Y": 183.7,
+      "dPdDelta": 0.353,
+      "dDist": 2.098,
+      "loadBearing": true,
+      "visual": {
+        "radius": 5,
+        "outerRing": 9,
+        "color": "#ff3344"
+      },
+      "neighbors": [
+        {
+          "token": "LOAD_SUB",
+          "dist": 5.324342503996284
+        },
+        {
+          "token": "bytecode",
+          "dist": 5.384639207591067
+        },
+        {
+          "token": "LOAD",
+          "dist": 5.75450886176502
+        }
+      ],
+      "isPseudoBoundary": true,
+      "jump": {
+        "from": "LOAD",
+        "to": "PTR_DEREF"
+      }
+    },
+    {
+      "path": "exponential",
+      "pathName": "Aggressive Exponential",
+      "color": "#ff3344",
+      "step": 6,
+      "T": 0.964,
+      "token": "__PSEUDO_SLOT4__",
+      "note": "slot[4]=JMP_TABLE[2] pseudo-embedding (not in vocab)",
+      "dist": 1.839,
+      "P": 54.91,
+      "X": 1009.6,
+      "Y": 197.1,
+      "dPdDelta": 0,
+      "loadBearing": true,
+      "visual": {
+        "radius": 5,
+        "outerRing": 9,
+        "color": "#ff3344",
+        "persistent": true
+      },
+      "neighbors": [
+        {
+          "token": "JMP_TABLE[2]",
+          "dist": 0.2
+        },
+        {
+          "token": "CONTRA",
+          "dist": 0.44
+        }
+      ],
+      "isPseudoBox": true
+    },
+    {
+      "path": "stochastic",
+      "pathName": "Stochastic Walk",
+      "color": "#38bdf8",
+      "step": 0,
+      "T": 0.2,
+      "token": "compiler",
+      "dist": 0.313,
+      "baseDist": 3.9,
+      "scaleOffset": 0.08,
+      "jitter": 6.74,
+      "P": 35.61,
+      "X": 151.6,
+      "Y": 154.4,
+      "dPdDelta": 0,
+      "dDist": 0,
+      "loadBearing": false,
+      "visual": {
+        "radius": 3,
+        "outerRing": 0,
+        "color": "#38bdf8"
+      },
+      "neighbors": [
+        {
+          "token": "LOAD",
+          "dist": 5.38101123484022
+        },
+        {
+          "token": "YIELD",
+          "dist": 5.734962737416756
+        },
+        {
+          "token": "LOAD_SUB",
+          "dist": 5.750480310457106
+        }
+      ],
+      "isPseudoBoundary": false,
+      "jump": null
+    },
+    {
+      "path": "stochastic",
+      "pathName": "Stochastic Walk",
+      "color": "#38bdf8",
+      "step": 1,
+      "T": 0.327,
+      "token": "JMP_TABLE",
+      "dist": 0.818,
+      "baseDist": 4.146,
+      "scaleOffset": 0.197,
+      "jitter": 1.59,
+      "P": 33.18,
+      "X": 157.3,
+      "Y": 181.4,
+      "dPdDelta": -4.805,
+      "dDist": 0.505,
+      "loadBearing": false,
+      "visual": {
+        "radius": 3,
+        "outerRing": 0,
+        "color": "#38bdf8"
+      },
+      "neighbors": [
+        {
+          "token": "CONTENT",
+          "dist": 5.322729251525036
+        },
+        {
+          "token": "LOAD_SUB",
+          "dist": 5.600144005324495
+        },
+        {
+          "token": "LOAD",
+          "dist": 5.702567493007498
+        }
+      ],
+      "isPseudoBoundary": false,
+      "jump": {
+        "from": "compiler",
+        "to": "JMP_TABLE"
+      }
+    },
+    {
+      "path": "stochastic",
+      "pathName": "Stochastic Walk",
+      "color": "#38bdf8",
+      "step": 2,
+      "T": 0.455,
+      "token": "CONTENT",
+      "dist": 2.884,
+      "baseDist": 4.297,
+      "scaleOffset": 0.671,
+      "jitter": 7.49,
+      "P": 43.12,
+      "X": 171,
+      "Y": 159.2,
+      "dPdDelta": 4.814,
+      "dDist": 2.066,
+      "loadBearing": false,
+      "visual": {
+        "radius": 3,
+        "outerRing": 0,
+        "color": "#38bdf8"
+      },
+      "neighbors": [
+        {
+          "token": "JMP_TABLE",
+          "dist": 5.322729251525036
+        },
+        {
+          "token": "bytecode",
+          "dist": 5.555988353719859
+        },
+        {
+          "token": "LOAD",
+          "dist": 5.838993655867371
+        }
+      ],
+      "isPseudoBoundary": false,
+      "jump": {
+        "from": "JMP_TABLE",
+        "to": "CONTENT"
+      }
+    },
+    {
+      "path": "stochastic",
+      "pathName": "Stochastic Walk",
+      "color": "#38bdf8",
+      "step": 3,
+      "T": 0.582,
+      "token": "YIELD",
+      "dist": 2.982,
+      "baseDist": 4.137,
+      "scaleOffset": 0.721,
+      "jitter": 2.12,
+      "P": 40.13,
+      "X": 174.5,
+      "Y": 106.7,
+      "dPdDelta": -30.818,
+      "dDist": 0.097,
+      "loadBearing": false,
+      "visual": {
+        "radius": 3,
+        "outerRing": 0,
+        "color": "#38bdf8"
+      },
+      "neighbors": [
+        {
+          "token": "LOAD_SUB",
+          "dist": 5.336394354829015
+        },
+        {
+          "token": "bytecode",
+          "dist": 5.493050325558051
+        },
+        {
+          "token": "compiler",
+          "dist": 5.734962737416756
+        }
+      ],
+      "isPseudoBoundary": false,
+      "jump": {
+        "from": "CONTENT",
+        "to": "YIELD"
+      }
+    },
+    {
+      "path": "stochastic",
+      "pathName": "Stochastic Walk",
+      "color": "#38bdf8",
+      "step": 4,
+      "T": 0.709,
+      "token": "CONTRA",
+      "dist": 2.313,
+      "baseDist": 3.657,
+      "scaleOffset": 0.632,
+      "jitter": 6.2,
+      "P": 45.93,
+      "X": 1024,
+      "Y": 107.7,
+      "dPdDelta": 8.672,
+      "dDist": 0.669,
+      "loadBearing": false,
+      "visual": {
+        "radius": 3,
+        "outerRing": 0,
+        "color": "#38bdf8"
+      },
+      "neighbors": [
+        {
+          "token": "JMP",
+          "dist": 4.700060088450059
+        },
+        {
+          "token": "slot[4]",
+          "dist": 5.0190753558422
+        },
+        {
+          "token": "JMP_TABLE[2]",
+          "dist": 5.129075100378464
+        }
+      ],
+      "isPseudoBoundary": false,
+      "jump": {
+        "from": "YIELD",
+        "to": "CONTRA"
+      }
+    },
+    {
+      "path": "stochastic",
+      "pathName": "Stochastic Walk",
+      "color": "#38bdf8",
+      "step": 5,
+      "T": 0.836,
+      "token": "JMP_TABLE[2]",
+      "dist": 3.812,
+      "baseDist": 3.721,
+      "scaleOffset": 1.024,
+      "jitter": 5.77,
+      "P": 49.07,
+      "X": 1034.8,
+      "Y": 153.5,
+      "dPdDelta": 2.094,
+      "dDist": 1.499,
+      "loadBearing": false,
+      "visual": {
+        "radius": 3,
+        "outerRing": 0,
+        "color": "#38bdf8"
+      },
+      "neighbors": [
+        {
+          "token": "slot[4]",
+          "dist": 4.92001960469347
+        },
+        {
+          "token": "CONTRA",
+          "dist": 5.129075100378464
+        },
+        {
+          "token": "JMP",
+          "dist": 5.148584120607453
+        }
+      ],
+      "isPseudoBoundary": false,
+      "jump": {
+        "from": "CONTRA",
+        "to": "JMP_TABLE[2]"
+      }
+    },
+    {
+      "path": "stochastic",
+      "pathName": "Stochastic Walk",
+      "color": "#38bdf8",
+      "step": 6,
+      "T": 0.964,
+      "token": "POINTER",
+      "dist": 3.213,
+      "baseDist": 3.647,
+      "scaleOffset": 0.881,
+      "jitter": 3.22,
+      "P": 48.3,
+      "X": 634.7,
+      "Y": 235.1,
+      "dPdDelta": -1.288,
+      "dDist": 0.599,
+      "loadBearing": false,
+      "visual": {
+        "radius": 3,
+        "outerRing": 0,
+        "color": "#38bdf8"
+      },
+      "neighbors": [
+        {
+          "token": "PLAN_TRACE",
+          "dist": 4.985024486350369
+        },
+        {
+          "token": "PSEUDO",
+          "dist": 5.064622918168111
+        },
+        {
+          "token": "ADJACENT",
+          "dist": 5.2318779098712564
+        }
+      ],
+      "isPseudoBoundary": true,
+      "jump": {
+        "from": "JMP_TABLE[2]",
+        "to": "POINTER"
+      }
+    },
+    {
+      "path": "stochastic",
+      "pathName": "Stochastic Walk",
+      "color": "#38bdf8",
+      "step": 7,
+      "T": 1.091,
+      "token": "ADJACENT",
+      "dist": 6.395,
+      "baseDist": 3.983,
+      "scaleOffset": 1.606,
+      "jitter": 8.32,
+      "P": 58.39,
+      "X": 654.3,
+      "Y": 235.2,
+      "dPdDelta": 3.173,
+      "dDist": 3.182,
+      "loadBearing": true,
+      "visual": {
+        "radius": 5,
+        "outerRing": 9,
+        "color": "#ff3344"
+      },
+      "neighbors": [
+        {
+          "token": "POINTER",
+          "dist": 5.2318779098712564
+        },
+        {
+          "token": "PLAN_TRACE",
+          "dist": 5.4943013482930825
+        },
+        {
+          "token": "PSEUDO",
+          "dist": 5.658703544098903
+        }
+      ],
+      "isPseudoBoundary": false,
+      "jump": {
+        "from": "POINTER",
+        "to": "ADJACENT"
+      }
+    },
+    {
+      "path": "stochastic",
+      "pathName": "Stochastic Walk",
+      "color": "#38bdf8",
+      "step": 8,
+      "T": 1.218,
+      "token": "LOAD_SUB",
+      "dist": 2.598,
+      "baseDist": 4.082,
+      "scaleOffset": 0.636,
+      "jitter": 8.98,
+      "P": 58.11,
+      "X": 187.5,
+      "Y": 124.7,
+      "dPdDelta": -0.073,
+      "dDist": 3.796,
+      "loadBearing": true,
+      "visual": {
+        "radius": 5,
+        "outerRing": 9,
+        "color": "#ff3344"
+      },
+      "neighbors": [
+        {
+          "token": "PTR_DEREF",
+          "dist": 5.324342503996284
+        },
+        {
+          "token": "YIELD",
+          "dist": 5.336394354829015
+        },
+        {
+          "token": "LOAD",
+          "dist": 5.545105564921756
+        }
+      ],
+      "isPseudoBoundary": false,
+      "jump": {
+        "from": "ADJACENT",
+        "to": "LOAD_SUB"
+      }
+    },
+    {
+      "path": "stochastic",
+      "pathName": "Stochastic Walk",
+      "color": "#38bdf8",
+      "step": 9,
+      "T": 1.345,
+      "token": "RESOLVE",
+      "dist": 6.194,
+      "baseDist": 3.861,
+      "scaleOffset": 1.604,
+      "jitter": 10.2,
+      "P": 64.68,
+      "X": 1059.2,
+      "Y": 84.5,
+      "dPdDelta": 1.828,
+      "dDist": 3.595,
+      "loadBearing": true,
+      "visual": {
+        "radius": 5,
+        "outerRing": 9,
+        "color": "#ff3344"
+      },
+      "neighbors": [
+        {
+          "token": "JMP",
+          "dist": 5.246775910736965
+        },
+        {
+          "token": "CONTRA",
+          "dist": 5.300656311473912
+        },
+        {
+          "token": "JMP_TABLE[2]",
+          "dist": 5.475349096398384
+        }
+      ],
+      "isPseudoBoundary": false,
+      "jump": {
+        "from": "LOAD_SUB",
+        "to": "RESOLVE"
+      }
+    },
+    {
+      "path": "stochastic",
+      "pathName": "Stochastic Walk",
+      "color": "#38bdf8",
+      "step": 10,
+      "T": 1.473,
+      "token": "compiler",
+      "dist": 7.519,
+      "baseDist": 3.9,
+      "scaleOffset": 1.928,
+      "jitter": 2.08,
+      "P": 59.98,
+      "X": 219.1,
+      "Y": 92.6,
+      "dPdDelta": -3.549,
+      "dDist": 1.325,
+      "loadBearing": true,
+      "visual": {
+        "radius": 5,
+        "outerRing": 9,
+        "color": "#ff3344"
+      },
+      "neighbors": [
+        {
+          "token": "LOAD",
+          "dist": 5.38101123484022
+        },
+        {
+          "token": "YIELD",
+          "dist": 5.734962737416756
+        },
+        {
+          "token": "LOAD_SUB",
+          "dist": 5.750480310457106
+        }
+      ],
+      "isPseudoBoundary": false,
+      "jump": {
+        "from": "RESOLVE",
+        "to": "compiler"
+      }
+    },
+    {
+      "path": "stochastic",
+      "pathName": "Stochastic Walk",
+      "color": "#38bdf8",
+      "step": 11,
+      "T": 1.6,
+      "token": "JMP_TABLE",
+      "dist": 6.463,
+      "baseDist": 4.146,
+      "scaleOffset": 1.559,
+      "jitter": 9.51,
+      "P": 68.81,
+      "X": 216.6,
+      "Y": 183.7,
+      "dPdDelta": 8.357,
+      "dDist": 1.056,
+      "loadBearing": true,
+      "visual": {
+        "radius": 5,
+        "outerRing": 9,
+        "color": "#ff3344"
+      },
+      "neighbors": [
+        {
+          "token": "CONTENT",
+          "dist": 5.322729251525036
+        },
+        {
+          "token": "LOAD_SUB",
+          "dist": 5.600144005324495
+        },
+        {
+          "token": "LOAD",
+          "dist": 5.702567493007498
+        }
+      ],
+      "isPseudoBoundary": true,
+      "jump": {
+        "from": "compiler",
+        "to": "JMP_TABLE"
+      }
+    },
+    {
+      "path": "stochastic",
+      "pathName": "Stochastic Walk",
+      "color": "#ff3344",
+      "step": 6,
+      "T": 0.964,
+      "token": "__PSEUDO_SLOT4__",
+      "note": "slot[4]=JMP_TABLE[2] pseudo-embedding (not in vocab)",
+      "dist": 0.673,
+      "P": 53.92,
+      "X": 1003.5,
+      "Y": 197.1,
+      "dPdDelta": 0,
+      "loadBearing": true,
+      "visual": {
+        "radius": 5,
+        "outerRing": 9,
+        "color": "#ff3344",
+        "persistent": true
+      },
+      "neighbors": [
+        {
+          "token": "JMP_TABLE[2]",
+          "dist": 0.2
+        },
+        {
+          "token": "CONTRA",
+          "dist": 0.44
+        }
+      ],
+      "isPseudoBox": true
+    }
+  ],
+  "quantified": {
+    "linear": {
+      "meanPerplexity": 46.08,
+      "meanEntropySiphonRate": 10.57,
+      "maxP": 59.42,
+      "loadBearingFraction": 0.385,
+      "uniqueTokens": 11
+    },
+    "exponential": {
+      "meanPerplexity": 50.8,
+      "meanEntropySiphonRate": 3.949,
+      "maxP": 64.8,
+      "loadBearingFraction": 0.615,
+      "uniqueTokens": 11
+    },
+    "stochastic": {
+      "meanPerplexity": 50.71,
+      "meanEntropySiphonRate": -1.054,
+      "maxP": 68.81,
+      "loadBearingFraction": 0.462,
+      "uniqueTokens": 11
+    }
+  },
+  "Ts": [
+    0.2,
+    0.32727272727272727,
+    0.4545454545454546,
+    0.5818181818181818,
+    0.7090909090909092,
+    0.8363636363636364,
+    0.9636363636363636,
+    1.090909090909091,
+    1.2181818181818183,
+    1.3454545454545457,
+    1.4727272727272727,
+    1.6
+  ],
+  "vocab": [
+    "compiler",
+    "bytecode",
+    "JMP_TABLE",
+    "LOAD",
+    "CONTENT",
+    "PTR_DEREF",
+    "YIELD",
+    "subconscious",
+    "CONTRA",
+    "slot[4]",
+    "JMP_TABLE[2]",
+    "PLAN_TRACE",
+    "POINTER",
+    "PSEUDO",
+    "ADJACENT",
+    "EXEC",
+    "LOAD_SUB",
+    "ADJ_EDGE",
+    "RESOLVE",
+    "JMP"
+  ],
+  "pseudo": "__PSEUDO_SLOT4__",
+  "formula": "P=25+T*18+dist*0.85+jitter"
+}

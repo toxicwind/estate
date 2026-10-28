@@ -1,0 +1,7 @@
+{
+  "debate_id": "deb-toposort-shakedown-01-20260920-013755-a83f24",
+  "task_ref": "toposort-shakedown-01",
+  "redebate_of": "deb-toposort-shakedown-01-20260920-013755-a83f24",
+  "e2e_failure_notes": "candidate shakedown-topo-a FAILED e2e:\n\nno tests ran in 0.00s\nERROR: file or directory not found: tests\n\n\n\ncandidate shakedown-topo-b FAILED e2e:\n\nno tests ran in 0.00s\nERROR: file or directory not found: tests\n\n\n\ncandidate shakedown-topo-c FAILED e2e:\n\nno tests ran in 0.01s\nERROR: file or directory not found: tests\n\n",
+  "emitted_at": "2026-09-20T07:45:20.777686+00:00"
+}

@@ -1,0 +1,14 @@
+[Unit]
+Description=Tailray Tailscale System Tray (252xx)
+After=tailscaled.service
+
+[Service]
+Type=simple
+ExecStart=/home/toxic/.cargo/bin/tailray
+Restart=always
+RestartSec=10
+Environment="DISPLAY=:0"
+Environment="XAUTHORITY=/home/toxic/.Xauthority"
+
+[Install]
+WantedBy=default.target

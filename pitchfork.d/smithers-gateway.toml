@@ -1,0 +1,25 @@
+# smithers-gateway — estate resident control plane (pitchfork-managed).
+#
+# The estate Smithers Gateway singleton. Formerly an ad-hoc `bunx smthrs
+# gateway --port 7331` self-launch scoped to whatever transient workspace it
+# happened to start in (drift, untracked). Now a first-class, supervised daemon:
+#
+#   - Bun-native launcher: stack/services/smithers-gateway.ts
+#     (keyring-first secrets via the secretsmith Bun drop-in; port from SSOT).
+#   - Port SSOT: config/ports.env SMITHERS_GATEWAY_PORT=25280 (25xxx fleet).
+#   - Retired .sh is a thin compatibility shim, never the source of truth.
+#
+# Bound loopback; tailscale fronts it if a network surface is ever needed.
+# The gateway's env is what every smithers-spawned agent inherits, so the
+# model/routing keys are resolved here at boot. (thresher/ranch-ui precedent.)
+[daemons.smithers-gateway]
+mise = true
+port = 25280
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/stack/services/smithers-gateway.ts"
+dir = "/home/toxic/estate"
+retry = true
+env = { SMITHERS_GATEWAY_PORT = "25280" }
+ready_http = "http://127.0.0.1:25280/health"
+health_http = { url = "http://127.0.0.1:25280/health", interval = "30s", timeout = "5s", retries = 3 }
+boot_start = true
+auto = ["start"]

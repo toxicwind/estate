@@ -1,0 +1,29 @@
+[daemons.agent-display]
+# Forge 2026-09-21: isolated virtual display for the agent browser.
+# Isolated Xvnc :99 desktop. A window manager (agent-wm) must run against this
+# X server or the desktop has no WM: windows can't be resized/maximized and
+# the keeper Chromium (1600x900) overflows the root. See agent-wm daemon.
+mise = true
+port = 5900
+run = "exec Xvnc :99 -geometry 3840x2160 -depth 24 -rfbport 5900 -localhost -SecurityTypes VncAuth -rfbauth /home/toxic/.browserless/vncpasswd"
+dir = "."
+retry = true
+ready_cmd = "ss -tln | grep -q 127.0.0.1:5900"
+boot_start = true
+auto = ["start"]
+
+# Lightweight window manager for the agent's virtual desktop (:99).
+# Without a WM the keeper Chromium behaves like a bare automation browser:
+# _NET_SUPPORTING_WM_CHECK is absent, --start-maximized is a no-op, and
+# resizing the window does not propagate (no decorations / WM-driven layout).
+# openbox is intentionally minimal (no desktop icons, no panels).
+[daemons.agent-wm]
+mise = true
+port = 0
+run = "export DISPLAY=:99; exec openbox >> /home/toxic/.browserless/keeper/agent-wm.log 2>&1"
+dir = "."
+retry = true
+ready_cmd = "DISPLAY=:99 wmctrl -m 2>&1 | grep -q 'Name: OPENBOX'"
+boot_start = true
+auto = ["start"]
+after = ["agent-display"]

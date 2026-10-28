@@ -292,7 +292,7 @@ directory with thousands of untracked files is scratch, whatever its size.
 | `gateway` | dir | tracked | 1 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
 | `gear` | dir | untracked | 0 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
 | `grafana` | dir | tracked | 1247 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
-| `grasp-hub` | dir | repo | 0 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
+| `azurite` | dir | repo | 0 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
 | `hatch` | dir | untracked | 0 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
 | `helpers` | dir | tracked | 8 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |
 | `hf-downloader` | dir | untracked | 0 | 0 | — | Unclassified top-level entry — give it a home or a bucket. |

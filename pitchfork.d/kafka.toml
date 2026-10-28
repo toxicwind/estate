@@ -1,0 +1,7 @@
+[daemons.kafka]
+mise = true
+run = "exec ./stack/services/kafka.sh"
+dir = "."
+retry = true
+ready_port = 25144
+auto = ["start"]

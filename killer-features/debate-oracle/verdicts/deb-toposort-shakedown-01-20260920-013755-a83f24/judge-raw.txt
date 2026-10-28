@@ -1,0 +1,14 @@
+{
+  "winner": "C1",
+  "ranking": ["C1", "C2", "C3"],
+  "confidence": 0.95,
+  "rubric": {
+    "correctness": 10,
+    "evidence": 0,
+    "constraint_fit": 10,
+    "failure_coverage": 10,
+    "simplicity": 8
+  },
+  "rationale": "C1 implements Kahn's algorithm with heap for lexicographically smallest order and includes a real cycle detection via DFS that returns a valid cycle [u,v,w,u] with consecutive edges. C2's stub cycle report [leftover[0], leftover[0]] fails the measured failure mode (real cycle reporting). C3 fails lex smallest ordering and silently ignores unknown nodes. C1 passes all hard constraints and the measured failure mode. Evidence: C1 code lines 39-64 for real cycle detection, lines 24-33 for lex smallest ordering. C2 lines 33-37 for stub. C3 lines 16-18 for unknown node bug, lines 38-39 for non-lex smallest.",
+  "synthesis_map": {}
+}

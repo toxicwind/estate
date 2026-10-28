@@ -43,4 +43,4 @@ additive-only doctrine, never deletable without explicit order:
 - `estate/nativelink` run.sh → `ranch/forge/ops/nativelink/run.sh`.
 - `estate/nginx` conf → `ranch/forge/ops/nginx/nginx.conf`.
 - `estate/market-loop` imports → `ranch/trading-post/src/market/*`.
-- `estate/ml-serve` → mise python 3.14.7 (numpy present).
+- `estate/ml-serve` → mise python 3.12.13 (numpy present).

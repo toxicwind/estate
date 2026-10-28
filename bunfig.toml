@@ -1,0 +1,37 @@
+telemetry = false
+
+[install]
+minimumReleaseAge = 259200 # 3 days in seconds
+minimumReleaseAgeExcludes = ["@types/bun", "bun-types", "kitty-vt-wasm", "@stencil-hq/vibemon"]
+linker = "hoisted"
+exact = true
+saveTextLockfile = true
+
+[loader]
+".md" = "text"
+".py" = "text"
+".lark" = "text"
+
+[test]
+# Fast, focused root test runner: only scan top-level tests/ directory
+root = "./tests"
+pathIgnorePatterns = [
+  "**/node_modules/**",
+  "**/.git/**",
+  "**/target/**",
+  "**/dist/**",
+  "**/ranch/**",
+  "**/var/**",
+  "**/tmp/**",
+  "**/engines/**",
+  "python/**",
+  "docs/**",
+  "runs/**",
+  ".wt/**",
+  ".worktrees/**",
+  "bazel-*/**",
+  "**/bazel-out/**",
+]
+
+[run]
+bun = true

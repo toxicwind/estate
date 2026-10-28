@@ -14,7 +14,7 @@ Carried by the <ranch>-<name> worktrees (the "word-in-front" matches):
 - `~/kite/worktrees/ranch-{pry,sable,finch,forge,osprey,forge-archguard}/zero-transport`
 
 ## Related-but-distinct (do NOT conflate)
-- `true-zero-copy-pcie-streaming` — grasp-hub skill (PCIe zero-copy), different thing.
+- `true-zero-copy-pcie-streaming` — azurite skill (PCIe zero-copy), different thing.
 - `src/local/codeprobe/docs/zero-code-access` — code access docs.
 - `utf8-zero` — a Rust crate in cargo registry cache (unrelated).
 - nuclei-templates `agent-zero-detect` / `zerof-webserver-detect` / `zeroshell-*` — security templates (unrelated scanners).
@@ -23,7 +23,7 @@ Carried by the <ranch>-<name> worktrees (the "word-in-front" matches):
 ## Docs
 - `tmp/docs/zero-transport-audit-2026-10-14.md`
 - `pens/olympus/products/tau/zero-transport.md`
-- `sovereign/skills/true-zero-copy-pcie-streaming` + grasp-hub/flat symlinks
+- `sovereign/skills/true-zero-copy-pcie-streaming` + azurite/flat symlinks
 
 ## Notes
 - The zero-* search is best done with `find ... -iname 'zero-*' -o -iname '*zero-transport*'` (word-in-front via the worktree pattern ranch-*).

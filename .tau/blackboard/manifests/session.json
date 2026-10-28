@@ -1,0 +1,7 @@
+{
+  "session_id": "inkling-swarm-harness-20260908",
+  "created": "2026-09-08T15:31:00Z",
+  "agents": ["Coordinator", "GitAuditor", "PromptPackager", "BashGuardTester"],
+  "status": "INIT",
+  "blackboard_root": ".tau/blackboard"
+}

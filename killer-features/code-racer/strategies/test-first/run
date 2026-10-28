@@ -1,0 +1,87 @@
+#!/usr/bin/env python3
+"""test-first: model writes its OWN tests, then code, then self-repairs.
+
+Phase 1: tool model writes pytest tests from the spec (its own, NOT the
+mounted visible tests — those stay unseen for honesty of the repair signal).
+Phase 2: tool model writes code.
+Phase 3: run the self-written tests on yote's real python; feed failures
+back for repair, up to 3 repair rounds.
+Phase 4: emit the final code. Hidden-test validity is judged by the harness.
+Ceiling: 480s.
+"""
+import os, sys, tempfile
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "lib"))
+from cr import *
+
+CEILING = 480
+MAX_REPAIRS = 3
+
+def run_self_tests(workdir, timeout=60):
+    passed, failed, detail = run_tests(workdir, timeout=timeout)
+    return (0 if failed == 0 and passed > 0 else 1), f"{passed} passed, {failed} failed\n{detail}"
+
+def main(task_dir, output_path):
+    arm_timeout(CEILING)
+    spec = read_task(task_dir)
+    lang = spec.get("language", "python")
+    if lang.lower() != "python":
+        log(f"test-first supports python only (task is {lang}); falling back to direct write")
+        text = chat(TOOL_URL, TOOL_MODEL, spec_prompt(spec), max_tokens=4096,
+                    temperature=0.2, timeout=150)
+        code = extract_code(text, lang)
+        if not code: return 1
+        write_solution(output_path, f"solution.{lang}", code); return 0
+
+    title = spec.get("title", spec.get("id", ""))
+    desc = spec.get("description", "")
+    log(f"test-first: {spec.get('id')}: phase 1 self-tests")
+    test_prompt = (f"Task: {title}\n\n{desc}\n\n"
+                   "Write pytest tests for this task as a file named "
+                   "test_self.py. The solution will be importable as "
+                   "`solution`. Output ONLY the test code in one ```python "
+                   "fence, no explanations.")
+    tests = extract_code(chat(TOOL_URL, TOOL_MODEL, test_prompt, max_tokens=2048,
+                              temperature=0.3, timeout=120), "python")
+    if not tests:
+        log("no tests generated"); return 1
+
+    log("test-first: phase 2 initial code")
+    code_prompt = (f"Task: {title}\n\n{desc}\n\n"
+                   "Write a python solution importable as `solution`. "
+                   "Output ONLY the code in one ```python fence, no explanations.")
+    code = extract_code(chat(TOOL_URL, TOOL_MODEL, code_prompt, max_tokens=4096,
+                             temperature=0.2, timeout=150), "python")
+    if not code:
+        log("no code generated"); return 1
+
+    workdir = tempfile.mkdtemp(prefix="cr-testfirst-")
+    with open(os.path.join(workdir, "test_self.py"), "w") as f: f.write(tests)
+    def write_code(c):
+        with open(os.path.join(workdir, "solution.py"), "w") as f: f.write(c)
+
+    for rnd in range(MAX_REPAIRS + 1):
+        write_code(code)
+        rc, out = run_self_tests(workdir)
+        log(f"self-test round {rnd}: rc={rc}")
+        if rc == 0:
+            log("self-tests green"); break
+        if rnd >= MAX_REPAIRS:
+            log("repairs exhausted; emitting best effort"); break
+        log(f"test-first: repair round {rnd+1}")
+        repair_prompt = (f"Task: {title}\n\n{desc}\n\n"
+                         f"Current solution:\n```python\n{code}\n```\n\n"
+                         f"Failing tests:\n```python\n{tests}\n```\n\n"
+                         f"Test output:\n{out}\n\n"
+                         "Fix the solution so the tests pass. Output ONLY the "
+                         "full fixed code in one ```python fence.")
+        code = extract_code(chat(TOOL_URL, TOOL_MODEL, repair_prompt,
+                                 max_tokens=4096, temperature=0.3, timeout=150), "python")
+        if not code:
+            log("repair produced nothing; keeping previous"); break
+
+    dest = write_solution(output_path, "solution.py", code)
+    log(f"wrote {dest}")
+    return 0
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1], sys.argv[2]))

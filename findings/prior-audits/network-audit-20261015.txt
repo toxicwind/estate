@@ -1,0 +1,349 @@
+=== network-audit-20261015 2026-10-14T21:46:01-06:00 ===
+--- ip -brief a ---
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+enp12s0          UP             10.0.0.218/24 metric 100 2601:280:5280:1c00:da43:aeff:fef9:cef0/64 fe80::da43:aeff:fef9:cef0/64 
+wlan0            DOWN           
+tsd              UNKNOWN        100.108.135.48/32 fd7a:115c:a1e0::5333:8731/128 fe80::7cc8:d273:ce05:d41e/64 
+br-8aabe826d43b  DOWN           172.20.0.1/16 
+br-f5307473348a  DOWN           172.18.0.1/16 
+br-05ecbcc300e3  UP             172.19.0.1/16 fe80::a061:b1ff:fe76:9c64/64 
+docker0          UP             172.17.0.1/16 fe80::8423:20ff:fe87:19fc/64 
+br-687f22171e13  DOWN           172.21.0.1/16 
+vethdb3ae74@if2  UP             fe80::2c5a:73ff:fe2d:5802/64 
+veth660242e@if2  UP             fe80::18f8:4cff:feb1:e637/64 
+vethdf6dbc6@if2  UP             fe80::fcd1:f8ff:fe31:3ad0/64 
+tailscale0       UNKNOWN        100.72.199.93/32 fd7a:115c:a1e0::c233:c75d/128 fe80::e0a:d0b9:214b:c154/64 
+vethfab0ee4@if2  UP             fe80::3042:7cff:fef7:b038/64 
+--- ip route ---
+default via 10.0.0.1 dev enp12s0 proto dhcp src 10.0.0.218 metric 100 
+10.0.0.0/24 dev enp12s0 proto kernel scope link src 10.0.0.218 metric 100 
+10.0.0.1 dev enp12s0 proto dhcp scope link src 10.0.0.218 metric 100 
+75.75.75.75 via 10.0.0.1 dev enp12s0 proto dhcp src 10.0.0.218 metric 100 
+75.75.76.76 via 10.0.0.1 dev enp12s0 proto dhcp src 10.0.0.218 metric 100 
+172.17.0.0/16 dev docker0 proto kernel scope link src 172.17.0.1 
+172.18.0.0/16 dev br-f5307473348a proto kernel scope link src 172.18.0.1 linkdown 
+172.19.0.0/16 dev br-05ecbcc300e3 proto kernel scope link src 172.19.0.1 
+172.20.0.0/16 dev br-8aabe826d43b proto kernel scope link src 172.20.0.1 linkdown 
+172.21.0.0/16 dev br-687f22171e13 proto kernel scope link src 172.21.0.1 linkdown 
+--- tailscale status ---
+100.72.199.93   estate            toxicwind@  linux    -                           
+100.86.83.77    almalinux-server  toxicwind@  linux    -                           
+100.78.166.107  doorbell          toxicwind@  linux    -                           
+100.108.135.48  github-mcp-host   toxicwind@  linux    -                           
+100.94.78.109   muse-1            toxicwind@           -                           
+100.91.187.58   muse              toxicwind@           offline, last seen 22d ago  
+100.123.57.58   pixel-9-pro-xl    toxicwind@  android  offline, last seen 2d ago   
+
+# Funnel on:
+#     - https://estate.tailc9ac71.ts.net
+
+--- tailscale netcheck ---
+2026/10/14 21:46:01 portmap: monitor: gateway and self IP changed: gw=10.0.0.1 self=10.0.0.218
+
+Report:
+	* Time: 2026-10-14 21:46:01.339499556-06:00
+	* UDP: true
+	* IPv4: yes, 73.95.160.26:34218
+	* IPv6: yes, [2601:280:5280:1c00:da43:aeff:fef9:cef0]:45403
+	* MappingVariesByDestIP: false
+	* PortMapping: 
+	* Nearest DERP: Denver
+	* DERP latency:
+		- den: 15.5ms  (Denver)
+		- dfw: 28.7ms  (Dallas)
+		- sfo: 35ms    (San Francisco)
+		- ord: 38.4ms  (Chicago)
+		- sea: 40.2ms  (Seattle)
+		- lax: 46.3ms  (Los Angeles)
+		- nyc: 50.3ms  (New York City)
+		- iad: 52.4ms  (Ashburn)
+		- mia: 54.8ms  (Miami)
+		- tor: 55.2ms  (Toronto)
+		- hnl: 98.2ms  (Honolulu)
+		- lhr: 124.4ms (London)
+		- par: 129.9ms (Paris)
+		- tok: 133.9ms (Tokyo)
+		- mad: 135.9ms (Madrid)
+		- ams: 137.3ms (Amsterdam)
+		- fra: 137.7ms (Frankfurt)
+		- nue: 144.6ms (Nuremberg)
+		- waw: 147.8ms (Warsaw)
+		- hel: 148.9ms (Helsinki)
+		- hkg: 182.1ms (Hong Kong)
+		- syd: 184.5ms (Sydney)
+		- sao: 203.7ms (São Paulo)
+		- sin: 223.8ms (Singapore)
+		- dbi: 225.4ms (Dubai)
+		- blr:         (Bengaluru)
+		- jnb:         (Johannesburg)
+		- nai:         (Nairobi)
+--- tailscale dns status ---
+
+=== 'Use Tailscale DNS' status ===
+
+Tailscale DNS: enabled.
+
+Tailscale is configured to handle DNS queries on this device.
+Run 'tailscale set --accept-dns=false' to revert to your system default DNS resolver.
+
+=== MagicDNS configuration ===
+
+This is the DNS configuration provided by the coordination server to this device.
+
+MagicDNS: enabled tailnet-wide (suffix = tailc9ac71.ts.net)
+
+Other devices in your tailnet can reach this device at estate.tailc9ac71.ts.net.
+
+Resolvers (in preference order):
+  (no resolvers configured, system default will be used: see 'System DNS configuration' below)
+
+Split DNS Routes:
+  - ts.net.                        -> 199.247.155.53
+  - ts.net.                        -> 2620:111:8007::53
+
+Search Domains:
+  - tailc9ac71.ts.net
+
+=== System DNS configuration ===
+
+This is the DNS configuration that Tailscale believes your operating system is using.
+Tailscale may use this configuration if 'Override Local DNS' is disabled in the admin console,
+or if no resolvers are provided by the coordination server.
+
+  (reading the system DNS configuration is not supported on this platform)
+
+[this is a preliminary version of this command; the output format may change in the future]
+--- sysctl forwarding ---
+net.ipv4.ip_forward = 1
+net.ipv6.conf.all.forwarding = 1
+--- iptables ---
+Chain INPUT (policy ACCEPT)
+target     prot opt source               destination         
+
+Chain FORWARD (policy ACCEPT)
+target     prot opt source               destination         
+DOCKER-USER  all  --  0.0.0.0/0            0.0.0.0/0           
+DOCKER-FORWARD  all  --  0.0.0.0/0            0.0.0.0/0           
+
+Chain OUTPUT (policy ACCEPT)
+target     prot opt source               destination         
+
+Chain DOCKER (5 references)
+target     prot opt source               destination         
+ACCEPT     tcp  --  0.0.0.0/0            172.17.0.4           tcp dpt:20128
+ACCEPT     tcp  --  0.0.0.0/0            172.17.0.3           tcp dpt:8000
+ACCEPT     tcp  --  0.0.0.0/0            172.19.0.2           tcp dpt:80
+DROP       all  --  0.0.0.0/0            0.0.0.0/0           
+DROP       all  --  0.0.0.0/0            0.0.0.0/0           
+DROP       all  --  0.0.0.0/0            0.0.0.0/0           
+DROP       all  --  0.0.0.0/0            0.0.0.0/0           
+DROP       all  --  0.0.0.0/0            0.0.0.0/0           
+
+Chain DOCKER-BRIDGE (1 references)
+target     prot opt source               destination         
+DOCKER     all  --  0.0.0.0/0            0.0.0.0/0           
+DOCKER     all  --  0.0.0.0/0            0.0.0.0/0           
+DOCKER     all  --  0.0.0.0/0            0.0.0.0/0           
+DOCKER     all  --  0.0.0.0/0            0.0.0.0/0           
+DOCKER     all  --  0.0.0.0/0            0.0.0.0/0           
+
+Chain DOCKER-CT (1 references)
+target     prot opt source               destination         
+ACCEPT     all  --  0.0.0.0/0            0.0.0.0/0            ctstate RELATED,ESTABLISHED
+ACCEPT     all  --  0.0.0.0/0            0.0.0.0/0            ctstate RELATED,ESTABLISHED
+ACCEPT     all  --  0.0.0.0/0            0.0.0.0/0            ctstate RELATED,ESTABLISHED
+ACCEPT     all  --  0.0.0.0/0            0.0.0.0/0            ctstate RELATED,ESTABLISHED
+ACCEPT     all  --  0.0.0.0/0            0.0.0.0/0            ctstate RELATED,ESTABLISHED
+
+Chain DOCKER-FORWARD (1 references)
+target     prot opt source               destination         
+--- nft ruleset ---
+# Warning: table ip filter is managed by iptables-nft, do not touch!
+table ip filter {
+	chain DOCKER {
+		ip daddr 172.17.0.4 iifname != "docker0" oifname "docker0" tcp dport 20128 counter packets 0 bytes 0 accept
+		ip daddr 172.17.0.3 iifname != "docker0" oifname "docker0" tcp dport 8000 counter packets 0 bytes 0 accept
+		ip daddr 172.19.0.2 iifname != "br-05ecbcc300e3" oifname "br-05ecbcc300e3" tcp dport 80 counter packets 0 bytes 0 accept
+		iifname != "br-8aabe826d43b" oifname "br-8aabe826d43b" counter packets 0 bytes 0 drop
+		iifname != "br-f5307473348a" oifname "br-f5307473348a" counter packets 0 bytes 0 drop
+		iifname != "br-05ecbcc300e3" oifname "br-05ecbcc300e3" counter packets 0 bytes 0 drop
+		iifname != "br-687f22171e13" oifname "br-687f22171e13" counter packets 0 bytes 0 drop
+		iifname != "docker0" oifname "docker0" counter packets 0 bytes 0 drop
+	}
+
+	chain DOCKER-FORWARD {
+		counter packets 8228 bytes 8079784 jump DOCKER-CT
+		counter packets 3707 bytes 4970840 jump DOCKER-INTERNAL
+		counter packets 3707 bytes 4970840 jump DOCKER-BRIDGE
+		iifname "br-8aabe826d43b" counter packets 0 bytes 0 accept
+		iifname "br-f5307473348a" counter packets 0 bytes 0 accept
+		iifname "br-05ecbcc300e3" counter packets 0 bytes 0 accept
+		iifname "br-687f22171e13" counter packets 0 bytes 0 accept
+		iifname "docker0" counter packets 3707 bytes 4970840 accept
+	}
+
+	chain DOCKER-BRIDGE {
+		oifname "br-8aabe826d43b" counter packets 0 bytes 0 jump DOCKER
+		oifname "br-f5307473348a" counter packets 0 bytes 0 jump DOCKER
+		oifname "br-05ecbcc300e3" counter packets 0 bytes 0 jump DOCKER
+		oifname "br-687f22171e13" counter packets 0 bytes 0 jump DOCKER
+		oifname "docker0" counter packets 0 bytes 0 jump DOCKER
+	}
+
+	chain DOCKER-CT {
+		oifname "br-8aabe826d43b" xt match "conntrack" counter packets 0 bytes 0 accept
+		oifname "br-f5307473348a" xt match "conntrack" counter packets 0 bytes 0 accept
+		oifname "br-05ecbcc300e3" xt match "conntrack" counter packets 0 bytes 0 accept
+		oifname "br-687f22171e13" xt match "conntrack" counter packets 0 bytes 0 accept
+		oifname "docker0" xt match "conntrack" counter packets 4521 bytes 3108944 accept
+	}
+
+	chain DOCKER-INTERNAL {
+	}
+
+	chain FORWARD {
+		type filter hook forward priority filter; policy accept;
+		counter packets 8228 bytes 8079784 jump DOCKER-USER
+		counter packets 8228 bytes 8079784 jump DOCKER-FORWARD
+	}
+
+	chain DOCKER-USER {
+	}
+
+	chain INPUT {
+		type filter hook input priority filter; policy accept;
+	}
+
+	chain ts-input {
+		ip saddr 100.72.199.93 iifname "lo" counter packets 0 bytes 0 accept
+		iifname "tailscale0" counter packets 0 bytes 0 accept
+		udp dport 41641 counter packets 0 bytes 0 accept
+--- ufw/firewalld ---
+inactive
+inactive
+inactive
+--- resolved.conf ---
+[Resolve]
+--- resolv.conf ---
+# This is /run/systemd/resolve/stub-resolv.conf managed by man:systemd-resolved(8).
+# Do not edit.
+#
+# This file might be symlinked as /etc/resolv.conf. If you're looking at
+# /etc/resolv.conf and seeing this text, you have followed the symlink.
+#
+# This is a dynamic resolv.conf file for connecting local clients to the
+# internal DNS stub resolver of systemd-resolved. This file lists all
+# configured search domains.
+#
+# Run "resolvectl status" to see details about the uplink DNS servers
+# currently in use.
+#
+# Third party programs should typically not access this file directly, but only
+# through the symlink at /etc/resolv.conf. To manage man:resolv.conf(5) in a
+# different way, replace this symlink by a static file or a different symlink.
+#
+# See man:systemd-resolved.service(8) for details about the supported modes of
+# operation for /etc/resolv.conf.
+
+nameserver 127.0.0.53
+options edns0 trust-ad
+search tailc9ac71.ts.net
+lrwxrwxrwx 1 root root 37 Jul 12 13:37 /etc/resolv.conf -> /run/systemd/resolve/stub-resolv.conf
+--- netif ---
+inactive
+active
+active
+--- tailscaled enabled ---
+enabled
+active
+
+=== POST-CHANGE VERIFICATION 2026-10-14T21:47:24-06:00 ===
+--- nft tables ---
+table ip filter
+table ip nat
+table ip6 filter
+table ip6 nat
+table ip raw
+table ip mangle
+table ip6 mangle
+table inet awrawr_filter
+--- nft awrawr_filter ---
+table inet awrawr_filter {
+	chain input {
+		type filter hook input priority filter; policy drop;
+		iifname "lo" accept
+		ct state established,related accept
+		ct state invalid drop
+		ip protocol icmp accept
+		ip6 nexthdr ipv6-icmp accept
+		udp dport 41641 accept
+		iifname "tailscale0" accept
+		iifname "tsd" accept
+		ip saddr 10.0.0.0/24 tcp dport { 22, 3000-3001, 8503, 25100-25107, 25203 } accept
+		ip saddr 10.0.0.0/24 udp dport { 53, 22000, 41641 } accept
+		ip saddr 10.0.0.0/24 tcp dport { 53, 22000 } accept
+		log prefix "nft-drop: " limit rate 5/second burst 5 packets
+		drop
+		iifname "lo" accept
+		ct state established,related accept
+		ct state invalid drop
+		ip protocol icmp accept
+		ip6 nexthdr ipv6-icmp accept
+		udp dport 41641 accept
+		iifname "tailscale0" accept
+		iifname "tsd" accept
+		ip saddr 10.0.0.0/24 tcp dport { 22, 3000-3001, 8503, 25100-25107, 25203 } accept
+		ip saddr 10.0.0.0/24 udp dport { 53, 22000, 41641 } accept
+		ip saddr 10.0.0.0/24 tcp dport { 53, 22000 } accept
+		log prefix "nft-drop: " limit rate 5/second burst 5 packets
+		drop
+	}
+
+	chain forward {
+		type filter hook forward priority filter; policy accept;
+	}
+
+	chain output {
+		type filter hook output priority filter; policy accept;
+	}
+}
+--- nftables.service ---
+enabled
+Result=success
+ExecMainStatus=0
+--- advertised routes ---
+	"AdvertiseRoutes": [
+		"10.0.0.0/24"
+	],
+--- primary routes (admin approval pending) ---
+PrimaryRoutes: None
+--- tailscale ssh pref ---
+	"RunSSH": true,
+--- valkey bind ---
+LISTEN 0      511                                   127.0.0.1:25203      0.0.0.0:*    users:(("valkey-server",pid=2971151,fd=8))
+--- exposed 25xxx recheck (should be only bind-fixed + firewall-guarded) ---
+LISTEN 0      2048                                    0.0.0.0:25117      0.0.0.0:*    users:(("hindsight-api",pid=1790774,fd=20))
+LISTEN 0      511                                     0.0.0.0:25118      0.0.0.0:*    users:(("next-server (v",pid=1792467,fd=18))
+LISTEN 0      512                                     0.0.0.0:25110      0.0.0.0:*    users:(("bun",pid=482532,fd=7))
+LISTEN 0      512                                     0.0.0.0:25105      0.0.0.0:*    users:(("bun",pid=482420,fd=7))
+LISTEN 0      512                                     0.0.0.0:25103      0.0.0.0:*    users:(("bun",pid=1744472,fd=7))
+LISTEN 0      4096                                          *:25148            *:*    users:(("flicker-server",pid=2037741,fd=9))
+LISTEN 0      50                                            *:25144            *:*   
+LISTEN 0      512                                           *:25102            *:*    users:(("bun",pid=1733737,fd=11))
+LISTEN 0      4096                                          *:25212            *:*   
+LISTEN 0      512                                           *:25201            *:*    users:(("bun",pid=1485,fd=7))
+LISTEN 0      4096                                          *:25240            *:*    users:(("flicker-server",pid=2037741,fd=7))
+LISTEN 0      128                                           *:25224            *:*    users:(("hbbr",pid=2955046,fd=10))
+LISTEN 0      128                                           *:25220            *:*    users:(("hbbs",pid=2955081,fd=19))
+LISTEN 0      128                                           *:25221            *:*    users:(("hbbs",pid=2955081,fd=18))
+LISTEN 0      128                                           *:25222            *:*    users:(("hbbr",pid=2955046,fd=9))
+LISTEN 0      128                                           *:25223            *:*    users:(("hbbs",pid=2955081,fd=20))
+LISTEN 0      512                                           *:25219            *:*    users:(("bun",pid=1567,fd=11))
+--- sysctl ---
+net.ipv4.ip_forward = 1
+net.ipv6.conf.all.forwarding = 1
+lrwxrwxrwx 1 root root 60 Oct 14 21:47 /etc/sysctl.d/99-tailscale-forward.conf -> /home/toxic/estate/config/sysctl.d/99-tailscale-forward.conf
+--- tailscale ping direct ---
+pong from almalinux-server (100.86.83.77) via 172.96.160.178:41641 in 41ms
+--- ssh alive ---
+SSH_CONNECTION=10.0.0.77 56300 10.0.0.218 22

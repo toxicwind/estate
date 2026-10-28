@@ -1,0 +1,40 @@
+name: Estate Projects Monorepo CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-workspace:
+    name: Validate Estate Monorepo Workspace & Syntax
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        # NOTE: submodules intentionally NOT fetched — the tree carries engine
+        # gitlinks (engines/bornite/*, sigma, skills-hub, tools/pd-mcp-standalone)
+        # with no .gitmodules URL (estate policy: declare a submodule only when
+        # the checkout is on disk with its own .git).
+        uses: actions/checkout@v4
+
+      - name: Verify Topology Structure
+        # NOTE: ops intentionally removed 2026-10-19 (a10527625) — moved to
+        # ranch/forge/ops (ranch repo). Do not re-add; estate root is being
+        # deliberately pruned (see also: purge estate/skills, drop symlinks).
+        run: |
+          for dir in config docs engines scripts tests tools; do
+            if [ ! -d "$dir" ]; then
+              echo "❌ Missing core workspace directory: $dir"
+              exit 1
+            fi
+            echo "✅ Workspace $dir present"
+          done
+
+      - name: Validate Shell Script Syntax
+        run: |
+          find . -maxdepth 3 -name "*.sh" -not -path "*/node_modules/*" -not -path "*/target/*" -exec bash -n {} +

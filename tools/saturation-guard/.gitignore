@@ -1,0 +1,7 @@
+*.pid
+metrics.json
+test-metrics.json
+logs/*.log
+logs/*.1
+leases/*.json
+__pycache__/

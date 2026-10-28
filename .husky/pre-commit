@@ -1,0 +1,39 @@
+#!/bin/sh
+GIT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
+if [ -n "$GIT_ROOT" ]; then
+    cd "$GIT_ROOT" || exit 1
+else
+    exit 0
+fi
+
+# Max-optimized autofixes via Bun & Biome (parallel, minimal overhead)
+if command -v biome >/dev/null 2>&1; then
+    biome format --write --no-errors-on-unmatched src/ tests/ scripts/ 2>/dev/null || true
+elif command -v bunx >/dev/null 2>&1; then
+    bunx @biomejs/biome format --write --no-errors-on-unmatched src/ tests/ scripts/ 2>/dev/null || true
+else
+    echo "⚠ No autofix formatter configured" >&2
+fi
+
+git add -A 2>/dev/null || true
+
+if [ "${PI_ALLOW_LOCKFILE_CHANGE:-0}" != "1" ]; then
+    LOCK_MODS=$(git diff --cached --name-only 2>/dev/null | grep -E 'package-lock\.json|bun\.lock' || true)
+    if [ -n "$LOCK_MODS" ]; then
+        echo "⚠ WARN: Lockfile change detected (non-blocking):" >&2
+        echo "$LOCK_MODS" >&2
+    fi
+fi
+
+# Secret scan: gitleaks over the staged diff (warn-only here; the pre-push
+# guard refuses). Skips silently when gitleaks or the fleet config is absent.
+GITLEAKS_BIN="${GITLEAKS_BIN:-gitleaks}"
+GITLEAKS_CONFIG="${GITLEAKS_CONFIG:-$HOME/.config/gitleaks/gitleaks.toml}"
+if command -v "$GITLEAKS_BIN" >/dev/null 2>&1 && [ -f "$GITLEAKS_CONFIG" ]; then
+    GL_OUT="$("$GITLEAKS_BIN" protect --staged --source "$GIT_ROOT" --config "$GITLEAKS_CONFIG" --no-banner --redact 2>&1)" || {
+        echo "⚠ WARN: gitleaks found possible secrets in staged diff (non-blocking; pre-push guard will refuse):" >&2
+        printf '%s\n' "$GL_OUT" >&2
+    }
+fi
+
+exit 0

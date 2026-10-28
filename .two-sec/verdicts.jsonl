@@ -1,0 +1,82 @@
+{"ts":"2026-10-20T04:57:09.002Z","kind":"breach","elapsedMs":6,"exit":1,"command":"ls /home/toxic/estate/ranch/kairos/src"}
+{"ts":"2026-10-20T04:57:18.367Z","kind":"breach","elapsedMs":6,"exit":1,"command":"bun run .two-sec/_probe.ts"}
+{"ts":"2026-10-20T04:57:33.862Z","kind":"breach","elapsedMs":6,"exit":1,"command":"bash -c echo merge-test 1>&2; echo out-test"}
+{"ts":"2026-10-20T04:57:33.875Z","kind":"breach","elapsedMs":6,"exit":1,"command":"node -e const t=Date.now(); while(Date.now()-t<2100){}; console.log(\"took 2.1s, ok\")"}
+{"ts":"2026-10-20T05:11:42.348Z","kind":"breach","elapsedMs":117,"exit":1,"command":"git submodule status"}
+{"ts":"2026-10-20T05:36:21.014Z","kind":"breach","elapsedMs":6,"exit":1,"command":"git fetch origin"}
+{"ts":"2026-10-20T05:45:14.151Z","kind":"breach","elapsedMs":6,"exit":1,"command":"git push -u origin"}
+{"ts":"2026-10-20T05:47:50.678Z","kind":"breach","elapsedMs":915,"exit":0,"command":"gh auth status"}
+{"ts":"2026-10-20T05:47:50.691Z","kind":"breach","elapsedMs":5,"exit":1,"command":"git push -u origin"}
+{"ts":"2026-10-20T05:47:53.927Z","kind":"breach","elapsedMs":44,"exit":0,"command":"gh auth setup-git"}
+{"ts":"2026-10-20T10:41:41.695Z","kind":"breach","elapsedMs":6,"exit":1,"command":"ffs grep --root /home/toxic/.tau"}
+{"ts":"2026-10-20T10:41:41.718Z","kind":"breach","elapsedMs":7,"exit":1,"command":"ffs grep --root /home/toxic/estate"}
+{"ts":"2026-10-20T11:00:50.661Z","kind":"breach","elapsedMs":6,"exit":1,"command":"kappa run -m freeinference/glm-5.3-flash"}
+{"ts":"2026-10-20T11:13:09.144Z","kind":"breach","elapsedMs":6,"exit":1,"command":"bun install"}
+{"ts":"2026-10-20T11:13:09.156Z","kind":"breach","elapsedMs":6,"exit":1,"command":"bun run build"}
+{"ts":"2026-10-20T11:16:35.579Z","kind":"breach","elapsedMs":6,"exit":1,"command":"--cwd packages/core bun run"}
+{"ts":"2026-10-20T11:16:35.593Z","kind":"breach","elapsedMs":6,"exit":1,"command":"bun run script/setup-git.ts"}
+{"ts":"2026-10-20T11:39:37.732Z","kind":"breach","elapsedMs":6,"exit":1,"command":"bun run typecheck"}
+{"ts":"2026-10-20T11:48:14.283Z","kind":"breach","elapsedMs":6,"exit":1,"command":"bun test tests/"}
+{"ts":"2026-10-20T11:48:29.886Z","kind":"breach","elapsedMs":6,"exit":1,"command":"bun test tests/"}
+{"ts":"2026-10-20T11:49:31.406Z","kind":"breach","elapsedMs":6,"exit":1,"command":"git push -q origin"}
+{"ts":"2026-10-20T11:50:04.761Z","kind":"breach","elapsedMs":25,"exit":1,"command":"git submodule add https://github.com/toxicwind/corral.git"}
+{"ts":"2026-10-20T11:50:29.096Z","kind":"breach","elapsedMs":571,"exit":0,"command":"gh repo view toxicwind/corral"}
+{"ts":"2026-10-20T11:51:14.230Z","kind":"breach","elapsedMs":761,"exit":0,"command":"gh auth status"}
+{"ts":"2026-10-20T11:53:00.429Z","kind":"breach","elapsedMs":6,"exit":1,"command":"bun toolkit/gen-meta-manifest.ts"}
+{"ts":"2026-10-20T11:53:19.469Z","kind":"breach","elapsedMs":6,"exit":1,"command":"bun --eval console.log(\"meta via manifest\")"}
+{"ts":"2026-10-20T11:59:13.382Z","kind":"breach","elapsedMs":6,"exit":1,"command":"git push origin main"}
+{"ts":"2026-10-20T11:59:16.074Z","kind":"breach","elapsedMs":6,"exit":1,"command":"git push origin main"}
+{"ts":"2026-10-20T12:02:36.409Z","kind":"breach","elapsedMs":6,"exit":1,"command":"/home/toxic/.bun/bin/moon query projects"}
+{"ts":"2026-10-20T12:02:53.500Z","kind":"breach","elapsedMs":6,"exit":1,"command":"/home/toxic/.venv-guidellm/bin/guidellm run --backend kind=openai_http,target=https://api.atria-asi.ai/v1,model=Atria-Dawn,validate_backend=False,api_key=atr_wg37kbisgfcHQlJZOry76we0WSf0g4uv"}
+{"ts":"2026-10-20T12:03:06.256Z","kind":"breach","elapsedMs":6,"exit":1,"command":"/home/toxic/.bun/bin/moon query projects"}
+{"ts":"2026-10-20T12:11:37.205Z","kind":"breach","elapsedMs":943,"exit":0,"command":"gh repo edit toxicwind/ffs-diff"}
+{"ts":"2026-10-20T12:11:37.627Z","kind":"breach","elapsedMs":413,"exit":1,"command":"gh repo view toxicwind/ffs-diff"}
+{"ts":"2026-10-20T12:12:55.171Z","kind":"breach","elapsedMs":6,"exit":1,"command":"bun sweeps/realworld-bench.ts --help"}
+{"ts":"2026-10-20T12:19:38.735Z","kind":"breach","elapsedMs":45,"exit":1,"command":"bun test"}
+{"ts":"2026-10-20T12:21:22.691Z","kind":"breach","elapsedMs":14,"exit":1,"command":"forge retrieve --root /home/toxic/estate/ranch"}
+{"ts":"2026-10-20T12:32:42.918Z","kind":"breach","elapsedMs":6,"exit":1,"command":"/usr/bin/env ferret webprobe -l"}
+{"ts":"2026-10-20T12:32:42.932Z","kind":"breach","elapsedMs":6,"exit":1,"command":"/usr/bin/env ferret dnsprobe -list"}
+{"ts":"2026-10-20T12:32:42.945Z","kind":"breach","elapsedMs":6,"exit":1,"command":"/usr/bin/env ferret tlsprobe -l"}
+{"ts":"2026-10-20T12:32:42.959Z","kind":"breach","elapsedMs":6,"exit":1,"command":"/usr/bin/env ferret subprobe -dL"}
+{"ts":"2026-10-20T19:21:34.503Z","kind":"breach","elapsedMs":13,"exit":1,"command":"bun test"}
+{"ts":"2026-10-20T19:21:49.260Z","kind":"breach","elapsedMs":8,"exit":1,"command":"bun test"}
+{"ts":"2026-10-21T04:57:36.516Z","kind":"breach","elapsedMs":3,"exit":1,"command":"bun test test/kappacode/session-steering.test.ts"}
+{"ts":"2026-10-21T04:57:38.036Z","kind":"breach","elapsedMs":2,"exit":1,"command":"bun test test/kappacode/session-steering.test.ts"}
+{"ts":"2026-10-21T05:04:15.508Z","kind":"breach","elapsedMs":6,"exit":1,"command":"bun test"}
+{"ts":"2026-10-21T05:23:23.548Z","kind":"breach","elapsedMs":6,"exit":1,"command":"bun test"}
+{"ts":"2026-10-21T07:26:43.810Z","kind":"breach","elapsedMs":6,"exit":1,"command":"bun test"}
+{"ts":"2026-10-22T00:23:22.177Z","kind":"breach","elapsedMs":6,"exit":1,"command":"bun test"}
+{"ts":"2026-10-22T00:23:25.157Z","kind":"breach","elapsedMs":7,"exit":1,"command":"bun test"}
+{"ts":"2026-10-22T00:46:54.888Z","kind":"breach","elapsedMs":6,"exit":1,"command":"cargo install mergiraf"}
+{"ts":"2026-10-22T00:47:01.627Z","kind":"breach","elapsedMs":44,"exit":0,"command":"gh auth token"}
+{"ts":"2026-10-22T00:47:04.123Z","kind":"breach","elapsedMs":40,"exit":0,"command":"gh auth token"}
+{"ts":"2026-10-22T00:47:13.910Z","kind":"breach","elapsedMs":6,"exit":1,"command":"cargo install mergiraf --locked"}
+{"ts":"2026-10-22T01:58:58.432Z","kind":"breach","elapsedMs":45,"exit":0,"command":"gh auth setup-git"}
+{"ts":"2026-10-22T02:00:39.562Z","kind":"breach","elapsedMs":2,"exit":1,"command":"bun test test/session/retry.test.ts"}
+{"ts":"2026-10-22T02:03:04.192Z","kind":"breach","elapsedMs":2,"exit":1,"command":"bun test test/session/retry.test.ts -t"}
+{"ts":"2026-10-22T02:04:07.277Z","kind":"breach","elapsedMs":3,"exit":1,"command":"bun test test/session/retry.test.ts --timeout"}
+{"ts":"2026-10-22T02:09:17.290Z","kind":"breach","elapsedMs":46,"exit":0,"command":"gh auth token"}
+{"ts":"2026-10-22T02:45:16.384Z","kind":"breach","elapsedMs":634,"exit":0,"command":"gh auth status"}
+{"ts":"2026-10-22T04:35:54.753Z","kind":"breach","elapsedMs":39,"exit":0,"command":"gh auth token"}
+{"ts":"2026-10-22T05:24:46.065Z","kind":"breach","elapsedMs":6,"exit":1,"command":"bun check keeper-dropin.ts"}
+{"ts":"2026-10-22T05:42:12.560Z","kind":"breach","elapsedMs":13,"exit":1,"command":"bun toolkit/gen-meta-manifest.ts"}
+{"ts":"2026-10-22T06:17:30.227Z","kind":"breach","elapsedMs":6,"exit":1,"command":"bun test"}
+{"ts":"2026-10-22T06:17:42.357Z","kind":"breach","elapsedMs":6,"exit":1,"command":"bun test"}
+{"ts":"2026-10-22T06:25:38.525Z","kind":"breach","elapsedMs":6,"exit":1,"command":"bun test"}
+{"ts":"2026-10-22T06:25:40.589Z","kind":"breach","elapsedMs":6,"exit":1,"command":"bun test"}
+{"ts":"2026-10-22T06:25:42.616Z","kind":"breach","elapsedMs":6,"exit":1,"command":"bun test"}
+{"ts":"2026-10-22T06:50:17.186Z","kind":"breach","elapsedMs":6,"exit":1,"command":"cargo check --workspace"}
+{"ts":"2026-10-22T06:50:21.907Z","kind":"breach","elapsedMs":6,"exit":1,"command":"cargo check --workspace"}
+{"ts":"2026-10-22T06:50:29.210Z","kind":"breach","elapsedMs":6,"exit":1,"command":"cargo check --workspace"}
+{"ts":"2026-10-22T06:53:38.439Z","kind":"breach","elapsedMs":644,"exit":0,"command":"gh auth status"}
+{"ts":"2026-10-22T06:58:27.138Z","kind":"breach","elapsedMs":667,"exit":0,"command":"gh auth status"}
+{"ts":"2026-10-22T07:02:20.112Z","kind":"breach","elapsedMs":6,"exit":1,"command":"go vet ./cmd/..."}
+{"ts":"2026-10-22T21:38:35.580Z","kind":"breach","elapsedMs":6,"exit":1,"command":"bun test ./bin/delend.test.ts"}
+{"ts":"2026-10-22T21:41:16.202Z","kind":"breach","elapsedMs":6,"exit":1,"command":"bun test"}
+{"ts":"2026-10-22T21:41:20.142Z","kind":"breach","elapsedMs":7,"exit":1,"command":"bun test"}
+{"ts":"2026-10-22T22:07:06.168Z","kind":"breach","elapsedMs":6,"exit":1,"command":"bun /home/toxic/estate/ranch/olympus/api.ts"}
+{"ts":"2026-10-23T07:13:38.000Z","kind":"fail","elapsedMs":328,"exit":1,"command":"gh auth status"}
+{"ts":"2026-10-23T08:37:40.330Z","kind":"breach","elapsedMs":4019,"exit":1,"command":"cargo check -p ffs-cli"}
+{"ts":"2026-10-23T08:37:55.539Z","kind":"breach","elapsedMs":4013,"exit":1,"command":"cargo check -p ffs-cli"}
+{"ts":"2026-10-23T09:15:05.705Z","kind":"fail","elapsedMs":940,"exit":1,"command":"delend-quick -m fix(pitchfork): mise=true for all daemons; repair 9 reorg-stale run/dir paths (archguard, delendai-plane/web, forge→flicker, hodos→olympus, market-loop, tau-chute→pens); validate all 104 tomls"}
+{"ts":"2026-10-23T09:31:25.946Z","kind":"fail","elapsedMs":410,"exit":1,"command":"gh auth status"}

@@ -1,0 +1,230 @@
+From 49e4706fc95473efd32042588d6591534564eb77 Mon Sep 17 00:00:00 2001
+From: toxicwind <toxicwind@users.noreply.github.com>
+Date: Mon, 14 Sep 2026 18:34:11 -0600
+Subject: [PATCH] fix(trusted-dns): skip DoH cache warming when egress is dead
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Warm threads hung ~20s in socket I/O with dead egress and the
+interpreter SIGSEGV'd during teardown while they lingered — every venv
+python invocation crashed (exit 139), breaking all venv-based skills.
+
+Now: one bounded synchronous DoH probe (2s) at startup; skip warming
+when dead. Verdict cached 120s (~/.cache/shingle/doh_egress_dead) so
+dead windows cost ~0ms after the first probe. patch_socket() alone was
+verified safe.
+---
+ shared/trusted_dns_bootstrap.py             | 101 ++++++++++++++------
+ skill-setup/assets/trusted_dns_bootstrap.py |  80 ++++++++++++++++
+ 2 files changed, 152 insertions(+), 29 deletions(-)
+
+diff --git a/shared/trusted_dns_bootstrap.py b/shared/trusted_dns_bootstrap.py
+index a9e4ec1..d3df96a 100644
+--- a/shared/trusted_dns_bootstrap.py
++++ b/shared/trusted_dns_bootstrap.py
+@@ -6,38 +6,81 @@ try:
+ 
+     trusted_dns.patch_socket()
+ 
+-    # HFT: warm the DoH cache for domains this fleet hits constantly, in a
+-    # daemon thread so interpreter startup never blocks. The first real
+-    # lookup in a fresh process then hits cache (~0ms) instead of paying a
+-    # cold ~850ms DoH round trip. All failures are silent by design.
+-    _HOT_DOMAINS = (
+-        "api.github.com",
+-        "raw.githubusercontent.com",
+-        "api.exa.ai",
+-        "registry.npmjs.org",
+-        "pypi.org",
+-        "files.pythonhosted.org",
+-        "api.openai.com",
+-        "api.anthropic.com",
+-        "generativelanguage.googleapis.com",
+-        "api.pollinations.ai",
+-        "huggingface.co",
+-        "cdn.jsdelivr.net",
+-    )
++    # Egress-dead guard (2026-09-14): when DoH-over-IP is unreachable, warm
++    # threads hang ~20s in socket I/O and the interpreter SIGSEGVs during
++    # teardown while they linger — every venv invocation crashes. So: one
++    # bounded synchronous probe first; skip warming when dead. Verdict
++    # cached 120s so dead windows cost ~0ms after the first probe. When
++    # egress is healthy the probe doubles as a warm lookup.
++    import json as _json
++    import os as _os
++    import time as _time
++    import urllib.request as _urlreq
+ 
+-    def _warm():
++    _dead_marker = _os.path.expanduser("~/.cache/shingle/doh_egress_dead")
++    _skip_warm = False
++    try:
++        if _time.time() - _os.path.getmtime(_dead_marker) < 120:
++            _skip_warm = True
++    except OSError:
++        pass
++    if not _skip_warm:
+         try:
+-            from concurrent.futures import ThreadPoolExecutor
+-
+-            with ThreadPoolExecutor(
+-                max_workers=4, thread_name_prefix="trusted-dns-warm"
+-            ) as ex:
+-                for _ in ex.map(trusted_dns.doh_resolve, _HOT_DOMAINS):
+-                    pass
++            _probe_req = _urlreq.Request(
++                "https://1.1.1.1/dns-query?name=one.one.one.one&type=A",
++                headers={"accept": "application/dns-json"})
++            _probe_data = _json.loads(
++                _urlreq.urlopen(_probe_req, timeout=2).read()
++                .decode("utf-8", "replace"))
++            if not (_probe_data.get("Status") == 0
++                    and _probe_data.get("Answer")):
++                raise OSError("doh unhealthy")
+         except Exception:
+-            pass
++            _skip_warm = True
++            try:
++                _os.makedirs(_os.path.dirname(_dead_marker), exist_ok=True)
++                open(_dead_marker, "w").write("dead")
++            except OSError:
++                pass
++    if not _skip_warm:
++        # HFT: warm the DoH cache for domains this fleet hits constantly, in
++        # daemon threads so interpreter startup never blocks and a flaky proxy
++        # can't hang process exit (no ThreadPoolExecutor: its atexit join would
++        # block shutdown on slow lookups). The first real lookup in a fresh
++        # process then hits cache (~0ms) instead of a cold ~850ms DoH round
++        # trip. All failures are silent by design.
++        _HOT_DOMAINS = (
++            "api.github.com",
++            "raw.githubusercontent.com",
++            "api.exa.ai",
++            "registry.npmjs.org",
++            "pypi.org",
++            "files.pythonhosted.org",
++            "api.openai.com",
++            "api.anthropic.com",
++            "generativelanguage.googleapis.com",
++            "api.pollinations.ai",
++            "huggingface.co",
++            "cdn.jsdelivr.net",
++        )
++
++        def _warm_slice(hosts):
++            try:
++                for h in hosts:
++                    try:
++                        trusted_dns.doh_resolve(h)
++                    except Exception:
++                        pass
++            except Exception:
++                pass
+ 
+-    _t = _th.Thread(target=_warm, daemon=True, name="trusted-dns-warm")
+-    _t.start()
++        _slices = [
++            _HOT_DOMAINS[i::4] for i in range(4)
++        ]
++        for _i, _hosts in enumerate(_slices):
++            _t = _th.Thread(target=_warm_slice, args=(_hosts,), daemon=True,
++                            name="trusted-dns-warm-%d" % _i)
++            _t.start()
++        del _i, _hosts, _t, _slices
+ except Exception:
+     pass
+diff --git a/skill-setup/assets/trusted_dns_bootstrap.py b/skill-setup/assets/trusted_dns_bootstrap.py
+index afe5fd3..d3df96a 100644
+--- a/skill-setup/assets/trusted_dns_bootstrap.py
++++ b/skill-setup/assets/trusted_dns_bootstrap.py
+@@ -1,6 +1,86 @@
+ """Bootstrap for the trusted-DNS patch. Imported via trusted_dns.pth at interpreter startup."""
+ try:
++    import threading as _th
++
+     import trusted_dns
++
+     trusted_dns.patch_socket()
++
++    # Egress-dead guard (2026-09-14): when DoH-over-IP is unreachable, warm
++    # threads hang ~20s in socket I/O and the interpreter SIGSEGVs during
++    # teardown while they linger — every venv invocation crashes. So: one
++    # bounded synchronous probe first; skip warming when dead. Verdict
++    # cached 120s so dead windows cost ~0ms after the first probe. When
++    # egress is healthy the probe doubles as a warm lookup.
++    import json as _json
++    import os as _os
++    import time as _time
++    import urllib.request as _urlreq
++
++    _dead_marker = _os.path.expanduser("~/.cache/shingle/doh_egress_dead")
++    _skip_warm = False
++    try:
++        if _time.time() - _os.path.getmtime(_dead_marker) < 120:
++            _skip_warm = True
++    except OSError:
++        pass
++    if not _skip_warm:
++        try:
++            _probe_req = _urlreq.Request(
++                "https://1.1.1.1/dns-query?name=one.one.one.one&type=A",
++                headers={"accept": "application/dns-json"})
++            _probe_data = _json.loads(
++                _urlreq.urlopen(_probe_req, timeout=2).read()
++                .decode("utf-8", "replace"))
++            if not (_probe_data.get("Status") == 0
++                    and _probe_data.get("Answer")):
++                raise OSError("doh unhealthy")
++        except Exception:
++            _skip_warm = True
++            try:
++                _os.makedirs(_os.path.dirname(_dead_marker), exist_ok=True)
++                open(_dead_marker, "w").write("dead")
++            except OSError:
++                pass
++    if not _skip_warm:
++        # HFT: warm the DoH cache for domains this fleet hits constantly, in
++        # daemon threads so interpreter startup never blocks and a flaky proxy
++        # can't hang process exit (no ThreadPoolExecutor: its atexit join would
++        # block shutdown on slow lookups). The first real lookup in a fresh
++        # process then hits cache (~0ms) instead of a cold ~850ms DoH round
++        # trip. All failures are silent by design.
++        _HOT_DOMAINS = (
++            "api.github.com",
++            "raw.githubusercontent.com",
++            "api.exa.ai",
++            "registry.npmjs.org",
++            "pypi.org",
++            "files.pythonhosted.org",
++            "api.openai.com",
++            "api.anthropic.com",
++            "generativelanguage.googleapis.com",
++            "api.pollinations.ai",
++            "huggingface.co",
++            "cdn.jsdelivr.net",
++        )
++
++        def _warm_slice(hosts):
++            try:
++                for h in hosts:
++                    try:
++                        trusted_dns.doh_resolve(h)
++                    except Exception:
++                        pass
++            except Exception:
++                pass
++
++        _slices = [
++            _HOT_DOMAINS[i::4] for i in range(4)
++        ]
++        for _i, _hosts in enumerate(_slices):
++            _t = _th.Thread(target=_warm_slice, args=(_hosts,), daemon=True,
++                            name="trusted-dns-warm-%d" % _i)
++            _t.start()
++        del _i, _hosts, _t, _slices
+ except Exception:
+     pass
+-- 
+2.43.0
+

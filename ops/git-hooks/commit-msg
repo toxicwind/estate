@@ -1,0 +1,27 @@
+#!/bin/sh
+# >>> delendai guard (managed by delendai; remove this block to stop enforcing the development policy) >>>
+delendai_guard_runner=""
+delendai_guard_entry=""
+delendai_guard_root=$(git rev-parse --show-toplevel 2>/dev/null) || delendai_guard_root=.
+delendai_guard_configured=$(git config --get delendai.guard.runner 2>/dev/null)
+if [ -n "${DELENDAI_GUARD_CMD:-}" ]; then
+	delendai_guard_runner="$DELENDAI_GUARD_CMD"
+elif [ -n "$delendai_guard_configured" ]; then
+	delendai_guard_runner="$delendai_guard_configured"
+	delendai_guard_entry=$(git config --get delendai.guard.entry 2>/dev/null)
+elif [ -x "$delendai_guard_root/node_modules/.bin/delendai" ]; then
+	delendai_guard_runner="$delendai_guard_root/node_modules/.bin/delendai"
+elif command -v delendai >/dev/null 2>&1; then
+	delendai_guard_runner=delendai
+fi
+if [ -n "$delendai_guard_runner" ]; then
+	if [ -n "$delendai_guard_entry" ]; then
+		"$delendai_guard_runner" "$delendai_guard_entry" guard commit-msg "$@" || exit 1
+	else
+		"$delendai_guard_runner" guard commit-msg "$@" || exit 1
+	fi
+else
+	echo "delendai guard: delendai was not found (DELENDAI_GUARD_CMD, node_modules/.bin/delendai, or delendai on PATH); the development policy is not enforced for this commit-msg" >&2
+fi
+# <<< delendai guard <<<
+# delendai guard created this hook file.

@@ -1,0 +1,111 @@
+#!/usr/bin/env python3
+"""race-task <task-dir> --strategies all|name,... [--timeout N] [--workers N]
+
+Race registered candidate strategies on a code-racer task. First solution
+PASSING the task's real acceptance tests wins (fail-fast per-strategy
+timeouts). Results -> winners/code-racer-<task>.jsonl + race.py global log.
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE))
+from registry import load as load_registry, select as select_strats  # noqa: E402
+from task_loader import load as load_task  # noqa: E402
+from winners import append as ledger_append  # noqa: E402
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(
+        description="Race code strategies; first passing solution wins."
+    )
+    ap.add_argument("task_dir", help="task dir (task.md + tests/ + limits.yaml)")
+    ap.add_argument("--strategies", default="all",
+                    help="'all' or comma-separated strategy names")
+    ap.add_argument("--timeout", type=float, default=None,
+                    help="solve-timeout override in seconds")
+    ap.add_argument("--workers", type=int, default=None,
+                    help="max concurrent strategies")
+    ap.add_argument("--registry",
+                    default=str(HERE / "strategies" / "registry.json"))
+    ap.add_argument("--tag", default=None, help="race tag (default code-racer-<task>)")
+    a = ap.parse_args()
+
+    task = load_task(a.task_dir)
+    solve_to = a.timeout or task.solve_timeout_s
+    test_to = task.test_timeout_s
+    workers = a.workers or task.workers
+    tag = a.tag or f"code-racer-{task.name}"
+    strats = select_strats(load_registry(a.registry), a.strategies)
+    if not strats:
+        print("no strategies selected", file=sys.stderr)
+        return 2
+
+    race_id = f"{tag}-{int(time.time() * 1000)}"
+    strat_file = HERE / "runs" / f"{race_id}.strategies.json"
+    strat_file.parent.mkdir(parents=True, exist_ok=True)
+    entries = [{
+        "name": s.name,
+        "cmd": [sys.executable, str(HERE / "run_candidate.py"),
+                "--strategy", s.name, "--task", str(task.dir),
+                "--registry", a.registry,
+                "--solve-timeout", str(solve_to),
+                "--test-timeout", str(test_to)],
+        "match": "RACE-PASS",
+    } for s in strats]
+    strat_file.write_text(json.dumps({"strategies": entries}, indent=1))
+
+    race_timeout = solve_to + test_to + 10
+    t0 = time.time()
+    p = subprocess.run(
+        [sys.executable, str(HERE / "bin" / "race.py"),
+         "--strategies", str(strat_file),
+         "--tag", tag, "--timeout", str(race_timeout),
+         "--workers", str(workers)],
+        capture_output=True, text=True)
+    wall_s = round(time.time() - t0, 6)
+    try:
+        result = json.loads(p.stdout)
+    except ValueError:
+        print(p.stdout)
+        print(p.stderr, file=sys.stderr)
+        return 3
+
+    cand = {}
+    for line in p.stderr.splitlines():
+        try:
+            e = json.loads(line)
+        except ValueError:
+            continue
+        if e.get("event") == "candidate_result":
+            cand[e["name"]] = {k: e[k] for k in ("solve", "tests", "valid", "total_s")}
+
+    entry = {
+        "ts": time.time(), "task": task.name, "race_id": race_id, "tag": tag,
+        "winner": result.get("winner"),
+        "strategy_latency": result.get("strategy_latency"),
+        "candidates": cand,
+        "solve_timeout_s": solve_to, "test_timeout_s": test_to,
+        "wall_s": wall_s, "workers": workers,
+    }
+    ledger = ledger_append(HERE / "winners" / f"code-racer-{task.name}.jsonl", entry)
+
+    w = result.get("winner")
+    n_valid = len([c for c in cand.values() if c["valid"]])
+    print(f"task={task.name} race={race_id} winner={w} "
+          f"wall={wall_s}s ({n_valid}/{len(strats)} valid) ledger={ledger}")
+    for n, c in sorted(cand.items(), key=lambda kv: kv[1]["total_s"]):
+        t = c["tests"]
+        print(f"  {n}: valid={c['valid']} solve={c['solve']['elapsed_s']}s "
+              f"tests={t['elapsed_s']}s passed={t['passed']} failed={t['failed']}")
+    return 0 if w else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

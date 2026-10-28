@@ -1,0 +1,7 @@
+SWAP 1668:b8..1669:8c:
++	const attempt = (
++		m: typeof resolvedModel,
++		ctx: typeof context,
++		opts?: typeof options,
++	) =>
++		withReplaySafeStreamRetry(m, ctx, opts, streamOpenAICompletionsOnce, {

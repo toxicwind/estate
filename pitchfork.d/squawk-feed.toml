@@ -1,0 +1,11 @@
+# squawk-feed — bearer-authed fat long-poll Squawk feed (:25135).
+# 2026-10-24: points at merged pens/ranch/squawk/relay/feed.py, bus renamed
+# .fleet-bus -> .squawk-bus. Monolith is the live truth; keep consistent.
+[daemons.squawk-feed]
+mise = false
+dir = "/home/toxic/pens/ranch/squawk/relay"
+run = "exec /usr/bin/python3 /home/toxic/pens/ranch/squawk/relay/feed.py"
+port = 25135
+retry = true
+boot_start = true
+env = { SQUAWK_FEED_PORT = "25135", SQUAWK_CHAT_ROOT = "/home/toxic/.squawk-bus/squawk-root" }

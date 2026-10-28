@@ -1,0 +1,123 @@
+{
+  description = "Estate projects development environment (OMP build retired: source de-vendored to toxicwind/tau)";
+
+  nixConfig = {
+    extra-substituters = [ "https://nix-community.cachix.org" ];
+    extra-trusted-public-keys = [
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+    ];
+  };
+
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+
+    # nixpkgs unstable dropped Intel macOS in 26.11; keep that supported
+    # platform on the final stable branch that still receives security fixes.
+    nixpkgs-darwin-x64.url = "github:NixOS/nixpkgs/nixpkgs-26.05-darwin";
+
+    bun2nix = {
+      url = "github:nix-community/bun2nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # bun2nix's per-system helper packages must use the same Intel-compatible
+    # package set as the derivation consuming its overlay.
+    bun2nix-darwin-x64 = {
+      url = "github:nix-community/bun2nix";
+      inputs.nixpkgs.follows = "nixpkgs-darwin-x64";
+      inputs.systems.url = "github:nix-systems/x86_64-darwin";
+    };
+
+    nix-bun = {
+      url = "github:ryoppippi/nix-bun";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+
+  outputs =
+    {
+      self,
+      bun2nix,
+      bun2nix-darwin-x64,
+      nix-bun,
+      nixpkgs,
+      nixpkgs-darwin-x64,
+      rust-overlay,
+      ...
+    }:
+    let
+      systems = [
+        "aarch64-darwin"
+        "aarch64-linux"
+        "x86_64-darwin"
+        "x86_64-linux"
+      ];
+      forAllSystems = nixpkgs.lib.genAttrs systems;
+      pkgsFor =
+        system:
+        (if system == "x86_64-darwin" then nixpkgs-darwin-x64 else nixpkgs).legacyPackages.${system};
+
+      bun2nixFor =
+        system:
+        (if system == "x86_64-darwin" then bun2nix-darwin-x64 else bun2nix).packages.${system}.bun2nix;
+
+      rustToolchainFor =
+        system:
+        (rust-overlay.lib.mkRustBin { } (pkgsFor system)).fromRustupToolchainFile ./rust-toolchain.toml;
+
+      localPackagesFor =
+        system:
+        let
+          pkgs = pkgsFor system;
+        in
+        {
+          bun = pkgs.callPackage (nix-bun.outPath + "/package.nix") {
+            sourcesFile = nix-bun.outPath + "/versions/1.4.2.json";
+          };
+          bun2nix = bun2nixFor system;
+          rustToolchain = rustToolchainFor system;
+        };
+    in
+    {
+      devShells = forAllSystems (
+        system:
+        let
+          pkgs = pkgsFor system;
+          localPackages = localPackagesFor system;
+        in
+        {
+          default = import ./nix/dev-shell.nix ({ inherit pkgs; } // localPackages);
+        }
+      );
+
+      checks = forAllSystems (
+        system:
+        let
+          pkgs = pkgsFor system;
+          bun2nix = bun2nixFor system;
+        in
+        {
+          bun-lock = pkgs.runCommand "Estate-bun-lock" { nativeBuildInputs = [ bun2nix ]; } ''
+            cp -R ${self.outPath} source
+            chmod -R u+w source
+            cd source
+            mv nix/bun.nix nix/bun.expected.nix
+            bun2nix -l bun.lock -c ../ -o nix/bun.nix
+            # Normalize to exactly one trailing newline. (The sed append idiom
+            # behaves inconsistently across GNU sed versions, so avoid it.)
+            printf '%s\n' "$(cat nix/bun.nix)" > nix/bun.nix.tmp
+            mv nix/bun.nix.tmp nix/bun.nix
+            diff -u nix/bun.expected.nix nix/bun.nix
+            touch "$out"
+          '';
+        }
+      );
+
+      formatter = forAllSystems (system: (pkgsFor system).nixfmt);
+    };
+}

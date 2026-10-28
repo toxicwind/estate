@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -a
+[ -f "$HOME/.bashrc.env" ] && . "$HOME/.bashrc.env"
+[ -f "$HOME/.secrets" ] && . "$HOME/.secrets"
+set +a
+exec /home/toxic/estate/ranch/tau/packages/coding-agent/dist/tau "$@"

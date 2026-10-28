@@ -1,0 +1,14 @@
+{
+  "name": "@estate/scripts",
+  "version": "1.0.0",
+  "description": "Consolidated estate scripts repository with Bun test coverage",
+  "type": "module",
+  "scripts": {
+    "test": "bun test --coverage",
+    "test:watch": "bun test --watch",
+    "lint": "oxlint ."
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}

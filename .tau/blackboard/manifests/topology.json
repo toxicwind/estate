@@ -1,0 +1,9 @@
+{
+  "dag": {
+    "Coordinator": ["GitAuditor", "PromptPackager", "BashGuardTester"],
+    "GitAuditor": [],
+    "PromptPackager": [],
+    "BashGuardTester": []
+  },
+  "barrier_signals": ["GIT_MAIN_MERGED.signal", "PROMPT_EXTENSION_READY.signal", "BASH_GUARD_TESTED.signal", "SWARM_VERIFIED.signal"]
+}

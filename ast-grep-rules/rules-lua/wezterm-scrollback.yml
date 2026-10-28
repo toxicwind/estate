@@ -1,0 +1,6 @@
+id: wezterm-scrollback
+language: lua
+rule:
+  pattern: config.scrollback_lines = $LINES
+message: "Scrollback: {{LINES}} lines"
+severity: hint

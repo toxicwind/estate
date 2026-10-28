@@ -1,0 +1,11 @@
+[daemons.ml-serve]
+mise = true
+port = 25180
+run = "exec /home/toxic/.local/share/mise/installs/python/3.12.13/bin/python /home/toxic/estate/tools/ml-serve/server.py"
+dir = "/home/toxic/estate/tools/ml-serve"
+retry = true
+boot_start = true
+ready_http = "http://127.0.0.1:25180/health"
+health_http = { url = "http://127.0.0.1:25180/health", interval = "30s", timeout = "5s", retries = 3 }
+env = { ML_SERVE_PORT = "25180" }
+auto = ["start"]

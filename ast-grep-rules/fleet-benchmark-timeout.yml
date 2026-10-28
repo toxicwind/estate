@@ -1,0 +1,9 @@
+id: fleet-benchmark-timeout
+language: rust
+rule:
+  pattern: Command::new($CMD)
+  inside:
+    kind: function_item
+    pattern: fn bench($$$)
+message: "Fleet benchmarks must use tokio::time::timeout. Never hang on llama-bench."
+severity: error

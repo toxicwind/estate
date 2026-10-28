@@ -1,0 +1,12 @@
+# estate-chat — merged fleet coordination server (:25120, tailnet-only).
+# 2026-10-24: estate-chat repo consolidated into pens/ranch/squawk/bun.
+# Monolith (pitchfork.toml) is the live truth; keep this fragment consistent.
+[daemons.estate-chat]
+mise = false
+port = 25120
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/ranch/squawk/bun/index.ts"
+dir = "/home/toxic/pens/ranch/squawk"
+retry = true
+ready_http = "http://127.0.0.1:25120/health"
+env = { SQUAWK_CHAT_PORT = "25120", SQUAWK_CHAT_TOKEN_FILE = "/home/toxic/.config/estate-chat-token" }
+auto = ["start"]

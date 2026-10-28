@@ -1,0 +1,10 @@
+{
+  "experiments": [
+    {
+      "id": "exp-001",
+      "description": "Test a new algorithm for code generation",
+      "status": "in_progress",
+      "priority": "medium"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+id: wezterm-dynamic-colors
+language: lua
+rule:
+  pattern: pcall(dofile, $FILE)
+message: "Dynamic color override via dofile({{FILE}}) — verify file exists"
+severity: warning

@@ -1,0 +1,979 @@
+[
+  {
+    "id": "01-ai/yi-large",
+    "contextWindow": 32768,
+    "maxOutputTokens": 4096,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "abacusai/dracarys-llama-3.1-70b-instruct",
+    "contextWindow": 131072,
+    "maxOutputTokens": 8192,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "adept/fuyu-8b",
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "ai21labs/jamba-1.5-large-instruct",
+    "contextWindow": 262144,
+    "maxOutputTokens": 8192,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "aisingapore/sea-lion-7b-instruct",
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "baai/bge-m3",
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "bigcode/starcoder2-15b",
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "bytedance/seed-oss-36b-instruct",
+    "maxOutputTokens": 32768,
+    "reasoningBudget": 16384,
+    "supportsReasoning": true,
+    "contextWindow": 524288,
+    "thinkingFormat": "thinking-budget",
+    "supportsVision": false
+  },
+  {
+    "id": "databricks/dbrx-instruct",
+    "contextWindow": 32768,
+    "maxOutputTokens": 4096,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "deepseek-ai/deepseek-coder-6.7b-instruct",
+    "contextWindow": 16384,
+    "maxOutputTokens": 4096,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "deepseek-ai/deepseek-v4-flash",
+    "maxOutputTokens": 16384,
+    "reasoningEffortValues": [
+      "none",
+      "high",
+      "max"
+    ],
+    "exampleRequestExtra": {
+      "chat_template_kwargs": {
+        "thinking": true,
+        "reasoning_effort": "max"
+      }
+    },
+    "supportsReasoning": true,
+    "thinkingFormat": "deepseek-v4",
+    "contextWindow": 1000000,
+    "supportsVision": false
+  },
+  {
+    "id": "deepseek-ai/deepseek-v4-pro",
+    "maxOutputTokens": 16384,
+    "reasoningEffortValues": [
+      "none",
+      "high",
+      "max"
+    ],
+    "exampleRequestExtra": {
+      "chat_template_kwargs": {
+        "thinking": true,
+        "reasoning_effort": "max"
+      }
+    },
+    "supportsReasoning": true,
+    "contextWindow": 1048576,
+    "thinkingFormat": "deepseek-v4",
+    "supportsVision": false
+  },
+  {
+    "id": "google/codegemma-1.1-7b",
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "google/codegemma-7b",
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "google/deplot",
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "google/diffusiongemma-26b-a4b-it",
+    "maxOutputTokens": 32768,
+    "supportsVision": true,
+    "supportsReasoning": true,
+    "exampleRequestExtra": {
+      "chat_template_kwargs": {
+        "enable_thinking": true
+      }
+    },
+    "contextWindow": 262144
+  },
+  {
+    "id": "google/gemma-2-2b-it",
+    "maxOutputTokens": 4096,
+    "contextWindow": 4096,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "google/gemma-2b",
+    "contextWindow": 8192,
+    "maxOutputTokens": 8192,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "google/gemma-3-12b-it",
+    "contextWindow": 131072,
+    "maxOutputTokens": 8192,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "google/gemma-3-4b-it",
+    "contextWindow": 131072,
+    "maxOutputTokens": 8192,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "google/gemma-3n-e2b-it",
+    "maxOutputTokens": 8192,
+    "supportsVision": true,
+    "contextWindow": 131072,
+    "supportsReasoning": false
+  },
+  {
+    "id": "google/gemma-3n-e4b-it",
+    "maxOutputTokens": 8192,
+    "supportsVision": true,
+    "contextWindow": 131072,
+    "supportsReasoning": false
+  },
+  {
+    "id": "google/gemma-4-31b-it",
+    "maxOutputTokens": 32768,
+    "supportsVision": true,
+    "supportsReasoning": true,
+    "exampleRequestExtra": {
+      "chat_template_kwargs": {
+        "enable_thinking": true
+      }
+    },
+    "contextWindow": 262144,
+    "thinkingFormat": "qwen-chat-template"
+  },
+  {
+    "id": "google/recurrentgemma-2b",
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "ibm/granite-3.0-3b-a800m-instruct",
+    "contextWindow": 131072,
+    "maxOutputTokens": 8192,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "ibm/granite-3.0-8b-instruct",
+    "contextWindow": 131072,
+    "maxOutputTokens": 8192,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "ibm/granite-34b-code-instruct",
+    "contextWindow": 131072,
+    "maxOutputTokens": 8192,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "ibm/granite-8b-code-instruct",
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "meta/codellama-70b",
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "meta/llama-3.1-70b-instruct",
+    "contextWindow": 131072,
+    "maxOutputTokens": 8192,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "meta/llama-3.1-8b-instruct",
+    "contextWindow": 131072,
+    "maxOutputTokens": 8192,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "meta/llama-3.2-11b-vision-instruct",
+    "contextWindow": 131072,
+    "maxOutputTokens": 8192,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "meta/llama-3.2-1b-instruct",
+    "maxOutputTokens": 4096,
+    "contextWindow": 131072,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "meta/llama-3.2-3b-instruct",
+    "maxOutputTokens": 4096,
+    "contextWindow": 131072,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "meta/llama-3.2-90b-vision-instruct",
+    "contextWindow": 131072,
+    "maxOutputTokens": 8192,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "meta/llama-3.3-70b-instruct",
+    "contextWindow": 131072,
+    "maxOutputTokens": 8192,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "meta/llama-4-maverick-17b-128e-instruct",
+    "contextWindow": 131072,
+    "maxOutputTokens": 8192,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "meta/llama-guard-4-12b",
+    "supportsVision": true,
+    "supportsReasoning": false
+  },
+  {
+    "id": "meta/llama2-70b",
+    "contextWindow": 4096,
+    "maxOutputTokens": 4096,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "microsoft/kosmos-2",
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "microsoft/phi-3-vision-128k-instruct",
+    "contextWindow": 131072,
+    "maxOutputTokens": 4096,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "microsoft/phi-3.5-moe-instruct",
+    "contextWindow": 131072,
+    "maxOutputTokens": 4096,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "microsoft/phi-4-mini-instruct",
+    "maxOutputTokens": 4096,
+    "contextWindow": 131072,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "microsoft/phi-4-multimodal-instruct",
+    "maxOutputTokens": 8192,
+    "supportsVision": true,
+    "contextWindow": 131072,
+    "supportsReasoning": false
+  },
+  {
+    "id": "minimaxai/minimax-m2.7",
+    "maxOutputTokens": 16384,
+    "contextWindow": 204800,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "minimaxai/minimax-m3",
+    "maxOutputTokens": 16384,
+    "supportsVision": true,
+    "supportsReasoning": true,
+    "contextWindow": 1000000
+  },
+  {
+    "id": "mistralai/codestral-22b-instruct-v0.1",
+    "contextWindow": 32768,
+    "maxOutputTokens": 4096,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "mistralai/ministral-14b-instruct-2512",
+    "maxOutputTokens": 8192,
+    "supportsVision": true,
+    "contextWindow": 262144,
+    "supportsReasoning": false
+  },
+  {
+    "id": "mistralai/mistral-7b-instruct-v0.3",
+    "contextWindow": 32768,
+    "maxOutputTokens": 8192,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "mistralai/mistral-large",
+    "contextWindow": 131072,
+    "maxOutputTokens": 8192,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "mistralai/mistral-large-2-instruct",
+    "contextWindow": 131072,
+    "maxOutputTokens": 8192,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "mistralai/mistral-large-3-675b-instruct-2512",
+    "maxOutputTokens": 8192,
+    "supportsVision": true,
+    "supportsReasoning": true,
+    "contextWindow": 262144
+  },
+  {
+    "id": "mistralai/mistral-medium-3.5-128b",
+    "maxOutputTokens": 32768,
+    "supportsVision": true,
+    "reasoningEffortValues": [
+      "none",
+      "high"
+    ],
+    "supportsReasoning": true,
+    "contextWindow": 262144,
+    "thinkingFormat": "reasoning-effort"
+  },
+  {
+    "id": "mistralai/mistral-nemotron",
+    "maxOutputTokens": 4096,
+    "contextWindow": 131072,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "mistralai/mistral-small-4-119b-2603",
+    "maxOutputTokens": 32768,
+    "supportsVision": true,
+    "reasoningEffortValues": [
+      "none",
+      "high"
+    ],
+    "supportsReasoning": true,
+    "contextWindow": 262144,
+    "thinkingFormat": "reasoning-effort"
+  },
+  {
+    "id": "mistralai/mixtral-8x22b-v0.1",
+    "contextWindow": 65536,
+    "maxOutputTokens": 4096,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "mistralai/mixtral-8x7b-instruct-v0.1",
+    "contextWindow": 32768,
+    "maxOutputTokens": 4096,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "moonshotai/kimi-k2.6",
+    "maxOutputTokens": 65536,
+    "supportsVision": true,
+    "supportsReasoning": true,
+    "exampleRequestExtra": {
+      "chat_template_kwargs": {
+        "thinking": true
+      }
+    },
+    "contextWindow": 262144,
+    "thinkingFormat": "deepseek-nim"
+  },
+  {
+    "id": "nv-mistralai/mistral-nemo-12b-instruct",
+    "contextWindow": 131072,
+    "maxOutputTokens": 8192,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "nvidia/ai-synthetic-video-detector",
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "nvidia/cosmos-reason2-8b",
+    "maxOutputTokens": 4096,
+    "supportsVision": true,
+    "exampleRequestExtra": {
+      "media_io_kwargs": {
+        "video": {
+          "fps": 4
+        }
+      }
+    },
+    "supportsReasoning": true
+  },
+  {
+    "id": "nvidia/embed-qa-4",
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "nvidia/gliner-pii",
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "nvidia/ising-calibration-1-35b-a3b",
+    "maxOutputTokens": 32768,
+    "supportsVision": true,
+    "exampleRequestExtra": {
+      "chat_template_kwargs": {
+        "enable_thinking": true
+      }
+    },
+    "supportsReasoning": true
+  },
+  {
+    "id": "nvidia/llama-3.1-nemoguard-8b-content-safety",
+    "contextWindow": 131072,
+    "maxOutputTokens": 8192,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "nvidia/llama-3.1-nemoguard-8b-topic-control",
+    "contextWindow": 131072,
+    "maxOutputTokens": 8192,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "nvidia/llama-3.1-nemotron-51b-instruct",
+    "contextWindow": 131072,
+    "maxOutputTokens": 8192,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "nvidia/llama-3.1-nemotron-70b-instruct",
+    "contextWindow": 131072,
+    "maxOutputTokens": 8192,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "nvidia/llama-3.1-nemotron-nano-8b-v1",
+    "contextWindow": 131072,
+    "maxOutputTokens": 8192,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "nvidia/llama-3.1-nemotron-nano-vl-8b-v1",
+    "maxOutputTokens": 2048,
+    "supportsVision": true,
+    "contextWindow": 131072,
+    "supportsReasoning": false
+  },
+  {
+    "id": "nvidia/llama-3.1-nemotron-safety-guard-8b-v3",
+    "contextWindow": 131072,
+    "maxOutputTokens": 8192,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "nvidia/llama-3.1-nemotron-ultra-253b-v1",
+    "thinkingFormat": "deepseek-nim",
+    "supportsReasoning": true,
+    "contextWindow": 131072,
+    "maxOutputTokens": 8192,
+    "supportsVision": false
+  },
+  {
+    "id": "nvidia/llama-3.2-nemoretriever-1b-vlm-embed-v1",
+    "contextWindow": 131072,
+    "maxOutputTokens": 8192,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "nvidia/llama-3.2-nv-embedqa-1b-v1",
+    "contextWindow": 131072,
+    "maxOutputTokens": 8192,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "nvidia/llama-3.3-nemotron-super-49b-v1",
+    "thinkingFormat": "nemotron-system-detailed",
+    "supportsReasoning": true,
+    "contextWindow": 131072,
+    "maxOutputTokens": 8192,
+    "supportsVision": false
+  },
+  {
+    "id": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+    "thinkingFormat": "nemotron-system-think",
+    "supportsReasoning": true,
+    "contextWindow": 131072,
+    "maxOutputTokens": 8192,
+    "supportsVision": false
+  },
+  {
+    "id": "nvidia/llama-nemotron-embed-1b-v2",
+    "contextWindow": 8192,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "nvidia/llama-nemotron-embed-vl-1b-v2",
+    "contextWindow": 8192,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "nvidia/llama3-chatqa-1.5-70b",
+    "contextWindow": 131072,
+    "maxOutputTokens": 8192,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "nvidia/mistral-nemo-minitron-8b-8k-instruct",
+    "contextWindow": 131072,
+    "maxOutputTokens": 8192,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "nvidia/nemoretriever-parse",
+    "maxOutputTokens": 8192,
+    "supportsVision": true,
+    "supportsReasoning": false
+  },
+  {
+    "id": "nvidia/nemotron-3-content-safety",
+    "maxOutputTokens": 4096,
+    "supportsVision": true,
+    "exampleRequestExtra": {
+      "chat_template_kwargs": {
+        "request_categories": "/categories"
+      }
+    },
+    "supportsReasoning": true,
+    "contextWindow": 131072
+  },
+  {
+    "id": "nvidia/nemotron-3-nano-30b-a3b",
+    "maxOutputTokens": 32768,
+    "reasoningBudget": 32768,
+    "exampleRequestExtra": {
+      "chat_template_kwargs": {
+        "enable_thinking": true
+      }
+    },
+    "supportsReasoning": true,
+    "contextWindow": 1048576,
+    "thinkingFormat": "qwen-chat-template",
+    "supportsVision": false
+  },
+  {
+    "id": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
+    "maxOutputTokens": 65536,
+    "supportsVision": true,
+    "reasoningBudget": 32768,
+    "exampleRequestExtra": {
+      "chat_template_kwargs": {
+        "enable_thinking": true
+      }
+    },
+    "supportsReasoning": true,
+    "contextWindow": 262144,
+    "thinkingFormat": "qwen-chat-template"
+  },
+  {
+    "id": "nvidia/nemotron-3-super-120b-a12b",
+    "maxOutputTokens": 32768,
+    "reasoningBudget": 32768,
+    "reasoningEffortValues": [
+      "none",
+      "low",
+      "high"
+    ],
+    "exampleRequestExtra": {
+      "chat_template_kwargs": {
+        "enable_thinking": false
+      }
+    },
+    "supportsReasoning": true,
+    "contextWindow": 1048576,
+    "thinkingFormat": "nemotron-3-super-effort",
+    "supportsVision": false
+  },
+  {
+    "id": "nvidia/nemotron-3-ultra-550b-a55b",
+    "maxOutputTokens": 32768,
+    "reasoningBudget": 32768,
+    "reasoningEffortValues": [
+      "none",
+      "medium",
+      "high"
+    ],
+    "exampleRequestExtra": {
+      "chat_template_kwargs": {
+        "enable_thinking": false
+      }
+    },
+    "supportsReasoning": true,
+    "thinkingFormat": "nemotron-3-super-effort",
+    "contextWindow": 1000000,
+    "supportsVision": false
+  },
+  {
+    "id": "nvidia/nemotron-3.5-content-safety",
+    "maxOutputTokens": 4096,
+    "supportsVision": true,
+    "supportsReasoning": true,
+    "exampleRequestExtra": {
+      "chat_template_kwargs": {
+        "request_categories": "/categories"
+      }
+    },
+    "contextWindow": 131072
+  },
+  {
+    "id": "nvidia/nemotron-4-340b-instruct",
+    "contextWindow": 4096,
+    "maxOutputTokens": 4096,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "nvidia/nemotron-4-340b-reward",
+    "contextWindow": 4096,
+    "maxOutputTokens": 4096,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "nvidia/nemotron-content-safety-reasoning-4b",
+    "maxOutputTokens": 32768,
+    "contextWindow": 131072,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "nvidia/nemotron-mini-4b-instruct",
+    "maxOutputTokens": 2048,
+    "contextWindow": 4096,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "nvidia/nemotron-nano-12b-v2-vl",
+    "maxOutputTokens": 8192,
+    "supportsVision": true,
+    "contextWindow": 4096,
+    "supportsReasoning": false
+  },
+  {
+    "id": "nvidia/nemotron-nano-3-30b-a3b",
+    "contextWindow": 4096,
+    "maxOutputTokens": 4096,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "nvidia/nemotron-parse",
+    "maxOutputTokens": 8192,
+    "supportsVision": true,
+    "supportsReasoning": true
+  },
+  {
+    "id": "nvidia/neva-22b",
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "nvidia/nv-embed-v1",
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "nvidia/nv-embedcode-7b-v1",
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "nvidia/nv-embedqa-e5-v5",
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "nvidia/nv-embedqa-mistral-7b-v2",
+    "contextWindow": 32768,
+    "maxOutputTokens": 8192,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "nvidia/nvclip",
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "nvidia/nvidia-nemotron-nano-9b-v2",
+    "maxOutputTokens": 8192,
+    "exampleRequestExtra": {
+      "min_thinking_tokens": 500,
+      "max_thinking_tokens": 2000
+    },
+    "supportsReasoning": true,
+    "contextWindow": 131072,
+    "thinkingFormat": "nemotron-system-think",
+    "supportsVision": false
+  },
+  {
+    "id": "nvidia/riva-translate-4b-instruct",
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "nvidia/riva-translate-4b-instruct-v1.1",
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "nvidia/vila",
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "openai/gpt-oss-120b",
+    "maxOutputTokens": 4096,
+    "reasoningEffortValues": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "exampleRequestExtra": {
+      "input": [
+        {
+          "type": "message",
+          "role": "user",
+          "content": [
+            {
+              "type": "input_text",
+              "text": "Solve this step by step: What is 15 * 24?"
+            }
+          ]
+        }
+      ],
+      "reasoning_effort": "medium",
+      "max_output_tokens": 1000
+    },
+    "supportsReasoning": true,
+    "contextWindow": 128000,
+    "thinkingFormat": "reasoning-effort",
+    "supportsVision": false
+  },
+  {
+    "id": "openai/gpt-oss-20b",
+    "maxOutputTokens": 4096,
+    "reasoningEffortValues": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "exampleRequestExtra": {
+      "input": [
+        {
+          "type": "message",
+          "role": "user",
+          "content": [
+            {
+              "type": "input_text",
+              "text": "Solve this step by step: What is 15 * 24?"
+            }
+          ]
+        }
+      ],
+      "reasoning_effort": "medium",
+      "max_output_tokens": 1000
+    },
+    "supportsReasoning": true,
+    "contextWindow": 128000,
+    "thinkingFormat": "reasoning-effort",
+    "supportsVision": false
+  },
+  {
+    "id": "qwen/qwen3-next-80b-a3b-instruct",
+    "maxOutputTokens": 4096,
+    "supportsReasoning": true,
+    "contextWindow": 262144,
+    "supportsVision": false
+  },
+  {
+    "id": "qwen/qwen3.5-122b-a10b",
+    "maxOutputTokens": 32768,
+    "supportsVision": true,
+    "supportsReasoning": true,
+    "exampleRequestExtra": {
+      "chat_template_kwargs": {
+        "enable_thinking": true
+      }
+    },
+    "contextWindow": 262144,
+    "thinkingFormat": "qwen-chat-template"
+  },
+  {
+    "id": "qwen/qwen3.5-397b-a17b",
+    "maxOutputTokens": 32768,
+    "supportsVision": true,
+    "supportsReasoning": true,
+    "exampleRequestExtra": {
+      "chat_template_kwargs": {
+        "enable_thinking": true
+      }
+    },
+    "contextWindow": 262144,
+    "thinkingFormat": "qwen-chat-template"
+  },
+  {
+    "id": "sarvamai/sarvam-m",
+    "maxOutputTokens": 16384,
+    "supportsReasoning": true,
+    "contextWindow": 32768,
+    "supportsVision": false
+  },
+  {
+    "id": "snowflake/arctic-embed-l",
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "stepfun-ai/step-3.5-flash",
+    "maxOutputTokens": 262144,
+    "supportsReasoning": true,
+    "contextWindow": 256000,
+    "supportsVision": false
+  },
+  {
+    "id": "stepfun-ai/step-3.7-flash",
+    "maxOutputTokens": 262144,
+    "supportsVision": true,
+    "supportsReasoning": true,
+    "contextWindow": 262144
+  },
+  {
+    "id": "stockmark/stockmark-2-100b-instruct",
+    "maxOutputTokens": 4096,
+    "contextWindow": 32000,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "upstage/solar-10.7b-instruct",
+    "contextWindow": 4096,
+    "maxOutputTokens": 4096,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "writer/palmyra-creative-122b",
+    "contextWindow": 32768,
+    "maxOutputTokens": 4096,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "writer/palmyra-fin-70b-32k",
+    "contextWindow": 32768,
+    "maxOutputTokens": 4096,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "writer/palmyra-med-70b",
+    "contextWindow": 32768,
+    "maxOutputTokens": 4096,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "writer/palmyra-med-70b-32k",
+    "contextWindow": 32768,
+    "maxOutputTokens": 4096,
+    "supportsReasoning": false,
+    "supportsVision": false
+  },
+  {
+    "id": "z-ai/glm-5.2",
+    "maxOutputTokens": 32768,
+    "exampleRequestExtra": {
+      "chat_template_kwargs": {
+        "enable_thinking": true,
+        "clear_thinking": false
+      }
+    },
+    "supportsReasoning": true,
+    "contextWindow": 1000000,
+    "thinkingFormat": "qwen-chat-template",
+    "supportsVision": false
+  },
+  {
+    "id": "zyphra/zamba2-7b-instruct",
+    "contextWindow": 4096,
+    "maxOutputTokens": 4096,
+    "supportsReasoning": false,
+    "supportsVision": false
+  }
+]

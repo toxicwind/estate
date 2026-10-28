@@ -1,0 +1,85 @@
+# Morphe-style fingerprint rules for wezterm.lua auditing
+# Each rule is a resilient partial pattern — survives config reordering
+id: wezterm-display-pipeline
+language: lua
+rule:
+  pattern: config.front_end = $FRONT_END
+message: "Display pipeline: front_end = {{FRONT_END}} — verify GPU backend matches NVIDIA RTX 3090"
+severity: warning
+---
+id: wezterm-font-fallback
+language: lua
+rule:
+  pattern: config.font = wezterm.font_with_fallback($FALLBACKS)
+message: "Font fallback chain present — verify Nerd Font coverage"
+severity: hint
+---
+id: wezterm-color-scheme
+language: lua
+rule:
+  pattern: config.colors = $COLORS
+message: "Color scheme assignment — check for dynamic override (matugen/lmtt)"
+severity: hint
+---
+id: weztab-key-binding
+language: lua
+rule:
+  pattern: { key = $KEY, mods = $MODS, action = $ACTION }
+message: "Key binding: {{KEY}}+{{MODS}} → {{ACTION}} — check for conflicts"
+severity: info
+---
+id: wezterm-window-geometry
+language: lua
+rule:
+  pattern: config.initial_cols = $COLS
+message: "Initial columns: {{COLS}} — verify terminal size for 2026 workflows"
+severity: hint
+---
+id: wezterm-hyperlink-rules
+language: lua
+rule:
+  pattern: config.hyperlink_rules = $RULES
+message: "Hyperlink rules configured — verify file:line and URL patterns"
+severity: hint
+---
+id: wezterm-status-bar
+language: lua
+rule:
+  pattern: window:set_right_status($STATUS)
+message: "Status bar configured with custom format"
+severity: hint
+---
+id: wezterm-smart-split
+language: lua
+rule:
+  pattern: wezterm.on('smart-split', $CALLBACK)
+message: "Smart split (Villoh BSP) configured"
+severity: hint
+---
+id: wezterm-mouse-bindings
+language: lua
+rule:
+  pattern: config.mouse_bindings = $BINDINGS
+message: "Mouse bindings configured — check Mason double-click file open"
+severity: hint
+---
+id: wezterm-dynamic-colors
+language: lua
+rule:
+  pattern: pcall(dofile, $FILE)
+message: "Dynamic color override via dofile({{FILE}}) — verify file exists"
+severity: warning
+---
+id: wezterm-clipboard-integration
+language: lua
+rule:
+  pattern: act.CopyTo 'ClipboardAndPrimarySelection'
+message: "Clipboard integration: CopyTo ClipboardAndPrimarySelection"
+severity: hint
+---
+id: wezterm-scrollback
+language: lua
+rule:
+  pattern: config.scrollback_lines = $LINES
+message: "Scrollback: {{LINES}} lines — verify adequate for 2026 workflows"
+severity: hint

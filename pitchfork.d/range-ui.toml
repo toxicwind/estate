@@ -1,0 +1,15 @@
+# RANGE (agent-dashboard) — the coherent multi-tab dashboard project.
+# Its control-plane SPA (:25156) is served here; this manifest exists so the
+# pitchfork-compose accepts the range project.
+#
+# The SPA itself runs as a Vite dev server (delendai-control-plane dev).
+# Port 25156 = DELENDAI_CONTROL_PORT.
+[daemons.range-ui]
+mise = true
+run = "exec /home/toxic/.bun/bin/bun run --cwd /home/toxic/pens/ranch/range/apps/delendai-control-plane dev"
+dir = "/home/toxic/pens/ranch/range"
+retry = true
+boot_start = true
+auto = ["start"]
+ready_http = "http://127.0.0.1:25156/"
+health_http = { url = "http://127.0.0.1:25156/", interval = "30s", timeout = "5s", retries = 3 }

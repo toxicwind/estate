@@ -1,0 +1,47 @@
+{
+  "timestamp": "2026-09-08T02:03:47.160Z",
+  "wire": "estate <-> sovereign-projects <-> projects",
+  "folders": {
+    "estate": {
+      "path": "/home/toxic/estate",
+      "helpers": [
+        "git-mutator",
+        "health-audit",
+        "ast-migrate",
+        "mesh-probe",
+        "safe-rg-audit",
+        "hardware-telemetry",
+        "clean-orphans"
+      ],
+      "hasGit": false
+    },
+    "sovereignProjects": {
+      "path": "/home/toxic/projects/sovereign-projects",
+      "symlinkFrom": "/home/toxic/estate-projects",
+      "gitRemote": "https://github.com/toxicwind/sovereign-projects.git",
+      "helpersLinked": true
+    },
+    "projects": {
+      "path": "/home/toxic/projects",
+      "subdirs": 467,
+      "relevant": 460,
+      "keyProjectsVerified": 8,
+      "noiseFiltered": 10,
+      "helpersLinked": true
+    }
+  },
+  "shared": {
+    "portsEnv": "/home/toxic/.estate-shared/ports.env",
+    "miseToml": "/home/toxic/.estate-shared/mise.toml",
+    "agentsMd": "/home/toxic/.estate-shared/AGENTS.md",
+    "helpersDir": "/home/toxic/estate/helpers"
+  },
+  "crossLinks": {
+    "estate->sovereign-projects": ".estate-helpers -> ../../estate/helpers",
+    "estate->projects": ".shared -> ../.estate-shared",
+    "sovereign-projects->estate": ".estate-helpers -> ../../estate/helpers",
+    "sovereign-projects->projects": ".shared -> ../.estate-shared",
+    "projects->estate": ".shared -> ./.estate-shared",
+    "projects->sovereign-projects": ".shared -> ./.estate-shared"
+  }
+}

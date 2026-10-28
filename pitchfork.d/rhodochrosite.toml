@@ -1,0 +1,10 @@
+[daemons.rhodochrosite]
+health_http = { url = "http://127.0.0.1:25193/health", interval = "30s", timeout = "5s", retries = 3 }
+mise = true
+port = 25193
+run = "exec /home/toxic/pens/geode/products/rhodochrosite/proxy/serve.sh"
+dir = "/home/toxic/pens/geode/products/rhodochrosite/proxy"
+retry = true
+ready_http = "http://127.0.0.1:25193/health"
+env = { PORT = "25193", DATA_DIR = "/home/toxic/.hodos-data", HOST = "127.0.0.1", MARKER = "fragment-live" }
+auto = ["start"]

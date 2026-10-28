@@ -1,0 +1,6 @@
+id: wezterm-font-fallback
+language: lua
+rule:
+  pattern: config.font = wezterm.font_with_fallback($FALLBACKS)
+message: "Font fallback chain present — verify Nerd Font coverage"
+severity: hint

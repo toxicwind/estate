@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# estate-gate — ONE loud drift gate for the whole control plane.
+#
+# Aggregates the per-tool estate gates so a single command fails loudly when
+# anything drifts, instead of each tool being checked ad hoc and silently:
+#
+#   1. layout          --check   the generated docs/estate-layout.md matches the tree
+#   2. daemon-gate               every registered daemon satisfies the port SSOT
+#   3. fragment-clean  --check   one daemon + its own docs per pitchfork.d fragment
+#   4. delendai-swarm  --check   the recursive swarm stays bounded, de-duped, audit-aware
+#   5. pitchfork-compose --check every project still composes with no ownership conflicts
+#
+# Usage:
+#   mise run estate-gate          # run all gates (default)
+#   mise run estate-gate --fast   # skip the (slower) delendai-swarm audit passthrough
+#
+# Exit 0 when every gate is green; exit 1 with the first failing gate named.
+
+set -euo pipefail
+cd "${ESTATE_ROOT:-$(cd "$(dirname "$0")/../.." && pwd)}"
+
+FAST=0
+for a in "$@"; do [[ "$a" == "--fast" ]] && FAST=1; done
+
+gate() { # gate <name> <command...>
+  local name=$1; shift
+  echo "── estate-gate: $name"
+  if ! "$@" >/tmp/estate-gate-${name}.log 2>&1; then
+    echo "  ✗ $name FAILED — see /tmp/estate-gate-${name}.log"
+    sed 's/^/    /' /tmp/estate-gate-${name}.log | tail -20
+    exit 1
+  fi
+  echo "  ✓ $name ok"
+}
+
+gate layout       bun run tools/estate-layout/layout.ts --root . --check
+gate daemon       bun run tools/estate-layout/daemon-gate.ts --root .
+gate fragments    bun run tools/estate-layout/fragment-clean.ts --root . --check
+known=$(command -v delendai >/dev/null 2>&1 && command -v ffs >/dev/null 2>&1 && echo 1 || echo 0)
+if [[ "$known" == "1" ]]; then
+  if (( FAST )); then
+    gate swarm       bun run tools/delendai-swarm.ts --root . --check --no-audit
+  else
+    gate swarm       bun run tools/delendai-swarm.ts --root . --check
+  fi
+else
+  echo "  – swarm skipped (delendai/ffs not on PATH)"
+fi
+gate compose     bun bin/pitchfork-compose --check
+
+echo "estate-gate: ALL GREEN"

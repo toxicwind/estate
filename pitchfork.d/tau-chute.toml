@@ -1,0 +1,19 @@
+# Registered 2026-10-21: the tau ACP engine speaks stdio only, so it was
+# invisible to the supervisor and to every port-based surface registry.
+# `chute` (pens/barn/chute) is the estate's TCP<->stdio ACP passage: it makes
+# the tau engine observable as a daemon on a real port without patching omp.
+# Port is TAU_CHUTE_PORT from config/ports.env (SSOT = 25111).
+#
+# Why this exists: the surface registry pointed tau at the remote relay
+# origin (https://my.tau.sh), which is unreachable from the box (curl 000).
+# That remote relay was the red herring; this local daemon is the surface the
+# control plane actually probes and the ACP clients actually connect to.
+[daemons.tau-chute]
+mise = true
+port = 25111
+run = "exec /usr/bin/node chute.mjs --port 25111 -- /home/toxic/.local/bin/tau acp"
+dir = "/home/toxic/pens/barn/chute"
+retry = true
+ready_port = 25111
+env = { CHUTE_PORT = "25111" }
+auto = ["start"]

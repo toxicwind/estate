@@ -1,0 +1,17 @@
+{
+  "task_id": "pi-agent-phase-0-nuvio",
+  "agent": "pi-agent",
+  "model": "longcat-2.0-free",
+  "hash": "sha256:def456",
+  "name": "Nuvio LG TV Deployment",
+  "description": "Deploy Nuvio WebOS app to local LG TV",
+  "status": "blocked",
+  "priority": "highest",
+  "subtasks": [
+    { "id": "nuvio-1", "name": "Fork max level", "status": "completed" },
+    { "id": "nuvio-2", "name": "Review Nuvio UX", "status": "pending" },
+    { "id": "nuvio-3", "name": "Install WebOS SDK", "status": "pending" },
+    { "id": "nuvio-4", "name": "Pair LG TV", "status": "pending" },
+    { "id": "nuvio-5", "name": "Build & Deploy", "status": "pending" }
+  ]
+}

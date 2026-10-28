@@ -1,0 +1,31 @@
+SWAP 3208:6f..3222:b4:
++						const emitPartial = (args: Record<string, unknown>) => (partialResult: unknown) => {
++							stream.push({
++								type: "tool_execution_update",
++								toolCallId: toolCall.id,
++								toolName: toolCall.name,
++								args,
++								partialResult: coerceToolResult(partialResult).result,
++							});
++						};
++						// Tools that declare `chunking` get oversized array arguments
++						// split into sequential calls under the item ceiling instead of
++						// one giant call (Dots 3 recon: models collapse those to `{}`).
++						const chunkPlan = tool.chunking
++							? planArgumentChunks(
++									executionArgs as Record<string, unknown>,
++									tool.chunking.field,
++									tool.chunking.maxItems,
++								)
++							: null;
++						rawResult = chunkPlan
++							? await executeChunkedToolCall(chunkPlan, args =>
++									tool.execute(toolCall.id, args, record.signal, emitPartial(args), toolContext),
++								)
++							: await tool.execute(
++									toolCall.id,
++									executionArgs,
++									record.signal,
++									emitPartial(executionArgs as Record<string, unknown>),
++									toolContext,
++								);

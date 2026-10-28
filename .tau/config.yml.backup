@@ -1,0 +1,2 @@
+[61]=modelRoles.default: nvidia/Qwen3.6-27B-NVFP4:high
+[62]=modelRoles.default: nvidia/nemotron-3.5-lightning-30b-a3b:high

@@ -1,0 +1,263 @@
+diff --git a/.envrc b/.envrc
+index 99c08f7619..a88cb0408a 100755
+--- a/.envrc
++++ b/.envrc
+@@ -5,7 +5,7 @@
+ # shellcheck source=./.env.local
+ 
+ # 1. Absolute estate home (does not rely on .bashrc)
+-export ESTATE_HOME="/home/toxic/estate"
++export ESTATE_HOME="/home/toxic/estate"
+ export ESTATE_ROOT="/home/toxic/estate"
+ 
+ # 2. Absolute tau config (independent of CWD)
+@@ -22,8 +22,8 @@ fi
+ 
+ # 4. .env.local overrides (single source of truth for non-secret env vars)
+ # shellcheck source=/home/toxic/estate/.env.local
+-if [[ -f "$ESTATE_HOME/.env.local" ]]; then
+-  set -a; source "$ESTATE_HOME/.env.local"; set +a
++if [[ -f "$ESTATE_HOME/.env.local" ]]; then
++  set -a; source "$ESTATE_HOME/.env.local"; set +a
+ fi
+ # shellcheck source=./.env.local
+ if [[ -f "./.env.local" ]]; then
+@@ -31,11 +31,11 @@ if [[ -f "./.env.local" ]]; then
+ fi
+ 
+ # 5. Agent launcher is the canonical entrypoint
+-export PATH="$ESTATE_HOME:$PATH"
++export PATH="$ESTATE_HOME:$PATH"
+ 
+ # 6. Watch files that change config behavior
+ watch_file "$HOME/.secrets"
+-watch_file "$ESTATE_HOME/.env.local"
+-watch_file "$ESTATE_HOME/agent"
++watch_file "$ESTATE_HOME/.env.local"
++watch_file "$ESTATE_HOME/agent"
+ watch_file "$HOME/$PI_CONFIG_DIR/agent/config.yml"
+ if [ -f /home/toxic/.secrets ]; then source /home/toxic/.secrets; fi
+diff --git a/config/tau/agent/cache/composer/b11b302aa2d63cc7/status.json b/config/tau/agent/cache/composer/b11b302aa2d63cc7/status.json
+index 6b3f33faf9..97cab21169 100644
+--- a/config/tau/agent/cache/composer/b11b302aa2d63cc7/status.json
++++ b/config/tau/agent/cache/composer/b11b302aa2d63cc7/status.json
+@@ -1 +1 @@
+-{"version":1,"statusVersion":3,"shape":"band","borderColor":{"prefix":"\u001b[38;5;180m","suffix":"\u001b[39m"},"topBorder":{"content":"\u001b[48;5;233m\u001b[39m \u001b[38;5;39m⠹ …\u001b[39m \u001b[38;5;236m>\u001b[39m \u001b[38;5;39m◕ …\u001b[39m \u001b[38;5;236m>\u001b[39m \u001b[38;5;255m🗑 …\u001b[39m \u001b[0m\u001b[38;5;233m▶\u001b[0m\u001b[49m\u001b[38;5;39m────…%\u001b[38;5;236m────────────────\u001b[38;5;67m┃\u001b[38;5;236m───\u001b[38;5;67m…\u001b[38;5;236m─\u001b[39m","width":46},"bottomLines":[]}
+\ No newline at end of file
++{"version":1,"statusVersion":3,"shape":"band","borderColor":{"prefix":"\u001b[38;5;180m","suffix":"\u001b[39m"},"topBorder":{"content":"\u001b[48;5;233m\u001b[39m \u001b[38;5;39m⠙ …\u001b[39m \u001b[38;5;236m>\u001b[39m \u001b[38;5;39m◕ …\u001b[39m\u001b[38;5;203m 👁\u001b[39m \u001b[38;5;236m>\u001b[39m \u001b[38;5;255m🗑 …\u001b[39m \u001b[38;5;236m>\u001b[39m \u001b[38;5;180m(sub)\u001b[39m \u001b[0m\u001b[38;5;233m▶\u001b[0m\u001b[49m\u001b[38;5;39m────…%\u001b[38;5;236m───\u001b[38;5;67m┃…\u001b[38;5;236m─\u001b[39m\u001b[38;5;233m◀\u001b[0m\u001b[48;5;233m\u001b[39m \u001b[38;5;39m⚙ …\u001b[39m \u001b[0m","width":46},"bottomLines":[]}
+\ No newline at end of file
+diff --git a/config/tau/agent/cache/composer/b11b302aa2d63cc7/welcome.json b/config/tau/agent/cache/composer/b11b302aa2d63cc7/welcome.json
+index affb14e08e..45201c0170 100644
+--- a/config/tau/agent/cache/composer/b11b302aa2d63cc7/welcome.json
++++ b/config/tau/agent/cache/composer/b11b302aa2d63cc7/welcome.json
+@@ -1 +1 @@
+-{"version":1,"modelName":"Space Bunny Alpha (new)","providerName":"openrouter"}
+\ No newline at end of file
++{"version":1,"modelName":"GPT-5.6 Terra","providerName":"github-copilot"}
+\ No newline at end of file
+diff --git a/config/tau/agent/config.yml b/config/tau/agent/config.yml
+index 0f5c520d9b..827b3dfd35 100644
+--- a/config/tau/agent/config.yml
++++ b/config/tau/agent/config.yml
+@@ -1,8 +1,9 @@
+-defaultThinkingLevel: auto
++defaultThinkingLevel: medium
+ modelRoles:
+-  default: github-copilot/gpt-5.1-codex
++  default: github-copilot/gpt-5.6-terra:medium
+   judge: openrouter/~typesafe/jev-latest
+   tiny: local/lfm2.5-230m
++  advisor: google/models/gemini-flash-tool-retrieval
+ symbolPreset: unicode
+ composer:
+   shape: band
+@@ -68,4 +69,19 @@ mcp:
+ task:
+   enableEffort: true
+   maxConcurrency: 4
+-  enableLsp: true
+\ No newline at end of file
++  enableLsp: true
++  isolation:
++    merge: branch
++worktree:
++  clone: false
++snapcompact:
++  toolResults: true
++  systemPrompt: agents-md
++providers:
++  openai-codex:
++    codeMode: "on"
++tier:
++  subagent: auto
++advisor:
++  enabled: true
++  syncBacklog: "1"
+\ No newline at end of file
+diff --git a/docs/CONVENTIONS.md b/docs/CONVENTIONS.md
+index 97151fdaff..d86781696f 100644
+--- a/docs/CONVENTIONS.md
++++ b/docs/CONVENTIONS.md
+@@ -115,11 +115,25 @@ injected with `_.file`, and the path must resolve regardless of CWD.
+ runtime config SSOT (identity, stream tuning, model names). Secrets live in
+ `.secrets` / `$HOME/.secrets`.
+ 
+-> ⚠️ **Known conflicts.** `.env` sets `SCOUT_BASE_URL=…:25104/v1` while
+-> `mise.toml` sets `:25100/v1`. `.env` §8 re-declares ports that `ports.env`
+-> owns. `estate/.envrc` still exports `ESTATE_HOME=/home/toxic/estate`.
+-> `skills/git-mutator/types.ts` still points `ESTATE_PORT_SSOT` at
+-> `estate/config/ports.env`. All four need resolution during the mise rebuild.
++> **Resolved 2026-10-03.** All four were real; each is closed.
++> `SCOUT_BASE_URL`/`SCOUT_API_KEY`/`SCOUT_MODEL` were removed from the estate
++> config — zero consumers, and `/home/toxic/.tau/.env` defines all three with
++> different values (`:25193` + `estate/free`). Two contradictory copies of one
++> setting is worse than one, so the estate defers to the agent config that reads
++> them. `.env` §8 and `config/tau/.env` §8 no longer declare ports: each carried
++> six keys under names that disagreed with the SSOT, and `MCPPROXY_PORT` pointed
++> at `:25109`, which is `KEYPOOL_PORT`. `ESTATE_HOME` in `.envrc` is now
++> `ESTATE_HOME` — it had no consumer outside `.envrc` itself, and that is the
++> fixed override name from Rule 2.2 which `skills/lib/estate.sh` already
++> resolves, so the two now compose instead of disagreeing.
++> `skills/git-mutator/types.ts` already pointed at
++> `/home/toxic/estate/config/ports.env`; that part of this note was stale.
++>
++> `config/ports.env` was itself gitignored — an unanchored `*.env` from the
++> dotenv template layer swallowed it at every depth — which made the port SSOT
++> unreproducible from a clone. It is tracked now: 97 assignments, all numeric;
++> every daemon port is covered. Two assignments carry trailing owner comments,
++> but their values remain numeric ports.
+ 
+ **Rule 5.3 — direnv is a bridge, not a source of truth.** `.envrc` activates mise
+ and loads `$HOME/.secrets`. It never carries config of its own.
+diff --git a/docs/daemons.md b/docs/daemons.md
+index de185d95ad..7ca39575c4 100644
+--- a/docs/daemons.md
++++ b/docs/daemons.md
+@@ -48,7 +48,7 @@ bornite → rhodochrosite`.
+ | `bornite` | 25100 | The local model router. ELO-ranks providers, enforces the circuit breaker, owns the 25xxx model path. |
+ | `estate-router` | 25104 | The older TS router, still serving. Runs *beside* bornite, not behind it. Superseded but not retired — killing it is a separate decision. |
+ | `rhodochrosite` | 25193 | The cloud/paid provider router. Holds the `VANSROUTER_API_KEY` namespace vansrouter used to own. |
+-| `chalcopyrite` | — | The guard plane in front of bornite and rhodochrosite: quarantine, circuit breaker, credential rotation, winner ledger. Not in `groups.*` because it fronts everything else. |
++| `chalcopyrite` | 25200 | The guard plane in front of bornite and rhodochrosite: quarantine, circuit breaker, credential rotation, winner ledger. Its project overlay (`ranch/mesh/proxy/chalcopyrite/pitchfork.d/chalcopyrite.toml`) supplies `CHALCOPYRITE_PORT=25200` and the readiness URL, so the top-level daemon object has no `port =` field. Not in `groups.*` because it fronts everything else. |
+ | `mesh-hub` | 25115 | MCP registry. Answers "which MCPs exist". |
+ | `gatehouse` | 25127 | MCP meta-tool layer — the gatehouse MCP endpoint itself. The SSOT still names this port `MCPPROXY_GO_PORT`. |
+ | `null-g-proxy` | 25107 | Edge proxy that returns null for blocked traffic. |
+diff --git a/engines/bornite/beellama.cpp b/engines/bornite/beellama.cpp
+--- a/engines/bornite/beellama.cpp
++++ b/engines/bornite/beellama.cpp
+@@ -1 +1 @@
+-Subproject commit 78af8326522d94fb5fc24b60cfd6f26e29f12490
++Subproject commit 78af8326522d94fb5fc24b60cfd6f26e29f12490-dirty
+diff --git a/engines/bornite/ik_llama.cpp b/engines/bornite/ik_llama.cpp
+--- a/engines/bornite/ik_llama.cpp
++++ b/engines/bornite/ik_llama.cpp
+@@ -1 +1 @@
+-Subproject commit 7434a014237e55b2e0d36edc2ace6acfb82fea1c
++Subproject commit 7434a014237e55b2e0d36edc2ace6acfb82fea1c-dirty
+diff --git a/engines/bornite/llama-cpp-turboquant b/engines/bornite/llama-cpp-turboquant
+--- a/engines/bornite/llama-cpp-turboquant
++++ b/engines/bornite/llama-cpp-turboquant
+@@ -1 +1 @@
+-Subproject commit d69b48c7fe653535753964a283ceb09aed35ddd6
++Subproject commit d69b48c7fe653535753964a283ceb09aed35ddd6-dirty
+diff --git a/packages/omp-mobile-autocorrect/test/autocorrect.test.ts b/packages/omp-mobile-autocorrect/test/autocorrect.test.ts
+index acea17fd21..d67555bf7d 100644
+--- a/packages/omp-mobile-autocorrect/test/autocorrect.test.ts
++++ b/packages/omp-mobile-autocorrect/test/autocorrect.test.ts
+@@ -47,7 +47,7 @@ describe("omp-mobile-autocorrect engine", () => {
+   });
+ 
+   it("strictly protects URLs, URIs, endpoints, and IP addresses", () => {
+-    const input = "call http://127.0.0.1:20128/v1/models or skill://fix-omp-launcher";
++    const input = "call http://127.0.0.1:20128/v1/models or skill://tau-fork-pinning";
+     const result = autocorrectText(input);
+ 
+     expect(result.correctedText).toBe(input);
+diff --git a/profiles/default/env.sh b/profiles/default/env.sh
+index ae6bced314..1fda306960 100755
+--- a/profiles/default/env.sh
++++ b/profiles/default/env.sh
+@@ -19,11 +19,10 @@ export GHAS_FRONTEND_PORT="${GHAS_FRONTEND_PORT:-25114}"
+ export MESH_HUB_PORT="${MESH_HUB_PORT:-25115}"
+ export HINDSIGHT_API_PORT="${HINDSIGHT_API_PORT:-25117}"
+ export HINDSIGHT_CP_PORT="${HINDSIGHT_CP_PORT:-25118}"
+-# MCP_GATEWAY_PORT :25120 was retired with the estate-router merge. The
+-# gatehouse meta-tool layer is what still answers, on :25127 -- the same port
+-# MCPPROXY_GO_PORT carries. Both names meant one daemon; see config/ports.env.
++# MCP_GATEWAY_PORT is a compatibility alias for gatehouse :25127, the same
++# daemon MCPPROXY_GO_PORT names. :25120 belongs to ESTATE_CHAT_PORT; it was
++# never this gateway. See config/ports.env.
+ export MCP_GATEWAY_PORT="${MCP_GATEWAY_PORT:-25127}"
+-export MCPPROXY_GO_PORT="${MCPPROXY_GO_PORT:-25127}"
+ export QDRANT_PORT="${QDRANT_PORT:-25133}"
+ export REDIS_PORT="${REDIS_PORT:-25199}"
+ 
+diff --git a/profiles/toxic/env.sh b/profiles/toxic/env.sh
+index 17cd90f05b..03bf4a1e16 100755
+--- a/profiles/toxic/env.sh
++++ b/profiles/toxic/env.sh
+@@ -16,7 +16,7 @@ export SCOUT_API_KEY="bornite"
+ export NIM_QUEUE_BASE_URL="http://127.0.0.1:8000/v1"
+ export LLAMA_SWAP_MODEL="beellama/qwen-flash-64k"
+ 
+-# 2. Local Mesh & Gateway Ports (Aligned with estate/config/ports.env)
++# 2. Local Mesh & Gateway Ports (aligned with estate/config/ports.env)
+ export LLAMA_SWAP_PORT="25100"
+ export HERD_PORT="25100"
+ export RUST_WEB_PORT="25201"
+@@ -31,17 +31,16 @@ export GHAS_FRONTEND_PORT="25114"
+ export MESH_HUB_PORT="25115"
+ export HINDSIGHT_API_PORT="25117"
+ export HINDSIGHT_CP_PORT="25118"
+-# MCP_GATEWAY_PORT :25120 was retired with the estate-router merge. The
+-# gatehouse meta-tool layer is what still answers, on :25127 -- the same port
+-# MCPPROXY_GO_PORT carries. Both names meant one daemon; see config/ports.env.
++# MCP_GATEWAY_PORT is a compatibility alias for gatehouse :25127, the same
++# daemon MCPPROXY_GO_PORT names. :25120 belongs to ESTATE_CHAT_PORT; it was
++# never this gateway. See config/ports.env.
+ export MCP_GATEWAY_PORT="25127"
+ export FEEDLOT_PORT="25121"
+ export BEELLAMA_PORT="25122"
+ export IK_LLAMA_PORT="25123"
+ export KIMI_CODE_PORT="25126"
+-export MCPPROXY_GO_PORT="25127"
+ export BROWSERLESS_PORT="25130"
+-export ZEDRA_HOST_PORT="25146"
++export ZEDRA_HOST_PORT="25214"
+ export SOV_GHAS_PORT="25131"
+ export QDRANT_PORT="25133"
+ export REDIS_PORT="25199"
+diff --git a/scripts/generate.ts b/scripts/generate.ts
+index 9c4d0fc748..d89fe35e02 100755
+--- a/scripts/generate.ts
++++ b/scripts/generate.ts
+@@ -16,11 +16,13 @@
+ // caller, cron job, or muscle-memory `bun run scripts/generate.ts` still
+ // silently rewrote the estate's service config. That is now a hard exit.
+ //
+-// Sources in src/generators/ are kept for reference only. To resurrect this,
+-// delete this file deliberately — do not re-add the call.
++// src/generators/ and its tests were deleted 2026-10-03. Nothing imported them
++// except this retired entrypoint's test, so preserving them as "reference" only
++// preserved a stale second configuration system. A future generator needs a new
++// design and an explicit source of truth; it must not resurrect these sources.
+ //
+-// Open: fate of antigravity-cli, pi-agent, pi-web-dashboard, qed, zedra-host
+-// (defined in generator, not in pitchfork, not observed running).
++// The former open set (antigravity-cli, pi-agent, pi-web-dashboard, qed,
++// zedra-host) was reconciled separately; zedra-host is an active service now.
+ // ============================================================================
+ 
+ process.stderr.write(
+diff --git a/sigma b/sigma
+--- a/sigma
++++ b/sigma
+@@ -1 +1 @@
+-Subproject commit 2446607efdc3fe5cee64274774165c60fc1ca1b7
++Subproject commit 2446607efdc3fe5cee64274774165c60fc1ca1b7-dirty
+diff --git a/skills-hub b/skills-hub
+--- a/skills-hub
++++ b/skills-hub
+@@ -1 +1 @@
+-Subproject commit 49bee1ec8e4f89719c47c3bee2a8bae28a41ff8d
++Subproject commit 49bee1ec8e4f89719c47c3bee2a8bae28a41ff8d-dirty

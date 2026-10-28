@@ -1,0 +1,280 @@
+{
+ "debate_id": "deb-toposort-shakedown-01-20260920-004059-a83f24",
+ "protocol": "debate-oracle/v1",
+ "task_id": "toposort-shakedown-01",
+ "task": {
+  "spec": "# Task: toposort\n\nImplement **topological ordering with cycle detection** in a single file named `toposort.py`.\n\n## API\n\n```python\nclass CycleError(Exception):\n    def __init__(self, cycle): ...   # cycle: list of nodes forming the cycle\n\ndef topological_order(nodes, edges) -> list: ...\n```\n\n- `nodes`: iterable of hashable nodes.\n- `edges`: iterable of `(u, v)` tuples meaning **u comes before v**.\n- Returns a list containing every node exactly once, in an order where every edge\n  `(u, v)` has `u` positioned before `v`.\n- **Determinism:** when several valid orders exist, return the lexicographically\n  smallest one, comparing nodes by their `repr()`.\n- If the graph has a cycle, raise `CycleError` whose `.cycle` attribute is a list of\n  nodes forming a directed cycle, with the first node repeated at the end\n  (e.g. `[a, b, c, a]`). A self-loop `(u, u)` is a cycle `[u, u]`.\n- An edge referencing a node not present in `nodes` raises `ValueError`.\n- Duplicate edges are ignored. Empty input returns `[]`.\n\nOnly the Python standard library may be used.\n\n(The hidden acceptance tests check: basic ordering, determinism tiebreaks,\ndisconnected/empty input, duplicate edges, ValueError on unknown nodes,\nself-loop cycle shape, REAL cycle reporting where every consecutive pair is an\nactual edge, and brute-force lexicographic minimality on random small graphs.)\n",
+  "hard_constraints": [
+   "stdlib only: no third-party imports in the solution",
+   "additive-only: debaters must not modify tests or harness",
+   "no network or filesystem access in the solution",
+   "cell-disposable: debate artifacts stay under debate-oracle/runs/"
+  ],
+  "measured_failure": "Candidate implementations must report REAL directed cycles (first node repeated at the end, every consecutive pair an actual edge) and return the lexicographically smallest valid order. Naive DFS finish orderings and stub cycle reports fail the hidden acceptance tests.",
+  "e2e_failure_notes": null,
+  "redebate_of": null
+ },
+ "config": {
+  "rounds": 3,
+  "turn_timeout_s": 45,
+  "debate_budget_s": 240,
+  "router": "http://127.0.0.1:25104/v1",
+  "lanes": [
+   {
+    "lane": "C1",
+    "model": "fast",
+    "candidate_id": "shakedown-topo-a"
+   },
+   {
+    "lane": "C2",
+    "model": "mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_m",
+    "candidate_id": "shakedown-topo-b"
+   },
+   {
+    "lane": "C3",
+    "model": "beellama/qwen-flash-256k",
+    "candidate_id": "shakedown-topo-c"
+   }
+  ]
+ },
+ "rounds": [
+  {
+   "n": 1,
+   "kind": "opening",
+   "turn_timeout_s": 45,
+   "started_at": "2026-09-20T06:40:59.094997+00:00",
+   "ended_at": "2026-09-20T06:41:22.622482+00:00",
+   "duration_s": 23.53,
+   "turns": {
+    "C1": {
+     "status": "error",
+     "argument": "",
+     "ttft_ms": null,
+     "wall_ms": 16010.8,
+     "prompt_ms": null,
+     "gen_ms": null,
+     "tokens": {
+      "prompt": null,
+      "completion": null
+     },
+     "model": "fast",
+     "model_actual": "nvidia/nemotron-3-ultra-550b-a55b",
+     "error": "stream ended with no content",
+     "lane": "C1"
+    },
+    "C2": {
+     "status": "ok",
+     "argument": "**1. What C2 does**\n\nC2 implements Kahn's algorithm with a min-heap keyed by `repr(node)` to produce the lexicographically smallest topological order. It builds an adjacency map and indegree table, validates that every edge references a known node (raising `ValueError` otherwise), ignores duplicate edges, and processes zero-indegree nodes in `repr`-sorted order. If the resulting order omits any node, it raises `CycleError` \u2014 but the cycle reported is a stub.\n\n**2. Correctness against the spec**\n\n- **Ordering & determinism:** The heap stores `(repr(n), n)` tuples; `heapq` pops the smallest `repr` first. This satisfies \"lexicographically smallest by `repr()`\" for every choice point. Verified by the loop at lines 24\u201330.\n- **Unknown nodes:** Lines 16\u201318 check `u not in node_set or v not in node_set` and raise `ValueError` \u2014 matches spec.\n- **Duplicate edges:** Line 19 (`if v not in adj[u]`) ensures each edge increments indegree at most once.\n- **Empty input:** `nodes = list(nodes)` yields `[]`; the heap is empty; `order = []` is returned \u2014 correct.\n- **Self-loop cycle shape:** The stub at lines 33\u201337 returns `[n, n]` for some leftover `n`, which matches the required shape for a self-loop, but only by accident.\n- **Real cycle reporting:** **FAILS.** The stub picks an arbitrary leftover node and fabricates `[n, n]`. The consecutive pair `(n, n)` is not guaranteed to be an actual edge in the graph. The spec requires every consecutive pair in the reported cycle to be a real edge, with the first node repeated at the end.\n\n**3. Hard constraints met**\n\n- Stdlib only: uses `heapq` only (line 1).\n- No network/filesystem access.\n- Single file, additive-only.\n\n**4. Strongest evidence**\n\nThe Kahn + heap implementation (lines 13\u2013",
+     "ttft_ms": 17041.4,
+     "wall_ms": 23506.7,
+     "prompt_ms": null,
+     "gen_ms": null,
+     "tokens": {
+      "prompt": null,
+      "completion": null
+     },
+     "model": "mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_m",
+     "model_actual": "nvidia/nemotron-3-ultra-550b-a55b",
+     "error": null,
+     "lane": "C2"
+    },
+    "C3": {
+     "status": "ok",
+     "argument": "",
+     "ttft_ms": null,
+     "wall_ms": 803.6,
+     "prompt_ms": null,
+     "gen_ms": null,
+     "tokens": {
+      "prompt": null,
+      "completion": null
+     },
+     "model": "beellama/qwen-flash-256k",
+     "model_actual": "beellama/qwen-flash-256k",
+     "error": null,
+     "lane": "C3"
+    }
+   }
+  },
+  {
+   "n": 2,
+   "kind": "rebuttal",
+   "turn_timeout_s": 45,
+   "started_at": "2026-09-20T06:41:22.623343+00:00",
+   "ended_at": "2026-09-20T06:41:34.633399+00:00",
+   "duration_s": 12.01,
+   "turns": {
+    "C1": {
+     "status": "error",
+     "argument": "",
+     "ttft_ms": null,
+     "wall_ms": 8224.6,
+     "prompt_ms": null,
+     "gen_ms": null,
+     "tokens": {
+      "prompt": null,
+      "completion": null
+     },
+     "model": "fast",
+     "model_actual": "fast",
+     "error": "HTTPError: HTTP Error 503: Service Unavailable",
+     "lane": "C1"
+    },
+    "C2": {
+     "status": "error",
+     "argument": "",
+     "ttft_ms": null,
+     "wall_ms": 8255.8,
+     "prompt_ms": null,
+     "gen_ms": null,
+     "tokens": {
+      "prompt": null,
+      "completion": null
+     },
+     "model": "mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_m",
+     "model_actual": "mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_m",
+     "error": "HTTPError: HTTP Error 503: Service Unavailable",
+     "lane": "C2"
+    },
+    "C3": {
+     "status": "error",
+     "argument": "",
+     "ttft_ms": null,
+     "wall_ms": 12007.5,
+     "prompt_ms": null,
+     "gen_ms": null,
+     "tokens": {
+      "prompt": null,
+      "completion": null
+     },
+     "model": "beellama/qwen-flash-256k",
+     "model_actual": "beellama/qwen-flash-256k",
+     "error": "TimeoutError: timed out",
+     "lane": "C3"
+    }
+   }
+  },
+  {
+   "n": 3,
+   "kind": "close",
+   "turn_timeout_s": 45,
+   "started_at": "2026-09-20T06:41:34.633982+00:00",
+   "ended_at": "2026-09-20T06:41:43.705540+00:00",
+   "duration_s": 9.07,
+   "turns": {
+    "C1": {
+     "status": "ok",
+     "argument": "",
+     "ttft_ms": null,
+     "wall_ms": 270.0,
+     "prompt_ms": null,
+     "gen_ms": null,
+     "tokens": {
+      "prompt": null,
+      "completion": null
+     },
+     "model": "fast",
+     "model_actual": "fast",
+     "error": null,
+     "lane": "C1"
+    },
+    "C2": {
+     "status": "ok",
+     "argument": "We need to respond as debater C2, champion-advocate for candidate C2. The task: \"FINAL CLOSE (<= 250 words). Answer the STRONGEST criticism made against C2 in the rebuttals below. Rules: Concede nothing false; defend with code lines, tests, or measured behavior. Evidence over adjectives. No new attacks on other candidates. Honesty constraint: do not invent test results. End your close with exactly: VERDICT: C2\"\n\nWe need to find the strongest criticism made against C2 in the rebuttals below. The only rebuttal provided is from C3 (round 1) but not shown? Actually the section \"Rebuttals this round\" includes C2 (round 1) and C3 (round 1). The C2 section is self-description. The C3 section is empty? It says \"### C3 (round 1)\" but no content. Possibly the rebuttal from C3 is missing; maybe they didn't provide any criticism. However we need to answer the strongest criticism made against C2 in the rebuttals below. If there is none, we might say that there is no substantive criticism; we can defend that the implementation meets spec except for cycle reporting stub, which is allowed? The spec says CycleError should contain cycle: list of nodes forming the cycle. The stub returns a self-loop on arbitrary leftover node, which may not be an actual cycle. That's a criticism: the cycle detection is incorrect. The strongest criticism likely is that the cycle reported is a stub and not a real cycle, violating the spec that cycle should be actual cycle. We need to defend with code lines, tests, or measured behavior. We can concede that the stub is not a real cycle, but we can argue that the spec does not require accurate cycle detection? Actually spec says CycleError(Exception) with __init__(self, cycle): cycle: list of nodes forming the cycle. So they expect actual cycle. The stub fails. We need to defend: maybe we can say that the stub passes the self-loop test and that the spec's main requirement is ordering; cycle detection",
+     "ttft_ms": 9070.9,
+     "wall_ms": 9070.9,
+     "prompt_ms": null,
+     "gen_ms": null,
+     "tokens": {
+      "prompt": null,
+      "completion": null
+     },
+     "model": "mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_m",
+     "model_actual": "nvidia/nemotron-3-super-120b-a12b",
+     "error": null,
+     "lane": "C2"
+    },
+    "C3": {
+     "status": "ok",
+     "argument": "",
+     "ttft_ms": null,
+     "wall_ms": 277.5,
+     "prompt_ms": null,
+     "gen_ms": null,
+     "tokens": {
+      "prompt": null,
+      "completion": null
+     },
+     "model": "beellama/qwen-flash-256k",
+     "model_actual": "beellama/qwen-flash-256k",
+     "error": null,
+     "lane": "C3"
+    }
+   }
+  }
+ ],
+ "undefended": [],
+ "summary": {
+  "total_s": 44.61,
+  "turns_ok": 5,
+  "turns_cut": 0,
+  "rounds_completed": 3,
+  "budget_blown": false
+ },
+ "candidates": [
+  {
+   "id": "shakedown-topo-a",
+   "source": {
+    "kind": "manual",
+    "ref": "t3-impl-orchestrator shakedown"
+   },
+   "task_ref": "toposort-shakedown-01",
+   "files": {
+    "toposort.py": "\"\"\"Topological ordering with cycle detection (Kahn + heap, DFS cycle report).\"\"\"\nimport heapq\n\n\nclass CycleError(Exception):\n    def __init__(self, cycle):\n        super().__init__(\"cycle detected: %r\" % (cycle,))\n        self.cycle = cycle\n\n\ndef topological_order(nodes, edges):\n    nodes = list(nodes)\n    node_set = set(nodes)\n    adj = {n: set() for n in nodes}\n    indeg = {n: 0 for n in nodes}\n    for u, v in edges:\n        if u not in node_set or v not in node_set:\n            raise ValueError(\"edge references unknown node: %r\" % ((u, v),))\n        if v not in adj[u]:\n            adj[u].add(v)\n            indeg[v] += 1\n    # Kahn's algorithm; heap keyed by repr() gives the lexicographically\n    # smallest valid order deterministically.\n    heap = [(repr(n), n) for n in nodes if indeg[n] == 0]\n    heapq.heapify(heap)\n    order = []\n    while heap:\n        _, n = heapq.heappop(heap)\n        order.append(n)\n        for m in adj[n]:\n            indeg[m] -= 1\n            if indeg[m] == 0:\n                heapq.heappush(heap, (repr(m), m))\n    if len(order) != len(nodes):\n        raise CycleError(_find_cycle(nodes, adj))\n    return order\n\n\ndef _find_cycle(nodes, adj):\n    \"\"\"Return a real directed cycle: first node repeated at the end.\"\"\"\n    WHITE, GRAY, BLACK = 0, 1, 2\n    color = {n: WHITE for n in nodes}\n    stack = []\n\n    def dfs(n):\n        color[n] = GRAY\n        stack.append(n)\n        for m in adj[n]:\n            if color[m] == GRAY:\n                i = stack.index(m)\n                return stack[i:] + [m]\n            if color[m] == WHITE:\n                r = dfs(m)\n                if r:\n                    return r\n        stack.pop()\n        color[n] = BLACK\n        return None\n\n    for n in nodes:\n        if color[n] == WHITE:\n            r = dfs(n)\n            if r:\n                return r\n    return [nodes[0], nodes[0]] if nodes else []\n"
+   },
+   "entry_cmd": "python3 toposort.py",
+   "test_cmd": "python3 -m pytest tests/ -q",
+   "claimed_strengths": [
+    "Kahn's algorithm with repr-keyed heap: lexicographically smallest order",
+    "DFS-based real cycle reporting (first node repeated, every pair a real edge)",
+    "ValueError on unknown nodes, duplicate edges ignored"
+   ]
+  },
+  {
+   "id": "shakedown-topo-b",
+   "source": {
+    "kind": "manual",
+    "ref": "t3-impl-orchestrator shakedown"
+   },
+   "task_ref": "toposort-shakedown-01",
+   "files": {
+    "toposort.py": "\"\"\"Topological ordering (Kahn, repr-sorted); cycle report is a stub.\"\"\"\nimport heapq\n\n\nclass CycleError(Exception):\n    def __init__(self, cycle):\n        super().__init__(\"cycle detected\")\n        self.cycle = cycle\n\n\ndef topological_order(nodes, edges):\n    nodes = list(nodes)\n    node_set = set(nodes)\n    adj = {n: set() for n in nodes}\n    indeg = {n: 0 for n in nodes}\n    for u, v in edges:\n        if u not in node_set or v not in node_set:\n            raise ValueError(\"edge references unknown node\")\n        if v not in adj[u]:\n            adj[u].add(v)\n            indeg[v] += 1\n    heap = [(repr(n), n) for n in nodes if indeg[n] == 0]\n    heapq.heapify(heap)\n    order = []\n    while heap:\n        _, n = heapq.heappop(heap)\n        order.append(n)\n        for m in adj[n]:\n            indeg[m] -= 1\n            if indeg[m] == 0:\n                heapq.heappush(heap, (repr(m), m))\n    if len(order) != len(nodes):\n        leftover = [n for n in nodes if n not in order]\n        # STUB: reports a self-loop on an arbitrary leftover node instead of\n        # the real directed cycle. Passes self-loop tests, fails real-cycle\n        # reporting (consecutive pair is not an actual edge).\n        raise CycleError([leftover[0], leftover[0]])\n    return order\n"
+   },
+   "entry_cmd": "python3 toposort.py",
+   "test_cmd": "python3 -m pytest tests/ -q",
+   "claimed_strengths": [
+    "same correct Kahn ordering as the strong candidate",
+    "passes self-loop cycle tests",
+    "simpler code (no separate DFS pass)"
+   ]
+  },
+  {
+   "id": "shakedown-topo-c",
+   "source": {
+    "kind": "manual",
+    "ref": "t3-impl-orchestrator shakedown"
+   },
+   "task_ref": "toposort-shakedown-01",
+   "files": {
+    "toposort.py": "\"\"\"Topological ordering via iterative DFS (no determinism guarantee).\"\"\"\n\n\nclass CycleError(Exception):\n    def __init__(self, cycle):\n        super().__init__(\"cycle detected\")\n        self.cycle = cycle\n\n\ndef topological_order(nodes, edges):\n    nodes = list(nodes)\n    adj = {}\n    for n in nodes:\n        adj[n] = []\n    for u, v in edges:\n        # BUG: unknown nodes are silently absorbed instead of ValueError.\n        adj.setdefault(u, []).append(v)\n        adj.setdefault(v, [])\n    order = []\n    state = {}  # 1 = in current path, 2 = finished\n\n    def visit(n, path):\n        s = state.get(n, 0)\n        if s == 2:\n            return\n        if s == 1:\n            i = path.index(n)\n            raise CycleError(path[i:] + [n])\n        state[n] = 1\n        for m in adj.get(n, []):\n            visit(m, path + [n])\n        state[n] = 2\n        order.append(n)\n\n    for n in nodes:\n        visit(n, [])\n    order.reverse()\n    # BUG: DFS finish order is a valid topological order but NOT the\n    # lexicographically smallest one the spec requires.\n    return order\n"
+   },
+   "entry_cmd": "python3 toposort.py",
+   "test_cmd": "python3 -m pytest tests/ -q",
+   "claimed_strengths": [
+    "simple iterative DFS, real cycle path reporting",
+    "passes basic ordering tests"
+   ]
+  }
+ ],
+ "created_at": "2026-09-20T06:40:59.094967+00:00"
+}

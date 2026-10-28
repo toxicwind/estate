@@ -1,0 +1,45 @@
+{
+  "name": "kimi-claw",
+  "version": "0.27.1",
+  "description": "OpenClaw connector that bridges a remote /gateway server with the local OpenClaw Gateway.",
+  "type": "module",
+  "main": "dist/index.js",
+  "files": [
+    "dist/",
+    "openclaw.plugin.json"
+  ],
+  "openclaw": {
+    "extensions": [
+      "./dist/index.js"
+    ]
+  },
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "npm run build:internal",
+    "build:internal": "npm run clean && tsc -p tsconfig.build.json && mkdir -p dist/src && cp src/message-filter.js dist/src/message-filter.js && npm run minify:release",
+    "build:public": "npm run clean && tsc -p tsconfig.build.json && mkdir -p dist/src && cp src/message-filter.js dist/src/message-filter.js && npm run minify:release",
+    "minify:release": "for file in $(find dist -type f -name '*.js'); do terser \"$file\" --compress passes=2,dead_code=true,drop_console=true,drop_debugger=true --mangle --format comments=false --output \"$file\" -- \"$file\"; done",
+    "generate:im-proto": "node scripts/generate-im-proto.mjs",
+    "refresh:im-proto": "node scripts/refresh-im-proto.mjs",
+    "refresh:im-proto:check": "node scripts/refresh-im-proto.mjs --check",
+    "check:active-surface": "node scripts/check-active-im-surface.mjs",
+    "test": "node --experimental-transform-types --test tests/*.test.ts",
+    "test:cases": "node --experimental-transform-types tests/acp-case-runner.ts",
+    "test:coverage:baseline": "node --experimental-transform-types --experimental-test-coverage --test-coverage-include='src/**/*.ts' --test tests/*.test.ts"
+  },
+  "dependencies": {
+    "@bufbuild/protobuf": "2.11.0",
+    "undici": "^7.25.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@bufbuild/buf": "1.66.0",
+    "@bufbuild/protoc-gen-es": "2.11.0",
+    "@types/node": "^25.2.2",
+    "@types/ws": "^8.18.1",
+    "openclaw": "2026.4.14",
+    "protobufjs": "^8.0.0",
+    "terser": "^5.39.0",
+    "typescript": "^5.6.3"
+  }
+}

@@ -1,0 +1,27 @@
+id: openai-hardcoded-secret-go
+language: go
+severity: warning
+message: >-
+  A secret is hard-coded in the application. Secrets stored in source
+  code, such as credentials, identifiers, and other types of sensitive data,
+  can be leaked and used by internal or external malicious actors. It is
+  recommended to rotate the secret and retrieve them from a secure secret
+  vault or Hardware Security Module (HSM), alternatively environment
+  variables can be used if allowed by your company policy.
+note: >-
+  [CWE-798] Use of Hard-coded Credentials.
+  [REFERENCES]
+      - https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures
+
+ast-grep-essentials: true
+rule:
+  any:
+    - pattern: tls.Listen($NETWORK, $IP $$$)
+    - pattern: net.Listen($NETWORK, $IP $$$)
+constraints:
+  IP:
+    any:
+      - kind: interpreted_string_literal
+        regex: ^"0.0.0.0:.*"$|^":.*"$|^'0.0.0.0:.*'$|^':.*'$
+      - kind: raw_string_literal
+        regex: ^`0.0.0.0:.*`$|^`:.*`$

@@ -1,0 +1,49 @@
+{
+  "brain_dir": "/home/toxic/estate/brain/",
+  "version": "1.0.0",
+  "updated": "2026-08-09T17:06:00Z",
+  "agents": {
+    "pi-agent": {
+      "path": "/home/toxic/estate/brain/pi-agent/",
+      "identity": "/home/toxic/estate/brain/pi-agent/identity.json",
+      "model": "longcat-2.0-free",
+      "status": "active",
+      "role": "Broadcaster"
+    },
+    "grok": {
+      "path": "/home/toxic/estate/brain/grok/",
+      "identity": "/home/toxic/estate/brain/grok/identity.json",
+      "model": "pending",
+      "status": "pending_setup",
+      "setup": "grok cli --setup"
+    }
+  },
+  "subagents": {
+    "longcat-2.0-free": {
+      "path": "/home/toxic/estate/brain/subagents/longcat-2.0-free/",
+      "provider": "opencode",
+      "context_window": 1000000
+    },
+    "mimo-v2.5": {
+      "path": "/home/toxic/estate/brain/subagents/mimo-v2.5/",
+      "provider": "opencode",
+      "context_window": 131072,
+      "status": "available"
+    }
+  },
+  "shared": {
+    "generator": "/home/toxic/estate/brain/generate.sh",
+    "tasks": "/home/toxic/estate/TASKS.md",
+    "ports": "/home/toxic/estate/config/ports.env",
+    "mcp_config": "/home/toxic/.mcpproxy/mcp_config.json",
+    "coordination_md": "/home/toxic/coordination.md"
+  },
+  "recovery": {
+    "description": "Any agent reads MANIFEST.json to find all agents, subagents, and shared resources",
+    "protocol": "MANIFEST.json \u2192 agent/identity.json \u2192 full state"
+  },
+  "git": {
+    "estate": "https://github.com/toxicwind/estate.git",
+    "brain_commits": "brain/ changes tracked in estate main"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "bidder-a": {
+    "cal": 0.7,
+    "done": 0,
+    "fail": 1
+  },
+  "bidder-flash": {
+    "cal": 0.3429999999999999,
+    "done": 1,
+    "fail": 3
+  },
+  "bidder-mule": {
+    "cal": 0.7,
+    "done": 0,
+    "fail": 1
+  },
+  "bidder-specialist": {
+    "cal": 0.5215,
+    "done": 1,
+    "fail": 2
+  }
+}

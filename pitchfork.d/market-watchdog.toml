@@ -1,0 +1,6 @@
+[daemons.market-watchdog]
+mise = true
+run = "exec /home/toxic/pens/ranch/squawk/oracle/bin/market-watchdog.sh"
+dir = "/home/toxic/pens/ranch/squawk/oracle"
+retry = true
+auto = ["start"]

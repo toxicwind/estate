@@ -1,0 +1,20 @@
+# toxicwind/archguard integration — deterministic audit API (Express, :4000).
+# (Composer fragment re-landing 2026-10-23; see the sibling archguard-falkordb
+# fragment for the owning-layer lesson.)
+#
+# LLM-free by default: no provider keys are set here — extractor/advisor fall
+# back to deterministic synthesizers and the Auditor agent is Cypher-only by
+# construction (Phase-1 proof lived in forge-archguard-p1/EVIDENCE.md).
+#
+# LLM-free by design: the empty-string provider keys scrub the values the
+# daemon would otherwise inherit from the supervisor environment
+# (empty = falsy -> deterministic fallbacks).
+[daemons.archguard-api]
+run = "exec /home/toxic/.bun/bin/bun src/server.ts"
+dir = "/home/toxic/pens/ranch/barn/archguard"
+mise = false
+retry = true
+boot_start = true
+auto = ["start"]
+env = { PORT = "4000", FALKORDB_HOST = "127.0.0.1", FALKORDB_PORT = "6379", FALKORDB_GRAPH_NAME = "archguard_estate", OPENROUTER_API_KEY = "", ANTHROPIC_API_KEY = "" }
+ready_http = "/api/health"

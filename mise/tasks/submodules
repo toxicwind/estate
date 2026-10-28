@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# mise run submodules — autonomous sync of ranch submodules and estate pointer
+set -euo pipefail
+
+ESTATE_DIR="/home/toxic/estate"
+RANCH_DIR="${ESTATE_DIR}/ranch"
+
+echo "⚡ [submodules-sync] Synchronizing registered estate submodules..."
+
+# Update registered submodules whose remote upstream has advanced
+git -C "$RANCH_DIR" submodule update --init --recursive estate-kappa-plugin bash-style-guide pdfshield
+
+# Audit and update the catalog with live output
+if [[ -f "$RANCH_DIR/toolkit/audit-forks.ts" ]]; then
+  echo "📊 [submodules-sync] Running audit-forks..."
+  bun --cwd "$RANCH_DIR" toolkit/audit-forks.ts
+  echo "📖 [submodules-sync] Generating README catalog..."
+  bun --cwd "$RANCH_DIR" toolkit/generate-readme.ts --update
+fi
+
+# Check for staged or unstaged submodule changes in ranch
+if [[ -n "$(git -C "$RANCH_DIR" status --porcelain .gitmodules estate-kappa-plugin bash-style-guide pdfshield README.md FORKS-report.json FORKS-report.md 2>/dev/null)" ]]; then
+  echo "💾 [submodules-sync] Committing updated submodule state in ranch..."
+  git -C "$RANCH_DIR" add .gitmodules estate-kappa-plugin bash-style-guide pdfshield README.md FORKS-report.json FORKS-report.md
+  git -C "$RANCH_DIR" commit -m "bot: autonomous submodule catalog update"
+  git -C "$RANCH_DIR" push origin main
+  echo "🚀 [submodules-sync] Ranch submodules pushed to origin."
+else
+  echo "✅ [submodules-sync] Ranch submodules are up to date."
+fi
+
+# Check if estate root needs its ranch pointer updated
+if [[ -n "$(git -C "$ESTATE_DIR" status --porcelain ranch 2>/dev/null)" ]]; then
+  echo "🏠 [submodules-sync] Advancing ranch pointer in estate root..."
+  git -C "$ESTATE_DIR" add ranch
+  git -C "$ESTATE_DIR" commit -m "chore(ranch): auto-advance ranch submodule pointer"
+  git -C "$ESTATE_DIR" push origin main
+  echo "🚀 [submodules-sync] Estate root pointer synchronized."
+else
+  echo "✅ [submodules-sync] Estate root pointer is up to date."
+fi

@@ -1,0 +1,101 @@
+ESTATE / KILO CONFIG AUDIT
+source: {.txt}  (config.json candidate)
+status: JSON parses OK. Failures are config-level, not syntax.
+schema: https://app.kilo.ai/config.json
+
+== BLOCKERS (will break startup or a provider) ==========================
+
+[B1] provider.chalcopyrite is incomplete
+     location: provider.chalcopyrite
+     has: options.baseURL, options.apiKey
+     missing: npm, name, models
+     effect: provider cannot be instantiated (no SDK package); startup
+             throw or silently dead provider.
+     fix: add "npm": "@ai-sdk/openai-compatible", a "name", and at minimum
+          an empty "models": {}. Or delete the block entirely.
+
+[B2] skills.paths points at a FILE, not a directory
+     location: skills.paths[0]
+     value: /home/toxic/estate/skills-hub/bin/skills-hub.js
+     effect: loader that expects a dir will fail stat/readdir; loader that
+             ignores the key makes the entry dead.
+     fix: point at the directory (/home/toxic/estate/skills-hub) or remove
+          the skills block if this build has no skills support.
+
+[B3] active model depends on unset env
+     location: model, small_model
+     values: freeinference/glm-5.3-flash, freeinference/deepseek-v4-flash
+     requires: FREEINFERENCE_API_KEY
+     effect: no start if the var is absent.
+     fix: export the var, or move model/small_model to a provider whose key
+          you already have (nim or rhodochrosite).
+
+== HIGH RISK (type errors or silent misbehaviour) =======================
+
+[H1] options.timeout: false  (rhodochrosite, freeinference)
+     Not a documented type in @ai-sdk/openai-compatible. Accepted as
+     "disable" in some builds, rejected in others.
+     fix: omit, or use 0.
+
+[H2] freeinference.options.http.fingerprint = "chrome"
+     Not part of the openai-compatible provider schema. Ignored at best,
+     schema-validation error at worst.
+     fix: remove the "http" object.
+
+[H3] local routers assumed up
+     rhodochrosite        http://127.0.0.1:25193/v1
+     chalcopyrite  http://127.0.0.1:25200/v1
+     nim          http://127.0.0.1:8000/v1
+     freeinference is remote (freeinference.org).
+     effect: any 127.0.0.1 target that is down = connection refused on
+             first request to that provider.
+     fix: verify with curl before blaming the config.
+
+[H4] four local .ts plugins loaded from disk
+     .kilo/plugin/estate-thresher.ts
+     .kilo/plugin/estate-bornite-models.ts
+     .kilo/plugin/estate-rhodochrosite-strategy.ts
+     .kilo/plugin/estate-autofixer.ts
+     effect: one missing file or one TS compile error in any of them
+             aborts startup and the error will NOT mention config.json.
+     fix: ls the dir; check each plugin compiles.
+
+== LOW / COSMETIC ======================================================
+
+[L1] duplicate model id "z-ai/glm-5.3-flash"
+     declared under both provider.rhodochrosite and provider.nim.
+     Not an error. Ambiguous in UI / model pickers. Consider renaming the
+     nim entry (e.g. "z-ai/glm-5.3-flash-max").
+
+[L2] $schema URL must resolve
+     If your editor red-underlines the entire file, this is why. Harmless
+     at runtime unless the loader validates against it.
+
+[L3] compaction.reserved = 24000
+     Fine against nim's 131072 context. Would be too large for a provider
+     with a small window; currently no such provider here.
+
+[L4] snapshot: true
+     Requires a git repo at the workspace root for snapshots to do
+     anything. Harmless if absent.
+
+[L5] rhodochrosite model id "nvidia/nemotron-3-ultra-550b-a55b"
+     Only errors when selected, not at startup. Confirm the router
+     actually exposes this exact id.
+
+== ENV VARS REQUIRED ===================================================
+
+RHODOCHROSITE_API_KEY              rhodochrosite
+FREEINFERENCE_API_KEY      freeinference   (+ gates model/small_model)
+CHALCOPYRITE_CLIENT_KEY     chalcopyrite
+NIM_PROXY_KEY              nim
+
+== ORDERED FIX LIST ====================================================
+
+1. Fix or delete provider.chalcopyrite            [B1]
+2. Repoint or delete skills.paths                [B2]
+3. Ensure FREEINFERENCE_API_KEY is exported      [B3]
+4. Drop options.timeout and options.http         [H1][H2]
+5. curl the three 127.0.0.1 endpoints            [H3]
+6. ls + compile-check the four plugin .ts files  [H4]
+7. (optional) rename the duplicated nim model id [L1]

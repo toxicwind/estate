@@ -1,0 +1,9 @@
+SWAP 1677:46..1679:c6:
++	return withForcedToolDegradationRetry(
++		resolvedModel,
++		context,
++		options,
++		originalToolChoice,
++		attempt,
++		(msg: string) => console.debug(msg),
++	);

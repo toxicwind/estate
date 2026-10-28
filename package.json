@@ -1,12 +1,29 @@
 {
+  "description": "Estate control plane \u2014 the ranch monorepo and its config",
+  "devDependencies": {
+    "bun-types": "^1.1.0",
+    "jscpd": "5.4.0",
+    "marked": "18.1.1",
+    "smol-toml": "1.9.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "bun": ">=1.4.2",
+    "go": ">=1.23.1",
+    "node": ">=22.12.0"
+  },
   "name": "estate",
-  "version": "0.0.0",
-  "private": true,
-  "type": "module",
   "scripts": {
-    "test": "bun test",
-    "check": "bunx oxlint . && bunx oxfmt --check '*.ts'",
-    "lint": "bunx oxlint .",
-    "readme": "bun ./bin/readme-gen.ts"
+    "health": "curl -s http://127.0.0.1:25100/v1/models | python3 -c 'import sys,json;print(len(json.load(sys.stdin)[\"data\"]),\"models\")'",
+    "ui:check": "bun run --cwd ranch/range/ui check",
+    "ui:test": "bun run --cwd ranch/range/ui test",
+    "ui:build": "bun run --cwd ranch/range/ui build",
+    "resect": "resect",
+    "resect:audit": "resect audit src/"
+  },
+  "packageManager": "bun@1.4.2",
+  "version": "18.1.14",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.1"
   }
 }

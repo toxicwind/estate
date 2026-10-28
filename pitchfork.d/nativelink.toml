@@ -1,0 +1,7 @@
+[daemons.nativelink]
+mise = true
+run = "exec /home/toxic/pens/ranch/forge/ops/nativelink/run.sh"
+dir = "/home/toxic/estate"
+port = 25155
+auto = ["start"]
+restart_delay = 5

@@ -1,0 +1,21 @@
+{
+  "description": "Card-derived per-model request enforcement for bornite — TypeScript/Bun reverse proxy",
+  "main": "src/index.ts",
+  "name": "@estate/model-guard",
+  "private": true,
+  "scripts": {
+    "build": "bun build src/index.ts --compile --outfile dist/model-guard",
+    "dev": "bun --watch src/index.ts",
+    "lint": "tsc --noEmit -p tsconfig.json",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "estate": {
+    "daemon": "model-guard",
+    "description": "Per-model request contract enforcement proxy (bornite-model-guard.py port). Rewrites /v1/chat/completions bodies per config/model_constraints.yaml before they reach bornite.",
+    "port": 25101,
+    "portEnv": "MODEL_GUARD_PORT"
+  },
+  "type": "module",
+  "version": "0.1.0"
+}

@@ -1,0 +1,62 @@
+// ============================================================================
+// ESTATE — Web UI Launcher Unit & Integration Tests
+// ============================================================================
+
+import { describe, expect, test } from "bun:test";
+import { resolve } from "node:path";
+import { probeUI, ESTATE_WEB_UIS } from "../scripts/open-web-uis.ts";
+import { parsePortsEnv } from "../src/utils/ports.ts";
+
+const ROOT = resolve(import.meta.dir, "..");
+const ports = parsePortsEnv(ROOT);
+
+describe("Estate Web UI Registry", () => {
+  test("ESTATE_WEB_UIS contains essential core dashboards", () => {
+    const ids = ESTATE_WEB_UIS.map((u) => u.id);
+    expect(ids).toContain("bornite");
+    expect(ids).toContain("mesh");
+    expect(ids).toContain("prometheus");
+    expect(ids).toContain("grafana");
+    expect(ids).toContain("search-ui");
+    expect(ids).toContain("kimi-code");
+    expect(ids).toContain("qdrant");
+  });
+
+  test("all WebUI portKeys map to valid ports in ports.env", () => {
+    for (const ui of ESTATE_WEB_UIS) {
+      const port = ports.get(ui.portKey);
+      expect(port).toBeDefined();
+      expect(typeof port).toBe("number");
+      expect(port).toBeGreaterThan(1024);
+      expect(port).toBeLessThanOrEqual(65535);
+    }
+  });
+
+  test("probeUI returns structured status without throwing on down port", async () => {
+    const dummySpec = {
+      id: "dummy-test-service",
+      name: "Dummy Test",
+      portKey: "NONEXISTENT_PORT_KEY",
+      defaultPort: 29999,
+      path: "/nonexistent-path",
+      description: "Dummy test service",
+      authRequired: false,
+    };
+
+    const result = await probeUI(dummySpec, 100);
+    expect(result.spec.id).toBe("dummy-test-service");
+    expect(result.active).toBe(false);
+    expect(result.port).toBe(29999);
+    expect(["down", "timeout"]).toContain(result.statusText);
+  });
+
+  test("probeUI detects live bornite / bornite endpoint", async () => {
+    const herdSpec = ESTATE_WEB_UIS.find((u) => u.id === "bornite");
+    expect(herdSpec).toBeDefined();
+    if (herdSpec) {
+      const result = await probeUI(herdSpec, 500);
+      expect(result.port).toBe(25100);
+      expect(result.url).toContain("25100");
+    }
+  });
+});

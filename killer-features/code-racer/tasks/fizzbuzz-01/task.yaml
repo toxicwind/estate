@@ -1,0 +1,6 @@
+id: fizzbuzz-01
+lang: python
+artifact: solution.py
+extract: {fence: python}
+timeouts: {llm-fast: 60, llm-mid: 120, llm-cloud: 180, repo: 300, prompt-exotic: 240, judge: 60}
+accept: "pytest tests/ -q"

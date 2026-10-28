@@ -1,0 +1,34 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+{
+  "manifestVersion": "2.0.0",
+  "signatureType": "grafana",
+  "signedByOrg": "grafana",
+  "signedByOrgName": "Grafana Labs",
+  "plugin": "grafana-pyroscope-datasource",
+  "version": "13.0.8",
+  "time": 1792582216008,
+  "keyId": "7e4d0c6a708866e7",
+  "files": {
+    "module.js": "a6ebb5f98a5752ca9d617b3ccbf051da047f5c9bbd55c52c77cb33ea1114bb4b",
+    "gpx_grafana-pyroscope-datasource_linux_amd64": "d1066ddf1fd15af25eaee227b3c201aec824b24f416ba96fe68f57a40c4179eb",
+    "go_plugin_build_manifest": "dcb969481824ceea8999533b583797625ca51c0c4c8fa8e00cb54e96791aba21",
+    "LICENSE": "0d96a4ff68ad6d4b6f1f30f713b18d5184912ba8dd389f86aa7710db079abcb0",
+    "README.md": "f24240b139737237d573375ec88a0156d067e61e499d29c474c8326446d888ff",
+    "CHANGELOG.md": "c2cb89fcefc5e25af3087daf8edb39abc826bf3f4b4499a0a868f47691fe8bf3",
+    "module.js.map": "832a43b8785cfd6faf5defa2f3a0e60a2c44b5c347c75cd7d70c10676ea788fc",
+    "plugin.json": "a7fcc6a6ff03879047121b7d0753b8931159a7493edf23b127d3cef2ad23bf5e",
+    "img/grafana_pyroscope_icon.svg": "559341996765c2d5639a2818d76bcd88ffe252212193a573f2f9f77dae5064dd"
+  }
+}
+-----BEGIN PGP SIGNATURE-----
+
+wsA+BAETCgBtBYJq2KJICRB+TQxqcIhm50UUAAAAAAAcACBzYWx0QG5vdGF0
+aW9ucy5vcGVucGdwanMub3Jn76L3jV/UG130okvFM5dgTjqmCBXwv0wiQh1t
+ZsKzqksWIQTzOyW2kQdOhGNlcPN+TQxqcIhm5wAAvskCCQHESayEyvtKYO19
+F9RzEORNM79FrIryuhgquLGK5JATyhrClGuc3yfqjZSSv/s7a5i1tpuCZFVS
+HyKxhBkoxynt0gIGO3hKuclO9rSVm4Q175FFX0JBD/uBh510++3MK7F0VD8E
+bRAAe4TJg9ic6w8E6rWCd6aLuu0Cb16p1dELnb08Brk=
+=xuSu
+-----END PGP SIGNATURE-----

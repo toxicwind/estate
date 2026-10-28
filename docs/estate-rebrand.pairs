@@ -1,6 +1,6 @@
 # BRAND REBRAND — estate control plane, 2026-10-21
 #
-# Engine: grasp-hub/skills/00_inbox/rename-roundup/rename.ts (bun)
+# Engine: azurite/skills/00_inbox/rename-roundup/rename.ts (bun)
 #   bun run rename.ts --repo /home/toxic/estate --pairs docs/estate-rebrand.pairs --dry-run
 #
 # ORDER MATTERS: the engine applies rules in file order, and every substr/word/

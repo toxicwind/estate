@@ -1,0 +1,6 @@
+id: wezterm-display-pipeline
+language: lua
+rule:
+  pattern: config.front_end = $FRONT_END
+message: "Display pipeline: front_end = {{FRONT_END}} — verify GPU backend matches NVIDIA RTX 3090"
+severity: warning
