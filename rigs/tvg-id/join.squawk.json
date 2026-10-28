@@ -1,0 +1,9 @@
+{
+  "type": "squawk.join",
+  "identity": "tvg-id",
+  "channel": "fleet",
+  "ready": true,
+  "onboards": true,
+  "alias": "tvg-id",
+  "ts": 1792880000000
+}
