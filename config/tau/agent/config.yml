@@ -119,7 +119,7 @@ edit:
   enforceSeenLines: false
   fuzzyMatch: true
   fuzzyThreshold: 0.95
-  mode: patch
+  mode: hashline
   streamingAbort: false
 effort:
   high: 0.9
