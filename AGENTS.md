@@ -251,10 +251,12 @@ One rule: **products own their entrypoints; bins merely point at them.**
   The old `estate/ranch` and `estate/olympus` mirrors are GONE (deleted in the
   reorg; they were symlinks into `pens/`). Nothing stores product code under
   `estate/`, ever.
-- **Estate single-truth lease (2026-10-28):** `/home/toxic/estate` is a symlink
-  → `/home/toxic/pens/estate`. NEVER re-clone or re-create `/home/toxic/estate`
-  as a real checkout — pitchfork loads pens/estate, so any clone edits were
-  silently lost. If this symlink ever breaks, bin-contract audit fails.
+- **Estate single-truth lease (2026-10-28):** `/home/toxic/estate` must NOT exist
+  in any form — no symlink, no dir, no file. The SSOT is `/home/toxic/pens/estate`
+  and every daemon/config/script resolves absolute pens paths directly. NEVER
+  create `/home/toxic/estate` (symlink or real checkout) — pitchfork loads
+  pens/estate, so any ghost-path edits are silently lost. If `/home/toxic/estate`
+  ever appears, bin-contract audit fails.
 - **`/home/toxic/.local/bin` is the PATH surface.** Every product link there is
   a symlink straight into `pens/` (e.g. `forge -> pens/barn/forge/bin/forge.ts`,
   `corral -> pens/barn/corral/src/cli/index.ts`). Never a second copy.
@@ -377,10 +379,12 @@ One rule: **products own their entrypoints; bins merely point at them.**
   The old `estate/ranch` and `estate/olympus` mirrors are GONE (deleted in the
   reorg; they were symlinks into `pens/`). Nothing stores product code under
   `estate/`, ever.
-- **Estate single-truth lease (2026-10-28):** `/home/toxic/estate` is a symlink
-  → `/home/toxic/pens/estate`. NEVER re-clone or re-create `/home/toxic/estate`
-  as a real checkout — pitchfork loads pens/estate, so any clone edits were
-  silently lost. If this symlink ever breaks, bin-contract audit fails.
+- **Estate single-truth lease (2026-10-28):** `/home/toxic/estate` must NOT exist
+  in any form — no symlink, no dir, no file. The SSOT is `/home/toxic/pens/estate`
+  and every daemon/config/script resolves absolute pens paths directly. NEVER
+  create `/home/toxic/estate` (symlink or real checkout) — pitchfork loads
+  pens/estate, so any ghost-path edits are silently lost. If `/home/toxic/estate`
+  ever appears, bin-contract audit fails.
 - **`/home/toxic/.local/bin` is the PATH surface.** Every product link there is
   a symlink straight into `pens/` (e.g. `forge -> pens/barn/forge/bin/forge.ts`,
   `corral -> pens/barn/corral/src/cli/index.ts`). Never a second copy.
