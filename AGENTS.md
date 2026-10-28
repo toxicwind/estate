@@ -360,7 +360,7 @@ _Verified 2026-10-28; dossier: `/home/toxic/estate/docs/anomalies/2026-10-28/pit
 |46|**Evidence laundering: swallowed stderr → false "no hits"**|Invalid ffs flags + discarded stderr + sliced output laundered tool errors into "no hits" — twice, including a sanity needle that must match|Protocol: persist RAW stdout+stderr to a file, read back verbatim before concluding|
 |47|**Fleet todo done-endpoint doc lies**|Documented `POST /v1/todo/done` `{"file":…}` 404s; daemon implements `POST /v1/todo/<file>/done` (path param)|Doc fixed (rule 5); board flip verified 200|
 
-_Known gap: kimi-code ref points at the right monorepo but `apps/kimi-code/dist/main.mjs` needs a build before first start (build kicked pid 819944)._
+_Known gap: kimi-code ref points at the right monorepo but the checkout is a TRIMMED CLONE (no pnpm-workspace.yaml, no scripts/fix-node-pty-perms.mjs) → dist unbuildable until scaffold restored; daemon parked `auto=[]`._
 
 
 

@@ -594,9 +594,13 @@ retries = 3
 KIMI_AUTO_SHIM_PORT = "25153"
 SHIM_CONNECT_TIMEOUT = "240"
 
+# NOT BUILT 2026-10-28: src/local/kimi-code is a TRIMMED CLONE — missing
+# pnpm-workspace.yaml + scripts/fix-node-pty-perms.mjs, so pnpm install/build
+# cannot produce apps/kimi-code/dist/main.mjs (dossier: pitchfork-ref-mass-repair #45 gap).
+# Ref re-pointed to the live monorepo; parked until workspace scaffold restored.
 [daemons.kimi-code]
 run = "exec /home/toxic/pens/barn/estate-ops/claim-port 25126 /home/toxic/src/local/kimi-code/apps/kimi-code/dist/main.mjs web --no-open --port 25126"
-auto = ["start"]
+auto = []
 retry = true
 ready_http = "http://127.0.0.1:25126/health"
 port = 25126

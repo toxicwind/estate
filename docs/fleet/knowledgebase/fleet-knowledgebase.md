@@ -464,7 +464,7 @@ The session set out to verify goal item 11.1.2 (yote bot on the fleet, autonomou
 - AGENTS.md fleet-todo-loop doc: fixed done-endpoint shape (`POST /v1/todo/<file>/done`, path param — the documented `{"file":…}` body form 404s).
 
 **New tools added (paths):**
-- none new this session; reused `sync-estate-ns.sh`, `ffs`, squawk API. (kimi-code monorepo build kicked: pid 819944 → `/tmp/kimi-code-build.log`, to satisfy the re-pointed kimi-code ref.)
+- none new this session; reused `sync-estate-ns.sh`, `ffs`, squawk API. (kimi-code: parked `auto=[]` — the src/local checkout is a TRIMMED CLONE missing `pnpm-workspace.yaml` + `scripts/fix-node-pty-perms.mjs`, so pnpm cannot produce `apps/kimi-code/dist/main.mjs`; build-restore is a separate work item.)
 
 **The lessons (do not regress):**
 1. After ANY edit to `estate/pitchfork.toml`, run `sync-estate-ns.sh` — the supervisor loads `pens/estate/pitchfork.toml`, and the running supervisor also caches the old spawn until restart/clean.

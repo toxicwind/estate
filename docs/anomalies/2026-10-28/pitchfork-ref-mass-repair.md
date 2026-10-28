@@ -21,10 +21,14 @@ restoration**. Commit: estate `5e90a7eeee` (branch `wip/kappa/estate-cutover-202
 | 46 | **Self-inflicted evidence laundering: swallowed stderr → false "no hits"** | Two consecutive `ffs find` sweeps printed `(no hits)` for EVERY needle — including a sanity needle (`yote`) that must match | Invalid CLI flags (`--max-results` instead of `--limit`, then `-i`/`--mode` where unsupported) + stderr discarded + output sliced: tool errors were laundered into a "no hits" conclusion (twice) | Protocol change: persist RAW combined output to a file and read it back verbatim before concluding (`/tmp/ffs-raw-sweep.txt`, 11,538 bytes) | Raw re-run produced real hit lists; every moved-product home located and disk-verified from that raw evidence |
 | 47 | **Fleet todo done-endpoint doc lies** | `POST /v1/todo/done` `{"file": …}` → 404 `{"ok":false,"error":"not found"}` — endpoint shape as documented in AGENTS.md fleet-todo-loop | Daemon implements `POST /v1/todo/<file>/done` (path param, no body); doc drifted from code | Used path-param endpoint → 200; fixed the AGENTS.md doc line (rule 5: docs lie, code is absolute) | Board re-read shows yote todo `status: DONE` |
 
-**Known gap (honest):** `kimi-code` ref now points at the right monorepo
-(`/home/toxic/src/local/kimi-code`) but `apps/kimi-code/dist/main.mjs` was
-never built there — first `pitchfork start estate/kimi-code` needs the
-monorepo build (kicked off at retrospective time, pid 819944).
+**Known gap (precise):** `kimi-code` ref points at the right monorepo
+(`/home/toxic/src/local/kimi-code`), but that checkout is a TRIMMED CLONE —
+`pnpm-workspace.yaml` and `scripts/fix-node-pty-perms.mjs` are absent, so
+`pnpm install` (postinstall MODULE_NOT_FOUND) and `pnpm run build` (workspace
+packages unlinked, no node_modules in packages/*) cannot produce
+`apps/kimi-code/dist/main.mjs`. Daemon parked `auto=[]` (NOT BUILT comment)
+until the workspace scaffold is restored from upstream — restoring it is a
+separate work item from ref repair.
 
 **New capability, not an anomaly:** yote + coyote joined the squawk fleet as
 first-class citizens (`POST /v1/join` receipts 200, presence heartbeats live);
