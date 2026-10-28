@@ -1139,6 +1139,32 @@
       "isolation": {
         "enabled": false
       }
+    },
+    {
+      "quarantined": false,
+      "name": "taas-telegram",
+      "url": "http://127.0.0.1:25243/mcp",
+      "protocol": "http",
+      "command": "",
+      "args": [],
+      "env": {},
+      "oauth": null,
+      "enabled": true,
+      "created": "2026-10-27T21:47:18.000000-06:00",
+      "updated": "2026-10-27T21:47:18.000000-06:00"
+    },
+    {
+      "quarantined": false,
+      "name": "gemini-mcp",
+      "url": "http://127.0.0.1:25227/mcp",
+      "protocol": "http",
+      "command": "",
+      "args": [],
+      "env": {},
+      "oauth": null,
+      "enabled": true,
+      "created": "2026-10-27T21:47:18.000000-06:00",
+      "updated": "2026-10-27T21:47:18.000000-06:00"
     }
   ],
   "oauth_expiry_warning_hours": 4,
