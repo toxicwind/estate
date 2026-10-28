@@ -21,7 +21,7 @@ type EnvLayer = { resolve: () => string; precedence: number };
  * Strip a trailing ` # comment` from an env-file value. Quote-aware: a `#`
  * inside a quoted value is preserved, so `KEY="a#b"` keeps `a#b`.
  * Unquoted values are cut at the first whitespace-then-`#`, so
- * `OPENFANG_PORT=25103  # owner: x` parses as `25103`. Without this, any
+ * `RIG_PORT=25103  # owner: x` parses as `25103`. Without this, any
  * trailing comment becomes part of the value and numeric parsing (ports,
  * timeouts) fails on the polluted string.
  */

@@ -18,7 +18,7 @@ export interface HealthReport {
     metrics: any;
     logs: string | null;
   };
-  openFang: { healthy: boolean; status: string | null };
+  rig: { healthy: boolean; status: string | null };
   gpu: { healthy: boolean; devices: any[]; summary: string };
   overall: string;
   warnings: string[];
@@ -194,7 +194,7 @@ export async function checkHealth() {
   return {
     timestamp: new Date().toISOString(),
     durationMs: dur,
-    services: { llamaSwap: ls, openFang: of },
+    services: { llamaSwap: ls, rig: of },
     llamaSwap: {
       healthy: ls.healthy,
       models: ms,
@@ -202,7 +202,7 @@ export async function checkHealth() {
       metrics: mt,
       logs: null,
     },
-    openFang: { healthy: of.healthy, status: of.healthy ? "ok" : of.error },
+    rig: { healthy: of.healthy, status: of.healthy ? "ok" : of.error },
     gpu,
     warnings: [],
     overall,

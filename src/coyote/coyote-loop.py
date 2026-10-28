@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Coyote Loop v3.1 — Max Level Autonomous Agent
-First-class estate service. OpenFang agent with Yote integration.
+First-class estate service. Rig agent with Yote integration.
 HTTP server for task ingestion + health checks (pitchfork-compatible).
 """
 
@@ -45,8 +45,8 @@ class HalConfig:
     max_context_tokens: int = 120000
     http_port: int = 25143
     http_host: str = "0.0.0.0"
-    # OpenFang integration
-    openfang_api: str = "http://127.0.0.1:25103"
+    # Rig integration
+    rig_api: str = "http://127.0.0.1:25103"
     yote_api: str = "http://127.0.0.1:25102"
     mcpproxy_api: str = os.getenv("MCPPROXY_GO_URL", f"http://127.0.0.1:{os.getenv('MCPPROXY_GO_PORT', '25127')}")
     ghas_mcp_api: str = "http://127.0.0.1:25113"

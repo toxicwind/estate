@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Coyote v3.1 — Autonomous Agent Inference Engine
-# First-class estate service. OpenFang agent with Yote integration.
+# First-class estate service. Rig agent with Yote integration.
 # Routes through AST matrix (bornite :25100) with 14 providers.
 set -euo pipefail
 SOV="${ESTATE_ROOT:-/home/toxic/pens/estate}"

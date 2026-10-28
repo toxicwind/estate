@@ -136,7 +136,7 @@ estate/                    ← ROOT (this repo)
 │   ├── pi/                   ← Pi agent fork (was estate-pi)
 │   ├── swap/                 ← Model swapping
 │   ├── rebrand/              ← Rebrand toolkit
-│   ├── os/                   ← Openfang agent OS
+│   ├── os/                   ← Rig agent OS
 │   ├── framework/            ← Tau agent framework
 │   ├── orchestrator/         ← Bornite orchestrator
 │   ├── messaging/            ← Yote messaging gateway

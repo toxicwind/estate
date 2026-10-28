@@ -8,7 +8,7 @@
  *   3. Records 429s with proper Retry-After → central backoff pool
  *   4. Mirrors successful responses back into the cache → every agent benefits
  *
- * All pi-agent providers (nvidia.ts), OpenFang hands, subagents route here
+ * All pi-agent providers (nvidia.ts), Rig hands, subagents route here
  * instead of hitting integrate.api.nvidia.com directly.
  *
  * Env:
