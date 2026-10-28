@@ -1509,3 +1509,27 @@ mise = true
 url = "http://127.0.0.1:25227/health"
 interval = "30s"
 timeout = "5s"
+
+[daemons.taas]
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/ranch/arroyo/overlord/src/taas.ts"
+auto = ["start"]
+retry = true
+port = 25243
+expected_port = [25243]
+ready_http = "http://127.0.0.1:25243/health"
+dir = "/home/toxic/pens/ranch/arroyo/overlord"
+mise = true
+
+[daemons.taas.health_http]
+url = "http://127.0.0.1:25243/health"
+interval = "60s"
+timeout = "5s"
+
+[daemons.eidolon]
+run = "exec /home/toxic/pens/ergasterion/eidolon/serve.sh"
+auto = ["start"]
+retry = true
+ready_http = "http://127.0.0.1:25244/api/health"
+port = 25244
+dir = "/home/toxic/pens/ergasterion/eidolon"
+mise = true
