@@ -256,23 +256,23 @@ model:
     threshold: 5
 modelRoleStorage: global
 modelRoles:
-  advisor: freeinference/qwen3.6-35b:low
+  advisor: nvidia/nemotron-3-super-120b-a12b
   bodybuilder: custom/bodybuilder
-  commit: freeinference/qwen3.6-35b
+  commit: nvidia/nemotron-3-super-120b-a12b
   dots: custom/dots
-  fallback: freeinference/qwen3.6-35b
+  fallback: nvidia/nemotron-3-ultra-550b-a55b
   image: google-antigravity/gemini-3.1-flash-image:auto
-  judge: freeinference/qwen3.6-35b
-  memory: freeinference/qwen3.6-35b
-  plan: freeinference/qwen3.6-35b:low
-  slow: freeinference/qwen3.6-35b:max
-  smol: freeinference/minimax-m3.1-flash
-  task: freeinference/qwen3.6-35b
-  tiny: freeinference/qwen3.6-35b
-  verification: freeinference/qwen3.6-35b:low
-  vision: freeinference/minimax-m3.1-flash:xhigh
+  judge: nvidia/nemotron-3-super-120b-a12b
+  memory: nvidia/nemotron-3-super-120b-a12b
+  plan: nvidia/nemotron-3-super-120b-a12b
+  slow: nvidia/nemotron-3-ultra-550b-a55b
+  smol: nvidia/nemotron-3-super-120b-a12b
+  task: nvidia/nemotron-3-ultra-550b-a55b
+  tiny: nvidia/nemotron-3-super-120b-a12b
+  verification: nvidia/nemotron-3-super-120b-a12b
+  vision: google-antigravity/gemini-3.1-flash-image:auto
   web: web/exa
-  default: freeinference/glm-5.3-flash
+  default: nvidia/nemotron-3-ultra-550b-a55b
 omitThinking: false
 paste:
   largeMenuThreshold: 100

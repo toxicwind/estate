@@ -1475,3 +1475,22 @@ auto = ["start"]
 retry = true
 dir = "/home/toxic/pens/ranch/hatch/kite/agents/ember/readme-op/work/kestrel/gear/emergent-enrich"
 mise = true
+
+[daemons.village-clock]
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/ranch/geode-rig/village-clock.ts"
+auto = ["start"]
+retry = true
+dir = "/home/toxic/pens/ranch/geode-rig"
+mise = true
+
+[daemons.village-irc]
+run = "exec /home/toxic/pens/ranch/village-irc/ergo run --conf /home/toxic/pens/ranch/village-irc/ircd.yaml --quiet"
+auto = ["start"]
+retry = true
+ready_port = 25241
+dir = "/home/toxic/pens/ranch/village-irc"
+
+[daemons.irc-bridge]
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/ranch/geode-rig/irc-bridge.ts"
+auto = ["start"]
+retry = true

@@ -1,0 +1,11 @@
+{
+  "enabled": false,
+  "selectedProfile": "auto",
+  "thinkingByProfile": {},
+  "debugEnabled": false,
+  "widgetEnabled": false,
+  "debugHistory": [],
+  "lastNonRouterModel": "freeinference/qwen3.6-35b",
+  "accumulatedCost": 0,
+  "timestamp": 1793154321575
+}

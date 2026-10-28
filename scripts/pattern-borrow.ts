@@ -158,6 +158,7 @@ async function repoStats(full: string): Promise<any> {
     issues: r.open_issues_count ?? 0,
     forks: r.forks_count ?? 0,
     pushed: r.pushed_at ? Date.parse(r.pushed_at) / 1000 : 0,
+    pushedAt: r.pushed_at ?? null,
     hasTest,
   };
 }
@@ -173,7 +174,10 @@ for (const term of PATTERNS) {
   if (data?.items) {
     for (const it of data.items) {
       const full = it.repository?.full_name;
-      if (full && !repos[full]) repos[full] = await repoStats(full);
+      if (full && !repos[full]) {
+        const st = await repoStats(full);
+        repos[full] = { name: full, ...st };
+      }
       if (typeof it.size === "number") sizes.push(it.size);
     }
   }
@@ -205,6 +209,14 @@ for (const term of PATTERNS) {
     testFrac,
     avgSize,
     bugRel,
+    // Repo identity survives the ranking: without this the pipeline answers
+    // "how strong is this term" but never "which repos" — forcing every
+    // consumer to re-run its own GitHub search (observed 2026-10-27).
+    repos: vals
+      .sort((a: any, b: any) => b.stars - a.stars)
+      .map(
+        (v: any) => `${v.name} (${v.stars}★, pushed ${v.pushedAt ?? "n/a"})`,
+      ),
   });
   console.log(`  scanned '${term}': ${nRepos} repos, ${totalStars} stars`);
   await Bun.sleep(1200);

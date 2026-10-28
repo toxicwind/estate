@@ -1,5 +1,5 @@
 advisor:
-  enabled: false
+  enabled: true
   immuneTurns: 3
   syncBacklog: "off"
 appearance:
@@ -24,11 +24,9 @@ autolearn:
 bash:
   autoBackground:
     enabled: true
-  # Default shell/tool working directory: the home root, not a product dir.
-  cwd: /home/toxic
   direnv: auto
   direnvLoadTimeoutMs: 30000
-  enabled: true
+  enabled: false
   patterns: []
 bashInterceptor:
   enabled: false
@@ -121,7 +119,7 @@ edit:
   enforceSeenLines: false
   fuzzyMatch: true
   fuzzyThreshold: 0.95
-  mode: hashline
+  mode: patch
   streamingAbort: false
 effort:
   high: 0.9
@@ -133,7 +131,7 @@ eval:
   autoBackground:
     enabled: true
   jl: true
-  js: false
+  js: true
   py: true
   rb: true
   workpool:
@@ -170,8 +168,8 @@ goal:
 grep:
   contextAfter: 3
   contextBefore: 3
-  enabled: false
-hideThinkingBlock: false
+  enabled: true
+hideThinkingBlock: true
 hindsight:
   apiToken: ""
   apiUrl: http://127.0.0.1:25117
@@ -257,37 +255,24 @@ model:
       - hub
     threshold: 5
 modelRoleStorage: global
-# modelRoles — 2026-10-26 AST/probe-verified remap (kappa session).
-# Probed live: qwen3.6-35b does NOT honor reasoning_effort/thinking (dead
-# suffixes); deepseek-v4-flash DOES (19->88->130 reasoning tokens across
-# none/low/max) with 1M ctx @ ~80t/s; glm-5.3-flash always-thinks and barely
-# scales (31->29->52). Effort-bearing roles -> deepseek-v4-flash; bare
-# no-effort roles stay on qwen3.6-35b.
-# modelRoles — 2026-10-26 probe-verified remap (kappa session), TAKE 2.
-# Coordinate truth: tau has NO freeinference provider ("unknown model"
-# warnings); freeinference reaches tau THROUGH rhodochrosite as the
-# openai-compatible lane (:25193, corral JWT). Probed: deepseek-v4-flash
-# honors reasoning_effort (19->88->130 tok), qwen3.6-35b does not; glm-5.3-
-# flash always-thinks and barely scales. effort roles -> openai-compatible/
-# deepseek-v4-flash; bare roles -> freeinference/qwen3.6-35b.
 modelRoles:
-  advisor: freeinference/qwen3.6-35b:low
+  advisor: nvidia/nemotron-3-super-120b-a12b
   bodybuilder: custom/bodybuilder
-  commit: freeinference/qwen3.6-35b
+  commit: nvidia/nemotron-3-super-120b-a12b
   dots: custom/dots
-  fallback: freeinference/qwen3.6-35b
+  fallback: nvidia/nemotron-3-ultra-550b-a55b
   image: google-antigravity/gemini-3.1-flash-image:auto
-  judge: freeinference/qwen3.6-35b
-  memory: freeinference/qwen3.6-35b
-  plan: freeinference/qwen3.6-35b:low
-  slow: freeinference/qwen3.6-35b:max
-  smol: freeinference/qwen3.6-35b
-  task: freeinference/qwen3.6-35b
-  tiny: freeinference/qwen3.6-35b
-  verification: freeinference/qwen3.6-35b:low
-  vision: freeinference/minimax-m3.1-flash:xhigh
+  judge: nvidia/nemotron-3-super-120b-a12b
+  memory: nvidia/nemotron-3-super-120b-a12b
+  plan: nvidia/nemotron-3-super-120b-a12b
+  slow: nvidia/nemotron-3-ultra-550b-a55b
+  smol: nvidia/nemotron-3-super-120b-a12b
+  task: nvidia/nemotron-3-ultra-550b-a55b
+  tiny: nvidia/nemotron-3-super-120b-a12b
+  verification: nvidia/nemotron-3-super-120b-a12b
+  vision: google-antigravity/gemini-3.1-flash-image:auto
   web: web/exa
-  default: freeinference/qwen3.6-35b
+  default: nvidia/nemotron-3-ultra-550b-a55b
 omitThinking: false
 paste:
   largeMenuThreshold: 100
@@ -300,30 +285,30 @@ plugins:
   - merged: estate-swap
     name: bornite
     privileged: true
-    source: ../pens/geode/products/bornite
+    source: ./projects/range/ranch/stockyard/bornite
   - name: rhodochrosite
     privileged: true
-    source: ../pens/geode/products/rhodochrosite
+    source: ./projects/range/ranch/stockyard/rhodochrosite
   - name: thresher
     privileged: true
     role: MCP federation gateway
-    source: ../pens/ranch/barn/thresher
+    source: ./ranch/barn/thresher
   - merged:
       - router-legacy
       - stockyard-rhodochrosite-router
       - estate-router
     name: router
     privileged: true
-    source: ../pens/ranch/identity-router
+    source: ./projects/range/ranch/stockyard/router-legacy
   - name: barn-browser
     privileged: false
-    source: ../pens/ranch/vendored/browserless-mcp
+    source: ./projects/range/ranch/barn/browserless
   - name: barn-gemini
     privileged: false
-    source: ../pens/ranch/barn/gemini-mcp
+    source: ./projects/range/ranch/barn/gemini-mcp
   - name: secretsmith
     privileged: true
-    source: ../pens/barn/secretsmith
+    source: ./projects/range/ranch/barn/secretsmith
 power:
   sleepPrevention: idle
 presencePenalty: -1
@@ -331,7 +316,7 @@ prewalk:
   enabled: false
 proseOnlyThinking: true
 provider:
-  appendOnlyContext: auto
+  appendOnlyContext: "on"
 providers:
   anthropic:
     serverSideFallback: true
@@ -362,8 +347,8 @@ providers:
     - opencode-zen
   webSearchTimeoutSeconds: 60
 python:
-  interpreter: ""
-  kernelMode: session
+  interpreter: /home/toxic/.local/share/mise/installs/python/3.14.7/bin/python
+  kernelMode: per-call
 read:
   defaultLimit: 5000
   renderMarkdown: true
@@ -385,7 +370,8 @@ retry:
   fallbackChains:
     fallback:
       - freeinference/qwen3.6-35b
-      - freeinference/deepseek-v4-flash
+      - freeinference/minimax-m3.1-flash
+      - freeinference/qwen3.6-35b
     web:
       - web/tavily
       - web/firecrawl
@@ -415,13 +401,14 @@ shell:
   env:
     PI_DISABLE_UUTILS_BUILTINS: "1"
 shellMinimizer:
-  enabled: true
+  enabled: false
   sourceOutlineLevel: default
 showHardwareCursor: true
 skillful: true
 skills:
   customDirectories:
-    - /home/toxic/pens/geode/products/azurite/skills
+    - /home/toxic/estate/azurite/skills
+    - /home/toxic/estate/projects/range/ranch/gear
   enableSkillCommands: true
 snapcompact:
   shape: auto
@@ -472,12 +459,6 @@ subagents:
 symbolPreset: nerd
 task:
   agentIdleTtlMs: 420000
-  # 2026-10-27: per-agent pin — vibe cli sessions fell through to minimax-m3.1-flash
-  # (stalled every session). Pin vibe lanes to verified-live qwen3.6-35b.
-  agentModelOverrides:
-    vibe: freeinference/qwen3.6-35b
-    fast: freeinference/qwen3.6-35b
-    good: freeinference/qwen3.6-35b
   batch: true
   eager: preferred
   enableEffort: true
@@ -517,12 +498,13 @@ todo:
   eager: preferred
   enabled: true
   reminders: true
-  remindersMax: 10
-  maxVerbose: true
-  toolAnnounce: true
+  remindersMax: 5
 tools:
   abortOnFabricatedResult: true
-  approval: {}
+  approval:
+    bash: deny
+    grep: deny
+    find: deny
   approvalMode: yolo
   artifactHeadBytes: 20
   artifactSpillThreshold: 50
