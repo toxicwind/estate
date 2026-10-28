@@ -345,3 +345,8 @@ Every kappa/tau session MUST participate in the fleet todo board:
   queue; sessions are stateless-safe because of it.
 - Write new todos as markdown files in `pens/ranch/squawk/todo/` using the
   naming convention `YYYYMMDDThhmmZ-<agent>-<slug>.md`; the index auto-regenerates.
+
+## Search doctrine (2026-10-28)
+
+- **GitHub search = blackbird ONLY** (`pens/ranch/github-search`, web-engine with session cookies). The legacy REST `GET /search/code` misses path globs and diverges from github.com/search — never use it as primary.
+- Reviving the session: `firefox --Profile default-nightly https://github.com/login`, or `gh auth login --web` for a device code.
