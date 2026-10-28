@@ -272,7 +272,7 @@ modelRoles:
   verification: nvidia/nemotron-3-super-120b-a12b
   vision: google-antigravity/gemini-3.1-flash-image:auto
   web: web/exa
-  default: nvidia/nemotron-3-ultra-550b-a55b
+  default: freeinference/glm-5.3-flash
 omitThinking: false
 paste:
   largeMenuThreshold: 100

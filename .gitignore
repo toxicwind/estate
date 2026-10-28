@@ -1524,3 +1524,7 @@ work/tau-extensions/
 
 # shim artifacts (live_all.sh file-limit shim output)
 .krabby/
+
+# tau runtime artifacts (worktree isolation + remote-host cache) — 2026-10-28 fold-forward
+config/tau/remote-host/
+config/tau/wt/
