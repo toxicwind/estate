@@ -48,7 +48,7 @@ AWR_MCP_PORT = "25198"
 MCP_FUNNEL_HOST = "github-mcp-host.tailc9ac71.ts.net"
 
 [daemons.awrawr-ws-exec]
-run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/estate/bridge/awrawr_ws_exec.py"
+run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/pens/estate/bridge/awrawr_ws_exec.py"
 auto = ["start"]
 retry = true
 port = 25214
@@ -68,13 +68,13 @@ boot_start = false
 dir = "/home/toxic/projects/bedrock/web"
 mise = true
 [daemons.bench-radar]
-run = "exec /home/toxic/.bun/bin/bun --hot /home/toxic/estate/tools/bench-radar/server.ts"
+run = "exec /home/toxic/.bun/bin/bun --hot /home/toxic/pens/estate/tools/bench-radar/server.ts"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25181/health"
 port = 25181
 boot_start = true
-dir = "/home/toxic/estate/tools/bench-radar"
+dir = "/home/toxic/pens/estate/tools/bench-radar"
 mise = true
 [daemons.bench-radar.health_http]
 url = "http://127.0.0.1:25181/health"
@@ -175,7 +175,7 @@ DISPLAY = ":99"
 XDG_RUNTIME_DIR = "/run/user/1000"
 
 [daemons.codebase-memory]
-run = "exec /home/toxic/estate/tools/codebase-memory/run.sh"
+run = "exec /home/toxic/pens/estate/tools/codebase-memory/run.sh"
 auto = ["start"]
 retry = true
 ready_cmd = "ss -ltn 'sport = :25195' | grep -q LISTEN"
@@ -297,7 +297,7 @@ retries = 3
 run = "exec /home/toxic/pens/estate/products/estate-ops/estate-reconcile watch"
 auto = ["start"]
 retry = true
-dir = "/home/toxic/estate"
+dir = "/home/toxic/pens/estate"
 mise = true
 [daemons.estate-stream-broker]
 run = "exec bun run src/index.ts"
@@ -308,7 +308,7 @@ dir = "/home/toxic/pens/ranch/stream-broker"
 mise = true
 
 [daemons.feedlot]
-run = "exec /home/toxic/estate/stack/services/feedlot.sh"
+run = "exec /home/toxic/pens/estate/stack/services/feedlot.sh"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25121/health"
@@ -324,12 +324,12 @@ timeout = "5s"
 retries = 3
 
 [daemons.files]
-run = "exec python3 /home/toxic/estate/stack/services/files-server.py"
+run = "exec python3 /home/toxic/pens/estate/stack/services/files-server.py"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:34567/health"
 port = 34567
-dir = "/home/toxic/estate"
+dir = "/home/toxic/pens/estate"
 mise = true
 [daemons.files.health_http]
 url = "http://127.0.0.1:34567/health"
@@ -436,7 +436,7 @@ auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25100/health"
 port = 25100
-dir = "/home/toxic/estate"
+dir = "/home/toxic/pens/estate"
 mise = true
 
 [daemons.bornite.health_http]
@@ -538,7 +538,7 @@ auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25159/"
 boot_start = true
-dir = "/home/toxic/estate"
+dir = "/home/toxic/pens/estate"
 mise = true
 [daemons.keypool]
 run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/olympus/products/kryptos/keypool/src/index.ts"
@@ -547,7 +547,7 @@ retry = true
 ready_http = "http://127.0.0.1:25109/health"
 port = 25109
 boot_start = true
-dir = "/home/toxic/estate"
+dir = "/home/toxic/pens/estate"
 mise = true
 [daemons.keypool.health_http]
 url = "http://127.0.0.1:25109/health"
@@ -576,13 +576,13 @@ retries = 3
 KIMI_AUDIT_DASH_PORT = "25116"
 
 [daemons.kimi-auto-shim]
-run = "exec python3 /home/toxic/estate/config/bornite.d/alias-shim.py --port ${KIMI_AUTO_SHIM_PORT} --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --standby nim-kimi/moonshotai/kimi-k3 --advance-on 5xx,conn,429,402,404 --name kimi-auto"
+run = "exec python3 /home/toxic/pens/estate/config/bornite.d/alias-shim.py --port ${KIMI_AUTO_SHIM_PORT} --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --standby nim-kimi/moonshotai/kimi-k3 --advance-on 5xx,conn,429,402,404 --name kimi-auto"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25153/health"
 port = 25153
 boot_start = true
-dir = "/home/toxic/estate/config/bornite.d"
+dir = "/home/toxic/pens/estate/config/bornite.d"
 mise = true
 [daemons.kimi-auto-shim.health_http]
 url = "http://127.0.0.1:25153/health"
@@ -613,17 +613,17 @@ timeout = "5s"
 retries = 3
 
 [daemons.kimiclaw-a]
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/tools/kimi-claw/bridge.ts --daemon --instance a"
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/estate/tools/kimi-claw/bridge.ts --daemon --instance a"
 auto = ["start"]
 retry = true
 ready_cmd = """p=$(pgrep -f '[b]ridge[.]ts --daemon --instance a' | head -1); [ -n "$p" ] && ls -l /proc/$p/fd 2>/dev/null | grep -q inotify"""
-dir = "/home/toxic/estate/tools/kimi-claw"
+dir = "/home/toxic/pens/estate/tools/kimi-claw"
 mise = true
 [daemons.kimiclaw-b]
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/tools/kimi-claw/bridge.ts --daemon --instance b"
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/estate/tools/kimi-claw/bridge.ts --daemon --instance b"
 auto = ["start"]
 retry = true
-dir = "/home/toxic/estate/tools/kimi-claw"
+dir = "/home/toxic/pens/estate/tools/kimi-claw"
 mise = true
 [daemons.kite-daemon]
 run = "exec /home/toxic/.local/bin/kite-daemon"
@@ -638,7 +638,7 @@ auto = ["start"]
 retry = true
 port = 25211
 boot_start = true
-dir = "/home/toxic/estate"
+dir = "/home/toxic/pens/estate"
 mise = true
 [daemons.market-loop]
 run = "exec /home/toxic/.bun/bin/bun /home/toxic/src/github.com/toxicwind/estate-projects/agents/weaver/bin/market-loop.ts"
@@ -713,13 +713,13 @@ retries = 3
 MESH_LANDING_PORT = "25207"
 
 [daemons.ml-serve]
-run = "exec /home/toxic/.local/share/mise/installs/python/3.14.7/bin/python /home/toxic/estate/tools/ml-serve/server.py"
+run = "exec /home/toxic/.local/share/mise/installs/python/3.14.7/bin/python /home/toxic/pens/estate/tools/ml-serve/server.py"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25180/health"
 port = 25180
 boot_start = true
-dir = "/home/toxic/estate/tools/ml-serve"
+dir = "/home/toxic/pens/estate/tools/ml-serve"
 mise = true
 
 [daemons.ml-serve.health_http]
@@ -732,13 +732,13 @@ retries = 3
 ML_SERVE_PORT = "25180"
 
 [daemons.model-guard]
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/services/model-guard/src/index.ts"
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/estate/services/model-guard/src/index.ts"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25101/health"
 port = 25101
 boot_start = true
-dir = "/home/toxic/estate/services/model-guard"
+dir = "/home/toxic/pens/estate/services/model-guard"
 mise = true
 [daemons.model-guard.health_http]
 url = "http://127.0.0.1:25101/health"
@@ -755,7 +755,7 @@ run = "exec /home/toxic/pens/ranch/forge/ops/nativelink/run.sh"
 auto = ["start"]
 retry = 0
 port = 25155
-dir = "/home/toxic/estate"
+dir = "/home/toxic/pens/estate"
 
 # Forge (nativelink) web surfaces — the REAPI build-cache UI and its docs.
 # Source: pens/barn/nativelink/web (bun workspace; @forge/web = Next.js app,
@@ -821,7 +821,7 @@ retry = true
 ready_http = "http://127.0.0.1:25163/health"
 port = 25163
 boot_start = true
-dir = "/home/toxic/estate"
+dir = "/home/toxic/pens/estate"
 mise = true
 [daemons.nim-kimi-sidecar.health_http]
 url = "http://127.0.0.1:25163/health"
@@ -851,7 +851,7 @@ retry = true
 ready_http = "http://127.0.0.1:25107/health"
 port = 25107
 depends = ["thresher"]
-dir = "/home/toxic/estate/tools/null-g-proxy"
+dir = "/home/toxic/pens/estate/tools/null-g-proxy"
 mise = true
 
 [daemons.null-g-proxy.health_http]
@@ -959,7 +959,7 @@ timeout = "5s"
 retries = 3
 
 [daemons.qdrant]
-run = "exec /home/toxic/archive/home-dirs-2026/.cargo/bin/qdrant-server --config-path /home/toxic/pens/estate/qdrant-config.yaml"
+run = "exec /home/toxic/.cargo/bin/qdrant-server --config-path /home/toxic/pens/estate/qdrant-config.yaml"
 auto = ["start"]
 retry = true
 boot_start = true
@@ -992,12 +992,12 @@ retries = 3
 RALPH_DASH_PORT = "25194"
 
 [daemons.ranch-ui]
-run = "exec /home/toxic/.bun/bin/bun run /home/toxic/estate/stack/services/ranch-ui.ts"
+run = "exec /home/toxic/.bun/bin/bun run /home/toxic/pens/estate/stack/services/ranch-ui.ts"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25218/health"
 port = 25218
-dir = "/home/toxic/estate"
+dir = "/home/toxic/pens/estate"
 mise = true
 [daemons.ranch-ui.health_http]
 url = "http://127.0.0.1:25218/health"
@@ -1121,13 +1121,13 @@ timeout = "5s"
 retries = 3
 
 [daemons.smithers-gateway]
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/stack/services/smithers-gateway.ts"
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/estate/stack/services/smithers-gateway.ts"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25280/health"
 port = 25280
 boot_start = true
-dir = "/home/toxic/estate"
+dir = "/home/toxic/pens/estate"
 mise = true
 [daemons.smithers-gateway.health_http]
 url = "http://127.0.0.1:25280/health"
@@ -1157,11 +1157,11 @@ mise = true
 SQUAWK_HISTORY_PORT = "25229"
 
 [daemons.stash-guard]
-run = "exec python3 /home/toxic/estate/tools/stash-guard/stash-guard.py --repo /home/toxic/estate --deep --interval 90"
+run = "exec python3 /home/toxic/pens/estate/tools/stash-guard/stash-guard.py --repo /home/toxic/estate --deep --interval 90"
 auto = ["start"]
 retry = true
 boot_start = true
-dir = "/home/toxic/estate"
+dir = "/home/toxic/pens/estate"
 mise = true
 [daemons.task-launch]
 run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/ranch/task-launch/src/daemon.ts"
@@ -1186,19 +1186,19 @@ CHUTE_PORT = "25111"
 run = "exec /home/toxic/pens/estate/products/estate-ops/tmp-reaper/reap-loop.sh 3600"
 auto = ["start"]
 retry = true
-dir = "/home/toxic/estate"
+dir = "/home/toxic/pens/estate"
 mise = true
 [daemons.beellama-fast]
 # exaone-4.0-1.2b-iq4xs ("fast" alias) via the beellama.cpp CUDA build.
 # 2026-10-27: re-added as a real daemon — the engine and model are both
 # present and verified serving; it had been lost as a "ghost" entry while
 # the model cache was being relocated.
-run = "exec /home/toxic/estate/stack/services/_consolidated_bornite_20260924/beellama-fast.sh"
+run = "exec /home/toxic/pens/estate/stack/services/_consolidated_bornite_20260924/beellama-fast.sh"
 auto = ["start"]
 retry = 3
 ready_http = "http://127.0.0.1:25122/health"
 port = 25122
-dir = "/home/toxic/estate"
+dir = "/home/toxic/pens/estate"
 mise = true
 
 [daemons.sigma-guard]
@@ -1220,7 +1220,7 @@ mise = false
 # morphe v2 — fingerprint-matched transport-morphing router (obtuse HTTP->WS
 # conversion + HFT lane racing). Owns :25204/:25215 entrypoints; the real
 # ws-exec daemon lives on :25214 (green-blue). Control: /tmp/morphe.sock.
-run = "exec python3 /home/toxic/estate/bridge/morphe.py"
+run = "exec python3 /home/toxic/pens/estate/bridge/morphe.py"
 auto = ["start"]
 retry = true
 boot_start = true
@@ -1235,19 +1235,19 @@ port = 25204
 # The DFlash GGUF is a speculative DRAFT model (it refuses to load alone:
 # "dflash requires ctx_other to be set"), so serve the standard
 # Qwen3.5-9B Q5_K_M instead.
-run = "exec /home/toxic/estate/engines/bornite/beellama.cpp/build-cuda86/bin/llama-server -m /home/toxic/pens/ranch/models/qwen3.5-9b-Q5_K_M.gguf --host 127.0.0.1 --port 25152 -ngl 99 -c 32768 --alias qwen3.5-9b-tool"
+run = "exec /home/toxic/pens/geode/products/bornite/engines/beellama.cpp/build-cuda86/bin/llama-server -m /home/toxic/pens/ranch/models/qwen3.5-9b-Q5_K_M.gguf --host 127.0.0.1 --port 25152 -ngl 99 -c 32768 --alias qwen3.5-9b-tool"
 auto = []
 retry = 5
 ready_http = "http://127.0.0.1:25152/health"
 port = 25152
-dir = "/home/toxic/estate/engines/bornite/beellama.cpp/build-cuda86/bin"
+dir = "/home/toxic/pens/geode/products/bornite/engines/beellama.cpp/build-cuda86/bin"
 mise = true
 boot_start = false
 [daemons.toolcall-llm.env]
 TOOLCALL_PORT = "25152"
 
 [daemons.vansrouter]
-run = "exec /home/toxic/estate/stack/services/vansrouter.sh"
+run = "exec /home/toxic/pens/estate/stack/services/vansrouter.sh"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25237/api/health"
@@ -1334,13 +1334,13 @@ retry = true
 boot_start = true
 mise = true
 [daemons.mbx-cache]
-run = "exec /home/toxic/estate/ops/mbx-cache/run.sh"
+run = "exec /home/toxic/pens/estate/ops/mbx-cache/run.sh"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25148/v1/status"
 port = 25148
 boot_start = true
-dir = "/home/toxic/estate"
+dir = "/home/toxic/pens/estate"
 mise = true
 [daemons.mbx-cache.health_http]
 url = "http://127.0.0.1:25148/v1/status"
@@ -1415,7 +1415,7 @@ auto = ["start"]
 
 [daemons.tailscale-keepalive]
 mise = true
-dir = "/home/toxic/estate/stress-lab/conn"
+dir = "/home/toxic/pens/estate/stress-lab/conn"
 run = "exec bun keepalive-tailscale.ts --interval-ms 90000"
 retry = true
 boot_start = true
@@ -1423,7 +1423,7 @@ env = { }
 
 [daemons.tailscale-funnel-reconciler]
 mise = true
-dir = "/home/toxic/estate/tailscale"
+dir = "/home/toxic/pens/estate/tailscale"
 run = "exec ./reconcile-funnel.sh"
 retry = true
 boot_start = true

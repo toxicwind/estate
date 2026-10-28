@@ -4,12 +4,12 @@
 # Bench 2026-09-20 (RTX 3090): pp 15.6k tok/s, gen 311-335 tok/s.
 # Lifecycle owned by pitchfork; this script does NOT kill or steal the port.
 set -euo pipefail
-SOV="/home/toxic/estate"
+SOV="/home/toxic/pens/estate"
 source "$SOV/stack/lib-ports.sh"
 # 2026-09-20: default the SSOT port so a spawn without env (pitchfork retry path) cannot hit llama-server --port stoi
 BEELLAMA_PORT="${BEELLAMA_PORT:-25122}"
 require_port BEELLAMA_PORT
-ENGINE="${BEELLAMA_ENGINE:-/home/toxic/estate/engines/bornite/beellama.cpp/build-cuda86/bin}"
+ENGINE="${BEELLAMA_ENGINE:-/home/toxic/pens/geode/products/bornite/engines/beellama.cpp/build-cuda86/bin}"
 BIN="$ENGINE/llama-server"
 [[ -x "$BIN" ]] || { echo "beellama-fast: bin not found at $BIN" >&2; exit 1; }
 # 2026-10-27: the model cache moved to the ranch pen; $HOME/models is gone.

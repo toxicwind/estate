@@ -1,9 +1,10 @@
 [daemons.qdrant]
 mise = true
 port = [25133, 25134]
-run = "exec /home/toxic/archive/home-dirs-2026/.cargo/bin/qdrant-server --config-path ./qdrant-config.yaml"
-dir = "."
+run = "exec /home/toxic/.cargo/bin/qdrant-server --config-path /home/toxic/pens/estate/qdrant-config.yaml"
+dir = "/home/toxic/pens/estate"
 retry = true
+boot_start = true
 ready_http = "http://127.0.0.1:25133/"
 health_http = { url = "http://127.0.0.1:25133/healthz", interval = "30s", timeout = "5s", retries = 3 }
 auto = ["start"]
