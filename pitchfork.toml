@@ -1273,7 +1273,7 @@ retry = true
 ready_http = "http://127.0.0.1:25102/health"
 port = 25102
 depends = ["thresher"]
-dir = "ranch/yote"
+dir = "/home/toxic/pens/ranch/yote"
 mise = true
 [daemons.yote.health_http]
 url = "http://127.0.0.1:25102/health"
