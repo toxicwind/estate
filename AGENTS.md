@@ -346,6 +346,22 @@ _Verified 2026-10-28; dossier: `/home/toxic/estate/docs/anomalies/2026-10-28/ses
 
 _Session sweep receipts: managed python venv isolated; rhodochrosite 172ms completions verified; com.nuvio.livetv live on Hisense TV; Pixel 9 Pro XL Bitwarden/Authy verified via flotilla MCP; pens-ui master dashboard running on :25232._
 
+## Anomaly program D-2026-10-28 (pitchfork ref mass repair — verified live)
+
+_Verified 2026-10-28; dossier: `/home/toxic/estate/docs/anomalies/2026-10-28/pitchfork-ref-mass-repair.md`. Estate commit `5e90a7eeee` (wip/kappa/estate-cutover-20261027)._
+
+|#|Anomaly|Essence|Fix (committed)|
+|---|---|---|---|
+|41|**Daemon dir stale after reorg**|`estate/ranch/yote` purged to a `.git` remnant while monolith said `dir = "ranch/yote"` → supervisor pre-spawn ENOENT ("No such file or directory (os error 2)") on every start|`dir = "/home/toxic/pens/ranch/yote"`; start exit 0, `:25102/health` 200|
+|42|**Clone edit invisible to supervisor**|Supervisor loads `pens/estate/pitchfork.toml` (namespaces.estate), not the estate clone — edited SSOT, spawn log still showed the OLD command|`sync-estate-ns.sh` after EVERY monolith edit; verify via supervisor log's exact spawn line|
+|43|**`mise = true` pre-spawn kill**|Wrapper `mise x` exits 2 in dirs without toolchain activation ("bun is a mise bin however it is not currently active") — surfaces as the same ENOENT|Dropped `mise = true`, absolute `/home/toxic/.bun/bin/bun` in run|
+|44|**Stale Telegram webhook blocks poll forever**|`poll tg: Conflict: can't use getUpdates method while webhook is active` every 3.6s since 10-27; survives restarts|`deleteWebhook` → 200; contract = conflict-free log + `/test/e2e` round-trip `ok:true` (agent=coyote, via openfang-http)|
+|45|**Monolith mass stale refs (9 daemons)**|estate→pens reorg + archive moves never swept `dir`/`run`/`ready_cmd`: 6 dead homes, 3 deleted corpses (bedrock-ui, delendai-web, forever-loop)|6 re-pointed to disk-verified homes; corpses parked `auto=[]` + CORPSE provenance comment, never crash-looping|
+|46|**Evidence laundering: swallowed stderr → false "no hits"**|Invalid ffs flags + discarded stderr + sliced output laundered tool errors into "no hits" — twice, including a sanity needle that must match|Protocol: persist RAW stdout+stderr to a file, read back verbatim before concluding|
+|47|**Fleet todo done-endpoint doc lies**|Documented `POST /v1/todo/done` `{"file":…}` 404s; daemon implements `POST /v1/todo/<file>/done` (path param)|Doc fixed (rule 5); board flip verified 200|
+
+_Known gap: kimi-code ref points at the right monorepo but `apps/kimi-code/dist/main.mjs` needs a build before first start (build kicked pid 819944)._
+
 
 
 ## Layout (2026-10-23) — the bin contract
@@ -407,7 +423,7 @@ Every kappa/tau session MUST participate in the fleet todo board:
 - Read: `GET http://127.0.0.1:25120/v1/todo` (Bearer token `~/.config/estate-chat-token`)
 - Claim: work the top NOT-STARTED todo for your agent name, one at a time.
 - Implement end-to-end, commit, PUSH MAIN.
-- Mark done: `POST /v1/todo/done` with `{"file": "<todo filename>"}`.
+- Mark done: `POST /v1/todo/<file>/done` (path param, no body — e.g. `/v1/todo/20261028T023520Z-tau-goal-yote-telegram.md/done`; the `{"file": …}` body form 404s).
 - When idle or blocked, RE-READ the board — the board is the persistent task
   queue; sessions are stateless-safe because of it.
 - Write new todos as markdown files in `pens/ranch/squawk/todo/` using the

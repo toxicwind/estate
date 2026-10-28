@@ -449,3 +449,28 @@ The session unified runtime isolation, routing performance, IPTV deployment, and
 3. Xtream Codes port 2095 is strictly control plane (auth/API); stream data flows over port 80.
 4. Architect phone (Pixel 9 Pro XL, 10.0.0.77:43945) is the primary credential vault (Bitwarden + Authy); drive it PURELY headlessly via Flotilla MCP / wireless ADB (the "Alt+Up/Shift+Up" note was captured TUI chrome, not a directive).
 5. Ambiguous or plausible-sounding instructions: DEBATE with fleet agents on squawk (#fleet :25120), don't halt-ask the architect and don't canonize solo (architect directive 2026-10-28: "ask is bad, debate with agents is good"). Escalate only on deadlock. Canonize nothing without a provenance line.
+
+## 2026-10-28 pitchfork-ref-mass-repair + yote TaaS bring-up session (tau) — verified fixes + root causes
+
+**Root-cause chain (one paragraph):**
+The session set out to verify goal item 11.1.2 (yote bot on the fleet, autonomous inbound commands) and found `estate/yote` "available" but permanently unstartable: the estate→pens clean-arch reorg had deleted `estate/ranch/yote` to a `.git` remnant while the pitchfork monolith still said `dir = "ranch/yote"`. Fixing that one ref exposed the deeper lattice — the supervisor actually loads `pens/estate/pitchfork.toml` (clone edits are invisible until `sync-estate-ns.sh` runs), `mise = true` pre-kills any daemon whose dir doesn't activate its toolchain, a stale Telegram webhook had been silently strangling yote's poll loop since 10-27, and a full sweep surfaced 8 MORE daemons with dead refs (6 moved homes, 3 deleted corpses). Two ffs sweeps initially reported "no hits" for everything because invalid flags' stderr was being discarded — evidence laundering, fixed by persisting raw output and reading it back before concluding. All fixed at the refs per architect order (no symlink restoration); yote ended the session running, webhook-free, and proven end-to-end.
+
+**The fixes list (repo + verification):**
+- `estate` commit `5e90a7eeee` (wip/kappa/estate-cutover-20261027): repaired 10 daemon refs, dropped yote's mise wrapper (absolute bun), parked 3 corpses with provenance comments — verified by `pitchfork list` parsing clean and every target disk-checked before landing.
+- `pens/barn/estate-ops/bin/sync-estate-ns.sh` (run, exit 0): propagated the monolith to the namespace the supervisor loads — verified by supervisor log showing the NEW spawn command.
+- yote bot token: deleted stale webhook via Bot API (200 "Webhook was deleted"; getWebhookInfo "(none)") — verified by conflict-free poll log + `POST :25102/test/e2e` → `{"ok":true,...,"agent":"coyote","via":"openfang-http"}`.
+- squawk fleet roster: yote + coyote joined first-class (join receipts 200, presence live) — verified via `GET /v1/state`.
+- taas MCP (:25243): `telegram_newbot` + `telegram_status` confirmed in `tools/list`.
+- AGENTS.md fleet-todo-loop doc: fixed done-endpoint shape (`POST /v1/todo/<file>/done`, path param — the documented `{"file":…}` body form 404s).
+
+**New tools added (paths):**
+- none new this session; reused `sync-estate-ns.sh`, `ffs`, squawk API. (kimi-code monorepo build kicked: pid 819944 → `/tmp/kimi-code-build.log`, to satisfy the re-pointed kimi-code ref.)
+
+**The lessons (do not regress):**
+1. After ANY edit to `estate/pitchfork.toml`, run `sync-estate-ns.sh` — the supervisor loads `pens/estate/pitchfork.toml`, and the running supervisor also caches the old spawn until restart/clean.
+2. The supervisor log (`~/.local/state/pitchfork/logs/pitchfork/pitchfork.log`) prints the EXACT spawned command — read it before theorizing about config edits.
+3. `mise = true` is not free: it wraps the command in `mise x` and pre-kills daemons whose dir lacks toolchain activation (exact error: "bun is a mise bin however it is not currently active"). Use absolute interpreter paths for dirs without `mise use`.
+4. Never conclude "no hits" from filtered output — persist RAW stdout+stderr to a file and read it back; an invalid flag must surface as an error, never as an empty result.
+5. A Telegram bot token with a set webhook can NEVER poll (`getUpdates` 409 Conflict forever); `deleteWebhook` is a one-call fix — check it before blaming poll code.
+6. When a product moves, sweep the monolith's `dir`/`run`/`ready_cmd` refs in the SAME change; deleted products get parked (`auto=[]` + CORPSE comment), never left crash-looping.
+7. `POST /v1/todo/<file>/done` (path param) flips fleet todos; the body-form documented earlier 404s.
