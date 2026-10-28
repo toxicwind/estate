@@ -541,7 +541,7 @@ boot_start = true
 dir = "/home/toxic/pens/estate"
 mise = true
 [daemons.keypool]
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/olympus/products/kryptos/keypool/src/index.ts"
+run = "exec /bin/sh -c 'eval $(/home/toxic/pens/olympus/products/kryptos/bin/secretsmith env --app keypool) && exec /home/toxic/.bun/bin/bun /home/toxic/pens/olympus/products/kryptos/keypool/src/index.ts'"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25109/health"
