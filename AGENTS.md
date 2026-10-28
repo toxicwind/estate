@@ -2,7 +2,7 @@
 
 > **CURATED, not accumulated** ("The Developer as Curator", ACM 2026): a shallow
 > root here + nested `AGENTS.md` files where a domain owns its rules beats a
-> wall-file that drifts. This file is **authoritative**; `/home/toxic/estate/AGENTS.md`
+> wall-file that drifts. This file is **authoritative**; `/home/toxic/pens/estate/AGENTS.md`
 > mirrors `/home/toxic/AGENTS.md`. Nested files refine, never contradict, these.
 >
 > **YOU ARE TAU (`τ`) OR KAPPA (`κ`) — OLYMPUS CODING AGENTS.** This is YOUR
@@ -173,7 +173,16 @@ style is MONADIC PRIMITIVES + bun-forward, not ad-hoc imperative bash:
   deployables): docker compose, ports pinned in `config/ports.env`, bound to
   127.0.0.1/tailnet. One supervisor per service.
 - Stage scratch under `/home/toxic/` unique per-task dirs (`mktemp -d`); never
-  `rm -rf` a shared hardcoded path.
+  `rm -rf` a shared hardcoded path. **Never `rm` anything under `/tmp/kappa`
+  either — including your own session's artifacts** (other agents may still be
+  consuming them). Before cleanup of any scratch, ARCHIVE-what-is-useful first
+  (see next rule); delete only provably disposable junk after a provenance
+  triage (`tmp-triage` skill), and say what you removed.
+- **Archive before delete.** Useful session artifacts (test pages, extract
+  trees, probe JSONs, scripts that worked) get moved to a durable reuse home —
+  not deleted. Default: `~/sovereign/scratch-archive/<date>-<agent>-<slug>/`.
+  Anything worth re-running becomes a committed file in the owning repo when a
+  home exists. `/tmp` is a staging area, not a landfill.
 - **Max-collab, not lanes.** There is no "someone else's lane" to defer to. If
   you see an LSP error, an anomaly, or anything broken, FIX IT directly in a real
   committed file — do not leave it "for the owner." Unknown WIP on the tree folds
@@ -185,7 +194,7 @@ style is MONADIC PRIMITIVES + bun-forward, not ad-hoc imperative bash:
 ## Naming (2026-10-22)
 
 - EAP/Gemini Tool Retrieval = **@estate/theta** (private). Merged provider
-  gateway = **atlas** (ex-cuttinggate; renamed chalcopyrite). Key-pool router = **keygate**.
+  gateway = **atlas** (ex-chalcopyrite; renamed chalcopyrite). Key-pool router = **keygate**.
 - **olympus** holds the Greek codename lineage (τ tau, κ kappa, skopos, kilo,
   muse, keryx, rhodochrosite, kairos, kryptos). ranch/barn are NOT Greek; only Greek
   products join olympus.
@@ -221,15 +230,15 @@ _Verified runtime anomalies from 2026-10-23. Each gets a capability-contract tes
 
 | #   | Anomaly                               | Essence                                                                                                                        | Dossier                                                                                                                                                          |
 | --- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | **Reasoning-budget trap**             | `max_tokens=500` + `reasoning_effort=high` → finish=length, zero content, `reasoning_tokens=max_tokens` — not an infinite loop | `/home/toxic/estate/docs/anomalies/2026-10-23/endpoint-probe-results.md`                                                                                         |
-| 2   | **Catalog lies**                      | minimax `thinking` → HTTP 400; qwen3.6-35b has `reasoning: false` + empty `thinking` → `effort` silently ignored               | `/home/toxic/estate/docs/anomalies/2026-10-23/effort-param-audit.md`                                                                                             |
-| 3   | **Model-identity chain**              | CLI tag ≠ served model; resolved model is the chain through catalog → models.yml → overrides → modelRoles → frontmatter        | `/home/toxic/estate/docs/anomalies/2026-10-23/effort-param-audit.md`                                                                                             |
-| 4   | **Single-lane observer effect**       | 429 from a probe misread as "key lacks access" while workers succeeded on the same key+model simultaneously                    | `/home/toxic/estate/docs/anomalies/2026-10-23/endpoint-probe-results.md`                                                                                         |
-| 5   | **Front door vs exec lane**           | Health/OAuth returns 401 (alive) while chat completions return 502/empty (dead backend) — a route-contract divergence          | `/home/toxic/estate/docs/anomalies/2026-10-23/gem-forensic/funnel-443-diagnosis.txt + /home/toxic/estate/docs/anomalies/2026-10-23/gem-forensic/FUNNEL-FIXED.md` |
-| 6   | **Pitchfork two-truth problem**       | Monolith is live truth; 103 pitchfork.d fragments are dead litter; `generate.ts` retired for destroying hand-tuned config      | `/home/toxic/estate/docs/anomalies/2026-10-23/pitchfork-convention-report.md`                                                                                    |
-| 7   | **Fleet substrate failure**           | One malformed toolchain string (`bun:path@true`) mass-killed 65 pitchfork daemons; disk at 96% exacerbated                     | `/home/toxic/estate/docs/anomalies/2026-10-23/estate-recovery3-state.md` + `estate-recovery-report.md`                                                           |
-| 8   | **External scheduled readers**        | MacBook Claude Desktop tasks hold tunnel grants with no on-box inventory; provenance lives outside the estate box              | `/home/toxic/estate/docs/anomalies/2026-10-23/gem-forensic/SCHEDULED-TASKS-FOUND.md`                                                                             |
-| 9   | **Latency-only benchmark corruption** | `tps:0` rows are handshakes not completions — zero-token benchmark entries must be rejected from Pareto frontiers              | `/home/toxic/estate/docs/anomalies/2026-10-23/endpoint-probe-results.md`                                                                                         |
+| 1   | **Reasoning-budget trap**             | `max_tokens=500` + `reasoning_effort=high` → finish=length, zero content, `reasoning_tokens=max_tokens` — not an infinite loop | `/home/toxic/pens/estate/docs/anomalies/2026-10-23/endpoint-probe-results.md`                                                                                         |
+| 2   | **Catalog lies**                      | minimax `thinking` → HTTP 400; qwen3.6-35b has `reasoning: false` + empty `thinking` → `effort` silently ignored               | `/home/toxic/pens/estate/docs/anomalies/2026-10-23/effort-param-audit.md`                                                                                             |
+| 3   | **Model-identity chain**              | CLI tag ≠ served model; resolved model is the chain through catalog → models.yml → overrides → modelRoles → frontmatter        | `/home/toxic/pens/estate/docs/anomalies/2026-10-23/effort-param-audit.md`                                                                                             |
+| 4   | **Single-lane observer effect**       | 429 from a probe misread as "key lacks access" while workers succeeded on the same key+model simultaneously                    | `/home/toxic/pens/estate/docs/anomalies/2026-10-23/endpoint-probe-results.md`                                                                                         |
+| 5   | **Front door vs exec lane**           | Health/OAuth returns 401 (alive) while chat completions return 502/empty (dead backend) — a route-contract divergence          | `/home/toxic/pens/estate/docs/anomalies/2026-10-23/gem-forensic/funnel-443-diagnosis.txt + /home/toxic/pens/estate/docs/anomalies/2026-10-23/gem-forensic/FUNNEL-FIXED.md` |
+| 6   | **Pitchfork two-truth problem**       | Monolith is live truth; 103 pitchfork.d fragments are dead litter; `generate.ts` retired for destroying hand-tuned config      | `/home/toxic/pens/estate/docs/anomalies/2026-10-23/pitchfork-convention-report.md`                                                                                    |
+| 7   | **Fleet substrate failure**           | One malformed toolchain string (`bun:path@true`) mass-killed 65 pitchfork daemons; disk at 96% exacerbated                     | `/home/toxic/pens/estate/docs/anomalies/2026-10-23/estate-recovery3-state.md` + `estate-recovery-report.md`                                                           |
+| 8   | **External scheduled readers**        | MacBook Claude Desktop tasks hold tunnel grants with no on-box inventory; provenance lives outside the estate box              | `/home/toxic/pens/estate/docs/anomalies/2026-10-23/gem-forensic/SCHEDULED-TASKS-FOUND.md`                                                                             |
+| 9   | **Latency-only benchmark corruption** | `tps:0` rows are handshakes not completions — zero-token benchmark entries must be rejected from Pareto frontiers              | `/home/toxic/pens/estate/docs/anomalies/2026-10-23/endpoint-probe-results.md`                                                                                         |
 
 _Charter: every anomaly gets a capability-contract test before its fix is trusted._
 
@@ -258,7 +267,7 @@ One rule: **products own their entrypoints; bins merely point at them.**
   target. A broken symlink is a FAIL, never a WARN. When a product moves, fix the
   manifest first, then the link.
 - **No hardcoded product paths inside shims.** A shim resolves its target
-  through the manifest or `pens/`; a literal `/home/toxic/estate/...` path to a
+  through the manifest or `pens/`; a literal `/home/toxic/pens/estate/...` path to a
   product is a bug, not a fallback.
 - **Retired products are deleted, not relinked** (super-ralph, roost, shep,
   flock). No backup-binary repointing: dead link = remove + manifest archived
@@ -268,7 +277,167 @@ One rule: **products own their entrypoints; bins merely point at them.**
 
 | Path                                   | Owner                                                   |
 | -------------------------------------- | ------------------------------------------------------- |
-| `/home/toxic/estate/AGENTS.md`         | estate control-plane: repos, skills, azurite, pitchfork |
-| `/home/toxic/estate/ranch/*/AGENTS.md` | each ranch component repo's own contract                |
+| `/home/toxic/pens/estate/AGENTS.md`         | estate control-plane: repos, skills, azurite, pitchfork |
+| `/home/toxic/pens/estate/ranch/*/AGENTS.md` | each ranch component repo's own contract                |
 
 Nested files declare what they refine and where; none repeat or contradict these.
+
+## Anomaly program D-2026-10-27 (fleet restoration — verified live)
+
+_Verified 2026-10-27 with real traffic; dossier: `/home/toxic/pens/estate/docs/anomalies/2026-10-27/fleet-restoration.md`._
+
+| #    | Anomaly                          | Essence                                                                                                                                    | Fix (committed)                                                              |
+| ---- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
+| 10   | **Namespace drift**              | Estate clone (SSOT) and pens namespace (what pitchfork loads) both hold control-plane files; scripts resolve `./stack/...` against the pen  | `sync-estate-ns.sh` + `sync-stack.sh` + estate post-commit hook              |
+| 11   | **Pitchfork state resurrection** | `state.toml` is a THIRD truth — retired daemons persist there and are respawned on restart even after removal from pitchfork.toml          | delete the `[daemons."ns/name"]` blocks (incl. `.status`/`.env`) with the supervisor STOPPED |
+| 12   | **Effect 4.0.6 NetAddress rename** | Resolved TCP address tag is `InetAddressV4/V6` (was `TcpAddress`) — `kappa serve` died before bind on every invocation                   | kappa-code 1e61eaf702                                                        |
+| 13   | **Schema.TaggedError factory**   | `Schema.TaggedError` is a generic factory: calling it with no identifier yields `(void 0) is not a function` — vendored deps hit this too | regenerated drizzle patch (incl. cache-effect.{js,cjs})                      |
+| 14   | **Cloudflare 1010 UA block**     | Library-default UAs get 403 from CF-fronted upstreams (freeinference, groq) — surfaced as a bare router 502                               | rhodochrosite forwards caller UA / defaults to desktop UA                    |
+| 15   | **Per-model credit strikes**     | 402/401/403 are PER-MODEL (one exhausted key), not provider failures — dead pairs kept their weight share and were retried first, always  | router `record_model_strikes` (3 strikes, 15 min decay) gates selection      |
+| 16   | **secretsmith --app exact match** | `env --app kappa` dropped KAPPA_SERVER_PASSWORD (no `service` attr) → kappa booted unsecured; also `set` was broken (`Invalid object path: [object Promise]`) | label/key-prefix match; await ReadAlias before String() |
+| 17   | **cwd/env-dependent daemons**    | browserless resolved playwright-core via process.cwd() (died pre-bind); rhodochrosite sourced keys without `set -a` (dropped at exec)     | run.sh `cd app`; serve.sh `set -a` wrap                                       |
+| 18   | **Peer file snapshot fork**      | Ranch's index held a 277-file snapshot of squawk at v0.8.1 while the peer repo was at v0.10.2 — two owners, two truths, phantom dirt       | untrack peer roots; ignore their runtime WAL state                           |
+
+
+## Anomaly program D-2026-10-28 (village sovereignty — verified live)
+
+_Verified 2026-10-28; dossier: `/home/toxic/pens/estate/docs/anomalies/2026-10-28/village-sovereignty.md`._
+
+|#|Anomaly|Essence|Fix (committed)|
+|---|---|---|---|
+|19|**Keyring emitter skip**|`set --secret-file` stores but `env` silently omits the item (catch-continue swallows reads) — 7 rig keys invisible while set reported success|stdin-path reroute + `sync-store-to-keyring.py` proof; secretsmith fix pending|
+|20|**Thresher dead-mirror config**|Live gateway ran a config path nobody edits; estate/config/thresher was a stale mirror — edits silently no-op|real path via /proc cmdline; both upstreams registered live|
+|21|**Gateway self-kill by enum guess**|`streamable_http` (underscore) vs valid `streamable-http` — one guessed config value crashed the estate's only MCP door|enum fixed, restored; verify via /api/v1/servers tool_count|
+|22|**rig CLI lying errors**|`✘ Failed: ?` while all 11 jobs registered; names rejected despite help text claiming name-or-ID|verify via process truth; UUIDs only; rig fix pending upstream|
+|23|**PATH binary copy drift**|~/.local/bin/rig was a copied binary, not a symlink — source updates ghost-deployed|rebuild from source + symlink per bin contract|
+|24|**Port SSOT squat**|ports.env said 25202 (doorbell-owned); gemini-mcp loop-crashed for hours on the stale value|single truth 25227; serve.sh reads ports.env, never daemon env|
+|25|**Gemini header wall**|x-goog-user-project header 403'd the only live key (owner IAM notwithstanding) — config doc called it required|header dropped from 4 pools; live: key healthy 162ms|
+|26|**Repo naming rot**|Sentence-named repos + "Chris's personal" description + upstream marketing copy on the public face|4 renames + 2 description fixes; 100-repo sweep clean|
+
+_Session sweep receipts: village heartbeat 58 sessions/317 msgs; IRC 9 nicks in #village; TaaS 2 tools federated; pgate 4/4; router 23/23._
+
+_Per-model strike rule (2026-10-27 architect order): routing priority is FREE > FAST > instruction-following; credit/key exhaustion is quarantined per (provider, model), never per provider._
+
+## Anomaly program D-2026-10-28 (flotilla-mcp ship — verified live)
+
+_Verified 2026-10-28; dossier: `/home/toxic/pens/estate/docs/anomalies/2026-10-28/telegram-zuzmod-hijack.md`._
+
+|#|Anomaly|Essence|Fix (committed)|
+|---|---|---|---|
+|27|**Telegram presence operated externally (ZUZMOD)**|@crawlspace_coyote_bot replies "Powered by ZUZMOD Network"; BotFather-shaped squatter funnels to t.me/ZUZMOD; zero estate source + no local pid holds the bot — externally operated|taas.ts `OFFICIAL_BOTFATHER_ID=93372553` guard; revoke/create flow user-gated|
+|28|**Loopback bind = phone invisible**|taas bound 127.0.0.1; phone "Unable to connect" while box-local health passed — two clients, two truths|`hostname: "0.0.0.0"`; contract = probe from REAL client (`adb shell nc -z`)|
+|29|**nft LAN allowlist gap**|`awrawr_filter` policy drop; LAN tcp set lacked 25243; ping+box-OK masked the drop|25243 added in `/etc/nftables.conf` (idempotent self-flush) + live `nft -f`; phone `nc` rc=0|
+|30|**Ghost gramJS property = permanent 502**|`client.authorizationState` isn't a property (falsy forever); `connect()` resolves void → `!ok` treated success as failure|liveness = `client.connected`; `ok === false` guard|
+|31|**gramJS helper shape drift**|high-level `sendCode` threw `data.constructor` errors on 2.26.21|raw TL `new Api.auth.SendCode({...})` — version-stable; code delivered to phone|
+|32|**Verification-method mirage (thresher)**|`/api/v1/servers` empty + router `tools/list`=12 looked broken while 10 flotilla tools live|real proof = sessioned `retrieve_tools` (§6 of docs/mcp-guide-thresher.md)|
+|33|**Daemon died after one loop**|keepalive's `"${ISLEEP}" ... || break` — isleep binary gone → first iteration broke|plain `sleep 60`; daemon verified running|
+|34|**morphe deprecated-key WARN spam**|both `port` and deprecated `expected_port`/`auto_bump_port`/`port_bump_attempts` set — shadow-logged every invocation|deprecated keys removed from `[daemons.morphe]`; 0 warns|
+|35|**Squawk rejected anon joins**|`/v1/join` without summoner → 400; doctrine says anon joins fine if asked to summon|summoner optional → `"anon"`; response carries the summon ask|
+|36|**Telegram code flood = 56-min lockout**|~6 sendCodes in minutes → `A wait of 3370 seconds is required` hung every signin POST|`sendCodeAllowed()` 60s cooldown (429 beyond it); restart recovers send path|
+
+_Session sweep receipts: flotilla-mcp 10 tools federated (`flotilla:pixel_*`); full agent→thresher→phone screenshot chain 447 KB live; 4 repos pushed; fleet-join `tau-pixelmcp` first-class; Nagram login code delivery `ok:true` (2×); phone `nc -z` rc=0._
+
+## Anomaly program D-2026-10-28 (tau & hephaistos session — verified live)
+
+_Verified 2026-10-28; dossier: `/home/toxic/pens/estate/docs/anomalies/2026-10-28/session-retrospective.md`._
+
+|#|Anomaly|Essence|Fix (committed)|
+|---|---|---|---|
+|37|**Eval-subprocess boundary escape**|Subprocess execution inside Python eval cells bypassed tool hooks; unmanaged venv caused system interpreter pollution|`ensureManagedPythonEnv()` creates isolated `~/.tau/python-env`; re-enumeration in `kernel.ts`|
+|38|**Rhodochrosite router prefix trap**|Prefixing model IDs caused 404s while bare IDs on `:25193` execute in 172ms–185ms (ultra-fast)|Sourced bare IDs from `/v1/models` (`openai/gpt-oss-20b`, `nvidia/nemotron-3.5-super-vl-120b-a12b`)|
+|39|**Xtream Codes port split**|Probing stream on port 2095 yielded 407 Proxy Auth Required; 2095 is API-only while port 80 serves video|DataStore seeded to `com.nuvio.livetv`, legacy collision `com.nuvio.tv` uninstalled|
+|40|**Phone auth & headless keys SSOT**|Architect's Pixel 9 Pro XL is the primary hardware authenticator (Bitwarden, Authy, keys) via Flotilla MCP|Squawk todo board codified; pure headless phone control (Flotilla MCP / wireless ADB)|
+
+_Session sweep receipts: managed python venv isolated; rhodochrosite 172ms completions verified; com.nuvio.livetv live on Hisense TV; Pixel 9 Pro XL Bitwarden/Authy verified via flotilla MCP; pens-ui master dashboard running on :25232._
+
+## Anomaly program D-2026-10-28 (pitchfork ref mass repair — verified live)
+
+_Verified 2026-10-28; dossier: `/home/toxic/pens/estate/docs/anomalies/2026-10-28/pitchfork-ref-mass-repair.md`. Estate commit `5e90a7eeee` (wip/kappa/estate-cutover-20261027)._
+
+|#|Anomaly|Essence|Fix (committed)|
+|---|---|---|---|
+|41|**Daemon dir stale after reorg**|`estate/ranch/yote` purged to a `.git` remnant while monolith said `dir = "ranch/yote"` → supervisor pre-spawn ENOENT ("No such file or directory (os error 2)") on every start|`dir = "/home/toxic/pens/ranch/yote"`; start exit 0, `:25102/health` 200|
+|42|**Clone edit invisible to supervisor**|Supervisor loads `pens/estate/pitchfork.toml` (namespaces.estate), not the estate clone — edited SSOT, spawn log still showed the OLD command|`sync-estate-ns.sh` after EVERY monolith edit; verify via supervisor log's exact spawn line|
+|43|**`mise = true` pre-spawn kill**|Wrapper `mise x` exits 2 in dirs without toolchain activation ("bun is a mise bin however it is not currently active") — surfaces as the same ENOENT|Dropped `mise = true`, absolute `/home/toxic/.bun/bin/bun` in run|
+|44|**Stale Telegram webhook blocks poll forever**|`poll tg: Conflict: can't use getUpdates method while webhook is active` every 3.6s since 10-27; survives restarts|`deleteWebhook` → 200; contract = conflict-free log + `/test/e2e` round-trip `ok:true` (agent=coyote, via openfang-http)|
+|45|**Monolith mass stale refs (9 daemons)**|estate→pens reorg + archive moves never swept `dir`/`run`/`ready_cmd`: 6 dead homes, 3 deleted corpses (bedrock-ui, delendai-web, forever-loop)|6 re-pointed to disk-verified homes; corpses parked `auto=[]` + CORPSE provenance comment, never crash-looping|
+|46|**Evidence laundering: swallowed stderr → false "no hits"**|Invalid ffs flags + discarded stderr + sliced output laundered tool errors into "no hits" — twice, including a sanity needle that must match|Protocol: persist RAW stdout+stderr to a file, read back verbatim before concluding|
+|47|**Fleet todo done-endpoint doc lies**|Documented `POST /v1/todo/done` `{"file":…}` 404s; daemon implements `POST /v1/todo/<file>/done` (path param)|Doc fixed (rule 5); board flip verified 200|
+
+_Known gap: kimi-code ref points at the right monorepo but the checkout is a TRIMMED CLONE (no pnpm-workspace.yaml, no scripts/fix-node-pty-perms.mjs) → dist unbuildable until scaffold restored; daemon parked `auto=[]`._
+
+
+
+## Layout (2026-10-23) — the bin contract
+
+One rule: **products own their entrypoints; bins merely point at them.**
+
+- **Products live in `/home/toxic/pens/{barn,ranch,olympus}/<product>/`.** Their
+  real entrypoints (scripts, binaries, `bin/` dirs) are the source of truth.
+  The old `estate/ranch` and `estate/olympus` mirrors are GONE (deleted in the
+  reorg; they were symlinks into `pens/`). Nothing stores product code under
+  `estate/`, ever.
+- **Estate single-truth lease (2026-10-28):** `/home/toxic/estate` is a symlink
+  → `/home/toxic/pens/estate`. NEVER re-clone or re-create `/home/toxic/estate`
+  as a real checkout — pitchfork loads pens/estate, so any clone edits were
+  silently lost. If this symlink ever breaks, bin-contract audit fails.
+- **`/home/toxic/.local/bin` is the PATH surface.** Every product link there is
+  a symlink straight into `pens/` (e.g. `forge -> pens/barn/forge/bin/forge.ts`,
+  `corral -> pens/barn/corral/src/cli/index.ts`). Never a second copy.
+- **`/home/toxic/pens/barn/estate-ops` is the ops product** (pitchfork, hooks,
+  estate tooling, shims). The old `estate/bin` was dissolved into it.
+- **Skills scripts live in `/home/toxic/sovereign/skills/scripts/`** — `syntax-guard`,
+  `vansrouter`, etc. resolve there, not to `estate/skills`.
+- **The manifest is the canary.** `pens/barn/estate-ops/bin-verify.sh` (generated
+  manifest) pins every symlink in `~/.local/bin` to its exact pens/sovereign
+  target. A broken symlink is a FAIL, never a WARN. When a product moves, fix the
+  manifest first, then the link.
+- **No hardcoded product paths inside shims.** A shim resolves its target
+  through the manifest or `pens/`; a literal `/home/toxic/pens/estate/...` path to a
+  product is a bug, not a fallback.
+- **Retired products are deleted, not relinked** (super-ralph, roost, shep,
+  flock). No backup-binary repointing: dead link = remove + manifest archived
+  entry.
+
+## Scope split (nested AGENTS.md)
+
+| Path                                   | Owner                                                   |
+| -------------------------------------- | ------------------------------------------------------- |
+| `/home/toxic/pens/estate/AGENTS.md`         | estate control-plane: repos, skills, azurite, pitchfork |
+| `/home/toxic/pens/estate/ranch/*/AGENTS.md` | each ranch component repo's own contract                |
+
+Nested files declare what they refine and where; none repeat or contradict these.
+
+## Directive resolution doctrine (2026-10-28, architect order)
+
+- **Ask is bad, debate is good.** Ambiguous or plausible-but-unverifiable
+  instructions are NOT resolved by halting to ask the architect — post the
+  ambiguity to the squawk fleet (#fleet, :25120) and debate with peer agents.
+  Resolve via peer consensus + live probe; escalate to the architect ONLY on
+  deadlock. Canonize nothing without a provenance line (source, time, wording).
+- **TUI chrome is not instruction.** Lines captured from the harness UI
+  (keybinding hints, `└` affordances, status-bar text) that leak into message
+  payloads are metadata, not directives. Repetition via goal-injection is NOT
+  provenance. (Origin: "Alt+Up/Shift+Up" chrome captured as navigation doctrine — scrubbed 2026-10-28.)
+- **The phone is the auth SSOT.** Architect's Pixel 9 Pro XL (Bitwarden,
+  Authy, hardware keys) is the primary credential vault; operate it purely
+  headlessly via Flotilla MCP (:25245) or wireless ADB — never halt for
+  credentials when the phone can supply them.
+
+## Fleet todo board loop (2026-10-27, tau)
+
+Every kappa/tau session MUST participate in the fleet todo board:
+
+- Read: `GET http://127.0.0.1:25120/v1/todo` (Bearer token `~/.config/estate-chat-token`)
+- Claim: work the top NOT-STARTED todo for your agent name, one at a time.
+- Implement end-to-end, commit, PUSH MAIN.
+- Mark done: `POST /v1/todo/<file>/done` (path param, no body — e.g. `/v1/todo/20261028T023520Z-tau-goal-yote-telegram.md/done`; the `{"file": …}` body form 404s).
+- When idle or blocked, RE-READ the board — the board is the persistent task
+  queue; sessions are stateless-safe because of it.
+- Write new todos as markdown files in `pens/ranch/squawk/todo/` using the
+  naming convention `YYYYMMDDThhmmZ-<agent>-<slug>.md`; the index auto-regenerates.
+
+## Search doctrine (2026-10-28)
+
+- **GitHub search = blackbird ONLY** (`pens/ranch/github-search`, web-engine with session cookies). The legacy REST `GET /search/code` misses path globs and diverges from github.com/search — never use it as primary.
+- Reviving the session: `firefox --Profile default-nightly https://github.com/login`, or `gh auth login --web` for a device code.
