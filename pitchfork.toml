@@ -1494,3 +1494,18 @@ dir = "/home/toxic/pens/ranch/village-irc"
 run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/ranch/geode-rig/irc-bridge.ts"
 auto = ["start"]
 retry = true
+
+[daemons.gemini-mcp]
+run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/pens/ranch/barn/gemini-mcp/server.py"
+auto = ["start"]
+retry = true
+port = 25227
+expected_port = [25227]
+ready_http = "http://127.0.0.1:25227/health"
+dir = "/home/toxic/pens/ranch/barn/gemini-mcp"
+mise = true
+
+[daemons.gemini-mcp.health_http]
+url = "http://127.0.0.1:25227/health"
+interval = "30s"
+timeout = "5s"
