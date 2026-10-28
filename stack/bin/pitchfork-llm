@@ -4,7 +4,7 @@
 set -euo pipefail
 
 PITCHFORK="/home/toxic/.local/bin/pitchfork"
-ESTATE="/home/toxic/estate"
+ESTATE="/home/toxic/pens/estate"
 
 # Strip ANSI escape sequences
 strip_ansi() {

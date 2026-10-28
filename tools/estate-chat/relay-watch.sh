@@ -18,7 +18,7 @@
 # follow-up sweep via /v1/rooms/<room>/messages instead.
 set -u
 
-STATE_DIR="${ESTATE_CHAT_STATE_DIR:-/home/toxic/estate/tools/estate-chat/state}"
+STATE_DIR="${ESTATE_CHAT_STATE_DIR:-/home/toxic/pens/estate/tools/estate-chat/state}"
 WM="$STATE_DIR/relay-watermark"
 TOKEN_FILE="${ESTATE_CHAT_TOKEN_FILE:-/home/toxic/.config/estate-chat-token}"
 BASE="${ESTATE_CHAT_BASE:-http://127.0.0.1:25120}"

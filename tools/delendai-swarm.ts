@@ -34,14 +34,14 @@
  *     Zero dependencies beyond Bun stdlib + the ffs and delendai CLIs.
  *
  * Usage:
- *   delendai-swarm --root /home/toxic/estate
- *   delendai-swarm --root /home/toxic/estate --depth 4 --fanout 6
- *   delendai-swarm --root /home/toxic/estate --plan out.json   # write the forest
- *   delendai-swarm --root /home/toxic/estate --check           # gate: run one level, assert termination
- *   delendai-swarm --root /home/toxic/estate --json
- *   delendai-swarm --root /home/toxic/estate --audit report.md # explicit audit report
- *   delendai-swarm --root /home/toxic/estate --audit -         # audit from stdin
- *   delendai-swarm --root /home/toxic/estate --no-audit        # opt out of the default auto-audit
+ *   delendai-swarm --root /home/toxic/pens/estate
+ *   delendai-swarm --root /home/toxic/pens/estate --depth 4 --fanout 6
+ *   delendai-swarm --root /home/toxic/pens/estate --plan out.json   # write the forest
+ *   delendai-swarm --root /home/toxic/pens/estate --check           # gate: run one level, assert termination
+ *   delendai-swarm --root /home/toxic/pens/estate --json
+ *   delendai-swarm --root /home/toxic/pens/estate --audit report.md # explicit audit report
+ *   delendai-swarm --root /home/toxic/pens/estate --audit -         # audit from stdin
+ *   delendai-swarm --root /home/toxic/pens/estate --no-audit        # opt out of the default auto-audit
  *
  * The swarm is AUDIT-AWARE BY DEFAULT: it auto-runs the estate's merged
  * session audit (tau JSONL + kappa SQLite via the azurite tau-session-audit
@@ -356,7 +356,7 @@ function main(argv: string[]): number {
     // by the grasb-hub tau-session-audit helper) rather than blind. Non-fatal:
     // a missing helper just strands audit-awareness, it never blocks the swarm.
     const helper =
-      "/home/toxic/estate/azurite/skills/04_code_intelligence/tau-session-audit/helper/audit.ts";
+      "/home/toxic/pens/estate/azurite/skills/04_code_intelligence/tau-session-audit/helper/audit.ts";
     if (existsSync(helper)) {
       // --all prints (among others) the "Repeated Tool Failure Loop" section;
       // exit-code 1 (critical unknown-types) still yields a useful report for

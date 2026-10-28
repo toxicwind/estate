@@ -12,7 +12,7 @@
  * install step, and it composes with ffs for the per-pair diff.
  *
  * Usage:
- *   similarity --root /home/toxic/estate [--threshold 0.85] [--max-bytes 2000000]
+ *   similarity --root /home/toxic/pens/estate [--threshold 0.85] [--max-bytes 2000000]
  *              [--include <glob-ish path prefix>] [--exclude <prefix>]...
  *              [--json out.json] [--top N] [--plan]
  *   similarity --root <dir> --plan            # emit a merge plan (canonical per group)
@@ -263,7 +263,7 @@ function parseArgs(
 
 function main(): number {
   const args = parseArgs(process.argv.slice(2));
-  const root = resolve(String(args.root ?? "/home/toxic/estate"));
+  const root = resolve(String(args.root ?? "/home/toxic/pens/estate"));
   const threshold = Number(args.threshold ?? 0.85);
   const maxBytes = Number(args["max-bytes"] ?? 2_000_000);
   const topN = Number(args.top ?? 40);

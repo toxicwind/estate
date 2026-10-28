@@ -8,7 +8,7 @@ set -euo pipefail
 # the rest of the service scaffolding live here (the pens/estate namespace
 # pen whitelists only bin/ + docs/, so its stack/ is not the SSOT and was
 # missing lib-ports.sh entirely: hindsight died on source for the 80th time).
-SOV="${ESTATE_ROOT:-/home/toxic/estate}"
+SOV="${ESTATE_ROOT:-/home/toxic/pens/estate}"
 source "$SOV/stack/lib-ports.sh"
 require_env HINDSIGHT_API_PORT
 require_env HINDSIGHT_CP_PORT

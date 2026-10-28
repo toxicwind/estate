@@ -9,7 +9,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
-const ROOT = "/home/toxic/estate";
+const ROOT = "/home/toxic/pens/estate";
 const SRC = join(ROOT, "config/ports.env");
 const OUT = join(ROOT, "ranch/range/ui/src/lib/ports.ts");
 

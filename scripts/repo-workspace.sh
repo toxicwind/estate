@@ -7,7 +7,7 @@ if [[ -z "$name" || ! "$name" =~ ^[a-z0-9][a-z0-9-]{0,40}$ ]]; then
   echo "usage: $0 <workspace-name>" >&2
   exit 64
 fi
-root="/home/toxic/estate"
+root="/home/toxic/pens/estate"
 reg="$root/config/repos.toml"
 dest="$root/var/workspaces/$name"
 mkdir -p "$dest"

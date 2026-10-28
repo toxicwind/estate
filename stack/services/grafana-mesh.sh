@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Grafana on backend port + mesh-front on public GRAFANA_PORT.
 set -euo pipefail
-SOV="${ESTATE_ROOT:-/home/toxic/estate}"
+SOV="${ESTATE_ROOT:-/home/toxic/pens/estate}"
 # shellcheck source=../lib-ports.sh
 source "$SOV/stack/lib-ports.sh"
 PORT="${GRAFANA_PORT:?}"

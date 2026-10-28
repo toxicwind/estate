@@ -26,10 +26,10 @@
  * and untracked content in 0.00s, because git already knows it.
  *
  * Usage:
- *   layout --root /home/toxic/estate            # print the manifest table
- *   layout --root /home/toxic/estate --write    # regenerate docs/estate-layout.md
- *   layout --root /home/toxic/estate --check    # drift check (exit 1 on drift)
- *   layout --root /home/toxic/estate --json <path>
+ *   layout --root /home/toxic/pens/estate            # print the manifest table
+ *   layout --root /home/toxic/pens/estate --write    # regenerate docs/estate-layout.md
+ *   layout --root /home/toxic/pens/estate --check    # drift check (exit 1 on drift)
+ *   layout --root /home/toxic/pens/estate --json <path>
  *
  * Zero dependencies (Bun stdlib only).
  */
@@ -246,7 +246,7 @@ function bucketOf(
 
 function main(): number {
   const args = parseArgs(process.argv.slice(2));
-  const root = resolve(String(args.root ?? "/home/toxic/estate"));
+  const root = resolve(String(args.root ?? "/home/toxic/pens/estate"));
   const docPath = String(args["doc"] ?? join(root, "docs/estate-layout.md"));
   const jsonPath = args.json ? String(args.json) : null;
 

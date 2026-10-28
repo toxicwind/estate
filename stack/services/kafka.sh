@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Kafka service — Estate stack
 set -euo pipefail
-SOV="${ESTATE_ROOT:-/home/toxic/estate}"
+SOV="${ESTATE_ROOT:-/home/toxic/pens/estate}"
 source "$SOV/stack/lib-ports.sh" 2>/dev/null || true
 PORT="${KAFKA_PORT:-25144}"
 export JAVA_HOME=/usr/lib/jvm/java-25-graalvm

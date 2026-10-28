@@ -1,6 +1,6 @@
 #!/bin/bash
 # Safe pitchfork wrapper - sanitizes output for LLM consumption
-cd /home/toxic/estate
+cd /home/toxic/pens/estate
 export PATH="/home/toxic/.local/share/mise/shims:$PATH"
 
 cmd="$1"

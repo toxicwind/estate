@@ -253,7 +253,7 @@ const llamaMcp = await runMcp(
   [
     "/home/toxic/.bun/bin/bun",
     "run",
-    "/home/toxic/estate/src/mcp/bornite.ts",
+    "/home/toxic/pens/estate/src/mcp/bornite.ts",
   ],
   "bornite_health",
   {},
@@ -265,7 +265,7 @@ const llamaModels = await runMcp(
   [
     "/home/toxic/.bun/bin/bun",
     "run",
-    "/home/toxic/estate/src/mcp/bornite.ts",
+    "/home/toxic/pens/estate/src/mcp/bornite.ts",
   ],
   "bornite_models",
   {},

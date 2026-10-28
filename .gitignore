@@ -1451,3 +1451,8 @@ ranch/rustdesk-server/id_ed25519.pub
 qdrant_data/
 storage/
 snapshots/
+
+# grafana runtime-extracted lazy chunks (regenerated each start)
+grafana/plugins/*/*.js
+grafana/plugins/*/*.js.map
+grafana/logs/

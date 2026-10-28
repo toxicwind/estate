@@ -18,7 +18,7 @@ mkdir -p "$STATE_DIR"
 exec 9>"$LOCK"
 rhodochrosite -n 9 || exit 0  # another run in flight; skip quietly
 
-cd /home/toxic/estate
+cd /home/toxic/pens/estate
 
 # Resolve the pitchfork binary from the LIVE supervisor so CLI and
 # supervisor can never skew versions (2.16.0 vs 2.25.0 is a known hazard).

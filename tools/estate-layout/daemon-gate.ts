@@ -30,9 +30,9 @@
  *                      "sovereign" brand.
  *
  * Usage:
- *   daemon-gate --root /home/toxic/estate            # human report, exit 1 on error
- *   daemon-gate --root /home/toxic/estate --json out.json
- *   daemon-gate --root /home/toxic/estate --warn     # report, never fail
+ *   daemon-gate --root /home/toxic/pens/estate            # human report, exit 1 on error
+ *   daemon-gate --root /home/toxic/pens/estate --json out.json
+ *   daemon-gate --root /home/toxic/pens/estate --warn     # report, never fail
  */
 
 import { readFileSync, existsSync, writeFileSync } from "node:fs";
@@ -167,7 +167,7 @@ function readPortsEnv(text: string): {
 
 function main(): number {
   const args = parseArgs(process.argv.slice(2));
-  const root = resolve(String(args.root ?? "/home/toxic/estate"));
+  const root = resolve(String(args.root ?? "/home/toxic/pens/estate"));
   const composedPath = join(root, "pitchfork.toml");
   const portsEnvPath = join(root, "config/ports.env");
 

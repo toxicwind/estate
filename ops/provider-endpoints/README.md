@@ -33,7 +33,7 @@ This probe settles it:
 ## Quick start
 
 ```bash
-cd /home/toxic/estate && bun ops/provider-endpoints/probe-endpoints.ts
+cd /home/toxic/pens/estate && bun ops/provider-endpoints/probe-endpoints.ts
 ```
 
 Writes `provider-endpoints.json` (machine-readable) and

@@ -9,4 +9,4 @@
 # references to the old launcher still work. It simply argv-replaces itself
 # with the Bun entrypoint, which is now the source of truth. Do NOT extend
 # bash here; put new behavior in the .ts. (ggeenhouse-serve.ts precedent.)
-exec /home/toxic/.bun/bin/bun /home/toxic/estate/stack/services/smithers-gateway.ts "$@"
+exec /home/toxic/.bun/bin/bun /home/toxic/pens/estate/stack/services/smithers-gateway.ts "$@"

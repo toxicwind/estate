@@ -2,12 +2,12 @@
 # bornite (bornite) loopback launcher — binds Go binary to 127.0.0.1:HERD_PORT (25100).
 # Renamed from bornite.sh — project-wide bornite naming, bornite binary kept for compatibility.
 # No proxy/middleware hop. mesh-hub (25115) serves 20 GHAS /mesh/* features.
-# Config: --config <main> plus --config-dir /home/toxic/estate/config/bornite.d
+# Config: --config <main> plus --config-dir /home/toxic/pens/estate/config/bornite.d
 # (additive, watch-config hot-reload) for the kimi-auto virtual model.
 # Lifecycle is owned by pitchfork (supervisor); this script does NOT kill or
 # steal the port — if the bind fails, pitchfork sees the failure and retries.
 set -euo pipefail
-SOV="/home/toxic/estate"
+SOV="/home/toxic/pens/estate"
 # Pens overlay: the Go bornite binary lives in — and is built from —
 # pens/geode/products/bornite (the canonical, newest copy); pens/ranch/... is
 # a stale pre-reorg path. Search pens first, then estate, then the archived copy.
@@ -55,4 +55,4 @@ CONF="$SOV/config/bornite.yaml"
 # exec replaces this shell so the supervisor tracks the ACTUAL server PID,
 # not a bash wrapper (2026-09-18: fixes stale-ownership where wrapper PID
 # != server PID). pitchfork ready_http gates on /health; no background+wait.
-exec "$BIN" --config "$CONF" --config-dir /home/toxic/estate/config/bornite.d --watch-config --listen "127.0.0.1:${PORT}"
+exec "$BIN" --config "$CONF" --config-dir /home/toxic/pens/estate/config/bornite.d --watch-config --listen "127.0.0.1:${PORT}"

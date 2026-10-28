@@ -136,7 +136,7 @@ Tools: `join`, `heartbeat`, `post_message`, `read_messages`, `list_presence`,
 
 ```json
 { "mcpServers": { "estate-chat": {
-  "command": "bun", "args": ["run", "/home/toxic/estate/tools/estate-chat/chat.ts", "mcp"],
+  "command": "bun", "args": ["run", "/home/toxic/pens/estate/tools/estate-chat/chat.ts", "mcp"],
   "env": { "ESTATE_CHAT_TOKEN_FILE": "/home/toxic/.config/estate-chat-token",
             "ESTATE_CHAT_TOKEN": "<token>" }
 } } }

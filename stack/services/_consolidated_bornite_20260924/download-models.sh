@@ -10,8 +10,8 @@ set -euo pipefail
 # Pattern from: https://raw.githubusercontent.com/wiremarrow/luma/main/runpod/scripts/setup.py
 #               https://raw.githubusercontent.com/abetlen/llama-cpp-python/main/llama_cpp/llama.py
 
-MODEL_DIR="${MODEL_DIR:-/home/toxic/estate/models}"
-SRC_DIRS=("$HOME/projects/models" "$HOME/models" "/home/toxic/estate/models")
+MODEL_DIR="${MODEL_DIR:-/home/toxic/pens/estate/models}"
+SRC_DIRS=("$HOME/projects/models" "$HOME/models" "/home/toxic/pens/estate/models")
 LOG="$MODEL_DIR/final_download.log"
 mkdir -p "$MODEL_DIR"
 export HF_HUB_VERBOSITY=info
@@ -355,6 +355,6 @@ _draw_divider
 printf "  ${C_BOLD}Total files:${C_RESET} %d    ${C_BOLD}Used:${C_RESET} ${C_CYAN}%s${C_RESET}    ${C_BOLD}Free:${C_RESET} ${C_GREEN}%sGB${C_RESET}\n" "$count" "$used" "$(avail_gb)"
 
 log "DONE avail $(avail_gb)GB - $count files, ~$used used"
-log "Next: cp /home/toxic/estate/config/bornite/config.yaml /home/toxic/estate/tools/bornite/config.yaml && pkill -f bornite; /home/toxic/estate/stack/services/llama-herder.sh"
+log "Next: cp /home/toxic/pens/estate/config/bornite/config.yaml /home/toxic/pens/estate/tools/bornite/config.yaml && pkill -f bornite; /home/toxic/pens/estate/stack/services/llama-herder.sh"
 
 printf "\n${C_BOLD}${C_GREEN}✓ Estate model fleet ready.${C_RESET}\n\n"

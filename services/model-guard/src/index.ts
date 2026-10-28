@@ -19,7 +19,7 @@
 // changes (stat per request — no polling loop, no timers).
 //
 // Audit: every rewrite appends one JSON line to
-//   /home/toxic/estate/var/data/model-guard-audit.jsonl
+//   /home/toxic/pens/estate/var/data/model-guard-audit.jsonl
 // (override with MODEL_GUARD_AUDIT). Rotated at MODEL_GUARD_AUDIT_MAX_BYTES
 // (default 10MB) -> <path>.1.
 //
@@ -63,9 +63,9 @@ function requiredUpstream(): string {
 
 const UPSTREAM = requiredUpstream();
 let CONSTRAINTS_PATH =
-  process.env.MODEL_CONSTRAINTS || "/home/toxic/estate/config/model_constraints.yaml";
+  process.env.MODEL_CONSTRAINTS || "/home/toxic/pens/estate/config/model_constraints.yaml";
 const AUDIT_PATH =
-  process.env.MODEL_GUARD_AUDIT || "/home/toxic/estate/var/data/model-guard-audit.jsonl";
+  process.env.MODEL_GUARD_AUDIT || "/home/toxic/pens/estate/var/data/model-guard-audit.jsonl";
 const AUDIT_MAX_BYTES = Number(process.env.MODEL_GUARD_AUDIT_MAX_BYTES || "10000000");
 
 // ------------------------------------------------------------ constraints

@@ -15,7 +15,7 @@ a no-op returning the cached result. Interrupted jobs restart cleanly on
 daemon boot.
 
 Source: `tools/buildsrv/` in `toxicwind/estate-projects` (also checked
-out at `/home/toxic/estate` on awrawr-pc).
+out at `/home/toxic/pens/estate` on awrawr-pc).
 
 ```mermaid
 flowchart LR
@@ -50,7 +50,7 @@ flowchart LR
 ```bash
 # Rust — build one crate of the tau engine workspace
 buildsrv submit --name tau-pi-ast \
-  --repo /home/toxic/estate/tau/engine \
+  --repo /home/toxic/pens/estate/tau/engine \
   --toolchain rust \
   --cmd "cargo build -p pi-ast"
 
@@ -89,7 +89,7 @@ Known toolchains: `rust`/`cargo`, `go`, `bun`, `node`, `python`/`python3`,
 
 ## Config
 
-Pitchfork stanza `[daemons.buildsrv]` in `/home/toxic/estate/pitchfork.toml`
+Pitchfork stanza `[daemons.buildsrv]` in `/home/toxic/pens/estate/pitchfork.toml`
 (hand-edited — `scripts/generate.ts` must never run), also in `[groups.all]`.
 Reload/start: `pitchfork start|restart|status|logs buildsrv`.
 

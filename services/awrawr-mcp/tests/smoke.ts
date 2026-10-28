@@ -15,7 +15,7 @@
 import { spawn } from "node:child_process";
 
 const BUN = "/home/toxic/.bun/bin/bun";
-const SERVER = "/home/toxic/estate/services/awrawr-mcp/src/index.ts";
+const SERVER = "/home/toxic/pens/estate/services/awrawr-mcp/src/index.ts";
 
 async function runMode(mode: "framed" | "lines"): Promise<void> {
   const child = spawn("/usr/bin/bash", ["-l", "-c", `${BUN} ${SERVER} --stdio`], {

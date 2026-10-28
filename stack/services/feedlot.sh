@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # feedlot service — Estate stack (real llama.cpp MCP, Go binary)
 set -euo pipefail
-SOV="${ESTATE_ROOT:-/home/toxic/estate}"
+SOV="${ESTATE_ROOT:-/home/toxic/pens/estate}"
 source "$SOV/stack/lib-ports.sh" 2>/dev/null || true
 PORT="${FEEDLOT_PORT:-25121}"
 

@@ -16,7 +16,7 @@ fuser -k 25118/tcp 2>/dev/null || true
 echo "[fix-hindsight] Ensuring rhodochrosite (25193) is running..."
 if ! curl -sf -m 2 http://127.0.0.1:25193/health >/dev/null 2>&1; then
     echo "[fix-hindsight] Starting bornite..."
-    ESTATE_ROOT=/home/toxic/estate bash /home/toxic/estate/stack/services/bornite.sh &
+    ESTATE_ROOT=/home/toxic/pens/estate bash /home/toxic/pens/estate/stack/services/bornite.sh &
     sleep 2
 fi
 
@@ -26,7 +26,7 @@ export HINDSIGHT_API_LLM_API_KEY="$(cat /home/toxic/.rhodochrosite-data/client-k
 export HINDSIGHT_API_LLM_BASE_URL="http://127.0.0.1:25193/v1"
 export HINDSIGHT_API_LLM_MODEL="openai/gpt-oss-20b"
 
-(cd /home/toxic/estate && ./stack/services/hindsight.sh) &
+(cd /home/toxic/pens/estate && ./stack/services/hindsight.sh) &
 echo "[fix-hindsight] Waiting 15s for startup..."
 sleep 15
 

@@ -3,5 +3,5 @@
 # Maps legacy HAL_SUBSTRATE_PORT to COYOTE_PORT and execs the new script.
 set -euo pipefail
 export COYOTE_PORT="${COYOTE_PORT:-${HAL_SUBSTRATE_PORT:-25143}}"
-SOV="${ESTATE_ROOT:-/home/toxic/estate}"
+SOV="${ESTATE_ROOT:-/home/toxic/pens/estate}"
 exec "$SOV/stack/services/coyote.sh"

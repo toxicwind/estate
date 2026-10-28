@@ -32,7 +32,7 @@ Control: unix socket /tmp/morphe.sock — {"cmd":"routes"|"chaos"|"fingerprint"
 """
 import asyncio, json, os, socket, ssl, time, uuid
 
-CONF = "/home/toxic/estate/bridge/morphe-fingerprints.json"
+CONF = "/home/toxic/pens/estate/bridge/morphe-fingerprints.json"
 LOG = "/tmp/morphe.log"
 CTRL = "/tmp/morphe.sock"
 LEDGER = os.path.expanduser("~/.cache/morphe/winners.jsonl")

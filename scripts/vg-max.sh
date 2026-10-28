@@ -62,7 +62,7 @@ done
 
 if [ ! -f "$PDAUDIT/artifacts/eligible.txt" ]; then
   err "pd-audit not found at $PDAUDIT"
-  info "run: bash /home/toxic/estate/scripts/pd-audit.sh"
+  info "run: bash /home/toxic/pens/estate/scripts/pd-audit.sh"
   exit 1
 fi
 ok "pd-audit found: $(wc -l < "$PDAUDIT/artifacts/eligible.txt") eligible models"

@@ -7,8 +7,8 @@ Event-driven pacing: no artificial sleeps; the swap queue itself paces us.
 import json, re, time, sys, threading, http.client, os
 from concurrent.futures import ThreadPoolExecutor
 
-BORNITE = "/home/toxic/estate/config/bornite.yaml"
-OUTDIR = "/home/toxic/estate/data/bornite-ranker"
+BORNITE = "/home/toxic/pens/estate/config/bornite.yaml"
+OUTDIR = "/home/toxic/pens/estate/data/bornite-ranker"
 HOST, PORT = "127.0.0.1", 25100
 COLD_CEIL = 300   # includes model load
 WARM_CEIL = 60

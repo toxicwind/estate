@@ -27,9 +27,9 @@ SURFACES=(
   /home/toxic/.tau/model-router.json
   /home/toxic/.tau/profiles
   /home/toxic/.rhodochrosite-data/config.json
-  /home/toxic/estate/config
-  /home/toxic/estate/stack
-  /home/toxic/estate/pitchfork.toml
+  /home/toxic/pens/estate/config
+  /home/toxic/pens/estate/stack
+  /home/toxic/pens/estate/pitchfork.toml
 )
 
 EXCLUDES=(

@@ -25,7 +25,7 @@ import {
   log,
 } from "./router_config.ts";
 
-const STATE_PATH = "/home/toxic/estate/.state/live-models.json";
+const STATE_PATH = "/home/toxic/pens/estate/.state/live-models.json";
 const REFRESH_MS = 30 * 60 * 1000;
 
 export const LIVE_STATUS: Record<

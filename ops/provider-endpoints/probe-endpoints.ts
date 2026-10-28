@@ -25,7 +25,7 @@ import { fileURLToPath } from "node:url";
 const here = dirname(fileURLToPath(import.meta.url));
 const MIMETITE_PROVIDERS =
   process.env.MIMETITE_PROVIDERS_JSON ??
-  "/home/toxic/estate/ranch/mimetite/generated/providers.json";
+  "/home/toxic/pens/estate/ranch/mimetite/generated/providers.json";
 const OUT_DIR = here;
 const PROBE_TIMEOUT_MS = 8000;
 const CONCURRENCY = 12;

@@ -5,10 +5,10 @@
 # Does NOT touch the bridge (awrawr-ws-exec) or any squawk process.
 set -euo pipefail
 
-KC_DIR="/home/toxic/estate/tools/kimi-claw"
+KC_DIR="/home/toxic/pens/estate/tools/kimi-claw"
 PF="/home/toxic/.local/share/mise/installs/pitchfork/latest/pitchfork"
 BUN="/home/toxic/.bun/bin/bun"
-TOML="/home/toxic/estate/pitchfork.toml"
+TOML="/home/toxic/pens/estate/pitchfork.toml"
 
 say() { echo "[deploy] $*"; }
 

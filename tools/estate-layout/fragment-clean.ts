@@ -31,9 +31,9 @@
  * composer regenerates anyway.
  *
  * Usage:
- *   fragment-clean --root /home/toxic/estate            # report
- *   fragment-clean --root /home/toxic/estate --write    # relocate the docs
- *   fragment-clean --root /home/toxic/estate --check    # exit 1 if dirty
+ *   fragment-clean --root /home/toxic/pens/estate            # report
+ *   fragment-clean --root /home/toxic/pens/estate --write    # relocate the docs
+ *   fragment-clean --root /home/toxic/pens/estate --check    # exit 1 if dirty
  *
  * Zero dependencies (Bun stdlib only).
  */
@@ -183,7 +183,7 @@ function classifyTail(
 
 function main(): number {
   const args = parseArgs(process.argv.slice(2));
-  const root = resolve(String(args.root ?? "/home/toxic/estate"));
+  const root = resolve(String(args.root ?? "/home/toxic/pens/estate"));
 
   const files = manifestDirs(root).flatMap(fragmentFiles);
   const allDaemons = new Set<string>();

@@ -27,7 +27,7 @@ grep -q "approvalMode:" "$TAU_HOME/config.yml" 2>/dev/null \
 # committed blob at HEAD. (taurun 2026-10-01)
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/.." && pwd)"
 # resolve to the real estate repo even when run from ~/.local/bin (installed copy)
-git -C "$REPO_ROOT" rev-parse --git-dir >/dev/null 2>&1 || REPO_ROOT="/home/toxic/estate"
+git -C "$REPO_ROOT" rev-parse --git-dir >/dev/null 2>&1 || REPO_ROOT="/home/toxic/pens/estate"
 if git -C "$REPO_ROOT" show HEAD:config/tau/agent/config.yml 2>/dev/null | diff -q - "$TAU_HOME/agent/config.yml" >/dev/null 2>&1; then
   ok "live agent config matches committed blob (no clobber)"
 else

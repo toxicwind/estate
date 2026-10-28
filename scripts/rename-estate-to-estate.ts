@@ -20,7 +20,7 @@ function* walk(dir: string): Generator<string> {
   }
 }
 
-const ROOT = "/home/toxic/estate";
+const ROOT = "/home/toxic/pens/estate";
 // live estate surface only — ranch/* are independent subrepos with their own naming
 const SUBDIRS = ["docs", "skills", "scripts", "config", "agents", "manor", "services", "stack", "tools", "python", "infra", "profiles", "migration", "crews", ".github", ".code-scalpel", "audit", "brain", "corral", "deploy", "devices", "gear", "keypool", "lib", "nix", "packages", "pdfshield", "research", "src", "standalone", "tests", "trail-runner", "ts", "work", "killer-features", "completion-audit", "bridge", "pi-skills", "six-task-loop", "skills-hub", "mesh", "hatch", "bin", "ast-grep-rules", "hooks", "deploy", "test", "types", "corral", "devices", "gear", "infra"];
 const ROOT_FILES = ["pitchfork.toml", "mise.toml", "AGENTS.md", "README.md", "TASKS.md", "SOUL.md", "IDENTITY.md", "projects.toml", "AUDIT.md", "MERGE-DECISIONS.md", ".Estate-integration.ts", ".Estate-integration.json", ".env.example", ".envrc"];
@@ -46,8 +46,8 @@ function lineRefsExistingEstatePath(line: string): boolean {
     const tok = m[0];
     const cands = [
       tok.replace(/^~\/?/, "/home/toxic/").replace(/^\$HOME\/?/, "/home/toxic/"),
-      tok.replace(/^\.?\/?estate\/?/, "/home/toxic/estate/"),
-      `/home/toxic/estate/${tok.replace(/^\.\//, "")}`,
+      tok.replace(/^\.?\/?estate\/?/, "/home/toxic/pens/estate/"),
+      `/home/toxic/pens/estate/${tok.replace(/^\.\//, "")}`,
     ];
     for (const c of cands) {
       if (c.includes("Estate") && existsSync(c)) return true;
