@@ -1,9 +1,17 @@
 # Estate
 
-One of the estate's five pens (`pens/{estate,geode,barn,ranch,olympus}`).
+One of the estate's six pens (`pens/{estate,geode,barn,ranch,olympus,ergasterion}`).
 Every pen has the same shape: `products/` for peer standalone checkouts,
 `docs/` for pen-owned documentation, and a `bin/` entrypoint surface that
 is symlinked into `~/.local/bin` and pinned by the estate-ops manifest.
+
+## Facts (generated — do not hand-edit)
+
+<!-- FACTS:START -->
+| estate chat (squawk) port | 25120 (ports.env) |
+| irc village port | 25241 (ports.env VILLAGE_IRC_PORT) |
+| anomaly program | docs/anomalies/<date>/ + AGENTS.md table (rows 19-26 = village-sovereignty 2026-10-28) |
+<!-- FACTS:END -->
 
 ## Products
 
