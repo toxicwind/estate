@@ -1,9 +1,9 @@
 /**
- * OpenFang external API client for Yote.
+ * Rig external API client for Yote.
  *
- * Yote talks to OpenFang ONLY over HTTP (public mesh port :25103), never by
- * sharing OpenFang process env / internal secrets. Auth: optional Bearer from
- * OPENFANG_API_KEY if OpenFang has api_key configured.
+ * Yote talks to Rig ONLY over HTTP (public mesh port :25103), never by
+ * sharing Rig process env / internal secrets. Auth: optional Bearer from
+ * RIG_API_KEY if Rig has api_key configured.
  */
 export type OfAgent = {
   id: string;
@@ -37,7 +37,7 @@ export type RouteOption = {
 };
 
 const DEFAULT_BASE =
-  process.env.OPENFANG_URL?.replace(/\/$/, "") || "http://127.0.0.1:25103";
+  process.env.RIG_URL?.replace(/\/$/, "") || "http://127.0.0.1:25103";
 
 /** Universal 20s timeout for "find faster route" — first-class operation */
 const _UNIVERSAL_ROUTE_TIMEOUT_MS = 20_000;
@@ -46,7 +46,7 @@ const _UNIVERSAL_ROUTE_TIMEOUT_MS = 20_000;
 const DEFAULT_ROUTE_CHAIN: RouteOption[] = [
   {
     agent: "coyote",
-    model: "openfang:coyote",
+    model: "rig:coyote",
     max_tokens: 512,
     temperature: 0.3,
     timeoutMs: 8000,
@@ -54,7 +54,7 @@ const DEFAULT_ROUTE_CHAIN: RouteOption[] = [
   },
   {
     agent: "coyote",
-    model: "openfang:coyote",
+    model: "rig:coyote",
     max_tokens: 1024,
     temperature: 0.4,
     timeoutMs: 15000,
@@ -62,7 +62,7 @@ const DEFAULT_ROUTE_CHAIN: RouteOption[] = [
   },
   {
     agent: "coyote",
-    model: "openfang:coyote",
+    model: "rig:coyote",
     max_tokens: 2048,
     temperature: 0.5,
     timeoutMs: 30000,
@@ -70,12 +70,12 @@ const DEFAULT_ROUTE_CHAIN: RouteOption[] = [
   },
 ];
 
-export class OpenFangClient {
+export class RigClient {
   constructor(
     public baseUrl = DEFAULT_BASE,
-    public apiKey = process.env.OPENFANG_API_KEY || "",
-    public defaultAgent = process.env.YOTE_OPENFANG_AGENT ||
-      process.env.DEFAULT_MODEL?.replace(/^openfang:/, "") ||
+    public apiKey = process.env.RIG_API_KEY || "",
+    public defaultAgent = process.env.YOTE_RIG_AGENT ||
+      process.env.DEFAULT_MODEL?.replace(/^rig:/, "") ||
       "coyote",
     public routeChain: RouteOption[] = DEFAULT_ROUTE_CHAIN,
   ) {}
@@ -146,7 +146,7 @@ export class OpenFangClient {
     }
   }
 
-  /** Chat a named OpenFang agent via OpenAI-compat surface openfang:<name> */
+  /** Chat a named Rig agent via OpenAI-compat surface rig:<name> */
   async chat(
     text: string,
     opts: {
@@ -157,7 +157,7 @@ export class OpenFangClient {
       routeChain?: RouteOption[];
     } = {},
   ): Promise<OfChatResult> {
-    const agent = (opts.agent || this.defaultAgent).replace(/^openfang:/, "");
+    const agent = (opts.agent || this.defaultAgent).replace(/^rig:/, "");
     const routeChain = opts.routeChain || this.routeChain;
     const t0 = performance.now();
     const messages: Array<{ role: string; content: string }> = [];
@@ -204,7 +204,7 @@ export class OpenFangClient {
         // If this route failed but we have more routes, continue to next
         if (i < routeChain.length - 1) {
           console.log(
-            `[openfang-client] Route ${route.label} failed (${routeMs}ms), trying next...`,
+            `[rig-client] Route ${route.label} failed (${routeMs}ms), trying next...`,
           );
           continue;
         }
@@ -228,7 +228,7 @@ export class OpenFangClient {
         // If this route timed out or errored but we have more routes, continue
         if (i < routeChain.length - 1) {
           console.log(
-            `[openfang-client] Route ${route.label} error (${routeMs}ms): ${String(e)}, trying next...`,
+            `[rig-client] Route ${route.label} error (${routeMs}ms): ${String(e)}, trying next...`,
           );
           continue;
         }
@@ -251,7 +251,7 @@ export class OpenFangClient {
     return {
       ok: false,
       agent,
-      model: "openfang:coyote",
+      model: "rig:coyote",
       content: "",
       error: "All routes exhausted",
       ms: Math.round(performance.now() - t0),
@@ -282,7 +282,7 @@ export class OpenFangClient {
         results.push({
           ok: false,
           agent: a.name,
-          model: `openfang:${a.name}`,
+          model: `rig:${a.name}`,
           content: "",
           error: `skipped state=${a.state} ready=${a.ready}`,
           ms: 0,
@@ -312,4 +312,4 @@ export class OpenFangClient {
   }
 }
 
-export const openfang = new OpenFangClient();
+export const rig = new RigClient();

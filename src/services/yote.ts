@@ -1,6 +1,6 @@
 /**
- * Yote — Telegram gateway that uses OpenFang as an *external* HTTP service.
- * No OpenFang process env sharing; only OPENFANG_URL + optional OPENFANG_API_KEY.
+ * Yote — Telegram gateway that uses Rig as an *external* HTTP service.
+ * No Rig process env sharing; only RIG_URL + optional RIG_API_KEY.
  */
 
 import {
@@ -15,7 +15,7 @@ import { fileURLToPath } from "node:url";
 import { serve } from "bun";
 import { handleMeshRequest } from "../../src/lib/ghas-mesh-features.ts";
 import { checkHealth, checkHealthLegacy } from "./lib/health";
-import { OpenFangClient, openfang } from "./lib/openfang-client.ts";
+import { RigClient, rig } from "./lib/rig-client.ts";
 import { Overlord } from "./lib/overlord";
 
 const __f = fileURLToPath(import.meta.url);
@@ -65,15 +65,15 @@ const CHS = (process.env.YOTE_TELEGRAM_CHANNELS ?? "")
   .map((s) => s.trim())
   .filter(Boolean);
 const LLM = process.env.LLM_PROXY_URL ?? "http://127.0.0.1:25100";
-const OF_URL = process.env.OPENFANG_URL ?? "http://127.0.0.1:25103";
+const OF_URL = process.env.RIG_URL ?? "http://127.0.0.1:25103";
 const DEFAULT_AGENT = (
-  process.env.YOTE_OPENFANG_AGENT ||
-  process.env.DEFAULT_MODEL?.replace(/^openfang:/, "") ||
+  process.env.YOTE_RIG_AGENT ||
+  process.env.DEFAULT_MODEL?.replace(/^rig:/, "") ||
   "coyote"
-).replace(/^openfang:/, "");
+).replace(/^rig:/, "");
 const PUP_TRIX_ID = Number(process.env.YOTE_TARGET_USER || "716302190");
 
-/** Coyote persona for the bornite fallback path (used only when OpenFang is down). */
+/** Coyote persona for the bornite fallback path (used only when Rig is down). */
 const YOTE_SYSTEM = "You are Yote, a clever southwestern desert coyote and User's loyal trickster companion. Warm, dry, direct, a little mischievous — but all business when something real is at stake. Keep replies tight and useful. You answer as Yote in Telegram chats.";
 
 /** Avatar sync: push the Yote avatar to the Telegram bot profile (once). */
@@ -81,14 +81,14 @@ const AVATAR_PATH =
   process.env.YOTE_AVATAR_PATH || join(CD, "yote-avatar.png");
 const AVATAR_MARK = join(CD, ".avatar_synced");
 
-const ofClient = new OpenFangClient(
+const ofClient = new RigClient(
   OF_URL,
-  process.env.OPENFANG_API_KEY || "",
+  process.env.RIG_API_KEY || "",
   DEFAULT_AGENT,
   [
     {
       agent: "coyote",
-      model: "openfang:coyote",
+      model: "rig:coyote",
       max_tokens: 512,
       temperature: 0.3,
       timeoutMs: 8000,
@@ -96,7 +96,7 @@ const ofClient = new OpenFangClient(
     },
     {
       agent: "coyote",
-      model: "openfang:coyote",
+      model: "rig:coyote",
       max_tokens: 1024,
       temperature: 0.4,
       timeoutMs: 15000,
@@ -104,7 +104,7 @@ const ofClient = new OpenFangClient(
     },
     {
       agent: "coyote",
-      model: "openfang:coyote",
+      model: "rig:coyote",
       max_tokens: 2048,
       temperature: 0.5,
       timeoutMs: 30000,
@@ -238,7 +238,7 @@ async function send(cid: number, t: string, o: any = {}) {
   }
 }
 
-/** Direct bornite (bornite) chat — fallback when OpenFang is unreachable. */
+/** Direct bornite (bornite) chat — fallback when Rig is unreachable. */
 async function herdChat(
   txt: string,
   maxTokens = 1024,
@@ -282,17 +282,17 @@ async function herdChat(
   return { ok: false, content: "", model: models[0] || "none" };
 }
 
-/** OpenFang HTTP chat with bornite fallback — Yote stays alive if OpenFang is down. */
+/** Rig HTTP chat with bornite fallback — Yote stays alive if Rig is down. */
 async function ofChat(txt: string, agent?: string) {
   const r = await ofClient.chat(txt, {
     agent: agent || DEFAULT_AGENT,
     max_tokens: 1024,
   });
   if (r.ok) return r.content;
-  log(`ofChat openfang failed (${r.agent}): ${r.error} — bornite fallback`);
+  log(`ofChat rig failed (${r.agent}): ${r.error} — bornite fallback`);
   const h = await herdChat(txt);
-  if (h.ok) return `${h.content}\n\n⚡ via bornite/${h.model} (openfang unreachable)`;
-  return `openfang err (${r.agent}): ${r.error || "empty"}; bornite fallback also down`;
+  if (h.ok) return `${h.content}\n\n⚡ via bornite/${h.model} (rig unreachable)`;
+  return `rig err (${r.agent}): ${r.error || "empty"}; bornite fallback also down`;
 }
 
 async function hChat(cid: number, txt: string, o: any = {}) {
@@ -346,7 +346,7 @@ async function proc(up: any) {
     saveChats();
     await send(
       cid,
-      `yote v0.6 · openfang external API @ ${OF_URL}\nagent: ${chatAgent[String(cid)] || DEFAULT_AGENT}\ncmds: /start /status /health /agent <name> /agents\nwatching: ${CHS.join(",") || "all"}\nallowed: ${Array.from(ALW).join(",")}`,
+      `yote v0.6 · rig external API @ ${OF_URL}\nagent: ${chatAgent[String(cid)] || DEFAULT_AGENT}\ncmds: /start /status /health /agent <name> /agents\nwatching: ${CHS.join(",") || "all"}\nallowed: ${Array.from(ALW).join(",")}`,
       { threadId: tid },
     );
     return;
@@ -357,7 +357,7 @@ async function proc(up: any) {
     const ofh = await ofClient.health();
     await send(
       cid,
-      `status llama:${h.llama ? "ok" : "down"} openfang:${ofh.ok ? "ok" : "down"} (${ofh.ms}ms) agent:${chatAgent[String(cid)] || DEFAULT_AGENT} gpu:${h.gpu}`,
+      `status llama:${h.llama ? "ok" : "down"} rig:${ofh.ok ? "ok" : "down"} (${ofh.ms}ms) agent:${chatAgent[String(cid)] || DEFAULT_AGENT} gpu:${h.gpu}`,
       { threadId: tid },
     );
     return;
@@ -386,7 +386,7 @@ async function proc(up: any) {
     );
     await send(
       cid,
-      `openfang agents (${agents.length}) via ${OF_URL}/api/agents\n` +
+      `rig agents (${agents.length}) via ${OF_URL}/api/agents\n` +
         lines.join("\n"),
       { threadId: tid },
     );
@@ -403,7 +403,7 @@ async function proc(up: any) {
       );
       return;
     }
-    chatAgent[String(cid)] = name.replace(/^openfang:/, "");
+    chatAgent[String(cid)] = name.replace(/^rig:/, "");
     await send(cid, `agent set → ${chatAgent[String(cid)]}`, {
       threadId: tid,
     });
@@ -467,7 +467,7 @@ async function testE2E(chatId: number, text: string) {
     sent: text,
     chatId,
     agent: chatAgent[String(chatId)] || DEFAULT_AGENT,
-    via: "openfang-http",
+    via: "rig-http",
   };
 }
 
@@ -489,9 +489,9 @@ const app = serve({
         svc: "yote",
         version: "0.6",
         port: PORT,
-        openfang_url: OF_URL,
-        openfang_agent: DEFAULT_AGENT,
-        integration: "openfang-http-api-only",
+        rig_url: OF_URL,
+        rig_agent: DEFAULT_AGENT,
+        integration: "rig-http-api-only",
         llm_fallback_display: LLM,
         chs: CHS,
         overlord: overlordReady,
@@ -502,17 +502,17 @@ const app = serve({
       });
     }
 
-    // Proxy pure LLM path still available for debugging (not OpenFang)
+    // Proxy pure LLM path still available for debugging (not Rig)
     if (p === "/v1/chat/completions" && req.method === "POST") {
       const b = await req.json().catch(() => ({}));
-      // Prefer OpenFang OpenAI surface when model is openfang:*
+      // Prefer Rig OpenAI surface when model is rig:*
       const model = String((b as any).model || "");
-      if (model.startsWith("openfang:") || !model) {
+      if (model.startsWith("rig:") || !model) {
         const messages = (b as any).messages || [];
         const lastUser =
           [...messages].reverse().find((m: any) => m.role === "user")
             ?.content || "";
-        const agent = model.replace(/^openfang:/, "") || DEFAULT_AGENT;
+        const agent = model.replace(/^rig:/, "") || DEFAULT_AGENT;
         const r = await ofClient.chat(String(lastUser), {
           agent,
           max_tokens: (b as any).max_tokens,
@@ -528,7 +528,7 @@ const app = serve({
               finish_reason: "stop",
             },
           ],
-          openfang: { ok: r.ok, error: r.error, ms: r.ms },
+          rig: { ok: r.ok, error: r.error, ms: r.ms },
         });
       }
       const r = await fetch(`${LLM}/v1/chat/completions`, {
@@ -551,21 +551,21 @@ const app = serve({
       return jres({ ok: true });
     }
 
-    // OpenFang external API diagnostics
-    if (p === "/api/openfang/health") {
+    // Rig external API diagnostics
+    if (p === "/api/rig/health") {
       return jres(await ofClient.health());
     }
-    if (p === "/api/openfang/agents") {
+    if (p === "/api/rig/agents") {
       return jres(await ofClient.listAgents());
     }
-    if (p === "/api/openfang/models") {
+    if (p === "/api/rig/models") {
       return jres({ models: await ofClient.listOpenAiModels() });
     }
-    if (p === "/api/openfang/probe" || p === "/api/openfang/probe-all") {
+    if (p === "/api/rig/probe" || p === "/api/rig/probe-all") {
       const report = await ofClient.probeAllAgents();
       return jres(report, report.fail ? 207 : 200);
     }
-    if (p === "/api/openfang/chat" && req.method === "POST") {
+    if (p === "/api/rig/chat" && req.method === "POST") {
       const b: any = await req.json().catch(() => ({}));
       const r = await ofClient.chat(String(b.message || b.text || "hi"), {
         agent: b.agent,
@@ -573,7 +573,7 @@ const app = serve({
       });
       return jres(r, r.ok ? 200 : 502);
     }
-    if (p === "/api/openfang/chat") {
+    if (p === "/api/rig/chat") {
       const msg = u.searchParams.get("msg") || "Reply with: YOTE_OF_OK";
       const agent = u.searchParams.get("agent") || DEFAULT_AGENT;
       const r = await ofClient.chat(msg, { agent, max_tokens: 64 });
@@ -593,14 +593,14 @@ const app = serve({
         ms: r.ms,
         fasterRouteAttempted: r.fasterRouteAttempted,
         fallbackUsed: r.fallbackUsed,
-        via: "openfang-http",
+        via: "rig-http",
       });
     }
 
     if (p === "/test/send" && req.method === "POST") {
       const b: any = await req.json().catch(() => ({}));
       const cid = b.chat_id || PUP_TRIX_ID;
-      const txt = b.text || "test from yote api (openfang-external)";
+      const txt = b.text || "test from yote api (rig-external)";
       const res = await tg("sendMessage", { chat_id: cid, text: txt });
       return jres({ ok: Boolean(res?.ok), sent: txt, chatId: cid, tg: res });
     }
@@ -609,7 +609,7 @@ const app = serve({
       const mode = u.searchParams.get("mode") || "bot";
       const txt =
         u.searchParams.get("msg") ||
-        `yote→openfang external test ${new Date().toISOString()}`;
+        `yote→rig external test ${new Date().toISOString()}`;
       if (mode === "overlord") {
         const target = u.searchParams.get("to") || "crawlspace_coyote_bot";
         const r = await testOverlordSend(target, txt);
@@ -630,33 +630,33 @@ const app = serve({
     if (p === "/test/e2e" && req.method === "POST") {
       const b: any = await req.json().catch(() => ({}));
       const cid = b.chat_id || PUP_TRIX_ID;
-      const txt = b.text || "hello from yote e2e openfang";
+      const txt = b.text || "hello from yote e2e rig";
       const r = await testE2E(cid, txt);
       return jres(r);
     }
     if (p === "/test/e2e") {
       const cid = Number(u.searchParams.get("chat_id") || PUP_TRIX_ID);
-      const txt = u.searchParams.get("msg") || "hello from yote e2e openfang";
+      const txt = u.searchParams.get("msg") || "hello from yote e2e rig";
       const r = await testE2E(cid, txt);
       return jres(r);
     }
 
     if (p === "/test/pup-trix") {
-      // Full path: OpenFang chat + bot message to real id
+      // Full path: Rig chat + bot message to real id
       const msg =
         u.searchParams.get("msg") ||
         "Pup Trix probe: reply with ESTATE_YOTE_OK";
       const agent = u.searchParams.get("agent") || DEFAULT_AGENT;
       const of = await ofClient.chat(msg, { agent, max_tokens: 128 });
       const text = of.ok
-        ? `🤖 openfang:${of.agent} (${of.ms}ms)\n${of.content}`
-        : `openfang failed: ${of.error}`;
+        ? `🤖 rig:${of.agent} (${of.ms}ms)\n${of.content}`
+        : `rig failed: ${of.error}`;
       const tgRes = await tg("sendMessage", {
         chat_id: PUP_TRIX_ID,
         text,
       });
       return jres({
-        openfang: of,
+        rig: of,
         telegram: tgRes,
         chat_id: PUP_TRIX_ID,
         ok: of.ok && Boolean(tgRes?.ok),
@@ -664,17 +664,17 @@ const app = serve({
     }
 
     if (p === "/test/fallback") {
-      // Exercise the full ofChat path (OpenFang -> bornite fallback) without
+      // Exercise the full ofChat path (Rig -> bornite fallback) without
       // touching Telegram. Returns which tier answered.
       const msg = u.searchParams.get("msg") || "Reply with the single word: yip";
       const agent = u.searchParams.get("agent") || DEFAULT_AGENT;
       const t = Date.now();
       const text = await ofChat(msg, agent);
-      const via = text.includes("(openfang unreachable)")
+      const via = text.includes("(rig unreachable)")
         ? "bornite-fallback"
-        : text.startsWith("openfang err")
+        : text.startsWith("rig err")
           ? "none"
-          : "openfang";
+          : "rig";
       return jres({
         ok: via !== "none",
         via,
@@ -758,4 +758,4 @@ else log("WARNING: YOTE_TELEGRAM_BOT_TOKEN missing — poll disabled");
 syncAvatar();
 
 export default app;
-export { ofClient, openfang };
+export { ofClient, rig };

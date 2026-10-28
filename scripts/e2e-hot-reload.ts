@@ -102,7 +102,7 @@ const MARKER = `t${Date.now()}`;
 const SWAP = requirePort("HERD_PORT");
 const RUST = requirePort("RUST_WEB_PORT");
 const YOTE = requirePort("YOTE_PORT");
-const OF = requirePort("OPENFANG_PORT");
+const OF = requirePort("RIG_PORT");
 const AM = requirePort("ESTATE_ROUTER_PORT");
 const HF = requirePort("HF_DOWNLOADER_PORT");
 const NG = requirePort("NULL_G_PROXY_PORT");
@@ -118,10 +118,10 @@ const suite: Array<{
   waitMs: number;
 }> = [
   {
-    daemon: "openfang",
+    daemon: "rig",
     mechanism: "bun --hot",
     health: `http://127.0.0.1:${OF}/api/health`,
-    file: resolve(ROOT, "src/services/openfang.ts"),
+    file: resolve(ROOT, "src/services/rig.ts"),
     kind: "ts",
     waitMs: 2500,
   },

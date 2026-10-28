@@ -40,7 +40,7 @@ MERGES=(
     "toxicwind/estate-rebrand:packages/rebrand"
 
     # Agent OS / Framework
-    "toxicwind/openfang:packages/os"
+    "toxicwind/rig:packages/os"
     "toxicwind/tau:packages/framework"
     "toxicwind/bornite:packages/orchestrator"
     "toxicwind/yote:packages/messaging"

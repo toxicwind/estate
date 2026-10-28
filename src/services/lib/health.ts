@@ -25,18 +25,18 @@ export interface HealthReport {
 }
 export interface HealthStatus {
   llama: boolean;
-  openfang: boolean;
+  rig: boolean;
   gpu: string;
   timestamp: string;
 }
 const TO = 2000;
 const RT = 2;
 const RD = 500;
-// Estate 25xxx map: bornite :25100, openfang :25103
+// Estate 25xxx map: bornite :25100, rig :25103
 const LP = Number(
   process.env.HERD_PORT ?? process.env.LLAMA_PORT ?? "25100",
 );
-const OP = Number(process.env.OPENFANG_PORT ?? "25103");
+const OP = Number(process.env.RIG_PORT ?? "25103");
 function env(n: string, f: string) {
   return typeof process !== "undefined" && process.env?.[n]
     ? (process.env[n] ?? f)
@@ -122,11 +122,11 @@ export async function checkLlamaSwap(
   }
   return r;
 }
-export async function checkOpenFang(
-  url = env("OPENFANG_HEALTH_URL", u(OP, "/api/health")),
+export async function checkRig(
+  url = env("RIG_HEALTH_URL", u(OP, "/api/health")),
   o: any = {},
 ) {
-  return checkService("openfang", url, o);
+  return checkService("rig", url, o);
 }
 export async function queryGpuStatus() {
   try {
@@ -179,7 +179,7 @@ export function unloadModel(m: string) {
 }
 export async function checkHealth() {
   const st = performance.now();
-  const [ls, of] = await Promise.all([checkLlamaSwap(), checkOpenFang()]);
+  const [ls, of] = await Promise.all([checkLlamaSwap(), checkRig()]);
   const ms = await fetchLlamaModels().catch(() => []);
   const rn = await fetchRunningModels().catch(() => []);
   const mt = await fetchLlamaMetrics().catch(() => null);
@@ -213,14 +213,14 @@ export async function checkHealthLegacy() {
     checkLlamaSwap()
       .then((r) => r.healthy)
       .catch(() => false),
-    checkOpenFang()
+    checkRig()
       .then((r) => r.healthy)
       .catch(() => false),
   ]);
   const g = await queryGpuStatus();
   return {
     llama: l,
-    openfang: o,
+    rig: o,
     gpu: g.summary,
     timestamp: new Date().toISOString(),
   } as HealthStatus;

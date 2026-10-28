@@ -123,8 +123,8 @@ export const ALL_SERVICES: ServiceDef[] = [
   {
     id: "axiom",
     name: "axiom",
-    portKey: "OPENFANG_PORT",
-    run: "exec ./stack/services/openfang.sh",
+    portKey: "RIG_PORT",
+    run: "exec ./stack/services/rig.sh",
     dir: ".",
     readyHttp: "/api/health",
     group: "core",

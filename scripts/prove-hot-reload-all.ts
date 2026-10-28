@@ -47,7 +47,7 @@ const DAEMONS: Daemon[] = [
     mechanism: "bun-hot",
   },
   {
-    id: "openfang",
+    id: "rig",
     health: "http://127.0.0.1:25103/api/health",
     mechanism: "pitchfork-restart",
   },

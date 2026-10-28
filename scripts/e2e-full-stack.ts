@@ -208,7 +208,7 @@ async function modelsSse(): Promise<Row> {
 const SWAP = requirePort("HERD_PORT");
 const RUST = requirePort("RUST_WEB_PORT");
 const YOTE = requirePort("YOTE_PORT");
-const OF = requirePort("OPENFANG_PORT");
+const OF = requirePort("RIG_PORT");
 const AM = requirePort("ESTATE_ROUTER_PORT");
 const HF = requirePort("HF_DOWNLOADER_PORT");
 const NG = requirePort("NULL_G_PROXY_PORT");
@@ -233,7 +233,7 @@ rows.push(
   }),
 );
 rows.push(await get("yote-health", `http://127.0.0.1:${YOTE}/health`));
-rows.push(await get("openfang-health", `http://127.0.0.1:${OF}/api/health`));
+rows.push(await get("rig-health", `http://127.0.0.1:${OF}/api/health`));
 rows.push(await get("bornite-health", `http://127.0.0.1:${AM}/health`));
 // readiness for hf: root HTML (binary has no /health)
 rows.push(

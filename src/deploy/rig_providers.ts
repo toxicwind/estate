@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * Align OpenFang providers with bornite :25100.
+ * Align Rig providers with bornite :25100.
  * provider id "llama" is preferred; "vllm" kept only as alias URL → same swap.
  * Never points at real vLLM :8000.
  */
@@ -21,7 +21,7 @@ const HOME = homedir();
 const OF = join(HOME, ".rig");
 const BACKUP = join(
   HOME,
-  "estate/backup/reorg_2026-07-11_bun/openfang_pre_llama_provider",
+  "estate/backup/reorg_2026-07-11_bun/rig_pre_llama_provider",
 );
 const SWAP = `http://127.0.0.1:${requireEnv("HERD_PORT")}/v1`;
 

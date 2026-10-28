@@ -13,7 +13,7 @@ export type MeshServiceId =
   | "bornite"
   | "rust-web"
   | "yote"
-  | "openfang"
+  | "rig"
   | "estate-router"
   | "prometheus"
   | "hf-downloader"
@@ -107,8 +107,8 @@ export function serviceCatalog(): ServiceMeta[] {
       ghas_borrow: "agent health chain + overlord",
     },
     {
-      id: "openfang",
-      portEnv: "OPENFANG_PORT",
+      id: "rig",
+      portEnv: "RIG_PORT",
       healthPath: "/api/health",
       role: "agent-kernel",
       ghas_borrow: "multi-provider hand swarm",
@@ -339,8 +339,8 @@ export async function runFeature(
       const edges: Record<MeshServiceId, MeshServiceId[]> = {
         "bornite": [],
         "rust-web": ["bornite", "hf-downloader", "prometheus"],
-        yote: ["openfang", "bornite"],
-        openfang: ["bornite"],
+        yote: ["rig", "bornite"],
+        rig: ["bornite"],
         "estate-router": ["bornite"],
         prometheus: [],
         "hf-downloader": [],
@@ -428,7 +428,7 @@ export async function runFeature(
               "estate-router",
               "null-g-proxy",
               "yote",
-              "openfang",
+              "rig",
             ].includes(ctx.service),
             search: ctx.service.startsWith("ghas"),
           },

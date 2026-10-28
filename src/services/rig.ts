@@ -1,23 +1,23 @@
 #!/usr/bin/env bun
 /**
- * OpenFang public front — mesh-front on OPENFANG_PORT proxying the single
- * OpenFang kernel on OPENFANG_KERNEL_PORT.
+ * Rig public front — mesh-front on RIG_PORT proxying the single
+ * Rig kernel on RIG_KERNEL_PORT.
  *
  * Canonical map (2026-09-21 full audit):
- *   :25196 (OPENFANG_KERNEL_PORT) — the ONE kernel (pitchfork daemons.openfang,
- *            ops/openfang-run.sh). Serves the dashboard UI + /v1 (OpenAI-compat)
- *            + /api. Owns ~/.openfang (config, SQLite DB, triggers).
- *   :25103 (OPENFANG_PORT)        — THIS service: mesh-front reverse proxy in
+ *   :25196 (RIG_KERNEL_PORT) — the ONE kernel (pitchfork daemons.rig,
+ *            ops/rig-run.sh). Serves the dashboard UI + /v1 (OpenAI-compat)
+ *            + /api. Owns ~/.rig (config, SQLite DB, triggers).
+ *   :25103 (RIG_PORT)        — THIS service: mesh-front reverse proxy in
  *            front of the kernel (adds /mesh/* GHAS features on the public port).
  *   :25203 — RETIRED 2026-09-21. It  a DUPLICATE kernel sharing the same
  *            SQLite DB (double-writer hazard), split-brain heartbeat warnings,
  *            and flapped the CLI's API target between instances.
  *   :4200  — RETIRED (legacy pre-migration port; config moved to
- *            config/deprecated/openfang-4200.toml).
+ *            config/deprecated/rig-4200.toml).
  *
- * This service NEVER spawns the openfang binary and NEVER mutates
- * ~/.openfang/config.toml or daemon.json — the kernel owns its own lifecycle
- * and config. See ops/openfang-run.sh.
+ * This service NEVER spawns the rig binary and NEVER mutates
+ * ~/.rig/config.toml or daemon.json — the kernel owns its own lifecycle
+ * and config. See ops/rig-run.sh.
  */
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -25,8 +25,8 @@ import { loadEstatePorts, requirePort } from "../lib/ports.ts";
 
 loadEstatePorts();
 const HOME = process.env.HOME || "/home/toxic";
-const PUBLIC = requirePort("OPENFANG_PORT");
-const KERNEL = requirePort("OPENFANG_KERNEL_PORT");
+const PUBLIC = requirePort("RIG_PORT");
+const KERNEL = requirePort("RIG_KERNEL_PORT");
 const SOV = process.env.ESTATE_ROOT || resolve(HOME, "estate");
 
 function loadSecretsFile(path: string) {
@@ -55,9 +55,9 @@ function loadSecretsFile(path: string) {
 delete process.env.ANTHROPIC_API_KEY;
 
 loadSecretsFile(resolve(HOME, ".secrets"));
-loadSecretsFile(resolve(HOME, ".openfang/secrets.env"));
+loadSecretsFile(resolve(HOME, ".rig/secrets.env"));
 
-console.log(`[openfang-front] kernel :${KERNEL} mesh-front :${PUBLIC}`);
+console.log(`[rig-front] kernel :${KERNEL} mesh-front :${PUBLIC}`);
 
 // Bounded boot gate (one-shot, not a polling daemon): wait for the kernel's
 // real API before exposing the proxy. If the kernel never comes up we still
@@ -81,7 +81,7 @@ while (Date.now() < deadline) {
 }
 if (!kernelUp) {
   console.error(
-    `[openfang-front] kernel :${KERNEL} not healthy after 60s — starting proxy anyway (backend will 502)`
+    `[rig-front] kernel :${KERNEL} not healthy after 60s — starting proxy anyway (backend will 502)`
   );
 }
 
@@ -91,7 +91,7 @@ const front = Bun.spawn({
     "run",
     resolve(SOV, "src/services/mesh-front.ts"),
     "--service",
-    "openfang",
+    "rig",
     // 2026-10-15: bind loopback, not 0.0.0.0 — recon front is internal-only,
     // the tailnet is reached via estate-chat; remove the nftables dependency.
     "--listen",

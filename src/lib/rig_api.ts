@@ -1,4 +1,4 @@
-import { OpenFangInterceptor } from "../../yote/src/lib/openfang";
+import { RigInterceptor } from "../../yote/src/lib/rig";
 
 export interface OfAgent {
   id: string;
@@ -31,15 +31,15 @@ export interface RouteOption {
   label: string;
 }
 
-export class OpenFangClient {
+export class RigClient {
   constructor(
     private baseUrl: string,
-    private apiKey: string = process.env.OPENFANG_API_KEY || "",
+    private apiKey: string = process.env.RIG_API_KEY || "",
     private defaultAgent: string = "coyote",
     private defaultRouteChain: RouteOption[] = [
       {
         agent: "coyote",
-        model: "openfang:coyote",
+        model: "rig:coyote",
         max_tokens: 512,
         temperature: 0.3,
         timeoutMs: 8000,
@@ -47,7 +47,7 @@ export class OpenFangClient {
       },
       {
         agent: "coyote",
-        model: "openfang:coyote",
+        model: "rig:coyote",
         max_tokens: 1024,
         temperature: 0.4,
         timeoutMs: 15000,
@@ -55,7 +55,7 @@ export class OpenFangClient {
       },
       {
         agent: "coyote",
-        model: "openfang:coyote",
+        model: "rig:coyote",
         max_tokens: 2048,
         temperature: 0.5,
         timeoutMs: 30000,
@@ -63,7 +63,7 @@ export class OpenFangClient {
       },
     ],
   ) {
-    this.interceptor = new OpenFangInterceptor(baseUrl, { apiKey });
+    this.interceptor = new RigInterceptor(baseUrl, { apiKey });
   }
 
   private headers(json = true): Record<string, string> {
@@ -172,7 +172,7 @@ export class OpenFangClient {
       routeChain?: RouteOption[];
     } = {},
   ): Promise<OfChatResult> {
-    const agent = (opts.agent || this.defaultAgent).replace(/^openfang:/, "");
+    const agent = (opts.agent || this.defaultAgent).replace(/^rig:/, "");
     const routeChain = opts.routeChain || this.defaultRouteChain;
     const t0 = performance.now();
     const messages = opts.system
@@ -288,7 +288,7 @@ export class OpenFangClient {
     return {
       ok: false,
       agent,
-      model: "openfang:coyote",
+      model: "rig:coyote",
       content: "",
       error: "All routes exhausted",
       ms: Math.round(performance.now() - t0),

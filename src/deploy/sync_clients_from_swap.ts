@@ -3,7 +3,7 @@
  * Point local clients at bornite SSOT (:25100) without hand-listing models.
  *
  * - Writes .state/bornite-ssot.json + client-llm.env (includes MODELS_SSE)
- * - Patches OpenFang provider_urls.llama → :25100/v1
+ * - Patches Rig provider_urls.llama → :25100/v1
  * - Ensures Zed language_models.llama.cpp = { api_url, auto_discover: true }
  *   (strips any available_models under llama.cpp — SSE rediscovery owns the list)
  * - Does NOT invent per-model inventories for Zed
@@ -66,7 +66,7 @@ writeFileSync(
 writeFileSync(join(outDir, "client-llm.env"), clientEnvExports(defaultModel));
 
 // Rig: ensure provider_urls.llama → :25100/v1 (do not rewrite agent model tables here)
-const ofConfig = join(HOME, ".openfang/config.toml");
+const ofConfig = join(HOME, ".rig/config.toml");
 if (existsSync(ofConfig)) {
   let t = readFileSync(ofConfig, "utf8");
   const want = `llama = "${swapV1Url()}"`;

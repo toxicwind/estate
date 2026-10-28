@@ -120,9 +120,9 @@ export const ESTATE_WEB_UIS: WebUISpec[] = [
     authRequired: false,
   },
   {
-    id: "openfang",
-    name: "OpenFang / Axiom",
-    portKey: "OPENFANG_PORT",
+    id: "rig",
+    name: "Rig / Axiom",
+    portKey: "RIG_PORT",
     defaultPort: 25103,
     path: "/",
     description: "Autonomous agent execution dashboard",
