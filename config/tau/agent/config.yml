@@ -1,5 +1,5 @@
 advisor:
-  enabled: false
+  enabled: true
   immuneTurns: 3
   syncBacklog: "off"
 appearance:
@@ -501,7 +501,10 @@ todo:
   remindersMax: 5
 tools:
   abortOnFabricatedResult: true
-  approval: {}
+  approval:
+    bash: deny
+    grep: deny
+    find: deny
   approvalMode: yolo
   artifactHeadBytes: 20
   artifactSpillThreshold: 50
