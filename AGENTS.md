@@ -294,6 +294,24 @@ _Verified 2026-10-27 with real traffic; dossier: `/home/toxic/estate/docs/anomal
 | 17   | **cwd/env-dependent daemons**    | browserless resolved playwright-core via process.cwd() (died pre-bind); rhodochrosite sourced keys without `set -a` (dropped at exec)     | run.sh `cd app`; serve.sh `set -a` wrap                                       |
 | 18   | **Peer file snapshot fork**      | Ranch's index held a 277-file snapshot of squawk at v0.8.1 while the peer repo was at v0.10.2 — two owners, two truths, phantom dirt       | untrack peer roots; ignore their runtime WAL state                           |
 
+
+## Anomaly program D-2026-10-28 (village sovereignty — verified live)
+
+_Verified 2026-10-28; dossier: `/home/toxic/estate/docs/anomalies/2026-10-28/village-sovereignty.md`._
+
+|#|Anomaly|Essence|Fix (committed)|
+|---|---|---|---|
+|19|**Keyring emitter skip**|`set --secret-file` stores but `env` silently omits the item (catch-continue swallows reads) — 7 rig keys invisible while set reported success|stdin-path reroute + `sync-store-to-keyring.py` proof; secretsmith fix pending|
+|20|**Thresher dead-mirror config**|Live gateway ran a config path nobody edits; estate/config/thresher was a stale mirror — edits silently no-op|real path via /proc cmdline; both upstreams registered live|
+|21|**Gateway self-kill by enum guess**|`streamable_http` (underscore) vs valid `streamable-http` — one guessed config value crashed the estate's only MCP door|enum fixed, restored; verify via /api/v1/servers tool_count|
+|22|**rig CLI lying errors**|`✘ Failed: ?` while all 11 jobs registered; names rejected despite help text claiming name-or-ID|verify via process truth; UUIDs only; rig fix pending upstream|
+|23|**PATH binary copy drift**|~/.local/bin/rig was a copied binary, not a symlink — source updates ghost-deployed|rebuild from source + symlink per bin contract|
+|24|**Port SSOT squat**|ports.env said 25202 (doorbell-owned); gemini-mcp loop-crashed for hours on the stale value|single truth 25227; serve.sh reads ports.env, never daemon env|
+|25|**Gemini header wall**|x-goog-user-project header 403'd the only live key (owner IAM notwithstanding) — config doc called it required|header dropped from 4 pools; live: key healthy 162ms|
+|26|**Repo naming rot**|Sentence-named repos + "Chris's personal" description + upstream marketing copy on the public face|4 renames + 2 description fixes; 100-repo sweep clean|
+
+_Session sweep receipts: village heartbeat 58 sessions/317 msgs; IRC 9 nicks in #village; TaaS 2 tools federated; pgate 4/4; router 23/23._
+
 _Per-model strike rule (2026-10-27 architect order): routing priority is FREE > FAST > instruction-following; credit/key exhaustion is quarantined per (provider, model), never per provider._
 
 

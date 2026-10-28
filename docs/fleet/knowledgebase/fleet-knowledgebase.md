@@ -346,3 +346,63 @@ workflows.json has a buildsrv row.
 New-toolchain rule: persistent config in projects/yote/host/home/, daemon
 env in pitchfork.toml, then a REAL buildsrv compile with nonzero cache-hit
 proof. Proven 2026-09-21: 2 hits, 50 percent hit rate on a real job.
+
+
+## 2026-10-28 village-sovereignty session (tau) — verified fixes + root causes
+
+**Root-cause chain (one paragraph):** the session opened on a 404 that was really a credential graveyard — every Google key on the box was API_KEY_INVALID or 402-prepay-depleted (billing is a project-level state, not a key property; `/v1beta/models` 200s without hitting billing and lies to naive probes) — and while unblocking it the audit surfaced a second-class of silent failures: secretsmith's `--secret-file` items exist in the keyring but the env emitter skips them (7 rig keys invisible), the live thresher ran from a config path nobody edits (dead-mirror two-truths), a guessed protocol enum crashed the whole MCP gateway, rig's CLI lied about failures while registering the jobs anyway, and gemini-mcp loop-crashed on a port the SSOT said was free but doorbell owned. The fixes went systemic: per-model decay classes + per-provider concurrency gate in rhodochrosite (Rust), modelOverrides in mimetite (data, not code), a village of 11 named rigs on hourly self-tasking crons that file their own squawk todos on fractures, an IRCd + bridge, TaaS federated as MCP tools, and a naming sweep that killed the sentence-named repos.
+
+### Retrospective board (agile, 4 columns)
+
+| ✅ Went well (receipts) | ⚠️ Drifted (what slowed us) | 📌 Lessons (do not regress) | 🔁 Next recursion |
+|---|---|---|---|
+| Rig-native runtime adopted over bespoke scripts (58 sessions, 317 msgs live) | Harness todo tool misuse scrambled boards twice (fuzzy done flipped wrong rows) | Process truth over CLI claims — `✘ Failed: ?` registered all 11 jobs; verify via list/proc, never the error string | rigs file todos on fractures (LIVE) → next: rigs CLAIM board items in their turns |
+| Decay classes + pgate shipped with unit tests AND live probes (4/4, 23/23) | Heredoc-in-heredoc quoting cost ~6 aborted cells — should have gone file-script on attempt 1 | `--help` before ANY new binary subcommand (rig cron positional, gcloud describe vs get, ergo initdb) | swarm-refresh weekly cron (LIVE) → auto-apply swarm-10 when crystalline > 2 |
+| Naming sweep: 100 repos audited, 4 renames, 0 slop remaining | GitHub profile write blocked by PAT scope; pins have no API at all | Loopback+tailnet = plaintext; TLS only at the edge (ergo smoke passed on first plaintext config) | TaaS session auth (user-gated) → hephaistos mints first bot |
+| thresher federation means tau+kappa parity is automatic (2 tools connected) | Probe loop for gemini-mcp burned retries on `Retry-After`-less 502s | Never trust daemon env — it carried the stale port; serve.sh reads ports.env SSOT | gemini-mcp reconnects when keypool healths a key |
+
+### Fixes (repo + commit + one-line verification)
+
+- rhodochrosite `7a5df79` — per-model strike DECAY CLASSES (402/404/410→12h; 401/403→15m; 429 never strikes); 23/23 router tests
+- rhodochrosite (release) — pgate per-provider concurrency gate + `/api/gate`; 4/4 tests; live cap=2 in store
+- estate `a3c1fb87` — keypools.yaml: x-goog-user-project dropped (4 pools), GEMINI_EAP_KEY first; live: EAP key healthy 162ms
+- estate `bd371f9` — tau modelRoles diversified (nemotron-ultra/super split); live tmux boot: qwen→nemotron resolved
+- mimetite `4081f25` — rhodochrosite.azurite modelProvider (gemini-flash-tool-retrieval only); in all 4 outputs
+- mimetite (2nd) — modelOverrides emission (tau mp + static paths); live: maxConcurrency:1 → models.yml
+- hephaistos `872ff5a` — bun-canary-native cutover (ServerWebSocket, optional-fetch obsolete); core typechecks clean
+- hephaistos `d25a557`-era — eidolon fork + NVIDIA NIM provider; :25244 health ok
+- hephaistos — geode plugin (geode_chat/geode_models/geode_keypool); typecheck clean; committed inside hephaistos repo + gitlink bump
+- hephaistos — Bun.write codemod (3 one-shot sites; 41 fs sites structurally-correct documented) + Dirent cast-ladders dropped
+- ranch — TaaS :25243 (MTProto BotFather driver + MCP JSON-RPC surface); thresher: taas-telegram connected 2 tools
+- ranch — irc-bridge rewrite: per-rig nicks (9 live in #village) + geode-rig manifest/census/remint/sync scripts
+- ranch — eidolon daemon :25244 + serve.sh (ports.env SSOT read)
+- estate — village-irc (ergo 2.19.1, :25241 plaintext loopback) + irc-bridge + village-clock + taas + gemini-mcp daemon blocks (both monoliths)
+- estate — ports.env single-truth GEMINI_MCP_PORT=25227; UTF-8 polyglot floor (10-env.toml)
+- tau — python.interpreter → mise 3.14.7; TAU_FETCH_VERBOSE=1 shipped in rebuilt binary + ~/.tau/.env
+- tau — TAUVISOR.yml (user-scope): Tauvisor enabled, full-tool grant minus bash/grep/find, squawk-awareness clause; advisor.enabled: true
+- squawk `7f42370`+ — always-resolve resolver (loud candidates), rich done (by/when/evidence), /v1/todo/block, BLOCKED rank bucket
+- kairos — rules.toml (per-rule timeout_ms/cancel/rewrite schema, lane field) — the TOML rule DB, awaiting verdict-engine wiring
+- renames — kappa-engine / kappa-monorepo / kappa-cli / antigravity-gateway; estate + thresher descriptions de-slopped
+
+### New tools (paths)
+
+- `pens/ranch/range/apps/delendai-control-plane/src/components/dashboard/farm-page.tsx` — the Harvest Moon tab (/farm)
+- `pens/ranch/arroyo/overlord/src/taas.ts` — TaaS API+MCP
+- `pens/ranch/geode-rig/{rig-migration,remint-rig-keys,sync-store-to-keyring,awareness-manifest}.py`, `swarm-refresh.ts`, `village-clock.ts` (retired→rig crons)
+- `pens/barn/estate-ops/bin/tau-todo.ts` — the flawless todo shim (+ managed skill tau-todo-shim)
+- `pens/ergasterion/eidolon/src/providers/nvidia.ts`, `assets/puny-characters/` (CC0)
+- `pens/olympus/products/kairos/rules.toml`
+- `estate/docs/pens-harvest-moon-os.md`, `estate/docs/anomalies/2026-10-28/village-sovereignty.md`, `pens/ergasterion/docs/session-synthesis-20261028.md`
+
+### The lessons (do not regress)
+
+1. Billing walls are project-state, not key-state — `/v1beta/models` 200 proves nothing about generation.
+2. A header a config doc calls "required" may be the exact thing 403ing your only live key — probe both ways before believing the comment.
+3. Find the config a daemon ACTUALLY loaded via /proc cmdline before editing any mirror of it.
+4. A guessed enum in shared config is a fleet-wide outage — read the target's own error string for the valid set.
+5. Lying error strings go both ways: `✘ Failed: ?` can mean registered; always verify via process truth.
+6. `set` reporting success ≠ the emitter emitting; sha-match the full chain (keyring→env→consumer) before calling a credential wired.
+7. `--help` first, always; positional syntax beats guessed flags.
+8. Never poll: capture the named deadline and wait on the barrier.
+9. Binaries on PATH are symlinks into pens/, never copies; a copy is a ghost deployment.
+10. Names are API: sentence-names and upstream marketing copy rot the public face — sweep periodically.
