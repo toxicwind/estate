@@ -17,9 +17,9 @@
     url = "https://registry.npmjs.org/@hono/node-server/-/node-server-2.1.5.tgz";
     hash = "sha512-MgP/I06GdvsilDspMk/qmRzpk8LOUStP6jFAbSRi40W09DhoyUn+Mj7eyKICPqeYKybOjVFLVIAQzvu1bfIa7Q==";
   };
-  "@modelcontextprotocol/sdk@1.32.1" = fetchurl {
-    url = "https://registry.npmjs.org/@modelcontextprotocol/sdk/-/sdk-1.32.1.tgz";
-    hash = "sha512-2DdE+SJDtzLEEWzY1ZjY7Q+VcPhcV1KisD3zI4u0XZyktsjHum1mwbMI+JaulUBi2OZk+KJAi2uPXzxichPkdw==";
+  "@modelcontextprotocol/sdk@1.32.2" = fetchurl {
+    url = "https://registry.npmjs.org/@modelcontextprotocol/sdk/-/sdk-1.32.2.tgz";
+    hash = "sha512-SWsVtH/0vULSQStoZ6xxH2K09Li8fXYTMC64ZeogCdpZ3XSi1eCPOByV1OpuJxuI3OcmHhosDWYyii07tpPsLw==";
   };
   "@types/node@25.9.6" = fetchurl {
     url = "https://registry.npmjs.org/@types/node/-/node-25.9.6.tgz";
