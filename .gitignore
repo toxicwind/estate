@@ -1520,3 +1520,7 @@ config/tau/*.bak
 #   engines/bornite/* (empty gitlinks)        -> removed
 #   submodules/phone-sentinel/ (empty)        -> removed
 #   work/airspeak/ (empty)                    -> removed
+
+# peer product clones own themselves (submoduleless doctrine, anomaly #18)
+products/
+archive/

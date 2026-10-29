@@ -1,5 +1,0 @@
-blank_issues_enabled: false
-contact_links:
-  - name: Security vulnerability
-    url: https://github.com/acoyfellow/hashline-pi/security/advisories/new
-    about: Report a jail escape, arbitrary write, or other security-relevant bug privately.
