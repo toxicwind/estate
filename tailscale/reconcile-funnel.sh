@@ -18,10 +18,10 @@ INTERVAL="${FUNNEL_RECONCILE_INTERVAL:-30}"
 DOORBELL_EDGE="${DOORBELL_OAUTH_EDGE_PORT:-25217}"
 SQUAWK_WS="${SQUAWK_WS_PORT:-25147}"
 
-if [ -f /home/toxic/estate/config/ports.env ]; then
+if [ -f /home/toxic/pens/estate/config/ports.env ]; then
   set -a
   # shellcheck disable=SC1091
-  source /home/toxic/estate/config/ports.env
+  source /home/toxic/pens/estate/config/ports.env
   set +a
   DOORBELL_EDGE="${DOORBELL_OAUTH_EDGE_PORT:-25217}"
   SQUAWK_WS="${SQUAWK_WS_PORT:-25147}"

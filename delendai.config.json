@@ -4,7 +4,7 @@
     "scopes": {
       "estate-health": [
         {
-          "command": "command -v tsgo >/dev/null 2>&1 && tsgo --version && git -C /home/toxic/estate status --porcelain=1 >/dev/null",
+          "command": "command -v tsgo >/dev/null 2>&1 && tsgo --version && git -C /home/toxic/pens/estate status --porcelain=1 >/dev/null",
           "expect": "0"
         },
         {
@@ -270,57 +270,57 @@
     "work-refs": {
       "enabled": true,
       "prefix": "work_refs",
-      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/work-refs/src/index.ts"
+      "path": "/home/toxic/pens/ranch/barn/corral/delendai/plugins/work-refs/src/index.ts"
     },
     "code-race": {
       "enabled": true,
       "prefix": "code_race",
-      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/code-race/src/index.ts"
+      "path": "/home/toxic/pens/ranch/barn/corral/delendai/plugins/code-race/src/index.ts"
     },
     "experimental": {
       "enabled": true,
       "prefix": "experimental",
-      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/experimental/src/index.ts"
+      "path": "/home/toxic/pens/ranch/barn/corral/delendai/plugins/experimental/src/index.ts"
     },
     "iterate": {
       "enabled": true,
       "prefix": "iterate",
-      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/iterate/src/index.ts"
+      "path": "/home/toxic/pens/ranch/barn/corral/delendai/plugins/iterate/src/index.ts"
     },
     "oracle-market": {
       "enabled": true,
       "prefix": "oracle",
-      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/oracle-market/src/index.ts"
+      "path": "/home/toxic/pens/ranch/barn/corral/delendai/plugins/oracle-market/src/index.ts"
     },
     "model-race": {
       "enabled": true,
       "prefix": "model_race",
-      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/model-race/src/index.ts"
+      "path": "/home/toxic/pens/ranch/barn/corral/delendai/plugins/model-race/src/index.ts"
     },
     "forge-audit": {
       "enabled": true,
       "prefix": "forge_audit",
-      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/forge-audit/src/index.ts"
+      "path": "/home/toxic/pens/ranch/barn/corral/delendai/plugins/forge-audit/src/index.ts"
     },
     "intent-router": {
       "enabled": true,
       "prefix": "intent",
-      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/intent-router/src/index.ts"
+      "path": "/home/toxic/pens/ranch/barn/corral/delendai/plugins/intent-router/src/index.ts"
     },
     "global-gh": {
       "enabled": true,
       "prefix": "gh",
-      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/global-gh/src/index.ts"
+      "path": "/home/toxic/pens/ranch/barn/corral/delendai/plugins/global-gh/src/index.ts"
     },
     "rig-c2": {
       "enabled": true,
       "prefix": "rig_c2",
-      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/rig-c2/src/index.ts"
+      "path": "/home/toxic/pens/ranch/barn/corral/delendai/plugins/rig-c2/src/index.ts"
     },
     "consent": {
       "enabled": true,
       "origin": "user-local",
-      "path": "/home/toxic/estate/ranch/barn/corral/delendai/plugins/consent/src/index.ts"
+      "path": "/home/toxic/pens/ranch/barn/corral/delendai/plugins/consent/src/index.ts"
     }
   }
 }

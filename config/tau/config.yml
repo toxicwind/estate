@@ -573,7 +573,7 @@ title:
 skills:
   enableSkillCommands: true
   customDirectories:
-  - /home/toxic/estate/skills
+  - /home/toxic/pens/geode/products/azurite/skills
   # Register a flat skill repo by its root. The loader reads <dir>/<name>/SKILL.md
   # at depth 1 only, so a repo whose skills sit directly at the root works as-is.
   # Nothing is copied or symlinked: each skill keeps its own code, its relative
@@ -581,7 +581,7 @@ skills:
   # repo-aware. This is the universal rule -- any flat skill repo registers this
   # way. toxicwind/gear (486 skills) holds the *-swarm family, including
   # webapp-building-swarm, vibecoding-webapp-swarm and backend-building-swarm.
-  - /home/toxic/estate/projects/range/ranch/gear
+  - /home/toxic/pens/estate/config/gear
 commands:
   enableClaudeUser: true
   enableClaudeProject: true

@@ -48,10 +48,10 @@ _probe() {
 }
 
 # Reported, but never counted. These two have a ports.env entry and real
-# consumers, yet pitchfork does not start them: `ghas-mcp` (:25113) has no
-# launcher anywhere in this tree, and `antigravity-gw` (:25128) lives in its
-# own fork at /home/toxic/projects/antigravity-gateway-master. Counting them
-# as failures would make "ALL HEALTHY" unreachable, so they are informational.
+# consumers, yet pitchfork does not start them: `ghas-mcp` (:25113) is now
+# pitchfork-managed (estate/ghas-mcp, 2026-10-28), and `antigravity-gw`
+# (:25128) has no live home on disk (the projects/ fork is gone) — removed
+# from the informational list if still down on next audit.
 _info() {
   local name=$1 url=$2
   if curl -sf --max-time 2 "$url" >/dev/null 2>&1; then

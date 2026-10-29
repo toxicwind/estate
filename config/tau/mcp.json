@@ -8,14 +8,14 @@
     "estate-tools": {
       "command": "bun",
       "args": [
-        "/home/toxic/estate/helpers/estate-mcp-server.ts"
+        "/home/toxic/pens/estate/helpers/estate-mcp-server.ts"
       ],
       "enabled": true
     },
     "browserless": {
       "command": "bun",
       "args": [
-        "/home/toxic/estate/ranch/barn/browserless/dist/index.js"
+        "/home/toxic/pens/ranch/barn/browserless/dist/index.js"
       ],
       "env": {
         "BROWSER_KEEPER_CDP": "http://127.0.0.1:9223"

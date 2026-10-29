@@ -3,7 +3,7 @@
   "wire": "estate <-> sovereign-projects <-> projects",
   "folders": {
     "estate": {
-      "path": "/home/toxic/estate",
+      "path": "/home/toxic/pens/estate",
       "helpers": [
         "git-mutator",
         "health-audit",
@@ -17,7 +17,7 @@
     },
     "sovereignProjects": {
       "path": "/home/toxic/projects/sovereign-projects",
-      "symlinkFrom": "/home/toxic/estate-projects",
+      "symlinkFrom": "/home/toxic/pens/estate/products",
       "gitRemote": "https://github.com/toxicwind/sovereign-projects.git",
       "helpersLinked": true
     },
@@ -34,7 +34,7 @@
     "portsEnv": "/home/toxic/.estate-shared/ports.env",
     "miseToml": "/home/toxic/.estate-shared/mise.toml",
     "agentsMd": "/home/toxic/.estate-shared/AGENTS.md",
-    "helpersDir": "/home/toxic/estate/helpers"
+    "helpersDir": "/home/toxic/pens/estate/helpers"
   },
   "crossLinks": {
     "estate->sovereign-projects": ".estate-helpers -> ../../estate/helpers",

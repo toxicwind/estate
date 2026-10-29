@@ -127,7 +127,7 @@ def audit():
     out["loadavg_t1"] = read_file("/proc/loadavg")
     out["elapsed_ms"] = round((time.time() - t0) * 1000, 1)
 
-    with open("/home/toxic/estate/config/tau/yote_audit_report.json", "w") as f:
+    with open("/home/toxic/pens/estate/config/tau/yote_audit_report.json", "w") as f:
         json.dump(out, f, indent=2)
     print("AUDIT_OK elapsed_ms=", out["elapsed_ms"], "total_threads=", out["total_threads_counted"], "states=", dict(state_counts))
 

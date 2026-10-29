@@ -36,7 +36,7 @@ def load_spec(path):
 
 def state_dir(spec):
     base = os.environ.get("HOTRELOAD_STATE_BASE",
-                           "/home/toxic/estate/hotreload/state")
+                           "/home/toxic/pens/estate/hotreload/state")
     d = os.path.join(base, spec["name"])
     os.makedirs(d, exist_ok=True)
     return d

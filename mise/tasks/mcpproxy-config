@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# mise run mcpproxy-config — manage mcpproxy server config
-# Uses the actual config at /home/toxic/.mcpproxy/mcp_config.json (30 servers)
+# mise run thresher-config — manage thresher server config
+# Uses the actual config at /home/toxic/.thresher/mcp_config.json (30 servers)
 set -euo pipefail
 
-MCPPROXY_CONFIG="${MCPPROXY_CONFIG:-/home/toxic/.mcpproxy/mcp_config.json}"
+MCPPROXY_CONFIG="${MCPPROXY_CONFIG:-/home/toxic/.thresher/mcp_config.json}"
 
 usage() {
   cat <<EOF
-Usage: mise run mcpproxy-config <command> [args]
+Usage: mise run thresher-config <command> [args]
 
 Commands:
   show                    Show current config summary
@@ -23,14 +23,14 @@ Commands:
   disable-management      Disable management API (disable_management=true)
   backup                  Create timestamped backup
   restore <backup-file>   Restore from backup
-  restart                 Restart mcpproxy after config changes
-  health                  Check mcpproxy health
+  restart                 Restart thresher after config changes
+  health                  Check thresher health
 EOF
 }
 
 case "${1:-}" in
   show)
-    echo "=== mcpproxy config: $MCPPROXY_CONFIG ==="
+    echo "=== thresher config: $MCPPROXY_CONFIG ==="
     cat "$MCPPROXY_CONFIG" | jq -r '
       "listen: \(.listen)",
       "api_key: \(.api_key[0:8])...",
@@ -46,62 +46,62 @@ case "${1:-}" in
 
   max-yolo)
     echo "Applying code-audited max-yolo config to $MCPPROXY_CONFIG ..."
-    python3 /home/toxic/estate/tools/mcpproxy-max-yolo-v2.py
-    echo "Done. Run 'mise run mcpproxy-config restart' to apply."
+    python3 /home/toxic/pens/estate/tools/thresher-max-yolo-v2.py
+    echo "Done. Run 'mise run thresher-config restart' to apply."
     ;;
 
   enable-all)
     echo "Enabling all 30 servers..."
     jq '.mcpServers |= map(.enabled = true | .quarantined = false)' "$MCPPROXY_CONFIG" > "$MCPPROXY_CONFIG.tmp" && mv "$MCPPROXY_CONFIG.tmp" "$MCPPROXY_CONFIG"
-    echo "Done. Run 'mise run mcpproxy-config restart' to apply."
+    echo "Done. Run 'mise run thresher-config restart' to apply."
     ;;
 
   disable-server)
     server="${2:-}"
-    [[ -z "$server" ]] && { echo "Usage: mise run mcpproxy-config disable-server <name>"; exit 1; }
+    [[ -z "$server" ]] && { echo "Usage: mise run thresher-config disable-server <name>"; exit 1; }
     jq --arg s "$server" '.mcpServers |= map(if .name == $s then .enabled = false else . end)' "$MCPPROXY_CONFIG" > "$MCPPROXY_CONFIG.tmp" && mv "$MCPPROXY_CONFIG.tmp" "$MCPPROXY_CONFIG"
-    echo "Disabled $server. Run 'mise run mcpproxy-config restart' to apply."
+    echo "Disabled $server. Run 'mise run thresher-config restart' to apply."
     ;;
 
   enable-server)
     server="${2:-}"
-    [[ -z "$server" ]] && { echo "Usage: mise run mcpproxy-config enable-server <name>"; exit 1; }
+    [[ -z "$server" ]] && { echo "Usage: mise run thresher-config enable-server <name>"; exit 1; }
     jq --arg s "$server" '.mcpServers |= map(if .name == $s then .enabled = true else . end)' "$MCPPROXY_CONFIG" > "$MCPPROXY_CONFIG.tmp" && mv "$MCPPROXY_CONFIG.tmp" "$MCPPROXY_CONFIG"
-    echo "Enabled $server. Run 'mise run mcpproxy-config restart' to apply."
+    echo "Enabled $server. Run 'mise run thresher-config restart' to apply."
     ;;
 
   quarantine-server)
     server="${2:-}"
-    [[ -z "$server" ]] && { echo "Usage: mise run mcpproxy-config quarantine-server <name>"; exit 1; }
+    [[ -z "$server" ]] && { echo "Usage: mise run thresher-config quarantine-server <name>"; exit 1; }
     jq --arg s "$server" '.mcpServers |= map(if .name == $s then .quarantined = true else . end)' "$MCPPROXY_CONFIG" > "$MCPPROXY_CONFIG.tmp" && mv "$MCPPROXY_CONFIG.tmp" "$MCPPROXY_CONFIG"
-    echo "Quarantined $server. Run 'mise run mcpproxy-config restart' to apply."
+    echo "Quarantined $server. Run 'mise run thresher-config restart' to apply."
     ;;
 
   unquarantine-server)
     server="${2:-}"
-    [[ -z "$server" ]] && { echo "Usage: mise run mcpproxy-config unquarantine-server <name>"; exit 1; }
+    [[ -z "$server" ]] && { echo "Usage: mise run thresher-config unquarantine-server <name>"; exit 1; }
     jq --arg s "$server" '.mcpServers |= map(if .name == $s then .quarantined = false else . end)' "$MCPPROXY_CONFIG" > "$MCPPROXY_CONFIG.tmp" && mv "$MCPPROXY_CONFIG.tmp" "$MCPPROXY_CONFIG"
-    echo "Unquarantined $server. Run 'mise run mcpproxy-config restart' to apply."
+    echo "Unquarantined $server. Run 'mise run thresher-config restart' to apply."
     ;;
 
   enable-code-exec)
     jq '.enable_code_execution = true' "$MCPPROXY_CONFIG" > "$MCPPROXY_CONFIG.tmp" && mv "$MCPPROXY_CONFIG.tmp" "$MCPPROXY_CONFIG"
-    echo "Code execution enabled. Run 'mise run mcpproxy-config restart' to apply."
+    echo "Code execution enabled. Run 'mise run thresher-config restart' to apply."
     ;;
 
   disable-code-exec)
     jq '.enable_code_execution = false' "$MCPPROXY_CONFIG" > "$MCPPROXY_CONFIG.tmp" && mv "$MCPPROXY_CONFIG.tmp" "$MCPPROXY_CONFIG"
-    echo "Code execution disabled. Run 'mise run mcpproxy-config restart' to apply."
+    echo "Code execution disabled. Run 'mise run thresher-config restart' to apply."
     ;;
 
   enable-management)
     jq '.disable_management = false' "$MCPPROXY_CONFIG" > "$MCPPROXY_CONFIG.tmp" && mv "$MCPPROXY_CONFIG.tmp" "$MCPPROXY_CONFIG"
-    echo "Management API enabled. Run 'mise run mcpproxy-config restart' to apply."
+    echo "Management API enabled. Run 'mise run thresher-config restart' to apply."
     ;;
 
   disable-management)
     jq '.disable_management = true' "$MCPPROXY_CONFIG" > "$MCPPROXY_CONFIG.tmp" && mv "$MCPPROXY_CONFIG.tmp" "$MCPPROXY_CONFIG"
-    echo "Management API disabled. Run 'mise run mcpproxy-config restart' to apply."
+    echo "Management API disabled. Run 'mise run thresher-config restart' to apply."
     ;;
 
   backup)
@@ -111,18 +111,16 @@ case "${1:-}" in
 
   restore)
     backup="${2:-}"
-    [[ -z "$backup" ]] && { echo "Usage: mise run mcpproxy-config restore <backup-file>"; exit 1; }
+    [[ -z "$backup" ]] && { echo "Usage: mise run thresher-config restore <backup-file>"; exit 1; }
     cp "$backup" "$MCPPROXY_CONFIG"
-    echo "Restored from $backup. Run 'mise run mcpproxy-config restart' to apply."
+    echo "Restored from $backup. Run 'mise run thresher-config restart' to apply."
     ;;
 
   restart)
-    echo "Restarting mcpproxy..."
-    cd /home/toxic/estate
-    pitchfork stop mcpproxy 2>/dev/null || true
-    sleep 2
-    pitchfork start mcpproxy
-    echo "mcpproxy restarted"
+    # 2026-10-28: thresher is thresher (estate's fork rename); daemon id is
+    # the namespaced estate/thresher. No cwd cd — pitchfork resolves the id.
+    echo "Restarting estate/thresher (thresher fork)..."
+    exec /home/toxic/pens/barn/estate-ops/pitchfork-restart estate/thresher
     ;;
 
   health)

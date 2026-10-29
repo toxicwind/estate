@@ -44,10 +44,10 @@ wsock() {
 # existing backend for that path; if the route is gone it is recreated.
 funnel_up() {
   mkdir -p /home/toxic/pens/estate/.state/logs  # legacy: keep for funnel.sh; SSOT is pens/estate
-  if [ -f /home/toxic/estate/config/ports.env ]; then
+  if [ -f /home/toxic/pens/estate/config/ports.env ]; then
     set -a
     # shellcheck disable=SC1091
-    source /home/toxic/estate/config/ports.env
+    source /home/toxic/pens/estate/config/ports.env
     set +a
     DOORBELL_EDGE="${DOORBELL_OAUTH_EDGE_PORT:-25217}"
     SQUAWK_WS="${SQUAWK_WS_PORT:-25147}"

@@ -1,11 +1,11 @@
 {
   "timestamp": "2026-09-08T01:50:17.542Z",
   "estateProjectsPath": "/home/toxic/projects/estate-projects",
-  "symlinkFrom": "/home/toxic/estate-projects",
+  "symlinkFrom": "/home/toxic/pens/estate/products",
   "linkedToEstate": {
-    "healthAudit": "/home/toxic/estate/helpers/health-audit.ts",
-    "gitMutator": "/home/toxic/estate/helpers/git-mutator/cli.ts",
-    "portsEnv": "/home/toxic/estate/config/ports.env"
+    "healthAudit": "/home/toxic/pens/estate/helpers/health-audit.ts",
+    "gitMutator": "/home/toxic/pens/estate/helpers/git-mutator/cli.ts",
+    "portsEnv": "/home/toxic/pens/estate/config/ports.env"
   },
   "subdirIntegrations": {
     "bornite": {

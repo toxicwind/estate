@@ -40,25 +40,25 @@ binaries:
     daemon: bornite
     note: warden takeover 2026-10-04 - blessed live rebuild (builder unknown, 2026-10-03 21:12 MDT, unchanged source, /health OK); sha verified dddef255acb0
   bornite-keypool:
-    path: /home/toxic/estate/bin/bornite-keypool.py
+    path: /home/toxic/pens/estate/bin/bornite-keypool.py
     sha256: "078f3aacdf0550ae75c3219f0d53b3f4f9ebd7b6ce6d3c3e88614f269d059f16"
     source: toxicwind/estate
     commit: e4a383cad849f80dec832251e159ac8c7839c5da
     git_path: bin/bornite-keypool.py
     daemon: keypool
-    immutable_copy: /home/toxic/estate/bin/bornite-keypool.py.20261002-184500
+    immutable_copy: /home/toxic/pens/estate/bin/bornite-keypool.py.20261002-184500
     note: blessed 2026-10-02 (warden) — live matches estate HEAD; the Architect: "Bless live obv wtf"
   bornite-model-guard:
-    path: /home/toxic/estate/bin/bornite-model-guard.py
+    path: /home/toxic/pens/estate/bin/bornite-model-guard.py
     sha256: "7ff038184434e52e6a0200b7d48fea80975f1d00e5d8b2ffb1ea10a67627f829"
     source: toxicwind/estate
     commit: e4a383cad849f80dec832251e159ac8c7839c5da
     git_path: bin/bornite-model-guard.py
     daemon: model-guard
-    immutable_copy: /home/toxic/estate/bin/bornite-model-guard.py.20261002-184500
+    immutable_copy: /home/toxic/pens/estate/bin/bornite-model-guard.py.20261002-184500
     note: blessed 2026-10-02 (warden) — live matches estate HEAD; the Architect: "Bless live"
   progress-watchdog:
-    path: /home/toxic/estate/bin/progress-watchdog.py
+    path: /home/toxic/pens/estate/bin/progress-watchdog.py
     sha256: "64901196f4246de5f12a90388eda2c417d20f85db82f185d33e47c22bc8b433b"
     source: toxicwind/estate
     commit: 213218592259a0af3d403e6dc1f088358a23d79c
@@ -75,7 +75,7 @@ binaries:
     note: rebuilt 2026-10-03 post-rename via mbx-cache mise task (rig 0.6.9); Q1 bless superseded by fresh build; deployed, thresher restarted, child verified on new SHA
 
   mbx-cache:
-    path: /home/toxic/estate/vendored/mr-boxington-cache/target/release/mise-cache
+    path: /home/toxic/pens/estate/vendored/mr-boxington-cache/target/release/mise-cache
     sha256: 9ec23c39697f7d49e2d235bd96f31e3f082e7a77ae7133c4e71797d92f3ada2b
     source: github.com/jdx/mr-boxington-cache v0.1.1 (991a586421d1ace4165a3c53b8ef98d08934fce5)
     daemon: mbx-cache
@@ -89,5 +89,5 @@ declared_configs:
 runtime_paths:
   - /home/toxic/.openfang/runtime/
   - /home/toxic/.openfang/backups/
-  - /home/toxic/estate/log/
+  - /home/toxic/pens/estate/log/
   - /home/toxic/kimi-auto/bornite.d/

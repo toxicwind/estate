@@ -7,7 +7,9 @@ import { existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { resolve } from "node:path";
 
-const SOV = process.env.ESTATE_ROOT || resolve(homedir(), "estate");
+const SOV =
+  process.env.ESTATE_ROOT ||
+  resolve(homedir(), "pens", "estate"); // 2026-10-28: ~/estate is a forbidden ghost path (estate single-truth lease)
 
 type EnvLayer = { resolve: () => string; precedence: number };
 

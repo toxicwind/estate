@@ -1,4 +1,4 @@
-cd /home/toxic/estate/rust_algo_web
+cd /home/toxic/pens/estate/rust_algo_web
 
 cat > Cargo.toml <<'CT'
 [package]

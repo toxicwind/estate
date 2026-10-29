@@ -12,7 +12,7 @@
 #   estate-reconcile proc-audit               declared vs /proc exe for the daemons
 #
 # Environment:
-#   ESTATE_ROOT   estate worktree (default /home/toxic/estate)
+#   ESTATE_ROOT   estate worktree (default /home/toxic/pens/estate)
 #   SQUAWK_ROOT   squawk root (default /home/toxic/.squawk-bus/squawk-root);
 #                 unset/no-fleet-dir => squawk alerts no-op (sandbox-safe)
 #
@@ -23,7 +23,7 @@
 # crews' live WIP.
 set -euo pipefail
 
-ESTATE_ROOT="${ESTATE_ROOT:-/home/toxic/estate}"
+ESTATE_ROOT="${ESTATE_ROOT:-/home/toxic/pens/estate}"
 MANIFEST_DEFAULT="$ESTATE_ROOT/deploy/manifest.yaml"
 LOG_DIR="$ESTATE_ROOT/log"
 AUDIT_DIR="$LOG_DIR/drift-audit"

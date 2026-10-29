@@ -89,7 +89,7 @@ export const extendedTests: ExtendedServiceTest[] = [
           cmd: [
             "test",
             "-f",
-            "/home/toxic/estate/stack/services/openfang.sh",
+            "/home/toxic/pens/estate/stack/services/openfang.sh",
           ],
           stdout: "pipe",
         });
@@ -154,7 +154,7 @@ export const extendedTests: ExtendedServiceTest[] = [
           cmd: [
             "bash",
             "-c",
-            "grep -q '^rhodochrosite:' /home/toxic/estate/config/bornite.yaml && echo FOUND || echo MISSING",
+            "grep -q '^rhodochrosite:' /home/toxic/pens/estate/config/bornite.yaml && echo FOUND || echo MISSING",
           ],
           stdout: "pipe",
           stderr: "pipe",

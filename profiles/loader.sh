@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # Estate Modular Profile Loader
-# Usage: source this file or run via /home/toxic/estate/.profile
+# Usage: source this file or run via /home/toxic/pens/estate/.profile
 # ==============================================================================
 ESTATE_ROOT="${ESTATE_ROOT:-$HOME/estate}"
 ESTATE_PROFILE="${ESTATE_PROFILE:-toxic}"

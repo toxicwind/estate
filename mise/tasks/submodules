@@ -1,41 +1,47 @@
 #!/usr/bin/env bash
-# mise run submodules — autonomous sync of ranch submodules and estate pointer
-set -euo pipefail
+# mise run submodules → REPLACED by `mise run peers` (2026-10-28 desubmodule cutover)
+#
+# Estate doctrine: zero submodules (docs/REPO_TOPOLOGY.md "Rule - no gitlinks").
+# The old task synced gitlink submodules in ranch/ + advanced estate's ranch
+# pointer. Both concepts are retired:
+#   * peers are independent checkouts with their own origin (pens/.../products/)
+#   * cross-pen sync = `git fetch && git merge --ff-only` per peer, or the
+#     fleet todo board — never pointer-advancing.
+#
+# This task syncs every peer checkout under the pens products/ roots:
+#   pens/ranch/<peer>, pens/estate/products/<peer>, pens/geode/products/<peer>,
+#   pens/barn/*, pens/olympus/products/<peer>
+set -uo pipefail
 
-ESTATE_DIR="/home/toxic/estate"
-RANCH_DIR="${ESTATE_DIR}/ranch"
+echo "⚡ [peers-sync] syncing peer checkouts across pens..."
 
-echo "⚡ [submodules-sync] Synchronizing registered estate submodules..."
+PENS=/home/toxic/pens
+declare -a ROOTS=(
+  "$PENS/ranch"
+  "$PENS/estate/products"
+  "$PENS/geode/products"
+  "$PENS/olympus/products"
+  "$PENS/barn"
+)
 
-# Update registered submodules whose remote upstream has advanced
-git -C "$RANCH_DIR" submodule update --init --recursive estate-kappa-plugin bash-style-guide pdfshield
+dirty=0
+for root in "${ROOTS[@]}"; do
+  [ -d "$root" ] || continue
+  for peer in "$root"/*/; do
+    [ -d "$peer/.git" ] || continue
+    name=$(basename "$peer")
+    branch=$(git -C "$peer" branch --show-current 2>/dev/null || echo "")
+    [ -n "$branch" ] || continue
+    ahead=$(git -C "$peer" rev-list --count "$branch..@{upstream}" 2>/dev/null || echo 0)
+    if [ "${ahead:-0}" -gt 0 ]; then
+      echo "  ⬇ $name: $ahead behind — fast-forwarding"
+      git -C "$peer" merge --ff-only "@{upstream}" 2>&1 | head -2
+      dirty=1
+    else
+      echo "  ✅ $name up to date"
+    fi
+  done
+done
 
-# Audit and update the catalog with live output
-if [[ -f "$RANCH_DIR/toolkit/audit-forks.ts" ]]; then
-  echo "📊 [submodules-sync] Running audit-forks..."
-  bun --cwd "$RANCH_DIR" toolkit/audit-forks.ts
-  echo "📖 [submodules-sync] Generating README catalog..."
-  bun --cwd "$RANCH_DIR" toolkit/generate-readme.ts --update
-fi
-
-# Check for staged or unstaged submodule changes in ranch
-if [[ -n "$(git -C "$RANCH_DIR" status --porcelain .gitmodules estate-kappa-plugin bash-style-guide pdfshield README.md FORKS-report.json FORKS-report.md 2>/dev/null)" ]]; then
-  echo "💾 [submodules-sync] Committing updated submodule state in ranch..."
-  git -C "$RANCH_DIR" add .gitmodules estate-kappa-plugin bash-style-guide pdfshield README.md FORKS-report.json FORKS-report.md
-  git -C "$RANCH_DIR" commit -m "bot: autonomous submodule catalog update"
-  git -C "$RANCH_DIR" push origin main
-  echo "🚀 [submodules-sync] Ranch submodules pushed to origin."
-else
-  echo "✅ [submodules-sync] Ranch submodules are up to date."
-fi
-
-# Check if estate root needs its ranch pointer updated
-if [[ -n "$(git -C "$ESTATE_DIR" status --porcelain ranch 2>/dev/null)" ]]; then
-  echo "🏠 [submodules-sync] Advancing ranch pointer in estate root..."
-  git -C "$ESTATE_DIR" add ranch
-  git -C "$ESTATE_DIR" commit -m "chore(ranch): auto-advance ranch submodule pointer"
-  git -C "$ESTATE_DIR" push origin main
-  echo "🚀 [submodules-sync] Estate root pointer synchronized."
-else
-  echo "✅ [submodules-sync] Estate root pointer is up to date."
-fi
+[ "$dirty" -eq 0 ] && echo "✅ [peers-sync] all peers up to date."
+exit 0

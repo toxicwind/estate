@@ -142,7 +142,7 @@
       "protocol": "stdio",
       "command": "node",
       "args": [
-        "/home/toxic/estate/ranch/vendored/organized-lattice-v3/adhoc-mcp-servers/mcp-installs/agent-orchestration/node_modules/agent-orchestration/dist/index.js",
+        "/home/toxic/pens/ranch/vendored/organized-lattice-v3/adhoc-mcp-servers/mcp-installs/agent-orchestration/node_modules/agent-orchestration/dist/index.js",
         "serve"
       ],
       "oauth": null,
@@ -223,7 +223,7 @@
       "protocol": "stdio",
       "command": "/home/toxic/.local/share/mise/installs/node/22.12.0/bin/node",
       "args": [
-        "/home/toxic/estate/ranch/keeper/dist/index.js"
+        "/home/toxic/pens/ranch/keeper/dist/index.js"
       ],
       "env": {
         "BROWSER_KEEPER_CDP": "http://127.0.0.1:25233"
@@ -333,7 +333,7 @@
       "command": "/home/toxic/.local/bin/delendai",
       "args": [
         "__serve",
-        "--workspace=/home/toxic/estate",
+        "--workspace=/home/toxic/pens/estate",
         "--plugins=work-refs,code-race,experimental,iterate,oracle-market,model-race,forge-audit,intent-router,global-gh,rig-c2,consent"
       ],
       "oauth": null,
@@ -353,7 +353,7 @@
       "protocol": "stdio",
       "command": "/home/toxic/.bun/bin/bun",
       "args": [
-        "/home/toxic/estate/ranch/ferret-den/src/index.ts"
+        "/home/toxic/pens/ranch/ferret-den/src/index.ts"
       ],
       "env": {
         "PD_TOOLS_DIR": "/home/toxic/.pdtm/go/bin",
@@ -391,7 +391,7 @@
       "protocol": "stdio",
       "command": "/home/toxic/.bun/bin/bun",
       "args": [
-        "/home/toxic/estate/ranch/estate-brain/src/mcp-server.ts"
+        "/home/toxic/pens/ranch/estate-brain/src/mcp-server.ts"
       ],
       "oauth": null,
       "enabled": true,
@@ -448,7 +448,7 @@
       "protocol": "stdio",
       "command": "/home/toxic/.bun/bin/bun",
       "args": [
-        "/home/toxic/estate/ranch/forge-mcp/src/server.ts"
+        "/home/toxic/pens/ranch/forge-mcp/src/server.ts"
       ],
       "oauth": null,
       "enabled": true,
@@ -523,7 +523,7 @@
       "protocol": "stdio",
       "command": "/home/toxic/.bun/bin/bun",
       "args": [
-        "/home/toxic/estate/azurite/mcp/server.ts"
+        "/home/toxic/pens/estate/azurite/mcp/server.ts"
       ],
       "oauth": null,
       "enabled": true,
@@ -537,7 +537,7 @@
       "protocol": "stdio",
       "command": "python3",
       "args": [
-        "/home/toxic/estate/ranch/squawk/mcp_server.py"
+        "/home/toxic/pens/ranch/squawk/mcp_server.py"
       ],
       "oauth": null,
       "enabled": true,
@@ -558,7 +558,7 @@
       "command": "/home/toxic/.bun/bin/bun",
       "args": [
         "run",
-        "/home/toxic/estate/src/mcp/bornite.ts"
+        "/home/toxic/pens/estate/src/mcp/bornite.ts"
       ],
       "oauth": null,
       "enabled": true,
@@ -634,7 +634,7 @@
       "protocol": "stdio",
       "command": "/home/toxic/.bun/bin/bun",
       "args": [
-        "/home/toxic/estate/ranch/vendored/kitty-mcp-server/dist/index.js"
+        "/home/toxic/pens/ranch/vendored/kitty-mcp-server/dist/index.js"
       ],
       "env": {
         "KITTY_MCP_SOCKET": "tcp:localhost:25211"
@@ -675,7 +675,7 @@
       "args": [
         "run",
         "--directory",
-        "/home/toxic/estate/ranch/lasso",
+        "/home/toxic/pens/ranch/lasso",
         "hypruse"
       ],
       "oauth": null,
@@ -755,7 +755,7 @@
     {
       "name": "nnunley",
       "protocol": "stdio",
-      "command": "/home/toxic/estate/ranch/vendored/ast-grep-mcps/nnunley-ast-grep-mcp/target/release/ast-grep-mcp",
+      "command": "/home/toxic/pens/ranch/vendored/ast-grep-mcps/nnunley-ast-grep-mcp/target/release/ast-grep-mcp",
       "oauth": null,
       "enabled": true,
       "trust_mode": "auto",
@@ -769,7 +769,7 @@
       "protocol": "http",
       "command": "/usr/bin/python3",
       "args": [
-        "/home/toxic/estate/projects/range/bin/openfang-mcp-shim.py"
+        "/home/toxic/pens/estate/projects/range/bin/openfang-mcp-shim.py"
       ],
       "oauth": null,
       "enabled": true,
@@ -892,7 +892,7 @@
       "protocol": "stdio",
       "command": "/home/toxic/.bun/bin/bun",
       "args": [
-        "/home/toxic/estate/ranch/mcp/rsync-mcp/index.js",
+        "/home/toxic/pens/ranch/mcp/rsync-mcp/index.js",
         "--host",
         "pc"
       ],
@@ -919,9 +919,9 @@
       "quarantined": false,
       "name": "safurrier-filesystem-smart",
       "protocol": "stdio",
-      "command": "/home/toxic/estate/ranch/vendored/organized-lattice-v3/adhoc-mcp-servers/mcp-filesystem/.venv/bin/python",
+      "command": "/home/toxic/pens/ranch/vendored/organized-lattice-v3/adhoc-mcp-servers/mcp-filesystem/.venv/bin/python",
       "args": [
-        "/home/toxic/estate/ranch/vendored/organized-lattice-v3/adhoc-mcp-servers/mcp-filesystem/run_server.py",
+        "/home/toxic/pens/ranch/vendored/organized-lattice-v3/adhoc-mcp-servers/mcp-filesystem/run_server.py",
         "/home/toxic"
       ],
       "oauth": null,
@@ -1044,7 +1044,7 @@
       "protocol": "stdio",
       "command": "python3",
       "args": [
-        "/home/toxic/estate/ranch/squawk/mcp_server.py"
+        "/home/toxic/pens/ranch/squawk/mcp_server.py"
       ],
       "oauth": null,
       "enabled": true,
@@ -1057,7 +1057,7 @@
       "name": "tmux",
       "command": "/home/toxic/.bun/bin/bun",
       "args": [
-        "/home/toxic/estate/tools/tmux-mcp/server.ts"
+        "/home/toxic/pens/estate/tools/tmux-mcp/server.ts"
       ],
       "oauth": null,
       "enabled": true,
@@ -1070,7 +1070,7 @@
       "protocol": "stdio",
       "command": "node",
       "args": [
-        "/home/toxic/estate/ranch/vendored/organized-lattice-v3/adhoc-mcp-servers/mcp-installs/tpc-server/mcp-server.js"
+        "/home/toxic/pens/ranch/vendored/organized-lattice-v3/adhoc-mcp-servers/mcp-installs/tpc-server/mcp-server.js"
       ],
       "oauth": null,
       "enabled": true,
@@ -1105,7 +1105,7 @@
       "protocol": "stdio",
       "command": "python3",
       "args": [
-        "/home/toxic/estate/tools/websearch-mcp/server.py"
+        "/home/toxic/pens/estate/tools/websearch-mcp/server.py"
       ],
       "oauth": null,
       "enabled": true,
@@ -1120,7 +1120,7 @@
       "protocol": "stdio",
       "command": "/home/toxic/.bun/bin/bun",
       "args": [
-        "/home/toxic/estate/ranch/wezterm-agent-mcp/build/cli.js"
+        "/home/toxic/pens/ranch/wezterm-agent-mcp/build/cli.js"
       ],
       "env": {
         "WEZTERM_UNIX_SOCKET": "/run/user/1000/wezterm/wayland-wayland-1-org.wezfurlong.wezterm"

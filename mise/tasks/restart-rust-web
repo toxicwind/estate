@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# mise run restart-rust-web — restart via the owned pitchfork-restart wrapper
-# (2026-09-20: was raw `pitchfork restart`, which dies on desync/EADDRINUSE).
+# mise run restart-rust-web — restart the estate_web (rust binary) daemon.
+# 2026-10-28: de-shimmed — absolute wrapper path, real namespaced daemon id.
 set -euo pipefail
-cd "${ESTATE_ROOT:-/home/toxic/Estate}"
-exec ./bin/pitchfork-restart Estate/rust-web
+exec /home/toxic/pens/barn/estate-ops/pitchfork-restart estate/rust-web

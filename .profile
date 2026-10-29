@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Estate Modular Profile System - absolute, no dynamic dirname
-export ESTATE_ROOT="/home/toxic/estate"
+export ESTATE_ROOT="/home/toxic/pens/estate"
 # legacy alias: old callers still read the retired root variable name
 export SOVEREIGN_ROOT="$ESTATE_ROOT"
 export ESTATE_PROFILE="${ESTATE_PROFILE:-toxic}"

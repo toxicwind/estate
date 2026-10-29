@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
-# mise run ffs <args...> — forward to estate/bin/ffs-bun.ts
-# Wrapper around the estate/bin/ffs Go binary via Bun.
-# Usage: mise run ffs --root /home/toxic/estate grep pitchfork --limit 5
+# mise run ffs — forward to the canonical ffs-bun.ts (estate-ops product, bin contract).
+# 2026-10-28: de-shimmed. Usage: mise run ffs grep --root /home/toxic/pens/estate pitchfork
 set -euo pipefail
-cd "${ESTATE_ROOT:-$(cd "$(dirname "$0")/../.." && pwd)}"
-exec bun run bin/ffs-bun.ts "$@"
+exec /home/toxic/.bun/bin/bun run /home/toxic/pens/barn/estate-ops/bin/ffs-bun.ts "$@"

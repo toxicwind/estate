@@ -10,7 +10,7 @@
 # 2026-10-02 fix: mkdir -p the logs dir first -- without it the >> redirect
 # failed and the reconcile never ran.
 set -u
-REPO="/home/toxic/estate"
+REPO="/home/toxic/pens/estate"
 
 if git -C "$REPO" diff-tree --no-commit-id --name-only -r HEAD 2>/dev/null \
     | grep -qx 'pitchfork.toml'; then

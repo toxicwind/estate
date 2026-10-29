@@ -38,7 +38,7 @@ depends = ["shep"]
 auto = ["start"]
 
 [daemons.bornite]
-run = "exec /home/toxic/estate/stack/services/bornite.sh"
+run = "exec /home/toxic/pens/estate/stack/services/bornite.sh"
 dir = "."
 mise = false
 retry = true
@@ -111,7 +111,7 @@ auto = ["start"]
 
 [daemons.null-g-proxy]
 run = "exec bun run src/index.ts"
-dir = "/home/toxic/estate/tools/null-g-proxy"
+dir = "/home/toxic/pens/estate/tools/null-g-proxy"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25107/health"
@@ -129,7 +129,7 @@ auto = ["start"]
 
 [daemons.mcp-gateway]
 run = "exec bun run gateway.ts"
-dir = "/home/toxic/estate/ranch/mesh/router/estate-mcp-gateway"
+dir = "/home/toxic/pens/ranch/mesh/router/estate-mcp-gateway"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25120/health"
@@ -313,7 +313,7 @@ auto = ["start"]
 
 [daemons.estate-router]
 run = "exec bun run router.ts"
-dir = "/home/toxic/estate/ranch/mesh/router/estate-router/estate-router-ts"
+dir = "/home/toxic/pens/ranch/mesh/router/estate-router/estate-router-ts"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25104/health"
@@ -372,8 +372,8 @@ auto = ["start"]
 # tools/brand in toxicwind/estate-projects. Submit via the brand CLI.
 # NOTE: pitchfork.toml is hand-edited (generator retired 2026-09-14, never run it).
 [daemons.brand]
-run = "exec /usr/bin/python3 /home/toxic/estate/tools/brand/brandd.py"
-dir = "/home/toxic/estate/tools/brand"
+run = "exec /usr/bin/python3 /home/toxic/pens/estate/tools/brand/brandd.py"
+dir = "/home/toxic/pens/estate/tools/brand"
 mise = false
 retry = true
 boot_start = true
@@ -387,8 +387,8 @@ auto = ["start"]
 # see (2026-09-14 18:03 lock deadlock: process "running", health dead).
 # Scoped to brand only; sibling lanes own their watchdogs.
 [daemons.brand-watchdog]
-run = "exec /usr/bin/python3 /home/toxic/estate/tools/brand/brand-watchdog.py"
-dir = "/home/toxic/estate/tools/brand"
+run = "exec /usr/bin/python3 /home/toxic/pens/estate/tools/brand/brand-watchdog.py"
+dir = "/home/toxic/pens/estate/tools/brand"
 mise = false
 retry = true
 boot_start = true

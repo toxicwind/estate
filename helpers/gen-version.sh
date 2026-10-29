@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euo pipefail
-ROOT="/home/toxic/estate/projects/tau"
+ROOT="/home/toxic/pens/estate/projects/tau"
 TAU_PKG="$ROOT/packages/coding-agent/package.json"
 SOV_ROOT="$HOME/estate"
 VER_BASE=$(jq -r .version "$TAU_PKG" 2>/dev/null || echo "18.3.0")

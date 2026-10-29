@@ -7,7 +7,7 @@
 import { $ } from "bun";
 
 const SOV_PROJECTS = "/home/toxic/projects/estate-projects";
-const ESTATE = "/home/toxic/estate";
+const ESTATE = "/home/toxic/pens/estate";
 
 async function integrate() {
   console.log("=== ESTATE-PROJECTS -> ESTATE INTEGRATION ===");
@@ -24,7 +24,7 @@ async function integrate() {
   const config = {
     timestamp: new Date().toISOString(),
     estateProjectsPath: SOV_PROJECTS,
-    symlinkFrom: "/home/toxic/estate-projects",
+    symlinkFrom: "/home/toxic/pens/estate/products",
     linkedToEstate: {
       healthAudit: `${ESTATE}/helpers/health-audit.ts`,
       gitMutator: `${ESTATE}/helpers/git-mutator/cli.ts`,

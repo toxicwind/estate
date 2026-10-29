@@ -2,8 +2,8 @@
 # Tail pitchfork logs for the RustDesk server daemons (hbbs + hbbr).
 set -euo pipefail
 source "$(dirname "$0")/_lib.sh" 2>/dev/null || true
-PITCHFORK="${PITCHFORK:-/home/toxic/estate/bin/pitchfork}"
+PITCHFORK="${PITCHFORK:-pitchfork}"  # bin contract: ~/.local/bin/pitchfork
 for d in rustdesk-hbbs rustdesk-hbbr; do
   echo "=== $d ==="
-  "$PITCHFORK" logs "$d" "${1:---lines 100}" 2>&1 || echo "(no logs for $d)"
+  "$PITCHFORK" logs "estate/$d" "${1:---lines 100}" 2>&1 || echo "(no logs for $d)"
 done

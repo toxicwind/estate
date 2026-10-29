@@ -19,7 +19,7 @@ from pathlib import Path
 RELAY_DIR = Path(os.environ.get("SQUAWK_RELAY_DIR", "/home/toxic/.fleet-bus/squawk-relay"))
 CHAT_ROOT = Path(os.environ.get("SQUAWK_CHAT_ROOT", "/home/toxic/.fleet-bus/squawk-root"))
 KEYS_DIR = Path(os.environ.get("FLEET_KEYS_DIR", str(CHAT_ROOT / "keys")))
-SQUAWK_CODE = Path(os.environ.get("SQUAWK_CODE_DIR", "/home/toxic/estate/ranch/squawk"))
+SQUAWK_CODE = Path(os.environ.get("SQUAWK_CODE_DIR", "/home/toxic/pens/ranch/squawk"))
 CHAT_PY = SQUAWK_CODE / "chat.py"
 OUTBOX = RELAY_DIR / "outbox.jsonl"
 SINK_STATE = RELAY_DIR / "state.json"

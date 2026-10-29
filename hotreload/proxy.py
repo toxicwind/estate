@@ -11,7 +11,7 @@ Backend switching:
 
 Usage:
   proxy.py <stable_port> <statedir>
-  proxy.py 25147 /home/toxic/estate/hotreload/state/squawk-ws
+  proxy.py 25147 /home/toxic/pens/estate/hotreload/state/squawk-ws
 
 The bluegreen.py orchestrator writes the control file to cut over.
 """

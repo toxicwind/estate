@@ -421,8 +421,8 @@ showHardwareCursor: true
 skillful: true
 skills:
   customDirectories:
-    - /home/toxic/estate/azurite/skills
-    - /home/toxic/estate/projects/range/ranch/gear
+    - /home/toxic/pens/geode/products/azurite/skills
+    - /home/toxic/pens/estate/config/gear
   enableSkillCommands: true
 snapcompact:
   shape: auto

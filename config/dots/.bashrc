@@ -180,5 +180,5 @@ source /home/toxic/nim-omnibus.sh
 
 # 2-second rule shim (estate doctrine): known-slow cmds via run-fast
 shopt -s expand_aliases 2>/dev/null
-source /home/toxic/estate/bin/bash-2s-shim.sh 2>/dev/null
+source /home/toxic/pens/olympus/products/kairos/shim.sh 2>/dev/null
 export -f _2s_slow 2>/dev/null || true

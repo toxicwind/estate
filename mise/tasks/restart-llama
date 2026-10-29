@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
-# mise run restart-llama — restart the LLM serving daemon.
-# 2026-09-20: was `pitchfork restart bornite` but no daemon named
-# bornite exists (renamed to bornite long ago). Now uses the owned
-# pitchfork-restart wrapper, which reconciles against the port.
+# mise run restart-llama — restart the bornite LLM serving daemon.
+# 2026-10-28: de-shimmed. The owned pitchfork-restart wrapper lives in the
+# estate-ops product (bin contract); daemon id is the namespaced estate/bornite.
 set -euo pipefail
-cd "${ESTATE_ROOT:-/home/toxic/Estate}"
-exec ./bin/pitchfork-restart Estate/bornite
+exec /home/toxic/pens/barn/estate-ops/pitchfork-restart estate/bornite

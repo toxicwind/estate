@@ -40,7 +40,7 @@ enabled = true
 # Forge build tasks — first-class build pipeline
 [tasks.kappa-build]
 run = """
-bun run --cwd /home/toxic/estate/ranch/kappa/kappa-code make --single --skip-install
+bun run --cwd /home/toxic/pens/olympus/products/kappa/kappa-code make --single --skip-install
 """
 description = "Build kappa binary via forge remote cache"
 sources = ["package.json", "bun.lock", "packages/cli/script/build.ts"]
@@ -52,22 +52,22 @@ outputs = ["packages/cli/dist/@kappacode/cli-linux-x64/bin/kappa"]
 # all DelendAI code. The former ranch/borrowed/delendai placeholder is empty and
 # deprecated — never point delend tasks at it.
 [tasks.delendai-install]
-run = "bun install --cwd /home/toxic/pens/barn/corral/delendai"
-description = "Install DelendAI monorepo deps (bun)"
+run = "bun install --cwd /home/toxic/pens/ranch/range/apps/delendai-control-plane"
+description = "Install DelendAI control-plane deps (bun)"
 
 [tasks.delendai-validate]
-run = "bun run --cwd /home/toxic/pens/barn/corral/delendai validate -- --ci"
-description = "Run DelendAI full gate (typecheck + lint + tests + coverage)"
+run = "bun run --cwd /home/toxic/pens/ranch/range/apps/delendai-control-plane validate -- --ci"
+description = "Run DelendAI control-plane gate (typecheck + lint + tests)"
 
 [tasks.delendai-cli]
-run = "bun run --cwd /home/toxic/pens/barn/corral/delendai cli -- $@"
+run = "bun run --cwd /home/toxic/pens/ranch/range/apps/delendai-control-plane cli -- $@"
 description = "Run the DelendAI CLI (delendai <cmd>)"
 
 [tasks.delendai-scaffold]
-run = "bun run --cwd /home/toxic/estate/ranch/bun-scaffold apply:scaffold -- $@"
+run = "bun run --cwd /home/toxic/pens/ranch/bun-scaffold apply:scaffold -- $@"
 description = "Apply the maximal Bun scaffold across estate projects"
 
 [tasks.mimetite-codegen]
 run = "bun run build"
-dir = "/home/toxic/estate/ranch/mimetite"
+dir = "/home/toxic/pens/geode/products/mimetite"
 description = "Regenerate + live-sync mimetite provider catalog (5 artifacts + tau/kappa installed slices). Rerunnable."

@@ -2,7 +2,7 @@
 # Print the RustDesk client connection info for this server (awrawr-pc).
 set -euo pipefail
 WORKDIR=/home/toxic/pens/ranch/rustdesk-server
-PORTS=/home/toxic/estate/config/ports.env
+PORTS=/home/toxic/pens/estate/config/ports.env
 source "$PORTS"
 HOST=100.72.199.93
 PUBKEY="$WORKDIR/id_ed25519.pub"

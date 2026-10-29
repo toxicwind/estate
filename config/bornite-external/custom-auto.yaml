@@ -32,7 +32,7 @@
 # MUST match the pitchfork custom-auto-shim run line (port 25153).
 models:
   custom-auto:
-    cmd: python3 /home/toxic/estate/config/bornite.d/alias-shim.py --port ${PORT} --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --standby nim-kimi/moonshotai/kimi-k3 --advance-on 5xx,conn,429,402,404 --name custom-auto
+    cmd: python3 /home/toxic/pens/estate/config/bornite.d/alias-shim.py --port ${PORT} --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --standby nim-kimi/moonshotai/kimi-k3 --advance-on 5xx,conn,429,402,404 --name custom-auto
     description: "custom-auto: maximal free-Kimi chain (openrouter-free :free IDs -> hf-free Kimi-K3 -> nim-kimi genuine K3 via NVIDIA NIM, cold-aware ~120s)"
     metadata:
       alias_of: openrouter-free/moonshotai/kimi-k3:free

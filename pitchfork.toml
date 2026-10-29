@@ -1009,7 +1009,9 @@ retries = 3
 
 [daemons.ranch-ui.env]
 RANCH_UI_PORT = "25218"
-RANCH_UI_DIST = "/home/toxic/pens/ranch/range/ui/dist"
+# RANCH_UI_DIST removed 2026-10-28: hardcoding the dead range/ui/dist ghost
+# overrode ranch-ui.ts's own DIST_CANDIDATES self-healing. The service
+# resolves the real build (range/apps/delendai-control-plane/dist) itself.
 BORNITE_ORIGIN = "http://127.0.0.1:25100"
 RHODOCHROSITE_ORIGIN = "http://127.0.0.1:25193"
 
@@ -1181,7 +1183,7 @@ mise = true
 SQUAWK_HISTORY_PORT = "25229"
 
 [daemons.stash-guard]
-run = "exec python3 /home/toxic/pens/estate/tools/stash-guard/stash-guard.py --repo /home/toxic/estate --deep --interval 90"
+run = "exec python3 /home/toxic/pens/estate/tools/stash-guard/stash-guard.py --repo /home/toxic/pens/estate --deep --interval 90"
 auto = ["start"]
 retry = true
 boot_start = true

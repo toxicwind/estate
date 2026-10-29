@@ -3,20 +3,20 @@
 
 [estate]
 role = "control-plane"
-path = "/home/toxic/estate"
+path = "/home/toxic/pens/estate"
 remote = "https://github.com/toxicwind/estate.git"
 branch = "main"
 
 [ranch]
 role = "projects"
-path = "/home/toxic/estate/ranch"
+path = "/home/toxic/pens/ranch"
 remote = "https://github.com/toxicwind/ranch"
 branch = "main"
 ignored_by = "estate"
 
 [tau]
 role = "product"
-path = "/home/toxic/estate/ranch/tau"
+path = "/home/toxic/pens/ranch/tau"
 remote = "https://github.com/toxicwind/tau.git"
 branch = "main"
 operated_by = "ranch/corral"
@@ -24,7 +24,7 @@ note = "Tau engine monorepo located in ranch."
 
 [estate-recon]
 role = "reconnaissance"
-path = "/home/toxic/estate/projects/estate-recon"
+path = "/home/toxic/pens/estate/products/estate-recon"
 remote = "https://github.com/toxicwind/estate-recon.git"
 branch = "main"
 note = "Unified multi-sector recon: gemini-spark, grok-grokbot-cursor, kimi, muse-meta-hatch."
