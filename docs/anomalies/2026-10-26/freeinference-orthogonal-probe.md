@@ -70,3 +70,43 @@ Contents at probe time (fleet: **healthy**, 4 nodes / 11 GPUs / 7 online, 7 SGLa
 - Dashboard `kpis` counts 11 GPUs / 7 servers while history shows 7 GPUs / 5 servers — **dashboard includes offline/deregistered hardware in totals** (nodes_online 3 of 4, gpus_online 7 of 11).
 
 **Doctrine implication:** the ROUTE CONTRACT anomaly class (front door alive, exec lane dead) now has a third leg: **fleet telemetry is the best "is the backend really there" signal** — `openinfra.freeinference.org/api/dashboard` + `/api/history` prove which models have live backends regardless of what the catalog advertises. Poll it before trusting any model in the catalog. Also: `GET /public-stats` is the model-inventory supersource (reveals unlisted models like `diffusiongemma` and the unlisted-`other` traffic bucket).
+
+---
+
+## 2026-10-28 re-verification vs "Master Forensic Dossier: FreeInference (Harvard SEAS) Gateway & Account Topology Analysis"
+
+The dossier was treated as unverified claims (DECLARED ≠ OBSERVED, estate doctrine). Every claim below was probed live on 2026-10-28 with a real Chrome browser UA (site bans fake UAs); key `hyi-u5H98c...` from `~/.tau/freeinference.key` == secretsmith `FREEINFERENCE_API_KEY`.
+
+| # | Dossier claim | Observed live (2026-10-28) | Verdict |
+|---|---|---|---|
+| 1 | Harvard SEAS / MaDSys runs FreeInference; JWT `role:"pro"`, UID `01M2CZNVZ3DY4G10AE7PTT71EE`; build `d55dab6` (2026-10-27) doubled pro ceiling $80→$160/day | Juncheng Yang confirmed Harvard SEAS Asst. Prof.; freeinference.org team page = Harvard MaDSys. Pro quota $160/day confirmed: dashboard export "Daily quota remaining $97.21 of $160.00", resets Oct 29 00:00 GMT; keypool `GET http://127.0.0.1:25109/quota` → `limitCents:16000`. JWT role claim not observable without session JWT; build hash internal. | PARTIAL — org + $160 quota real; role:pro/d55dab6 internal/unobservable |
+| 2 | `/v1/models` OpenAI schema | 200, 4 models keyed: `glm-5.3-flash`, `qwen3.6-35b`, `deepseek-v4-flash`, `bge-m3` | VERIFIED |
+| 3 | `Anthropic-Version` flips `/v1/models` to Anthropic schema | 200; 3 models (`bge-m3` hidden), `created_at` epoch-0 placeholders | VERIFIED |
+| 4 | `/public-stats` unauth model-inventory supersource | 200; daily stats; `diffusiongemma` only in `other` bucket | VERIFIED |
+| 5 | `openinfra.freeinference.org` `/api/dashboard` + `/api/history?hours=N` unauth fleet telemetry | 200; CORS `Allow-Origin: *`; GPU/SGLang/KPIs incl. NVLink/pcie bytes, `cache_hit_rate`, `spec_accept` | VERIFIED |
+| 6 | `data.freeinference.org/api/dashboard` | 404 — host is now static Open Data hub (HF datasets `harvardMadsys/*`) | VERIFIED (negative) |
+| 7 | `status.freeinference.org` | 200 | VERIFIED |
+| 8 | `doc.freeinference.org/api_headers` | 200 (Sphinx docs); UA policy, `X-Reasoning-Passthrough`, `X-Session-ID`, `X-Request-ID`, `X-API-Key` documented | VERIFIED |
+| 9 | `X-API-Key` accepts raw `hyi-` key without `Bearer` prefix | Works (200 on `/v1/models`, `/v1/chat/completions`, `GET /v1/batches`) — equivalent to Bearer auth | VERIFIED |
+| 10 | `X-Reasoning-Passthrough: false` strips `reasoning_content` | VERIFIED behaviorally: present default/`true`, absent with `false` | VERIFIED |
+| 11 | `X-Request-ID` echoed back | VERIFIED in response headers | VERIFIED |
+| 12 | `X-Session-ID` sticky routing to SGLang worker | Header accepted; **no observable echo** — sticky routing not directly proven | NOT OBSERVED |
+| 13 | `POST /v1/batches` inline JSON up to 32 MiB, 50k requests, auto-retry ×8, quota rollover at 00:00 UTC | **Route exists but role-gated: `403 "Creating batches requires the 'internal' role or higher"`**. `GET /v1/batches` → 200 `{"data":[]}` | REFUTED for pro account |
+| 14 | K-anonymity: shell commands logged & sanitized into `harvardMadsys/freeinference_agentic_trace` | Dataset EXISTS on HF (2.51M rows, updated ~9 days ago). "Terminal/shell command AST structures" scope not independently verifiable from this box | DATASET VERIFIED; content scope unverified |
+| 15 | quota $80→$160 reflected in estate config | mimetite `src/data.ts`: `dailyBudgetCents:16000`, `quotaSource http://127.0.0.1:25109/quota`; keypool returns 16000 limit; `.tau/models.yml` freeinference provider present | VERIFIED in config |
+
+### Estate config surfaces already supporting freeinference (no changes required)
+
+- **mimetite** (`pens/geode/products/mimetite/src/data.ts`): provider `freeinference` — `baseUrl https://freeinference.org/v1`, `keyEnv FREEINFERENCE_API_KEY`, adapter `static`, 4 model cards (`glm-5.3-flash`, `minimax-m3.1-flash`, `qwen3.6-35b`, `deepseek-v4-flash`), `contextLengths`, UA + retryCeiling 3, `maxConcurrency 16` (architect order: no concurrency cap, 429 = local shed), regenerated into `tau-models.yml`, `providers.json/.go/.rs`, `kappa-models.json` via `bun run build` (codegen sync test diffs byte-for-byte).
+- **rhodochrosite proxy** (Rust, `:25193`): `pgate` caps `freeinference` at 2 concurrent upstream slots (tests assert limit=2); `DEFAULT_UPSTREAM_UA` forwarded to CF-fronted upstream; `base_url https://freeinference.org/v1`, `key_env FREEINFERENCE_API_KEY`; key env loaded via `secretsmith env` + `set -a` in `serve.sh`.
+- **tau**: `roost.ts` `TAU_PROVIDER_POLICY.freeinference` (defaultModel `qwen3.6-35b`, discovery label FreeInference, kindApis); `~/.tau/models.yml` freeinference provider entry.
+- **Anthropic `/v1/messages`**: route exists at provider level; silent model fallback observed (`minimax-m3` → served `qwen3.6-35b`), never trust requested==served.
+
+### Not supported — do not build on
+
+- `POST /v1/batches`: internal-role-only for this account (403). Any batch-orchestrator tooling must assume it is unavailable unless the key is upgraded to an internal role. `GET /v1/batches` (list) is available but returns empty for this account.
+- `X-Session-ID` sticky routing: header passes through but no sticky-routing behavior observed; do not code to >99% cache-hit claims.
+
+### Conclusion
+
+The dossier's infrastructure (Harvard MaDSys, `openinfra` telemetry, `status`, `doc.freeinference.org/api_headers`, `/public-stats`) is real and already supported by estate config. The **batch pipeline (Section 6) is not actionable** on the current pro key — the endpoint is role-gated. The quota doubling ($80→$160) is real and already wired (`dailyBudgetCents:16000`, keypool `/quota`).
