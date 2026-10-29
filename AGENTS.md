@@ -198,6 +198,27 @@ style is MONADIC PRIMITIVES + bun-forward, not ad-hoc imperative bash:
 - **Ask, don't guess** via the `question` tool when intent is unclear.
 - Luis guesses are starting points, not specs — fuzz/verify.
 
+## Reactive refactoring doctrine (2026-10-29, architect order)
+
+- **Refactoring-in-passing is preferred and sought out, never deferred.**
+  When working at byte/AST/module level (reading code, tracing process
+  ground truth, scanning node_modules-level logic), any defect, duplicated
+  path, wrong abstraction, or stale module discovered — EVEN IF unrelated
+  to the current task — is fixed IMMEDIATELY in a real committed file.
+  "Not my task" is not a reason to leave broken code behind.
+- Thinking in layers: bytes → AST → module graph → process ground truth
+  (/proc, sockets, fds) → behavior. Never settle for log-surface guesses
+  when /proc and module resolution can prove the truth.
+- A discovered unrelated defect gets: root-cause fix + commit/push, or a
+  filed verbose squawk todo with exact evidence if it needs another owner.
+  Both, never merely a note.
+- **Will-use-then-stop is the #1 anti-pattern** (session-audit, 2026-10-29:
+  48 sessions). Declaring "I'll call X" then yielding without calling is a
+  contract violation — the declaration IS the call or it is a lie. Detect:
+  `~/.local/bin/session-audit` (kleio deep-audit, commit 5c6f5d4).
+- **Read directly, once.** Narrating a read/grep before executing it is the
+  same anti-pattern in disguise. The tool call is the narration.
+
 ## Naming (2026-10-22)
 
 - EAP/Gemini Tool Retrieval = **@estate/theta** (private). Merged provider
@@ -448,6 +469,7 @@ Every kappa/tau session MUST participate in the fleet todo board:
 ## Search doctrine (2026-10-28)
 
 - **GitHub search = blackbird ONLY** (`pens/ranch/github-search`, web-engine with session cookies). The legacy REST `GET /search/code` misses path globs and diverges from github.com/search — never use it as primary.
+- **`GITHUB_SESSIONS` env** — GitHub device-code/session token lives in `GITHUB_SESSIONS`; blackbird reads it for authenticated raw-code queries (`site:raw.githubusercontent.com` / `site:gist.githubusercontent.com` first). Never commit the value.
 - Reviving the session: `firefox --Profile default-nightly https://github.com/login`, or `gh auth login --web` for a device code.
 
 ## Anomaly program D-2026-10-28 (estate single-truth cutover + kryptos/rig mastership — verified live)
@@ -476,15 +498,3 @@ _Verified 2026-10-28; dossier: pens/estate/docs/anomalies/2026-10-28/estate-sing
 | 58  | **--app keypool: 0 keys**                      | pool keys lacked service attrs                                                                        | Variant-wrapped SetAttributes stamp; 12 keys; stanza wired                           |
 | 59  | **loadSecrets merge order**                    | ambient env overrode file before quote-strip observable                                               | file-wins reorder; 46/46 green e19f114                                               |
 | 60  | **Quota-blind routing**                        | no $160/day pro ledger; reasoning-budget trap on long loops                                           | QuotaTracker TDD 5 tests + GET /quota live e9ba53d                                   |
-
-## Pen layout (2026-10-29 five-shape)
-
-- Product pens (barn ranch geode olympus): five-shape enforced — all products under
-  `products/<name>/`, litter in `archive/`, scaffold tooling in `pens/toolkit/scaffold/`.
-- **estate is the control-plane pen and is EXEMPT**: root dirs (stack/ bridge/
-  tools/ config/ services/) are live daemon homes referenced by absolute pens
-  paths in pitchfork.toml. `reorganize-pen.ts` refuses it (exit 3).
-- Bin contract manifest: `pens/estate/products/estate-ops/bin/manifest.yaml`
-  (self-locating bin-verify.sh). bin-verify: 428 ok, 0 FAIL.
-- Rollback snapshots for pen reorgs: `/home/toxic/archive/pen-snapshots/<pen>-pre-reorg-*`
-  (hardlink, node_modules-excluded) + git refs `archive/pre-reorg-*`.
