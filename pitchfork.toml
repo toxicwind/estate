@@ -396,7 +396,7 @@ run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/ranch/range/bin/thresher-s
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25127/health"
-dir = "/home/toxic/pens/ranch/thresher"
+dir = "/home/toxic/pens/barn/thresher"
 mise = true
 # NOTE: no `port` field — pitchfork's port pre-check binds 0.0.0.0 and false-
 # conflicts with tailscaled's SNI forwarder on 100.72.199.93:25127. Readiness
