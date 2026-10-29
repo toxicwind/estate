@@ -476,3 +476,15 @@ _Verified 2026-10-28; dossier: pens/estate/docs/anomalies/2026-10-28/estate-sing
 | 58  | **--app keypool: 0 keys**                      | pool keys lacked service attrs                                                                        | Variant-wrapped SetAttributes stamp; 12 keys; stanza wired                           |
 | 59  | **loadSecrets merge order**                    | ambient env overrode file before quote-strip observable                                               | file-wins reorder; 46/46 green e19f114                                               |
 | 60  | **Quota-blind routing**                        | no $160/day pro ledger; reasoning-budget trap on long loops                                           | QuotaTracker TDD 5 tests + GET /quota live e9ba53d                                   |
+
+## Pen layout (2026-10-29 five-shape)
+
+- Product pens (barn ranch geode olympus): five-shape enforced — all products under
+  `products/<name>/`, litter in `archive/`, scaffold tooling in `pens/toolkit/scaffold/`.
+- **estate is the control-plane pen and is EXEMPT**: root dirs (stack/ bridge/
+  tools/ config/ services/) are live daemon homes referenced by absolute pens
+  paths in pitchfork.toml. `reorganize-pen.ts` refuses it (exit 3).
+- Bin contract manifest: `pens/estate/products/estate-ops/bin/manifest.yaml`
+  (self-locating bin-verify.sh). bin-verify: 428 ok, 0 FAIL.
+- Rollback snapshots for pen reorgs: `/home/toxic/archive/pen-snapshots/<pen>-pre-reorg-*`
+  (hardlink, node_modules-excluded) + git refs `archive/pre-reorg-*`.
