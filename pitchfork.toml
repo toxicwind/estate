@@ -511,7 +511,9 @@ retry = true
 ready_http = "http://127.0.0.1:25193/health"
 port = 25193
 dir = "/home/toxic/pens/geode/products/rhodochrosite/proxy"
-mise = true
+# mise = true dropped 2026-10-28 (anomaly #43 class): `mise x` exits 2 in dirs
+# without toolchain activation, killing the daemon pre-bind. serve.sh execs an
+# absolute release binary, so mise adds nothing here.
 
 [daemons.rhodochrosite.health_http]
 url = "http://127.0.0.1:25193/health"
