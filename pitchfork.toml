@@ -414,6 +414,7 @@ mise = true
 # CORPSE 2026-10-28: estate-brain moved to kite/lumen-packport2/estate-brain and
 # has no forever-loop agent (only market-watchdog, oracle-core). Auto-start parked.
 
+# CORPSE 2026-10-29: run-loop.ts gone estate-wide (agents/forever-loop dir missing in every estate-brain twin). Parked auto=[] per anomaly-45 doctrine.
 [daemons.forever-loop]
 run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/estate/products/estate-brain/agents/forever-loop/run-loop.ts"
 auto = []
