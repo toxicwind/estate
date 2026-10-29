@@ -498,3 +498,18 @@ _Verified 2026-10-28; dossier: pens/estate/docs/anomalies/2026-10-28/estate-sing
 | 58  | **--app keypool: 0 keys**                      | pool keys lacked service attrs                                                                        | Variant-wrapped SetAttributes stamp; 12 keys; stanza wired                           |
 | 59  | **loadSecrets merge order**                    | ambient env overrode file before quote-strip observable                                               | file-wins reorder; 46/46 green e19f114                                               |
 | 60  | **Quota-blind routing**                        | no $160/day pro ledger; reasoning-budget trap on long loops                                           | QuotaTracker TDD 5 tests + GET /quota live e9ba53d                                   |
+
+## Anomaly program D-2026-10-29 (tau deep-audit & fleet-restore — verified live)
+
+_Verified 2026-10-29; dossier: `pens/estate/docs/anomalies/2026-10-29/tau-deep-audit-fleet-restore.md`._
+
+| #   | Anomaly                                     | Essence                                                                                                          | Fix (committed)                                                                                      |
+| --- | ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| 61  | **Bare regex routed to REST**               | `ghas_search_code "/re/i"` → 0: `needsBlackbirdEngine` had no bare-`/regex/` branch; REST has no regex semantics | blackbird.ts bare-regex branch, TDD 8 cases, E2E via MCP (github-search 436d73a)                     |
+| 62  | **Code-regex silent-0 traps**               | alternation/`$`/`+`/`.{0,3}`/over-escape AND 429 windows all return count 0 with no error                        | engine contract documented + cooldown-then-retest probe discipline (memory+skill)                    |
+| 63  | **secretsmith get wrong-item fallback**     | `get <missing-label>` exits 0 returning an arbitrary keyring item (MOONBOX key as "GITHUB_SESSIONS")             | ghas keyringSession validates label match + cookie shape (2477d55); kryptos upstream fix owed        |
+| 64  | **taas-telegram shipped supervisor-less**   | thresher registration without pitchfork daemon → service died with its session; :25243 dark, thresher error      | `[daemons.taas-telegram]` in monolith; :25243 live, thresher connected 2 tools; phone re-auth owed   |
+| 65  | **Ghost estate recreated again (#48 reg)**  | systemd units + state writers rooted on `/home/toxic/estate`; pairs-apply `WOULD PATCH` ghost path               | state archived → scratch-archive; dir removed; name-fix.ts ESTATE repointed (f27ce28d9b ctx)         |
+| 66  | **xerj "index didn't work" = never booted** | vendored engine had no daemon, no data dir, nothing on :9200-9202                                                | engine booted per README; cosmic-disclosure TDD 4/4 (xerj 2ad64e3); bge-m3→qdrant cross-lingual live |
+| 67  | **Will-use-then-stop undetected**           | intent-declared-then-yielded sessions invisible to audit (only phantom-todos caught)                             | kleio deep-audit.ts band → 48 sessions flagged (5c6f5d4); session-audit bin; AGENTS doctrine         |
+| 68  | **tau mcp.json transport mismatch**         | mesh-gateway declared `transport: "sse"`; thresher speaks streamable-http only (no /sse, 404)                    | ~/.tau/mcp.json transport→http; raw initialize 200 + session id verified                             |
