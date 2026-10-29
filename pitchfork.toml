@@ -1122,6 +1122,28 @@ interval = "30s"
 timeout = "5s"
 retries = 3
 
+# Blackbird (GHAS) MCP — dual-engine GitHub search (Blackbird UI index + REST).
+# Runs apps/mcp via the package.json start script. Was previously ad-hoc
+# (no pitchfork daemon -> died silently; searches returned empty/null).
+[daemons.ghas-mcp]
+run = "exec bun run start"
+auto = ["start"]
+retry = true
+ready_http = "http://127.0.0.1:25113/"
+port = 25113
+depends = ["search-api"]
+dir = "/home/toxic/pens/ranch/github-search/apps/mcp"
+mise = true
+
+[daemons.ghas-mcp.health_http]
+url = "http://127.0.0.1:25113/health"
+interval = "30s"
+timeout = "5s"
+retries = 3
+
+[daemons.ghas-mcp.env]
+GHAS_MCP_PORT = "25113"
+
 [daemons.smithers-gateway]
 run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/estate/stack/services/smithers-gateway.ts"
 auto = ["start"]
