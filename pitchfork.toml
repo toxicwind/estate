@@ -28,7 +28,7 @@ dir = "."
 mise = true
 
 [daemons.agent-viewer]
-run = "exec /home/toxic/.local/bin/websockify --web /home/toxic/pens/ranch/stable/novnc 127.0.0.1:6080 127.0.0.1:5900"
+run = "exec /home/toxic/.local/bin/websockify --web /home/toxic/pens/ranch/products/stable/novnc 127.0.0.1:6080 127.0.0.1:5900"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:6080/"
@@ -112,7 +112,7 @@ HOST = "127.0.0.1"
 BOUNDLESS_PORT = "25197"
 
 [daemons.browserless]
-run = "exec /home/toxic/pens/ranch/stable/server/run.sh"
+run = "exec /home/toxic/pens/ranch/products/stable/server/run.sh"
 auto = ["start"]
 retry = 0
 ready_port = 25130
@@ -571,7 +571,7 @@ PAPER_POLLER_PORT = "25149"
 PAPER_POLLER_INTERVAL = "30"
 
 [daemons.proc-watch-audit]
-run = "exec /home/toxic/pens/ranch/bun-scaffold/bin/watch-procs.sh --watch=30"
+run = "exec /home/toxic/pens/ranch/products/bun-scaffold/bin/watch-procs.sh --watch=30"
 auto = ["start"]
 retry = true
 boot_start = true
@@ -779,7 +779,7 @@ timeout = "5s"
 retries = 3
 
 [daemons.squawk-ws]
-run = "exec /usr/bin/python3 /home/toxic/pens/ranch/squawk/core/ws.py"
+run = "exec /usr/bin/python3 /home/toxic/pens/ranch/products/squawk/core/ws.py"
 env = { SQUAWK_WS_PORT = "25147", SQUAWK_CHAT_ROOT = "/home/toxic/.squawk-bus/squawk-root" }
 auto = ["start"]
 retry = true
@@ -826,7 +826,7 @@ boot_start = true
 env = { TAILSCALE_FUNNEL_SOCK = "/run/tailscale/doorbell.sock", FUNNEL_RECONCILE_INTERVAL = "30" }
 
 [daemons.irc-bridge]
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/ranch/geode-rig/irc-bridge.ts"
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/ranch/products/geode-rig/irc-bridge.ts"
 auto = ["start"]
 retry = true
 
@@ -840,20 +840,20 @@ dir = "/home/toxic/pens/ergasterion/eidolon"
 mise = true
 
 [daemons."pixel-adb-keepalive"]
-run = "exec /home/toxic/pens/ranch/android-fleet/bin/pixel-adb-keepalive.sh"
+run = "exec /home/toxic/pens/ranch/products/android-fleet/bin/pixel-adb-keepalive.sh"
 auto = ["start"]
 retry = true
 mise = true
-dir = "/home/toxic/pens/ranch/android-fleet"
+dir = "/home/toxic/pens/ranch/products/android-fleet"
 
 [daemons."flotilla-mcp"]
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/ranch/android-fleet/flotilla/mcp/server.ts"
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/ranch/products/android-fleet/flotilla/mcp/server.ts"
 auto = ["start"]
 retry = true
 mise = true
 port = 25245
 ready_http = "http://127.0.0.1:25245/health"
-dir = "/home/toxic/pens/ranch/android-fleet"
+dir = "/home/toxic/pens/ranch/products/android-fleet"
 
 [daemons."flotilla-mcp".health_http]
 url = "http://127.0.0.1:25245/health"
