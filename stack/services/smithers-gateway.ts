@@ -32,7 +32,7 @@ import { fileURLToPath } from "node:url";
 // secretsmith Bun drop-in — keyring-first secret resolution. The original
 // `bun/src/index.ts` `get()` was consolidated into secretsmith.ts:
 // SecretService.search(filters) finds exact-attr items, getSecret() reads one.
-import { SecretService } from "/home/toxic/pens/barn/secretsmith/secretsmith.ts";
+import { SecretService } from "/home/toxic/pens/olympus/products/kryptos/secretsmith.ts";
 import {
   loadEnvFileInto,
   resolvePort,
