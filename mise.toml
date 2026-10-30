@@ -19,7 +19,8 @@
 # kilo-named reference are gone — kappa-build is the one canonical build task.
 # Also: mise 2026.10.12 renamed task `cmd` to `run` and dropped
 # [task_config.cache] `ttl` (valid fields: enabled, audit, env, command_inputs);
-# remote cache TTL is now owned by the server side (flicker :25148).
+# remote cache TTL is now owned by the server side (mbx-cache :25148;
+# "flicker" was a ghost name — no such product exists).
 # ============================================================================
 
 [env]
@@ -28,12 +29,14 @@
 _.file = ["config/ports.env", "config/rhodochrosite-ssot/route.env"]
 
 # Forge remote build cache — first-class nativelink-backed cache at :25148
-# (:25148 is flicker, the ranch build daemon — estate map, NOT mbx-cache).
+# (:25148 IS mbx-cache, product ranch/products/mr-boxington-cache, Rust REAPI
+# cache. Earlier "flicker" attribution was wrong — no flicker product exists).
 MISE_CACHE_REMOTE_URL = "http://127.0.0.1:25148"
 BUN_BUILD_REMOTE_CACHE = "http://127.0.0.1:25148"
 
 [task_config.cache]
-# Remote build cache via the flicker/forge daemon (nativelink RE API).
+# Remote build cache via the mbx-cache daemon (nativelink RE API,
+# product: ranch/products/mr-boxington-cache).
 # `ttl` was removed 2026-10-18: mise 2026.10.12 no longer accepts it.
 enabled = true
 
@@ -49,7 +52,7 @@ outputs = ["packages/cli/dist/@kappacode/cli-linux-x64/bin/kappa"]
 
 # Full user-TDD lane (2026-10-30): edit -> tests -> rebuild, all automatic.
 # `mise watch kappa-tdd` re-runs whenever any kappa source file changes;
-# the build leg rides the forge remote cache (flicker :25148 /
+# the build leg rides the forge remote cache (mbx-cache :25148 /
 # MISE_CACHE_REMOTE_URL) so unchanged outputs are never recomputed.
 [tasks.kappa-tdd]
 run = """
