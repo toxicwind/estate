@@ -6,7 +6,7 @@ port = 25109
 # var/workspaces/layout/ranch/mesh/keypool path that moved in the pens reorg.
 run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/olympus/products/kryptos/keypool/src/index.ts"
 env = { KEYPOOL_PORT = "25109" }
-dir = "/home/toxic/estate"
+dir = "/home/toxic/pens/estate"
 retry = true
 boot_start = true
 ready_http = "http://127.0.0.1:25109/health"
