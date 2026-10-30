@@ -54,7 +54,7 @@ mise install        # reads mise.toml — bun, node, rust, python, go, pitchfork
 
 # 2. Clone this repo + the project monorepo it deploys
 git clone https://github.com/toxicwind/estate.git /home/toxic/estate
-git clone https://github.com/toxicwind/ranch.git /home/toxic/estate/ranch   # the workshop
+git clone https://github.com/toxicwind/ranch.git /home/toxic/pens/estate/ranch   # the workshop
 
 # 3. Enter the DelendAI work environment (work-ref + shared-checkout-merge guard)
 delendai work enter --workspace /home/toxic/estate

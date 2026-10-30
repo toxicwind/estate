@@ -10,5 +10,5 @@ Bridges the estate's Thresher MCP federation gateway (`:25127`) directly into Ta
 
 ## Testing
 ```bash
-bun test /home/toxic/estate/config/tau/extensions/thresher/index.test.ts
+bun test /home/toxic/pens/estate/config/tau/extensions/thresher/index.test.ts
 ```

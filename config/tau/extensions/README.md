@@ -6,7 +6,7 @@ per file.
 
 | | |
 |---|---|
-| **Location** | `/home/toxic/estate/config/tau/extensions/` |
+| **Location** | `/home/toxic/pens/estate/config/tau/extensions/` |
 | **Reached as** | `~/.tau/extensions` and `~/.omp/extensions` (both symlink here) |
 | **Loader contract** | `export default function (pi: ExtensionAPI)` |
 | **Extension API** | `@oh-my-pi/pi-coding-agent` → `ExtensionAPI` |
@@ -15,7 +15,7 @@ per file.
 
 > [!NOTE]
 > Edit the files in `config/tau/extensions/`. Both `~/.tau` and `~/.omp` are
-> symlinks to `/home/toxic/estate/config/tau`, so a change here is visible through both
+> symlinks to `/home/toxic/pens/estate/config/tau`, so a change here is visible through both
 > paths with no reload step beyond restarting the session.
 
 ## Contents
@@ -296,5 +296,5 @@ bunx oxfmt --check ~/.tau/extensions/*.ts
 - Installed plugins: [`../plugins/README.md`](../plugins/README.md)
 - Registry: `~/.tau/plugins/omp-plugins.lock.json`
 - Extension API: `@oh-my-pi/pi-coding-agent` → `ExtensionAPI`
-- Session audit: `bun run /home/toxic/estate/skills-hub/tau-session-audit/helper/audit.ts`
-- Live install audit: `bun run /home/toxic/estate/skills-hub/tau-tmux/helper/audit.ts`
+- Session audit: `bun run /home/toxic/pens/estate/skills-hub/tau-session-audit/helper/audit.ts`
+- Live install audit: `bun run /home/toxic/pens/estate/skills-hub/tau-tmux/helper/audit.ts`

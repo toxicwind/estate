@@ -139,7 +139,7 @@ None. The reasoning pipeline is sound. The prior audit's 6 fixes (commit `31989c
 |------|------|-------------|
 | Raw SSE | `/tmp/raw-sse.txt` (2,998 lines) | 945 reasoning chunks, 0 error injection |
 | Logs | `/tmp/logs.txt` (3,779 lines) | 114 provider errors, all classified correctly |
-| Config | `/home/toxic/estate/config/tau/config.yml` | Reasoning config verified functional |
+| Config | `/home/toxic/pens/estate/config/tau/config.yml` | Reasoning config verified functional |
 | SSE reasoning parsing | `tau/packages/ai/src/providers/openai-completions.ts:1316-1332` | reasoning_content -> thinking_delta |
 | Error detection | `openai-completions.ts:1256-1258` | In-band error detection before reasoning processing |
 | Tau model registry | `estate/ranch/mimetite/src/data.ts` | freeinference seeds: 5 models |

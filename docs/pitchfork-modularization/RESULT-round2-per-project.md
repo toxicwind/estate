@@ -178,7 +178,7 @@ across 3 project dirs vs D1's 3 shared-file edits.
 - **Caveat:** D3 relies on mise *ignoring* unknown tables — true today, but it's
   coupling to leniency. And one-mise.toml-per-project is **not** current reality:
   exactly one project (`ranch/android-fleet/nuvio/nuvio-platform`) has its own mise.toml; everything
-  else is parent-only (`/home/toxic/estate/mise.toml`).
+  else is parent-only (`/home/toxic/pens/estate/mise.toml`).
 - Recommendation: **do not embed daemon stanzas in mise.toml.** If per-project
   mise files ever happen, keep daemon definitions in the adjacent
   `pitchfork.d/` dir (D2) — zero coupling to mise's schema evolution. D2 answers
@@ -265,4 +265,4 @@ Everything else lives with its project, including inside nested repos
 - `work/race/results.json`, `work/race2/results.json` — raw measurement data
   (regenerate with `bun race.ts` / `bun setup-d.ts && bun race2.ts`)
 
-Live `/home/toxic/estate/pitchfork.toml` was not modified at any point.
+Live `/home/toxic/pens/estate/pitchfork.toml` was not modified at any point.

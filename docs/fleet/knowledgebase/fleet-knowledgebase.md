@@ -30,11 +30,11 @@ A swarm of boxes. Run heavy work on yote / dedicated iron; keep hatch light.
 | `/home/toxic/estate` | Canonical shared worktree (origin `toxicwind/estate-projects`). May hold live dirty WIP — preserve it; use clean temp worktrees for isolated pushes. |
 | `/home/toxic/.tau` | Tau engine config |
 | `/home/toxic/.fleet-bus` (+ `.shingle` symlink) | Shingle root; squawk lives here — BOTH are now symlinks to `estate/hatch/agents/ember/` in-repo (reorg 2026-09-20); squawk-root is gitignored at .gitignore:295 |
-| `/home/toxic/estate/shingle-workspace/` | -> `scratch/` symlink (non-production staging; production bridge home is `bridge/`) |
-| `/home/toxic/estate/config/bornite.yaml` | Bornite router config (the model bornite) |
-| `/home/toxic/estate/skills/paper-search/` | Paper-search skill (canonical home) |
+| `/home/toxic/pens/estate/shingle-workspace/` | -> `scratch/` symlink (non-production staging; production bridge home is `bridge/`) |
+| `/home/toxic/pens/estate/config/bornite.yaml` | Bornite router config (the model bornite) |
+| `/home/toxic/pens/estate/skills/paper-search/` | Paper-search skill (canonical home) |
 | `/home/toxic/super-ralph` | Super Ralph source |
-| `/home/toxic/estate/agents/oracle-market/` | Oracle market loop + watchdog |
+| `/home/toxic/pens/estate/agents/oracle-market/` | Oracle market loop + watchdog |
 
 ### Services & ports (yote)
 | Port | Service |
@@ -187,7 +187,7 @@ A swarm of boxes. Run heavy work on yote / dedicated iron; keep hatch light.
 | lumen | Squawk feed UI readability: keeper-driven visual audit (CDP :9223) of /squawk-feed/ui at desktop 1440x900 + mobile 390x844; root-caused empty bodies (pre-HMAC msgs fail verify_on_read -> body withheld); fix = serve bodies flagged unverified + card-layout redesign | Lumen (Ember's crew) | DONE (2026-09-21) -- relay fix e5fdce9c95 (serve pre-HMAC plaintext flagged invalid, fail-closed on ciphertext; 12/12 feed tests OK), UI redesign cb6bd69f82 (cards, unverified badges, scroll-to-bottom, mobile, favicon); keeper-verified 1440x900 + 390x844, 0 console/page errors; deployed live :25135  markdown render + full bodies 0b33559ad2 (truncate dropped, escape-first md renderer, keeper-verified live) |
 
 
-| rivet | fix stale kimi-code-setup writer drift trap | rivet (Ember's crew) | DONE (2026-09-21) — fixed writer verified on origin/main 6bbdf1019f (default_model=estate/free, [providers.estate] :25104, bornite fallbacks); on-disk /home/toxic/estate/bin/kimi-code-setup synced to main blob (md5 1fe03699e416e4cd65fd443f5d436a66, staged, dirty WIP untouched); writer test vs live config: identical except runtime Moonshot key; kimi doctor OK on generated config; live ~/.kimi-code/config.toml never touched (md5 13962db0b6375316fdc2e09d65bc71ef); probe hit transient upstream 429s (free-pool rate limit, same class kimi-merge saw) |
+| rivet | fix stale kimi-code-setup writer drift trap | rivet (Ember's crew) | DONE (2026-09-21) — fixed writer verified on origin/main 6bbdf1019f (default_model=estate/free, [providers.estate] :25104, bornite fallbacks); on-disk /home/toxic/pens/estate/bin/kimi-code-setup synced to main blob (md5 1fe03699e416e4cd65fd443f5d436a66, staged, dirty WIP untouched); writer test vs live config: identical except runtime Moonshot key; kimi doctor OK on generated config; live ~/.kimi-code/config.toml never touched (md5 13962db0b6375316fdc2e09d65bc71ef); probe hit transient upstream 429s (free-pool rate limit, same class kimi-merge saw) |
 
 | auto1m | Effective-1M-context composite route implementation (Ember crew): sentence-aware chunking + query-term ranking + parallel map extraction + ExtAgents-style fact scoring + tree-collapse reduction, per-chunk provenance with fail-closed citation validation, env-overridable router/model (AUTO1M_ROUTER/AUTO1M_MODEL/AUTO1M_DIRECT_MODEL), source-aware multi-file input; pure-function unit tests 30/30 (no router); full ~740k-token proof test with grep-verified needles + test-evidence.json. Complementary to Tally's tau-routing-benchmark (which benchmarks routing; this lane builds the composite consumer). Code: projects/auto1m/ | auto1m-builder (Ember's crew) | RUNNING (2026-09-21) -- code commit e44739ac3b on origin/main; full proof green pending a capable worker (estate :25104 serving estate/free via local EXAONE-4.0-1.2B only; strong-worker watcher armed) |
 
@@ -270,14 +270,14 @@ Full protocol: `agents/oracle-market/SPEC.md` § oracle-as-approval.
 
 ## 5. Docs index (deep links)
 
-- Master README: [/home/toxic/estate/README.md](../../README.md) — every sub-README links back here.
+- Master README: [/home/toxic/pens/estate/README.md](../../README.md) — every sub-README links back here.
 - This knowledgebase: `docs/fleet-knowledgebase.md` (this file)
 - Spawn brief template: `docs/spawn-brief-template.md` — canonical template every brief is generated from; autonomy doctrine in its header (removing it is a visible diff)
-- Paper-search skill: `/home/toxic/estate/skills/paper-search/SKILL.md`
-- Tau engine docs: `/home/toxic/estate/projects/tau/engine/docs/`
-- Yote ops: `/home/toxic/estate/projects/yote/ops/` (yote-doctor.sh, yote-fix.sh)
-- Scheduler audit 2026-09-20: `/home/toxic/estate/projects/audits/scheduler-audit-2026-09-20.md`
-- Oracle market spec: `/home/toxic/estate/agents/oracle-market/SPEC.md` (v2.1)
+- Paper-search skill: `/home/toxic/pens/estate/skills/paper-search/SKILL.md`
+- Tau engine docs: `/home/toxic/pens/estate/projects/tau/engine/docs/`
+- Yote ops: `/home/toxic/pens/estate/projects/yote/ops/` (yote-doctor.sh, yote-fix.sh)
+- Scheduler audit 2026-09-20: `/home/toxic/pens/estate/projects/audits/scheduler-audit-2026-09-20.md`
+- Oracle market spec: `/home/toxic/pens/estate/agents/oracle-market/SPEC.md` (v2.1)
 - Daemon-rebuild drift note 2026-09-20: `hatch/audit-jarvis/daemon-rebuild-drift-2026-09-20.md` (compaction subsystem unchanged in hatch `82d6744eed2`; new `tool_dispatch_heartbeat`)
 - Runtime/credential docs: https://github.com/toxicwind/hatch-docs/blob/main/runtime/credential-broker.md
 

@@ -6,7 +6,7 @@
 
 | Check | Result |
 |-------|--------|
-| `readlink /home/toxic/.tau` | `/home/toxic/estate/config/tau` |
+| `readlink /home/toxic/.tau` | `/home/toxic/pens/estate/config/tau` |
 | `test -f /home/toxic/.tau/agent/config.yml` | PASS |
 | `test -f /home/toxic/.tau/AGENTS.md` | PASS |
 | `test -f /home/toxic/.tau/agent/agent.db` | PASS |

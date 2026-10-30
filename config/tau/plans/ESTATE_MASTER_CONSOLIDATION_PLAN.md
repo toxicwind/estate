@@ -49,13 +49,13 @@ The workstation (CachyOS / BTRFS on NVMe, 820GB used across /home/toxic) contain
      - `estate_safe_rg`: Token-budgeted regex/AST code search.
      - `estate_paper_search`: Queries `race_papers.py` on arXiv / alphaXiv.
 2. **Register in `shep` Gateway (`mcp_config.json`)**:
-   - Add `estate-tools` upstream to `/home/toxic/estate/mesh/gateway/mcp_config.json`:
+   - Add `estate-tools` upstream to `/home/toxic/pens/estate/mesh/gateway/mcp_config.json`:
      ```json
      {
        "name": "estate-tools",
        "protocol": "stdio",
        "command": "bun",
-       "args": ["/home/toxic/estate/helpers/estate-mcp-server.ts"],
+       "args": ["/home/toxic/pens/estate/helpers/estate-mcp-server.ts"],
        "enabled": true
      }
      ```
@@ -68,17 +68,17 @@ The workstation (CachyOS / BTRFS on NVMe, 820GB used across /home/toxic) contain
    - `estate/awrawr-ws-exec` $\to$ Healthy (`:25204`).
 2. **Verify Tooling**:
    - `tau audit` $\to$ 13 PASS, 0 FAIL.
-   - `/home/toxic/estate/bin/estate-scan` $\to$ PASS (0 broken bin symlinks).
-   - `/home/toxic/estate/ranch/mesh/bin/openfang-mesh-probe.sh` $\to$ `PROBE-PASS`.
+   - `/home/toxic/pens/estate/bin/estate-scan` $\to$ PASS (0 broken bin symlinks).
+   - `/home/toxic/pens/estate/ranch/mesh/bin/openfang-mesh-probe.sh` $\to$ `PROBE-PASS`.
 
 ---
 
 ## Critical Files & Anchors
 - `/home/toxic/.bashrc.env`: Idempotent PATH + first-class `ffs`/`fd`/`rg` tool routing.
-- `/home/toxic/estate/pitchfork.toml`: Service SSOT for all 25xxx daemons.
-- `/home/toxic/estate/mesh/gateway/mcp_config.json`: Shep upstream configuration.
-- `/home/toxic/estate/helpers/estate-mcp-server.ts`: Unified Bun MCP server.
-- `/home/toxic/estate/helpers/estate-scanner.ts`: High-speed filesystem & path validator.
+- `/home/toxic/pens/estate/pitchfork.toml`: Service SSOT for all 25xxx daemons.
+- `/home/toxic/pens/estate/mesh/gateway/mcp_config.json`: Shep upstream configuration.
+- `/home/toxic/pens/estate/helpers/estate-mcp-server.ts`: Unified Bun MCP server.
+- `/home/toxic/pens/estate/helpers/estate-scanner.ts`: High-speed filesystem & path validator.
 
 ---
 

@@ -14,15 +14,15 @@
 |------|-------------|------------------------|
 | `pitchfork.toml` browser-keeper | run: bin/keeper.ts → keeper.cjs (via bun run keeper in ranch/keeper), port 25154→25157, dir set to keeper root | ✅ keeper.cjs exists |
 | `pitchfork.d/browser-keeper.toml` | Same fix (port 25157, run via bun run keeper) | ✅ |
-| `pitchfork.toml` keypool | run: `/home/toxic/estate/services/keypool/` → `/home/toxic/estate/var/workspaces/layout/ranch/mesh/keypool/` | ✅ index.ts exists |
+| `pitchfork.toml` keypool | run: `/home/toxic/pens/estate/services/keypool/` → `/home/toxic/pens/estate/var/workspaces/layout/ranch/mesh/keypool/` | ✅ index.ts exists |
 | `pitchfork.d/keypool.toml` | Already had correct path (prior workers fixed) | ✅ |
-| `pitchfork.toml` market-loop | run: `/home/toxic/estate/agents/weaver/bin/` → `/home/toxic/estate/var/workspaces/layout/estate/agents/weaver/bin/` | ✅ market-loop.ts exists |
+| `pitchfork.toml` market-loop | run: `/home/toxic/pens/estate/agents/weaver/bin/` → `/home/toxic/pens/estate/var/workspaces/layout/estate/agents/weaver/bin/` | ✅ market-loop.ts exists |
 | `pitchfork.d/market-loop.toml` | Already had correct path | ✅ |
 | `pitchfork.toml` forge | port 25148→25150, WOODPECKER env refs updated | ✅ flicker-server exists |
 | `pitchfork.d/forge.toml` | Already had port 25150 | ✅ |
 | `pitchfork.d/oracle-core.toml` | Port reverted 25151→25149 (collision with paper-poller), then updated in Phase 2 to 25235 | ✅ run-oracle-core.sh exists |
 | `pitchfork.toml` oracle-core | Port updated 25151→25235 + env ORACLE_CORE_LISTEN | ✅ |
-| `pitchfork.d/thresher.toml` | run: `/home/toxic/estate/ranch/range/bin/` → `/home/toxic/estate/var/workspaces/layout/ranch/range/bin/` | ✅ exists; thresher NOT started (live PID on :25128) |
+| `pitchfork.d/thresher.toml` | run: `/home/toxic/pens/estate/ranch/range/bin/` → `/home/toxic/pens/estate/var/workspaces/layout/ranch/range/bin/` | ✅ exists; thresher NOT started (live PID on :25128) |
 | `pitchfork.d/bornite.toml` | Already correct: depends=[thresher] (not thresher) | ✅ |
 | `pitchfork.toml` phone-sentinel | run: `bun run` → `exec /home/toxic/.bun/bin/bun run` (pin correct bun) | ✅ |
 | `pitchfork.toml` browser-keeper | Port 25157→25233 (25157 taken by nativelink), health/ready/env updated | ✅ |
@@ -38,7 +38,7 @@
 | **phone-sentinel** | ✅ running on :25178 | Bun path pinned, started successfully |
 | **browser-keeper** | ✅ running on :25233 | Reaped 22 stale chromium processes; PLAYWRIGHT_CHROMIUM_EXECUTABLE needs chromium-1243 but browser launched on chromium-1223 (mismatch — will crash on next relaunch). Still RUNNING. |
 | **beellama-fast** | ❌ BLOCKED on model | `MODEL=/home/toxic/models/EXAONE-4.0-1.2B-IQ4_XS.gguf` missing. HuggingFace cache metadata exists but no actual GGUF file. Requires model download. |
-| **toolcall-llm** | ❌ BLOCKED on model | `MODEL=/home/toxic/estate/ranch/models/qwen3.5-9b-dflash-Q5_K_M.gguf` missing. No matching GGUF found in estate/ranch/models. |
+| **toolcall-llm** | ❌ BLOCKED on model | `MODEL=/home/toxic/pens/estate/ranch/models/qwen3.5-9b-dflash-Q5_K_M.gguf` missing. No matching GGUF found in estate/ranch/models. |
 | **market-loop** | ❌ blocked on missing module | `Cannot find module '/home/toxic/projects/trading-post/src/market/index.ts'` — depends on `projects/trading-post` workspace which doesn't exist. Module resolution failure loops. |
 | **oracle-core** | ❌ blocked on port collision | `OSError: Address already in use` on 25235 — something holds that port. The env ORACLE_CORE_LISTEN env var is set correctly but the daemon keeps retrying and failing. Need to find what's on 25235. |
 | **bornite** | ❌ blocked on binary crash | Go binary at `pens/geode/products/bornite/bornite` segfaults on start (exit code 139). Binary is corrupted or built for wrong architecture. Config and bornite.sh path are correct. |

@@ -18,7 +18,7 @@ One writer per subtree; 2 concurrent subagents; 4s race budget; deps/canary allo
 
 ## In-flight / open tasks (recover from any cancelled subagent)
 
-1. oracle-hindsight: write /home/toxic/estate/ranch/squawk/oracle/hindsight.md (Done/Open/Mandate) + verify delend-oracle status reads it. [resumed background ses_e9a88012]
+1. oracle-hindsight: write /home/toxic/pens/estate/ranch/squawk/oracle/hindsight.md (Done/Open/Mandate) + verify delend-oracle status reads it. [resumed background ses_e9a88012]
 2. market-loop rig fix: repoint stale run path estate/agents/weaver/bin/market-loop.ts → estate-brain/agents/weaver/bin. [background ses_e9a877d7]
 3. Kilo hindsight plugin: find+install OR build minimal at ranch/kilo/hindsight-plugin reading estate recall/session store. [errored on cap — replay when a slot frees]
 4. unified tailscale endpoints: pylae src/app/api/tunnels/unified/{health,status,fallback}/route.ts; checkpoint (pylae eslint-env broken). [cancelled — replay]

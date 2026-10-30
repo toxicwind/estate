@@ -1,6 +1,6 @@
 [daemons.codebase-memory]
 mise = true
-run = "exec /home/toxic/estate/tools/codebase-memory/run.sh"
+run = "exec /home/toxic/pens/estate/tools/codebase-memory/run.sh"
 dir = "/home/toxic"
 retry = true
 boot_start = true

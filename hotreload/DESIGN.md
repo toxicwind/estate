@@ -68,14 +68,14 @@ Each service gets a JSON spec:
   "health_path": "/health",
   "health_timeout_s": 30,
   "drain_timeout_s": 15,
-  "start_cmd": ["python3", "/home/toxic/estate/ranch/squawk/relay/squawk_ws_server.py"],
-  "proxy_cmd": ["python3", "/home/toxic/estate/hotreload/proxy.py", "25147"]
+  "start_cmd": ["python3", "/home/toxic/pens/estate/ranch/squawk/relay/squawk_ws_server.py"],
+  "proxy_cmd": ["python3", "/home/toxic/pens/estate/hotreload/proxy.py", "25147"]
 }
 ```
 
 ## Rollout
 
-1. Deploy `proxy.py` + `bluegreen.py` + `graceful.py` to `/home/toxic/estate/hotreload/` on yote.
+1. Deploy `proxy.py` + `bluegreen.py` + `graceful.py` to `/home/toxic/pens/estate/hotreload/` on yote.
 2. Patch squawk-feed / squawk-ws with `graceful.py` mixin (add /health, SIGTERM).
 3. Start proxy on stable ports, register existing backends as BLUE.
 4. Future deploys go through `bluegreen.py`.

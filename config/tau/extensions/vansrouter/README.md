@@ -10,5 +10,5 @@ Registers the local VansRouter OpenAI-compatible router (`http://127.0.0.1:20128
 
 ## Testing
 ```bash
-bun test /home/toxic/estate/config/tau/extensions/vansrouter/index.test.ts
+bun test /home/toxic/pens/estate/config/tau/extensions/vansrouter/index.test.ts
 ```

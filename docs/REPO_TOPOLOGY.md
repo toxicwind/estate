@@ -80,10 +80,10 @@ ranch dir or archive.
 
 | Path (on disk)                                                                                            | Owning repo                                                                          |
 | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| `/home/toxic/estate/**` (except `ranch/`, `vendored/`, `var/`)                                            | `toxicwind/estate`                                                                   |
-| `/home/toxic/estate/ranch/**`                                                                             | per-component (`toxicwind/<component>`) — the component's own repo, driven by `meta` |
-| `/home/toxic/estate/ranch/**/moon.yml`, `.moon/**`, `.gitmodules`, `.meta.yaml`, `README.md` (structural) | `toxicwind/ranch`                                                                    |
-| `/home/toxic/estate/vendored/**`                                                                          | third-party — own remotes, never indexed                                             |
+| `/home/toxic/pens/estate/**` (except `ranch/`, `vendored/`, `var/`)                                            | `toxicwind/estate`                                                                   |
+| `/home/toxic/pens/estate/ranch/**`                                                                             | per-component (`toxicwind/<component>`) — the component's own repo, driven by `meta` |
+| `/home/toxic/pens/estate/ranch/**/moon.yml`, `.moon/**`, `.gitmodules`, `.meta.yaml`, `README.md` (structural) | `toxicwind/ranch`                                                                    |
+| `/home/toxic/pens/estate/vendored/**`                                                                          | third-party — own remotes, never indexed                                             |
 | `/home/toxic/hatch`, `/home/toxic/kite/kite`                                                              | `toxicwind/hatch` (private)                                                          |
 | `~/.tau`                                                                                                  | `toxicwind/tau` (agent engine SSOT)                                                  |
 
@@ -104,7 +104,7 @@ Never assume "nested ⇒ same repo"; resolve via the table or `meta context`.
 ## Sync, the one way
 
 ```bash
-cd /home/toxic/estate/ranch
+cd /home/toxic/pens/estate/ranch
 meta git update         # clone missing + pull all (repos are peers)
 meta git status         # per-repo state across all components
 moon run ranch-sync     # same thing as a moon task

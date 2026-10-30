@@ -8,7 +8,7 @@
 | **browser-keeper** | ❌ BLOCKED | Processes restart every ~2 min (crash loop); no HTTP server on :25233 — likely Playwright/chromium mismatch or keeper.cjs runtime error | Investigate keeper.cjs stderr; may need chromium-1243 fix |
 | **bornite** | ❌ BLOCKED | Go binary crashes on execve (SIGSEGV at offset 0x8); same issue as flicker-server — binary built against incompatible ABI | Requires rebuild or replacing with compatible binary |
 | **ml-serve** | ❌ BLOCKED | Exit code 1 — likely missing model or GPU config | Inspect ml-serve config and stderr |
-| **toolcall-llm** | ❌ BLOCKED | Missing MODEL=/home/toxic/estate/ranch/models/qwen3.5-9b-dflash-Q5_K_M.gguf — GGUF file not present | Requires model download |
+| **toolcall-llm** | ❌ BLOCKED | Missing MODEL=/home/toxic/pens/estate/ranch/models/qwen3.5-9b-dflash-Q5_K_M.gguf — GGUF file not present | Requires model download |
 
 ## (2) Stopped Daemons (14)
 

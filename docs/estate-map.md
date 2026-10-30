@@ -14,12 +14,12 @@ Generated 2026-10-03T07:22:51.621Z on `awrawr-pc`. Estate root `/home/toxic/esta
 | Repo              | Path                       | Remote                                  | Head       | Committed           | Dirty | Checkout kind |
 | ----------------- | -------------------------- | --------------------------------------- | ---------- | ------------------- | ----- | ------------- |
 | 🟢 **estate**     | `/home/toxic/estate`       | https://github.com/toxicwind/estate.git | 4505f36bef | 2026-10-03T00:11:06 | 43    | nested        |
-| 🟢 **ranch**      | `/home/toxic/estate/ranch` | https://github.com/toxicwind/ranch      | 3c1a4a5    | 2026-10-02T23:57:58 | 1716  | nested        |
+| 🟢 **ranch**      | `/home/toxic/pens/estate/ranch` | https://github.com/toxicwind/ranch      | 3c1a4a5    | 2026-10-02T23:57:58 | 1716  | nested        |
 | 🟢 **ranch**      | `/home/toxic/ranch`        | https://github.com/toxicwind/ranch      | 3c1a4a5    | 2026-10-02T23:57:58 | 1716  | nested        |
 | 🟢 **tau-config** | `.tau`                     | —                                       | —          | —                   | 0     | none          |
 
 - **estate** (`/home/toxic/estate`) — control plane: pitchfork.toml, config/, bin/, bridge/, agents/, docs/, projects/
-- **ranch** (`/home/toxic/estate/ranch`) — the inference estate monorepo: bornite, rhodochrosite, thresher, squawk, oracle, and the mesh provider catalog
+- **ranch** (`/home/toxic/pens/estate/ranch`) — the inference estate monorepo: bornite, rhodochrosite, thresher, squawk, oracle, and the mesh provider catalog
 - **ranch** (`/home/toxic/ranch`) — SECOND checkout of toxicwind/ranch — duplicate, not the daemon target
 - **tau-config** (`.tau`) — coding-agent engine config (config.yml, models.yml, model-router.json, mcp.json)
 
@@ -224,7 +224,7 @@ something that looks wired and is not.
 
 | Sev    | Kind                 | Detail                                                                                                                                                 | Fix                                                                |
 | ------ | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------ |
-| high   | `duplicate-checkout` | https://github.com/toxicwind/ranch checked out 2x — newest 3c1a4a5 @ /home/toxic/estate/ranch; /home/toxic/ranch @ 3c1a4a5 (2026-10-02T23:57:58-06:00) | keep /home/toxic/estate/ranch; delete or archive /home/toxic/ranch |
+| high   | `duplicate-checkout` | https://github.com/toxicwind/ranch checked out 2x — newest 3c1a4a5 @ /home/toxic/pens/estate/ranch; /home/toxic/ranch @ 3c1a4a5 (2026-10-02T23:57:58-06:00) | keep /home/toxic/pens/estate/ranch; delete or archive /home/toxic/ranch |
 | high   | `daemon-path-dead`   | pitchfork daemon 'bedrock-ui' references /home/toxic/projects/bedrock/web — absent                                                                     | update pitchfork.toml [daemons.bedrock-ui]                         |
 | medium | `port-ssot-dead`     | ports.env claims 5000 (FLEET_POWER_INTERVAL) — no listener, no pitchfork daemon claims it                                                              | start the daemon or drop the SSOT entry                            |
 | medium | `port-ssot-dead`     | ports.env claims 25108 (WATCHDOG_PORT) — no listener, no pitchfork daemon claims it                                                                    | start the daemon or drop the SSOT entry                            |

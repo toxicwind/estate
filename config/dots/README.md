@@ -18,7 +18,7 @@ flowchart LR
         R[".ripgreprc"]
     end
 
-    subgraph ssot["Canonical SSOT (/home/toxic/estate/config/dots/)"]
+    subgraph ssot["Canonical SSOT (/home/toxic/pens/estate/config/dots/)"]
         SB[".bashrc"]
         SBP[".bash_profile"]
         SBE[".bashrc.env"]
@@ -50,7 +50,7 @@ flowchart LR
 
 ## 🔗 Connection to `ranch/shell`
 
-- **Upstream Root**: `/home/toxic/estate/ranch/shell/`
+- **Upstream Root**: `/home/toxic/pens/estate/ranch/shell/`
 - **Installer & Packaging**: `ranch/shell/ii/` maintains dotbot installers (`install.conf.yaml`), Arch package definitions (`packages.arch.txt`), and machine provisioning setups.
 - **Dynamic Secrets Management**:
   Per **Rule 3** of the estate doctrine, secrets (e.g. `GITHUB_TOKEN`) are never hardcoded in dotfiles. They are dynamically resolved via `secretsmith get ...` upon shell entry.
@@ -61,8 +61,8 @@ flowchart LR
 
 To test syntax validity across all managed dotfiles:
 ```bash
-bash -n /home/toxic/estate/config/dots/.bashrc
-bash -n /home/toxic/estate/config/dots/.bash_profile
-bash -n /home/toxic/estate/config/dots/.profile
+bash -n /home/toxic/pens/estate/config/dots/.bashrc
+bash -n /home/toxic/pens/estate/config/dots/.bash_profile
+bash -n /home/toxic/pens/estate/config/dots/.profile
 ```
 All files must return clean with `0` exit codes.

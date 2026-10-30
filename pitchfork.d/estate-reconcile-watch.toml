@@ -6,10 +6,10 @@
 
 [daemons.estate-reconcile-watch]
 mise = true
-run = "exec /home/toxic/estate/bin/estate-reconcile watch"
-dir = "/home/toxic/estate"
+run = "exec /home/toxic/pens/estate/bin/estate-reconcile watch"
+dir = "/home/toxic/pens/estate"
 retry = true
 auto = ["start"]
 # Pitchfork daemon fragment - merge into [daemons.browser-keeper] in
-# /home/toxic/estate/pitchfork.toml (owned sequence: stop -> ss-verify ->
+# /home/toxic/pens/estate/pitchfork.toml (owned sequence: stop -> ss-verify ->
 # clean --daemon -> start from /home/toxic/estate).

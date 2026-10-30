@@ -1,10 +1,10 @@
 {
   "$schema": "https://app.kilo.ai/config.json",
   "plugin": [
-    "file:///home/toxic/estate/.kilo/plugin/estate-thresher.ts",
-    "file:///home/toxic/estate/.kilo/plugin/estate-bornite-models.ts",
-    "file:///home/toxic/estate/.kilo/plugin/estate-rhodochrosite-strategy.ts",
-    "file:///home/toxic/estate/.kilo/plugin/estate-autofixer.ts"
+    "file:///home/toxic/pens/estate/.kilo/plugin/estate-thresher.ts",
+    "file:///home/toxic/pens/estate/.kilo/plugin/estate-bornite-models.ts",
+    "file:///home/toxic/pens/estate/.kilo/plugin/estate-rhodochrosite-strategy.ts",
+    "file:///home/toxic/pens/estate/.kilo/plugin/estate-autofixer.ts"
   ],
   "provider": {
     "rhodochrosite": {
@@ -72,7 +72,7 @@
   "autoupdate": true,
   "skills": {
     "paths": [
-      "/home/toxic/estate/skills-hub/bin/skills-hub.js"
+      "/home/toxic/pens/estate/skills-hub/bin/skills-hub.js"
     ]
   }
 }

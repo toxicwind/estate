@@ -26,15 +26,15 @@ The rhodochrosite service is returning 401 Unauthorized errors. The issue appear
 - Check for any related errors or warnings
 
 ## Critical Files & Anchors
-- `/home/toxic/estate/ranch/bornite/internal/rhodochrosite/` - main rhodochrosite implementation
-- `/home/toxic/estate/ranch/bornite/mesh/rhodochrosite-pkg/estate_complete_pkg/rhodochrosite-dist/lib/llm_client/llm_client.py` - LLM client with authentication
-- `/home/toxic/estate/ranch/bornite/mesh/rhodochrosite-pkg/estate_complete_pkg/rhodochrosite-dist/lib/orchestrator/orchestrator.py` - orchestration logic
-- `/home/toxic/estate/ranch/bornite/internal/rhodochrosite/config.go` - configuration handling
-- `/home/toxic/estate/ranch/bornite/internal/rhodochrosite/providers.go` - provider authentication
+- `/home/toxic/pens/estate/ranch/bornite/internal/rhodochrosite/` - main rhodochrosite implementation
+- `/home/toxic/pens/estate/ranch/bornite/mesh/rhodochrosite-pkg/estate_complete_pkg/rhodochrosite-dist/lib/llm_client/llm_client.py` - LLM client with authentication
+- `/home/toxic/pens/estate/ranch/bornite/mesh/rhodochrosite-pkg/estate_complete_pkg/rhodochrosite-dist/lib/orchestrator/orchestrator.py` - orchestration logic
+- `/home/toxic/pens/estate/ranch/bornite/internal/rhodochrosite/config.go` - configuration handling
+- `/home/toxic/pens/estate/ranch/bornite/internal/rhodochrosite/providers.go` - provider authentication
 
 ## Verification
-1. Run `ffs_find -pattern "key" -root /home/toxic/estate/ranch/bornite` to locate key configuration
-2. Run `ffs_find -pattern "401" -root /home/toxic/estate/ranch/bornite` to find error handling
+1. Run `ffs_find -pattern "key" -root /home/toxic/pens/estate/ranch/bornite` to locate key configuration
+2. Run `ffs_find -pattern "401" -root /home/toxic/pens/estate/ranch/bornite` to find error handling
 3. Read the identified configuration files to understand the current state
 4. Apply the fix and test the rhodochrosite service
 

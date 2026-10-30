@@ -51,7 +51,7 @@ Every gate between a caller requesting effort and the model receiving a thinking
 
 ### Step 1 — Confirm `task.enableEffort: true` is set
 
-Your config at `/home/toxic/estate/config/tau/config.yml:464` already declares:
+Your config at `/home/toxic/pens/estate/config/tau/config.yml:464` already declares:
 ```yaml
 task:
   enableEffort: true
@@ -111,13 +111,13 @@ modelRoles:
 
 ### Which settings file applies
 
-- Global config: `~/.tau/agent/config.yml` → symlinked to `/home/toxic/estate/config/tau/config.yml`
+- Global config: `~/.tau/agent/config.yml` → symlinked to `/home/toxic/pens/estate/config/tau/config.yml`
 - Project config: `.tau/config.yml` in current directory (overrides global)
 - CLI flags override both
 
 ### Exact YAML for pinning vibe tiers to freeinference models
 
-In `/home/toxic/estate/config/tau/config.yml` under `modelRoles:`:
+In `/home/toxic/pens/estate/config/tau/config.yml` under `modelRoles:`:
 
 ```yaml
 modelRoles:
@@ -205,7 +205,7 @@ Results extracted per-model:
 
 ### Config File State
 
-- `/home/toxic/estate/config/tau/config.yml:464` — `enableEffort: true` (ALREADY SET)
-- `/home/toxic/estate/config/tau/config.yml:472` — `maxEffort: high` (ALREADY SET)
-- `/home/toxic/estate/config/tau/config.yml:268-270` — `modelRoles.smol` and `modelRoles.task` point to `qwen3.6-35b` (THE PROBLEM)
-- `/home/toxic/estate/config/tau/models.yml` — no `modelOverrides` section (auto-generated from mimetite)
+- `/home/toxic/pens/estate/config/tau/config.yml:464` — `enableEffort: true` (ALREADY SET)
+- `/home/toxic/pens/estate/config/tau/config.yml:472` — `maxEffort: high` (ALREADY SET)
+- `/home/toxic/pens/estate/config/tau/config.yml:268-270` — `modelRoles.smol` and `modelRoles.task` point to `qwen3.6-35b` (THE PROBLEM)
+- `/home/toxic/pens/estate/config/tau/models.yml` — no `modelOverrides` section (auto-generated from mimetite)

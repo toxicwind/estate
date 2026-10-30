@@ -4,16 +4,16 @@ The exact cause may be unknown.
 If the signal above names a reason, use it; otherwise treat transient or external issues (for example, an internet outage) as possible contributors.
 Focus on resolving the failure above before continuing. Do not restart the task from scratch.
 Original prompt: `.agent/tmp/planning_prompt.md`
-Previous context summary: `/home/toxic/estate/.agent/tmp/agent_retry_context_a6b298d782fa40f9bbabfc058375aa58.md`
+Previous context summary: `/home/toxic/pens/estate/.agent/tmp/agent_retry_context_a6b298d782fa40f9bbabfc058375aa58.md`
 PREVIOUS OUTPUT SUMMARY EXCERPT:
 <previous log omitted> (93 earlier lines)
-"path": "/home/toxic/estate/.agent/tmp/planning_prompt.md"
+"path": "/home/toxic/pens/estate/.agent/tmp/planning_prompt.md"
 }
 },
 {
 "tool": "mcp__ralph__read_file",
 "arguments": {
-"path": "/home/toxic/estate/.agent/tmp/agent_retry_context_b1573900a8324aeea359340a4279c5a2.md"
+"path": "/home/toxic/pens/estate/.agent/tmp/agent_retry_context_b1573900a8324aeea359340a4279c5a2.md"
 }
 }
 ],
@@ -135,7 +135,7 @@ implementation work.
 
 PROMPT:
 
-Read the complete prompt from file at `/home/toxic/estate/.agent/PRODUCT_CRITERIA.md` before continuing.
+Read the complete prompt from file at `/home/toxic/pens/estate/.agent/PRODUCT_CRITERIA.md` before continuing.
 This file is the authoritative source for prompt in this prompt.
 Do not ask the user to paste it again, and do not claim the prompt is missing.
 

@@ -42,7 +42,7 @@ client:   mbx (mise task-cache client; `mise run` reaches it)
 ## Build (fresh, verified 2026-10-19)
 
 ```bash
-cd /home/toxic/estate/ranch/forge/flicker
+cd /home/toxic/pens/estate/ranch/forge/flicker
 corepack enable --install-directory /home/toxic/.local/bin   # pnpm for web/
 make build-server   # -> dist/woodpecker-server
 make build-agent    # -> dist/woodpecker-agent

@@ -1,8 +1,8 @@
 # Estate Pre-Release Integration Engine
 
 > **Architectural Law**: *"Production logic is integrated DIRECTLY in code. Pre-release staging overrides resolve via clean indirection."*
-> **Engine**: `/home/toxic/estate/src/lib/pre_release_integration.ts`
-> **Integration Store**: `/home/toxic/estate/integrations/` (designed location per `src/lib/pre_release_integration.ts:41` — directory not yet created)
+> **Engine**: `/home/toxic/pens/estate/src/lib/pre_release_integration.ts`
+> **Integration Store**: `/home/toxic/pens/estate/integrations/` (designed location per `src/lib/pre_release_integration.ts:41` — directory not yet created)
 ---
 
 ## 1. The Anti-Pattern vs. The Pattern
@@ -55,7 +55,7 @@ export const impl: ServiceDef = {
   id: "tau",
   name: "tau",
   portKey: "PI_AGENT_PORT",
-  run: "exec /home/toxic/estate/agent",
+  run: "exec /home/toxic/pens/estate/agent",
   dir: "/home/toxic",
   readyCmd: "sleep 1 && echo ready",
   group: "agents",
@@ -120,7 +120,7 @@ $ hotfix status
 
 ## 5. New Deliverable Hotfix — `registry.emergent_sync`
 
-**File**: `/home/toxic/estate/patches/emergent_registry_sync.ts`
+**File**: `/home/toxic/pens/estate/patches/emergent_registry_sync.ts`
 **Target**: `registry.emergent_sync`
 **Purpose**: Connects Hindsight health (`port 25117`) with Pitchfork daemon lifecycle (`bornite`, `hindsight`) through the registry resolution mechanism, only activating when both services report healthy.
 

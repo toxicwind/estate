@@ -7,8 +7,8 @@
 # 0.48.2 here; unix listen_on paths get -<pid> appended — see
 # bin/kitty-mcp-instance.sh).
 mise = true
-run = "exec /home/toxic/estate/bin/kitty-mcp-instance.sh"
-dir = "/home/toxic/estate"
+run = "exec /home/toxic/pens/estate/bin/kitty-mcp-instance.sh"
+dir = "/home/toxic/pens/estate"
 port = 25211
 retry = true
 boot_start = true

@@ -9,12 +9,12 @@ describe("local-audit", () => {
   });
 
   test("localAudit returns repos from estate directory", async () => {
-    const result = await localAudit(["/home/toxic/estate"]);
+    const result = await localAudit(["/home/toxic/pens/estate"]);
     expect(result.total).toBeGreaterThanOrEqual(0);
   });
 
   test("localAudit with --all scans both directories", async () => {
-    const result = await localAudit(["/home/toxic/projects", "/home/toxic/estate"]);
+    const result = await localAudit(["/home/toxic/projects", "/home/toxic/pens/estate"]);
     expect(result.total).toBeGreaterThan(0);
     expect(Object.keys(result.byArea).length).toBeGreaterThan(0);
   });

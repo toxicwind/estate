@@ -8,7 +8,7 @@
 # One-lane, durable, additive-only by construction.
 [daemons.tmp-reaper]
 mise = true
-run = "exec /home/toxic/estate/bin/tmp-reaper/reap-loop.sh 3600"
-dir = "/home/toxic/estate"
+run = "exec /home/toxic/pens/estate/bin/tmp-reaper/reap-loop.sh 3600"
+dir = "/home/toxic/pens/estate"
 retry = true
 auto = ["start"]

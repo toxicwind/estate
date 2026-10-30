@@ -3,18 +3,18 @@ import {
   effectiveBans,
   effectiveDeadline,
   loadIgnore,
-} from "/home/toxic/estate/ranch/kairos/src/project-policy.ts";
-import { firstBan } from "/home/toxic/estate/ranch/kairos/src/policy.ts";
+} from "/home/toxic/pens/estate/ranch/kairos/src/project-policy.ts";
+import { firstBan } from "/home/toxic/pens/estate/ranch/kairos/src/policy.ts";
 
-const p = loadProjectPolicy("/home/toxic/estate");
+const p = loadProjectPolicy("/home/toxic/pens/estate");
 console.log("loaded policy:", JSON.stringify(p));
 console.log(
   "effectiveDeadline(estate)= ",
-  effectiveDeadline("/home/toxic/estate", 2.0),
+  effectiveDeadline("/home/toxic/pens/estate", 2.0),
 );
-console.log("deadline(wc)= ", effectiveDeadline("/home/toxic/estate", 2.0));
+console.log("deadline(wc)= ", effectiveDeadline("/home/toxic/pens/estate", 2.0));
 
-const bans = effectiveBans("/home/toxic/estate");
+const bans = effectiveBans("/home/toxic/pens/estate");
 console.log(
   "remaining bans w/ friction keywords:",
   JSON.stringify(
@@ -36,5 +36,5 @@ for (const cmd of [
 }
 console.log(
   "ignore patterns:",
-  loadIgnore("/home/toxic/estate").map((r) => r.source),
+  loadIgnore("/home/toxic/pens/estate").map((r) => r.source),
 );

@@ -1,16 +1,16 @@
      14 /home/toxic/estate
-     11 /home/toxic/estate/tool
-      9 /home/toxic/estate/
-      2 /home/toxic/estate/engine
-      1 /home/toxic/estate/var/work
-      1 /home/toxic/estate/tail
-      1 /home/toxic/estate/op
+     11 /home/toxic/pens/estate/tool
+      9 /home/toxic/pens/estate/
+      2 /home/toxic/pens/estate/engine
+      1 /home/toxic/pens/estate/var/work
+      1 /home/toxic/pens/estate/tail
+      1 /home/toxic/pens/estate/op
       1 /home/toxic/estate --deep --interval 90
-      1 /home/toxic/estate/config/bornite.d/alia
-      1 /home/toxic/estate/config/bornite.d
-      1 /home/toxic/estate/bridge/morphe.py
-      1 /home/toxic/estate/bridge/awrawr_w
-      1 /home/toxic/estate/agent
+      1 /home/toxic/pens/estate/config/bornite.d/alia
+      1 /home/toxic/pens/estate/config/bornite.d
+      1 /home/toxic/pens/estate/bridge/morphe.py
+      1 /home/toxic/pens/estate/bridge/awrawr_w
+      1 /home/toxic/pens/estate/agent
 --- SYSTEMD USER UNITS ---
 /home/toxic/.config/systemd/user/pitchfork.service.bak-20260920
 /home/toxic/.config/systemd/user/skills-watch.service

@@ -27,7 +27,7 @@ pointers. Stop adding them.
   `https://github.com/toxicwind/<name>.git`)
 - `bun` + `bun toolkit/gen-meta-manifest.ts` availability inside the ranch
 - The repo directory already cloned at its permanent path under
-  `/home/toxic/estate/ranch/<path>`
+  `/home/toxic/pens/estate/ranch/<path>`
 - The farm repo checked out (your working dir is `ranch`)
 
 ## Steps
@@ -36,7 +36,7 @@ pointers. Stop adding them.
 
 ```bash
 # If it is not yet a repo:
-cd /home/toxic/estate/ranch
+cd /home/toxic/pens/estate/ranch
 mkdir -p <path>
 cd <path>
 git init
@@ -62,7 +62,7 @@ manifest. Never `rm -rf` a repo directory.
 
 ### 3. Register it as a peer in its themed holder
 
-Edit `/home/toxic/estate/ranch/.meta-themes.yaml` (DATA, not code):
+Edit `/home/toxic/pens/estate/ranch/.meta-themes.yaml` (DATA, not code):
 
 - Add a list item under the right holder (the bounded-context column the repo
   is responsible for — `olympus`, `ranch-structure`, `thresher-mcp`, etc.).
@@ -79,7 +79,7 @@ research:
 ### 4. Regenerate the manifest
 
 ```bash
-cd /home/toxic/estate/ranch
+cd /home/toxic/pens/estate/ranch
 bun toolkit/gen-meta-manifest.ts   # writes .meta.yaml from themes + on-disk peers
 ```
 
@@ -91,7 +91,7 @@ knows is emitted; nothing should be silently dropped. Spot-check
 ### 5. Verify peer state (NOT submodule status)
 
 ```bash
-cd /home/toxic/estate/ranch
+cd /home/toxic/pens/estate/ranch
 meta context                      # per-repo branch/clean/dirty across all peers
 meta git update                   # clone missing + pull all (replaces git submodule update)
 meta exec -- git -C <name> branch --show-current   # it is a normal peer branch

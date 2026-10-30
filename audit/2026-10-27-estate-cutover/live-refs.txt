@@ -1,5 +1,5 @@
-3:# dedup-weekly (standing, Chris 2026-10-04): weekly btrfs extent dedup via fclones (content-hash verified, extent-level, never deletes files). Script: /home/toxic/estate/ops/dedup-weekly.sh ; log: /home/toxic/estate/var/log/dedup-weekly.log
-4:23 5 * * 0 /home/toxic/estate/ops/dedup-weekly.sh
+3:# dedup-weekly (standing, Chris 2026-10-04): weekly btrfs extent dedup via fclones (content-hash verified, extent-level, never deletes files). Script: /home/toxic/pens/estate/ops/dedup-weekly.sh ; log: /home/toxic/pens/estate/var/log/dedup-weekly.log
+4:23 5 * * 0 /home/toxic/pens/estate/ops/dedup-weekly.sh
 --- TAU/KAPPA SKILL SOURCES ---
 /home/toxic/.config/kappa/AGENTS.md:227:  `vansrouter`, etc. resolve there, not to `estate/skills`.
 /home/toxic/.config/kappa/kappa.jsonc:475:      "/home/toxic/pens/estate/grasp-hub/skills",
@@ -7,14 +7,14 @@
 2403379 
 1248891 /home/toxic
 1136592 /home/toxic/estate
-2314879 /home/toxic/estate/config/bornite.d
-2353612 /home/toxic/estate/engines/bornite/beellama.cpp/build-cuda86/bin
-233292 /home/toxic/estate/forensics-srv
-2315175 /home/toxic/estate/services/model-guard
-2316173 /home/toxic/estate/tailscale
-2314237 /home/toxic/estate/tools/bench-radar
-2364178 /home/toxic/estate/tools/kimi-claw
-2315114 /home/toxic/estate/tools/ml-serve
+2314879 /home/toxic/pens/estate/config/bornite.d
+2353612 /home/toxic/pens/estate/engines/bornite/beellama.cpp/build-cuda86/bin
+233292 /home/toxic/pens/estate/forensics-srv
+2315175 /home/toxic/pens/estate/services/model-guard
+2316173 /home/toxic/pens/estate/tailscale
+2314237 /home/toxic/pens/estate/tools/bench-radar
+2364178 /home/toxic/pens/estate/tools/kimi-claw
+2315114 /home/toxic/pens/estate/tools/ml-serve
 2362346 /home/toxic/pens/estate
 2403367 /home/toxic/pens/estate/audit/2026-10-27-estate-cutover
 235391 /home/toxic/pens/ranch/android-fleet/phone-backup

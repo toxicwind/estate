@@ -52,9 +52,9 @@ flowchart LR
 
 ```bash
 # check / bring up the optional public edge (rust-web only)
-bash /home/toxic/estate/tailscale/funnel.sh status
-bash /home/toxic/estate/tailscale/funnel.sh up
-bash /home/toxic/estate/tailscale/funnel.sh down
+bash /home/toxic/pens/estate/tailscale/funnel.sh status
+bash /home/toxic/pens/estate/tailscale/funnel.sh up
+bash /home/toxic/pens/estate/tailscale/funnel.sh down
 ```
 
 `funnel.sh up` sources `config/ports.env` for `RANCH_UI_PORT` (default 25218),
@@ -66,7 +66,7 @@ It is **not** a multi-service gateway: funnel exposes exactly one backend.
 - **`funnel.sh`** — `up | down | status` wrapper around `tailscale funnel`.
   Single backend (no Caddy — removed: wrong ports, path conflicts with
   openfang `/api/*`, unused by `mise run up`). Logs under
-  `/home/toxic/estate/.state/logs`.
+  `/home/toxic/pens/estate/.state/logs`.
 - **`tailray.service`** — systemd user unit for the Tailray tray applet
   (`/home/toxic/.cargo/bin/tailray`, `Restart=always`, needs `DISPLAY=:0`).
   Independent of Caddy and of funnel; purely a local tray UI. NOTE: the

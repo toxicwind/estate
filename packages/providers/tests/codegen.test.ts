@@ -148,7 +148,7 @@ describe("generated-artifact sync", () => {
     const candidates = [
       process.env.BORNITE_ASTMATRIX_DIR,
       "/home/toxic/.worktrees/ranch-providers/stockyard/bornite/internal/astmatrix",
-      "/home/toxic/estate/projects/range/ranch/stockyard/bornite/internal/astmatrix",
+      "/home/toxic/pens/estate/projects/range/ranch/stockyard/bornite/internal/astmatrix",
     ].filter((p): p is string => typeof p === "string" && p.length > 0);
     let consumerPath = "";
     let consumer = "";

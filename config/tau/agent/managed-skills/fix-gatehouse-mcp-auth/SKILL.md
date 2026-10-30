@@ -7,7 +7,7 @@ description: Fix MCP thresher authentication by setting require_mcp_auth to fals
 
 When thresher MCP proxy returns `Authentication required` (HTTP 401) on port 25127:
 
-1. Check `/home/toxic/estate/ranch/barn/thresher/mcp_config.json`
+1. Check `/home/toxic/pens/estate/ranch/barn/thresher/mcp_config.json`
 2. Change `"require_mcp_auth": true` to `"require_mcp_auth": false`
 3. Restart thresher service
 

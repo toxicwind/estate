@@ -22,11 +22,11 @@ Run-receipt: `~/workspace/router-25104-receipts-2026-10-01.md`.
 
 ## 3. Skill routing, auto-approval, Spark capabilities
 
-- Tau config precedence: Tau opened only `~/.tau/agent/config.yml`; `~/.tau/config.yml` (15KB) was never opened (0 opens in strace). Fix applied: `skills.customDirectories: [/home/toxic/estate/skills]` in the live config; 68 SKILL.md opens verified.
+- Tau config precedence: Tau opened only `~/.tau/agent/config.yml`; `~/.tau/config.yml` (15KB) was never opened (0 opens in strace). Fix applied: `skills.customDirectories: [/home/toxic/pens/estate/skills]` in the live config; 68 SKILL.md opens verified.
 - Approval matrix (print-mode probes): schema default `tools.approvalMode` = `yolo`; `always-ask` blocks shell mutation; `write` and `yolo` permit; `--auto-approve` overrides `--approval-mode always-ask`. Observed precedence, not universal policy.
 - Spark default capabilities: clarified by attempt, not by documentation. `muse.db` table reads time out under cell saturation (11.4/2 vCPUs); `SELECT 1` succeeds. Ten standing-listed namespace names are not loadable in this session.
 
-Run-receipt: `~/workspace/capability-inventory-2026-10-01.md`; strace log `/home/toxic/estate/hatch/tau-audit-slate-20261001.log`.
+Run-receipt: `~/workspace/capability-inventory-2026-10-01.md`; strace log `/home/toxic/pens/estate/hatch/tau-audit-slate-20261001.log`.
 
 ## 4. Section -1 independent subagent experiment
 
@@ -69,7 +69,7 @@ Applied the audit's merge-tier absorptions to the top-11 KEEP skills:
 - `fleet-spawn` ← `fleet-push`: subscription registry, dispatch plan, chat-scope rule.
 - `hashline` ← `surgical-edit`: checks-before-writes doctrine.
 
-Sources archived to `~/workspace/skills/archive/`. The other 8 (thresher-mcp, context7, race, github-mcp, ast-bm25-racer, deep-research, smithers, github) had zero flagged defects; no overlay applied. Cell mirror updated; yote source tree (`/home/toxic/estate/skills/`) still pre-merge — sync pending.
+Sources archived to `~/workspace/skills/archive/`. The other 8 (thresher-mcp, context7, race, github-mcp, ast-bm25-racer, deep-research, smithers, github) had zero flagged defects; no overlay applied. Cell mirror updated; yote source tree (`/home/toxic/pens/estate/skills/`) still pre-merge — sync pending.
 
 Run-receipt: `~/workspace/skill-improvement-overlay-2026-10-01.md`.
 

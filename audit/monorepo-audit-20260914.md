@@ -8,7 +8,7 @@
 - **Submodules**: `shell/ii` (estate-end4), `tau/vendors` (kimi-cli)
 - **Symlinks** (top level):
   - `config/bornite.yaml` → `bornite.yaml`
-  - `helpers` → `/home/toxic/estate/skills`
+  - `helpers` → `/home/toxic/pens/estate/skills`
   - `models` → `/home/toxic/models`
   - `tau-skills` → `/home/toxic/.tau/skills`
 

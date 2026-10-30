@@ -8,7 +8,7 @@ Integrate upstream `estate-swap` and latest `bornite` features into `projects/bo
    - Ensure `Config` and related structs in `projects/bornite/internal/config/` include all fields required by newly merged packages (`GlobalConcurrencyLimit`, `Security`, `Tailcat`, etc.).
    - Verify `go.mod` and `go.sum` contain all required dependencies without version conflicts.
 2. **Compilation & Build**:
-   - Run `go build -o bornite .` inside `/home/toxic/estate/ranch/bornite`.
+   - Run `go build -o bornite .` inside `/home/toxic/pens/estate/ranch/bornite`.
    - Fix any missing fields, package reference mismatches, or syntax errors.
 3. **Service Integration**:
    - Update `/home/toxic/projects/bornite` symlink if needed to point to the unified `projects/bornite` directory.

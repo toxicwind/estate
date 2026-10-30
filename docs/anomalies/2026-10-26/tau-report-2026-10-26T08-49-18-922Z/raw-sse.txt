@@ -613,7 +613,7 @@ event: chat.completion.chunk
 data: {"id": "chatcmpl-3234f57d98d94f9f8dd7737f", "object": "chat.completion.chunk", "created": 1793003800, "model": "glm-5.3-flash", "choices": [{"index": 0, "delta": {"tool_calls": [{"index": 0, "function": {"arguments": " catalog."}}]}, "logprobs": null, "finish_reason": null, "token_ids": null}]}
 
 event: chat.completion.chunk
-data: {"id": "chatcmpl-3234f57d98d94f9f8dd7737f", "object": "chat.completion.chunk", "created": 1793003800, "model": "glm-5.3-flash", "choices": [{"index": 0, "delta": {"tool_calls": [{"index": 0, "function": {"arguments": "\", \"path\": \"/home/toxic/estate"}}]}, "logprobs": null, "finish_reason": null, "token_ids": null}]}
+data: {"id": "chatcmpl-3234f57d98d94f9f8dd7737f", "object": "chat.completion.chunk", "created": 1793003800, "model": "glm-5.3-flash", "choices": [{"index": 0, "delta": {"tool_calls": [{"index": 0, "function": {"arguments": "\", \"path\": \"/home/toxic/pens/estate"}}]}, "logprobs": null, "finish_reason": null, "token_ids": null}]}
 
 event: chat.completion.chunk
 data: {"id": "chatcmpl-3234f57d98d94f9f8dd7737f", "object": "chat.completion.chunk", "created": 1793003800, "model": "glm-5.3-flash", "choices": [{"index": 0, "delta": {"tool_calls": [{"index": 0, "function": {"arguments": "/docs/anomalies/202"}}]}, "logprobs": null, "finish_reason": null, "token_ids": null}]}

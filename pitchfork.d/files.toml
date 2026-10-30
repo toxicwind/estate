@@ -4,8 +4,8 @@
 # the serve entry existed but no backend was defined anywhere in the estate.
 mise = true
 port = 34567
-run = "exec python3 /home/toxic/estate/stack/services/files-server.py"
-dir = "/home/toxic/estate"
+run = "exec python3 /home/toxic/pens/estate/stack/services/files-server.py"
+dir = "/home/toxic/pens/estate"
 retry = true
 env = { FILES_PORT = "34567", FILES_ROOT = "/home/toxic/files" }
 ready_http = "http://127.0.0.1:34567/health"

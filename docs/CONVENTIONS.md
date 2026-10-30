@@ -62,7 +62,7 @@ own location → `$HOME` default.** Every path comes back `resolve()`d, so a com
 symlink never leaks into a report or a string comparison.
 
 **Rule 2.1 — No skill hardcodes an estate path.** If you catch
-`/home/toxic/estate/...` or `~/workspace/skills/...` in a script, that is a bug.
+`/home/toxic/pens/estate/...` or `~/workspace/skills/...` in a script, that is a bug.
 The skills home moved to `estate/skills-hub` on 2026-10-02; `~/workspace/skills` and
 `~/.tau/skills` are symlinks to it.
 
@@ -127,7 +127,7 @@ runtime config SSOT (identity, stream tuning, model names). Secrets live in
 > fixed override name from Rule 2.2 which `skills/lib/estate.sh` already
 > resolves, so the two now compose instead of disagreeing.
 > `skills/git-mutator/types.ts` already pointed at
-> `/home/toxic/estate/config/ports.env`; that part of this note was stale.
+> `/home/toxic/pens/estate/config/ports.env`; that part of this note was stale.
 >
 > `config/ports.env` was itself gitignored — an unanchored `*.env` from the
 > dotenv template layer swallowed it at every depth — which made the port SSOT

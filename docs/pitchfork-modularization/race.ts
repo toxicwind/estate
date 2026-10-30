@@ -102,7 +102,7 @@ const simMonolithOverlap = (async () => {
   await sh(["git", "commit", "-qam", "e1: rhodochrosite port"], d);
   await sh(["git", "checkout", "-q", "main"], d);
   await sh(["git", "checkout", "-qb", "e2"], d);
-  await editDaemonKey(`${d}/pitchfork.toml`, "rhodochrosite", "run", '"exec /home/toxic/estate/projects/range/ranch/rhodochrosite/bin/rhodochrosite-run.sh --trace"'); // agent 2: rhodochrosite run
+  await editDaemonKey(`${d}/pitchfork.toml`, "rhodochrosite", "run", '"exec /home/toxic/pens/estate/projects/range/ranch/rhodochrosite/bin/rhodochrosite-run.sh --trace"'); // agent 2: rhodochrosite run
   await sh(["git", "commit", "-qam", "e2: rhodochrosite run"], d);
   await sh(["git", "checkout", "-q", "e1"], d);
   return { case: "monolith: two agents edit SAME section [daemons.rhodochrosite]", ...(await tryMerge(d)) };
@@ -153,7 +153,7 @@ const simModularSameFile = (async () => {
   await sh(["git", "commit", "-qam", "e1"], d);
   await sh(["git", "checkout", "-q", "main"], d);
   await sh(["git", "checkout", "-qb", "e2"], d);
-  await editDaemonKey(flockF, "rhodochrosite", "run", '"exec /home/toxic/estate/projects/range/ranch/rhodochrosite/bin/rhodochrosite-run.sh --trace"');
+  await editDaemonKey(flockF, "rhodochrosite", "run", '"exec /home/toxic/pens/estate/projects/range/ranch/rhodochrosite/bin/rhodochrosite-run.sh --trace"');
   await sh(["git", "commit", "-qam", "e2"], d);
   await sh(["git", "checkout", "-q", "e1"], d);
   return { case: "modular (A): two agents edit the SAME daemon file", ...(await tryMerge(d)) };

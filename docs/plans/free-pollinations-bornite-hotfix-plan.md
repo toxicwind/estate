@@ -90,7 +90,7 @@ POST https://openrouter.ai/api/v1/chat/completions  (with .secrets OPENROUTER_AP
 
 ### 2.3 Estate orchestration latch
 - **SSOT:** `config/ports.env` (port map) + `src/services/*.ts` (service definitions) → `src/generators/pitchfork.ts` / `mise.ts` → `pitchfork.toml` / `mise.toml` (blocked from hand-edits).
-- **Bornite service def:** `src/services/core.ts` / `registry.ts`: `id: bornite, portKey: HERD_PORT (25100), run: "exec /home/toxic/estate/stack/services/bornite.sh", dir: ".", readyHttp: "/health"`.
+- **Bornite service def:** `src/services/core.ts` / `registry.ts`: `id: bornite, portKey: HERD_PORT (25100), run: "exec /home/toxic/pens/estate/stack/services/bornite.sh", dir: ".", readyHttp: "/health"`.
 - **If we added a new standalone free-proxy daemon**, we would add a port key to `config/ports.env`, a `ServiceDef` to `src/services/peripheral.ts` or `forks.ts`, then `bun run scripts/generate.ts`. For this plan we **do not add a new daemon** — we extend bornite in place via `peers:` — so no new port or service def is needed. This keeps the change to one config file + Go patch + binary rebuild, respecting latch.
 
 ---
@@ -390,15 +390,15 @@ omp bench --model openai --prompt "hi"  # or: mesh/gateway/bench via go run ./be
 - **This plan:** `docs/plans/free-pollinations-bornite-hotfix-plan.md` (estate) — also mirrored to `plans/free-pollinations-hotfix-plan.md` (bornite).
 - **Source of truth for method:** attachment (§ Custom Providers → free backends). Corrected per probe: Pollinations model ID is `openai`, not `openai/gpt-oss-20b`; OVH anon tier currently 403.
 - **Patch target:** `/home/toxic/projects/bornite/internal/router/peer.go:148-188`, `/home/toxic/projects/bornite/internal/config/peer.go`.
-- **Runtime config:** `/home/toxic/estate/config/bornite.yaml` (add `peers:`).
-- **Launcher:** `/home/toxic/estate/stack/services/bornite.sh` → `$HOME/projects/bornite/bornite --config $SOV/config/bornite.yaml --listen 0.0.0.0:25100`.
+- **Runtime config:** `/home/toxic/pens/estate/config/bornite.yaml` (add `peers:`).
+- **Launcher:** `/home/toxic/pens/estate/stack/services/bornite.sh` → `$HOME/projects/bornite/bornite --config $SOV/config/bornite.yaml --listen 0.0.0.0:25100`.
 - **Generated files (DO NOT EDIT):** `pitchfork.toml`, `mise.toml` (`src/generators/*`).
 
 ---
 
 ## 12. Handoff
 
-Plan ready at `/home/toxic/estate/docs/plans/free-pollinations-bornite-hotfix-plan.md`.
+Plan ready at `/home/toxic/pens/estate/docs/plans/free-pollinations-bornite-hotfix-plan.md`.
 
 What would you like to do next?
 

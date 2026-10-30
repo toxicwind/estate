@@ -25,7 +25,7 @@ import urllib.request
 from datetime import datetime, timezone
 
 TOKEN_FILE = "/home/toxic/.config/estate-chat-token"
-DEFAULT_STATE_DIR = "/home/toxic/estate/tools/estate-chat/state"
+DEFAULT_STATE_DIR = "/home/toxic/pens/estate/tools/estate-chat/state"
 HEARTBEAT_DEAD_S = 300
 
 

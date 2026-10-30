@@ -51,13 +51,13 @@ mentioned and exits 0. Cost three shredded files on 2026-10-02
 - After every patch, check the `~`/`-`/`+` lines match what you sent. Mismatch →
   repair before the next edit, do not stack another patch on top.
 
-Full contract: `/home/toxic/estate/docs/hashline-patch-contract.md`.
+Full contract: `/home/toxic/pens/estate/docs/hashline-patch-contract.md`.
 
 - Use `ffs` (`ffs find`, `ffs grep`, `ffs glob`, `ffs read`, `ffs symbol`). Never `fd`/`rg` or `find`/`grep`.
 - Live token counting is first-class: `tok` (`tok <file_or_string>` or pipe into `tok -v`; binary at `~/.local/bin/tok`). Uses `o200k_harmony` with persistent offline cache (`~/.cache/tiktoken`) and crashless special-token encoding.
 - Unique per-task /tmp paths (`mktemp -d`); NEVER `rm -rf` a shared hardcoded /tmp path. Nothing precious in /tmp — stage under /home/toxic/.
 - Never end a turn with a backgrounded bridge/exec call outstanding — wait for delivery (yield_ms up to 120000).
-- Services are owned by pitchfork+mise (defs in `/home/toxic/estate/pitchfork.toml` + `/home/toxic/estate/mise.toml`). No competing systemd units. NEVER touch `awrawr-mcp.service` from inside a bridge call.
+- Services are owned by pitchfork+mise (defs in `/home/toxic/pens/estate/pitchfork.toml` + `/home/toxic/pens/estate/mise.toml`). No competing systemd units. NEVER touch `awrawr-mcp.service` from inside a bridge call.
 - NEVER run `bun run scripts/generate.ts` — retired (46aa41cca2); it would destroy 15 live daemons.
 - Verify `bash -lc true` after shell changes. Two failures on one target → stop and replan.
 - Never expose, print, log, or commit credentials. Secret values stay in the vault (`/home/toxic/.secrets`).
@@ -66,11 +66,11 @@ Full contract: `/home/toxic/estate/docs/hashline-patch-contract.md`.
 
 - When a problem has several plausible approaches, RACE them concurrently — first valid result wins. Never sequential retry loops.
 - "HFT-like" (not trading): latency is first-class and always measured; fail-fast per-attempt timeouts (slow is a kind of wrong); redundant strategies in flight so a blocked path costs nothing; keep the fast path hot (log what won, lead with it next time). Maximal = try wider, not harder.
-- **Pattern-Forge & Pattern-Borrow Standing Subtask (2026-10-11, User)**: `pattern-forge` (`/home/toxic/estate/skills/pattern-forge/bin/forge.ts`) and `pattern-borrow` (`/home/toxic/estate/scripts/pattern-borrow.ts`) are first-class verification subtasks for **ALL tasks**. Every non-trivial fix or implementation must cross-reference real-world GitHub implementations via `pattern-borrow` and run `forge retrieve`/`forge audit` to verify against existing code patterns before declaring completion.
+- **Pattern-Forge & Pattern-Borrow Standing Subtask (2026-10-11, User)**: `pattern-forge` (`/home/toxic/pens/estate/skills/pattern-forge/bin/forge.ts`) and `pattern-borrow` (`/home/toxic/pens/estate/scripts/pattern-borrow.ts`) are first-class verification subtasks for **ALL tasks**. Every non-trivial fix or implementation must cross-reference real-world GitHub implementations via `pattern-borrow` and run `forge retrieve`/`forge audit` to verify against existing code patterns before declaring completion.
 
 ## Quick fixes (2026-09-14)
 
-- Never search "tau" — it's our brand, use repo-specific paths instead. Tau config lives at `$HOME/.tau/` (PI_CONFIG_DIR, a symlink to `estate/config/tau`), agent dir at `$HOME/.tau/agent/`. The engine is its own git repo at `/home/toxic/estate/ranch/tau` (5.1 GB checkout on `main`) — resolve engine work there, never grep for "tau" generically. There is no `ranch/tau` subdir of estate other than this; there is no `/home/toxic/tau` and no `/home/toxic/estate/tau/`.
+- Never search "tau" — it's our brand, use repo-specific paths instead. Tau config lives at `$HOME/.tau/` (PI_CONFIG_DIR, a symlink to `estate/config/tau`), agent dir at `$HOME/.tau/agent/`. The engine is its own git repo at `/home/toxic/pens/estate/ranch/tau` (5.1 GB checkout on `main`) — resolve engine work there, never grep for "tau" generically. There is no `ranch/tau` subdir of estate other than this; there is no `/home/toxic/tau` and no `/home/toxic/pens/estate/tau/`.
 - Never search "estate" — same rule. It's our brand, not a search term. Use repo-specific paths instead.
 - Use `ffs` (`ffs find`, `ffs grep`, `ffs glob`) for all searches — never `fd`, `rg`, `find`, or `grep`.
 - Always find and compare maximal multiple versions before deciding.
@@ -81,20 +81,20 @@ Full contract: `/home/toxic/estate/docs/hashline-patch-contract.md`.
 ## Verified ecosystem map (2026-10-14 — code is absolute)
 
 The `estate` namespace was renamed to `estate` (ranch commit `6af2094`).
-**`/home/toxic/estate/` DOES NOT EXIST.** Any doc that sends you there is wrong.
+**`/home/toxic/pens/estate/` DOES NOT EXIST.** Any doc that sends you there is wrong.
 
 | Thing | Verified path / port | Notes |
 |---|---|---|
 | Control plane repo | `/home/toxic/estate` | git repo on `main`; 91 pitchfork daemons |
-| Ranch (252 entries) | `/home/toxic/estate/ranch` | ferret-den lives at `ranch/ferret-den` |
-| Tau engine (5.1G) | `/home/toxic/estate/ranch/tau` | own git repo, bazel+rust+bun |
+| Ranch (252 entries) | `/home/toxic/pens/estate/ranch` | ferret-den lives at `ranch/ferret-den` |
+| Tau engine (5.1G) | `/home/toxic/pens/estate/ranch/tau` | own git repo, bazel+rust+bun |
 | Tau agent config | `$HOME/.tau` → `estate/config/tau` | agent dir `$HOME/.tau/agent` (auth.json, config.yml, sessions/) |
-| Skills (104) | `/home/toxic/estate/skills` | pattern-forge, tau-session-audit, … |
+| Skills (104) | `/home/toxic/pens/estate/skills` | pattern-forge, tau-session-audit, … |
 | Secrets vault | `/home/toxic/.secrets` | first-class credential record |
-| Pitchfork defs | `/home/toxic/estate/pitchfork.toml` | hand-edited SSOT, 1424 lines |
-| Mise defs | `/home/toxic/estate/mise.toml` | hand-edited; ports from `config/ports.env` |
-| Port SSOT | `/home/toxic/estate/config/ports.env` | all 25xxx, never invent |
-| Pitchfork CLI | `/home/toxic/estate/bin/pitchfork` | bash wrapper, works. `bin/pf` is bun-script content with a bun shebang (fixed 2026-10-14); `pf check` runs and reports real drift |
+| Pitchfork defs | `/home/toxic/pens/estate/pitchfork.toml` | hand-edited SSOT, 1424 lines |
+| Mise defs | `/home/toxic/pens/estate/mise.toml` | hand-edited; ports from `config/ports.env` |
+| Port SSOT | `/home/toxic/pens/estate/config/ports.env` | all 25xxx, never invent |
+| Pitchfork CLI | `/home/toxic/pens/estate/bin/pitchfork` | bash wrapper, works. `bin/pf` is bun-script content with a bun shebang (fixed 2026-10-14); `pf check` runs and reports real drift |
 | Qdrant | `127.0.0.1:25133` (HTTP) `:25134` (gRPC) | v1.19.1, restarted 2026-10-14 by this agent |
 | Redis (valkey) | `127.0.0.1:25203` | running (migrated 2026-10-14 off :25199, squatted by hatch/shim_mcp.py) |
 | nvidia-nim completions | `127.0.0.1:25100` | OpenAI-compatible, bornite/bornite models — NOT an MCP server |
@@ -105,9 +105,9 @@ The `estate` namespace was renamed to `estate` (ranch commit `6af2094`).
 
 ### Dead / nonexistent — do not trust docs that cite them
 
-- `/home/toxic/estate/` — does not exist (renamed to `estate`)
+- `/home/toxic/pens/estate/` — does not exist (renamed to `estate`)
 - `/home/toxic/deep-paper-reader/` — does not exist (real: `src/local/deep-paper-reader`)
-- `/home/toxic/workspace/skills/code-race/` — does not exist. The `code-race` skill is GONE; use `pattern-forge` (`/home/toxic/estate/skills/pattern-forge/bin/forge.ts`) instead
+- `/home/toxic/workspace/skills/code-race/` — does not exist. The `code-race` skill is GONE; use `pattern-forge` (`/home/toxic/pens/estate/skills/pattern-forge/bin/forge.ts`) instead
 - `/home/toxic/projects/pi-agent`, `/home/toxic/projects/codeshift`, `/home/toxic/projects/bedrock` — do not exist. `/home/toxic/projects` contains only `effusion-labs`
 - `/home/toxic/tau` — does not exist (engine is `estate/ranch/tau`)
 - GHAS on `:25113` — DEAD (connection refused). Do not route through it
@@ -167,7 +167,7 @@ key required for core features. Optional: Tavily, Semantic Scholar, OpenAI, Lang
 ## Lost tasks and session recovery
 
 - If a task is abandoned or a session "completes" phantomly (e.g. flurry of `todo(op="done")`), the intent is not lost. The original user prompt can be extracted from the session history.
-- Use `bun run /home/toxic/estate/skills/tau-session-audit/helper/audit.ts --search "<keyword>"` to search the `firstPrompt` / intent of all recent `.jsonl` files in `~/.tau/sessions/`.
+- Use `bun run /home/toxic/pens/estate/skills/tau-session-audit/helper/audit.ts --search "<keyword>"` to search the `firstPrompt` / intent of all recent `.jsonl` files in `~/.tau/sessions/`.
 - Never rely on `/tmp` scripts to parse sessions: use and enhance `tau-session-audit` as a first-class feature.
 
 ## Don't move scratch dirs out from under running workers (2026-09-14)

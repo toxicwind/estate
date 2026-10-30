@@ -92,7 +92,7 @@
       "pid": 3546930,
       "name": "biome",
       "threads": 35,
-      "cmd": "/home/toxic/estate/ranch/bun-scaffold/node_modules/@biomejs/cli-linux-x64/biome __run_server --watcher-kind=recommended "
+      "cmd": "/home/toxic/pens/estate/ranch/bun-scaffold/node_modules/@biomejs/cli-linux-x64/biome __run_server --watcher-kind=recommended "
     },
     {
       "pid": 2951710,
@@ -110,7 +110,7 @@
       "pid": 3546897,
       "name": "biome",
       "threads": 34,
-      "cmd": "/home/toxic/estate/ranch/bun-scaffold/node_modules/@biomejs/cli-linux-x64/biome lsp-proxy --stdio"
+      "cmd": "/home/toxic/pens/estate/ranch/bun-scaffold/node_modules/@biomejs/cli-linux-x64/biome lsp-proxy --stdio"
     }
   ],
   "top_swap_owners": [
@@ -118,7 +118,7 @@
       "pid": 2425926,
       "name": "rhodochrosite",
       "swap_mb": 1075.3,
-      "cmd": "/home/toxic/estate/ranch/rhodochrosite/proxy/target/release/rhodochrosite"
+      "cmd": "/home/toxic/pens/estate/ranch/rhodochrosite/proxy/target/release/rhodochrosite"
     },
     {
       "pid": 3263,
@@ -154,7 +154,7 @@
       "pid": 988933,
       "name": "llama-server",
       "swap_mb": 398.5,
-      "cmd": "/home/toxic/estate/engines/bornite/beellama.cpp/build-cuda86/bin/llama-server --model /home/toxic/models/EXAONE-4.0-1.2B-IQ"
+      "cmd": "/home/toxic/pens/estate/engines/bornite/beellama.cpp/build-cuda86/bin/llama-server --model /home/toxic/models/EXAONE-4.0-1.2B-IQ"
     },
     {
       "pid": 3460243,
@@ -166,7 +166,7 @@
       "pid": 993326,
       "name": "llama-server",
       "swap_mb": 300.9,
-      "cmd": "/home/toxic/estate/engines/llama.cpp-b11059/llama-b11059/llama-server -m /home/toxic/estate/ranch/models/qwen3.5-9b-dfla"
+      "cmd": "/home/toxic/pens/estate/engines/llama.cpp-b11059/llama-b11059/llama-server -m /home/toxic/pens/estate/ranch/models/qwen3.5-9b-dfla"
     },
     {
       "pid": 2951710,

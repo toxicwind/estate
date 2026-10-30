@@ -7,7 +7,7 @@ port = 25144
 # (github sort algorithm, recursive-agents study) as one first-class surface.
 # MCP tools are provided by ranch/olympus/mcp.ts (stdio) for the thresher.
 run = "exec bun /home/toxic/pens/ranch/olympus/api.ts"
-dir = "/home/toxic/estate"
+dir = "/home/toxic/pens/estate"
 retry = true
 boot_start = true
 ready_http = "http://127.0.0.1:25144/health"

@@ -157,7 +157,7 @@
 
 ## Context (paths/decisions — stable)
 
-- azurite = `/home/toxic/estate/azurite` (GitHub `toxicwind/azurite`, was
+- azurite = `/home/toxic/pens/estate/azurite` (GitHub `toxicwind/azurite`, was
   estate-skills-hub). Router: `node bin/azurite.js route "<query>"`. Registry
   submodule: tinh2/skills-hub-registry (553 skills). UI fork: toxicwind/skills-hub.
 - forge hf = `estate/skills/pattern-forge/src/{hf,hf-lib}.ts`; CLI

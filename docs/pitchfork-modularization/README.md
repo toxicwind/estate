@@ -6,7 +6,7 @@ hand-edited.
 ## Layout
 
 ```
-/home/toxic/estate/
+/home/toxic/pens/estate/
 ├── parent.toml            # preamble: groups, env_file, global settings
 ├── projects.toml          # registry: project key -> pitchfork.d/ directory
 ├── attribution.json       # machine-readable daemon -> project map

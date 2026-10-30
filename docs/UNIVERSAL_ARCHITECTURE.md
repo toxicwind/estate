@@ -1,6 +1,6 @@
 # Universal Architecture — Polyglot Estate Stack (August 2026)
 
-**Status**: Living document. Applies to all code under `/home/toxic/estate/`, `/home/toxic/projects/pi-agent/`, `/home/toxic/.pi/agent/`.
+**Status**: Living document. Applies to all code under `/home/toxic/pens/estate/`, `/home/toxic/projects/pi-agent/`, `/home/toxic/.pi/agent/`.
 
 ---
 
@@ -76,7 +76,7 @@ pub extern "C" fn encode(ptr: *const u8, len: i32) -> *mut u8 { ... }
 ## 3. Project Structure (Monorepo)
 
 ```
-/home/toxic/estate/
+/home/toxic/pens/estate/
 ├── config/                 # TOML configs (ports.env, mise.toml, pitchfork.toml)
 ├── src/
 │   ├── go/                 # Go services (bornite, rhodochrosite, router)

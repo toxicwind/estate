@@ -1,7 +1,7 @@
 [daemons.stash-guard]
 mise = true
-run = "exec python3 /home/toxic/estate/tools/stash-guard/stash-guard.py --repo /home/toxic/estate --deep --interval 90"
-dir = "/home/toxic/estate"
+run = "exec python3 /home/toxic/pens/estate/tools/stash-guard/stash-guard.py --repo /home/toxic/estate --deep --interval 90"
+dir = "/home/toxic/pens/estate"
 retry = true
 boot_start = true
 auto = ["start"]

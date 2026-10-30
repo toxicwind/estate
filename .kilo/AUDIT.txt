@@ -16,10 +16,10 @@ schema: https://app.kilo.ai/config.json
 
 [B2] skills.paths points at a FILE, not a directory
      location: skills.paths[0]
-     value: /home/toxic/estate/skills-hub/bin/skills-hub.js
+     value: /home/toxic/pens/estate/skills-hub/bin/skills-hub.js
      effect: loader that expects a dir will fail stat/readdir; loader that
              ignores the key makes the entry dead.
-     fix: point at the directory (/home/toxic/estate/skills-hub) or remove
+     fix: point at the directory (/home/toxic/pens/estate/skills-hub) or remove
           the skills block if this build has no skills support.
 
 [B3] active model depends on unset env

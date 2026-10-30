@@ -422,7 +422,7 @@ permanent make a bin script
 **Input:**
 ```json
 {
-  "command": "ls /home/toxic/.local/bin/pipewire-default 2>/dev/null; echo \"---\"; ls /home/toxic/estate/bin/pipewire-default 2>/dev/null",
+  "command": "ls /home/toxic/.local/bin/pipewire-default 2>/dev/null; echo \"---\"; ls /home/toxic/pens/estate/bin/pipewire-default 2>/dev/null",
   "description": "Check if script already exists"
 }
 ```
@@ -441,18 +441,18 @@ permanent make a bin script
 **Input:**
 ```json
 {
-  "command": "ls /home/toxic/estate/bin/manifest.yaml 2>/dev/null && head -5 /home/toxic/estate/bin/manifest.yaml",
+  "command": "ls /home/toxic/pens/estate/bin/manifest.yaml 2>/dev/null && head -5 /home/toxic/pens/estate/bin/manifest.yaml",
   "description": "Check manifest structure"
 }
 ```
 
 **Output:**
 ```
-/home/toxic/estate/bin/manifest.yaml
+/home/toxic/pens/estate/bin/manifest.yaml
 # =============================================================================
 # estate bin manifest — canonical inventory of executable entry points.
-#   /home/toxic/estate/bin/manifest.yaml
-# Verified by /home/toxic/estate/bin/bin-verify.sh (exit != 0 on any FAIL).
+#   /home/toxic/pens/estate/bin/manifest.yaml
+# Verified by /home/toxic/pens/estate/bin/bin-verify.sh (exit != 0 on any FAIL).
 #
 
 ```
@@ -466,7 +466,7 @@ permanent make a bin script
 **Input:**
 ```json
 {
-  "command": "grep 'pipewire\\|wireplumber\\|pw-link\\|pactl' /home/toxic/estate/bin/manifest.yaml 2>/dev/null | head -5; echo \"---\"; grep 'alias\\|set-default' /home/toxic/estate/bin/manifest.yaml 2>/dev/null | head -5",
+  "command": "grep 'pipewire\\|wireplumber\\|pw-link\\|pactl' /home/toxic/pens/estate/bin/manifest.yaml 2>/dev/null | head -5; echo \"---\"; grep 'alias\\|set-default' /home/toxic/pens/estate/bin/manifest.yaml 2>/dev/null | head -5",
   "description": "Search manifest for audio-related entries"
 }
 ```
@@ -485,7 +485,7 @@ permanent make a bin script
 **Input:**
 ```json
 {
-  "command": "ls /home/toxic/estate/bin/alias* 2>/dev/null; ls /home/toxic/estate/bin/set-default* 2>/dev/null",
+  "command": "ls /home/toxic/pens/estate/bin/alias* 2>/dev/null; ls /home/toxic/pens/estate/bin/set-default* 2>/dev/null",
   "description": "Check for existing alias scripts"
 }
 ```
@@ -504,7 +504,7 @@ permanent make a bin script
 **Input:**
 ```json
 {
-  "path": "/home/toxic/estate/bin"
+  "path": "/home/toxic/pens/estate/bin"
 }
 ```
 
@@ -681,7 +681,7 @@ permanent make a bin script
 **Input:**
 ```json
 {
-  "command": "head -30 /home/toxic/estate/bin/manifest.yaml",
+  "command": "head -30 /home/toxic/pens/estate/bin/manifest.yaml",
   "description": "Read manifest header for format"
 }
 ```
@@ -690,8 +690,8 @@ permanent make a bin script
 ```
 # =============================================================================
 # estate bin manifest — canonical inventory of executable entry points.
-#   /home/toxic/estate/bin/manifest.yaml
-# Verified by /home/toxic/estate/bin/bin-verify.sh (exit != 0 on any FAIL).
+#   /home/toxic/pens/estate/bin/manifest.yaml
+# Verified by /home/toxic/pens/estate/bin/bin-verify.sh (exit != 0 on any FAIL).
 #
 # What "bin" means here (2026-09-20):
 #   bin/                        canonical ops-tool dir. REORG phase 5 merged
@@ -701,7 +701,7 @@ permanent make a bin script
 #   /home/toxic/.local/bin/tau  installed tau — collapse level 2, md5-pinned
 #                               to the repo copy (verifier fails on drift).
 #   (tau entries moved to archived: below)
-# NOTE: /home/toxic/estate/tau/bin does NOT exist; `tau` is a symlink
+# NOTE: /home/toxic/pens/estate/tau/bin does NOT exist; `tau` is a symlink
 #       -> projects/tau. There is no [[bin]] in tau's Cargo.toml files —
 #       the engine ships as a dist artifact (omp), not a cargo bin target.
 # =============================================================================
@@ -730,7 +730,7 @@ bins:
 **Input:**
 ```json
 {
-  "command": "tail -30 /home/toxic/estate/bin/manifest.yaml",
+  "command": "tail -30 /home/toxic/pens/estate/bin/manifest.yaml",
   "description": "Read manifest footer for format end"
 }
 ```
@@ -779,7 +779,7 @@ bins:
 **Input:**
 ```json
 {
-  "command": "grep -n 'bins:' /home/toxic/estate/bin/manifest.yaml | head -3; echo \"---\"; sed -n '20,40p' /home/toxic/estate/bin/manifest.yaml",
+  "command": "grep -n 'bins:' /home/toxic/pens/estate/bin/manifest.yaml | head -3; echo \"---\"; sed -n '20,40p' /home/toxic/pens/estate/bin/manifest.yaml",
   "description": "Find bins section structure"
 }
 ```
@@ -821,7 +821,7 @@ bins:
 **Input:**
 ```json
 {
-  "command": "grep -n 'cron-trust-monitor' /home/toxic/estate/bin/manifest.yaml",
+  "command": "grep -n 'cron-trust-monitor' /home/toxic/pens/estate/bin/manifest.yaml",
   "description": "Find line number of first bin entry"
 }
 ```
@@ -841,7 +841,7 @@ bins:
 **Input:**
 ```json
 {
-  "command": "sed -n '28,60p' /home/toxic/estate/bin/manifest.yaml",
+  "command": "sed -n '28,60p' /home/toxic/pens/estate/bin/manifest.yaml",
   "description": "Read first few bin entries for format"
 }
 ```
@@ -893,14 +893,14 @@ bins:
 **Input:**
 ```json
 {
-  "path": "/home/toxic/estate/bin/set-audio",
+  "path": "/home/toxic/pens/estate/bin/set-audio",
   "content": "#!/usr/bin/env bash\n# set-audio — switch PipeWire default sink to the KRK monitor interface.\n# Usage: set-audio [amp|bt|hdmii|reset]\n#   amp   -> HyperX Amp (USB audio, KRK monitors)\n#   bt    -> KRKGoAux3 Bluetooth speaker\n#   hdmi  -> NVIDIA HDMI (monitor speaker)\n#   reset -> current system default\n\nset -euo pipefail\n\ndeclare -A sinks=(\n  [amp]=\"alsa_output.usb-Kingston_HyperX_Amp_000000000001-00.analog-stereo\"\n  [bt]=\"bluez_output.CC_90_93_24_11_F5.1\"\n  [hdmi]=\"alsa_output.pci-0000_01_00.1.hdmi-stereo\"\n)\n\ntarget=\"${1:-}\"\n\nif [[ -z \"$target\" ]]; then\n  echo \"Usage: set-audio [amp|bt|hdmi|reset]\"\n  echo \"\"\n  echo \"Available sinks:\"\n  pactl list sinks short 2>/dev/null | while IFS=$'\\t' read -r _ name _; do\n    echo \"  $name\"\n  done\n  exit 0\nfi\n\nif [[ \"$target\" == \"reset\" ]]; then\n  pactl set-default-sink \"$(pactl info 2>/dev/null | grep 'Default Sink' | awk '{print $3}')\"\n  exit 0\nfi\n\nsink=\"${sinks[$target]:-}\"\nif [[ -z \"$sink\" ]]; then\n  echo \"Error: unknown sink '$target'. Use amp, bt, hdmi, or reset.\"\n  exit 1\nfi\n\nif ! pactl set-default-sink \"$sink\" 2>/dev/null; then\n  echo \"Error: sink '$sink' not found.\"\n  pactl list sinks short 2>/dev/null\n  exit 1\nfi\n\n# Also set the current client to use it\npactl set-card-profile bluez_card.CC_90_93_24_11_F5 a2dp-sink 2>/dev/null || true\n\necho \"Set default sink to: $sink\"\n"
 }
 ```
 
 **Output:**
 ```
-Successfully wrote to /home/toxic/estate/bin/set-audio
+Successfully wrote to /home/toxic/pens/estate/bin/set-audio
 ```
 
 ---
@@ -912,7 +912,7 @@ Successfully wrote to /home/toxic/estate/bin/set-audio
 **Input:**
 ```json
 {
-  "command": "chmod +x /home/toxic/estate/bin/set-audio",
+  "command": "chmod +x /home/toxic/pens/estate/bin/set-audio",
   "description": "Make script executable"
 }
 ```
@@ -931,7 +931,7 @@ Successfully wrote to /home/toxic/estate/bin/set-audio
 **Input:**
 ```json
 {
-  "command": "ls -la ~/.local/bin/set-audio 2>/dev/null; echo \"---\"; grep -c 'set-audio' /home/toxic/estate/bin/manifest.yaml",
+  "command": "ls -la ~/.local/bin/set-audio 2>/dev/null; echo \"---\"; grep -c 'set-audio' /home/toxic/pens/estate/bin/manifest.yaml",
   "description": "Check if symlink exists and manifest entry"
 }
 ```
@@ -952,7 +952,7 @@ Successfully wrote to /home/toxic/estate/bin/set-audio
 **Input:**
 ```json
 {
-  "command": "ln -sf /home/toxic/estate/bin/set-audio ~/.local/bin/set-audio",
+  "command": "ln -sf /home/toxic/pens/estate/bin/set-audio ~/.local/bin/set-audio",
   "description": "Create symlink in .local/bin"
 }
 ```
@@ -971,7 +971,7 @@ Successfully wrote to /home/toxic/estate/bin/set-audio
 **Input:**
 ```json
 {
-  "command": "grep -n 'bins:' /home/toxic/estate/bin/manifest.yaml; sed -n '30,32p' /home/toxic/estate/bin/manifest.yaml",
+  "command": "grep -n 'bins:' /home/toxic/pens/estate/bin/manifest.yaml; sed -n '30,32p' /home/toxic/pens/estate/bin/manifest.yaml",
   "description": "Find insertion point in manifest"
 }
 ```
@@ -994,7 +994,7 @@ Successfully wrote to /home/toxic/estate/bin/set-audio
 **Input:**
 ```json
 {
-  "filePath": "/home/toxic/estate/bin/manifest.yaml",
+  "filePath": "/home/toxic/pens/estate/bin/manifest.yaml",
   "oldString": "  - name: cron-trust-monitor\n    dir: bin\n    kind: script\n    shebang: \"#!/usr/bin/env python3\"\n    syntax: python\n    run: []\n    expect: \"CRON-TRUST\"\n    timeout: 15\n    notes: \"cron reliability watchdog; read-only, safe to run\"",
   "newString": "  - name: set-audio\n    dir: bin\n    kind: script\n    shebang: \"#!/usr/bin/env bash\"\n    syntax: sh\n    notes: \"switch PipeWire default sink between KRK Amp (monitors), Bluetooth, and HDMI\"\n\n  - name: cron-trust-monitor\n    dir: bin\n    kind: script\n    shebang: \"#!/usr/bin/env python3\"\n    syntax: python\n    run: []\n    expect: \"CRON-TRUST\"\n    timeout: 15\n    notes: \"cron reliability watchdog; read-only, safe to run\""
 }
@@ -5900,9 +5900,11 @@ size=     938KiB time=00:00:05.00 bitrate=1536.1kbits/s speed=1.81e+03x elapsed=
 !�fC�p�2[ ���π )� L 	�〹$��, 8              �<Mnf�2     �   �        �<MnfD�2 � � A�� {�    G�  ��� m!L������v0X�$�@�0��P ���ͺb9/Q���ق���L� DT � X  ��X�"(�(G�4� m�M/'�<<GKWf� )��� � ��P �              �<MnfY,2     �   �        �<Mnf�%2 � � A�� {�    G�  ��� �!H��o5ߘv1pT���F��� 2;��&��dzo���Ԉk+�RsJ�� �I����"�4�.v�@ 
 ,�`� $���u&� y	l@QB �@3��?� �k��!�XG�Y�����HH 	���	�-q���4��               �<Mnf�02     �   �        �<Mnf�z2 � } A�� {�    G�  ��� g!L������v1`H��`A}��@  �b;��%��v7Ap�ش�� �`� \&� �؁" 8�#?��9RX>~BT8� "� E\ 	��                �<Mnf��2     �   �        �<Mng>�2 � � A�� {�    G�  ��� �!L������v0P�
 $	 b@�z��d(� ��cv	�p��^�A��CUr� � �4��f� ��E" �B���QH�h�VO�O�t"v�\�~6y�����h!   - H���k���               �<MngP�2     �   �        �<Mng�2 � � A�� {�    G�  ��� �!H��E5�v1� Be � �������ĄrT�9?x�+���0�tʴ	��*(�	�.u��T���h6�4cL FUJ
-D �$Mb��b(�!�-Eo�`-ӑ�f(��5�BO�S�'�_l+��H,���               �<Mng��2     y   y        �<Mng�2 u q A�� {�    G�  ��� [!L������v0X�!�b#��~�|~N'}%������`D�A ��$B���1��6P1!C%��	=�� @V `P@               �<Mng�62     �   �        �<Mnh8�2 � � A�� {�    G�  ��� ~!L�����Hv1hH���!Y@ �C�	?h>�C��?)}�F:Y@A)	�Ⱀ	Dr�rAH�`S� ��$D��`A G�'һ�?���#����qV�IE ��e� p@               �<MnhI�2     �   �        �<Mnh�"2 � � A�� {�    G�  ��� v!L�����v0X�%�BP� ��<��_kA%���]��-��`�@(��.\�!U�M70��\ �D QJ��hr3+�+5>�w� )� \�D�s  \�                �<Mnh��2     �   �        �<Mnh�z2 � � A�� {�    G�  ��� n!H������v1`J 1!� �Q���x���b��Y^� �%[�Ir�P�����@ � �}�$@bC�!Zr�HP�l|�Co>  @�J@	��; @               �<Mnh��2     �   �        �<Mni2�2 � � A�� {�    G�  ��� p!L�����v0X�
+D �$Mb��b(�!�-Eo�`-ӑ�f(��5�BO�S�'�_l+��H,���               �<Mng��2     y   y        �<Mng�2 u q A�� {�    G�  ��� [!L������v0X�!�b#��~�|~N'}%������`D�A ��$B���1��6P1!C%��	=�� @V `P@               �<Mng�62     �   �        �<Mnh8�2 � � A�� {�    G�  ��� ~!L�����Hv1hH���!Y@ �C�	?h>�C��?)}�F:Y@A)	�Ⱀ	Dr�rAH�`S� ��$D��`A G�'һ�?���#����qV�IE ��e� 
+p@               �<MnhI�2     �   �        �<Mnh�"2 � � A�� {�    G�  ��� v!L�����v0X�%�BP� ��<��_kA%���]��-��`�@(��.\�!U�M70��\ �D QJ��hr3+�+5>�w� )� \�D�s  \�                �<Mnh��2     �   �        �<Mnh�z2 � � A�� {�    G�  ��� n!H������v1`J 1!� �Q���x���b��Y^� �%[�Ir�P�����@ � �}�$@bC�!Zr�HP�l|�Co>  @�J@	��; @               �<Mnh��2     �   �        �<Mni2�2 � � A�� {�    G�  ��� p!L�����v0X�
 !���#��W��'㒥�~�S����!(�a� �
-��dARD@ F�@�B��G���&���#���J �� `F� �"  8              �<MniD?2     �   �        �<Mni�32 � � A�� {�    G�  ��� �!L��o5�l�� �#�Bc����E��` �F��̛��'-��p��IY5�B 	E+h.�+��h+]� 8  :����� �H����@!F �k����(
+��dARD@ F�@�B��G�
+��&���#���J �� `F� �"  8              �<MniD?2     �   �        �<Mni�32 � � A�� {�    G�  ��� �!L��o5�l�� �#�Bc����E��` �F��̛��'-��p��IY5�B 	E+h.�+��h+]� 8  :����� �H����@!F �k����(
 [E�!�XG�Y����ȀR ��`��+[�{M��                �<Mni��2     �   �        �<Mniل2 � � A�� {�    G�  ��� r!L������v0X�$��B0 ���jV�&@��:�?H���mV�*AQ`_�@B˒ 	�  #� @�
 !��3����HP�l|�Co> A�U� !e� 	�� �              �<Mni��2     �   �        �<Mnj,�2 � � A�� {�    G�  ��� w!L������v0H�
 !@��$��� p�2��A.�؉���N�V[�)Ut�bQ� \ ��� �D@!@H���6�4�� ��-]�P � �
@@ -5910,20 +5912,27 @@ D �$Mb��b(�!�-Eo�`-ӑ�f(��5�BO�S�'�_l+��H
 *�D�j#̙%" �$�D !0B��?�@� �eaef��n�� L� 4�*�Ŋ��aQ�&I(  �              �<Mnj��2     �   �        �<Mnjӌ2  { A�� !{�    G�  ��� e!L������v0X�$�@B0(��� �k���.�h���5g]W:�P��� DJ � � ��$D��`Q�J(?��������| Ha� � �                �<Mnj�2     �   �        �<Mnk&�2 � � A�� "{�    G�  ��� �!L������v1`H��`3!��"D��t����<����0}��`6� ��J \��	*�@�@��I.�` ~�@� H�
 !��%�`R���]���x��K�b8�O�$�� 
  ��                �<Mnk9�2     �   �        �<Mnkz 2 � � A�� #{�    G�  ��� y!L������v0H�
-$�@BP����h`��xM�3�f�]U��� �� �� Ta (ȸ.� �}�"��BP���,0fV�Vj}��,R �Xb�\�*<��P �              �<Mnk��2     �   �        �<Mnk�z2 � � A�� ${�    G�  ��� k!H������v0X�$�@BP��s� ( ���=��'ܺ�C���@ (�q . ��.� �}�!AP��@(�HP�l|�Co>  @ � L ,��               �<Mnkߺ2     �   �        �<Mnl �2 � � A�� %{�    G�  ��� l!L�����l�q0H� A @ i�Y=�</�>�8 ��mq�O�.*AB�,(Q@	�  �/�D QB��� 7�P��M/'�<<GKWf� @p@               �<Mnl2�2     �   �        �<Mnlt2 � � A�� &{�    G�  ��� �!L��e5�v1hB�����@e��1� ���3�cyJ�|��s��WUB�a �����Y� �U0Ƙ- @^ $�d��&� 'ȨR  � �-�
+$�@BP����h`��xM�3�f�]U��� �� �� Ta (ȸ.� �}�"��BP���,0fV�Vj}��,R �Xb�\�*<��P �              �<Mnk��2     �   �        �<Mnk�z2 � � A�� ${�    G�  ��� k!H������v0X�$�@BP��s� ( ���=��'ܺ�C���@ (�q . ��.� �}�!AP��@(�HP�l|�Co>  @ � L ,��               �<Mnkߺ2     �   �        �<Mnl �2 � � A�� %{�    G�  ��� l!L�����l�q0H� A @ i�Y=�</�>�8 ��mq�O�.*AB�,(Q@	�  �/�D QB��� 7�P�
+�M/'�<<GKWf� @
+p@               �<Mnl2�2     �   �        �<Mnlt2 � � A�� &{�    G�  ��� �!L��e5�v1hB�����@e��1� ���3�cyJ�|��s��WUB�a �����Y� �U0Ƙ- @^ $�d��&� 'ȨR  � �-�
 !�@B�!��W�փ`��fV�Vj}��,2 Y!{=0 �bՉ�¡(  �              �<Mnl��2     �   �        �<Mnl�y2 � } A�� '{�    G�  ��� g!L������v0H�
 %�@� ���� ٰy|$����.2J:�fҫ] �P(��U�.$�@ F�@�B�g��2[ ���π )� �%ɧ�L               �<Mnl�2     �   �        �<Mnm�2 � � A�� ({�    G�  ��� �!H������v0X�
-%��BP��{f �0�*GW�|1�ԡ	�	�"(� L�ʗ��3T T0�@ >�D [J �O��  Wk�K����٥ � �p& ���\ ]@!TSh����              �<Mnm+�2     �   �        �<Mnmn(2 � � A�� )|     G�  ��� �!H���5�v1p\(�@6GTb�`"~���I%���?�߀�j�4XWX�W����@ �7=��z\" Ȅ��*AZ *�*(D �$Mb�@BP�c XJ]`t�|��#�~P����	���
+%��BP��{f �0�*GW�|1�ԡ	�	�"(� L�ʗ��3T T0�@ >�D [J �O��  Wk�K����٥ � �p& ���\ ]@!TSh����              �<Mnm+�2     �   �        �<Mnmn(2 � � A�� )|     G�  ��� �!H���5�v1p\(�@6GTb�`"~���I%���?�߀�j�4XWX�W����@ �7=��z\" Ȅ��*AZ *�*(D �$Mb�@BP�c XJ]`t�|��#�
+~P����	���
 �)�
 �\M�屏9%*�}�`�              �<Mnm~�2     �   �        �<Mnm�y2 � � A�� *|    G�  ��� r!L������v08�
 !@��$|
-!0oL{��O7�b^��PH�Ix+ܵ�p"�� ���  �$D ć���L ��K��J�  �  a j�@1	�  8              �<Mnm�=2     �   �        �<Mnn�2 � � A�� +|    G�  ��� v!L�����v1`B �`!H��@����0���!�#��?I� �I�!�(�`��d� �,  �D 1F����JOYЈ�"S i ��``d�	�  p              �<Mnn$�2     �   �        �<Mnnh!2 � � A�� ,|    G�  ��� !L������v0X�
+!0
+oL{��O7�b^��PH�Ix+ܵ�p"�� ���  �$D ć���L ��K��J�  �  a j�@1	�  8              �<Mnm�=2     �   �        �<Mnn�2 � � A�� +|    G�  ��� v!L�����v1`B �`!H��@����0���!�#��?I� �I�!�(�`��d� �,  �D 1F����JOYЈ�"S i ��``d�	�  p              �<Mnn$�2     �   �        �<Mnnh!2 � � A�� ,|    G�  ��� !L������v0X�
 $�@f��?�� �i���V�OÙO��<@� ��J"�X�&�e��  C�k����>�	�@3I �H��G�k�@��#[��{j�Ȥ�c�Q4ha   &p�`�p� �              �<Mnnw�2     �   �        �<Mnn��2 � � A�� -|    G�  ��� o!H������v1hJ�ܰ�P# v�n�	���݂荒 �.T�\	� ��p � @  #� H�
 !
 ���HP�l|�Co>  ��p &   ��  p              �<Mnn��2     �   �        �<Mno�2 � � A�� .|    G�  ��� ~!L�����DVA`N��@�!Z�5�g��B������Y�y�6�5���0.$�@$ʀD�"a1� &� @�� �}�!�@B���k�K����٥ D� rD�c� @  p�  p              �<MnoB2     �   �        �<Mnob.2 � � A�� /|    G�  ��� j!L�����Hv0H�!�� ��Sಀ~���'���I�d����,�E@x��� ���	�D !F�@��R>$�����P'�����^ڨ�)�P\ �              �<Mnou�2     �   �        �<Mno�|2 �  A�� 0|    G�  ��� i!L�����v0X�%��B0 � 
 (/�WP�Hx�	�f&��p�5$VB�J �T�0&.@ F�@� F��(�HP�l|�Co>  � L ��\ �              �<Mno�,2     �   �        �<Mnp�2 � � A�� 1|     G�  ��� m!H������v0P�$�@f�c� , ���_z%���yx�nP����%��J"��P`� � \L�$���<b�@�����I�����%2 � .  *�P�  p              �<Mnp�2     �   �        �<Mnp\!2 � � A�� 2|$    G�  ��� �!H��m5��v1`B���b�$Q� sO;��3��C�|���P���REʎ�QAZ�@7kV��� 
-E[�&�0 +�EB�*� �}�"�@B�!�Q �NGɘ�?���	?�N��=}���() @�����l��               �<Mnpn�2     �   �        �<Mnp��2 � � A�� 3|(    G�  ��� {!L�����v0X�
-'@B0���/��F�����R��|✫O6�D(�� �  ����a� }��@a B�Ć��@�`H��$(d�>A!���  4AQ@�� �� L   �              �<Mnp��2     �   �        �<Mnq�2 � � A�� 4|,    G�  ��� �!L������v1`H���!�B�h6GH�Y��N:K��T���B�	H�A8 � QUK���\
+E[�&�0 
++�EB�*� �}�"�@B�!�Q �NGɘ�?���	?�N��=}���() @�����l��               �<Mnpn�2     �   �        �<Mnp��2 � � A�� 3|(    G�  ��� {!L�����v0X�
+'@B0���/��F�����R��|
+✫O6�D(�� �  ����a� }��@a B�Ć��@�`H��$(d�>A!���  4AQ@�� �� L   �              �<Mnp��2     �   �        �<Mnq�2 � � A�� 4|,    G�  ��� �!L������v1`H���!�B�h6GH�Y��N:K�
+�T���B�	H�A8 � QUK���\
 
 ```
 
@@ -6455,7 +6464,7 @@ I should just gather the facts and let the measurement decide. Let me:
 3. Check whether ALC897 has any input signal (enable card 2, capture, look for signal) — this is the "can we use hardware to hear" answer.
 4. Fix the bin script (main deliverable!) — it currently has amp/bt/hdmi mapping which is right, but I need to make it permanent/persistent, and add the balance-fix capability.
 
-Also important: the user asked for the bin script to be permanent. I already wrote /home/toxic/estate/bin/set-audio. I need to:
+Also important: the user asked for the bin script to be permanent. I already wrote /home/toxic/pens/estate/bin/set-audio. I need to:
 - Make it robust (auto-detect sink names by description, not hardcoded MAC)
 - Add balance/balance-fix
 - Make it persistent (so it re-applies after reconnects) — via a systemd/pitchfork or a wireplumber rule? Simplest robust: a small script + systemd user timer or just make the default sink persistent via pipewire config.
@@ -6572,7 +6581,7 @@ I should just gather the facts and let the measurement decide. Let me:
 3. Check whether ALC897 has any input signal (enable card 2, capture, look for signal) — this is the "can we use hardware to hear" answer.
 4. Fix the bin script (main deliverable!) — it currently has amp/bt/hdmi mapping which is right, but I need to make it permanent/persistent, and add the balance-fix capability.
 
-Also important: the user asked for the bin script to be permanent. I already wrote /home/toxic/estate/bin/set-audio. I need to:
+Also important: the user asked for the bin script to be permanent. I already wrote /home/toxic/pens/estate/bin/set-audio. I need to:
 - Make it robust (auto-detect sink names by description, not hardcoded MAC)
 - Add balance/balance-fix
 - Make it persistent (so it re-applies after reconnects) — via a systemd/pitchfork or a wireplumber rule? Simplest robust: a small script + systemd user timer or just make the default sink persistent via pipewire config.
@@ -7932,8 +7941,8 @@ For the manifest — I already added a set-audio entry but with wrong mapping no
 Let me check /etc/bluetooth/main.conf full content and wireplumber version.
 
 I'll write:
-- `/home/toxic/estate/bin/set-audio` — rewritten: `set-audio krk|bt|hdmi|amp|list`, plus `set-audio krk` = BT KRK.
-- `/home/toxic/estate/bin/krk-test` — quiet short per-channel tone player (dog-safe levels).
+- `/home/toxic/pens/estate/bin/set-audio` — rewritten: `set-audio krk|bt|hdmi|amp|list`, plus `set-audio krk` = BT KRK.
+- `/home/toxic/pens/estate/bin/krk-test` — quiet short per-channel tone player (dog-safe levels).
 - BlueZ config: `/etc/bluetooth/main.conf` — set `[Policy] AutoEnable=true`, and importantly `InitialAutoEnable`? Hmm.
 
 Let me recall BlueZ main.conf options for profile autoloading:
@@ -8077,8 +8086,8 @@ For the manifest — I already added a set-audio entry but with wrong mapping no
 Let me check /etc/bluetooth/main.conf full content and wireplumber version.
 
 I'll write:
-- `/home/toxic/estate/bin/set-audio` — rewritten: `set-audio krk|bt|hdmi|amp|list`, plus `set-audio krk` = BT KRK.
-- `/home/toxic/estate/bin/krk-test` — quiet short per-channel tone player (dog-safe levels).
+- `/home/toxic/pens/estate/bin/set-audio` — rewritten: `set-audio krk|bt|hdmi|amp|list`, plus `set-audio krk` = BT KRK.
+- `/home/toxic/pens/estate/bin/krk-test` — quiet short per-channel tone player (dog-safe levels).
 - BlueZ config: `/etc/bluetooth/main.conf` — set `[Policy] AutoEnable=true`, and importantly `InitialAutoEnable`? Hmm.
 
 Let me recall BlueZ main.conf options for profile autoloading:
@@ -8479,7 +8488,7 @@ udev
 
 **Output:**
 ```
-# AGENTS.md — estate-scripts Shell / Dots-Hyprland (`/home/toxic/estate/ranch/shell/dots-hyprland`)
+# AGENTS.md — estate-scripts Shell / Dots-Hyprland (`/home/toxic/pens/estate/ranch/shell/dots-hyprland`)
 
 **Role**: Desktop and OS user interface layer for the estate-scripts stack (Hyprland + QuickShell + Waybar/Rofi).
 **Stack**: Lua (Hyprland configs), QML / JavaScript (QuickShell), Bash, Fish shell.
@@ -8667,13 +8676,13 @@ Let me check the delend-code-race script.
 **Input:**
 ```json
 {
-  "filePath": "/home/toxic/estate/bin/delend-code-race"
+  "filePath": "/home/toxic/pens/estate/bin/delend-code-race"
 }
 ```
 
 **Output:**
 ```
-<path>/home/toxic/estate/bin/delend-code-race</path>
+<path>/home/toxic/pens/estate/bin/delend-code-race</path>
 <type>file</type>
 <content>
 1: #!/usr/bin/env bun
@@ -8691,7 +8700,7 @@ Let me check the delend-code-race script.
 **Input:**
 ```json
 {
-  "command": "cat /home/toxic/estate/bin/run-fast 2>/dev/null | head -40",
+  "command": "cat /home/toxic/pens/estate/bin/run-fast 2>/dev/null | head -40",
   "description": "Read run-fast wrapper"
 }
 ```
@@ -8750,7 +8759,7 @@ while [ $# -gt 0 ]; do
 **Input:**
 ```json
 {
-  "command": "cd /home/toxic/estate && timeout 20 bun /home/toxic/estate/bin/delend-code-race --help 2>&1 | head -50",
+  "command": "cd /home/toxic/estate && timeout 20 bun /home/toxic/pens/estate/bin/delend-code-race --help 2>&1 | head -50",
   "description": "Get delend-code-race usage"
 }
 ```
@@ -9427,7 +9436,7 @@ Let me create the script.
 
 I'll write /tmp/kappa/bt-probe.sh with lines, then run `delend-code-race-line --stdin < script --seconds 12 --log out.txt`.
 
-Wait, does delend-code-race-line exist as a bin? Yes: /home/toxic/estate/bin/delend-code-race-line. Let me verifyit exists.
+Wait, does delend-code-race-line exist as a bin? Yes: /home/toxic/pens/estate/bin/delend-code-race-line. Let me verifyit exists.
 </think>
 
 Understood — I was reasoning instead of racing. Let me read the racer contract and run the probes as a bounded race instead.
@@ -9620,7 +9629,7 @@ Let me create the script.
 
 I'll write /tmp/kappa/bt-probe.sh with lines, then run `delend-code-race-line --stdin < script --seconds 12 --log out.txt`.
 
-Wait, does delend-code-race-line exist as a bin? Yes: /home/toxic/estate/bin/delend-code-race-line. Let me verifyit exists.
+Wait, does delend-code-race-line exist as a bin? Yes: /home/toxic/pens/estate/bin/delend-code-race-line. Let me verifyit exists.
 
 **Tool: read**
 
@@ -9690,14 +9699,14 @@ Wait, does delend-code-race-line exist as a bin? Yes: /home/toxic/estate/bin/del
 **Input:**
 ```json
 {
-  "command": "ls -la /home/toxic/estate/bin/delend-code-race-line; echo \"=== system-tuning apply ===\"; rg -n 'etc/bluetooth|bluetooth' /home/toxic/pens/ranch/shell/ii/system-tuning/apply-system-tuning.sh 2>&1 | head -20",
+  "command": "ls -la /home/toxic/pens/estate/bin/delend-code-race-line; echo \"=== system-tuning apply ===\"; rg -n 'etc/bluetooth|bluetooth' /home/toxic/pens/ranch/shell/ii/system-tuning/apply-system-tuning.sh 2>&1 | head -20",
   "description": "Check race-line bin and bluetooth tuning hooks"
 }
 ```
 
 **Output:**
 ```
-lrwxrwxrwx 1 toxic toxic 72 Oct 24 00:36 /home/toxic/estate/bin/delend-code-race-line -> /home/toxic/pens/barn/corral/delendai/plugins/code-race/bin/race-line.ts
+lrwxrwxrwx 1 toxic toxic 72 Oct 24 00:36 /home/toxic/pens/estate/bin/delend-code-race-line -> /home/toxic/pens/barn/corral/delendai/plugins/code-race/bin/race-line.ts
 === system-tuning apply ===
 
 ```
@@ -10250,10 +10259,10 @@ Actually for speed, let me combine: write probe file via bash heredoc (file oper
 Let me do it.
 
 Also, I want to fix the set-audio script (wrong mapping) and create the BT autoload system. Let me plan file locations:
-- `/home/toxic/estate/bin/set-audio` — the permanent bin script (already exists, wrong mapping; fix it)
-- `/home/toxic/estate/bin/krk-audio` maybe better name. User said "make a bin script" for permanent audio switching. Keep `set-audio` and add `set-audio krk|bt|amp|hdmi|reset`.
+- `/home/toxic/pens/estate/bin/set-audio` — the permanent bin script (already exists, wrong mapping; fix it)
+- `/home/toxic/pens/estate/bin/krk-audio` maybe better name. User said "make a bin script" for permanent audio switching. Keep `set-audio` and add `set-audio krk|bt|amp|hdmi|reset`.
 - WirePlumber rule: `/home/toxic/pens/ranch/shell/ii/dots/.config/wireplumber/rules.d/` — but that dir doesn't exist in dots. I could add it. But the ~/.config/wireplumber doesn't exist locally. Creating the dots file + symlink works.
-- systemd user service for BT connect + default sink: `/home/toxic/estate/bin/` script + systemd user unit in dots/.config/systemd/user/.
+- systemd user service for BT connect + default sink: `/home/toxic/pens/estate/bin/` script + systemd user unit in dots/.config/systemd/user/.
 
 Let me check dots/.config/systemd exists.
 
@@ -10450,10 +10459,10 @@ Actually for speed, let me combine: write probe file via bash heredoc (file oper
 Let me do it.
 
 Also, I want to fix the set-audio script (wrong mapping) and create the BT autoload system. Let me plan file locations:
-- `/home/toxic/estate/bin/set-audio` — the permanent bin script (already exists, wrong mapping; fix it)
-- `/home/toxic/estate/bin/krk-audio` maybe better name. User said "make a bin script" for permanent audio switching. Keep `set-audio` and add `set-audio krk|bt|amp|hdmi|reset`.
+- `/home/toxic/pens/estate/bin/set-audio` — the permanent bin script (already exists, wrong mapping; fix it)
+- `/home/toxic/pens/estate/bin/krk-audio` maybe better name. User said "make a bin script" for permanent audio switching. Keep `set-audio` and add `set-audio krk|bt|amp|hdmi|reset`.
 - WirePlumber rule: `/home/toxic/pens/ranch/shell/ii/dots/.config/wireplumber/rules.d/` — but that dir doesn't exist in dots. I could add it. But the ~/.config/wireplumber doesn't exist locally. Creating the dots file + symlink works.
-- systemd user service for BT connect + default sink: `/home/toxic/estate/bin/` script + systemd user unit in dots/.config/systemd/user/.
+- systemd user service for BT connect + default sink: `/home/toxic/pens/estate/bin/` script + systemd user unit in dots/.config/systemd/user/.
 
 Let me check dots/.config/systemd exists.
 
@@ -10519,7 +10528,7 @@ Now let me race the probes and simultaneously check the system-tuning install pa
 **Input:**
 ```json
 {
-  "command": "cd /tmp/kappa && timeout 25 /home/toxic/estate/bin/delend-code-race-line /tmp/kappa/bt-probe.sh --seconds 12 --log /tmp/kappa/probe.log 2>&1 | rg -m3 '.'; echo \"=== PROBE OUTPUT ===\"; cat /tmp/kappa/probe.log",
+  "command": "cd /tmp/kappa && timeout 25 /home/toxic/pens/estate/bin/delend-code-race-line /tmp/kappa/bt-probe.sh --seconds 12 --log /tmp/kappa/probe.log 2>&1 | rg -m3 '.'; echo \"=== PROBE OUTPUT ===\"; cat /tmp/kappa/probe.log",
   "description": "Race all BT diagnostic probes under one budget"
 }
 ```

@@ -21,7 +21,7 @@ Secrets live in the **secretsmith keyring** (freedesktop Secret Service), inject
 | ---------------- | ------------------------------------------ | ------------------------------------------------------------------------------ |
 | `ESTATE_HOME`    | `/home/toxic/estate`                       | Absolute estate home (set in `.envrc`; not `.bashrc`-dependent)                |
 | `ESTATE_ROOT`    | `/home/toxic/estate`                       | Canonical estate root (formerly `SOVEREIGN_ROOT`)                              |
-| `ESTATE_DB`      | `/home/toxic/estate/data/estate_router.db` | SQLite DB for the estate router (relative default lives under `data/`)         |
+| `ESTATE_DB`      | `/home/toxic/pens/estate/data/estate_router.db` | SQLite DB for the estate router (relative default lives under `data/`)         |
 | `SOVEREIGN_ROOT` | _(retired)_                                | Legacy alias fully removed from `.envrc`; old callers should use `ESTATE_ROOT` |
 
 ## Compute & build

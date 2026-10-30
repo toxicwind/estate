@@ -12,11 +12,11 @@ NORTH STAR (estate/README.md) verified 10/10 claims vs pitchfork.toml, config/po
 6. Flag doc/code mismatches that are live bugs separately (already done: 100644 cleanup).
 
 ## Critical files & anchors
-- /home/toxic/estate/README.md (NORTH STAR — verified accurate)
-- /home/toxic/estate/pitchfork.toml (service definitions, port group SSOT)
-- /home/toxic/estate/config/ports.env (port SSOT — 25117 hindsight, 25127 mesh)
-- /home/toxic/estate/docs/fleet-knowledgebase.md (required reading, estate map)
-- /home/toxic/estate/hatch/agents/ember/docs/ + projects/mesh/README.md (SUBSYSTEM — spot-check only)
+- /home/toxic/pens/estate/README.md (NORTH STAR — verified accurate)
+- /home/toxic/pens/estate/pitchfork.toml (service definitions, port group SSOT)
+- /home/toxic/pens/estate/config/ports.env (port SSOT — 25117 hindsight, 25127 mesh)
+- /home/toxic/pens/estate/docs/fleet-knowledgebase.md (required reading, estate map)
+- /home/toxic/pens/estate/hatch/agents/ember/docs/ + projects/mesh/README.md (SUBSYSTEM — spot-check only)
 
 ## Verification
 - bun helpers/estate-scanner.ts → PASS (0 broken bin, /tmp/estate-verify-2.jsonl)

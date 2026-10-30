@@ -36,14 +36,14 @@ Source: `~/.tau/logs/http-400-requests/1791701662567-3otza2kh038ha.json`
 
 ## Files Modified
 
-### 1. `/home/toxic/estate/config/rhodochrosite-ssot/rhodochrosite.env` (line 16)
+### 1. `/home/toxic/pens/estate/config/rhodochrosite-ssot/rhodochrosite.env` (line 16)
 ```diff
 - NVIDIA_API_KEYS=<4× nvapi-… keys, retired; original values were in rhodochrosite.env + config/.secrets → NVIDIA_API_KEYS, now removed>
 + # NVIDIA_API_KEYS removed - keys belonged to failing NGC account iuh5eKGaKSnWglC73O7UeZBzNHZ5aP7TLHyJpM-rxWY
 + # Working key is in NVIDIA_API_KEY / NIM_API_KEY (nvapi-FSFzZ…WLOk; full value: config/.secrets → NVIDIA_API_KEY)
 ```
 
-### 2. `/home/toxic/estate/config/.secrets` (line 120)
+### 2. `/home/toxic/pens/estate/config/.secrets` (line 120)
 ```diff
 - NVIDIA_API_KEYS=<4× nvapi-… keys, retired; see config/.secrets → NVIDIA_API_KEYS history>
 + # NVIDIA_API_KEYS removed - keys belonged to failing NGC account iuh5eKGaKSnWglC73O7UeZBzNHZ5aP7TLHyJpM-rxWY
@@ -78,7 +78,7 @@ The `NVIDIA_API_KEYS` env var was being read by the proxy's key pool rotation lo
 1. **Never mix key formats in rotation pools.** `nvapi-*` and `npk_` keys have different trust boundaries.
 2. **Audit entitlements before adding keys.** Use the auditor script:
    ```bash
-   bun run /home/toxic/estate/scripts/nvapi-key-audit.ts
+   bun run /home/toxic/pens/estate/scripts/nvapi-key-audit.ts
    ```
 3. **Single source of truth.** Only `NVIDIA_API_KEY` (npk_) should be configured for rhodochrosite proxy. No `NVIDIA_API_KEYS` rotation.
 
@@ -86,9 +86,9 @@ The `NVIDIA_API_KEYS` env var was being read by the proxy's key pool rotation lo
 
 ## Related Links
 
-- Auditor script: [`/home/toxic/estate/scripts/nvapi-key-audit.ts`](../../scripts/nvapi-key-audit.ts)
-- Rhodochrosite env config: [`/home/toxic/estate/config/rhodochrosite-ssot/rhodochrosite.env`](../../config/rhodochrosite-ssot/rhodochrosite.env)
-- Source secrets: [`/home/toxic/estate/config/.secrets`](../../config/.secrets)
-- Proxy implementation: [`/home/toxic/estate/corral/src/nimProxy.ts`](../../corral/src/nimProxy.ts)
+- Auditor script: [`/home/toxic/pens/estate/scripts/nvapi-key-audit.ts`](../../scripts/nvapi-key-audit.ts)
+- Rhodochrosite env config: [`/home/toxic/pens/estate/config/rhodochrosite-ssot/rhodochrosite.env`](../../config/rhodochrosite-ssot/rhodochrosite.env)
+- Source secrets: [`/home/toxic/pens/estate/config/.secrets`](../../config/.secrets)
+- Proxy implementation: [`/home/toxic/pens/estate/corral/src/nimProxy.ts`](../../corral/src/nimProxy.ts)
 - Failed request logs: `~/.tau/logs/http-400-requests/`
 - NVIDIA NGC Entitlements doc: https://docs.nvidia.com/ngc/ngc-user-guide/index.html#entitlements

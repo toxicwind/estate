@@ -7,9 +7,9 @@ service was stopped/started (with liveness checks between).
 ## 1. What OpenFang is here
 
 - Kernel binary: `/home/toxic/projects/rig-work/target/debug/openfang` (Rig fork, v0.6.9)
-- Supervised as pitchfork daemon `Estate/openfang` via `/home/toxic/estate/ops/openfang-run.sh`
-- Config: `/home/toxic/estate/config/openfang-25196.toml` → `api_listen = "127.0.0.1:25196"`
-- HOME=/home/toxic; agent definitions in `/home/toxic/estate/agents/*/agent.toml`
+- Supervised as pitchfork daemon `Estate/openfang` via `/home/toxic/pens/estate/ops/openfang-run.sh`
+- Config: `/home/toxic/pens/estate/config/openfang-25196.toml` → `api_listen = "127.0.0.1:25196"`
+- HOME=/home/toxic; agent definitions in `/home/toxic/pens/estate/agents/*/agent.toml`
   (`/home/toxic/.openfang/agents` symlinks there)
 - State on disk: `/home/toxic/.openfang/data/openfang.db` (sqlite, WAL mode)
 

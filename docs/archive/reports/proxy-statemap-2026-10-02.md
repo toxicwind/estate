@@ -73,7 +73,7 @@ All four tau sessions run the **old** `@oh-my-pi/pi-coding-agent` bundle
 (the `omp → tau` rename has not reached the running processes).
 
 On `native-attach`: no such command exists anywhere in the tree (searched the
-estate, `/home/toxic/estate/sigma`, tau docs, `$PATH`, and the
+estate, `/home/toxic/pens/estate/sigma`, tau docs, `$PATH`, and the
 `billion-context` dist). The functional equivalent — which proxy a session is
 attached to and whether its code matches — is the lane registry plus the
 instance-record fingerprints, reported in the tables above. Fingerprint
@@ -128,7 +128,7 @@ Three instances, one sessions directory (`/home/toxic/.local/state/billion-conte
 
 ## Sigma status
 
-`/home/toxic/estate/sigma` exists (`dist/agent/omp-native.js` present) but
+`/home/toxic/pens/estate/sigma` exists (`dist/agent/omp-native.js` present) but
 `bili doctor` flags it **stale**: copy version `0.1.160` vs registry `0.1.180`.
 No sigma process is running. The queued `bili → sigma` rename has not landed
 in the live proxy layer — all live proxies are `billion-context`.

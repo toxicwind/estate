@@ -3,13 +3,13 @@
   "host": {
     "hostname": "awrawr-pc",
     "home": "/home/toxic",
-    "estateRoot": "/home/toxic/estate",
+    "estateRoot": "/home/toxic/pens/estate",
     "tauConfigDir": ".tau"
   },
   "repos": [
     {
       "name": "estate",
-      "path": "/home/toxic/estate",
+      "path": "/home/toxic/pens/estate",
       "role": "control plane: pitchfork.toml, config/, bin/, bridge/, agents/, docs/, projects/",
       "exists": true,
       "isRepo": true,
@@ -21,7 +21,7 @@
     },
     {
       "name": "ranch",
-      "path": "/home/toxic/estate/ranch",
+      "path": "/home/toxic/pens/estate/ranch",
       "role": "the inference estate monorepo: bornite, rhodochrosite, thresher, squawk, oracle, and the mesh provider catalog",
       "exists": true,
       "isRepo": true,
@@ -1878,8 +1878,8 @@
     {
       "severity": "high",
       "kind": "duplicate-checkout",
-      "detail": "https://github.com/toxicwind/ranch checked out 2x — newest 3c1a4a5 @ /home/toxic/estate/ranch; /home/toxic/ranch @ 3c1a4a5 (2026-10-02T23:57:58-06:00)",
-      "fix": "keep /home/toxic/estate/ranch; delete or archive /home/toxic/ranch"
+      "detail": "https://github.com/toxicwind/ranch checked out 2x — newest 3c1a4a5 @ /home/toxic/pens/estate/ranch; /home/toxic/ranch @ 3c1a4a5 (2026-10-02T23:57:58-06:00)",
+      "fix": "keep /home/toxic/pens/estate/ranch; delete or archive /home/toxic/ranch"
     },
     {
       "severity": "medium",

@@ -26,8 +26,8 @@ plane at [`toxicwind/estate`](https://github.com/toxicwind/estate).
 `pens/toolkit/` and `ranch/toolkit/` hold the Bun README/manifest generators that
 keep pantheon tables and component metadata in sync.
 
-The estate deploys _through_ the paths: `/home/toxic/estate/ranch/…` maps to
-`pens/ranch/…` and `/home/toxic/estate/olympus/…` maps to `pens/olympus/…`.
+The estate deploys _through_ the paths: `/home/toxic/pens/estate/ranch/…` maps to
+`pens/ranch/…` and `/home/toxic/pens/estate/olympus/…` maps to `pens/olympus/…`.
 This is the organization — pens under `pens/`, deploy plane under `estate/`,
 both staying path-compatible.
 

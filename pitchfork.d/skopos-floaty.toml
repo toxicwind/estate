@@ -9,8 +9,8 @@
 [daemons.skopos-floaty]
 mise = true
 port = 25238
-run = "exec /home/toxic/estate/bin/skopos-floaty.sh"
-dir = "/home/toxic/estate"
+run = "exec /home/toxic/pens/estate/bin/skopos-floaty.sh"
+dir = "/home/toxic/pens/estate"
 retry = true
 depends = ["agent-display"]
 ready_http = "http://127.0.0.1:25238/"

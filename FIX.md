@@ -14,10 +14,10 @@
 
 ## Phase 1: Core Infrastructure
 
-- [x] Start Qdrant on 25133 (config: `/home/toxic/estate/qdrant-config.yaml`)
+- [x] Start Qdrant on 25133 (config: `/home/toxic/pens/estate/qdrant-config.yaml`)
 - [x] Start bornite on 25100
   - [x] Verify binary exists: `/home/toxic/projects/bornite-main/bornite`
-  - [x] Verify config: `/home/toxic/estate/config/bornite.yaml`
+  - [x] Verify config: `/home/toxic/pens/estate/config/bornite.yaml`
   - [x] Run: `./stack/services/bornite.sh &`
   - [x] Health check: `curl -sf http://127.0.0.1:25100/health`
   - [x] **FULL AUDIT**: UI at `/ui/` serves React app with Tailwind, all assets load
@@ -131,7 +131,7 @@
 ### bornite (toxicwind fork)
 
 - ✅ Binary: `/home/toxic/projects/bornite-main/bornite` (Go, built)
-- ✅ Config: `/home/toxic/estate/config/bornite.yaml` (matrix router, 29 models)
+- ✅ Config: `/home/toxic/pens/estate/config/bornite.yaml` (matrix router, 29 models)
 - ✅ UI: `http://localhost:25100/ui/` — React + Tailwind, all assets load
 - ✅ API: `/v1/models` — 29 models from beellama, gemma, qwen, ik_llama forks
 - ✅ API: `/v1/chat/completions` — EXAONE 1.2B IQ4_XS loaded, responds in ~60ms
@@ -185,7 +185,7 @@ curl -s -X POST http://127.0.0.1:25109/mcp \
 - [x] Cache first-class: `/internal/cache/cache.go` in binary, `store.db` at `~/.local/share/bornite/store.db`
 - [x] UI first-class: React + Tailwind SPA embedded via `embed_ui` tag, all assets served with brotli compression
 - [x] Test framework: `test/services/test-framework.ts` — reusable, non-destructive service health tests using `curl` (handles compression) and `redis-cli`
-- [x] Pitchfork supervisor restarted; bornite started via `PITCHFORK_CONFIG_PATH=/home/toxic/estate/pitchfork.toml pitchfork start bornite`
+- [x] Pitchfork supervisor restarted; bornite started via `PITCHFORK_CONFIG_PATH=/home/toxic/pens/estate/pitchfork.toml pitchfork start bornite`
 
 ## Phase 4: HAL Substrate Integration
 

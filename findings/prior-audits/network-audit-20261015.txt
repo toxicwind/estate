@@ -342,7 +342,7 @@ LISTEN 0      512                                           *:25219            *
 --- sysctl ---
 net.ipv4.ip_forward = 1
 net.ipv6.conf.all.forwarding = 1
-lrwxrwxrwx 1 root root 60 Oct 14 21:47 /etc/sysctl.d/99-tailscale-forward.conf -> /home/toxic/estate/config/sysctl.d/99-tailscale-forward.conf
+lrwxrwxrwx 1 root root 60 Oct 14 21:47 /etc/sysctl.d/99-tailscale-forward.conf -> /home/toxic/pens/estate/config/sysctl.d/99-tailscale-forward.conf
 --- tailscale ping direct ---
 pong from almalinux-server (100.86.83.77) via 172.96.160.178:41641 in 41ms
 --- ssh alive ---

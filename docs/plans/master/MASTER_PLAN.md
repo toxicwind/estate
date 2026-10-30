@@ -50,7 +50,7 @@ User runs "pi"
 4. Add AST matrix mcpproxy awareness to pi-agent fork
 5. Ensure retrieve_tools shows ALL ghas endpoints
 
-See: `/home/toxic/estate/audit/GHAS_INTEGRATION_PLAN.md`
+See: `/home/toxic/pens/estate/audit/GHAS_INTEGRATION_PLAN.md`
 
 ---
 

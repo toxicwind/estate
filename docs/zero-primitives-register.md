@@ -27,4 +27,4 @@ Carried by the <ranch>-<name> worktrees (the "word-in-front" matches):
 
 ## Notes
 - The zero-* search is best done with `find ... -iname 'zero-*' -o -iname '*zero-transport*'` (word-in-front via the worktree pattern ranch-*).
-- Catalog regenerated on demand; see `/home/toxic/estate/bin/delend-route` for routing a "zero-transport" intent to the right primitive.
+- Catalog regenerated on demand; see `/home/toxic/pens/estate/bin/delend-route` for routing a "zero-transport" intent to the right primitive.

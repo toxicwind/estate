@@ -11,7 +11,7 @@
     },
     "tau_audit": {
       "agent": "11fa2d74-a807-4d64-8cf2-7e2636549176",
-      "detail": "Slate the pangolin. tau-audit.sh 15/15, audit.ts 7/7, frontmatter all pass. Log: /home/toxic/estate/hatch/tau-audit-slate-20261001.log",
+      "detail": "Slate the pangolin. tau-audit.sh 15/15, audit.ts 7/7, frontmatter all pass. Log: /home/toxic/pens/estate/hatch/tau-audit-slate-20261001.log",
       "status": "complete"
     },
     "marquee": {

@@ -711,7 +711,7 @@
 {"timestamp":"2026-10-26T02:15:30.998-06:00","level":"debug","pid":2380202,"message":"direnv .envrc not allowed; skipping","dir":"/home/toxic/pens/olympus/products/kairos"}
 {"timestamp":"2026-10-26T02:15:32.807-06:00","level":"debug","pid":2380202,"message":"direnv .envrc not allowed; skipping","dir":"/home/toxic/pens/olympus/products/kairos"}
 {"timestamp":"2026-10-26T02:15:34.063-06:00","level":"debug","pid":2380202,"message":"direnv .envrc not allowed; skipping","dir":"/home/toxic/pens/olympus/products/kairos"}
-{"timestamp":"2026-10-26T02:16:03.587-06:00","level":"debug","pid":2380202,"message":"direnv .envrc not allowed; skipping","dir":"/home/toxic/estate"}
+{"timestamp":"2026-10-26T02:16:03.587-06:00","level":"debug","pid":2380202,"message":"direnv .envrc not allowed; skipping","dir":"/home/toxic/pens/estate"}
 {"timestamp":"2026-10-26T02:16:13.222-06:00","level":"debug","pid":2380202,"message":"agent_end maintenance routing","route":"entered","stopReason":"stop","provider":"freeinference","model":"glm-5.3-flash","contentBlocks":1,"hasToolCalls":false,"hasText":true,"goalModeEnabled":false,"successfulYield":false}
 {"timestamp":"2026-10-26T02:16:15.098-06:00","level":"debug","pid":2380202,"message":"agent_end maintenance routing","route":"bottom-checkCompaction","stopReason":"stop","provider":"freeinference","model":"glm-5.3-flash","contentBlocks":1,"hasToolCalls":false,"hasText":true,"goalModeEnabled":false,"successfulYield":false}
 {"timestamp":"2026-10-26T02:16:39.877-06:00","level":"debug","pid":2380202,"message":"agent_end maintenance routing","route":"entered","stopReason":"stop","provider":"freeinference","model":"glm-5.3-flash","contentBlocks":2,"hasToolCalls":false,"hasText":true,"goalModeEnabled":false,"successfulYield":false}
@@ -761,7 +761,7 @@
 {"timestamp":"2026-10-26T02:34:10.019-06:00","level":"debug","pid":2380202,"message":"Usage fetch queued","provider":"zai","credentialType":"oauth","baseUrl":"https://api.z.ai/api/anthropic","email":"toxicwind@gmail.com"}
 {"timestamp":"2026-10-26T02:34:10.407-06:00","level":"warn","pid":2380202,"message":"ZAI usage response invalid 当前用户不存在coding plan","code":500}
 {"timestamp":"2026-10-26T02:34:10.916-06:00","level":"debug","pid":2380202,"message":"Usage fetch resolved","reports":[{"provider":"github-copilot","limits":1,"account":"toxicwind"},{"provider":"google-antigravity","limits":5,"account":"toxicwind@gmail.com"}]}
-{"timestamp":"2026-10-26T02:34:44.489-06:00","level":"debug","pid":2380202,"message":"direnv .envrc not allowed; skipping","dir":"/home/toxic/estate"}
+{"timestamp":"2026-10-26T02:34:44.489-06:00","level":"debug","pid":2380202,"message":"direnv .envrc not allowed; skipping","dir":"/home/toxic/pens/estate"}
 {"timestamp":"2026-10-26T02:34:50.107-06:00","level":"debug","pid":2380202,"message":"agent_end maintenance routing","route":"entered","stopReason":"stop","provider":"freeinference","model":"glm-5.3-flash","contentBlocks":1,"hasToolCalls":false,"hasText":true,"goalModeEnabled":false,"successfulYield":false}
 {"timestamp":"2026-10-26T02:34:52.124-06:00","level":"debug","pid":2380202,"message":"agent_end maintenance routing","route":"bottom-checkCompaction","stopReason":"stop","provider":"freeinference","model":"glm-5.3-flash","contentBlocks":1,"hasToolCalls":false,"hasText":true,"goalModeEnabled":false,"successfulYield":false}
 {"timestamp":"2026-10-26T02:34:59.251-06:00","level":"debug","pid":2380202,"message":"title-generator: start","sessionId":"01a1773e-850d-726f-aecd-cdbf79af1b80","provider":"freeinference","id":"qwen3.6-35b","model":"freeinference/qwen3.6-35b"}
@@ -774,7 +774,7 @@
 {"timestamp":"2026-10-26T02:35:09.056-06:00","level":"debug","pid":2380202,"message":"Usage fetch queued","provider":"zai","credentialType":"oauth","baseUrl":"https://api.z.ai/api/anthropic","email":"toxicwind@gmail.com"}
 {"timestamp":"2026-10-26T02:35:09.393-06:00","level":"warn","pid":2380202,"message":"ZAI usage response invalid 当前用户不存在coding plan","code":500}
 {"timestamp":"2026-10-26T02:35:09.810-06:00","level":"debug","pid":2380202,"message":"Usage fetch resolved","reports":[{"provider":"github-copilot","limits":1,"account":"toxicwind"},{"provider":"google-antigravity","limits":5,"account":"toxicwind@gmail.com"}]}
-{"timestamp":"2026-10-26T02:35:12.666-06:00","level":"debug","pid":2380202,"message":"direnv .envrc not allowed; skipping","dir":"/home/toxic/estate"}
+{"timestamp":"2026-10-26T02:35:12.666-06:00","level":"debug","pid":2380202,"message":"direnv .envrc not allowed; skipping","dir":"/home/toxic/pens/estate"}
 {"timestamp":"2026-10-26T02:35:31.961-06:00","level":"debug","pid":2380202,"message":"Mid-run todo nudge fired","incomplete":3,"nudge":1}
 {"timestamp":"2026-10-26T02:35:47.759-06:00","level":"debug","pid":2380202,"message":"agent_end maintenance routing","route":"entered","stopReason":"toolUse","provider":"freeinference","model":"glm-5.3-flash","contentBlocks":1,"hasToolCalls":true,"hasText":false,"goalModeEnabled":false,"successfulYield":false}
 {"timestamp":"2026-10-26T02:35:47.759-06:00","level":"debug","pid":2380202,"message":"agent.continue scheduled","source":"queued-message-drain","schedulerToken":5}
@@ -782,14 +782,14 @@
 {"timestamp":"2026-10-26T02:35:47.765-06:00","level":"debug","pid":2380202,"message":"agent.continue coalesced after scheduling","source":"queued-message-drain","schedulerToken":6,"activeSource":"queued-message-drain","activeSchedulerToken":5}
 {"timestamp":"2026-10-26T02:35:47.765-06:00","level":"debug","pid":2380202,"message":"agent_end maintenance routing","route":"bottom-checkCompaction","stopReason":"toolUse","provider":"freeinference","model":"glm-5.3-flash","contentBlocks":1,"hasToolCalls":true,"hasText":false,"goalModeEnabled":false,"successfulYield":false}
 {"timestamp":"2026-10-26T02:36:10.356-06:00","level":"debug","pid":2380202,"message":"Mid-run todo nudge fired","incomplete":3,"nudge":2}
-{"timestamp":"2026-10-26T02:36:51.844-06:00","level":"debug","pid":2380202,"message":"direnv .envrc not allowed; skipping","dir":"/home/toxic/estate"}
+{"timestamp":"2026-10-26T02:36:51.844-06:00","level":"debug","pid":2380202,"message":"direnv .envrc not allowed; skipping","dir":"/home/toxic/pens/estate"}
 {"timestamp":"2026-10-26T02:37:03.127-06:00","level":"debug","pid":2380202,"message":"agent_end maintenance routing","route":"entered","stopReason":"stop","provider":"freeinference","model":"glm-5.3-flash","contentBlocks":1,"hasToolCalls":false,"hasText":true,"goalModeEnabled":false,"successfulYield":false}
 {"timestamp":"2026-10-26T02:37:04.385-06:00","level":"debug","pid":2380202,"message":"agent_end maintenance routing","route":"bottom-checkCompaction","stopReason":"stop","provider":"freeinference","model":"glm-5.3-flash","contentBlocks":1,"hasToolCalls":false,"hasText":true,"goalModeEnabled":false,"successfulYield":false}
 {"timestamp":"2026-10-26T02:37:12.848-06:00","level":"debug","pid":2380202,"message":"Provider in-flight limit wait completed","provider":"freeinference","limit":8}
 {"timestamp":"2026-10-26T02:38:34.268-06:00","level":"debug","pid":2380202,"message":"agent_end maintenance routing","route":"entered","stopReason":"stop","provider":"freeinference","model":"glm-5.3-flash","contentBlocks":2,"hasToolCalls":false,"hasText":true,"goalModeEnabled":false,"successfulYield":false}
 {"timestamp":"2026-10-26T02:38:35.501-06:00","level":"debug","pid":2380202,"message":"agent_end maintenance routing","route":"bottom-checkCompaction","stopReason":"stop","provider":"freeinference","model":"glm-5.3-flash","contentBlocks":2,"hasToolCalls":false,"hasText":true,"goalModeEnabled":false,"successfulYield":false}
-{"timestamp":"2026-10-26T02:39:05.742-06:00","level":"debug","pid":2380202,"message":"direnv .envrc not allowed; skipping","dir":"/home/toxic/estate"}
-{"timestamp":"2026-10-26T02:39:07.242-06:00","level":"debug","pid":2380202,"message":"direnv .envrc not allowed; skipping","dir":"/home/toxic/estate"}
+{"timestamp":"2026-10-26T02:39:05.742-06:00","level":"debug","pid":2380202,"message":"direnv .envrc not allowed; skipping","dir":"/home/toxic/pens/estate"}
+{"timestamp":"2026-10-26T02:39:07.242-06:00","level":"debug","pid":2380202,"message":"direnv .envrc not allowed; skipping","dir":"/home/toxic/pens/estate"}
 {"timestamp":"2026-10-26T02:39:10.931-06:00","level":"debug","pid":2380202,"message":"Usage fetch requested","providers":["github-copilot","google-antigravity","zai"]}
 {"timestamp":"2026-10-26T02:39:10.932-06:00","level":"debug","pid":2380202,"message":"Usage fetch queued","provider":"github-copilot","credentialType":"oauth","baseUrl":"https://api.githubcopilot.com"}
 {"timestamp":"2026-10-26T02:39:10.932-06:00","level":"debug","pid":2380202,"message":"Usage fetch queued","provider":"google-antigravity","credentialType":"oauth","baseUrl":"https://daily-cloudcode-pa.googleapis.com","email":"toxicwind@gmail.com"}

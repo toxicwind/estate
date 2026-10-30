@@ -8,7 +8,7 @@ by the tau session 01a18aa0 (2026-10-30 ~02:25-03:2xZ).
 - **Symptom**: `estate/nativelink` daemon `available` (never running);
   REAPI :25155/:25157 ECONNREFUSED; forge remote cache degraded to flicker-only.
 - **Root cause**: `forge/ops/nativelink/run.sh` exec'd
-  `/home/toxic/estate/config/nl/nativelink.json5` — a path that died in the
+  `/home/toxic/pens/estate/config/nl/nativelink.json5` — a path that died in the
   pens reorg. Real config: `pens/estate/config/nativelink/nativelink.json5`.
 - **Fix**: repointed run.sh; `pitchfork restart estate/nativelink` — both ports
   now answer HTTP ("No route for /" = listening; health is gRPC-side on the

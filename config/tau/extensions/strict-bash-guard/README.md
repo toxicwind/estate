@@ -4,5 +4,5 @@ In-process safety guard for Tau that blocks shell commands duplicating built-in 
 
 ## Testing
 ```bash
-bun test /home/toxic/estate/config/tau/extensions/strict-bash-guard/index.test.ts
+bun test /home/toxic/pens/estate/config/tau/extensions/strict-bash-guard/index.test.ts
 ```

@@ -15,8 +15,8 @@
 [daemons.smithers-gateway]
 mise = true
 port = 25280
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/stack/services/smithers-gateway.ts"
-dir = "/home/toxic/estate"
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/estate/stack/services/smithers-gateway.ts"
+dir = "/home/toxic/pens/estate"
 retry = true
 env = { SMITHERS_GATEWAY_PORT = "25280" }
 ready_http = "http://127.0.0.1:25280/health"

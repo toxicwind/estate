@@ -1,7 +1,7 @@
 [daemons.market-loop]
 mise = true
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/var/workspaces/layout/estate/agents/weaver/bin/market-loop.ts"
-dir = "/home/toxic/estate/agents/weaver"
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/estate/var/workspaces/layout/estate/agents/weaver/bin/market-loop.ts"
+dir = "/home/toxic/pens/estate/agents/weaver"
 retry = true
 auto = ["start"]
 ready_cmd = "pgrep -f '[m]arket-loop.ts' >/dev/null"

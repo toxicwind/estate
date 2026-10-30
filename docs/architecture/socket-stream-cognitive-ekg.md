@@ -57,7 +57,7 @@ The model-guard proxy (`bornite-model-guard.py`) serves as the primary health en
 
 2. **Fail-Open Upstream** — If the constraints file is unreadable or the upstream (bornite) resets, traffic passes through untouched with the error logged.
 
-3. **Audit Trail** — Every rewrite appends a JSON line to `/home/toxic/estate/data/model-guard-audit.jsonl`, rotated at 10MB.
+3. **Audit Trail** — Every rewrite appends a JSON line to `/home/toxic/pens/estate/data/model-guard-audit.jsonl`, rotated at 10MB.
 
 ### Health Endpoints
 
@@ -85,9 +85,9 @@ All daemons are supervised by Pitchfork (systemd user unit). The supervisor read
 
 ### Config Loading
 
-The `pitchfork.toml` at `/home/toxic/estate/pitchfork.toml` is the single source of truth for all daemon definitions. Pitchfork does NOT hot-reload — editing any `[daemons.*]` section requires `pitchfork restart estate/<name>`.
+The `pitchfork.toml` at `/home/toxic/pens/estate/pitchfork.toml` is the single source of truth for all daemon definitions. Pitchfork does NOT hot-reload — editing any `[daemons.*]` section requires `pitchfork restart estate/<name>`.
 
-The symlink `/home/toxic/pitchfork.toml → /home/toxic/estate/pitchfork.toml` ensures the supervisor (running from `/home/toxic`) can find the config.
+The symlink `/home/toxic/pitchfork.toml → /home/toxic/pens/estate/pitchfork.toml` ensures the supervisor (running from `/home/toxic`) can find the config.
 
 ### Version Management
 
@@ -95,7 +95,7 @@ Pitchfork is pinned to version 2.25 in `~/.config/mise/config.toml` (`pitchfork 
 
 ## Recent Fixes (2026-09-23)
 
-1. **503 Error Resolution** — The pitchfork supervisor was running from `/home/toxic` instead of `/home/toxic/estate`, causing it to not find `pitchfork.toml`. Fixed by creating the symlink `/home/toxic/pitchfork.toml → /home/toxic/estate/pitchfork.toml`.
+1. **503 Error Resolution** — The pitchfork supervisor was running from `/home/toxic` instead of `/home/toxic/estate`, causing it to not find `pitchfork.toml`. Fixed by creating the symlink `/home/toxic/pitchfork.toml → /home/toxic/pens/estate/pitchfork.toml`.
 
 2. **Model-Guard Connection Reset** — Added `try/except (BrokenPipeError, ConnectionResetError)` around the entire `_proxy` method body in `bornite-model-guard.py` to prevent server thread crashes.
 

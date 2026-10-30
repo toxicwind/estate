@@ -65,7 +65,7 @@ Probe artifacts: `/tmp/fi_schema_probe/` (raw bodies, headers, statuses; script
   `set -a . dump` died pre-exec. Fixed: re-set clean value, deleted stale dup.
 - **`sync-estate-ns.sh` ghost path**: defaulted `CLONE=/home/toxic/estate`
   (lease-forbidden). Fixed to pens SSOT + same-file tolerant cp.
-- **mimetite `build.ts` ghost writes**: synced to `/home/toxic/estate/...`,
+- **mimetite `build.ts` ghost writes**: synced to `/home/toxic/pens/estate/...`,
   recreating the ghost dir. Fixed to `/home/toxic/pens/estate/...`; ghost removed.
 - **pitchfork `mise = true` on rhodochrosite** (anomaly #43 class): `mise x`
   exit 2 killed the daemon pre-bind. Dropped from the monolith; spawn line now

@@ -2,7 +2,7 @@
 
 Global mise config for this box. Wired in via symlink:
 
-    /home/toxic/.config/mise/conf.d -> /home/toxic/estate/mise/conf.d
+    /home/toxic/.config/mise/conf.d -> /home/toxic/pens/estate/mise/conf.d
 
 (The symlink is the wiring. Without it, `conf.d/` is dead config —
 caught 2026-10-03: the directory existed but was empty, so no

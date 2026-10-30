@@ -1,4 +1,4 @@
-session: /home/toxic/estate/config/tau/agent/sessions/-tmp/2026-10-14T20-56-04-696Z_01a13c33-6958-7264-8d8a-4e015fdaac0b.jsonl
+session: /home/toxic/pens/estate/config/tau/agent/sessions/-tmp/2026-10-14T20-56-04-696Z_01a13c33-6958-7264-8d8a-4e015fdaac0b.jsonl
 tokenizer: o200k_harmony
 turns: 418  thinking_tokens: 34327  tool_calls: 0
 turns with zero tool calls: 418

@@ -9,7 +9,7 @@
 import { parseToml, serVal } from "./lib/toml.ts";
 
 const ORIG = "./pitchfork.toml.orig";
-const SOV = "/home/toxic/estate";
+const SOV = "/home/toxic/pens/estate";
 
 interface Block { kind: "daemon" | "groups"; name: string; text: string; dir?: string }
 
