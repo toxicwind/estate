@@ -1524,3 +1524,7 @@ config/tau/*.bak
 # peer product clones own themselves (submoduleless doctrine, anomaly #18)
 products/
 archive/
+
+products/estate-recon/
+docs/recon/
+docs/Meta/
