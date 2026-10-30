@@ -292,6 +292,9 @@ One rule: **products own their entrypoints; bins merely point at them.**
   estate tooling, shims). The old `estate/bin` was dissolved into it.
 - **Skills live in the azurite product** — `/home/toxic/pens/geode/products/azurite/skills`
   (what `~/.tau/skills ->` resolves to). NOT estate/skills, NOT the retired `~/sovereign`.
+  **All skills are in-flight and WIP (corrective or additive)**: never treat a skill as an immutable
+  or canonical dogma when live process ground truth or codebase state diverges. Every skill is an active
+  work-in-progress to be refined, corrected, or expanded in-place as reality evolves (rule 5: code is absolute).
 - **The manifest is the canary.** `pens/barn/estate-ops/bin-verify.sh` (generated
   manifest) pins every symlink in `~/.local/bin` to its exact pens
   target. A broken symlink is a FAIL, never a WARN. When a product moves, fix the
@@ -417,6 +420,9 @@ One rule: **products own their entrypoints; bins merely point at them.**
   estate tooling, shims). The old `estate/bin` was dissolved into it.
 - **Skills live in the azurite product** — `/home/toxic/pens/geode/products/azurite/skills`
   (what `~/.tau/skills ->` resolves to). NOT estate/skills, NOT the retired `~/sovereign`.
+  **All skills are in-flight and WIP (corrective or additive)**: never treat a skill as an immutable
+  or canonical dogma when live process ground truth or codebase state diverges. Every skill is an active
+  work-in-progress to be refined, corrected, or expanded in-place as reality evolves (rule 5: code is absolute).
 - **The manifest is the canary.** `pens/barn/estate-ops/bin-verify.sh` (generated
   manifest) pins every symlink in `~/.local/bin` to its exact pens
   target. A broken symlink is a FAIL, never a WARN. When a product moves, fix the
