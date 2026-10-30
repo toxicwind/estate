@@ -31,6 +31,8 @@
 6. **Collaboration contract**:
    - One agent's unreviewed push is not a problem to escalate; fold tree WIP forward.
    - **Max-collab, not lanes**: no "someone else's lane." If you see broken code or an LSP error, fix it directly in a real committed file.
+   - **Pseudo-subagents write to your tree concurrently** (verified 2026-10-30, tau repo): files you just wrote can be re-saved under you between your `write` and your next `edit`. Therefore: (a) NEVER whole-file overwrite a file you don't recognize — re-read and fold forward; (b) make edits **surgical and atomic** (small anchored edits, one commit fast) so a race loses nothing; (c) if an edit "didn't apply", assume a concurrent writer changed the anchor, re-read, and merge — do not assume the writer is dead; (d) when two versions diverge, keep the union of real behavior, and never revert a fellow writer's passing work.
+   - **All TDD must pin REAL behavior** (code is absolute): tests assert the actual contract of the current implementation — throw-vs-return, exact sentinel handling, verbatim pass-through — never an invented "should" contract. A test written against imagined semantics is a defect, and a blanket table rule (e.g. "expected undefined ⇒ must throw") that mangles legitimately distinct behaviors (sentinel → `undefined`, invalid → throw) is wrong twice.
 7. **Refactoring-in-passing**:
    - When discovering defects, dead code, duplicated paths, or stale modules, fix them immediately at the root. Thinking in layers: bytes → AST → module graph → process ground truth (/proc, sockets, fds) → behavior.
    - **Will-use-then-stop is forbidden**: declaring "I'll call X" and yielding without calling is a contract violation. The tool call IS the narration.
