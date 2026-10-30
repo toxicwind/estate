@@ -191,3 +191,27 @@ pools:
       default: 120
     keys:
       - MISTRAL_API_KEY
+
+  # --- cloudflare: CF API tokens (added 2026-10-30, leak audit) ---
+  # /user/tokens/verify returns HTTP 200 for a valid token, 400 for invalid
+  # (code 1000/9109). The two stored tokens were DEAD (both invalid) when
+  # audited — they'd rotted silently because CF had no health pool. Now
+  # probed like every other provider key so a dead CF token can't hide again.
+  cloudflare:
+    upstream: https://api.cloudflare.com/client/v4
+    health:
+      method: GET
+      path: /user/tokens/verify
+      ok: [200]
+    fail_status: [400, 401, 403]
+    probe_timeout: 5
+    request_timeout: 30
+    cooldown:
+      400: 300
+      401: 300
+      403: 300
+      default: 120
+    keys:
+      - CLOUDFLARE_API_TOKEN
+      - CF_API_TOKEN
+      - CLOUDFLARE_GLOBAL_API_KEY
