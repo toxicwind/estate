@@ -18,7 +18,8 @@
 set -uo pipefail
 
 # Canonical gate config (proven; used by the global hooks in ops/git-hooks/).
-CFG="/home/toxic/pens/estate/ops/git-hooks/gitleaks.toml"
+# Moved from ops/git-hooks/ to config/gitleaks/ in the estate reorg (2026-10-30).
+CFG="${GITLEAKS_CONFIG:-/home/toxic/pens/estate/config/gitleaks/gitleaks.toml}"
 [ -f "$CFG" ] || { echo "config not found: $CFG" >&2; exit 2; }
 
 SRC="."

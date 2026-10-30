@@ -79,8 +79,8 @@ run = "bun run --cwd /home/toxic/pens/ranch/range/apps/delendai-control-plane cl
 description = "Run the DelendAI CLI (delendai <cmd>)"
 
 [tasks.delendai-scaffold]
-run = "bun run --cwd /home/toxic/pens/ranch/bun-scaffold apply:scaffold -- $@"
-description = "Apply the maximal Bun scaffold across estate projects"
+run = "bun run --cwd /home/toxic/pens/ergasterion/eidos apply:scaffold -- $@"
+description = "Apply the maximal Bun scaffold (eidos, ex-bun-scaffold) across estate projects"
 
 [tasks.mimetite-codegen]
 run = "bun run build"
