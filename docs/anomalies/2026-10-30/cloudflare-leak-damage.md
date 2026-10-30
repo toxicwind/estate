@@ -32,3 +32,11 @@ since been rotated, OR owns the Cloudflare account another way.
 - [ ] Kill/verify the mildlyawesome.com zone (is it OURS? did the hijacker add it?)
 - [ ] Contain dedi #3327 (KVM/SSH, phone-gated)
 - [ ] Finalize this damage assessment
+
+## CONFIRMED intrusion vector (2026-10-30, later audit)
+Public **Dokploy** panel exposed on the ORIGIN. Verified:
+- `curl -sk -H "Host: dokploy.mildlyawesome.com" https://172.96.160.178/` -> 200, real Dokploy login (25KB panel).
+- The subdomain resolves through CF externally (proxied) but the panel is served raw on the origin IP by Host header — anyone who knows the origin IP hits an unauthenticated Dokploy login.
+- Dokploy = self-hosted Docker PaaS. A public panel = arbitrary container deploy = exactly how an attacker hosts content (the porn) on this ReliableSite box.
+- Estate's own config: DEDI_HOST=172.96.160.178, root/password-auth, DEDI_PUBLIC_HOST=mildlyawesome.com — password not yet obtained.
+Containment: disable/public-close the Dokploy panel (or rotate/admin it via KVM/SSH), which requires the DEDI root password or KVM creds (phone-gated).
