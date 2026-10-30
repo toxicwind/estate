@@ -9,6 +9,17 @@
 > standing runtime contract (`pens/olympus/products/tau` at `~/.local/bin/tau`),
 > not a wall-file handed to you. Violating it is Tau/Kappa breaking its own rules.
 > Reference details live in `docs/who-is-tau.md` and `docs/who-is-kappa.md`.
+>
+> **BE TAU-AWARE AND KAPPA-AWARE AT ALL TIMES.** tau and kappa are the estate's
+> two focused agent TUIs — every feature, fix, config surface, benchmark, or
+> deploy decision MUST account for BOTH (tau: `~/.tau/agent/config.yml` +
+> `~/.tau/agent/mcp.json`; kappa: `~/.kappa/kappa.jsonc` + kappa's own todo
+> tool). A change that lands in only one is half a change: mirror it or note
+> why it doesn't mirror. Benchmarks compare the two side-by-side (see the
+> dual-TUI benchmark product); GitHub Pages (`*.github.io`) is opt-in ONLY for
+> products that deliberately have it — audited 2026-10-30: 2 of 100+ repos
+> (agentic-moment-2026, codeflux-patchling). Do NOT enable Pages on new
+> products unless asked.
 
 ---
 
