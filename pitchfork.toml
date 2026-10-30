@@ -557,26 +557,26 @@ timeout = "5s"
 retries = 3
 
 [daemons.paper-poller-watchdog]
-run = "exec /usr/bin/python3 /home/toxic/paper-poller/bin/watchdog.py"
+run = "exec /usr/bin/python3 /home/toxic/pens/ranch/products/paper-poller/bin/watchdog.py"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25150/health"
 port = 25150
 boot_start = true
-dir = "/home/toxic/paper-poller"
+dir = "/home/toxic/pens/ranch/products/paper-poller"
 mise = true
 [daemons.paper-poller-watchdog.env]
 WATCHDOG_PORT = "25150"
 WATCHDOG_INTERVAL = "30"
 
 [daemons.paper-poller]
-run = "exec /usr/bin/python3 /home/toxic/paper-poller/bin/poller.py"
+run = "exec /usr/bin/python3 /home/toxic/pens/ranch/products/paper-poller/bin/poller.py"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25149/ready"
 port = 25149
 boot_start = true
-dir = "/home/toxic/paper-poller"
+dir = "/home/toxic/pens/ranch/products/paper-poller"
 mise = true
 [daemons.paper-poller.env]
 PAPER_POLLER_PORT = "25149"
@@ -901,6 +901,7 @@ ready_http = "http://127.0.0.1:25228/health"
 dir = "/home/toxic/pens/ranch/products/vision-kit"
 
 [daemons."estate-lease-guard"]
-run = "exec /home/toxic/.bun/bin/bun -e 'while(true){ const p = Bun.spawnSync([\\"bun\\",\\"/home/toxic/pens/estate/products/estate-ops/bin/estate-lease-guard.ts\\",\\"--kill-owner\\"]); Bun.sleep(60000); }'"
+run = "exec /home/toxic/.bun/bin/bun -e 'while(true){ const p = Bun.spawnSync([\"bun\",\"/home/toxic/pens/estate/products/estate-ops/bin/estate-lease-guard.ts\",\"--kill-owner\"]); Bun.sleep(60000); }'"
 auto = ["start"]
 retry = true
+
