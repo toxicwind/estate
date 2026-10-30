@@ -17,7 +17,7 @@
 
 ```mermaid
 flowchart TD
-    D[devices/] --> K[kodi/]
+    D[devices/] --> K[coreelec/]
     D --> A[android/]
     K --> KR[JSON-RPC :8080]
     A --> AA[ADB]
@@ -43,9 +43,10 @@ another platform folder, the abstraction is leaking.
 ```
 devices/
 ├── README.md          # this file
-├── kodi/              # Kodi fleet: RPC-based tooling for both boxes
+├── coreelec/          # CoreELEC/Kodi fleet: RPC-based tooling for both boxes
+│   ├── .env           # box 246 credentials + device facts (gitignored)
+│   ├── .env.example   # template with secrets blanked
 │   ├── README.md      # box inventory (246=CoreELEC, 225=APK on Android TV)
-│   ├── bin/           # kodi-audit, kodi-handoff, kodi-resume
 │   ├── docs/          # box-inventory, menu-latency
 │   ├── addons/        # lasso, manifold-upstream
 │   ├── forensics/
@@ -72,17 +73,14 @@ Notes:
 ## Usage
 
 ```bash
-# Audit a Kodi box
-devices/kodi/bin/kodi-audit 10.0.0.246
-
-# Hand off playback 246 -> 225
-devices/kodi/bin/kodi-handoff 10.0.0.246 10.0.0.225 --play
+# Audit / hand off CoreELEC boxes (tooling: estate-ops/kodi-handoff)
+kodi-handoff 10.0.0.246 10.0.0.225 --play
 
 # Keep the Pixel's ADB session alive
 devices/android/bin/pixel-adb-keepalive.sh
 ```
 
-See `kodi/README.md` for the full Kodi box inventory and `android/docs/devices.md`
+See `coreelec/README.md` for the full CoreELEC/Kodi box inventory and `android/docs/devices.md`
 for the Android device inventory.
 
 ## License

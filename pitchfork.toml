@@ -863,20 +863,20 @@ dir = "/home/toxic/pens/ergasterion/eidolon"
 mise = true
 
 [daemons."pixel-adb-keepalive"]
-run = "exec /home/toxic/pens/ranch/products/android-fleet/bin/pixel-adb-keepalive.sh"
+run = "exec /home/toxic/pens/fleet/devices/android-fleet/bin/pixel-adb-keepalive.sh"
 auto = ["start"]
 retry = true
 mise = true
-dir = "/home/toxic/pens/ranch/products/android-fleet"
+dir = "/home/toxic/pens/fleet/devices/android-fleet"
 
 [daemons."flotilla-mcp"]
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/ranch/products/android-fleet/flotilla/mcp/server.ts"
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/fleet/devices/android-fleet/flotilla/mcp/server.ts"
 auto = ["start"]
 retry = true
 mise = true
 port = 25245
 ready_http = "http://127.0.0.1:25245/health"
-dir = "/home/toxic/pens/ranch/products/android-fleet"
+dir = "/home/toxic/pens/fleet/devices/android-fleet"
 
 [daemons."flotilla-mcp".health_http]
 url = "http://127.0.0.1:25245/health"

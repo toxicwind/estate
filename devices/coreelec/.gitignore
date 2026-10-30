@@ -1,0 +1,10 @@
+# Secrets & local state — never commit
+.env
+
+# Kodi fleet runtime state (per-box resume bookmarks)
+resume.json
+*.resume.json
+
+# OS junk
+.DS_Store
+Thumbs.db

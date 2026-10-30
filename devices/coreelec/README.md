@@ -29,7 +29,7 @@ runs from awrawr-pc (has the LAN route + SSH).
 Reference box is **246** ("it has correct"). Dupes go 246 -> 225, except
 tv/audio settings, which stay per-box.
 
-## Tools (`bin/`)
+## Tools
 
 - **kodi-handoff** — one-shot playback transfer: `kodi-handoff <src> <dst> [--play]`.
   Freezes source, opens the same stream URL on the destination, waits for a real
@@ -61,8 +61,15 @@ tv/audio settings, which stay per-box.
 
 - **parked/** — retired tooling: `kodi-sync` was parked 2026-09-19 (User: "cancel"); its `NOTE.md` records the incident analysis that killed it.
 
-Deployed copies: `/home/toxic/bin/kodi-handoff` (symlink or copy of `bin/` source).
-Keep the repo source canonical; re-deploy after edits.
+Tooling source lives in `estate-ops/kodi-handoff` (canonical) and deploys to
+`~/.local/bin`; box facts + credentials live in `.env` (gitignored; see
+`.env.example` for the shape). Keep the repo source canonical; re-deploy after edits.
+
+## Config (`.env`)
+
+Box 246's full device environment — SSH creds, JSON-RPC URL, OS/hardware
+facts, storage, skin, audio — is captured in `.env` (secret, gitignored)
+with `.env.example` as the blanked template.
 
 ## Docs (`docs/`)
 
