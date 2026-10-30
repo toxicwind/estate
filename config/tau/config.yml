@@ -1,30 +1,33 @@
 plugins:
+# Sources re-anchored 2026-10-30: every ./projects/range/ranch/* path died in
+# the pens reorg (verified GHOST). router-legacy no longer exists as a product
+# — it merged into rhodochrosite, so the router plugin points there too.
 - name: bornite
-  source: ./projects/range/ranch/stockyard/bornite
+  source: /home/toxic/pens/geode/products/bornite
   merged: estate-swap
   privileged: true
 - name: rhodochrosite
-  source: ./projects/range/ranch/stockyard/rhodochrosite
+  source: /home/toxic/pens/geode/products/rhodochrosite
   privileged: true
 - name: gatehouse
-  source: ./projects/range/ranch/barn/gatehouse
+  source: /home/toxic/pens/barn/products/gatehouse
   privileged: true
   role: MCP federation gateway
 - name: router
-  source: ./projects/range/ranch/stockyard/router-legacy
+  source: /home/toxic/pens/geode/products/rhodochrosite
   merged:
   - router-legacy
   - stockyard-rhodochrosite-router
   - estate-router
   privileged: true
 - name: barn-browser
-  source: ./projects/range/ranch/barn/browserless
+  source: /home/toxic/pens/ranch/products/ranch-analyze/code/barn/browserless
   privileged: false
 - name: barn-gemini
-  source: ./projects/range/ranch/barn/gemini-mcp
+  source: /home/toxic/pens/barn/products/gemini-mcp
   privileged: false
 - name: secretsmith
-  source: ./projects/range/ranch/barn/secretsmith
+  source: /home/toxic/pens/barn/products/secretsmith
   privileged: true
 providers:
   anthropic:
@@ -289,6 +292,31 @@ retry:
     google-antigravity/*:
     - openrouter/inclusionai/ling-3.0-flash-fin:free
     - openrouter/nvidia/nemotron-3-super-120b-a12b:free
+    # freeinference per-model quota strikes are CONCURRENCY, not exhaustion:
+    # single-key 429s mirror in-flight load (observer effect), while live
+    # logs show glm-5.3-flash answering 200 all session (verified 2026-10-30,
+    # tau.2026-10-30.398989.log). Treat 429 here as rotate-down-the-chain,
+    # never as a multi-day outage — the earlier "weekly-exhausted until
+    # 2026-11-04" note was fabricated from one 429 and contradicted by the
+    # very next successful call. The chain rotates inside the fleet first,
+    # then escapes to the NVIDIA lane and the openrouter free trio.
+    freeinference/*:
+    - freeinference/qwen3.6-35b
+    - freeinference/deepseek-v4-flash
+    - nvidia/nvidia/nemotron-3.5-super-vl-120b-a12b
+    - nvidia/nvidia/nemotron-3.5-lightning-30b-a3b
+    - openrouter/nvidia/nemotron-3.5-lightning:free
+    - openrouter/inclusionai/ling-3.0-flash-fin:free
+    - openrouter/liquid/lfm-2.5-2.6b:free
+    # Universal safety net: owns models that belong to no configured chain
+    # (incl. judge's @default alias) so an exhausted selector always has a
+    # live exit instead of a maxDelayMs fail-fast.
+    default:
+    - freeinference/qwen3.6-35b
+    - nvidia/nvidia/nemotron-3.5-super-vl-120b-a12b
+    - openrouter/nvidia/nemotron-3.5-lightning:free
+    - openrouter/inclusionai/ling-3.0-flash-fin:free
+    - openrouter/liquid/lfm-2.5-2.6b:free
     # Live web providers first. The four chat models that used to sit directly
     # after web/perplexity all 402 (no credits) or 400 (`claude-haiku-4-5` is
     # not a valid id), so every fallback burned a doomed attempt before
@@ -573,7 +601,7 @@ title:
 skills:
   enableSkillCommands: true
   customDirectories:
-  - /home/toxic/pens/geode/products/azurite/skills
+  - /home/toxic/pens/estate/products/estate-skills-hub/skills
   # Register a flat skill repo by its root. The loader reads <dir>/<name>/SKILL.md
   # at depth 1 only, so a repo whose skills sit directly at the root works as-is.
   # Nothing is copied or symlinked: each skill keeps its own code, its relative
@@ -581,7 +609,7 @@ skills:
   # repo-aware. This is the universal rule -- any flat skill repo registers this
   # way. toxicwind/gear (486 skills) holds the *-swarm family, including
   # webapp-building-swarm, vibecoding-webapp-swarm and backend-building-swarm.
-  - /home/toxic/pens/estate/config/gear
+  - /home/toxic/estate/projects/range/ranch/gear
 commands:
   enableClaudeUser: true
   enableClaudeProject: true

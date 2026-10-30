@@ -257,22 +257,25 @@ model:
       - hub
     threshold: 5
 modelRoleStorage: global
+# Aligned 2026-10-30 with the curated ~/.tau/config.yml modelRoles (SSOT):
+# the stale map here omitted `default` entirely, so every turn fell through to
+# priority.json's anthropic/claude-opus-5-5 and died on "Connection error".
 modelRoles:
-  advisor: freeinference/qwen3.6-35b
-  bodybuilder: custom/bodybuilder
-  commit: freeinference/qwen3.6-35b
+  default: openrouter/dots-studio/dots-3-note-preview:free
   dots: custom/dots
-  fallback: nvidia/nemotron-3.5-super-vl-120b-a12b
-  image: google-antigravity/gemini-3.1-flash-image:auto
-  judge: freeinference/qwen3.6-35b
-  memory: freeinference/qwen3.6-35b
-  plan: freeinference/qwen3.6-35b
-  slow: nvidia/nemotron-3.5-super-vl-120b-a12b
-  smol: freeinference/qwen3.6-35b
-  task: nvidia/nemotron-3.5-super-vl-120b-a12b
-  tiny: freeinference/qwen3.6-35b
-  verification: freeinference/qwen3.6-35b
-  vision: google-antigravity/gemini-3.1-flash-image:auto
+  bodybuilder: custom/bodybuilder
+  smol: openrouter/liquid/lfm-2.5-2.6b:free
+  slow: openrouter/nvidia/nemotron-3-ultra-550b-a55b:free
+  vision: openrouter/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free
+  plan: openrouter/nvidia/nemotron-3-super-120b-a12b:free
+  advisor: openrouter/nvidia/nemotron-3-super-120b-a12b:free
+  judge: openrouter/nvidia/nemotron-3-super-120b-a12b:free
+  task: openrouter/nvidia/nemotron-3.5-lightning:free
+  commit: openrouter/liquid/lfm-2.5-2.6b:free
+  tiny: openrouter/liquid/lfm-2.5-2.6b:free
+  memory: openrouter/liquid/lfm-2.5-2.6b:free
+  verification: openrouter/nvidia/nemotron-3.5-lightning:free
+  fallback: openrouter/inclusionai/ling-3.0-flash-fin:free
   web: web/exa
 omitThinking: false
 paste:
@@ -282,38 +285,37 @@ plan:
   autosave: true
   defaultOnStartup: false
   enabled: true
+# Aligned 2026-10-30 with the curated ~/.tau/config.yml plugins block: the
+# ./projects/range/ranch/* sources below died in the pens reorg (ghost paths —
+# silently unresolvable), and router-legacy merged into rhodochrosite.
 plugins:
-  - merged: estate-swap
-    name: bornite
+  - name: bornite
+    source: /home/toxic/pens/geode/products/bornite
+    merged: estate-swap
     privileged: true
-    source: ./projects/range/ranch/stockyard/bornite
   - name: rhodochrosite
+    source: /home/toxic/pens/geode/products/rhodochrosite
     privileged: true
-    source: ./projects/range/ranch/stockyard/rhodochrosite
-  - name: thresher
+  - name: gatehouse
+    source: /home/toxic/pens/barn/products/gatehouse
     privileged: true
     role: MCP federation gateway
-    source: ./ranch/barn/thresher
-  - merged:
+  - name: router
+    source: /home/toxic/pens/geode/products/rhodochrosite
+    merged:
       - router-legacy
       - stockyard-rhodochrosite-router
       - estate-router
-    name: router
     privileged: true
-    source: ./projects/range/ranch/stockyard/router-legacy
   - name: barn-browser
+    source: /home/toxic/pens/ranch/products/ranch-analyze/code/barn/browserless
     privileged: false
-    source: ./projects/range/ranch/barn/browserless
   - name: barn-gemini
+    source: /home/toxic/pens/barn/products/gemini-mcp
     privileged: false
-    source: ./projects/range/ranch/barn/gemini-mcp
   - name: secretsmith
+    source: /home/toxic/pens/barn/products/secretsmith
     privileged: true
-    source: ./projects/range/ranch/barn/secretsmith
-  - name: azurite
-    privileged: false
-    role: Estate Skills Hub (geode peer; 180-skill registry + DAG router)
-    source: /home/toxic/pens/geode/products/azurite/mcp/server.ts
 power:
   sleepPrevention: idle
 presencePenalty: -1
