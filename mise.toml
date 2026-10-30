@@ -43,7 +43,22 @@ run = """
 bun run --cwd /home/toxic/pens/olympus/products/kappa/kappa-code make --single --skip-install
 """
 description = "Build kappa binary via forge remote cache"
-sources = ["package.json", "bun.lock", "packages/cli/script/build.ts"]
+dir = "/home/toxic/pens/olympus/products/kappa/kappa-code"
+sources = ["package.json", "bun.lock", "packages/cli/script/build.ts", "packages/cli/src/**/*.ts", "packages/kappa-indexing/src/**/*.ts"]
+outputs = ["packages/cli/dist/@kappacode/cli-linux-x64/bin/kappa"]
+
+# Full user-TDD lane (2026-10-30): edit -> tests -> rebuild, all automatic.
+# `mise watch kappa-tdd` re-runs whenever any kappa source file changes;
+# the build leg rides the forge remote cache (flicker :25148 /
+# MISE_CACHE_REMOTE_URL) so unchanged outputs are never recomputed.
+[tasks.kappa-tdd]
+run = """
+cd /home/toxic/pens/olympus/products/kappa/kappa-code/packages/cli && bun test 2>/home/toxic/tmp/kappa-tdd-test.log
+bun run --cwd /home/toxic/pens/olympus/products/kappa/kappa-code make --single --skip-install
+"""
+description = "User-TDD loop: kappa tests then forge-cached rebuild"
+dir = "/home/toxic/pens/olympus/products/kappa/kappa-code"
+sources = ["packages/cli/src/**/*.ts", "packages/cli/test/**/*.ts", "packages/kappa-indexing/src/**/*.ts"]
 outputs = ["packages/cli/dist/@kappacode/cli-linux-x64/bin/kappa"]
 
 # DelendAI — first-class maximal Bun scaffold / MCP monorepo (fork 2026-10-20).

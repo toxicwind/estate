@@ -873,6 +873,14 @@ interval = "60s"
 timeout = "5s"
 
 # vision-kit MCP drop-in (2026-10-29, tau) — qwen3.6-35b vision workloads
+# TDD watch (2026-10-30): kappa edit -> tests -> forge-cached rebuild, automatic.
+# Runs `mise watch kappa-tdd` (estate mise.toml); the build leg rides the
+# forge remote cache so unchanged outputs are never recomputed.
+[daemons."tdd-watch"]
+run = "mise watch kappa-tdd"
+auto = ["start"]
+mise = true
+dir = "/home/toxic/pens/estate"
 [daemons."vision-kit-mcp"]
 run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/ranch/products/vision-kit/mcp/serve.ts"
 auto = ["start"]
