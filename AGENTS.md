@@ -10,512 +10,189 @@
 > not a wall-file handed to you. Violating it is Tau/Kappa breaking its own rules.
 > Reference details live in `docs/who-is-tau.md` and `docs/who-is-kappa.md`.
 
-## Non-negotiable
-
-- **Agents collaborate; one agent's unreviewed push is not a problem to
-  escalate.** Tree WIP from another agent/session is folded forward and pushed
-  (rule 1b) — that IS the collaboration contract. Don't re-litigate a teammate's
-  work that landed on a pushed ref; fix forward if it's wrong.
-- **Join the squawk fleet** — every tau/kappa session should be a first-class
-  fleet citizen, not a lone process:
-  1. Fleet bus is the squawk daemon — fleet coordination server
-     `http://127.0.0.1:25120` (pitchfork daemon `estate-chat`; env
-     `SQUAWK_CHAT_PORT`, token file `~/.config/estate-chat-token`):
-     `POST /v1/join` (Bearer) registers a
-     4-namespace identity; `POST /v1/presence` heartbeats; `GET /v1/state`
-     shows the roster; `POST /v1/rooms/<id>/messages` posts (schema:
-     `from_agent` + `body` + `kind`); WebSocket push
-     on :25147 (`core/ws.py`). Use the daemon FIRST for all fleet traffic.
-  2. File bus `~/.squawk-bus/squawk-root` is the FALLBACK for when the
-     daemon is down — hash-linked `NNNN-<from>-<slug>.md` message files,
-     readable by anything. Do not treat it as primary; when the daemon is
-     healthy, it owns the traffic.
-  3. To become an OpenFang agent: `bun pens/ranch/squawk/join/fleet-join.ts
---name <name> --species <species> --personality "<text>" --lane <lane>
---task "<task>" [--sigil <emoji>]` — renders agent.toml + system.md,
-     writes estate/agents/<name>/ + ~/.openfang/agents/<name>/, hyper-races
-     activation against :25196, verifies, commits.
-
-- **The estate is the deploy plane.** push → `forge` (:25155) → `pitchfork`
-  (mise-managed daemons, health-checked) → live. Anything stood up gets a real
-  pitchfork daemon + healthck here.
-- 1. **MAXIMAL.** Fix-forward, never report-only. Commit, push, forward-only.
-     1b. **Never leave the tree dirty.** "Clean" = committed to a work-ref pushed to
-     origin, not merged to main. Unknown WIP on the tree is fold-in, not a landmine:
-     checkpoint it onto the same work-ref you push rather than hopping over it.
-     Push a work-ref satisfies forward-only; main merges when the lane is clean.
-- 2. **The box is live.** Additive-only — never remove/disable a peer/daemon/model
-     without an explicit order. Never touch `awrawr-mcp.service`. Never run the
-     retired `bun run scripts/generate.ts`.
-- 3. **Secrets live in the secretsmith keyring** (SSOT since 2026-10-18; inject
-     via `secretsmith env`). `~/.secrets` is a fallback record, never the source.
-     Never COMMIT them.
-- 4. **Diverged main:** back up origin main as `backup/main-<date>` first, then
-     merge, then push. Never force-push main without that backup.
-     4a. **NEVER ALLOW `git reset --hard`, `git checkout -- .`, `git clean -f`,
-     or any other destructive working-tree reset.** A divergent repo is
-     recovered by _backing up the current HEAD and branches first_ (reflog,
-     `backup/<ref>-<date>` refs, `git stash`), then merging or cherry-picking
-     forward — never by discarding the working tree or index. Recover-by-revert
-     or recover-by-rebase-from-origin only, and only with the current state
-     safely saved so nothing is lost. An agent that resets and drops work has
-     broken the estate; the reset is only permitted with an explicit human order
-     naming exactly what is being discarded and why.
-- 5. **Docs lie; code is absolute.** A `.md` that disagrees with code is wrong.
-     Fix the doc, don't work around it.
-- 5b. **LSP diagnostics are contracts, never noise.** Every diagnostic the
-  language server emits is a real defect to fix MAXIMALLY at its root via
-  AST-level changes (proper types imports, real tsconfig `types` +
-  `bun-types`/`@types/bun`, dead code deletion over suppression). Never
-  dismiss as "pre-existing noise," never `@ts-ignore`/cast-to-silence.
-  `bun x tsc --noEmit` green is the acceptance bar; missing type packages
-  are created/installed, not excused.
-- 6. **Restart supervised services after any binary swap/redeploy (pitchfork)** —
-     "deployed" means a running process uses it. Skip only on an explicit
-     "don't disrupt this flow" order.
-
-## The vibe meta-todo (always the last item in every `todowrite`)
-
-- **Free-will / MAXIMAL / first-class / future-usable / cutting-edge.** Slow,
-  blocked, or basic is a signal to race the fastest path — never stop.
-- **Route slow/blocked steps**: `ast-grep` → `bm25` → paper-finder → forge borrow
-  → `background_process`, before ANY workaround. Never retry a slow command
-  without a raced fix.
-- **After research, spawn the next 6 complex todos** capturing the directions
-  found; execute them in sequence.
-- **2s breach = opportunity, not failure** — find the faster pattern/paper.
-- **Verbosity ON.** Additive-only. Secrets never committed. One writer per
-  subtree. Everything pushed.
-- **End every task** by re-visiting this todo as the reset.
-
-## Tooling — MCP-first
-
-- Use first-class native tools and **Thresher MCP** (`:25127/mcp`, federates
-  FFS, BM25, memory, browser-keeper, GitHub, `xd://` tools) over raw bash. Raw
-  bash is acceptable only for system introspection no MCP tool covers (`docker
-ps`, `ss`, `curl` health checks).
-- **FFS** is the universal search/read interface (`find/glob/grep/read/symbol/
-callers/refs/flow`). Reminder: `ffs guide` prints the command reference. Never
-  `fd`/`rg`/`find`/`grep`/`cat` for these — doctrine violation, not fallback.
-- **Patch with hashline anchors**; **4-second rule**: wrap every command in
-  `run-fast` + `delend-code-race` (`bash-4s/2s-shim.sh`); long work goes to
-  `background_process`/a daemon, never a blocking call.
-- **Verification**: parallelize reads; persist FULL check output; PASS/FAIL with
-  evidence.
-
-## Enum: command-time enforcement (kairos + delend-code-race) — SESSION-VERIFIED 2026-10-25
-
-These two ARE the estate's latency-first enforcement, not optional sugar. Both live
-in the odyssey rig and must be present + functional. (Fixed a real regression where
-the kairos shim hardcoded removed `estate/bin/` paths and silently `return 0`'d —
-the 2s guard was INERT for every agent command. TDD-fixed `toxicwind/kairos` `42b5e0e`.)
-
-- **`kairos` (καιρός)** — the 2-second-rule enforcer. Product:
-  `pens/olympus/products/kairos`; entry `~/.local/bin/kairos` (+ `run-fast`
-  alias). Every command an agent runs gets a 2.0s (4.0s shim-doctrine) hard
-  deadline; a breach races a faster alternative — never blocks.
-  - Emits a **static bash shim** (`kairos init > shim.sh`) sourced via
-    `BASH_ENV` (agent tool shells) + `~/.bashrc` (interactive). It wraps
-    `git/bun/npm/pip/uv/gh/go/cargo/...` so slow routes use `run-fast` and
-    banned patterns (`/dev/null`, `2>&1`, `| head`, bare `sleep`) are flagged.
-  - The shim resolves `RF_BIN` (run-fast) and `DELEND_CODE_RACE` through
-    **`$HOME/pens/barn/estate-ops/`** — NEVER `$HOME/estate/bin/` (removed in
-    the reorg). A stale mirror path makes the hook inert; regenerate with
-    `kairos init > shim.sh` after any product move.
-- **`delend-code-race`** — the sub-4s-breach auto-racer
-  (`@delendai/code-race` plugin; launcher `pens/barn/estate-ops/delend-code-race`).
-  Usage: `delend-code-race "<slow cmd>" [--2s] [--per-source N]`. It re-runs the
-  command under budget; on persistent breach it races pattern-borrow + forge and
-  writes the winner to `/tmp/delend-code-race-winner.json`.
-- **Load the hook every command.** The agent tool shell RESETS per call, so each
-  command chain sources the shim inline (`source kairos/shim.sh`) or relies on
-  `BASH_ENV` pointing at it.
-
-## Monadic-primitives implementation style (SESSION-DIRECTIVE 2026-10-25)
-
-The architect's standing ok to **complete refactor, backed by TDD**. Implementation
-style is MONADIC PRIMITIVES + bun-forward, not ad-hoc imperative bash:
-
-- Compose fixes as **Bun-native pipeline primitives** — `Result`/`Ok`/`Err`
-  chaining, `map`/`flatMap`, no nested `try/catch` pyramids, no blocking
-  monolith commands, no `2>/dev/null`, fail-loud-but-forward.
-- Prefer a small monadic core + composable ops over long linear scripts. Route
-  slow/odd steps through `delend-code-race` / `kairos` / `background_process`.
-- **Lock files are intentionally bugged** in this estate's known-fault profile:
-  on any weird resolution, DELETE the `bun.lock`/`package-lock` and REBUILD clean
-  (`rm bun.lock && rm -rf node_modules && bun install`) rather than incremental
-  lock surgery.
-- **GREEN-BLUE deploy is the standing pattern**: green = current, blue = new;
-  build the new slate, healthcheck, swap, keep prior runnable for instant
-  rollback.
-- **Phoenix recovery per todo**: before implementing anything, run a WEB-SEARCH
-  (MCP) for the item, check ADJACENT non-tau/non-kappa generic projects for
-  similar code, PATTERN-BORROW (`code-patterns`/forge) or search GitHub PRs for a
-  cherry-pickable upstream, THEN implement ranking vs public prior art with
-  provenance.
-
-## Providers & orchestration
-
-- **Mimetite** (`@toxicwind/mimetite`) is the provider SSOT. **FreeInference**
-  (`freeinference.org/v1`: qwen3.6-35b, glm-5.3-flash, deepseek-v4-flash,
-  minimax-m3) is primary fast inference. **No hard provider concurrency cap** —
-  a 429 with retry-after is a local Thresher/limiter shed, not the provider.
-  Concurrency is a config-driven client knob, not doctrine.
-- **Corral + DelendAI** orchestrate the fleet. **super-ralph and roost are
-  retired — never reference them.**
-- **`delend-quick`** is the checkpoint fast-path on `shared-checkout-merge` repos
-  (main is protected): it commits picked paths to a normalized work-ref and
-  pushes to origin.
-
-## 25xxx fleet
-
-- Managed by pitchfork. Key surfaces: **ranch-ui (:25218)** dashboard,
-  **range-ui (:25156)** dev server proxying control-api **(:25162)**.
-  Port SSOT: `config/ports.env`.
-
-## Working rules
-
-- **Docker scoped, not banned.** Lane A (estate services): native, pitchfork+mise,
-  never docker (protocol/port clashes, stale NAT). Lane B (ops/website
-  deployables): docker compose, ports pinned in `config/ports.env`, bound to
-  127.0.0.1/tailnet. One supervisor per service.
-- Stage scratch under `/home/toxic/` unique per-task dirs (`mktemp -d`); never
-  `rm -rf` a shared hardcoded path. **Never `rm` anything under `/tmp/kappa`
-  either — including your own session's artifacts** (other agents may still be
-  consuming them). Before cleanup of any scratch, ARCHIVE-what-is-useful first
-  (see next rule); delete only provably disposable junk after a provenance
-  triage (`tmp-triage` skill), and say what you removed.
-- **Archive before delete.** Useful session artifacts (test pages, extract
-  trees, probe JSONs, scripts that worked) get moved to a durable reuse home —
-  not deleted. Default: `~/sovereign/scratch-archive/<date>-<agent>-<slug>/`.
-  Anything worth re-running becomes a committed file in the owning repo when a
-  home exists. `/tmp` is a staging area, not a landfill.
-- **Max-collab, not lanes.** There is no "someone else's lane" to defer to. If
-  you see an LSP error, an anomaly, or anything broken, FIX IT directly in a real
-  committed file — do not leave it "for the owner." Unknown WIP on the tree folds
-  into whatever ref you're pushing, same as any other change; it is not a wall.
-- **No monkeypatch** — fix root cause, real committed file.
-- **Ask, don't guess** via the `question` tool when intent is unclear.
-- Luis guesses are starting points, not specs — fuzz/verify.
-
-## Reactive refactoring doctrine (2026-10-29, architect order)
-
-- **Refactoring-in-passing is preferred and sought out, never deferred.**
-  When working at byte/AST/module level (reading code, tracing process
-  ground truth, scanning node_modules-level logic), any defect, duplicated
-  path, wrong abstraction, or stale module discovered — EVEN IF unrelated
-  to the current task — is fixed IMMEDIATELY in a real committed file.
-  "Not my task" is not a reason to leave broken code behind.
-- Thinking in layers: bytes → AST → module graph → process ground truth
-  (/proc, sockets, fds) → behavior. Never settle for log-surface guesses
-  when /proc and module resolution can prove the truth.
-- A discovered unrelated defect gets: root-cause fix + commit/push, or a
-  filed verbose squawk todo with exact evidence if it needs another owner.
-  Both, never merely a note.
-- **Will-use-then-stop is the #1 anti-pattern** (session-audit, 2026-10-29:
-  48 sessions). Declaring "I'll call X" then yielding without calling is a
-  contract violation — the declaration IS the call or it is a lie. Detect:
-  `~/.local/bin/session-audit` (kleio deep-audit, commit 5c6f5d4).
-- **Read directly, once.** Narrating a read/grep before executing it is the
-  same anti-pattern in disguise. The tool call is the narration.
-
-## Naming (2026-10-22)
-
-- EAP/Gemini Tool Retrieval = **@estate/theta** (private). Merged provider
-  gateway = **atlas** (ex-chalcopyrite; renamed chalcopyrite). Key-pool router = **keygate**.
-- **olympus** holds the Greek codename lineage (τ tau, κ kappa, skopos, kilo,
-  muse, keryx, rhodochrosite, kairos, kryptos). ranch/barn are NOT Greek; only Greek
-  products join olympus.
-
-## Emergent rig doctrine
-
-- **Deps, shims, bun-canary ALLOWED.** No "no-deps" rule; check `npm view
-bun@canary version` and prefer canary when it wins.
-- **Time is not a construct for depth** — the 4s budget is for running a chosen
-  tool fast, not limiting how far you dig.
-- **Delend-experimental** for novel/emergent steps: auto-heal & auto-iterate,
-  conjecture 3+ parallel paths, never settle on one guess.
-- **Global GitHub primitive** `delend-gh`: resolve ANY upstream repo, never
-  assume org. `delend-branch-audit-for-main` audits any repo.
-
-## Provenance-first capability contracts
-
-_Codified from 2026-10-23 anomalies (endpoint probes, fleet recovery, funnel forensics). These replace assumptions with verified contracts._
-
-- **DECLARED ≠ OBSERVED.** Never trust a catalog (`supported_sampling_parameters`), model card, or SDK type definition as behavioral fact. Validate with a live probe (HTTP status + body + finish_reason + token accounting) before relying on it. Examples: minimax-m3 advertises `thinking` → HTTP 400; qwen3.6-35b shows `"reasoning": false` in catalog while `reasoning_effort` silently does nothing.
-- **REASONING BUDGET CONTRACT.** Reasoning tokens and content tokens share ONE ceiling. If `finish_reason=length` AND `reasoning_tokens ≥ ~0.95 × max_tokens` AND content is empty → classify as `reasoning_budget_starvation` (NOT an infinite loop, NOT provider failure). Rule: with reasoning on, `max_tokens ≥ 2500` (or record the per-model content-safe budget before choosing). Never diagnose "endless" from streaming deltas alone.
-- **OBSERVER EFFECT / SINGLE LANE.** The provider key is a single-server queue (advertised limit 2, de facto 1). A probe's 429/403 is NOT evidence of model failure if workers succeeded on the same key+model in the same window. Probes serialize (LeaseScheduler: one lease per key; workers > probes) and record concurrent-worker count in every probe row. Never conclude "key lacks access" while production turns run the same model.
-- **MODEL IDENTITY CHAIN.** The model that executes is a provenance chain, NOT the CLI tag: catalog → models.yml (mimetite-generated, DO NOT EDIT BY HAND — regenerate from mesh/catalog/src/data.ts) → task.agentModelOverrides → modelRoles → agent frontmatter model list → parent active/default fallback. The roster's resolved model is ground truth. Effort: gated by `task.enableEffort` + the selected model's `thinking` metadata; `vibe_spawn` has no effort field, so pin via modelRoles/agentModelOverrides. **deepseek-v4-flash via freeinference is a live primary model (kappa-session audit: 19,648 calls, incl. the current session) — earlier line claiming it is "BANNED" contradicted observed reality and is removed; it is NOT banned, do not treat it as banned.**
-- **ROUTE CONTRACT.** A route can be "alive" at the front door (health/models/OAuth 401 wall) and dead at the exec lane (empty/502 chat completions). Every served route declares its expected end-to-end contract: `GET /health`, `GET /v1/models`, `POST /v1/chat/completions`, auth class, expected status (`401` = auth wall OK, `502` = dead backend, empty body = exec-lane defect). Tailscale serve state is mutable/distributed — a declarative routes SSOT with drift check is the standing pattern; never assume serve config from kite's or any external port legend.
-- **TWO TRUTHS ARE A BUG.** `pitchfork.toml` (monolith) SHADOWS `pitchfork.d` fragments (103 dead fragments exist; monolith is the only live truth; `generate.ts` retired 2026-09-14 because it destroyed config). When editing a daemon, edit the MAIN config; check both, keep consistent, never treat `pitchfork.d` as authoritative. Fleet substrate: one malformed toolchain token (`bun:path@true`) mass-killed 65 daemons — per-daemon toolchain isolation (per-daemon mise env, no global `bun:path`) is doctrine; before daemon restarts, gate on disk > 90% free, mise resolves, ports free, health passes.
-- **EXTERNAL BOUNDARY.** Scheduled browser readers (architect's MacBook Claude Desktop tasks) hold persistent tunnel grants to `estate.tailc9ac71.ts.net` with NO on-box inventory. Observability stops at the box; the grant inventory lives outside it. Treat recurring 502 reports from external readers as route-contract drift until proven otherwise, and keep a kill-switch/revoke path per grant. Unreachable remote hosts and flooded SSH are not evidence of backend state — probe the box directly.
-- **LAZINESS IS A CONTRACT VIOLATION.** Latency-only benchmark rows with zero tokens (`nvidia-tps.jsonl` shows `tps:0`) are handshakes, not completions; quality/tool-correctness/cost belong in the objective set; use Pareto frontiers, reject zero-token rows.
-- **DURABLE ORCHESTRATION.** Worker turns can die to runtime caps/restarts mid-edit — checkpoints must be written incrementally (persist command output to files immediately, write report section-by-section), and the director verifies by READING files, never trusting worker claims.
-
-## Anomaly program (D-2026-10-23)
-
-_Verified runtime anomalies from 2026-10-23. Each gets a capability-contract test before its fix is trusted._
-
-| #   | Anomaly                               | Essence                                                                                                                        | Dossier                                                                                                                                                                    |
-| --- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | **Reasoning-budget trap**             | `max_tokens=500` + `reasoning_effort=high` → finish=length, zero content, `reasoning_tokens=max_tokens` — not an infinite loop | `/home/toxic/pens/estate/docs/anomalies/2026-10-23/endpoint-probe-results.md`                                                                                              |
-| 2   | **Catalog lies**                      | minimax `thinking` → HTTP 400; qwen3.6-35b has `reasoning: false` + empty `thinking` → `effort` silently ignored               | `/home/toxic/pens/estate/docs/anomalies/2026-10-23/effort-param-audit.md`                                                                                                  |
-| 3   | **Model-identity chain**              | CLI tag ≠ served model; resolved model is the chain through catalog → models.yml → overrides → modelRoles → frontmatter        | `/home/toxic/pens/estate/docs/anomalies/2026-10-23/effort-param-audit.md`                                                                                                  |
-| 4   | **Single-lane observer effect**       | 429 from a probe misread as "key lacks access" while workers succeeded on the same key+model simultaneously                    | `/home/toxic/pens/estate/docs/anomalies/2026-10-23/endpoint-probe-results.md`                                                                                              |
-| 5   | **Front door vs exec lane**           | Health/OAuth returns 401 (alive) while chat completions return 502/empty (dead backend) — a route-contract divergence          | `/home/toxic/pens/estate/docs/anomalies/2026-10-23/gem-forensic/funnel-443-diagnosis.txt + /home/toxic/pens/estate/docs/anomalies/2026-10-23/gem-forensic/FUNNEL-FIXED.md` |
-| 6   | **Pitchfork two-truth problem**       | Monolith is live truth; 103 pitchfork.d fragments are dead litter; `generate.ts` retired for destroying hand-tuned config      | `/home/toxic/pens/estate/docs/anomalies/2026-10-23/pitchfork-convention-report.md`                                                                                         |
-| 7   | **Fleet substrate failure**           | One malformed toolchain string (`bun:path@true`) mass-killed 65 pitchfork daemons; disk at 96% exacerbated                     | `/home/toxic/pens/estate/docs/anomalies/2026-10-23/estate-recovery3-state.md` + `estate-recovery-report.md`                                                                |
-| 8   | **External scheduled readers**        | MacBook Claude Desktop tasks hold tunnel grants with no on-box inventory; provenance lives outside the estate box              | `/home/toxic/pens/estate/docs/anomalies/2026-10-23/gem-forensic/SCHEDULED-TASKS-FOUND.md`                                                                                  |
-| 9   | **Latency-only benchmark corruption** | `tps:0` rows are handshakes not completions — zero-token benchmark entries must be rejected from Pareto frontiers              | `/home/toxic/pens/estate/docs/anomalies/2026-10-23/endpoint-probe-results.md`                                                                                              |
-
-_Charter: every anomaly gets a capability-contract test before its fix is trusted._
-
-## Layout (2026-10-23) — the bin contract
-
-One rule: **products own their entrypoints; bins merely point at them.**
-
-- **Products live under `/home/toxic/pens/<pen>/<product>/`** (pens are open namespaces: barn, ranch, olympus, geode, ergasterion, etc. — never assume a fixed set of three). Their
-  real entrypoints (scripts, binaries, `bin/` dirs) are the source of truth.
-  The old `estate/ranch` and `estate/olympus` mirrors are GONE (deleted in the
-  reorg; they were symlinks into `pens/`). Nothing stores product code under
-  `estate/`, ever.
-- **Estate single-truth lease (2026-10-28):** `/home/toxic/estate` must NOT exist
-  in any form — no symlink, no dir, no file. The SSOT is `/home/toxic/pens/estate`
-  and every daemon/config/script resolves absolute pens paths directly. NEVER
-  create `/home/toxic/estate` (symlink or real checkout) — pitchfork loads
-  pens/estate, so any ghost-path edits are silently lost. If `/home/toxic/estate`
-  ever appears, bin-contract audit fails.
-- **`/home/toxic/.local/bin` is the PATH surface.** Every product link there is
-  a symlink straight into `pens/` (e.g. `forge -> pens/barn/forge/bin/forge.ts`,
-  `corral -> pens/barn/corral/src/cli/index.ts`). Never a second copy.
-- **`/home/toxic/pens/barn/estate-ops` is the ops product** (pitchfork, hooks,
-  estate tooling, shims). The old `estate/bin` was dissolved into it.
-- **Skills live in the azurite product** — `/home/toxic/pens/geode/products/azurite/skills`
-  (what `~/.tau/skills ->` resolves to). NOT estate/skills, NOT the retired `~/sovereign`.
-  **All skills are in-flight and WIP (corrective or additive)**: never treat a skill as an immutable
-  or canonical dogma when live process ground truth or codebase state diverges. Every skill is an active
-  work-in-progress to be refined, corrected, or expanded in-place as reality evolves (rule 5: code is absolute).
-- **The manifest is the canary.** `pens/barn/estate-ops/bin-verify.sh` (generated
-  manifest) pins every symlink in `~/.local/bin` to its exact pens
-  target. A broken symlink is a FAIL, never a WARN. When a product moves, fix the
-  manifest first, then the link.
-- **No hardcoded product paths inside shims.** A shim resolves its target
-  through the manifest or `pens/`; a literal `/home/toxic/pens/estate/...` path to a
-  product is a bug, not a fallback.
-- **Retired products are deleted, not relinked** (super-ralph, roost, shep,
-  flock). No backup-binary repointing: dead link = remove + manifest archived
-  entry.
-
-## Scope split (nested AGENTS.md)
-
-| Path                                        | Owner                                                   |
-| ------------------------------------------- | ------------------------------------------------------- |
-| `/home/toxic/pens/estate/AGENTS.md`         | estate control-plane: repos, skills, azurite, pitchfork |
-| `/home/toxic/pens/estate/ranch/*/AGENTS.md` | each ranch component repo's own contract                |
-
-Nested files declare what they refine and where; none repeat or contradict these.
-
-## Anomaly program D-2026-10-27 (fleet restoration — verified live)
-
-_Verified 2026-10-27 with real traffic; dossier: `/home/toxic/pens/estate/docs/anomalies/2026-10-27/fleet-restoration.md`._
-
-| #   | Anomaly                            | Essence                                                                                                                                                       | Fix (committed)                                                                              |
-| --- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| 10  | **Namespace drift**                | Estate clone (SSOT) and pens namespace (what pitchfork loads) both hold control-plane files; scripts resolve `./stack/...` against the pen                    | `sync-estate-ns.sh` + `sync-stack.sh` + estate post-commit hook                              |
-| 11  | **Pitchfork state resurrection**   | `state.toml` is a THIRD truth — retired daemons persist there and are respawned on restart even after removal from pitchfork.toml                             | delete the `[daemons."ns/name"]` blocks (incl. `.status`/`.env`) with the supervisor STOPPED |
-| 12  | **Effect 4.0.6 NetAddress rename** | Resolved TCP address tag is `InetAddressV4/V6` (was `TcpAddress`) — `kappa serve` died before bind on every invocation                                        | kappa-code 1e61eaf702                                                                        |
-| 13  | **Schema.TaggedError factory**     | `Schema.TaggedError` is a generic factory: calling it with no identifier yields `(void 0) is not a function` — vendored deps hit this too                     | regenerated drizzle patch (incl. cache-effect.{js,cjs})                                      |
-| 14  | **Cloudflare 1010 UA block**       | Library-default UAs get 403 from CF-fronted upstreams (freeinference, groq) — surfaced as a bare router 502                                                   | rhodochrosite forwards caller UA / defaults to desktop UA                                    |
-| 15  | **Per-model credit strikes**       | 402/401/403 are PER-MODEL (one exhausted key), not provider failures — dead pairs kept their weight share and were retried first, always                      | router `record_model_strikes` (3 strikes, 15 min decay) gates selection                      |
-| 16  | **secretsmith --app exact match**  | `env --app kappa` dropped KAPPA_SERVER_PASSWORD (no `service` attr) → kappa booted unsecured; also `set` was broken (`Invalid object path: [object Promise]`) | label/key-prefix match; await ReadAlias before String()                                      |
-| 17  | **cwd/env-dependent daemons**      | browserless resolved playwright-core via process.cwd() (died pre-bind); rhodochrosite sourced keys without `set -a` (dropped at exec)                         | run.sh `cd app`; serve.sh `set -a` wrap                                                      |
-| 18  | **Peer file snapshot fork**        | Ranch's index held a 277-file snapshot of squawk at v0.8.1 while the peer repo was at v0.10.2 — two owners, two truths, phantom dirt                          | untrack peer roots; ignore their runtime WAL state                                           |
-
-## Anomaly program D-2026-10-28 (village sovereignty — verified live)
-
-_Verified 2026-10-28; dossier: `/home/toxic/pens/estate/docs/anomalies/2026-10-28/village-sovereignty.md`._
-
-| #   | Anomaly                             | Essence                                                                                                                                        | Fix (committed)                                                                |
-| --- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| 19  | **Keyring emitter skip**            | `set --secret-file` stores but `env` silently omits the item (catch-continue swallows reads) — 7 rig keys invisible while set reported success | stdin-path reroute + `sync-store-to-keyring.py` proof; secretsmith fix pending |
-| 20  | **Thresher dead-mirror config**     | Live gateway ran a config path nobody edits; estate/config/thresher was a stale mirror — edits silently no-op                                  | real path via /proc cmdline; both upstreams registered live                    |
-| 21  | **Gateway self-kill by enum guess** | `streamable_http` (underscore) vs valid `streamable-http` — one guessed config value crashed the estate's only MCP door                        | enum fixed, restored; verify via /api/v1/servers tool_count                    |
-| 22  | **rig CLI lying errors**            | `✘ Failed: ?` while all 11 jobs registered; names rejected despite help text claiming name-or-ID                                               | verify via process truth; UUIDs only; rig fix pending upstream                 |
-| 23  | **PATH binary copy drift**          | ~/.local/bin/rig was a copied binary, not a symlink — source updates ghost-deployed                                                            | rebuild from source + symlink per bin contract                                 |
-| 24  | **Port SSOT squat**                 | ports.env said 25202 (doorbell-owned); gemini-mcp loop-crashed for hours on the stale value                                                    | single truth 25227; serve.sh reads ports.env, never daemon env                 |
-| 25  | **Gemini header wall**              | x-goog-user-project header 403'd the only live key (owner IAM notwithstanding) — config doc called it required                                 | header dropped from 4 pools; live: key healthy 162ms                           |
-| 26  | **Repo naming rot**                 | Sentence-named repos + "Chris's personal" description + upstream marketing copy on the public face                                             | 4 renames + 2 description fixes; 100-repo sweep clean                          |
-
-_Session sweep receipts: village heartbeat 58 sessions/317 msgs; IRC 9 nicks in #village; TaaS 2 tools federated; pgate 4/4; router 23/23._
-
-_Per-model strike rule (2026-10-27 architect order): routing priority is FREE > FAST > instruction-following; credit/key exhaustion is quarantined per (provider, model), never per provider._
-
-## Anomaly program D-2026-10-28 (flotilla-mcp ship — verified live)
-
-_Verified 2026-10-28; dossier: `/home/toxic/pens/estate/docs/anomalies/2026-10-28/telegram-zuzmod-hijack.md`._
-
-| #   | Anomaly                                            | Essence                                                                                                                                                                             | Fix (committed)                                                                              |
-| --- | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| 27  | **Telegram presence operated externally (ZUZMOD)** | @crawlspace_coyote_bot replies "Powered by ZUZMOD Network"; BotFather-shaped squatter funnels to t.me/ZUZMOD; zero estate source + no local pid holds the bot — externally operated | taas.ts `OFFICIAL_BOTFATHER_ID=93372553` guard; revoke/create flow user-gated                |
-| 28  | **Loopback bind = phone invisible**                | taas bound 127.0.0.1; phone "Unable to connect" while box-local health passed — two clients, two truths                                                                             | `hostname: "0.0.0.0"`; contract = probe from REAL client (`adb shell nc -z`)                 |
-| 29  | **nft LAN allowlist gap**                          | `awrawr_filter` policy drop; LAN tcp set lacked 25243; ping+box-OK masked the drop                                                                                                  | 25243 added in `/etc/nftables.conf` (idempotent self-flush) + live `nft -f`; phone `nc` rc=0 |
-| 30  | **Ghost gramJS property = permanent 502**          | `client.authorizationState` isn't a property (falsy forever); `connect()` resolves void → `!ok` treated success as failure                                                          | liveness = `client.connected`; `ok === false` guard                                          |
-| 31  | **gramJS helper shape drift**                      | high-level `sendCode` threw `data.constructor` errors on 2.26.21                                                                                                                    | raw TL `new Api.auth.SendCode({...})` — version-stable; code delivered to phone              |
-| 32  | **Verification-method mirage (thresher)**          | `/api/v1/servers` empty + router `tools/list`=12 looked broken while 10 flotilla tools live                                                                                         | real proof = sessioned `retrieve_tools` (§6 of docs/mcp-guide-thresher.md)                   |
-| 33  | **Daemon died after one loop**                     | keepalive's `"${ISLEEP}" ...                                                                                                                                                        |                                                                                              | break` — isleep binary gone → first iteration broke | plain `sleep 60`; daemon verified running |
-| 34  | **morphe deprecated-key WARN spam**                | both `port` and deprecated `expected_port`/`auto_bump_port`/`port_bump_attempts` set — shadow-logged every invocation                                                               | deprecated keys removed from `[daemons.morphe]`; 0 warns                                     |
-| 35  | **Squawk rejected anon joins**                     | `/v1/join` without summoner → 400; doctrine says anon joins fine if asked to summon                                                                                                 | summoner optional → `"anon"`; response carries the summon ask                                |
-| 36  | **Telegram code flood = 56-min lockout**           | ~6 sendCodes in minutes → `A wait of 3370 seconds is required` hung every signin POST                                                                                               | `sendCodeAllowed()` 60s cooldown (429 beyond it); restart recovers send path                 |
-
-_Session sweep receipts: flotilla-mcp 10 tools federated (`flotilla:pixel_*`); full agent→thresher→phone screenshot chain 447 KB live; 4 repos pushed; fleet-join `tau-pixelmcp` first-class; Nagram login code delivery `ok:true` (2×); phone `nc -z` rc=0._
-
-## Anomaly program D-2026-10-28 (tau & hephaistos session — verified live)
-
-_Verified 2026-10-28; dossier: `/home/toxic/pens/estate/docs/anomalies/2026-10-28/session-retrospective.md`._
-
-| #   | Anomaly                              | Essence                                                                                                               | Fix (committed)                                                                                     |
-| --- | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| 37  | **Eval-subprocess boundary escape**  | Subprocess execution inside Python eval cells bypassed tool hooks; unmanaged venv caused system interpreter pollution | `ensureManagedPythonEnv()` creates isolated `~/.tau/python-env`; re-enumeration in `kernel.ts`      |
-| 38  | **Rhodochrosite router prefix trap** | Prefixing model IDs caused 404s while bare IDs on `:25193` execute in 172ms–185ms (ultra-fast)                        | Sourced bare IDs from `/v1/models` (`openai/gpt-oss-20b`, `nvidia/nemotron-3.5-super-vl-120b-a12b`) |
-| 39  | **Xtream Codes port split**          | Probing stream on port 2095 yielded 407 Proxy Auth Required; 2095 is API-only while port 80 serves video              | DataStore seeded to `com.nuvio.livetv`, legacy collision `com.nuvio.tv` uninstalled                 |
-| 40  | **Phone auth & headless keys SSOT**  | Architect's Pixel 9 Pro XL is the primary hardware authenticator (Bitwarden, Authy, keys) via Flotilla MCP            | Squawk todo board codified; pure headless phone control (Flotilla MCP / wireless ADB)               |
-
-_Session sweep receipts: managed python venv isolated; rhodochrosite 172ms completions verified; com.nuvio.livetv live on Hisense TV; Pixel 9 Pro XL Bitwarden/Authy verified via flotilla MCP; pens-ui master dashboard running on :25232._
-
-## Anomaly program D-2026-10-28 (pitchfork ref mass repair — verified live)
-
-_Verified 2026-10-28; dossier: `/home/toxic/pens/estate/docs/anomalies/2026-10-28/pitchfork-ref-mass-repair.md`. Estate commit `5e90a7eeee` (wip/kappa/estate-cutover-20261027)._
-
-| #   | Anomaly                                                     | Essence                                                                                                                                                                         | Fix (committed)                                                                                                          |
-| --- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| 41  | **Daemon dir stale after reorg**                            | `estate/ranch/yote` purged to a `.git` remnant while monolith said `dir = "ranch/yote"` → supervisor pre-spawn ENOENT ("No such file or directory (os error 2)") on every start | `dir = "/home/toxic/pens/ranch/yote"`; start exit 0, `:25102/health` 200                                                 |
-| 42  | **Clone edit invisible to supervisor**                      | Supervisor loads `pens/estate/pitchfork.toml` (namespaces.estate), not the estate clone — edited SSOT, spawn log still showed the OLD command                                   | `sync-estate-ns.sh` after EVERY monolith edit; verify via supervisor log's exact spawn line                              |
-| 43  | **`mise = true` pre-spawn kill**                            | Wrapper `mise x` exits 2 in dirs without toolchain activation ("bun is a mise bin however it is not currently active") — surfaces as the same ENOENT                            | Dropped `mise = true`, absolute `/home/toxic/.bun/bin/bun` in run                                                        |
-| 44  | **Stale Telegram webhook blocks poll forever**              | `poll tg: Conflict: can't use getUpdates method while webhook is active` every 3.6s since 10-27; survives restarts                                                              | `deleteWebhook` → 200; contract = conflict-free log + `/test/e2e` round-trip `ok:true` (agent=coyote, via openfang-http) |
-| 45  | **Monolith mass stale refs (9 daemons)**                    | estate→pens reorg + archive moves never swept `dir`/`run`/`ready_cmd`: 6 dead homes, 3 deleted corpses (bedrock-ui, delendai-web, forever-loop)                                 | 6 re-pointed to disk-verified homes; corpses parked `auto=[]` + CORPSE provenance comment, never crash-looping           |
-| 46  | **Evidence laundering: swallowed stderr → false "no hits"** | Invalid ffs flags + discarded stderr + sliced output laundered tool errors into "no hits" — twice, including a sanity needle that must match                                    | Protocol: persist RAW stdout+stderr to a file, read back verbatim before concluding                                      |
-| 47  | **Fleet todo done-endpoint doc lies**                       | Documented `POST /v1/todo/done` `{"file":…}` 404s; daemon implements `POST /v1/todo/<file>/done` (path param)                                                                   | Doc fixed (rule 5); board flip verified 200                                                                              |
-
-_Known gap: kimi-code ref points at the right monorepo but the checkout is a TRIMMED CLONE (no pnpm-workspace.yaml, no scripts/fix-node-pty-perms.mjs) → dist unbuildable until scaffold restored; daemon parked `auto=[]`._
-
-## Layout (2026-10-23) — the bin contract
-
-One rule: **products own their entrypoints; bins merely point at them.**
-
-- **Products live under `/home/toxic/pens/<pen>/<product>/`** (pens are open namespaces: barn, ranch, olympus, geode, ergasterion, etc. — never assume a fixed set of three). Their
-  real entrypoints (scripts, binaries, `bin/` dirs) are the source of truth.
-  The old `estate/ranch` and `estate/olympus` mirrors are GONE (deleted in the
-  reorg; they were symlinks into `pens/`). Nothing stores product code under
-  `estate/`, ever.
-- **Estate single-truth lease (2026-10-28):** `/home/toxic/estate` must NOT exist
-  in any form — no symlink, no dir, no file. The SSOT is `/home/toxic/pens/estate`
-  and every daemon/config/script resolves absolute pens paths directly. NEVER
-  create `/home/toxic/estate` (symlink or real checkout) — pitchfork loads
-  pens/estate, so any ghost-path edits are silently lost. If `/home/toxic/estate`
-  ever appears, bin-contract audit fails.
-- **`/home/toxic/.local/bin` is the PATH surface.** Every product link there is
-  a symlink straight into `pens/` (e.g. `forge -> pens/barn/forge/bin/forge.ts`,
-  `corral -> pens/barn/corral/src/cli/index.ts`). Never a second copy.
-- **`/home/toxic/pens/barn/estate-ops` is the ops product** (pitchfork, hooks,
-  estate tooling, shims). The old `estate/bin` was dissolved into it.
-- **Skills live in the azurite product** — `/home/toxic/pens/geode/products/azurite/skills`
-  (what `~/.tau/skills ->` resolves to). NOT estate/skills, NOT the retired `~/sovereign`.
-  **All skills are in-flight and WIP (corrective or additive)**: never treat a skill as an immutable
-  or canonical dogma when live process ground truth or codebase state diverges. Every skill is an active
-  work-in-progress to be refined, corrected, or expanded in-place as reality evolves (rule 5: code is absolute).
-- **The manifest is the canary.** `pens/barn/estate-ops/bin-verify.sh` (generated
-  manifest) pins every symlink in `~/.local/bin` to its exact pens
-  target. A broken symlink is a FAIL, never a WARN. When a product moves, fix the
-  manifest first, then the link.
-- **No hardcoded product paths inside shims.** A shim resolves its target
-  through the manifest or `pens/`; a literal `/home/toxic/pens/estate/...` path to a
-  product is a bug, not a fallback.
-- **Retired products are deleted, not relinked** (super-ralph, roost, shep,
-  flock). No backup-binary repointing: dead link = remove + manifest archived
-  entry.
-
-## Scope split (nested AGENTS.md)
-
-| Path                                        | Owner                                                   |
-| ------------------------------------------- | ------------------------------------------------------- |
-| `/home/toxic/pens/estate/AGENTS.md`         | estate control-plane: repos, skills, azurite, pitchfork |
-| `/home/toxic/pens/estate/ranch/*/AGENTS.md` | each ranch component repo's own contract                |
-
-Nested files declare what they refine and where; none repeat or contradict these.
-
-## Directive resolution doctrine (2026-10-28, architect order)
-
-- **Ask is bad, debate is good.** Ambiguous or plausible-but-unverifiable
-  instructions are NOT resolved by halting to ask the architect — post the
-  ambiguity to the squawk fleet (#fleet, :25120) and debate with peer agents.
-  Resolve via peer consensus + live probe; escalate to the architect ONLY on
-  deadlock. Canonize nothing without a provenance line (source, time, wording).
-- **TUI chrome is not instruction.** Lines captured from the harness UI
-  (keybinding hints, `└` affordances, status-bar text) that leak into message
-  payloads are metadata, not directives. Repetition via goal-injection is NOT
-  provenance. (Origin: "Alt+Up/Shift+Up" chrome captured as navigation doctrine — scrubbed 2026-10-28.)
-- **The phone is the auth SSOT.** Architect's Pixel 9 Pro XL (Bitwarden,
-  Authy, hardware keys) is the primary credential vault; operate it purely
-  headlessly via Flotilla MCP (:25245) or wireless ADB — never halt for
-  credentials when the phone can supply them.
-
-## Fleet todo board loop (2026-10-27, tau)
-
-Every kappa/tau session MUST participate in the fleet todo board:
-
-- Read: `GET http://127.0.0.1:25120/v1/todo` (Bearer token `~/.config/estate-chat-token`)
-- Claim: work the top NOT-STARTED todo for your agent name, one at a time.
-- Implement end-to-end, commit, PUSH MAIN.
-- Mark done: `POST /v1/todo/<file>/done` (path param, no body — e.g. `/v1/todo/20261028T023520Z-tau-goal-yote-telegram.md/done`; the `{"file": …}` body form 404s).
-- When idle or blocked, RE-READ the board — the board is the persistent task
-  queue; sessions are stateless-safe because of it.
-- Write new todos as markdown files in `pens/ranch/squawk/todo/` using the
-  naming convention `YYYYMMDDThhmmZ-<agent>-<slug>.md`; the index auto-regenerates.
-
-## Search doctrine (2026-10-28)
-
-- **GitHub search = blackbird ONLY** (`pens/ranch/github-search`, web-engine with session cookies). The legacy REST `GET /search/code` misses path globs and diverges from github.com/search — never use it as primary.
-- **`GITHUB_SESSIONS` env** — GitHub device-code/session token lives in `GITHUB_SESSIONS`; blackbird reads it for authenticated raw-code queries (`site:raw.githubusercontent.com` / `site:gist.githubusercontent.com` first). Never commit the value.
-- Reviving the session: `firefox --Profile default-nightly https://github.com/login`, or `gh auth login --web` for a device code.
-
-## Anomaly program D-2026-10-28 (estate single-truth cutover + kryptos/rig mastership — verified live)
-
-_Verified 2026-10-28; dossier: `pens/estate/docs/anomalies/2026-10-28/estate-single-truth-cutover.md`._
-
-| #   | Anomaly                                | Essence                                                                                 | Fix (committed)                                                                                   |
-| --- | -------------------------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| 48  | **Estate dual-truth checkout**         | estate was checkout AND runtime home; daemons + grafana re-created ghost on every start | runtime → real dirs; scripts pens-swept; lease-guard fails if estate exists ANY form (364b68ddf9) |
-| 49  | **openfang→rig 90% cutover**           | ~/.openfang+~/.rig dual state; fleet API dark; RENAME-AUDIT self-corrupted              | state → ~/.rig; fleet-join + estate src cutover; rig daemon started (9341a9b, e84e8f89c3)         |
-| 50  | **Kryptos mastership**                 | 3 secret-service copies, no master                                                      | barn code → kryptos; keygate/ranch/barn copies retired; v1.0.0 (f6e7ef7)                          |
-| 51  | **loadSecrets merge order**            | process.env overrode file before quote-strip observable                                 | env→file→keyring-gapfill (e19f114, 41/41 TDD)                                                     |
-| 52  | **Git credential helper unconfigured** | mid-session https pushes died                                                           | `gh auth setup-git` permanent (ranch b47c454bc)                                                   |
-
-## Anomaly program D-2026-10-28 (estate single-truth evening arc — verified live)
-
-_Verified 2026-10-28; dossier: pens/estate/docs/anomalies/2026-10-28/estate-single-truth-consolidation.md._
-
-| #   | Anomaly                                        | Essence                                                                                               | Fix (committed)                                                                      |
-| --- | ---------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| 53  | **Secrets-in-repo push catch**                 | backup-recovery stash (GEMINI keys) folded into estate main; GitHub push-protection rejected the push | stash → ~/estate-secrets-recovery (outside repo), history rewritten clean 7f451eb2b5 |
-| 54  | **Secrets triple-truth**                       | kryptos master stale since init; barn held newer features; keygate a third copy                       | cherry-pick barn→kryptos v1.0.0; copies retired f6e7ef7                              |
-| 55  | **Orphan keypool**                             | :25109 served by deleted-exe bun from archived clone cwd with ghost defaults                          | pens defaults + pitchfork restart; 7 pools keyring-SSOT a411783                      |
-| 56  | **~/.openfang resurrected by moved manifests** | kappa state_dir pointed at retired path; rig spawn recreated it                                       | retarget → ~/.rig/workspaces; 0 refs                                                 |
-| 57  | **Kairos inert via ghost bashrc source**       | .bashrc sourced estate/bin shim; BASH_ENV disabled pre-fix                                            | product-SSOT shim rewired; bash -i SHIM-LOADED                                       |
-| 58  | **--app keypool: 0 keys**                      | pool keys lacked service attrs                                                                        | Variant-wrapped SetAttributes stamp; 12 keys; stanza wired                           |
-| 59  | **loadSecrets merge order**                    | ambient env overrode file before quote-strip observable                                               | file-wins reorder; 46/46 green e19f114                                               |
-| 60  | **Quota-blind routing**                        | no $160/day pro ledger; reasoning-budget trap on long loops                                           | QuotaTracker TDD 5 tests + GET /quota live e9ba53d                                   |
-
-## Anomaly program D-2026-10-29 (tau deep-audit & fleet-restore — verified live)
-
-_Verified 2026-10-29; dossier: `pens/estate/docs/anomalies/2026-10-29/tau-deep-audit-fleet-restore.md`._
-
-| #   | Anomaly                                     | Essence                                                                                                          | Fix (committed)                                                                                      |
-| --- | ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| 61  | **Bare regex routed to REST**               | `ghas_search_code "/re/i"` → 0: `needsBlackbirdEngine` had no bare-`/regex/` branch; REST has no regex semantics | blackbird.ts bare-regex branch, TDD 8 cases, E2E via MCP (github-search 436d73a)                     |
-| 62  | **Code-regex silent-0 traps**               | alternation/`$`/`+`/`.{0,3}`/over-escape AND 429 windows all return count 0 with no error                        | engine contract documented + cooldown-then-retest probe discipline (memory+skill)                    |
-| 63  | **secretsmith get wrong-item fallback**     | `get <missing-label>` exits 0 returning an arbitrary keyring item (MOONBOX key as "GITHUB_SESSIONS")             | ghas keyringSession validates label match + cookie shape (2477d55); kryptos upstream fix owed        |
-| 64  | **taas-telegram shipped supervisor-less**   | thresher registration without pitchfork daemon → service died with its session; :25243 dark, thresher error      | `[daemons.taas-telegram]` in monolith; :25243 live, thresher connected 2 tools; phone re-auth owed   |
-| 65  | **Ghost estate recreated again (#48 reg)**  | systemd units + state writers rooted on `/home/toxic/estate`; pairs-apply `WOULD PATCH` ghost path               | state archived → scratch-archive; dir removed; name-fix.ts ESTATE repointed (f27ce28d9b ctx)         |
-| 66  | **xerj "index didn't work" = never booted** | vendored engine had no daemon, no data dir, nothing on :9200-9202                                                | engine booted per README; cosmic-disclosure TDD 4/4 (xerj 2ad64e3); bge-m3→qdrant cross-lingual live |
-| 67  | **Will-use-then-stop undetected**           | intent-declared-then-yielded sessions invisible to audit (only phantom-todos caught)                             | kleio deep-audit.ts band → 48 sessions flagged (5c6f5d4); session-audit bin; AGENTS doctrine         |
-| 68  | **tau mcp.json transport mismatch**         | mesh-gateway declared `transport: "sse"`; thresher speaks streamable-http only (no /sse, 404)                    | ~/.tau/mcp.json transport→http; raw initialize 200 + session id verified                             |
+---
+
+## 1. Core Operating Principles (Non-Negotiable)
+
+1. **MAXIMAL. Fix-forward, never report-only.** Commit, push, forward-only.
+   - **Never leave the tree dirty.** "Clean" = committed to a work-ref pushed to origin. Checkpoint unknown tree WIP onto your ref rather than hopping over it.
+   - **No monkeypatches**: fix root causes in real committed files.
+2. **The box is live.** Additive-only. Never remove/disable a peer/daemon/model without an explicit order.
+   - Never touch `awrawr-mcp.service`.
+   - Never run the retired `bun run scripts/generate.ts`.
+   - **Restart supervised services after any binary swap/redeploy (pitchfork)** — "deployed" means a running process uses it.
+3. **Secrets live in the secretsmith keyring** (SSOT since 2026-10-18; inject via `secretsmith env`).
+   - `~/.secrets` is a fallback record, never the source. Never commit secrets.
+4. **Git safety & diverged main**:
+   - Back up origin main as `backup/main-<date>` first, then merge, then push. Never force-push main without that backup.
+   - **NEVER ALLOW destructive resets**: `git reset --hard`, `git checkout -- .`, `git clean -f` are forbidden. Recover by backing up current HEAD/branches (reflog, stash, backup refs), then merge or cherry-pick forward.
+5. **Docs lie; code is absolute.** If a `.md` contradicts working code, fix the doc.
+   - **LSP diagnostics are contracts, never noise.** Every diagnostic is a defect to fix MAXIMALLY at its root via AST-level changes. `bun x tsc --noEmit` green is the acceptance bar; never `@ts-ignore` or cast-to-silence.
+6. **Collaboration contract**:
+   - One agent's unreviewed push is not a problem to escalate; fold tree WIP forward.
+   - **Max-collab, not lanes**: no "someone else's lane." If you see broken code or an LSP error, fix it directly in a real committed file.
+7. **Refactoring-in-passing**:
+   - When discovering defects, dead code, duplicated paths, or stale modules, fix them immediately at the root. Thinking in layers: bytes → AST → module graph → process ground truth (/proc, sockets, fds) → behavior.
+   - **Will-use-then-stop is forbidden**: declaring "I'll call X" and yielding without calling is a contract violation. The tool call IS the narration.
+
+---
+
+## 2. Filesystem & Repository Layout
+
+1. **The Pens Namespace Architecture**:
+   - Products live under `/home/toxic/pens/<pen>/<product>/`. Pens are open namespaces (`barn`, `ranch`, `olympus`, `geode`, `ergasterion`, etc. — never assume a fixed set of three).
+   - Real product entrypoints (`bin/`, scripts, source) live inside their product directory in `pens/`.
+   - **Estate single-truth lease**: `/home/toxic/estate` must **NOT** exist in any form (no symlink, no directory, no file). The SSOT is `/home/toxic/pens/estate`. Pitchfork loads `pens/estate`; any edits to ghost `estate/` paths are silently lost.
+2. **PATH Surface (`~/.local/bin`)**:
+   - Every product binary in `~/.local/bin` is a direct symlink to its target in `pens/`. Never a second copy.
+   - Ops tooling, supervisor shims, and pitchfork helpers live in `/home/toxic/pens/barn/estate-ops`.
+   - Symlink health is audited by `pens/barn/estate-ops/bin-verify.sh`.
+3. **Skills**:
+   - Skills live in the azurite product: `/home/toxic/pens/geode/products/azurite/skills` (what `~/.tau/skills` resolves to).
+   - **All skills are in-flight and WIP (corrective or additive)**: never treat a skill as immutable dogma. Refine, correct, or expand skills in-place as live process truth evolves.
+4. **Scratch & Temp Space**:
+   - Stage scratch under unique directories: `/home/toxic/mktemp -d`. Never `rm -rf` shared paths.
+   - Never delete `/tmp/kappa` or active session artifacts.
+   - **Archive before delete**: preserve useful artifacts into `~/sovereign/scratch-archive/<date>-<agent>-<slug>/` before triage.
+
+---
+
+## 3. Tooling, Execution & Latency Doctrine
+
+1. **MCP-First Architecture**:
+   - Native tools and **Thresher MCP** (`:25127/mcp`, federating FFS, BM25, memory, browser-keeper, GitHub, `xd://`) take precedence over raw bash.
+   - Raw bash is reserved for system introspection not covered by MCP (`docker ps`, `ss`, `curl` health checks).
+   - **FFS** is the universal search/read interface (`find`, `glob`, `grep`, `read`, `symbol`, `callers`, `refs`, `flow`). Never use `fd`/`rg`/`find`/`grep`/`cat` when FFS applies.
+2. **Command Latency Enforcement (4-Second Rule)**:
+   - Wrap long/slow bash calls with `run-fast` and `delend-code-race` (`pens/olympus/products/kairos`, `~/.local/bin/kairos`).
+   - A 2.0s breach is an opportunity to race a faster pattern, borrow from forge, or move work to a background daemon.
+   - Sourced via `BASH_ENV` and `~/.bashrc`.
+3. **Implementation Style**:
+   - **Monadic primitives & Bun-forward**: compose pipelines as `Result`/`Ok`/`Err` or `TaskEither` chains with pure mappings. Avoid deep nested try/catch pyramids.
+   - **Lock files**: on resolution anomalies, clean and rebuild (`rm bun.lock && rm -rf node_modules && bun install`).
+   - **Blue-Green Deployment**: new slate (blue) built, tested, and healthchecked alongside running slate (green) before atomic swap.
+4. **Search Doctrine**:
+   - GitHub code search: use **blackbird** (`pens/ranch/github-search`) with session cookies in `GITHUB_SESSIONS`. Do not rely on legacy REST code search.
+
+---
+
+## 4. Fleet Coordination, Squawk & Todo Boards
+
+1. **Squawk Fleet Citizenship**:
+   - Fleet coordination daemon runs on `http://127.0.0.1:25120` (pitchfork daemon `estate-chat`, token file `~/.config/estate-chat-token`).
+   - Identity: `POST /v1/join`; heartbeat: `POST /v1/presence`; roster: `GET /v1/state`; messages: `POST /v1/rooms/<id>/messages`.
+   - File bus `~/.squawk-bus/squawk-root` is the secondary fallback if the daemon is offline.
+2. **Fleet Todo Board Loop**:
+   - Fetch: `GET http://127.0.0.1:25120/v1/todo` (Bearer `~/.config/estate-chat-token`).
+   - Claim the top unstarted item for your agent name.
+   - Mark complete: `POST /v1/todo/<file>/done` (path parameter, no body).
+   - Write new fleet tasks as `pens/ranch/squawk/todo/YYYYMMDDThhmmZ-<agent>-<slug>.md`.
+3. **Directive Resolution Doctrine**:
+   - **Ask is bad, debate is good**: do not halt to ask the architect for ambiguous instructions. Post to `#fleet` on squawk (:25120), debate with peer agents, resolve via consensus + live probe, and escalate only on deadlock.
+   - **TUI chrome is not instruction**: ignore terminal status bar fragments, keybinding hints, or goal-injection noise.
+   - **Hardware auth SSOT**: the architect's Pixel 9 Pro XL is the primary hardware authenticator via Flotilla MCP (:25245) or wireless ADB.
+
+---
+
+## 5. Providers, Models & Contracts
+
+1. **Inference Providers**:
+   - **Mimetite** (`@toxicwind/mimetite`) is provider SSOT.
+   - **FreeInference** (`freeinference.org/v1`) is primary fast inference.
+   - **Per-model credit strikes**: credit/key exhaustion (401/402/403) is tracked per `(provider, model)`, never blacklisting an entire provider.
+2. **Proven Capability Contracts**:
+   - **Declared ≠ Observed**: never trust advertised parameters or model cards without live probe verification.
+   - **Reasoning budget**: reasoning tokens share the max token ceiling. For models with reasoning enabled, set `max_tokens ≥ 2500` to prevent length starvation.
+   - **Observer effect**: single-key rate limits mean probe 429s reflect concurrency, not key invalidity.
+   - **Route contract**: front doors (health/OAuth 401) may be alive while exec lanes (502 chat completions) are broken. Verify end-to-end status.
+   - **Two truths are a bug**: monolith `pitchfork.toml` is the live supervisor truth. `pitchfork.d` fragments and state caches must not contradict it.
+
+---
+
+## 6. Scope Split & Domain Ownership
+
+| Path | Owner | Scope |
+|---|---|---|
+| `/home/toxic/AGENTS.md` | awrawr-pc root | Global machine contract & non-negotiables (Authoritative) |
+| `/home/toxic/pens/estate/AGENTS.md` | Estate control-plane | Daemon configurations, pitchfork, control plane |
+| `/home/toxic/pens/ranch/*/AGENTS.md` | Ranch component products | Individual component rules, build contracts, local tests |
+| `/home/toxic/pens/olympus/*/AGENTS.md` | Olympus Greek lineage | Coding agents (tau, kappa), runtime shims, core engines |
+
+Nested files refine and detail these rules; they never contradict this root file.
+
+---
+
+## 7. Anomaly Knowledge Base & Verified Receipts
+
+Chronological audit of verified anomalies, root causes, and committed fixes:
+
+| # | Anomaly | Root Cause / Essence | Verified Fix | Dossier / Reference |
+|---|---|---|---|---|
+| 1 | **Reasoning-budget trap** | `max_tokens=500` with high reasoning effort consumes all tokens on reasoning | Enforce `max_tokens ≥ 2500` when reasoning effort is enabled | `docs/anomalies/2026-10-23/endpoint-probe-results.md` |
+| 2 | **Catalog lies** | minimax advertises thinking but returns 400; qwen3.6-35b ignores effort | Live behavioral probe contract; do not trust advertised sampling params | `docs/anomalies/2026-10-23/effort-param-audit.md` |
+| 3 | **Model-identity chain** | CLI label differs from executing model | Trace model through catalog → models.yml → overrides → modelRoles | `docs/anomalies/2026-10-23/effort-param-audit.md` |
+| 4 | **Single-lane observer effect** | Probe 429 misdiagnosed as bad key while worker active | LeaseScheduler: serialize probes and record active worker count | `docs/anomalies/2026-10-23/endpoint-probe-results.md` |
+| 5 | **Front door vs exec lane** | Health passes 401 while chat completions return 502 | Route-contract test checking end-to-end completions, not just health | `docs/anomalies/2026-10-23/gem-forensic/FUNNEL-FIXED.md` |
+| 6 | **Pitchfork two-truth problem** | Monolith shadowed by dead `pitchfork.d` fragments | Edit only main `pitchfork.toml`; retire fragment generation | `docs/anomalies/2026-10-23/pitchfork-convention-report.md` |
+| 7 | **Fleet substrate failure** | Malformed toolchain token (`bun:path@true`) killed 65 daemons | Per-daemon mise toolchain isolation; pre-restart health checks | `docs/anomalies/2026-10-23/estate-recovery-report.md` |
+| 8 | **External scheduled readers** | External readers held tunnel grants with no local inventory | Maintain revoke/kill-switch per grant; probe box directly | `docs/anomalies/2026-10-23/gem-forensic/SCHEDULED-TASKS-FOUND.md` |
+| 9 | **Latency benchmark corruption** | Handshake 0-token rows polluted latency rankings | Reject zero-token rows from Pareto frontiers | `docs/anomalies/2026-10-23/endpoint-probe-results.md` |
+| 10 | **Namespace drift** | Estate clone and pens namespace diverged | Sourced sync scripts (`sync-estate-ns.sh`) + post-commit hook | `docs/anomalies/2026-10-27/fleet-restoration.md` |
+| 11 | **Pitchfork state resurrection** | Retired daemons in `state.toml` respawned on restart | Purge daemon state entries with supervisor stopped | `docs/anomalies/2026-10-27/fleet-restoration.md` |
+| 12 | **Effect 4.0.6 NetAddress rename** | TCP address tag renamed to `InetAddressV4/V6` | Updated kappa-code network address tag (commit 1e61eaf702) | `docs/anomalies/2026-10-27/fleet-restoration.md` |
+| 13 | **Schema.TaggedError factory** | TaggedError without identifier throws `(void 0) is not a function` | Regenerated drizzle patch including cache-effect scripts | `docs/anomalies/2026-10-27/fleet-restoration.md` |
+| 14 | **Cloudflare 1010 UA block** | Default HTTP client User-Agents blocked by Cloudflare | Router forwards caller UA or uses desktop browser UA | `docs/anomalies/2026-10-27/fleet-restoration.md` |
+| 15 | **Per-model credit strikes** | 402 billing errors treated as whole-provider failures | Implement 3-strike 15-min decay quarantine per (provider, model) | `docs/anomalies/2026-10-27/fleet-restoration.md` |
+| 16 | **secretsmith --app exact match** | Dropped service-unbound keys like KAPPA_SERVER_PASSWORD | Added label/key-prefix matching and awaited ReadAlias before String() | `docs/anomalies/2026-10-27/fleet-restoration.md` |
+| 17 | **cwd-dependent daemons** | Playwright resolution failed due to process.cwd() mismatch | Enforced explicit `cd app` in daemon startup scripts | `docs/anomalies/2026-10-27/fleet-restoration.md` |
+| 18 | **Peer file snapshot fork** | Ranch git index tracked snapshot of peer squawk repository | Untracked peer roots; ignored runtime WAL files | `docs/anomalies/2026-10-27/fleet-restoration.md` |
+| 19 | **Keyring emitter skip** | `secretsmith set --secret-file` swallowed reads | Rerouted via stdin and verified via D-Bus secretstorage | `docs/anomalies/2026-10-28/village-sovereignty.md` |
+| 20 | **Thresher dead-mirror config** | Live daemon ran config path nobody edited | Verified config via `/proc/$PID/cmdline`; pointed to live file | `docs/anomalies/2026-10-28/village-sovereignty.md` |
+| 21 | **Gateway enum crash** | Guessed `streamable_http` instead of `streamable-http` crashed gateway | Corrected enum; verified via `/api/v1/servers` tool count | `docs/anomalies/2026-10-28/village-sovereignty.md` |
+| 22 | **rig CLI lying errors** | Misleading CLI errors while jobs registered successfully | Rely on process ground truth and UUIDs rather than CLI output | `docs/anomalies/2026-10-28/village-sovereignty.md` |
+| 23 | **PATH binary copy drift** | `~/.local/bin/rig` was a stale binary copy, not a symlink | Rebuilt from source and created symlink per bin contract | `docs/anomalies/2026-10-28/village-sovereignty.md` |
+| 24 | **Port SSOT squat** | `ports.env` listed conflicting port 25202 for gemini-mcp | Reassigned to 25227; scripts load ports.env dynamically | `docs/anomalies/2026-10-28/village-sovereignty.md` |
+| 25 | **Gemini header wall** | `x-goog-user-project` header caused 403 on valid keys | Dropped header from pools; verified 162ms response | `docs/anomalies/2026-10-28/village-sovereignty.md` |
+| 26 | **Repo naming rot** | Inconsistent repo names and descriptions across estate | Mass-corrected naming and standardized public documentation | `docs/anomalies/2026-10-28/village-sovereignty.md` |
+| 27 | **Telegram presence operated externally** | Bot was operated externally without local pid | Added OFFICIAL_BOTFATHER_ID guard; gated authorization flow | `docs/anomalies/2026-10-28/telegram-zuzmod-hijack.md` |
+| 28 | **Loopback bind = phone invisible** | Service bound 127.0.0.1; phone could not reach it | Bound to 0.0.0.0; verified probe from real client over LAN | `docs/anomalies/2026-10-28/telegram-zuzmod-hijack.md` |
+| 29 | **nft LAN allowlist gap** | Filter dropped port 25243 over LAN | Added 25243 to `/etc/nftables.conf` LAN TCP set; verified nc rc=0 | `docs/anomalies/2026-10-28/telegram-zuzmod-hijack.md` |
+| 30 | **Ghost gramJS property = permanent 502** | `client.authorizationState` accessed as property (undefined) | Switched liveness check to `client.connected` | `docs/anomalies/2026-10-28/telegram-zuzmod-hijack.md` |
+| 31 | **gramJS helper shape drift** | High-level `sendCode` threw constructor errors on 2.26.21 | Used version-stable raw TL `new Api.auth.SendCode` | `docs/anomalies/2026-10-28/telegram-zuzmod-hijack.md` |
+| 32 | **Thresher verification method mirage** | Empty server list looked broken while tools federated | Verified via sessioned `retrieve_tools` instead of server list | `docs/anomalies/2026-10-28/telegram-zuzmod-hijack.md` |
+| 33 | **Daemon died after one loop** | Missing binary in loop killed keepalive | Replaced with standard `sleep 60` in keepalive loop | `docs/anomalies/2026-10-28/telegram-zuzmod-hijack.md` |
+| 34 | **morphe deprecated-key spam** | Deprecated port keys caused continuous warning logs | Cleaned deprecated keys from pitchfork.toml configuration | `docs/anomalies/2026-10-28/telegram-zuzmod-hijack.md` |
+| 35 | **Squawk rejected anon joins** | Missing summoner returned 400 on `/v1/join` | Defaulted summoner to `"anon"` when omitted | `docs/anomalies/2026-10-28/telegram-zuzmod-hijack.md` |
+| 36 | **Telegram code flood lockout** | Rapid successive sendCodes triggered 56-minute rate limit | Added 60s cooldown guard in authentication endpoint | `docs/anomalies/2026-10-28/telegram-zuzmod-hijack.md` |
+| 37 | **Eval-subprocess boundary escape** | Subprocess inside eval bypassed hooks; polluted interpreter | Isolated environment in `~/.tau/python-env` managed by kernel | `docs/anomalies/2026-10-28/session-retrospective.md` |
+| 38 | **Rhodochrosite router prefix trap** | Prefixed model IDs returned 404 on port 25193 | Sourced bare IDs directly from `/v1/models` | `docs/anomalies/2026-10-28/session-retrospective.md` |
+| 39 | **Xtream Codes port split** | Port 2095 was API-only; video stream required port 80 | Seeded data store to `com.nuvio.livetv` on port 80 | `docs/anomalies/2026-10-28/session-retrospective.md` |
+| 40 | **Phone auth SSOT** | Ambiguity about primary authenticator source | Codified Pixel 9 Pro XL as hardware SSOT via Flotilla MCP | `docs/anomalies/2026-10-28/session-retrospective.md` |
+| 41 | **Daemon dir stale after reorg** | Purged directory in pitchfork.toml caused pre-spawn ENOENT | Repointed `dir` to absolute pens path `/home/toxic/pens/ranch/yote` | `docs/anomalies/2026-10-28/pitchfork-ref-mass-repair.md` |
+| 42 | **Clone edit invisible to supervisor** | Supervisor loaded `pens/estate/pitchfork.toml`, not clone | Run `sync-estate-ns.sh` after every monolith edit | `docs/anomalies/2026-10-28/pitchfork-ref-mass-repair.md` |
+| 43 | **`mise = true` pre-spawn kill** | `mise x` failed in directories without active toolchain | Dropped `mise = true`; used absolute binary paths in run command | `docs/anomalies/2026-10-28/pitchfork-ref-mass-repair.md` |
+| 44 | **Stale Telegram webhook blocked poll** | Active webhook conflicted with getUpdates polling | Called `deleteWebhook`; verified conflict-free logs and e2e test | `docs/anomalies/2026-10-28/pitchfork-ref-mass-repair.md` |
+| 45 | **Monolith mass stale refs** | Dead directory paths caused daemons to crash-loop | Repointed paths to verified homes; parked corpses as `auto=[]` | `docs/anomalies/2026-10-28/pitchfork-ref-mass-repair.md` |
+| 46 | **Evidence laundering via swallowed stderr** | Discarded stderr caused silent tool failures to look like "no hits" | Mandatory rule: persist raw stdout+stderr to disk before concluding | `docs/anomalies/2026-10-28/pitchfork-ref-mass-repair.md` |
+| 47 | **Fleet todo done-endpoint doc lies** | Documented `POST /v1/todo/done` with body returned 404 | Updated doc to match actual path: `POST /v1/todo/<file>/done` | `docs/anomalies/2026-10-28/pitchfork-ref-mass-repair.md` |
+| 48 | **Estate dual-truth checkout** | `/home/toxic/estate` recreated as ghost checkout by daemons | Removed ghost path; added lease guard failing if path appears | `docs/anomalies/2026-10-28/estate-single-truth-cutover.md` |
+| 49 | **openfang→rig cutover incomplete** | Dual state between `~/.openfang` and `~/.rig` | Standardized state directory on `~/.rig`; started rig daemon | `docs/anomalies/2026-10-28/estate-single-truth-cutover.md` |
+| 50 | **Kryptos secret mastership drift** | Multiple copies of secret-service across barn and keygate | Unified secret-service in kryptos v1.0.0; retired obsolete copies | `docs/anomalies/2026-10-28/estate-single-truth-cutover.md` |
+| 51 | **loadSecrets merge order bug** | Ambient env values overrode config files before quote stripping | Reordered precedence: file settings override ambient environment | `docs/anomalies/2026-10-28/estate-single-truth-cutover.md` |
+| 52 | **Git credential helper unconfigured** | Mid-session HTTPS pushes failed with authentication errors | Ran `gh auth setup-git` to permanently wire credential helper | `docs/anomalies/2026-10-28/estate-single-truth-cutover.md` |
+| 53 | **Secrets-in-repo push rejection** | Backup stash containing Gemini keys blocked push | Moved stash to `~/estate-secrets-recovery`; rewrote git history clean | `docs/anomalies/2026-10-28/estate-single-truth-consolidation.md` |
+| 54 | **Secrets triple-truth copies** | Barn had newer secret features than initial kryptos master | Cherry-picked updates from barn to kryptos; retired extra copies | `docs/anomalies/2026-10-28/estate-single-truth-consolidation.md` |
+| 55 | **Orphan keypool process** | Keypool served by deleted binary from archived clone cwd | Updated defaults to pens; restarted pitchfork with keyring SSOT | `docs/anomalies/2026-10-28/estate-single-truth-consolidation.md` |
+| 56 | **~/.openfang resurrected by moved manifests** | Stale state_dir path in kappa config caused openfang rebirth | Retargeted configuration to `~/.rig/workspaces`; 0 references | `docs/anomalies/2026-10-28/estate-single-truth-consolidation.md` |
+| 57 | **Kairos inert via ghost bashrc source** | Interactive bashrc sourced removed `estate/bin/` shim | Rewired bashrc to product SSOT in `pens/`; verified SHIM-LOADED | `docs/anomalies/2026-10-28/estate-single-truth-consolidation.md` |
+| 58 | **secretsmith --app keypool missing keys** | Pool keys lacked service attributes in keyring | Applied Variant-wrapped SetAttributes stamps to populate service | `docs/anomalies/2026-10-28/estate-single-truth-consolidation.md` |
+| 59 | **loadSecrets merge order** | Ambient env values overrode config file values | Enforced file-wins reorder; verified with 46 green tests | `docs/anomalies/2026-10-28/estate-single-truth-consolidation.md` |
+| 60 | **Quota-blind routing on long loops** | No ledger tracking pro tier quota led to budget starvation | Built QuotaTracker with tests; added `GET /quota` endpoint | `docs/anomalies/2026-10-28/estate-single-truth-consolidation.md` |
+| 61 | **Bare regex routed to REST engine** | Bare regex `/re/i` in search returned 0 results | Added bare-regex branch to blackbird.ts; verified via E2E test | `docs/anomalies/2026-10-29/tau-deep-audit-fleet-restore.md` |
+| 62 | **Code-regex silent-0 traps** | Complex regex patterns silently returned 0 results without errors | Documented blackbird engine contracts; probe cooldown discipline | `docs/anomalies/2026-10-29/tau-deep-audit-fleet-restore.md` |
+| 63 | **secretsmith get wrong-item fallback** | Query for missing label returned arbitrary keyring item | Added label match and cookie shape validation in ghas session | `docs/anomalies/2026-10-29/tau-deep-audit-fleet-restore.md` |
+| 64 | **taas-telegram shipped without supervisor** | Thresher service died when session ended; :25243 went dark | Added `[daemons.taas-telegram]` to pitchfork monolith | `docs/anomalies/2026-10-29/tau-deep-audit-fleet-restore.md` |
+| 65 | **Ghost estate recreated by systemd units** | Systemd units rooted on `/home/toxic/estate` revived ghost path | Repointed units to `pens/`; archived state to scratch-archive | `docs/anomalies/2026-10-29/tau-deep-audit-fleet-restore.md` |
+| 66 | **xerj search engine never booted** | Vendored engine had no running daemon or data directory | Booted engine per README; verified bge-m3→qdrant pipeline | `docs/anomalies/2026-10-29/tau-deep-audit-fleet-restore.md` |
+| 67 | **Will-use-then-stop undetected** | Agents declaring tool intent then yielding went unnoticed | Built kleio deep-audit session analyzer; added rule to AGENTS.md | `docs/anomalies/2026-10-29/tau-deep-audit-fleet-restore.md` |
+| 68 | **tau mcp.json transport mismatch** | Config declared SSE transport while Thresher speaks HTTP | Updated `~/.tau/mcp.json` to `transport: "http"`; verified init | `docs/anomalies/2026-10-29/tau-deep-audit-fleet-restore.md` |
