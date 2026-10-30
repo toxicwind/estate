@@ -45,6 +45,8 @@
     "@mariozechner/pi-coding-agent": "*"
   },
   "devDependencies": {
+    "@types/bun": "^1.4.4",
+    "bun-types": "^1.4.4",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18"
   }

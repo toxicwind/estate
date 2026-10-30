@@ -1,4 +1,8 @@
 {
+  "devDependencies": {
+    "@types/bun": "^1.4.4",
+    "bun-types": "^1.4.4"
+  },
   "name": "@toxicwind/phone-backup",
   "version": "2026.9.30",
   "description": "μ-speed phone backup: hybrid parallel ADB pull with SQLite incremental manifest",

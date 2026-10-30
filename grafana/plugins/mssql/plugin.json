@@ -14,8 +14,8 @@
             "small": "img/sql_server_logo.svg",
             "large": "img/sql_server_logo.svg"
         },
-        "updated": "2026-10-08",
-        "version": "13.0.7",
+        "updated": "2026-10-27",
+        "version": "13.0.9",
         "keywords": [
             "mssql",
             "microsoft",

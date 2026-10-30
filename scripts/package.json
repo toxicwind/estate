@@ -9,6 +9,8 @@
     "lint": "oxlint ."
   },
   "devDependencies": {
+    "@types/bun": "^1.4.4",
+    "bun-types": "^1.4.4",
     "@types/bun": "latest"
   }
 }

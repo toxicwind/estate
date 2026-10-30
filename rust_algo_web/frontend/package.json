@@ -12,6 +12,8 @@
     "react-router-dom": "^6.26"
   },
   "devDependencies": {
+    "@types/bun": "^1.4.4",
+    "bun-types": "^1.4.4",
     "@types/react": "^19",
     "@vitejs/plugin-react": "^4",
     "typescript": "^5.6",

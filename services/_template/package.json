@@ -1,1 +1,5 @@
-{"description":"Template for estate TS services — copy to services/<name>, never run as-is","main":"src/index.ts","name":"@estate/template","private":true,"scripts":{"build":"bun build src/index.ts --compile --outfile dist/template","dev":"bun --watch src/index.ts","lint":"tsc --noEmit -p tsconfig.json","test":"bun test","typecheck":"tsc --noEmit -p tsconfig.json"},"estate":{"daemon":"template","description":"Copy-me skeleton. Set port/portEnv/daemon when scaffolding a real service.","port":0,"portEnv":"TEMPLATE_PORT"},"type":"module","version":"0.1.0"}
+{
+  "devDependencies": {
+    "@types/bun": "^1.4.4",
+    "bun-types": "^1.4.4"
+  },"description":"Template for estate TS services — copy to services/<name>, never run as-is","main":"src/index.ts","name":"@estate/template","private":true,"scripts":{"build":"bun build src/index.ts --compile --outfile dist/template","dev":"bun --watch src/index.ts","lint":"tsc --noEmit -p tsconfig.json","test":"bun test","typecheck":"tsc --noEmit -p tsconfig.json"},"estate":{"daemon":"template","description":"Copy-me skeleton. Set port/portEnv/daemon when scaffolding a real service.","port":0,"portEnv":"TEMPLATE_PORT"},"type":"module","version":"0.1.0"}

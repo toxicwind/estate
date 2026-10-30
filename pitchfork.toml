@@ -251,9 +251,20 @@ auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25226/api/health"
 port = 25226
-depends = ["barn/thresher"]
-dir = "."
-mise = true
+[daemons.taas-telegram]
+# taas.ts — Telegram-as-a-Service (Overlord GramJS, arroyo/overlord). Died with
+# its session on 2026-10-28: thresher registration shipped without a supervisor
+# entry. Deps resolve from yote node_modules (gramjs); creds via secretsmith
+# env --app yote. Port SSOT: config/ports.env TAAS_PORT=25243.
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/ranch/products/arroyo/overlord/src/taas.ts"
+dir = "/home/toxic/pens/ranch/products/arroyo/overlord"
+auto = ["start"]
+retry = true
+port = 25243
+ready_http = "http://127.0.0.1:25243/telegram/status"
+health_http = { url = "http://127.0.0.1:25243/telegram/status", interval = "60s", timeout = "5s", retries = 3 }
+[daemons.taas-telegram.env]
+VANS_TAAS_PORT = "25243"
 
 [daemons.hf-downloader.health_http]
 url = "http://127.0.0.1:25226/health"
@@ -486,7 +497,7 @@ port = 25155
 dir = "/home/toxic/pens/estate"
 
 # Forge (nativelink) web surfaces — the REAPI build-cache UI and its docs.
-# Source: pens/barn/nativelink/web (bun workspace; @forge/web = Next.js app,
+# Source: pens/pens/estate/config/nativelink/web (bun workspace; @forge/web = Next.js app,
 # @forge/docs = fumadocs). Both serve their production build.
 
 [daemons.nginx]
@@ -860,3 +871,12 @@ dir = "/home/toxic/pens/ranch/products/android-fleet"
 url = "http://127.0.0.1:25245/health"
 interval = "60s"
 timeout = "5s"
+
+# vision-kit MCP drop-in (2026-10-29, tau) — qwen3.6-35b vision workloads
+[daemons."vision-kit-mcp"]
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/ranch/products/vision-kit/mcp/serve.ts"
+auto = ["start"]
+retry = true
+port = 25228
+ready_http = "http://127.0.0.1:25228/health"
+dir = "/home/toxic/pens/ranch/products/vision-kit"

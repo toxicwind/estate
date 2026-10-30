@@ -1,5 +1,13 @@
 # Changelog
 
+## 13.0.7
+
+- Chore: Update dependencies
+
+## 13.0.6
+
+- Chore: Pin golangci-lint to 2.15.0 in development dependencies and CI/CD pipelines
+
 ## 13.0.5
 
 - Fix security vulnerabilities (CVE-2026-102276, CVE-2026-102278, CVE-2026-102990)
@@ -10,7 +18,7 @@
 
 ## 13.0.3
 
-- ⚙️ Chore: Update dependencies
+- Chore: Update dependencies
 
 ## 13.0.2
 

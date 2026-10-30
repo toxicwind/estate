@@ -1,4 +1,8 @@
 {
+  "devDependencies": {
+    "@types/bun": "^1.4.4",
+    "bun-types": "^1.4.4"
+  },
   "description": "Card-derived per-model request enforcement for bornite — TypeScript/Bun reverse proxy",
   "main": "src/index.ts",
   "name": "@estate/model-guard",

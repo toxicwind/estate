@@ -274,7 +274,7 @@ _Charter: every anomaly gets a capability-contract test before its fix is truste
 
 One rule: **products own their entrypoints; bins merely point at them.**
 
-- **Products live in `/home/toxic/pens/{barn,ranch,olympus}/<product>/`.** Their
+- **Products live under `/home/toxic/pens/<pen>/<product>/`** (pens are open namespaces: barn, ranch, olympus, geode, ergasterion, etc. — never assume a fixed set of three). Their
   real entrypoints (scripts, binaries, `bin/` dirs) are the source of truth.
   The old `estate/ranch` and `estate/olympus` mirrors are GONE (deleted in the
   reorg; they were symlinks into `pens/`). Nothing stores product code under
@@ -402,7 +402,7 @@ _Known gap: kimi-code ref points at the right monorepo but the checkout is a TRI
 
 One rule: **products own their entrypoints; bins merely point at them.**
 
-- **Products live in `/home/toxic/pens/{barn,ranch,olympus}/<product>/`.** Their
+- **Products live under `/home/toxic/pens/<pen>/<product>/`** (pens are open namespaces: barn, ranch, olympus, geode, ergasterion, etc. — never assume a fixed set of three). Their
   real entrypoints (scripts, binaries, `bin/` dirs) are the source of truth.
   The old `estate/ranch` and `estate/olympus` mirrors are GONE (deleted in the
   reorg; they were symlinks into `pens/`). Nothing stores product code under

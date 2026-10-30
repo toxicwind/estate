@@ -1,5 +1,13 @@
 # Changelog
 
+## 13.0.9
+
+- Bump backend dependency
+
+## 13.0.8
+
+- Update Go to 1.27.3
+
 ## 13.0.7
 
 - Fix security vulnerabilities (CVE-2026-102278, CVE-2026-102276, CVE-2026-102990)
