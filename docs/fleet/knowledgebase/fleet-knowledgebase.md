@@ -387,3 +387,31 @@ Fixes: github-search 436d73a (bare-regex routing, 8 TDD, E2E via MCP :25113) + 2
 New tools: `~/.local/bin/session-audit` (→ estate-ops/bin/session-audit → kleio helper/deep-audit.ts); `kleio helper/deep-audit.ts` (TSV/JSON dataframe + findings + bands); estate-ops `name-fix.ts` ESTATE const pens-repointed.
 
 The lessons (do not regress): (1) thresher server registration WITHOUT a pitchfork daemon = a service that dies with its authoring session — every mcp_config.json entry needs a monolith `[daemons.*]` row; (2) `secretsmith get <missing-label>` silently returns an arbitrary item — any consumer MUST validate the returned label; (3) GitHub code-search regex silently returns 0 for unsupported constructs (no alternation, no `$`/`+`, no `.{0,3}`) and for 429 windows — cooldown-then-retest before concluding anything; (4) tau mcp.json `transport: "sse"` ≠ thresher (streamable-http only) — enum-class bug again; (5) the will-use-then-stop anti-pattern is now programmatically detected (deep-audit band) — narrating a tool call instead of making one is the same failure; (8) ranch auto-ignores `products/` (submoduleless doctrine): product commits need `git add -f products/...` from the ranch root — a plain add fails and the folder only LOOKS lost; (9) LG-TV deep checks: prisoner-SSH luna-send is permission-denied on current webOS — `lgroot` (Homebrew root exec) is the root channel, and `lg-fleet` bins (lg-deploy/lg-app/lg-hot) own the deploy lane, never ad-hoc /tmp scripts; (10) folding another agent's deletion-WIP via stash: stash pop can surface UD conflicts — `git reset` resolves, the deletion-WIP stays with its owner, never commit it yourself; (6) systemd user units rooted on retired paths keep recreating ghosts — sweep `%h/estate` refs next; (7) vendored engines don't self-start — boot the product before auditing its features.
+
+## 2026-10-30 coreelec-playback-fleet-restructure session (tau) — verified fixes + root causes
+
+Root-cause chain: the fleet pen was structurally healthy but had drifted (duplicate android-fleet checkouts, products/ vs devices/ naming, pitchfork pointing at the ranch copy) — restored. The CoreELEC playback hunt then exposed a whole class of "guess the route" failure: the addon dispatch (router.py "'playback.' in mode" → player_check → Sources().playback_prep), autoplay gating (settings.db rows auto_play_movie + autoplay.*_cloud, NOT the URL param alone), the dead shipped TMDB key vs magneto's working key, and the armhf userland that can't run bun/FFS. The cure was trio gaining a ROUTE channel so the next hunt reads the dispatch table instead of guessing, plus a python3.11 stdio MCP (ffs-coreelec-mcp) on the box for read-only search.
+
+Fixes list (repo commit — verification):
+- tau binary rebuild: stale dist carried the old TAU_DENIED_TOOLS red-herring message; source was already fixed. run-fast default kairos path corrected (ranch → olympus).
+- fleet pen restructure (estate 27e394cf11): products/ → devices/; android-fleet canonical at fleet/devices (ranch copy archived); pitchfork repointed estate+ranch (8ae5d2501); 0 stale refs.
+- estate devices rename (estate 27e394cf11): kodi/ → coreelec/ with .env/.env.example/.gitignore + live inventory.
+- flotilla boot crash (android-fleet 2e81496): removed dead enableFreeform import; 25 tests green; daemon running :25245.
+- keepalive one-loop death (android-fleet 4800ea4): isleep(1) was gone; plain sleep 60; daemon stays up.
+- kodi-fleet docs (kodi-fleet 2efe11c): stale sovereign-projects refs → actual repo + estate devices inventory.
+- ffs-coreelec-mcp: pure-python stdio MCP on CoreELEC 246 (/storage/ffs-coreelec-mcp/server.py) — trio-style BM25+AST+symbol read-only search; registered thresher/tau/kappa via ssh passthrough.
+- trio ROUTE channel (triphylite engine.ts/index.ts/test/route.test.ts): dispatch-table tracing, prefix-family + %s-format mode matching, setting-declaration noise filter; 4-channel RRF; trio_route MCP tool; TDD pinned.
+
+New tools added:
+- pens/geode/products/coreelec-mcp/remote/ffs-coreelec-mcp.py → box /storage/ffs-coreelec-mcp/server.py
+- trio trio_route MCP tool (triphylite)
+- keyring item TMDB_API_KEY (magneto's working key)
+
+The lessons (do not regress):
+1. When addon behavior is uncertain, READ ITS DISPATCH TABLE with trio ROUTE — never guess modes/params from memory.
+2. Kodi addon autoplay/settings live in settings.db rows (settings_cache) — a settings.xml edit alone is not enough.
+3. Box 10.0.0.246 is armhf USERLAND — aarch64 bun/x64 ffs will not execute. Use python3 or ssh-passthrough from awrawr-pc.
+4. Redlight's shipped TMDB key is dead (401); magneto's key (7b2b17) works — keyring TMDB_API_KEY.
+5. Real search route: navigator.search_history&action=tmdb_keyword_{movie,tvshow}; build_tvshow_list&action=tmdb_tv_search returns 0.
+6. Live-box UI pokes are last resort — every probe can spawn UI dialogs. Prefer read-only RPC + log reading.
+7. Existing binary = source + build — check dist/tau mtime before chasing config.

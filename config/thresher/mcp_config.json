@@ -1293,6 +1293,17 @@
       "created": "2026-10-28T03:30:00.000000-06:00",
       "updated": "2026-10-28T03:30:00.000000-06:00"
     }
+  ,{
+    "name": "coreelec",
+    "protocol": "stdio",
+    "command": "/home/toxic/.bun/bin/bun",
+    "args": [
+      "/home/toxic/pens/geode/products/coreelec-mcp/server.ts"
+  ],
+    "oauth": null,
+    "enabled": true,
+    "trust_mode": "auto"
+    }
   ],
   "oauth_expiry_warning_hours": 4,
   "observability": {
