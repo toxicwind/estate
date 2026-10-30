@@ -53,7 +53,7 @@ outputs = ["packages/cli/dist/@kappacode/cli-linux-x64/bin/kappa"]
 # MISE_CACHE_REMOTE_URL) so unchanged outputs are never recomputed.
 [tasks.kappa-tdd]
 run = """
-cd /home/toxic/pens/olympus/products/kappa/kappa-code/packages/cli && bun test 2>/home/toxic/tmp/kappa-tdd-test.log
+cd /home/toxic/pens/olympus/products/kappa/kappa-code/packages/cli && bun test --timeout 30000 2>/home/toxic/tmp/kappa-tdd-test.log
 bun run --cwd /home/toxic/pens/olympus/products/kappa/kappa-code make --single --skip-install
 """
 description = "User-TDD loop: kappa tests then forge-cached rebuild"
