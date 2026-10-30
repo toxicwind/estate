@@ -801,6 +801,17 @@ ready_http = "http://127.0.0.1:25147/ping"
 mise = false
 # merged from standalone repo squawk-ws (2026-10-24); canonical core/ws.py
 
+[daemons.estate-chat]
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/ranch/products/squawk/bun/index.ts"
+dir = "/home/toxic/pens/ranch/products/squawk"
+mise = false
+retry = true
+port = 25120
+auto = ["start"]
+ready_http = "http://127.0.0.1:25120/health"
+env = { SQUAWK_CHAT_PORT = "25120", SQUAWK_CHAT_TOKEN_FILE = "/home/toxic/.config/estate-chat-token" }
+# restored per chat-miscue: estate-chat/:25120 was retired (anomaly-retire) but pitchfork monolith never loaded it -> daemon permanently stopped; restored to monolith SSOT per AGENTS.md §7 anomaly #6
+
 [daemons.mbx-cache]
 run = "exec /home/toxic/pens/estate/ops/mbx-cache/run.sh"
 auto = ["start"]
