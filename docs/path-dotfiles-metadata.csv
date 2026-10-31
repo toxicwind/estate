@@ -1,0 +1,196 @@
+entry,type,size,mtime,perms,link_target,exists,realpath,class,intent
+.wrangler,DIR,98,1792122579.4558063,0o755,,True,/home/toxic/.config/.wrangler,APP-DIR,keep
+Bitwarden,DIR,532,1792122547.0220037,0o700,,True,/home/toxic/.config/Bitwarden,APP-DIR,keep
+Bitwarden CLI,DIR,18,1793334157.5236247,0o700,,True,/home/toxic/.config/Bitwarden CLI,APP-DIR,keep
+Code,DIR,28,1793252165.3319325,0o755,,True,/home/toxic/.config/Code,APP-DIR,keep
+Code - Insiders,DIR,964,1793214479.6199942,0o755,,True,/home/toxic/.config/Code - Insiders,APP-DIR,keep
+Electron,DIR,526,1793041910.0661855,0o700,,True,/home/toxic/.config/Electron,APP-DIR,keep
+GitHub,DIR,28,1789935898.430777,0o755,,True,/home/toxic/.config/GitHub,APP-DIR,keep
+Kvantum,DIR,100,1792122546.523397,0o755,,True,/home/toxic/.config/Kvantum,APP-DIR,keep
+QtProject.conf,FILE,103,1793224750.0884411,0o644,,True,/home/toxic/.config/QtProject.conf,APP-DIR,keep
+aHR0cHg,DIR,22,1792122578.0394225,0o700,,True,/home/toxic/.config/aHR0cHg,APP-DIR,keep
+agent-mcp-gateway,DIR,46,1792122547.026052,0o755,,True,/home/toxic/.config/agent-mcp-gateway,APP-DIR,keep
+aix,DIR,22,1792122579.4559872,0o755,,True,/home/toxic/.config/aix,APP-DIR,keep
+alterx,DIR,46,1792122578.0414455,0o700,,True,/home/toxic/.config/alterx,APP-DIR,keep
+apex-operator,DIR,24,1792122547.026118,0o700,,True,/home/toxic/.config/apex-operator,APP-DIR,keep
+ash,DIR,22,1792122578.0428689,0o755,,True,/home/toxic/.config/ash,APP-DIR,keep
+asnmap,DIR,22,1792122579.4555879,0o700,,True,/home/toxic/.config/asnmap,APP-DIR,keep
+astro,DIR,22,1792556191.815197,0o755,,True,/home/toxic/.config/astro,APP-DIR,keep
+atuin,DIR,22,1792122547.0270035,0o700,,True,/home/toxic/.config/atuin,APP-DIR,keep
+baloofileinformationrc,FILE,623,1792122579.46264,0o600,,True,/home/toxic/.config/baloofileinformationrc,APP-DIR,keep
+bat,DIR,16,1792122547.0272706,0o755,,True,/home/toxic/.config/bat,APP-DIR,keep
+billion-context,DIR,40,1792122547.027379,0o755,,True,/home/toxic/.config/billion-context,APP-DIR,keep
+bloodhound,DIR,20,1792122578.041311,0o755,,True,/home/toxic/.config/bloodhound,APP-DIR,keep
+bluedevilglobalrc,FILE,88,1792869171.9068978,0o600,,True,/home/toxic/.config/bluedevilglobalrc,APP-DIR,keep
+byte-vision,DIR,76,1793126706.298566,0o755,,True,/home/toxic/.config/byte-vision,APP-DIR,keep
+ccache,DIR,22,1792122547.027443,0o755,,True,/home/toxic/.config/ccache,APP-DIR,keep
+chat-coord-token,FILE,44,1792122579.4580197,0o600,,True,/home/toxic/.config/chat-coord-token,SECRET,600 perms + keyring SSOT
+chawan,DIR,22,1792122547.027503,0o755,,True,/home/toxic/.config/chawan,APP-DIR,keep
+chrome-flags.conf,FILE,227,1792122579.4575222,0o644,,True,/home/toxic/.config/chrome-flags.conf,APP-DIR,keep
+chromium,DIR,1388,1793327662.6434464,0o700,,True,/home/toxic/.config/chromium,APP-DIR,keep
+chromium-headless,DIR,96,1793423419.5026953,0o700,,True,/home/toxic/.config/chromium-headless,APP-DIR,keep
+claude,DIR,326,1792122548.7535398,0o755,,True,/home/toxic/.config/claude,APP-DIR,keep
+code-flags.conf,FILE,177,1792122579.4576385,0o644,,True,/home/toxic/.config/code-flags.conf,APP-DIR,keep
+code-insiders-flags.conf,FILE,189,1792122579.4580898,0o644,,True,/home/toxic/.config/code-insiders-flags.conf,APP-DIR,keep
+configstore,DIR,110,1793252389.075318,0o700,,True,/home/toxic/.config/configstore,APP-DIR,keep
+cover,DIR,24,1792122548.7536087,0o755,,True,/home/toxic/.config/cover,APP-DIR,keep
+damond,DIR,14,1791596982.4845996,0o755,,True,/home/toxic/.config/damond,APP-DIR,keep
+darklyrc,FILE,31,1792122579.4576893,0o644,,True,/home/toxic/.config/darklyrc,APP-DIR,keep
+dconf,DIR,8,1792951784.0477448,0o700,,True,/home/toxic/.config/dconf,APP-DIR,keep
+discord,DIR,868,1792122554.171014,0o755,,True,/home/toxic/.config/discord,APP-DIR,keep
+dnsx,DIR,22,1792122554.1710973,0o700,,True,/home/toxic/.config/dnsx,APP-DIR,keep
+dolphinrc,FILE,665,1792122579.4577348,0o644,,True,/home/toxic/.config/dolphinrc,APP-DIR,keep
+droidrun,DIR,22,1792122554.171183,0o755,,True,/home/toxic/.config/droidrun,APP-DIR,keep
+easyeffects,DIR,4,1789764710.2347693,0o755,,True,/home/toxic/.config/easyeffects,APP-DIR,keep
+elinks,DIR,0,1789250396.0231981,0o700,,True,/home/toxic/.config/elinks,APP-DIR,keep
+environment.d,DIR,100,1793037107.1871135,0o755,,True,/home/toxic/.config/environment.d,APP-DIR,keep
+estate-chat-token,FILE,96,1792122579.4635184,0o600,,True,/home/toxic/.config/estate-chat-token,SECRET,600 perms + keyring SSOT
+fd,DIR,12,1792122554.171309,0o755,,True,/home/toxic/.config/fd,APP-DIR,keep
+feedlot,DIR,90,1793098678.3283257,0o755,,True,/home/toxic/.config/feedlot,APP-DIR,keep
+ffuf,DIR,58,1792038824.7043397,0o750,,True,/home/toxic/.config/ffuf,APP-DIR,keep
+fish,DIR,90,1792122546.5236592,0o755,,True,/home/toxic/.config/fish,APP-DIR,keep
+fontconfig,DIR,20,1792122546.5237656,0o755,,True,/home/toxic/.config/fontconfig,APP-DIR,keep
+foot,DIR,16,1792122546.5238278,0o755,,True,/home/toxic/.config/foot,APP-DIR,keep
+fuzzel,DIR,52,1792122546.5239282,0o755,,True,/home/toxic/.config/fuzzel,APP-DIR,keep
+fzf,DIR,0,1790097767.3769863,0o755,,True,/home/toxic/.config/fzf,APP-DIR,keep
+gcloud,DIR,602,1793428788.8038602,0o755,,True,/home/toxic/.config/gcloud,APP-DIR,keep
+gh,DIR,98,1792753763.6735184,0o751,,True,/home/toxic/.config/gh,APP-DIR,keep
+ghostty,DIR,28,1792122554.5906944,0o755,,True,/home/toxic/.config/ghostty,APP-DIR,keep
+git,DIR,30,1792122554.5907905,0o755,,True,/home/toxic/.config/git,APP-DIR,keep
+gitleaks,DIR,26,1792122554.5910783,0o755,,True,/home/toxic/.config/gitleaks,APP-DIR,keep
+glib-2.0,DIR,16,1792130833.546386,0o700,,True,/home/toxic/.config/glib-2.0,APP-DIR,keep
+go,DIR,18,1789324060.8886342,0o755,,True,/home/toxic/.config/go,APP-DIR,keep
+google-chrome-for-testing,DIR,1528,1792707881.2961946,0o700,,True,/home/toxic/.config/google-chrome-for-testing,APP-DIR,keep
+google-chrome-for-testing-headless,DIR,128,1792570877.183076,0o700,,True,/home/toxic/.config/google-chrome-for-testing-headless,APP-DIR,keep
+gtk-3.0,DIR,14,1792122554.6147451,0o755,,True,/home/toxic/.config/gtk-3.0,APP-DIR,keep
+gtk-4.0,DIR,14,1792122554.6150272,0o755,,True,/home/toxic/.config/gtk-4.0,APP-DIR,keep
+guidellm-bench,DIR,24,1792122554.615351,0o700,,True,/home/toxic/.config/guidellm-bench,APP-DIR,keep
+httpx,DIR,22,1792122554.615525,0o700,,True,/home/toxic/.config/httpx,APP-DIR,keep
+hypr,DIR,282,1792122546.5348213,0o755,,True,/home/toxic/.config/hypr,APP-DIR,keep
+illogical-impulse,DIR,350,1793052926.3104694,0o755,,True,/home/toxic/.config/illogical-impulse,APP-DIR,keep
+jadx,DIR,14,1789444825.8501027,0o755,,True,/home/toxic/.config/jadx,APP-DIR,keep
+jj,DIR,32,1792122554.618257,0o755,,True,/home/toxic/.config/jj,APP-DIR,keep
+kactivitymanagerdrc,FILE,58,1792122579.4582372,0o600,,True,/home/toxic/.config/kactivitymanagerdrc,APP-DIR,keep
+kappa,SYMLINK,35,1793222646.463599,0o777,/home/toxic/pens/olympus/ssot/kappa,True,/home/toxic/pens/olympus/ssot/kappa,ESTATE-MANAGED,keep (pens symlink)
+katana,DIR,88,1792122554.6189554,0o700,,True,/home/toxic/.config/katana,APP-DIR,keep
+kconf_updaterc,FILE,2345,1792122579.4583917,0o600,,True,/home/toxic/.config/kconf_updaterc,APP-DIR,keep
+kde-material-you-colors,DIR,22,1792122546.5348911,0o755,,True,/home/toxic/.config/kde-material-you-colors,APP-DIR,keep
+kdeglobals,FILE,4205,1793224750.092562,0o644,,True,/home/toxic/.config/kdeglobals,APP-DIR,keep
+kilo,DIR,206,1792737823.1874416,0o755,,True,/home/toxic/.config/kilo,STALE-BRAND,migrate to kappa or remove
+"kilo",DIR,0,1792120064.7572114,0o755,,True,"/home/toxic/.config/kilo",APP-DIR,keep
+kite-cli,DIR,108,1793242649.9890192,0o755,,True,/home/toxic/.config/kite-cli,APP-DIR,keep
+kitty,DIR,66,1792122546.536013,0o755,,True,/home/toxic/.config/kitty,APP-DIR,keep
+konsolerc,FILE,143,1792122579.4577894,0o644,,True,/home/toxic/.config/konsolerc,APP-DIR,keep
+konsolesshconfig,FILE,43,1792122579.4584966,0o600,,True,/home/toxic/.config/konsolesshconfig,APP-DIR,keep
+ktimezonedrc,FILE,106,1792122579.4585774,0o600,,True,/home/toxic/.config/ktimezonedrc,APP-DIR,keep
+libaccounts-glib,DIR,82,1792122554.6197474,0o755,,True,/home/toxic/.config/libaccounts-glib,APP-DIR,keep
+loom,DIR,22,1792122578.0421975,0o755,,True,/home/toxic/.config/loom,APP-DIR,keep
+matplotlib,DIR,0,1789600253.717669,0o755,,True,/home/toxic/.config/matplotlib,APP-DIR,keep
+matugen,DIR,40,1792122546.5392947,0o755,,True,/home/toxic/.config/matugen,APP-DIR,keep
+mbx,DIR,56,1792122578.0173886,0o755,,True,/home/toxic/.config/mbx,APP-DIR,keep
+micro,DIR,54,1792122554.621424,0o755,,True,/home/toxic/.config/micro,APP-DIR,keep
+mimeapps.list,FILE,1567,1792122579.4634242,0o644,,True,/home/toxic/.config/mimeapps.list,APP-DIR,keep
+mise,DIR,126,1793426587.749422,0o755,,True,/home/toxic/.config/mise,APP-DIR,keep
+modelpilot,DIR,64,1792122554.621805,0o755,,True,/home/toxic/.config/modelpilot,APP-DIR,keep
+mozilla,DIR,14,1789418557.7501626,0o755,,True,/home/toxic/.config/mozilla,APP-DIR,keep
+mozilla-backup-20260914,DIR,54,1789417440.986574,0o755,,True,/home/toxic/.config/mozilla-backup-20260914,JUNK-BACKUP,archive then remove
+mpv,DIR,16,1792122546.5393786,0o755,,True,/home/toxic/.config/mpv,APP-DIR,keep
+muse-cli,DIR,22,1792814871.2947683,0o755,,True,/home/toxic/.config/muse-cli,APP-DIR,keep
+naabu,DIR,22,1792122558.05441,0o700,,True,/home/toxic/.config/naabu,APP-DIR,keep
+nanocoder,DIR,0,1789254266.3028119,0o755,,True,/home/toxic/.config/nanocoder,APP-DIR,keep
+nautilus,DIR,0,1789781770.4225976,0o755,,True,/home/toxic/.config/nautilus,APP-DIR,keep
+nextjs-nodejs,DIR,22,1792122558.0545855,0o755,,True,/home/toxic/.config/nextjs-nodejs,APP-DIR,keep
+nim-proxy-npk,FILE,1,1792122579.458668,0o644,,True,/home/toxic/.config/nim-proxy-npk,APP-DIR,keep
+notify,DIR,22,1792122579.4560606,0o700,,True,/home/toxic/.config/notify,APP-DIR,keep
+nuclei,DIR,136,1792122558.055271,0o700,,True,/home/toxic/.config/nuclei,APP-DIR,keep
+omniroute,DIR,38,1792122578.0425785,0o700,,True,/home/toxic/.config/omniroute,APP-DIR,keep
+openbox,DIR,66,1792642593.048854,0o755,,True,/home/toxic/.config/openbox,APP-DIR,keep
+opencode,DIR,168,1793252165.3339326,0o755,,True,/home/toxic/.config/opencode,STALE-BRAND,migrate to kappa or remove
+pavucontrol-qt,DIR,38,1792830471.3495133,0o755,,True,/home/toxic/.config/pavucontrol-qt,APP-DIR,keep
+pdtm,DIR,42,1792122558.0887961,0o700,,True,/home/toxic/.config/pdtm,APP-DIR,keep
+pipewire,DIR,30,1792867919.743853,0o755,,True,/home/toxic/.config/pipewire,APP-DIR,keep
+pitchfork,DIR,84,1792122558.089447,0o755,,True,/home/toxic/.config/pitchfork,APP-DIR,keep
+pitchfork-secrets,DIR,32,1792122558.0895286,0o700,,True,/home/toxic/.config/pitchfork-secrets,SECRET,600 perms + keyring SSOT
+ponytail-on-stimulants,DIR,22,1792122578.0415797,0o755,,True,/home/toxic/.config/ponytail-on-stimulants,APP-DIR,keep
+procps,DIR,0,1789945855.518234,0o700,,True,/home/toxic/.config/procps,APP-DIR,keep
+proxify,DIR,58,1792122579.4562187,0o700,,True,/home/toxic/.config/proxify,APP-DIR,keep
+pulse,DIR,12,1792122558.0896091,0o700,,True,/home/toxic/.config/pulse,APP-DIR,keep
+push-guard,DIR,12,1792122558.089796,0o755,,True,/home/toxic/.config/push-guard,APP-DIR,keep
+qalculate,DIR,16,1792122558.0904448,0o700,,True,/home/toxic/.config/qalculate,APP-DIR,keep
+quickshell,DIR,58,1791408150.025738,0o755,,True,/home/toxic/.config/quickshell,APP-DIR,keep
+ralph-backup-20260912-170705,DIR,136,1792122558.090623,0o755,,True,/home/toxic/.config/ralph-backup-20260912-170705,JUNK-BACKUP,archive then remove
+ralph-backup-20260912-170909,DIR,136,1792122558.0907857,0o755,,True,/home/toxic/.config/ralph-backup-20260912-170909,JUNK-BACKUP,archive then remove
+ralph-dashboard,DIR,94,1792122558.091268,0o755,,True,/home/toxic/.config/ralph-dashboard,APP-DIR,keep
+ralph-workflow-agents.toml.bak-1789254266,FILE,390,1792122579.458767,0o644,,True,/home/toxic/.config/ralph-workflow-agents.toml.bak-1789254266,JUNK-BACKUP,archive then remove
+ralph-workflow-agents.toml.bak-20260913-102749,FILE,678,1792122579.4588666,0o644,,True,/home/toxic/.config/ralph-workflow-agents.toml.bak-20260913-102749,JUNK-BACKUP,archive then remove
+ralph-workflow-agents.toml.bak-20260913-105911,FILE,1092,1792122579.4589558,0o644,,True,/home/toxic/.config/ralph-workflow-agents.toml.bak-20260913-105911,JUNK-BACKUP,archive then remove
+ralph-workflow-agents.toml.bak-20260913-115535,FILE,588,1792122579.4590342,0o644,,True,/home/toxic/.config/ralph-workflow-agents.toml.bak-20260913-115535,JUNK-BACKUP,archive then remove
+ralph-workflow-agents.toml.bak-20260913-124315,FILE,4388,1792122579.4594102,0o644,,True,/home/toxic/.config/ralph-workflow-agents.toml.bak-20260913-124315,JUNK-BACKUP,archive then remove
+ralph-workflow-agents.toml.bak-20260913-125450,FILE,4394,1792122579.4602873,0o644,,True,/home/toxic/.config/ralph-workflow-agents.toml.bak-20260913-125450,JUNK-BACKUP,archive then remove
+ralph-workflow-agents.toml.bak-20260913-130445,FILE,2292,1792122579.4606817,0o644,,True,/home/toxic/.config/ralph-workflow-agents.toml.bak-20260913-130445,JUNK-BACKUP,archive then remove
+ralph-workflow-artifacts.toml.bak-20260913-115535,FILE,356,1792122579.4607835,0o644,,True,/home/toxic/.config/ralph-workflow-artifacts.toml.bak-20260913-115535,JUNK-BACKUP,archive then remove
+ralph-workflow-capabilities.json,FILE,791,1792122579.4609287,0o644,,True,/home/toxic/.config/ralph-workflow-capabilities.json,APP-DIR,keep
+ralph-workflow-mcp.toml.bak-1789254266,FILE,501,1792122579.461009,0o644,,True,/home/toxic/.config/ralph-workflow-mcp.toml.bak-1789254266,JUNK-BACKUP,archive then remove
+ralph-workflow-mcp.toml.bak-20260913-102221,FILE,485,1792122579.4610693,0o644,,True,/home/toxic/.config/ralph-workflow-mcp.toml.bak-20260913-102221,JUNK-BACKUP,archive then remove
+ralph-workflow-mcp.toml.bak-20260913-102749,FILE,1635,1792122579.4611409,0o644,,True,/home/toxic/.config/ralph-workflow-mcp.toml.bak-20260913-102749,JUNK-BACKUP,archive then remove
+ralph-workflow-mcp.toml.bak-20260913-112358,FILE,162,1792122579.461215,0o644,,True,/home/toxic/.config/ralph-workflow-mcp.toml.bak-20260913-112358,JUNK-BACKUP,archive then remove
+ralph-workflow-mcp.toml.bak-20260913-115535,FILE,1038,1792122579.4612768,0o644,,True,/home/toxic/.config/ralph-workflow-mcp.toml.bak-20260913-115535,JUNK-BACKUP,archive then remove
+ralph-workflow-mcp.toml.bak-20260913-120718,FILE,1008,1792122579.4613323,0o644,,True,/home/toxic/.config/ralph-workflow-mcp.toml.bak-20260913-120718,JUNK-BACKUP,archive then remove
+ralph-workflow-mcp.toml.bak-20260913-123454,FILE,367,1792122579.461383,0o644,,True,/home/toxic/.config/ralph-workflow-mcp.toml.bak-20260913-123454,JUNK-BACKUP,archive then remove
+ralph-workflow-mcp.toml.bak-20260913-124315,FILE,419,1792122579.4614365,0o644,,True,/home/toxic/.config/ralph-workflow-mcp.toml.bak-20260913-124315,JUNK-BACKUP,archive then remove
+ralph-workflow-pipeline.toml.bak-20260913-115535,FILE,681,1792122579.4615347,0o644,,True,/home/toxic/.config/ralph-workflow-pipeline.toml.bak-20260913-115535,JUNK-BACKUP,archive then remove
+ralph-workflow-user.ini,FILE,1632,1792122579.4616053,0o600,,True,/home/toxic/.config/ralph-workflow-user.ini,APP-DIR,keep
+ralph-workflow.toml.bak,FILE,554,1792122579.4616668,0o644,,True,/home/toxic/.config/ralph-workflow.toml.bak,JUNK-BACKUP,archive then remove
+ralph-workflow.toml.bak-1789254266,FILE,670,1792122579.4617224,0o644,,True,/home/toxic/.config/ralph-workflow.toml.bak-1789254266,JUNK-BACKUP,archive then remove
+ralph-workflow.toml.bak-20260913-102221,FILE,721,1792122579.4617698,0o644,,True,/home/toxic/.config/ralph-workflow.toml.bak-20260913-102221,JUNK-BACKUP,archive then remove
+ralph-workflow.toml.bak-20260913-102749,FILE,2307,1792122579.4618702,0o644,,True,/home/toxic/.config/ralph-workflow.toml.bak-20260913-102749,JUNK-BACKUP,archive then remove
+ralph-workflow.toml.bak-20260913-115454,FILE,1132,1792122579.4619424,0o644,,True,/home/toxic/.config/ralph-workflow.toml.bak-20260913-115454,JUNK-BACKUP,archive then remove
+ralph-workflow.toml.bak-20260913-115535,FILE,1612,1792122579.4620142,0o644,,True,/home/toxic/.config/ralph-workflow.toml.bak-20260913-115535,JUNK-BACKUP,archive then remove
+ralph-workflow.toml.bak-20260913-123454,FILE,1383,1792122579.4621139,0o644,,True,/home/toxic/.config/ralph-workflow.toml.bak-20260913-123454,JUNK-BACKUP,archive then remove
+ralph-workflow.toml.bak-20260913-124315,FILE,2574,1792122579.4622252,0o644,,True,/home/toxic/.config/ralph-workflow.toml.bak-20260913-124315,JUNK-BACKUP,archive then remove
+rclone,DIR,22,1793179928.4108117,0o755,,True,/home/toxic/.config/rclone,APP-DIR,keep
+ripgrep,DIR,12,1792122558.0913715,0o755,,True,/home/toxic/.config/ripgrep,APP-DIR,keep
+rosec,DIR,22,1792122578.0427842,0o755,,True,/home/toxic/.config/rosec,APP-DIR,keep
+rust-analyzer,DIR,36,1792122578.017203,0o755,,True,/home/toxic/.config/rust-analyzer,APP-DIR,keep
+rustdesk,DIR,692,1792561390.7913008,0o755,,True,/home/toxic/.config/rustdesk,APP-DIR,keep
+secretsmith,DIR,24,1792862401.0710769,0o755,,True,/home/toxic/.config/secretsmith,SECRET,600 perms + keyring SSOT
+secretsmith-keyring-snapshot-20261028T1836.env,FILE,24635,1793234206.382205,0o600,,True,/home/toxic/.config/secretsmith-keyring-snapshot-20261028T1836.env,SECRET,600 perms + keyring SSOT
+session,DIR,46,1793051533.5565078,0o755,,True,/home/toxic/.config/session,APP-DIR,keep
+shuffledns,DIR,22,1792122558.0917041,0o700,,True,/home/toxic/.config/shuffledns,APP-DIR,keep
+sigma,DIR,20,1793099820.8376904,0o755,,True,/home/toxic/.config/sigma,APP-DIR,keep
+squawk,DIR,22,1792841339.416512,0o755,,True,/home/toxic/.config/squawk,APP-DIR,keep
+squawk-tunnel.token,FILE,44,1792122579.4624014,0o600,,True,/home/toxic/.config/squawk-tunnel.token,SECRET,600 perms + keyring SSOT
+starship,DIR,0,1790097767.3756876,0o755,,True,/home/toxic/.config/starship,APP-DIR,keep
+starship.toml,FILE,2441,1792122579.4578836,0o644,,True,/home/toxic/.config/starship.toml,APP-DIR,keep
+subfinder,DIR,62,1792122558.0919034,0o700,,True,/home/toxic/.config/subfinder,APP-DIR,keep
+syncthing,DIR,174,1792122558.096629,0o700,,True,/home/toxic/.config/syncthing,APP-DIR,keep
+systemd,DIR,8,1789321224.7103097,0o755,,True,/home/toxic/.config/systemd,APP-DIR,keep
+tailscale,DIR,30,1792122578.0421975,0o700,,True,/home/toxic/.config/tailscale,APP-DIR,keep
+tau,DIR,30,1791233250.2525966,0o755,,True,/home/toxic/.config/tau,APP-DIR,keep
+thorium-flags.conf,FILE,158,1792122579.457969,0o644,,True,/home/toxic/.config/thorium-flags.conf,APP-DIR,keep
+tigervnc,DIR,0,1791705219.5309243,0o755,,True,/home/toxic/.config/tigervnc,APP-DIR,keep
+tint2,DIR,14,1792642362.039406,0o700,,True,/home/toxic/.config/tint2,APP-DIR,keep
+tlsx,DIR,22,1792122558.0991323,0o700,,True,/home/toxic/.config/tlsx,APP-DIR,keep
+trashrc,FILE,21,1792122579.4623218,0o600,,True,/home/toxic/.config/trashrc,APP-DIR,keep
+turborepo,DIR,28,1792122558.099288,0o755,,True,/home/toxic/.config/turborepo,APP-DIR,keep
+uncover,DIR,40,1792122558.0993674,0o700,,True,/home/toxic/.config/uncover,APP-DIR,keep
+vansrouter,DIR,42,1793222401.8165998,0o755,,True,/home/toxic/.config/vansrouter,APP-DIR,keep
+vercel-ai-gateway,DIR,24,1792122578.042001,0o755,,True,/home/toxic/.config/vercel-ai-gateway,APP-DIR,keep
+wezterm,DIR,112,1792122546.9801354,0o755,,True,/home/toxic/.config/wezterm,APP-DIR,keep
+wezterm.backup_20260923_205508,DIR,76,1792122558.0995607,0o755,,True,/home/toxic/.config/wezterm.backup_20260923_205508,JUNK-BACKUP,archive then remove
+wlogout,DIR,30,1792122546.9727643,0o755,,True,/home/toxic/.config/wlogout,APP-DIR,keep
+xdg-desktop-portal,DIR,42,1792122546.9728782,0o755,,True,/home/toxic/.config/xdg-desktop-portal,APP-DIR,keep
+yarn,DIR,12,1792473431.2581127,0o755,,True,/home/toxic/.config/yarn,APP-DIR,keep
+yay,DIR,0,1789250663.4915295,0o755,,True,/home/toxic/.config/yay,APP-DIR,keep
+zoxide,DIR,22,1792122558.0996423,0o755,,True,/home/toxic/.config/zoxide,APP-DIR,keep
+zshrc.d,DIR,84,1792122546.9730349,0o755,,True,/home/toxic/.config/zshrc.d,APP-DIR,keep
+_REALM_,~,,,,,,,,
+.bash_profile,FILE,753,1793224860.1809173,0o644,,True,/home/toxic/.bash_profile,APP-DIR,keep
+.bashrc,FILE,12115,1793327379.8204267,0o644,,True,/home/toxic/.bashrc,APP-DIR,keep
+.bashrc.env,FILE,7362,1793329214.8764794,0o644,,True,/home/toxic/.bashrc.env,APP-DIR,keep
+.bashrc.local,FILE,942,1792744522.888197,0o644,,True,/home/toxic/.bashrc.local,APP-DIR,keep
+.profile,FILE,1369,1793240245.5695455,0o644,,True,/home/toxic/.profile,APP-DIR,keep
+.ripgreprc,SYMLINK,46,1793222304.2082012,0o777,/home/toxic/pens/estate/config/dots/.ripgreprc,True,/home/toxic/pens/estate/config/dots/.ripgreprc,ESTATE-MANAGED,keep (pens symlink)
+.gitconfig,FILE,1627,1793391848.776675,0o644,,True,/home/toxic/.gitconfig,APP-DIR,keep
+.git-credentials,FILE,145,1793434071.816667,0o600,,True,/home/toxic/.git-credentials,APP-DIR,keep
+.config,DIR,5280,1793234206.1822083,0o755,,True,/home/toxic/.config,APP-DIR,keep
