@@ -50,7 +50,7 @@
 
 8. **Reactivity & log doctrine (2026-10-30)**:
    - **Always be reactive**: estate anomalies (ESTATE-ANOMALY-*), errors, warnings, and dependency drift are NOT background noise. Every occurrence is a work item: root-cause it in the same session, or park it with an explicit anomaly entry — never silently ignore.
-   - **Tool denials are routing signals**: `TAU_DENIED_TOOLS` / gate denials mean "route to the sanctioned equivalent" — **gateway (Thresher MCP `xd://mcp__gateway_*`) is PRIMARY, eval is the fallback** — never bypass, never edit config to dodge, never retry the same denied call.
+   - **Tool denials are routing signals**: `TAU_DENIED_TOOLS` / gate denials are DELIBERATE and mean "route to the sanctioned equivalent" — **gateway (Thresher MCP `xd://mcp__gateway_*`) is PRIMARY, eval is the fallback** — never bypass, never edit config to dodge, never retry the same denied call.
    - **Structured logs**: agent/service logs must be dedupe-friendly (stable event keys, dedupe keys) and data-framed (JSON-lines, schema-stable fields, table/parquet-ready). No free-form prose-only logs.
    - **Log helperproduct**: estate log shipping/aggregation is a real product (agentic-moment pen) chosen by evidence (compare lab), not vibes. See `pens/agentic-moment` compare fixtures.
 
@@ -78,10 +78,10 @@
 
 ## 3. Tooling, Execution & Latency Doctrine
 
-1. **MCP-First Architecture**:
-   - **Route order on denial/unavailability**: gateway first (Thresher MCP `:25127/mcp` via `xd://mcp__gateway_*`, federating FFS, BM25, memory, browser-keeper, GitHub, `xd://`), eval second, raw bash last.
+1. **Gateway-First Architecture (2026-10-31)**:
+   - **Tool surface reality**: the raw `bash` tool is NOT available in tau sessions at all, and native `find`/`grep` tools are policy-denied. There is NO raw-bash lane; never plan around one.
+   - **Route order**: gateway first (Thresher MCP `:25127/mcp` via `xd://mcp__gateway_*`, federating FFS, BM25, memory, browser-keeper, GitHub, `xd://`), eval second (kernel shell for system introspection: `ps`, `ss`, `docker ps`, `curl` health checks).
    - Native tools stay preferred when unblocked; the gateway carries equivalent coverage for blocked native tools (search/read/exec).
-   - Raw bash is reserved for system introspection not covered by MCP (`docker ps`, `ss`, `curl` health checks).
    - **FFS** is the universal search/read interface (`find`, `glob`, `grep`, `read`, `symbol`, `callers`, `refs`, `flow`). Never use `fd`/`rg`/`find`/`grep`/`cat` when FFS applies.
 2. **Command Latency Enforcement (4-Second Rule)**:
    - Wrap long/slow bash calls with `run-fast` and `delend-code-race` (`pens/olympus/products/kairos`, `~/.local/bin/kairos`).
