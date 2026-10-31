@@ -1263,6 +1263,8 @@ var/
 # reports, and outputs are machine-local runtime state.
 .moon/cache/
 .qdrant-initialized/
+.qdrant-data/
+qdrant_data/
 .state/
 .jj/
 .smithers/
