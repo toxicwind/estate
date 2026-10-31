@@ -9,7 +9,7 @@
     },
     {
       "name": "exec-ws-probe-health",
-      "ports": [25204],
+      "ports": [25204, 25215],
       "path_pattern": "^/$",
       "lane": "morphe-health",
       "note": "cell connector exec probe: plain GET / health check (morphe v2 cutover 2026-10-28 loud-failed it -> connector 502 on all lanes)"
