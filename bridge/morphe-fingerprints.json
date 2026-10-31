@@ -8,6 +8,13 @@
       "note": "client already speaks WS: replay head verbatim, passthrough (never re-upgrade)"
     },
     {
+      "name": "exec-ws-probe-health",
+      "ports": [25204],
+      "path_pattern": "^/$",
+      "lane": "morphe-health",
+      "note": "cell connector exec probe: plain GET / health check (morphe v2 cutover 2026-10-28 loud-failed it -> connector 502 on all lanes)"
+    },
+    {
       "name": "exec-ws-http-client",
       "ports": [25204],
       "path_pattern": "^/exec",
@@ -25,6 +32,7 @@
     }
   ],
   "lanes": {
+    "morphe-health":    {"kind": "health", "note": "synthetic 200 health answer, no upstream dial"},
     "exec-ws-raw":      {"kind": "raw",   "host": "127.0.0.1", "port": 25214, "note": "real awrawr-ws-exec daemon (green-blue moved); WS clients passthrough"},
     "exec-ws-convert":  {"kind": "ws",    "host": "127.0.0.1", "port": 25214, "path": "/exec-ws", "note": "HTTP->WS conversion lane; body<->frame"},
     "exec-ws-funnel":   {"kind": "tls-ws","host": "github-mcp-host.tailc9ac71.ts.net", "port": 443, "path": "/exec-ws", "note": "funnel h1.1 lane"},

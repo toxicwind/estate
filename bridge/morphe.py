@@ -338,16 +338,28 @@ async def serve_conn(port, creader, cwriter):
         log("CACHE-HIT %s port=%s lane=%s (sticky)" % (cid, port, lane))
 
     lane_def = state["lanes"][lane]
+    if lane_def.get("kind") == "health":
+        # Synthetic probe lane (no upstream): the cell connector's exec probe
+        # is a plain GET / health check. Answer 200 inline — loud-fail doctrine
+        # only covers UNKNOWN shapes; this shape is a known, deliberate probe.
+        body = json.dumps({"ok": True, "service": "morphe-exec",
+                           "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}).encode()
+        cwriter.write(b"HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n"
+                      b"Content-Length: %d\r\nConnection: close\r\n\r\n%s"
+                      % (len(body), body))
+        await cwriter.drain()
+        cwriter.close()
+        return
     head_l = head.lower() if head else b""
     is_ws_native = b"upgrade: websocket" in head_l
     if is_ws_native:
         # the client IS a WS client (native protocol): raw passthrough —
         # replay the consumed head and pipe bytes verbatim. Never re-upgrade.
-        if lane_def.get("kind") == "raw":
-            r, w = await lane_connect(lane)
-        else:
-            r, w = await asyncio.wait_for(
-                asyncio.open_connection(lane_def["host"], int(lane_def["port"])), timeout=CEILING)
+        # Fresh dial per client: a shared hot raw conn gets eaten by the
+        # previous client's conversation (daemon closes after each exchange),
+        # so the next client's replay lands in a dead socket -> empty reply.
+        r, w = await asyncio.wait_for(
+            asyncio.open_connection(lane_def["host"], int(lane_def["port"])), timeout=CEILING)
         if head_bytes:
             w.write(head_bytes)
             await w.drain()
@@ -359,7 +371,8 @@ async def serve_conn(port, creader, cwriter):
         await http_to_ws_bridge(creader, cwriter, lane, head)
     else:
         # raw tcp lane, plain http: transparent replay
-        r, w = await lane_connect(lane)
+        r, w = await asyncio.wait_for(
+            asyncio.open_connection(lane_def["host"], int(lane_def["port"])), timeout=CEILING)
         if head_bytes:
             w.write(head_bytes)
             await w.drain()
