@@ -7,6 +7,19 @@ daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "matt
 [groups.agents]
 daemons = ["rig"]
 
+[daemons.thresher]
+# 2026-10-30 impostor fix: direct guarded binary (was bun launcher whose Go child
+# re-parented to systemd — tracked PID died, retries died on bolt config.db lock,
+# orphan kept the port). serve-guarded.sh kills stale thresher holders of the db
+# and :25127 first; tailscale SNI listeners are left alone, hence still no
+# reliance on the `port` pre-check.
+run = "exec /home/toxic/pens/barn/products/thresher/bin/serve-guarded.sh"
+dir = "/home/toxic/pens/barn/products/thresher"
+auto = ["start"]
+retry = true
+ready_http = "http://127.0.0.1:25127/health"
+health_http = { url = "http://127.0.0.1:25127/health", interval = "30s", timeout = "5s", retries = 3 }
+mise = false
 [daemons.agent-display]
 run = "exec Xvnc :99 -geometry 3840x2160 -depth 24 -rfbport 5900 -localhost -SecurityTypes VncAuth -rfbauth /home/toxic/.browserless/vncpasswd"
 auto = ["start"]
@@ -901,7 +914,7 @@ ready_http = "http://127.0.0.1:25228/health"
 dir = "/home/toxic/pens/ranch/products/vision-kit"
 
 [daemons."estate-lease-guard"]
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/estate/products/estate-ops/bin/estate-lease-guard-loop.ts"bun\",\"/home/toxic/pens/estate/products/estate-ops/bin/estate-lease-guard.ts\",\"--kill-owner\"]); Bun.sleep(60000); }'"
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/estate/products/estate-ops/bin/estate-lease-guard-loop.ts"
 auto = ["start"]
 retry = true
 

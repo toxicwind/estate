@@ -48,6 +48,12 @@
    - When discovering defects, dead code, duplicated paths, or stale modules, fix them immediately at the root. Thinking in layers: bytes → AST → module graph → process ground truth (/proc, sockets, fds) → behavior.
    - **Will-use-then-stop is forbidden**: declaring "I'll call X" and yielding without calling is a contract violation. The tool call IS the narration.
 
+8. **Reactivity & log doctrine (2026-10-30)**:
+   - **Always be reactive**: estate anomalies (ESTATE-ANOMALY-*), errors, warnings, and dependency drift are NOT background noise. Every occurrence is a work item: root-cause it in the same session, or park it with an explicit anomaly entry — never silently ignore.
+   - **Tool denials are routing signals**: `TAU_DENIED_TOOLS` / gate denials mean "use a sanctioned equivalent (FFS, harness tools, MCP)" — never bypass, never edit config to dodge, never retry the same denied call.
+   - **Structured logs**: agent/service logs must be dedupe-friendly (stable event keys, dedupe keys) and data-framed (JSON-lines, schema-stable fields, table/parquet-ready). No free-form prose-only logs.
+   - **Log helperproduct**: estate log shipping/aggregation is a real product (agentic-moment pen) chosen by evidence (compare lab), not vibes. See `pens/agentic-moment` compare fixtures.
+
 ---
 
 ## 2. Filesystem & Repository Layout
