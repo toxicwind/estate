@@ -18,7 +18,7 @@
 > why it doesn't mirror. Benchmarks compare the two side-by-side (see the
 > dual-TUI benchmark product); GitHub Pages (`*.github.io`) is a drop-in or
 > not — no approval ritual. Repos with it as of 2026-10-31: agentic-moment-2026,
-> codeflux-patchling, nvidia-nim-model-probe, optimized-cr3-repo.
+> fluxling (formerly codeflux-patchling), nvidia-nim-model-probe, optimized-cr3-repo.
 
 ---
 
