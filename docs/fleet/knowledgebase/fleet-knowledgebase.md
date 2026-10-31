@@ -415,3 +415,23 @@ The lessons (do not regress):
 5. Real search route: navigator.search_history&action=tmdb_keyword_{movie,tvshow}; build_tvshow_list&action=tmdb_tv_search returns 0.
 6. Live-box UI pokes are last resort — every probe can spawn UI dialogs. Prefer read-only RPC + log reading.
 7. Existing binary = source + build — check dist/tau mtime before chasing config.
+
+## 2026-10-31 kappa-freeze-termius-trio-path session (tau) — verified fixes + root causes
+
+One-paragraph chain: the kappa TUI "freeze" the architect saw over SSH was two stacked failures — a deployed binary predating two stdin-band-aid commits whose `stream.resume()` never created a kernel fd-0 subscription (proven by strace: zero `epoll_ctl ADD fd=0`), compounded by startup modals from Promise templates in the /command JSON and an undetermined embedding dimension — plus a 3.8 GB tcpdump funnel taxing kappa's loopback RPCs; below that, an APK deobfuscation showed the Termius client suppressing its soft keyboard (and an optional experimental InputConnection buffering keystrokes), so over-SSH typing had no letter surface at all.
+
+Fixes (repo @ commit, verification):
+- kappa-code @ eab600a6ec — deterministic tty-input pump + command template materialization + qdrant 1.19.0 (echo 50 ms harness; suite modals gone; typecheck green)
+- olympus @ d14734c — kappa.jsonc `dimension: 1024`, dropped decorative mcp.timeout (no consumer)
+- trio @ dda139e — ROUTE default fallback removed; stdio-transport MCP tests; GIT_TERMINAL_PROMPT=0 + gh-health skip
+- estate @ 92986489b8 (+archive) — path/dots audits, declutter archive, envd drift fixes, ghost estate removal
+
+New tools: `apk-autopsy` decompile+jadx path documented (ranch/products/apk-autopsy); tty-input test suite (tui pkg).
+
+The lessons (do not regress):
+1. A TUI "freeze" needs kernel proof (strace epoll/read on fd 0) before touching JS — resumes don't subscribe.
+2. Rebuild + atomic-deploy + LIVE ECHO TEST after any TUI input change; a stale binary masquerades as a regression.
+3. Deobfuscate the client (Termius APK) when input dies over SSH — the phone's IME state (`mInputShown`) is a first-class clue.
+4. Parallel 296-file suites on this box race on shared resources by design — solo-rerun failures before trusting them.
+5. environment.d files claiming SSOT are orphans until a generator is found — verify, then archive.
+6. /proc + pcap litter from debug sessions is a live tax: kill and shred before moving on.
