@@ -17,9 +17,10 @@
 > tool). A change that lands in only one is half a change: mirror it or note
 > why it doesn't mirror. Benchmarks compare the two side-by-side (see the
 > dual-TUI benchmark product); GitHub Pages (`*.github.io`) is opt-in ONLY for
-> products that deliberately have it — audited 2026-10-30: 2 of 100+ repos
-> (agentic-moment-2026, codeflux-patchling). Do NOT enable Pages on new
-> products unless asked.
+> products that deliberately have it — audited 2026-10-31: 4 of 100+ repos
+> (agentic-moment-2026, codeflux-patchling, nvidia-nim-model-probe,
+> optimized-cr3-repo — the last two sanctioned by the architect 2026-10-31).
+> Do NOT enable Pages on new products unless asked.
 
 ---
 
