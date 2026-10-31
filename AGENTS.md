@@ -72,7 +72,7 @@
 4. **Scratch & Temp Space**:
    - Stage scratch under unique directories: `/home/toxic/mktemp -d`. Never `rm -rf` shared paths.
    - Never delete `/tmp/kappa` or active session artifacts.
-   - **Archive before delete**: preserve useful artifacts into `~/sovereign/scratch-archive/<date>-<agent>-<slug>/` before triage.
+   - **Archive before delete**: preserve useful artifacts into `pens/estate/archive/<date>-<agent>-<slug>/` before triage. `~/sovereign` is RETIRED (backup-plan.md: ghost-risk brand; env-reference.md retired `SOVEREIGN_*` → `ESTATE_*`) — never write new archives there.
 
 ---
 
