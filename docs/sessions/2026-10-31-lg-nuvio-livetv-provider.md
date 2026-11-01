@@ -56,3 +56,16 @@ Rogue pitchfork daemon was an **inline `bun -e while(true){spawnSync; Bun.sleep(
 - Node `statSync().mtime` is a Date, not a number — bun:sqlite rejects it (binding error).
 - bge-m3 embeds similarity; it does not organize. The provider concept (registry + liveness + dedup) is the organizer.
 - Un-awaited `Bun.sleep` after `spawnSync` in `while(true)` = fork storm. No timers in daemon loops that must sleep — event-driven fs.watch beats setInterval for a correctness-critical watcher.
+
+## co.uk pattern (gleaned, not yet built)
+
+- `nuvio.tvflix.co.uk` — "Nuvio Configurator": third-party SPA that generates
+  `nuvio_collections.json`, `aio_meta.json`, and AIOStreams configs for import
+  into a Nuvio account (upstream issue iqui27/nuvio-native-legacy#414 tracks it;
+  portuguese plan docs call out "import direct file/URL on TV" as the gap).
+- Pattern to duplicate (nuvio-default lane): a config-generator that emits
+  importable JSON for the baked TV account — TV-side import of a file/URL is
+  the missing feature the ecosystem wants. tivimateplayer.co.uk hits are EPG
+  tuning SEO (12-24h refresh, tvg-id matching, 8-15s buffer), useful reference
+  only.
+- Status: FOUND + documented. Building the configurator clone is fresh scope.
