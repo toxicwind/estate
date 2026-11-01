@@ -59,7 +59,23 @@
 
 1. **The Pens Namespace Architecture**:
    - Products live under `/home/toxic/pens/<pen>/<product>/`. Pens are open namespaces (`barn`, `ranch`, `olympus`, `geode`, `ergasterion`, etc. — never assume a fixed set of three).
-   - Real product entrypoints (`bin/`, scripts, source) live inside their product directory in `pens/`.
+   - **REPO-PER-PRODUCT DOCTRINE (2026-10-31)**: every REAL product under
+     `products/` is its own standalone git repo — not a folder inside a pen
+     monorepo and never a submodule/gitlink (mode 160000). Each product repo has
+     its own GitHub remote (`toxicwind/<product>.git`) and full history. A pen's
+     repo (`barn`, `ranch`, …) is only a THIN coordinator: it owns `.gitignore`,
+     `README.md`, `LICENSE`, `package.json`, `mise.toml`, `AGENTS.md`, `bin/`,
+     `docs/` and IGNORES `products/` wholesale (submoduleless doctrine). Real
+     entrypoints (`bin/`, scripts, source) live inside their own product repo.
+     - If you find a REAL product dir whose `git rev-parse --show-toplevel`
+       walks up to the pen (fold-tracked, no own `.git`) or that has no GitHub
+       repo, that is a **topology defect**: split it out via
+       `git subtree split -P products/<name> -b split/<name>`, push to a new
+       `toxicwind/<name>` repo, then `git rm -r --cached products/<name>` from
+       the pen and convert the dir in-place (`git init -b main`, fetch, reset)
+       — forward-only, never `filter-repo`/rewrite the pen history.
+     - Scratch/config dirs (no `src/`, `bin/`, `package.json`, or source files)
+       may stay fold-tracked in the pen — they are not products.
    - **Estate single-truth lease**: `/home/toxic/estate` must **NOT** exist in any form (no symlink, no directory, no file). The SSOT is `/home/toxic/pens/estate`. Pitchfork loads `pens/estate`; any edits to ghost `estate/` paths are silently lost.
 2. **PATH Surface (`~/.local/bin`)**:
    - Every product binary in `~/.local/bin` is a direct symlink to its target in `pens/`. Never a second copy.
