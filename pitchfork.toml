@@ -300,6 +300,12 @@ interval = "30s"
 timeout = "5s"
 retries = 3
 
+# codeflux-rig (2026-10-31): autonomous LLM diff agent — scheduler loop,
+# dry-run outbox proposals, code-run-first satisfaction. Key via secretsmith env.
+[daemons.codeflux-rig]
+run = "exec /bin/sh -c 'eval $(/home/toxic/pens/olympus/products/kryptos/bin/secretsmith env --app agentic-completions) && exec /home/toxic/.local/share/mise/installs/python/3.14.7/bin/python /home/toxic/pens/forge/products/codeflux-rig/rig_agent.py --serve --config /home/toxic/pens/forge/products/codeflux-rig/rig.yml'"
+auto = []
+
 # retain-slot fix 2026-10-24: give retain a reserved floor so the Hindsight
 # worker can drain its 885-item claimable backlog. Hindsight's default reserves
 # 2 slots for consolidation with no retain floor, so with max_slots=2 retain
@@ -912,6 +918,31 @@ retry = true
 port = 25228
 ready_http = "http://127.0.0.1:25228/health"
 dir = "/home/toxic/pens/ranch/products/vision-kit"
+
+[daemons."estate-log-conditioner"]
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/estate/tools/estate-log-conditioner.ts --watch --db /home/toxic/pens/estate/db/estate-events.db --squawk-token /home/toxic/.config/estate-chat-token"
+auto = ["start"]
+retry = true
+dir = "/home/toxic/pens/estate"
+mise = true
+interval = "30s"
+
+[daemons."epigenetics-heartbeat"]
+# Seeds expected_signals table from the dedupe ledger (one-shot at startup).
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/estate/tools/epigenetics-heartbeat.ts /home/toxic/pens/estate/tools/estate-event-ledger.jsonl --db /home/toxic/pens/estate/db/estate-events.db --force"
+auto = ["start"]
+retry = false
+dir = "/home/toxic/pens/estate"
+mise = true
+
+[daemons."epigenetics-watcher"]
+# Runs negative-space query on interval; posts abscissions to squawk fleet.
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/estate/tools/epigenetics-watcher.ts --db /home/toxic/pens/estate/db/estate-events.db --squawk-token /home/toxic/.config/estate-chat-token --interval 60"
+auto = ["start"]
+retry = true
+dir = "/home/toxic/pens/estate"
+mise = true
+interval = "60s"
 
 [daemons."estate-lease-guard"]
 run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/estate/products/estate-ops/bin/estate-lease-guard-loop.ts"
