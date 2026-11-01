@@ -920,7 +920,7 @@ ready_http = "http://127.0.0.1:25228/health"
 dir = "/home/toxic/pens/ranch/products/vision-kit"
 
 [daemons."estate-log-conditioner"]
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/estate/tools/estate-log-conditioner.ts --watch --db /home/toxic/pens/estate/db/estate-events.db --squawk-token /home/toxic/.config/estate-chat-token"
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/estate/tools/estate-log-conditioner.ts /home/toxic/pens/estate/tools/estate-event-ledger.jsonl --watch --db /home/toxic/pens/estate/db/estate-events.db --squawk-token /home/toxic/.config/estate-chat-token"
 auto = ["start"]
 retry = true
 dir = "/home/toxic/pens/estate"
