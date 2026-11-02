@@ -27,6 +27,13 @@
 1. **MAXIMAL. Fix-forward, never report-only.** Commit, push, forward-only.
    - **Never leave the tree dirty.** "Clean" = committed to a work-ref pushed to origin. Checkpoint unknown tree WIP onto your ref rather than hopping over it.
    - **No monkeypatches**: fix root causes in real committed files.
+   - **TDD-FIRST is the ground truth rule (2026-11-02, "this is why TDD is
+     good" — architect).** A failing test IS the source of truth: trust the
+     assertion over memory and over ad-hoc probes (a probe resolving from a
+     different base proved the WRONG module; the anchored test resolved
+     truth). When a test fails, fix THE TEST CONTRACT or THE IMPLEMENTATION —
+     never relax the assert to "work around". RED → GREEN → REFACTOR, always.
+     Full procedure in the `tdd-first` azurite skill.
 2. **The box is live.** Additive-only. Never remove/disable a peer/daemon/model without an explicit order.
    - Never touch `awrawr-mcp.service`.
    - Never run the retired `bun run scripts/generate.ts`.
