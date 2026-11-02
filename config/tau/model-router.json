@@ -48,13 +48,13 @@
    "disabled": true
   },
   "backup": {
-   "selector": "rhodochrosite/openai/gpt-oss-20b",
+   "selector": "rhodochrosite/qwen3.6-35b",
    "profile": "backup",
    "tier": "low",
    "thinking": "low",
    "auth": "none",
-   "verified": "2026-09-20T03:10MDT naming-audit: was bornite/pollinations-free/openai (dead, peer removed); now gemma-4-12b-unified (MODEL-MAX healthy local, 499ms TTFT p50, 92 RPM)",
-   "note": "local 12B backup, distinct from balanced"
+   "verified": "2026-11-02 live probe 200 (freeinference lane)",
+   "note": "backup fallback (qwen3.6-35b), distinct from balanced"
   }
  },
  "timestamp": "2026-09-20T00:45:00-06:00",
