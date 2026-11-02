@@ -151,6 +151,8 @@ features:
   unexpectedStopDetection: smart
 fetch:
   enabled: true
+find:
+  enabled: off
 followUpMode: all
 generate_image:
   enabled: false
@@ -555,13 +557,14 @@ treeFilterMode: default
 tts:
   localVoice: af_heart
 ttsr:
-  builtinRules: true
-  contextMode: discard
+  builtinRules: false
+  contextMode: keep
   disabledRules: []
-  enabled: true
+  enabled: false
   interruptMode: never
   repeatGap: 10
   repeatMode: after-gap
+  judge: "off"
 tui:
   codexResetFireworks: false
   hyperlinks: auto
