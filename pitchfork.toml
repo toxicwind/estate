@@ -969,3 +969,9 @@ auto = []
 [daemons.flotilla-daemon-page.health_http]
 url = "http://127.0.0.1:25221/"
 expect = "200"
+
+[daemons.estate-map-refresh]
+run = "exec bun bin/estate-map.ts && git add docs/estate-map.json docs/estate-map.md && git commit -m 'chore: regenerate estate-map (6h cycle)' || true"
+dir = "/home/toxic/pens/estate"
+interval = "6h"
+auto = []

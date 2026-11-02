@@ -1,13 +1,13 @@
 # Estate map
 
-Generated 2026-11-02T11:04:08.141Z by `bin/estate-map.ts` (rebuilt 2026-11-02 — original was deleted in the Oct reorg).
+Generated 2026-11-02T11:15:22.984Z by `bin/estate-map.ts` (rebuilt 2026-11-02 — original was deleted in the Oct reorg).
 
 ## Repos (6)
 
 | name | path | head | dirty |
 |---|---|---|--:|
-| estate | /home/toxic/pens/estate | 80ca9b0902 | 215 |
-| ranch | /home/toxic/pens/ranch | 00a907bb1 | 0 |
+| estate | /home/toxic/pens/estate | f202bde8d1 | 5 |
+| ranch | /home/toxic/pens/ranch | ead318fc0 | 0 |
 | barn | /home/toxic/pens/barn | 3a9304c | 1 |
 | olympus | /home/toxic/pens/olympus | 7415290 | 1 |
 | geode | /home/toxic/pens/geode | bdb4cdf | 0 |
