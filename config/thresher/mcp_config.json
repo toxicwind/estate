@@ -1235,9 +1235,9 @@
     {
       "name": "docs-mcp",
       "protocol": "stdio",
-      "command": "python3",
+      "command": "/home/toxic/.bun/bin/bun",
       "args": [
-        "/home/toxic/pens/estate/products/docs-mcp/docs_mcp.py"
+        "/home/toxic/pens/toolkit/products/docs-mcp/docs_mcp.ts"
       ],
       "oauth": null,
       "enabled": true,
