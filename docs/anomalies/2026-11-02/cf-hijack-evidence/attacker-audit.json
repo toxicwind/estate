@@ -1,0 +1,192 @@
+[
+  {
+    "when": "2026-11-02T16:28:54Z",
+    "action": "token_update",
+    "resource": "2d5e60dbc717af626a1eb04177aa2225",
+    "metadata": {
+      "token_name": "yellow-fire-6591",
+      "token_tag": "187fc839b7823753883039a0572e427e"
+    }
+  },
+  {
+    "when": "2026-11-02T16:28:34Z",
+    "action": "token_revoke",
+    "resource": "2d5e60dbc717af626a1eb04177aa2225",
+    "metadata": {
+      "new_token_status": "deleted",
+      "old_token_status": "active",
+      "token_name": "dedi-ops",
+      "token_tag": "a89dee0394ee5c6dd1255f9a6288b3d9"
+    }
+  },
+  {
+    "when": "2026-11-02T16:27:21Z",
+    "action": "token_roll",
+    "resource": "2d5e60dbc717af626a1eb04177aa2225",
+    "metadata": {
+      "new_token_hash": "9a246d1c6db8a1d045d633da3024c485877c2b1f6115280d194ea017dd326f88",
+      "old_token_hash": "5441cb92ccc889e4c44392142bb0e438ea680ebe32ef3dc45901ea1fc367aaf5",
+      "token_name": "yellow-fire-6591",
+      "token_tag": "187fc839b7823753883039a0572e427e"
+    }
+  },
+  {
+    "when": "2026-11-02T16:24:09Z",
+    "action": "token_revoke",
+    "resource": "2d5e60dbc717af626a1eb04177aa2225",
+    "metadata": {
+      "new_token_status": "deleted",
+      "old_token_status": "active",
+      "token_name": "omp-ai-gateway",
+      "token_tag": "ee3827fbeced04fb118b04528fec99d6"
+    }
+  },
+  {
+    "when": "2026-11-02T16:24:05Z",
+    "action": "token_revoke",
+    "resource": "2d5e60dbc717af626a1eb04177aa2225",
+    "metadata": {
+      "new_token_status": "deleted",
+      "old_token_status": "revoked (exposed)",
+      "token_name": "omp-ai-gateway",
+      "token_tag": "c0fa2b36a020fb62362412abcca725af"
+    }
+  },
+  {
+    "when": "2026-11-02T16:23:41Z",
+    "action": "token_roll",
+    "resource": "2d5e60dbc717af626a1eb04177aa2225",
+    "metadata": {
+      "new_token_hash": "5441cb92ccc889e4c44392142bb0e438ea680ebe32ef3dc45901ea1fc367aaf5",
+      "old_token_hash": "f291fd7fcaafbc864a934cfcc62cb491f50656c10b4e4d2ccd74dc05a2be68e0",
+      "token_name": "yellow-fire-6591",
+      "token_tag": "187fc839b7823753883039a0572e427e"
+    }
+  },
+  {
+    "when": "2026-10-30T14:42:30.942256Z",
+    "action": "rulesets_update",
+    "resource": "3c0d44e1756c4264aec1fbabc81899ed",
+    "metadata": {
+      "batch_id": "01a18d43-2787-7858-8d89-3965c3f9705d",
+      "cf-ray": "a52b2fda3eeee4c9-AKX",
+      "id": "3c0d44e1756c4264aec1fbabc81899ed",
+      "kind": "zone",
+      "phase": "http_request_dynamic_redirect",
+      "zone_name": "so-fabulo.us"
+    }
+  },
+  {
+    "when": "2026-10-30T14:40:51.08033Z",
+    "action": "rulesets_create",
+    "resource": "3c0d44e1756c4264aec1fbabc81899ed",
+    "metadata": {
+      "batch_id": "01a18d41-a174-75b1-a34a-d3acb0c1a1ee",
+      "cf-ray": "a52b2d6a78643f34-AKX",
+      "id": "3c0d44e1756c4264aec1fbabc81899ed",
+      "kind": "zone",
+      "phase": "http_request_dynamic_redirect",
+      "zone_name": "so-fabulo.us"
+    }
+  },
+  {
+    "when": "2026-10-30T14:40:14.964827Z",
+    "action": "rulesets_create",
+    "resource": "e0f7079a3a424d9c90f0190de9868cd8",
+    "metadata": {
+      "batch_id": "01a18d41-145c-7b47-bd11-39b59d9546d8",
+      "cf-ray": "a52b2c881fdf3f34-AKX",
+      "id": "e0f7079a3a424d9c90f0190de9868cd8",
+      "kind": "zone",
+      "phase": "http_request_dynamic_redirect",
+      "zone_name": "waverss.com"
+    }
+  },
+  {
+    "when": "2026-10-30T14:39:21.352806Z",
+    "action": "rulesets_create",
+    "resource": "5b24e4cf24424a5e8d5b5533adc1bd59",
+    "metadata": {
+      "batch_id": "01a18d40-42f7-703d-ae40-662cfe294226",
+      "cf-ray": "a52b2b39cee83f34-AKX",
+      "id": "5b24e4cf24424a5e8d5b5533adc1bd59",
+      "kind": "zone",
+      "phase": "http_request_dynamic_redirect",
+      "zone_name": "effusionlabs.com"
+    }
+  },
+  {
+    "when": "2026-10-30T14:22:57.828714Z",
+    "action": "update",
+    "resource": "b3be8466d935358d9b4afe23124550e5",
+    "metadata": {
+      "zone_name": "effusionlabs.com"
+    }
+  },
+  {
+    "when": "2026-10-30T11:15:59.751751Z",
+    "action": "update",
+    "resource": "b3be8466d935358d9b4afe23124550e5",
+    "metadata": {
+      "zone_name": "effusionlabs.com"
+    }
+  },
+  {
+    "when": "2026-10-30T11:15:47.338806Z",
+    "action": "update",
+    "resource": "bfffb187c5e6500acfc5dad0c7cffbcf",
+    "metadata": {
+      "zone_name": "arlockworks.com"
+    }
+  },
+  {
+    "when": "2026-10-30T11:14:08.997567Z",
+    "action": "update",
+    "resource": "543a3f790ea6ff2baf0a00e52842a958",
+    "metadata": {
+      "zone_name": "galleryeffusion.com"
+    }
+  },
+  {
+    "when": "2026-10-30T11:13:49.616754Z",
+    "action": "update",
+    "resource": "bfffb187c5e6500acfc5dad0c7cffbcf",
+    "metadata": {
+      "zone_name": "arlockworks.com"
+    }
+  },
+  {
+    "when": "2026-10-30T11:13:23.349567Z",
+    "action": "update",
+    "resource": "b3be8466d935358d9b4afe23124550e5",
+    "metadata": {
+      "zone_name": "effusionlabs.com"
+    }
+  },
+  {
+    "when": "2026-10-30T11:12:27.658367Z",
+    "action": "rulesets_update",
+    "resource": "715d765a7476418dabd5030fef51bc36",
+    "metadata": {
+      "batch_id": "01a18c82-d7f6-790f-a0fe-1a4d13fb4b48",
+      "cf-ray": "a529fc28ca56ca1a-OTP",
+      "id": "715d765a7476418dabd5030fef51bc36",
+      "kind": "zone",
+      "phase": "http_request_dynamic_redirect",
+      "zone_name": "arlockworks.com"
+    }
+  },
+  {
+    "when": "2026-10-30T11:11:09.095101Z",
+    "action": "rulesets_create",
+    "resource": "715d765a7476418dabd5030fef51bc36",
+    "metadata": {
+      "batch_id": "01a18c81-a513-7857-a503-a4cd4ad018b4",
+      "cf-ray": "a529fa3d0dc2b6b5-OTP",
+      "id": "715d765a7476418dabd5030fef51bc36",
+      "kind": "zone",
+      "phase": "http_request_dynamic_redirect",
+      "zone_name": "arlockworks.com"
+    }
+  }
+]

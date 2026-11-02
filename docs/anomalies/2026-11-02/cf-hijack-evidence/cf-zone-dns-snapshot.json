@@ -1,0 +1,74 @@
+{
+  "arlockworks.com": [
+    {
+      "type": "A",
+      "name": "arlockworks.com",
+      "content": "172.96.160.178",
+      "proxied": false,
+      "ttl": 300
+    }
+  ],
+  "effusionlabs.com": [
+    {
+      "type": "A",
+      "name": "effusionlabs.com",
+      "content": "172.96.160.178",
+      "proxied": true,
+      "ttl": 1
+    }
+  ],
+  "galleryeffusion.com": [
+    {
+      "type": "CNAME",
+      "name": "galleryeffusion.com",
+      "content": "pornhub.org",
+      "proxied": true,
+      "ttl": 1
+    }
+  ],
+  "mildlyawesome.com": [
+    {
+      "type": "A",
+      "name": "mildlyawesome.com",
+      "content": "172.96.160.178",
+      "proxied": true,
+      "ttl": 1
+    }
+  ],
+  "mysticfoxmyco.com": [
+    {
+      "type": "A",
+      "name": "mysticfoxmyco.com",
+      "content": "172.96.160.178",
+      "proxied": true,
+      "ttl": 1
+    }
+  ],
+  "patenthound.net": [
+    {
+      "type": "A",
+      "name": "patenthound.net",
+      "content": "172.96.160.178",
+      "proxied": true,
+      "ttl": 1
+    }
+  ],
+  "so-fabulo.us": [
+    {
+      "type": "A",
+      "name": "so-fabulo.us",
+      "content": "172.96.160.178",
+      "proxied": true,
+      "ttl": 1
+    }
+  ],
+  "waverss.com": [
+    {
+      "type": "A",
+      "name": "waverss.com",
+      "content": "172.96.160.178",
+      "proxied": true,
+      "ttl": 1
+    }
+  ]
+}
