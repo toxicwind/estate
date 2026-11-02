@@ -888,8 +888,8 @@ retry = true
 mise = true
 dir = "/home/toxic/pens/fleet/devices/android-fleet"
 
-[daemons."flotilla-mcp"]
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/fleet/devices/android-fleet/flotilla/mcp/server.ts"
+[daemons."mosaic-mcp"]
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/mosaic/products/mosaic-mcp/mcp/server.ts"
 auto = ["start"]
 retry = true
 mise = true
@@ -897,7 +897,7 @@ port = 25245
 ready_http = "http://127.0.0.1:25245/health"
 dir = "/home/toxic/pens/fleet/devices/android-fleet"
 
-[daemons."flotilla-mcp".health_http]
+[daemons."mosaic-mcp".health_http]
 url = "http://127.0.0.1:25245/health"
 interval = "60s"
 timeout = "5s"
@@ -949,3 +949,23 @@ run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/estate/products/estate-ops
 auto = ["start"]
 retry = true
 
+
+[daemons.flotilla-license-page]
+run = "exec /home/toxic/.local/bin/bun src/server.ts"
+dir = "/home/toxic/pens/mosaic/products/license-page"
+env = { LICENSE_PAGE_PORT = "25222" }
+auto = []
+
+[daemons.flotilla-license-page.health_http]
+url = "http://127.0.0.1:25222/"
+expect = "200"
+
+[daemons.flotilla-daemon-page]
+run = "exec /home/toxic/.local/bin/bun src/server.ts"
+dir = "/home/toxic/pens/mosaic/products/daemon-page"
+env = { DAEMON_PAGE_PORT = "25221" }
+auto = []
+
+[daemons.flotilla-daemon-page.health_http]
+url = "http://127.0.0.1:25221/"
+expect = "200"
