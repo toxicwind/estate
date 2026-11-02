@@ -1535,3 +1535,6 @@ docs/Meta/
 
 # session memory dumps — local-only (contain tool-result secrets; never push)
 snapshots/
+
+# keyring SSOT sweep artifacts — live secrets go to secretsmith, never git
+cred-ssot-pitchfork.txt

@@ -1,0 +1,173 @@
+pitchfork WARN  daemon agent-display: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon agent-wm: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon agent-viewer: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon awrawr-mcp: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon awrawr-ws-exec: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon bedrock-ui: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon beellama-fast: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon bench-radar: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon boundless: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon browser-keeper: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon codebase-memory: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon coyote: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon delendai-control-api: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon doorbell-mcp: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon doorbell-oauth-edge: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon estate-chat: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon estate-exporter: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon estate-stream-broker: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon feedlot: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon files: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon forge: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon gibber-mcp: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon grafana: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon herd: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon hf-downloader: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon hodos: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon keeper-floaty: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon keypool: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon kimi-auto-shim: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon kimi-code: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon kitty-mcp: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon matter-server: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon mesh-hub: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon mesh-landing: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon ml-serve: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon model-guard: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon nativelink: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon nginx: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon nim-kimi-sidecar: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon node-exporter: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon null-g-proxy: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon oracle-core: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon paper-poller-watchdog: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon paper-poller: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon phone-sentinel: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon prometheus: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon qdrant: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon ralph-dashboard: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon ranch-ui: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon rig: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon rust-web: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon search-api: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon smithers-gateway: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon squawk-history: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon tau-chute: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon toolcall-llm: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon vansrouter: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon windmill: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon yote: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon squawk-ws: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+pitchfork WARN  daemon mbx-cache: both `port` and deprecated expected_port/auto_bump_port/port_bump_attempts are set; ignoring deprecated fields
+estate/agent-display            running
+estate/agent-viewer             running
+estate/agent-wm                 running
+estate/archguard-api            stopped
+estate/archguard-falkordb       stopped
+estate/awrawr-ws-exec           running
+estate/beellama-fast            errored    exit code 1
+estate/bench-radar              running
+estate/bidder-finch             running
+estate/bidder-forge             running
+estate/bidder-raccoon           running
+estate/bidder-scout             running
+estate/bidder-vesper            running
+estate/bidder-warden            running
+estate/bin-contract-audit       stopped
+estate/browser-keeper           errored    exit code 1
+estate/browserless              running
+estate/codebase-memory          running
+estate/coyote                   stopped
+estate/custom-auto-shim         stopped    disabled
+estate/cuttinggate              errored    exit code 1
+estate/delendai-control-api     running
+estate/delendai-control-plane   stopped
+estate/delendai-web             stopped
+estate/dnsmasq                  running
+estate/doorbell-mcp             running
+estate/doorbell-oauth-edge      running
+estate/estate-chat              running
+estate/estate-exporter          running
+estate/estate-reconcile-watch   running
+estate/estate-stream-broker     running
+estate/feedlot                  running
+estate/files                    stopped
+estate/fleet-feed               running
+estate/fleet-ui                 running
+estate/fleetd                   running
+estate/forever-loop             running
+estate/forge                    errored    unknown exit code
+estate/forge-agent              errored    unknown exit code
+estate/gatehouse                stopped
+estate/grafana                  running
+estate/hashline                 running
+estate/herd                     errored    unknown exit code
+estate/hf-downloader            running
+estate/hindsight                running
+estate/hodos                    stopped
+estate/kafka                    stopped
+estate/kappa-acp                running
+estate/kappa-board-bridge       running
+estate/keeper-floaty            running
+estate/keypool                  errored    exit code 1
+estate/kimi-auto-shim           running
+estate/kimiclaw-a               running
+estate/kimiclaw-b               running
+estate/kite-daemon              running
+estate/kitty-mcp                stopped    disabled
+estate/market-loop              errored    exit code 1
+estate/market-watchdog          running
+estate/matter-server            running
+estate/mbx-cache                running    disabled
+estate/mesh-hub                 running
+estate/mesh-landing             running
+estate/ml-serve                 errored    exit code 1
+estate/model-guard              running
+estate/nativelink               running
+estate/nats                     running
+estate/nats-tail                running
+estate/nginx                    running
+estate/nim-kimi-sidecar         running
+estate/node-exporter            running
+estate/null-g-proxy             running
+estate/oracle-chat              running
+estate/oracle-core              errored    exit code 1
+estate/oracle-market            running
+estate/paper-poller             running
+estate/paper-poller-watchdog    running
+estate/phone-sentinel           errored    exit code 1
+estate/pitchfork-binding-watch  running
+estate/proc-watch-audit         stopped
+estate/prometheus               running
+estate/qdrant                   stopped
+estate/ralph-dashboard          running
+estate/ranch-ui                 running
+estate/range-ui                 running
+estate/redis                    running
+estate/rig                      running
+estate/rust-web                 running
+estate/rustdesk-hbbr            running
+estate/rustdesk-hbbs            running
+estate/search-api               running
+estate/shim-drift-watch         stopped
+estate/smithers-gateway         running
+estate/squawk-feed              running
+estate/squawk-history           running
+estate/squawk-ws                running
+estate/stash-guard              running
+estate/task-launch              running
+estate/tau-chute                running
+estate/thresher                 running
+estate/tmp-reaper               running
+estate/toolcall-llm             errored    exit code 1
+estate/vansrouter               running
+estate/windmill                 running
+estate/yote                     running
+estate/awrawr-mcp               available
+estate/bedrock-ui               available  disabled
+estate/boundless                available  disabled
+estate/gibber-mcp               available
+estate/kimi-audit-dash          available  disabled
+estate/kimi-code                available  disabled
+estate/refusal-watchdog         available  disabled
+estate/sorry-watchdog           available  disabled

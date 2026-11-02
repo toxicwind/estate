@@ -1,0 +1,20 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style type="text/css">
+:root {
+color-scheme: light dark;
+}
+</style>
+<title>Directory listing for /</title>
+</head>
+<body>
+<h1>Directory listing for /</h1>
+<hr>
+<ul>
+<li><a href="ext/">ext/</a></li>
+</ul>
+<hr>
+</body>
+</html>

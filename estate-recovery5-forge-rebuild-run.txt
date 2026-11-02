@@ -1,0 +1,4 @@
+{"level":"info","time":"2026-10-23T20:05:59-06:00","message":"log level: info"}
+{"level":"error","error":"WOODPECKER_HOST is not properly configured","time":"2026-10-23T20:05:59-06:00","message":"error running server"}
+
+HTTP: 000

@@ -1,0 +1,21 @@
+{"level":"info","time":"2026-10-23T20:06:06-06:00","message":"log level: info"}
+{"level":"warn","time":"2026-10-23T20:06:06-06:00","message":"no sqlite3 file found, will create one at 'woodpecker.sqlite'"}
+{"level":"info","time":"2026-10-23T20:06:06-06:00","message":"Initializing Schema"}
+{"level":"info","time":"2026-10-23T20:06:07-06:00","message":"WOODPECKER_FORCE_IGNORE_SERVICE_FAILURE is true by default. To prepare for v4.0.0, set it to false and update your pipeline definitions if needed."}
+{"level":"info","time":"2026-10-23T20:06:07-06:00","message":"flicker: created synthetic user"}
+{"level":"info","time":"2026-10-23T20:06:07-06:00","message":"flicker: created synthetic repo"}
+{"level":"info","time":"2026-10-23T20:06:07-06:00","message":"flicker: completion watcher started"}
+{"level":"info","time":"2026-10-23T20:06:07-06:00","message":"starting Woodpecker server with version 'next-ea10439d24'"}
+{"level":"info","time":"2026-10-23T20:06:07-06:00","message":"starting cron service ..."}
+{"level":"info","time":"2026-10-23T20:06:07-06:00","message":"store metric collector started"}
+{"level":"info","time":"2026-10-23T20:06:07-06:00","message":"starting grpc server ..."}
+{"level":"info","time":"2026-10-23T20:06:07-06:00","message":"queue metric collector started"}
+{"level":"info","time":"2026-10-23T20:06:07-06:00","message":"starting http server ..."}
+{"level":"info","time":"2026-10-23T20:06:12-06:00","message":"termination signal is received, shutting down server"}
+{"level":"info","time":"2026-10-23T20:06:12-06:00","message":"shutdown http server ..."}
+{"level":"info","time":"2026-10-23T20:06:12-06:00","message":"terminating grpc service gracefully"}
+{"level":"info","time":"2026-10-23T20:06:12-06:00","message":"cron service stopped"}
+{"level":"info","time":"2026-10-23T20:06:12-06:00","message":"queue metric collector stopped"}
+{"level":"info","time":"2026-10-23T20:06:12-06:00","message":"store metric collector stopped"}
+{"level":"info","time":"2026-10-23T20:06:12-06:00","message":"http server stopped"}
+{"level":"info","time":"2026-10-23T20:06:12-06:00","message":"grpc service stopped"}

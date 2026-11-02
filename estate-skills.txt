@@ -1,0 +1,6 @@
+authoring-extensions.md
+authoring-hooks.md
+authoring-marketplaces.md
+examples
+kappa-hindsight
+smithers

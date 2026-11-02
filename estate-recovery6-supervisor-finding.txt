@@ -1,0 +1,14 @@
+=== Supervisor launch mode finding (R6) ===
+
+PID: 12170
+Command: /home/toxic/.local/share/mise/installs/pitchfork/2.25.0/pitchfork supervisor run --boot
+PPID: 1001 (user session — user@1000.service)
+Launched via: systemctl --user pitchfork.service (active since 2026-10-23 05:15:19 MDT)
+Mode: SESSION-SCOPED (systemd user service under user.slice/user-1000.slice)
+
+R6 Finding: pitchfork supervisor is SESSION-SCOPED (systemd user service).
+The supervisor runs under user@1000.service, not the system-level unit.
+The reconcile service (pitchfork-reconcile.service) is also user-scoped but has been
+failing since Oct 12 with 'exit-code 1/FAILURE'. It now starts when manually restarted,
+but converges slowly (iterating through 103 daemons, many have 'no snapshot entry' drift).
+The deeper 65-daemon cause (malformed bun:path@true) was already addressed by prior workers.

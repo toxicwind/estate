@@ -1,0 +1,1 @@
+/home/toxic/.local/share/mise/installs/pitchfork/2.25.0/pitchfork supervisor run --boot 

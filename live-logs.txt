@@ -1,0 +1,6 @@
+/home/toxic/.tau/logs/tau.2026-10-26.4129807.log
+/home/toxic/.tau/logs/tau.2026-10-26.44444.log
+/home/toxic/.tau/logs/tau.2026-10-26.54373.log
+/home/toxic/.tau/logs/tau.2026-10-26.57407.log
+/home/toxic/.tau/logs/tau.2026-10-26.57677.log
+/home/toxic/.tau/logs/tau.2026-10-26.62393.log

@@ -1,0 +1,12 @@
+== /home/toxic/.tau/logs/tau.2026-10-26.57677.log
+== /home/toxic/.tau/logs/tau.2026-10-26.57407.log
+== /home/toxic/.tau/logs/tau.2026-10-26.4129807.log
+"model":"dots-studio/dots-3-note-preview:free"
+"model":"freeinference/qwen3.6-35b"
+"model":"github-copilot/gpt-5.5"
+== /home/toxic/.tau/logs/tau.2026-10-26.54373.log
+"model":"zai-glm-4.7"
+== /home/toxic/.tau/logs/tau.2026-10-26.44444.log
+"model":"zai-glm-4.7"
+== /home/toxic/.tau/logs/tau.2026-10-26.4150225.log
+"model":"nvidia/nemotron-3.5-bolt-e4b"

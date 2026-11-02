@@ -1,0 +1,110 @@
+estate/agent-display            running
+estate/agent-viewer             running
+estate/agent-wm                 errored    exit code 1
+estate/archguard-api            stopped
+estate/archguard-falkordb       stopped
+estate/awrawr-ws-exec           stopped
+estate/beellama-fast            errored    exit code 1
+estate/bench-radar              running
+estate/bidder-finch             stopped
+estate/bidder-forge             stopped
+estate/bidder-raccoon           stopped
+estate/bidder-scout             stopped
+estate/bidder-vesper            stopped
+estate/bidder-warden            stopped
+estate/browser-keeper           errored    exit code 1
+estate/browserless              stopped
+estate/codebase-memory          running
+estate/coyote                   stopped
+estate/custom-auto-shim         stopped    disabled
+estate/cuttinggate              stopped
+estate/delendai-control-api     stopped
+estate/delendai-control-plane   stopped
+estate/delendai-web             stopped
+estate/dnsmasq                  stopped
+estate/doorbell-mcp             stopped
+estate/doorbell-oauth-edge      stopped
+estate/estate-chat              stopped
+estate/estate-exporter          stopped
+estate/estate-reconcile-watch   stopped
+estate/estate-stream-broker     stopped
+estate/feedlot                  stopped
+estate/files                    stopped
+estate/fleet-feed               running
+estate/fleet-ui                 running
+estate/fleetd                   stopped
+estate/forever-loop             stopped
+estate/forge                    errored    exit code 127
+estate/forge-agent              errored    exit code 127
+estate/gatehouse                stopped
+estate/grafana                  stopped
+estate/hashline                 stopped
+estate/herd                     errored    exit code 1
+estate/hf-downloader            stopped
+estate/hindsight                stopped
+estate/hodos                    stopped
+estate/kafka                    stopped
+estate/kappa-acp                running
+estate/kappa-board-bridge       running
+estate/keeper-floaty            running
+estate/keypool                  errored    exit code 1
+estate/kimi-auto-shim           running
+estate/kimiclaw-a               stopped
+estate/kimiclaw-b               stopped
+estate/kite-daemon              running
+estate/kitty-mcp                stopped    disabled
+estate/market-loop              stopped
+estate/market-watchdog          stopped
+estate/matter-server            stopped
+estate/mbx-cache                running
+estate/mesh-hub                 stopped
+estate/mesh-landing             stopped
+estate/ml-serve                 errored    exit code 1
+estate/model-guard              running
+estate/nativelink               stopped
+estate/nats                     running
+estate/nats-tail                running
+estate/nginx                    stopped
+estate/nim-kimi-sidecar         errored    exit code 1
+estate/node-exporter            stopped
+estate/null-g-proxy             stopped
+estate/oracle-chat              stopped
+estate/oracle-core              stopped
+estate/oracle-market            stopped
+estate/paper-poller             running
+estate/paper-poller-watchdog    running
+estate/phone-sentinel           stopped
+estate/pitchfork-binding-watch  running
+estate/proc-watch-audit         stopped
+estate/prometheus               stopped
+estate/qdrant                   stopped
+estate/ralph-dashboard          running
+estate/ranch-ui                 stopped
+estate/range-ui                 running
+estate/redis                    stopped
+estate/rig                      running
+estate/rust-web                 stopped
+estate/rustdesk-hbbr            stopped
+estate/rustdesk-hbbs            stopped
+estate/search-api               stopped
+estate/shim-drift-watch         stopped
+estate/smithers-gateway         running
+estate/squawk-feed              stopped
+estate/squawk-history           stopped
+estate/squawk-ws                running
+estate/stash-guard              running
+estate/task-launch              stopped
+estate/tau-chute                stopped
+estate/tmp-reaper               stopped
+estate/toolcall-llm             errored    exit code 1
+estate/vansrouter               stopped
+estate/windmill                 running
+estate/yote                     stopped
+estate/awrawr-mcp               available
+estate/bedrock-ui               available  disabled
+estate/boundless                available  disabled
+estate/gibber-mcp               available
+estate/kimi-audit-dash          available  disabled
+estate/kimi-code                available  disabled
+estate/refusal-watchdog         available  disabled
+estate/sorry-watchdog           available  disabled

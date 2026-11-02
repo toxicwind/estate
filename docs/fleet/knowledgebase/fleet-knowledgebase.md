@@ -485,3 +485,37 @@ The lessons (do not regress):
    for unrealized verification is BLOCKED, and block reasons must stay visible.
 4. Confirm before killing/deploying over live user sessions.
 5. Scope: one pain, one fix, then sweep — never the reverse order.
+
+## 2026-11-02 tau session — AIFL + estate tool-layer audit
+
+Root-cause chain (one paragraph): The session started as a wip→product audit
+and became a self-audit of the tool layer: the model experienced a
+heavily-compacted slice (8,071 content chars / 19 tool-call deltas) vs a 16MB
+debug ledger — session forensics are capture-limited by construction; rule
+injections (no-output-truncation 244x) fired from tool-ARG text matching my own
+python script bodies, not harness corruption; GraalVM-25 jvmci hangs Kotlin
+2.3.0 (JDK 21 works, build 10min→15s); docs-mcp lost every response to a
+sync-read/async-write deadlock; the embed-lane 401 was a wrong-probe
+misdiagnosis (endpoint works); bin-contract 103 FAIL was a stale manifest.
+
+Fixes (repo / commit / verification):
+- tau rules: no-output-truncation + no-terminal-blockers re-scoped (rule tests)
+- nuvio-tv-fleet eb45b9787: gradle 9.1 + JDK21 + incremental; build 15s; UI default-group
+- docs-mcp f84abb8 / d764635: writeSync(1); estate 527f29d738 gateway repoint
+- barn d9efda1: manifest regen 103→0 FAIL; estate 262058e4e2 anomaly #91
+- estate 036ef0cc9: AGENTS.md FreeInference bge-m3 = unlimited/free/99.9%
+- forge b6fd17e / 9bce6ff: @forge/hf canonical embed client + CLI
+- lg-fleet 64a7b52 / 06dab76: lg-live auto-discover probe; bge-m3 model card
+- azurite 05eadae: universal bge-m3 skill + iptv specialization
+- effusion-labs a465a7c: AIFL whitepaper (1,061 sessions / 397,716 events)
+- wip-to-product 6d7ee19 / a86d4d3: bge-m3 classifier product; zones + guards
+
+New tools: wip-to-product (classifier), forge hf CLI, lg-live probe, skill-router.
+
+The lessons (do not regress):
+1. SDK/import paths: read the entry before importing — guessing costs 2-3 retries each.
+2. Rule engines match raw ARG text, not executed commands — never put banned-token examples in a rule body.
+3. Session files are ledgers, not the model's view — audit what the model SAW, not row counts.
+4. bge-m3 is free/unlimited/99.9% — embed everything; optimize routing, not embedding.
+5. Gradle: JDK choice > flags; GraalVM-25 hangs kotlin-compiler-embeddable 2.3.0.
+6. Every MD is a red herring until proven against working code; correct it, not around it.

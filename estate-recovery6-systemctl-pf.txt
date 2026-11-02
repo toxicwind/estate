@@ -1,0 +1,5 @@
+  depend-refire.service                                                                                                                loaded    inactive   dead         bedf89a9: dependency re-fire watcher (pitchfork stopped + deps healthy -> start)
+  estate-forensics-srv.service                                                                                                         loaded    inactive   dead         estate-scripts daemon forensics-srv (migrated from pitchfork)
+● pitchfork-reconcile.service                                                                                                          loaded    failed     failed       Pitchfork MAPE-K reconciler (converge daemons to pitchfork.toml)
+  pitchfork.service                                                                                                                    loaded    active     running      pitchfork
+  depend-refire.timer                                                                                                                  loaded    active     waiting      bedf89a9: re-fire dependency-blocked pitchfork daemons every 60s
