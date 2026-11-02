@@ -388,7 +388,7 @@
    "protocol": "stdio",
    "command": "/home/toxic/.bun/bin/bun",
    "args": [
-    "/home/toxic/pens/ranch/ferret-den/src/index.ts"
+    "/home/toxic/pens/ranch/products/ferret-den/src/index.ts"
    ],
    "env": {
     "PD_TOOLS_DIR": "/home/toxic/.pdtm/go/bin",
