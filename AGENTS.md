@@ -158,8 +158,11 @@ advice; it is NOT the concurrent writer of agent trees.
   `pens/barn/products/loom`, fork of `rjwalters/loom`) is the first-class home
   for the advisor/visor lane — tauvisor lives in tau, but the product mapping +
   ownership contract are documented at `pens/barn/products/loom/docs/visor-lane.md`
-  (arc 20261030T231137Z). Forge → stencil rename pending; the emergent seam
-  survives it (2026-11-02).
+*  (arc 20261030T231137Z). **Stencil (ex-forge) owns pattern/paper borrow**:
+*  `estate/bin/pattern-borrow` → `estate/scripts/pattern-borrow.ts` (delegate) →
+*  azurite code-patterns canonical CLI. The barn forge build-triad product keeps
+*  the forge brand (live estate infra); the emergent paper-borrow seam points at
+*  canonical pens paths (2026-11-02).
 
 ---
 
