@@ -473,8 +473,8 @@
     "enabled": false,
     "mode": "none"
    },
-   "health_check_interval": "15s",
-   "tool_discovery_interval": "2m0s"
+   "health_check_interval": "60s",
+   "tool_discovery_interval": "5m0s"
   },
   {
    "quarantined": false,
