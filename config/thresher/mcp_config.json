@@ -474,7 +474,9 @@
     "mode": "none"
    },
    "health_check_interval": "60s",
-   "tool_discovery_interval": "5m0s"
+   "tool_discovery_interval": "5m0s",
+   "call_timeout": "90s",
+   "timeout": "90s"
   },
   {
    "quarantined": false,
