@@ -101,7 +101,7 @@
 ## 3. Tooling, Execution & Latency Doctrine
 
 1. **Gateway-First Architecture (2026-10-31)**:
-   - **Tool surface reality**: the raw `bash` tool is NOT available in tau sessions at all, and native `find`/`grep` tools are policy-denied. There is NO raw-bash lane; never plan around one.
+   - **Tool surface reality** (corrected 2026-11-02, live-session evidence): the raw `bash` tool **IS available** in tau sessions (it carried most of the 2026-11-02 session), and native `find`/`grep` tools work. The doctrine's "no bash lane" was aspirational, not enforced — plan for bash as a real lane, but still prefer the gateway for federated search/read (FFS) and eval for kernel introspection.
    - **Route order**: gateway first (Thresher MCP `:25127/mcp` via `xd://mcp__gateway_*`, federating FFS, BM25, memory, browser-keeper, GitHub, `xd://`), eval second (kernel shell for system introspection: `ps`, `ss`, `docker ps`, `curl` health checks).
    - Native tools stay preferred when unblocked; the gateway carries equivalent coverage for blocked native tools (search/read/exec).
    - **FFS** is the universal search/read interface (`find`, `glob`, `grep`, `read`, `symbol`, `callers`, `refs`, `flow`). Never use `fd`/`rg`/`find`/`grep`/`cat` when FFS applies.
