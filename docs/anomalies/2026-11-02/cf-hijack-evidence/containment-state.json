@@ -1,0 +1,98 @@
+{
+  "when": "2026-11-02T23:57:09.375929+00:00",
+  "note": "collected from verified live API outputs this session; rate-limited on the final sweep (10502)",
+  "zones_active_all_8": [
+    {
+      "name": "arlockworks.com",
+      "status": "active",
+      "ns": [
+        "matt.ns.cloudflare.com",
+        "pam.ns.cloudflare.com"
+      ]
+    },
+    {
+      "name": "effusionlabs.com",
+      "status": "active",
+      "ns": [
+        "matt.ns.cloudflare.com",
+        "pam.ns.cloudflare.com"
+      ]
+    },
+    {
+      "name": "galleryeffusion.com",
+      "status": "active",
+      "ns": [
+        "brian.ns.cloudflare.com",
+        "chin.ns.cloudflare.com"
+      ]
+    },
+    {
+      "name": "mildlyawesome.com",
+      "status": "active",
+      "ns": [
+        "matt.ns.cloudflare.com",
+        "pam.ns.cloudflare.com"
+      ]
+    },
+    {
+      "name": "mysticfoxmyco.com",
+      "status": "active",
+      "ns": [
+        "matt.ns.cloudflare.com",
+        "pam.ns.cloudflare.com"
+      ]
+    },
+    {
+      "name": "patenthound.net",
+      "status": "active",
+      "ns": [
+        "matt.ns.cloudflare.com",
+        "pam.ns.cloudflare.com"
+      ]
+    },
+    {
+      "name": "so-fabulo.us",
+      "status": "active",
+      "ns": [
+        "pam.ns.cloudflare.com",
+        "matt.ns.cloudflare.com"
+      ]
+    },
+    {
+      "name": "waverss.com",
+      "status": "active",
+      "ns": [
+        "matt.ns.cloudflare.com",
+        "pam.ns.cloudflare.com"
+      ]
+    }
+  ],
+  "members_after_demote": [
+    {
+      "email": "noo056272@gmail.com",
+      "status": "accepted",
+      "roles": [
+        "Trust and Safety Read"
+      ],
+      "member_id": "d0db60dd2c82cb6995770a2d6ddc9151"
+    },
+    {
+      "email": "toxicwind@gmail.com",
+      "status": "pending",
+      "roles": [
+        "Super Administrator - All Privileges"
+      ]
+    }
+  ],
+  "account_tokens_after_revoke": [
+    {
+      "name": "yellow-fire-6591",
+      "id": "187fc839b7823753883039a0572e427e",
+      "revoked": true
+    }
+  ],
+  "attacker_zone_cname_purged": "galleryeffusion.com pornhub.org CNAME deleted, clean A to origin added",
+  "311_source": "legacy Page Rule (invisible to cfat_ tokens, code 1011)",
+  "origin": "172.96.160.178 returns nginx 200 directly (clean)",
+  "edge": "all 8 zones still 301 -> femboy.pp.ua pending Page Rule removal via user session"
+}
