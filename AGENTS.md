@@ -168,6 +168,13 @@ advice; it is NOT the concurrent writer of agent trees.
 
 ## 5. Providers, Models & Contracts
 
+0. **FreeInference bge-m3 embeddings: unlimited, free, ~99.9% available
+   (verified 2026-11-02).** Design consequence: NEVER optimize embedding usage
+   away — embed every candidate, classify uniformly via `forge hf`
+   (`pens/barn/products/forge/hf/hf.ts`, canonical client), and use score
+   thresholds only for ROUTING decisions, never as a reason to skip an embed.
+   The client is `@forge/hf`; see `bge-m3-universal` skill.
+
 1. **Inference Providers**:
    - **Mimetite** (`@toxicwind/mimetite`) is provider SSOT.
    - **FreeInference** (`freeinference.org/v1`) is primary fast inference.
