@@ -100,7 +100,7 @@ A swarm of boxes. Run heavy work on yote / dedicated iron; keep hatch light.
 | 25137                 | bedrock web (`/home/toxic/projects/bedrock/web/server.ts`; tailnet)                                       |
 | 25142                 | cell-files UI (bun --hot)                                                                                 |
 | 25143                 | coyote-loop (OpenFang agent loop → :25100)                                                                |
-| 25149 / 25150         | paper-poller + watchdog (`/home/toxic/deep-paper-reader/paper-poller`)                                    |
+| 25149 / 25150         | paper-poller + watchdog (`pens/ranch/products/paper-poller`)                                               |
 | 25151                 | oracle-core (oracle-as-approval `POST /ask`)                                                              |
 | 25153                 | kimi-auto-shim                                                                                            |
 | 25194                 | ralph-dashboard backend (uvicorn)                                                                         |

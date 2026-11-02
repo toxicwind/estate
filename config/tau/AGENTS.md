@@ -115,27 +115,24 @@ The `estate` namespace was renamed to `estate` (ranch commit `6af2094`).
 - `estate/projects/range/ranch` — does not exist (ranch is at `estate/ranch`, top level)
 - `~/.tau/agent/mcp.json` — does not exist
 
-## Merged paper reader — first-class (deep-paper-reader master + paper-poller leg)
+## Paper tools — canonical homes (code is absolute; verified 2026-11-02)
 
-The two repos are merged under `/home/toxic/src/local/deep-paper-reader/`:
-- **deep-paper-reader** (Siris2314) is the master — local-first agentic PDF reader with
-  equation walkthroughs, cited paper chat, research lineage, term highlighting,
-  concept cards, implementation reconstruction, and human-aligned judges.
-- **paper-poller** (toxicwind) is the racing leg inside it — HFT-style arXiv + alphaXiv
-  search racer with the PAPER-TASK/PAPER-RESULT fleet protocol, poller daemon, and
-  watchdog. Lives at `src/local/deep-paper-reader/paper-poller/`.
-
-**Setup:**
-```bash
-cd /home/toxic/src/local/deep-paper-reader
-./scripts/setup.sh               # Linux/macOS
-./scripts/run_paper_reader_ui.sh  # launch at http://localhost:8503
-```
+**paper-poller** (the only live copy) lives at
+`/home/toxic/pens/ranch/products/paper-poller` (git repo `toxicwind/paper-poller`).
+It is the HFT-style arXiv + alphaXiv + HF + OpenAlex + Semantic Scholar search
+racer (`bin/race_papers.py`) with the PAPER-TASK/PAPER-RESULT fleet protocol,
+poller daemon, and watchdog. All other paths are ghost/legacy:
+- `/home/toxic/src/local/deep-paper-reader/paper-poller` — **does not exist** (merged-master claim was stale; the repo is standalone at ranch/products).
+- `/home/toxic/paper-poller` — **ghost**, purged 2026-10-30.
+- `wip/products/paper-poller` — dangling symlink, removed 2026-11-02.
 
 **Paper search (one-shot, races legs):**
 ```bash
-python3 /home/toxic/src/local/deep-paper-reader/paper-poller/bin/race_papers.py "<query>" --maxn 10
+python3 /home/toxic/pens/ranch/products/paper-poller/bin/race_papers.py "<query>" --maxn 10
 ```
+
+**MCP:** `estate_paper_search` is the federation point (estate-tools upstream in
+thresher), running the canonical racer.
 
 **Paper poller daemon:** pitchfork-managed, health on 127.0.0.1:25149, watchdog on 25150.
 Posts PAPER-RESULT entries to `/home/toxic/.fleet-bus/directives.md`.
