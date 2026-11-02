@@ -103,7 +103,7 @@
    - A 2.0s breach is an opportunity to race a faster pattern, borrow from forge, or move work to a background daemon.
    - Sourced via `BASH_ENV` and `~/.bashrc`.
 3. **Implementation Style**:
-   - **Monadic primitives & Bun-forward**: compose pipelines with the estate's chosen `effect` monad (see `pens/estate/docs/typescript-monadic-standard.md`). Avoid deep nested try/catch pyramids.
+   - **Monadic primitives & Bun-forward**: compose pipelines as `effect` (`Effect.tryPromise`/`Effect.gen`/`Effect.mapError`) chains with pure mappings. Avoid deep nested try/catch pyramids. The `Result`/`Ok`/`Err` / `TaskEither` wording describes the concept (a labelled error channel + composition); the running estate converges on `effect` — see `pens/estate/docs/typescript-monadic-standard.md`.
    - **Lock files**: on resolution anomalies, clean and rebuild (`rm bun.lock && rm -rf node_modules && bun install`).
    - **Blue-Green Deployment**: new slate (blue) built, tested, and healthchecked alongside running slate (green) before atomic swap.
 4. **Search Doctrine**:
@@ -154,6 +154,12 @@ advice; it is NOT the concurrent writer of agent trees.
 - **Kappa mirror**: kappa has NO advisor concept today. When one lands, it must
   mirror this contract (read-only default, main-aware, runtime-enforced) —
   half a change is a defect.
+- **Loom = the visor-lane product**: `toxicwind/loom` (barn
+  `pens/barn/products/loom`, fork of `rjwalters/loom`) is the first-class home
+  for the advisor/visor lane — tauvisor lives in tau, but the product mapping +
+  ownership contract are documented at `pens/barn/products/loom/docs/visor-lane.md`
+  (arc 20261030T231137Z). Forge → stencil rename pending; the emergent seam
+  survives it (2026-11-02).
 
 ---
 
