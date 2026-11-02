@@ -178,6 +178,12 @@ advice; it is NOT the concurrent writer of agent trees.
 1. **Inference Providers**:
    - **Mimetite** (`@toxicwind/mimetite`) is provider SSOT.
    - **FreeInference** (`freeinference.org/v1`) is primary fast inference.
+   - **FreeInference `bge-m3` is the estate's DEFAULT embedding lane** (free,
+     unlimited, ~99.9% availability, verified 2026-11-02). Any embed consumer
+     (mnemotau, sharpshooter, cosmic index, future UIs) defaults to
+     `https://freeinference.org/v1` + model `bge-m3` + keyring
+     `FREEINFERENCE_API_KEY` — never a hosted-NIM or local-MiniLM first choice.
+     Local/alternate embed lanes remain fallbacks only.
    - **Per-model credit strikes**: credit/key exhaustion (401/402/403) is tracked per `(provider, model)`, never blacklisting an entire provider.
 2. **Proven Capability Contracts**:
    - **Declared ≠ Observed**: never trust advertised parameters or model cards without live probe verification.
