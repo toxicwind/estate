@@ -1,7 +1,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
-import { modelsJsonPath, saveSettings, type FlockConfig, type FlockSettings } from "./config.ts";
-import type { FlockPI, FlockRequestModel, FlockThinking, ProviderApi, ProviderCompat, ProviderEntry, ProviderModelConfig, ProviderThinkingLevel, ProviderThinkingLevelMap } from "./contracts.ts";
+import { modelsJsonPath, saveSettings, type SyncConfig, type SyncSettings } from "./config.ts";
+import type { SyncPI, SyncRequestModel, SyncThinking, ProviderApi, ProviderCompat, ProviderEntry, ProviderModelConfig, ProviderThinkingLevel, ProviderThinkingLevelMap } from "./contracts.ts";
 
 const DEFAULT_PROVIDER_API: ProviderApi = "openai-responses";
 export const PROVIDER_COMPAT: ProviderCompat = {
@@ -44,7 +44,7 @@ function modelCompat(omitMaxOutputTokens = false): ProviderCompat {
 	};
 }
 
-interface FlockApiModel {
+interface SyncApiModel {
 	id?: string;
 	name?: string;
 	owned_by?: string;
@@ -83,7 +83,7 @@ interface SyncedModel {
 	omitMaxOutputTokens?: boolean;
 	reasoning?: boolean;
 	supportsTools?: boolean;
-	thinking?: FlockThinking;
+	thinking?: SyncThinking;
 	thinkingLevelMap?: ProviderThinkingLevelMap;
 	input?: string[];
 }
@@ -117,7 +117,7 @@ interface ModelsJson {
 	providers?: Record<string, Partial<ProviderEntry>>;
 }
 
-function authHeaders(config: FlockConfig): Record<string, string> {
+function authHeaders(config: SyncConfig): Record<string, string> {
 	return config.apiKey ? { Authorization: `Bearer ${config.apiKey}` } : {};
 }
 
@@ -126,7 +126,7 @@ function requestSignal(timeoutMs: number, signal?: AbortSignal | null): AbortSig
 }
 
 async function requestJson<T>(
-	config: FlockConfig,
+	config: SyncConfig,
 	path: string,
 	init: RequestInit = {},
 	timeoutMs = 10_000,
@@ -143,7 +143,7 @@ async function requestJson<T>(
 }
 
 /** Older hosts build these fields without reading newer catalog capability metadata. */
-export function transformProviderPayload(payload: unknown, model: FlockRequestModel | undefined, providerName: string): unknown {
+export function transformProviderPayload(payload: unknown, model: SyncRequestModel | undefined, providerName: string): unknown {
 	if (!model || model.provider !== providerName || typeof payload !== "object" || payload === null || Array.isArray(payload)) return payload;
 
 	const next = { ...(payload as Record<string, unknown>) };
@@ -173,7 +173,7 @@ export interface HealthProbeResult {
 	unreachable: boolean;
 }
 
-export async function probeHealth(config: FlockConfig, signal?: AbortSignal): Promise<HealthProbeResult> {
+export async function probeHealth(config: SyncConfig, signal?: AbortSignal): Promise<HealthProbeResult> {
 	try {
 		// rhodochrosite's own client-key-gated liveness probe (client_api.rs). The
 		// OmniRoute /api/health/ping path does not exist on rhodochrosite; the
@@ -189,11 +189,11 @@ export async function probeHealth(config: FlockConfig, signal?: AbortSignal): Pr
 	}
 }
 
-export async function checkHealth(config: FlockConfig, signal?: AbortSignal): Promise<boolean> {
+export async function checkHealth(config: SyncConfig, signal?: AbortSignal): Promise<boolean> {
 	return (await probeHealth(config, signal)).ok;
 }
 
-export async function checkModelsEndpoint(config: FlockConfig, signal?: AbortSignal): Promise<boolean> {
+export async function checkModelsEndpoint(config: SyncConfig, signal?: AbortSignal): Promise<boolean> {
 	try {
 		const res = await fetch(`${config.serverUrl}/v1/models`, {
 			headers: authHeaders(config),
@@ -211,7 +211,7 @@ function rawModalities(value: unknown): string[] {
 	return value.map((item) => String(item).trim().toLowerCase()).filter(Boolean);
 }
 
-function normalizeInputModalities(model: FlockApiModel): string[] {
+function normalizeInputModalities(model: SyncApiModel): string[] {
 	const raw = rawModalities(model.input_modalities ?? model.input);
 	const capabilities = model.capabilities;
 	const visual =
@@ -223,7 +223,7 @@ function normalizeInputModalities(model: FlockApiModel): string[] {
 	return visual ? ["text", "image"] : ["text"];
 }
 
-function isPiChatModel(model: FlockApiModel): boolean {
+function isPiChatModel(model: SyncApiModel): boolean {
 	const type = String(model.type || "chat").toLowerCase();
 	if (NON_CHAT_TYPES.has(type)) return false;
 	const output = rawModalities(model.output_modalities ?? model.output);
@@ -231,7 +231,7 @@ function isPiChatModel(model: FlockApiModel): boolean {
 	return output.includes("text");
 }
 
-function mapThinking(model: FlockApiModel): FlockThinking | undefined {
+function mapThinking(model: SyncApiModel): SyncThinking | undefined {
 	const raw = Array.isArray(model.effort_tiers)
 		? model.effort_tiers
 		: Array.isArray(model.capabilities?.effort_tiers)
@@ -250,7 +250,7 @@ function mapThinking(model: FlockApiModel): FlockThinking | undefined {
 	return { mode: "effort", efforts };
 }
 
-function thinkingLevelMap(thinking: FlockThinking | undefined): ProviderThinkingLevelMap | undefined {
+function thinkingLevelMap(thinking: SyncThinking | undefined): ProviderThinkingLevelMap | undefined {
 	if (!thinking) return undefined;
 	const supported = new Set(thinking.efforts);
 	return {
@@ -311,7 +311,7 @@ export function globMatches(value: string, pattern: string): boolean {
 
 export function shouldIncludeModel(
 	model: { enabled?: boolean; id: string; owned_by?: string },
-	settings: Pick<FlockSettings, "onlyShowUsableModels" | "showGlobalRoutingModels" | "includeModels" | "excludeModels">,
+	settings: Pick<SyncSettings, "onlyShowUsableModels" | "showGlobalRoutingModels" | "includeModels" | "excludeModels">,
 	usableProviders?: ReadonlySet<string>,
 ): boolean {
 	if (!settings.showGlobalRoutingModels && isGlobalRoutingModel(model.id)) return false;
@@ -352,7 +352,7 @@ export function usableProviderAliases(connections: ProviderConnection[], pricing
 	return aliases;
 }
 
-async function fetchUsableProviders(config: FlockConfig, signal?: AbortSignal): Promise<Set<string> | undefined> {
+async function fetchUsableProviders(config: SyncConfig, signal?: AbortSignal): Promise<Set<string> | undefined> {
 	try {
 		const [providers, pricing] = await Promise.all([
 			// rhodochrosite client-key endpoints (client_api.rs): /api/client/providers
@@ -368,7 +368,7 @@ async function fetchUsableProviders(config: FlockConfig, signal?: AbortSignal): 
 	}
 }
 
-async function fetchPricing(config: FlockConfig, signal?: AbortSignal): Promise<Record<string, ModelPricing>> {
+async function fetchPricing(config: SyncConfig, signal?: AbortSignal): Promise<Record<string, ModelPricing>> {
 	try {
 		// rhodochrosite's client-key-gated cost catalog (client_api.rs).
 		const result: Record<string, ModelPricing> = {};
@@ -407,13 +407,13 @@ export function modelCost(pricing?: ModelPricing): ProviderModelConfig["cost"] {
 	};
 }
 
-async function fetchSyncedModels(config: FlockConfig, signal?: AbortSignal): Promise<SyncedModel[]> {
-	const data = await requestJson<{ data?: Array<FlockApiModel | string> }>(config, "/v1/models", {}, 10_000, signal);
+async function fetchSyncedModels(config: SyncConfig, signal?: AbortSignal): Promise<SyncedModel[]> {
+	const data = await requestJson<{ data?: Array<SyncApiModel | string> }>(config, "/v1/models", {}, 10_000, signal);
 	const rawModels = Array.isArray(data.data) ? data.data : [];
 	const results: SyncedModel[] = [];
 
 	for (const rawModel of rawModels) {
-		const model: FlockApiModel = typeof rawModel === "string" ? { id: rawModel } : rawModel;
+		const model: SyncApiModel = typeof rawModel === "string" ? { id: rawModel } : rawModel;
 		if (!model.id || !isPiChatModel(model)) continue;
 
 		const contextWindow = positiveNumber(model.context_length) ?? positiveNumber(model.max_input_tokens);
@@ -484,7 +484,7 @@ function buildAutoModel(id: string): ProviderModelConfig {
 	});
 }
 
-export async function discoverModels(config: FlockConfig, settings: FlockSettings, signal?: AbortSignal): Promise<ProviderModelConfig[]> {
+export async function discoverModels(config: SyncConfig, settings: SyncSettings, signal?: AbortSignal): Promise<ProviderModelConfig[]> {
 	const [synced, usableProviders, pricing] = await Promise.all([
 		fetchSyncedModels(config, signal),
 		settings.onlyShowUsableModels ? fetchUsableProviders(config, signal) : undefined,
@@ -507,7 +507,7 @@ export async function discoverModels(config: FlockConfig, settings: FlockSetting
 	];
 }
 
-function buildProviderEntry(config: FlockConfig, models: ProviderModelConfig[]): ProviderEntry {
+function buildProviderEntry(config: SyncConfig, models: ProviderModelConfig[]): ProviderEntry {
 	return {
 		baseUrl: `${config.serverUrl}/v1`,
 		apiKey: config.apiKey || "omniroute-public",
@@ -526,7 +526,7 @@ function readModelsJson(agentHome: string): ModelsJson {
 	}
 }
 
-function persistModels(agentHome: string, config: FlockConfig, models: ProviderModelConfig[]): void {
+function persistModels(agentHome: string, config: SyncConfig, models: ProviderModelConfig[]): void {
 	const path = modelsJsonPath(agentHome);
 	const file = readModelsJson(agentHome);
 	file.providers ??= {};
@@ -547,11 +547,11 @@ function persistModels(agentHome: string, config: FlockConfig, models: ProviderM
 	writeFileSync(path, JSON.stringify(file, null, 2));
 }
 
-export async function registerFlockProvider(
-	pi: FlockPI,
+export async function registerSyncProvider(
+	pi: SyncPI,
 	agentHome: string,
-	config: FlockConfig,
-	settings: FlockSettings,
+	config: SyncConfig,
+	settings: SyncSettings,
 	signal?: AbortSignal,
 ): Promise<ProviderModelConfig[]> {
 	const models = await discoverModels(config, settings, signal);
@@ -590,13 +590,13 @@ export function normalizePersistedModels(models: Array<Partial<ProviderModelConf
 }
 
 export function isSyncStale(
-	settings: Pick<FlockSettings, "lastSuccessfulSyncAt" | "modelCacheTtlMinutes">,
+	settings: Pick<SyncSettings, "lastSuccessfulSyncAt" | "modelCacheTtlMinutes">,
 	now = Date.now(),
 ): boolean {
 	return settings.lastSuccessfulSyncAt === 0 || now - settings.lastSuccessfulSyncAt >= settings.modelCacheTtlMinutes * 60_000;
 }
 
-export function reloadFlockProvider(pi: FlockPI, agentHome: string, config: FlockConfig): void {
+export function reloadSyncProvider(pi: SyncPI, agentHome: string, config: SyncConfig): void {
 	const persisted = readModelsJson(agentHome).providers?.[config.providerName];
 	if (!persisted?.baseUrl || !persisted.models) return;
 	const models = normalizePersistedModels(persisted.models);
@@ -615,7 +615,7 @@ interface ResponsesResult {
 	output?: Array<{ content?: Array<{ text?: string }> }>;
 }
 
-export async function testChat(config: FlockConfig, model: string, signal?: AbortSignal): Promise<string> {
+export async function testChat(config: SyncConfig, model: string, signal?: AbortSignal): Promise<string> {
 	if (providerApi() === "openai-completions") {
 		const data = await requestJson<{ choices?: Array<{ message?: { content?: string } }> }>(
 			config,

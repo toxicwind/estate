@@ -1,12 +1,13 @@
-import type { ExtensionAPI } from "tau";
+import type { ExtensionAPI } from "tau/extensibility/extensions/types";
 import { Input, matchesKey } from "@oh-my-pi/pi-tui";
-import type { FlockPI } from "./contracts.ts";
-import { createFlockExtension } from "./extension.ts";
+import type { SyncPI } from "./contracts.ts";
+import { createSyncExtension } from "./extension.ts";
 
 export default async function (pi: ExtensionAPI): Promise<void> {
-	await createFlockExtension(pi as unknown as FlockPI, {
-		homeEnvVar: "PI_HOME",
+	await createSyncExtension(pi as unknown as SyncPI, {
+		homeEnvVar: "PI_CODING_AGENT_DIR",
 		defaultHome: "~/.tau/agent",
+		inferenceApi: "openai-completions",
 		matchesKey,
 		createInput: (initialValue) => {
 			const input = new Input();

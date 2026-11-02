@@ -6,13 +6,13 @@ import type { AgentHomeOptions } from "./contracts.ts";
 export const ON_UNREACHABLE_VALUES = ["none", "host-fallback"] as const;
 export type OnUnreachable = (typeof ON_UNREACHABLE_VALUES)[number];
 
-export interface FlockConfig {
+export interface SyncConfig {
 	serverUrl: string;
 	apiKey: string;
 	providerName: string;
 }
 
-export interface FlockSettings {
+export interface SyncSettings {
 	serverUrl: string;
 	providerName: string;
 	onlyShowUsableModels: boolean;
@@ -42,8 +42,8 @@ function defaultServerUrl(): string {
 	return `http://127.0.0.1:${port}`;
 }
 
-export const EXTENSION_STATE_DIR = "tau-hodossync";
-const DEFAULT_SETTINGS: FlockSettings = {
+export const EXTENSION_STATE_DIR = "rhodochrositesync";
+const DEFAULT_SETTINGS: SyncSettings = {
 	serverUrl: defaultServerUrl(),
 	providerName: "rhodochrosite",
 	onlyShowUsableModels: true,
@@ -75,7 +75,7 @@ export function settingsPath(agentHome: string): string {
 	return join(agentHome, "extensions", EXTENSION_STATE_DIR, "settings.json");
 }
 
-export function sanitizeSettings(input: Partial<FlockSettings>): FlockSettings {
+export function sanitizeSettings(input: Partial<SyncSettings>): SyncSettings {
 	// Accept settings written by the short-lived millisecond version of autosync.
 	const legacyIntervalMs = (input as { autoSyncIntervalMs?: unknown }).autoSyncIntervalMs;
 	const intervalSeconds = input.autoSyncIntervalSeconds ?? (typeof legacyIntervalMs === "number" ? legacyIntervalMs / 1000 : undefined);
@@ -106,7 +106,7 @@ export function sanitizeSettings(input: Partial<FlockSettings>): FlockSettings {
 	};
 }
 
-export function loadSettings(agentHome: string): FlockSettings {
+export function loadSettings(agentHome: string): SyncSettings {
 	try {
 		return sanitizeSettings(JSON.parse(readFileSync(settingsPath(agentHome), "utf8")));
 	} catch {
@@ -130,12 +130,12 @@ export function resolveConfiguredServerUrl(agentHome: string): string {
 	return normalizeServerUrl(settings.serverUrl);
 }
 
-export function loadProbeConfig(agentHome: string): FlockConfig {
+export function loadProbeConfig(agentHome: string): SyncConfig {
 	const runtime = loadConfig(agentHome);
 	return { ...runtime, serverUrl: resolveConfiguredServerUrl(agentHome) };
 }
 
-export function loadHopSettings(agentHome: string): Pick<FlockSettings, "onUnreachable" | "fallbackModel"> {
+export function loadHopSettings(agentHome: string): Pick<SyncSettings, "onUnreachable" | "fallbackModel"> {
 	const settings = loadSettings(agentHome);
 	const onUnreachable = process.env.RHODOCHROSITESYNC_ON_UNREACHABLE;
 	const fallbackModel = process.env.RHODOCHROSITESYNC_FALLBACK_MODEL;
@@ -147,17 +147,17 @@ export function loadHopSettings(agentHome: string): Pick<FlockSettings, "onUnrea
 	};
 }
 
-export function sanitizeConfig(input: Partial<FlockConfig>): FlockConfig {
+export function sanitizeConfig(input: Partial<SyncConfig>): SyncConfig {
 	const settings = sanitizeSettings(input);
 	return { serverUrl: settings.serverUrl, apiKey: String(input.apiKey ?? ""), providerName: settings.providerName };
 }
 
-export function loadConfig(agentHome: string): FlockConfig {
+export function loadConfig(agentHome: string): SyncConfig {
 	const settings = loadSettings(agentHome);
 	return sanitizeConfig({
 		...settings,
 		serverUrl: process.env.RHODOCHROSITESYNC_URL ?? settings.serverUrl,
-		// Only HODOSSYNC_API_KEY can override the stored key. The legacy
+		// Only RHODOCHROSITESYNC_API_KEY can override the stored key. The legacy
 		// Legacy OMNIROUTE_API_KEY is not consulted (provider retired 2026-10-16): it was a different
 		// system's management token (OmniRoute on :20130), it cannot
 		// authenticate against rhodochrosite's client-key gate, and a stale export
@@ -167,7 +167,7 @@ export function loadConfig(agentHome: string): FlockConfig {
 	});
 }
 
-export function saveSettings(agentHome: string, settings: FlockSettings): void {
+export function saveSettings(agentHome: string, settings: SyncSettings): void {
 	const path = settingsPath(agentHome);
 	mkdirSync(dirname(path), { recursive: true, mode: 0o700 });
 	writeFileSync(path, JSON.stringify(sanitizeSettings(settings), null, 2), { mode: 0o600 });
@@ -175,7 +175,7 @@ export function saveSettings(agentHome: string, settings: FlockSettings): void {
 	chmodSync(path, 0o600);
 }
 
-export function saveConfig(agentHome: string, config: FlockConfig, currentSettings = loadSettings(agentHome)): void {
+export function saveConfig(agentHome: string, config: SyncConfig, currentSettings = loadSettings(agentHome)): void {
 	saveSettings(agentHome, sanitizeSettings({ ...currentSettings, ...config }));
 }
 

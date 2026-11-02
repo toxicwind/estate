@@ -23,7 +23,7 @@ curl -s -m 5 http://127.0.0.1:20128/v1/models
 ### 2. Update Tau Agent Configuration
 Edit `~/.tau/agent/config.yml`:
 - Change `providers.omni.baseUrl` from `http://127.0.0.1:20130/v1` to `http://127.0.0.1:20128/v1`
-- Change `extensions` list from `[pi-omniroute-sync, gwern]` to `[tau-hodossync, gwern]`
+- Change `extensions` list from `[pi-omniroute-sync, gwern]` to `[rhodochrositesync, gwern]`
 
 ### 3. Remove Old Omniroute Extension Dependency
 Edit `~/.tau/plugins/package.json`:
@@ -55,7 +55,7 @@ grep -A2 "omni:" ~/.tau/agent/config.yml | grep baseUrl
 
 # Check extensions list
 grep -A2 "extensions:" ~/.tau/agent/config.yml
-# Should show: extensions: [tau-hodossync, gwern]
+# Should show: extensions: [rhodochrositesync, gwern]
 
 # Verify package.json fix
 grep -c "pi-omniroute-sync" ~/.tau/plugins/package.json
@@ -67,7 +67,7 @@ grep -c "pi-omniroute-sync" ~/.tau/plugins/package.json
 
 ## Verification Points
 - ✅ omni provider baseUrl points to :20128 (rhodochrosite gateway)
-- ✅ extensions list contains tau-hodossync, not pi-omniroute-sync
+- ✅ extensions list contains rhodochrositesync, not pi-omniroute-sync
 - ✅ pi-omniroute-sync removed from package.json dependencies
 - ✅ omniroute container stopped
 - ✅ Artifacts quarantined for potential recovery
@@ -75,6 +75,6 @@ grep -c "pi-omniroute-sync" ~/.tau/plugins/package.json
 
 ## Notes
 - The rhodochrosite gateway on :20128 does not require authentication for basic model listing/chat
-- First tau start after cutover may trigger initial model sync via tau-hodossync
+- First tau start after cutover may trigger initial model sync via rhodochrositesync
 - Monitor ~/.tau/agent/models.json for updated model list from :20128/v1/models
 - If needed, quarantined artifacts can be restored from the archive directory

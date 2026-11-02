@@ -1,32 +1,32 @@
 export type NotificationType = "info" | "warning" | "error";
 
-export interface FlockComponent {
+export interface SyncComponent {
 	render(width: number): readonly string[];
 	handleInput?(data: string): void;
 	invalidate(): void;
 }
 
-export interface FlockInput extends FlockComponent {
+export interface SyncInput extends SyncComponent {
 	onSubmit?: (value: string) => void;
 	onEscape?: () => void;
 	getValue(): string;
 	setValue(value: string): void;
 }
 
-export interface FlockTheme {
+export interface SyncTheme {
 	fg(color: "accent" | "dim" | "error" | "muted" | "success" | "text" | "warning", text: string): string;
 	bold(text: string): string;
 }
 
-export interface FlockTUI {
+export interface SyncTUI {
 	requestRender(): void;
 }
 
-export interface FlockUI {
+export interface SyncUI {
 	input(title: string, placeholder?: string): Promise<string | undefined>;
 	confirm(title: string, message: string): Promise<boolean>;
 	custom<T>(
-		factory: (tui: FlockTUI, theme: FlockTheme, keybindings: unknown, done: (result: T) => void) => FlockComponent,
+		factory: (tui: SyncTUI, theme: SyncTheme, keybindings: unknown, done: (result: T) => void) => SyncComponent,
 		options?: {
 			overlay?: boolean;
 			overlayOptions?: { width?: number | string; minWidth?: number; anchor?: string; margin?: number };
@@ -36,7 +36,7 @@ export interface FlockUI {
 	setStatus(key: string, text: string | undefined): void;
 }
 
-export interface FlockRequestModel {
+export interface SyncRequestModel {
 	provider?: string;
 	id?: string;
 	omitMaxOutputTokens?: boolean;
@@ -72,24 +72,24 @@ export interface AgentEndEvent {
 	messages: AgentEndMessage[];
 }
 
-export interface FlockModelRegistry {
+export interface SyncModelRegistry {
 	find(provider: string, id: string): unknown;
 }
 
-export interface FlockContext {
+export interface SyncContext {
 	hasUI: boolean;
 	mode: "tui" | "rpc" | "json" | "print";
-	model?: FlockRequestModel;
+	model?: SyncRequestModel;
 	signal?: AbortSignal;
-	ui: FlockUI;
-	modelRegistry?: FlockModelRegistry;
+	ui: SyncUI;
+	modelRegistry?: SyncModelRegistry;
 }
 
 export type ProviderApi = "openai-completions" | "openai-responses";
 export type ProviderThinkingLevel = "off" | "minimal" | "low" | "medium" | "high" | "xhigh" | "max";
 export type ProviderThinkingLevelMap = Partial<Record<ProviderThinkingLevel, string | null>>;
 
-export interface FlockThinking {
+export interface SyncThinking {
 	mode: "effort";
 	efforts: string[];
 }
@@ -125,7 +125,7 @@ export interface ProviderModelConfig {
 	omitMaxOutputTokens?: boolean;
 	supportsTools?: boolean;
 	thinkingLevelMap?: ProviderThinkingLevelMap;
-	thinking?: FlockThinking;
+	thinking?: SyncThinking;
 	compat?: ProviderCompat;
 }
 
@@ -144,7 +144,7 @@ interface ToolResult<TDetails> {
 	details: TDetails;
 }
 
-export interface FlockPI {
+export interface SyncPI {
 	registerProvider(name: string, config: ProviderEntry): void;
 	registerTool<TDetails>(tool: {
 		name: string;
@@ -158,22 +158,22 @@ export interface FlockPI {
 		opts: {
 			description: string;
 			getArgumentCompletions?(prefix: string): { value: string; label: string }[];
-			handler(args: string, ctx: FlockContext): Promise<void>;
+			handler(args: string, ctx: SyncContext): Promise<void>;
 		},
 	): void;
-	on(event: "session_start", handler: (event: unknown, ctx: FlockContext) => void | Promise<void>): void;
-	on(event: "agent_start", handler: (event: AgentStartEvent, ctx: FlockContext) => void | Promise<void>): void;
-	on(event: "turn_start", handler: (event: unknown, ctx: FlockContext) => void | Promise<void>): void;
-	on(event: "agent_end", handler: (event: AgentEndEvent, ctx: FlockContext) => void | Promise<void>): void;
-	on(event: "after_provider_response", handler: (event: ProviderResponseEvent, ctx: FlockContext) => void | Promise<void>): void;
-	on(event: "agent_settled", handler: (event: AgentSettledEvent, ctx: FlockContext) => void | Promise<void>): void;
-	on(event: "before_provider_request", handler: (event: ProviderRequestEvent, ctx: FlockContext) => unknown | Promise<unknown>): void;
+	on(event: "session_start", handler: (event: unknown, ctx: SyncContext) => void | Promise<void>): void;
+	on(event: "agent_start", handler: (event: AgentStartEvent, ctx: SyncContext) => void | Promise<void>): void;
+	on(event: "turn_start", handler: (event: unknown, ctx: SyncContext) => void | Promise<void>): void;
+	on(event: "agent_end", handler: (event: AgentEndEvent, ctx: SyncContext) => void | Promise<void>): void;
+	on(event: "after_provider_response", handler: (event: ProviderResponseEvent, ctx: SyncContext) => void | Promise<void>): void;
+	on(event: "agent_settled", handler: (event: AgentSettledEvent, ctx: SyncContext) => void | Promise<void>): void;
+	on(event: "before_provider_request", handler: (event: ProviderRequestEvent, ctx: SyncContext) => unknown | Promise<unknown>): void;
 	on(event: "session_shutdown", handler: () => void): void;
 	on(
 		event: "model_select",
-		handler: (event: { model?: { id?: string; provider?: string } }, ctx: FlockContext) => void | Promise<void>,
+		handler: (event: { model?: { id?: string; provider?: string } }, ctx: SyncContext) => void | Promise<void>,
 	): void;
-	on(event: "before_agent_start", handler: (event: unknown, ctx: FlockContext) => void | Promise<void>): void;
+	on(event: "before_agent_start", handler: (event: unknown, ctx: SyncContext) => void | Promise<void>): void;
 	setModel?(model: unknown): Promise<boolean> | boolean;
 }
 
@@ -181,7 +181,7 @@ export interface AgentHomeOptions {
 	homeEnvVar: string;
 	defaultHome: string;
 	matchesKey(data: string, key: string): boolean;
-	createInput(initialValue: string): FlockInput;
+	createInput(initialValue: string): SyncInput;
 	/** Wire API for the rhodochrosite gateway. OMP uses chat completions; Pi defaults to Responses. */
 	inferenceApi?: ProviderApi;
 }

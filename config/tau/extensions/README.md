@@ -38,6 +38,7 @@ per file.
 | [`vansrouter.ts`](./vansrouter.ts) | `registerProvider` + `session_start` | Registers the VansRouter OpenAI-compatible provider and syncs its live model catalog |
 | [`strict-bash-guard.ts`](./strict-bash-guard.ts) | `tool_call` | Blocks shell commands that duplicate built-in tools |
 | [`mobile-autocorrect.ts`](./mobile-autocorrect.ts) | `input` + `context` | In-process MITM mobile autocorrect repairing QWERTY touchscreen slips while preserving code & CLI tokens |
+| [`rhodochrositesync.ts`](./rhodochrositesync.ts) | full TUI extension | Master rhodochrosite model-catalog sync + routing TUI (`/rhodochrositesync models …`). Single canonical extension consolidating all former `tau-hodossync`/flock surfaces; `RHODOCHROSITESYNC_API_KEY` keyring env |
 
 ---
 

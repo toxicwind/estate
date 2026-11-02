@@ -1,7 +1,7 @@
 /**
  * Model Router Engine
  *
- * Integrated into tau-hodossync.
+ * Integrated into rhodochrositesync.
  * Originally created by Riwut Libinuko (@cakriwut) as part of omp-model-router
  * https://github.com/cakriwut/omp-model-router (MIT License)
  */
@@ -32,7 +32,7 @@ import { registerRtkIntegration } from "./rtk-integration.ts";
 import { setScopedPin, clearScopedPin, clearSystemPin } from "./routing/pin.ts";
 
 const routerExtension = (pi: ExtensionAPI) => {
-	pi.setLabel("FlockSync & Model Router");
+	pi.setLabel("SyncRuntime & Model Router");
 
 	const state = new RouterState(pi);
 

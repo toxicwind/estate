@@ -1,1 +1,1 @@
-export { default } from "./tau-hodossync/tau.ts";
+export { default } from "./rhodochrositesync/tau.ts";

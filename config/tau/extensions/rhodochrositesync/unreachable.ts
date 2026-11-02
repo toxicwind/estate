@@ -1,6 +1,6 @@
 import { probeHealth, type HealthProbeResult } from "./provider.ts";
-import type { FlockConfig, OnUnreachable } from "./config.ts";
-import type { AgentEndMessage, FlockContext } from "./contracts.ts";
+import type { SyncConfig, OnUnreachable } from "./config.ts";
+import type { AgentEndMessage, SyncContext } from "./contracts.ts";
 
 export type { OnUnreachable };
 
@@ -16,7 +16,7 @@ export interface UnreachableEvent {
 export interface UnreachableHopOptions {
 	onUnreachable: OnUnreachable;
 	fallbackModel: string;
-	flockProviderName: string;
+	syncProviderName: string;
 	currentProvider?: string;
 	currentModelId?: string;
 	findModel?: (provider: string, id: string) => unknown;
@@ -42,20 +42,20 @@ export function isUnreachableHttpStatus(status?: number): boolean {
 const UNREACHABLE_ERROR_PATTERN =
 	/\b(?:408|5\d{2})\b|\b(?:ECONNREFUSED|ECONNRESET|ECONNABORTED|ETIMEDOUT|EHOSTUNREACH|ENETUNREACH|ENOTFOUND|EAI_AGAIN)\b|(?:fetch failed|network error|connection (?:error|failure|refused|reset|closed)|timed?\s*out|timeout|socket)/i;
 
-export function isUnreachableRequestFailure(message: AgentEndMessage | undefined, flockProviderName: string): boolean {
-	if (message?.role !== "assistant" || message.provider !== flockProviderName || message.stopReason !== "error") return false;
+export function isUnreachableRequestFailure(message: AgentEndMessage | undefined, syncProviderName: string): boolean {
+	if (message?.role !== "assistant" || message.provider !== syncProviderName || message.stopReason !== "error") return false;
 	return UNREACHABLE_ERROR_PATTERN.test(message.errorMessage ?? "");
 }
 
-export function isFlockActiveModel(
+export function isSyncActiveModel(
 	model: { provider?: string } | undefined,
-	flockProviderName: string,
+	syncProviderName: string,
 ): boolean {
-	return !model?.provider || model.provider === flockProviderName;
+	return !model?.provider || model.provider === syncProviderName;
 }
 
 export function shouldAttemptHop(
-	options: Pick<UnreachableHopOptions, "onUnreachable" | "flockProviderName" | "currentProvider" | "currentModelId" | "fallbackModel">,
+	options: Pick<UnreachableHopOptions, "onUnreachable" | "syncProviderName" | "currentProvider" | "currentModelId" | "fallbackModel">,
 ): boolean {
 	if (options.onUnreachable !== "host-fallback") return false;
 	if (options.currentProvider && options.currentProvider !== options.rhodochrositeProviderName) return false;
@@ -110,7 +110,7 @@ export async function hopOnUnreachable(event: UnreachableEvent, options: Unreach
 
 /** Coalesce compatible probes without allowing an older request to repopulate the success cache. */
 export function createUnreachableController(): {
-	probe(config: FlockConfig, signal?: AbortSignal, force?: boolean): Promise<HealthProbeResult>;
+	probe(config: SyncConfig, signal?: AbortSignal, force?: boolean): Promise<HealthProbeResult>;
 	reset(): void;
 } {
 	let lastSuccess: { url: string; at: number } | undefined;
@@ -148,8 +148,8 @@ export function createUnreachableController(): {
 }
 
 export function hopOptionsFromContext(
-	ctx: FlockContext,
-	settings: Pick<UnreachableHopOptions, "onUnreachable" | "fallbackModel" | "flockProviderName">,
+	ctx: SyncContext,
+	settings: Pick<UnreachableHopOptions, "onUnreachable" | "fallbackModel" | "syncProviderName">,
 	setModel?: UnreachableHopOptions["setModel"],
 ): UnreachableHopOptions {
 	return {

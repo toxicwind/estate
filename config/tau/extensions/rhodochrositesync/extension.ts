@@ -10,19 +10,19 @@ import {
 	saveConfig,
 	saveSettings,
 	settingsPath,
-	type FlockConfig,
-	type FlockSettings,
+	type SyncConfig,
+	type SyncSettings,
 } from "./config.ts";
 // Effusion patch: dynamic model resolution for Vercel AI Gateway
 import { ConfigDialog, summarizeModels, type ModelSummary } from "./config-dialog.ts";
-import type { AgentHomeOptions, FlockContext, FlockPI, ProviderModelConfig } from "./contracts.ts";
-import { AUTO_MODELS, checkModelsEndpoint, discoverModels, isSyncStale, probeHealth, registerFlockProvider, reloadFlockProvider, resolveVercelAiGatewayModel, setInferenceApi, testChat, transformProviderPayload } from "./provider.ts";
+import type { AgentHomeOptions, SyncContext, SyncPI, ProviderModelConfig } from "./contracts.ts";
+import { AUTO_MODELS, checkModelsEndpoint, discoverModels, isSyncStale, probeHealth, registerSyncProvider, reloadSyncProvider, resolveVercelAiGatewayModel, setInferenceApi, testChat, transformProviderPayload } from "./provider.ts";
 import { registerGatewayTelemetry } from "./gateway-telemetry.ts";
 import {
 	createUnreachableController,
 	hopOnUnreachable,
 	hopOptionsFromContext,
-	isFlockActiveModel,
+	isSyncActiveModel,
 	isUnreachableHttpStatus,
 	isUnreachableRequestFailure,
 } from "./unreachable.ts";
@@ -63,7 +63,7 @@ function modelLines(models: ProviderModelConfig[], query = "", limit = 80): stri
 	return lines;
 }
 
-async function showStatus(ctx: FlockContext, agentHome: string, config: FlockConfig): Promise<void> {
+async function showStatus(ctx: SyncContext, agentHome: string, config: SyncConfig): Promise<void> {
 	const probeConfig = loadProbeConfig(agentHome);
 	const hop = loadHopSettings(agentHome);
 	const result = await probeHealth(probeConfig, ctx.signal);
@@ -98,8 +98,8 @@ function helpText(): string {
 }
 
 async function showConfigDialog(
-	ctx: FlockContext,
-	pi: FlockPI,
+	ctx: SyncContext,
+	pi: SyncPI,
 	agentHome: string,
 	options: AgentHomeOptions,
 ): Promise<void> {
@@ -140,11 +140,11 @@ async function showConfigDialog(
 	await refreshSummary();
 
 	const storedSettings = loadSettings(agentHome);
-	const settings: FlockSettings = { ...storedSettings, ...loadHopSettings(agentHome) };
-	const saved = await ctx.ui.custom<FlockSettings | undefined>((tui, theme, _keybindings, done) => {
+	const settings: SyncSettings = { ...storedSettings, ...loadHopSettings(agentHome) };
+	const saved = await ctx.ui.custom<SyncSettings | undefined>((tui, theme, _keybindings, done) => {
 		const sync = async () => {
 			try {
-				const models = await registerFlockProvider(pi, agentHome, loadConfig(agentHome), loadSettings(agentHome), ctx.signal);
+				const models = await registerSyncProvider(pi, agentHome, loadConfig(agentHome), loadSettings(agentHome), ctx.signal);
 				return { summary: summarizeModels(models) };
 			} catch (error) {
 				return { error: (error as Error).message };
@@ -167,20 +167,20 @@ async function showConfigDialog(
 	});
 	if (!saved) return;
 
-	const persisted: FlockSettings = { ...saved };
+	const persisted: SyncSettings = { ...saved };
 	const envAction = process.env.RHODOCHROSITESYNC_ON_UNREACHABLE ?? process.env.OMNIROUTE_ON_UNREACHABLE;
 	if (envAction === "none" || envAction === "host-fallback") persisted.onUnreachable = storedSettings.onUnreachable;
 	if ((process.env.RHODOCHROSITESYNC_FALLBACK_MODEL ?? process.env.OMNIROUTE_FALLBACK_MODEL) !== undefined) persisted.fallbackModel = storedSettings.fallbackModel;
 	saveConfig(agentHome, persisted, storedSettings);
 	try {
-		const models = await registerFlockProvider(pi, agentHome, loadConfig(agentHome), persisted, ctx.signal);
+		const models = await registerSyncProvider(pi, agentHome, loadConfig(agentHome), persisted, ctx.signal);
 		ctx.ui.notify(`Settings saved; rhodochrosite synced ${models.length} model(s).`, "info");
 	} catch (error) {
 		ctx.ui.notify(`Settings saved, but sync failed: ${(error as Error).message}`, "error");
 	}
 }
 
-async function runSetup(ctx: FlockContext, pi: FlockPI, agentHome: string): Promise<FlockConfig | undefined> {
+async function runSetup(ctx: SyncContext, pi: SyncPI, agentHome: string): Promise<SyncConfig | undefined> {
 	const storedSettings = loadSettings(agentHome);
 	const current = loadConfig(agentHome);
 	const serverUrl = await ctx.ui.input("rhodochrosite server URL", current.serverUrl);
@@ -192,7 +192,7 @@ async function runSetup(ctx: FlockContext, pi: FlockPI, agentHome: string): Prom
 	if (apiKey === undefined) return undefined;
 
 	const next = sanitizeConfig({ ...current, serverUrl, apiKey: apiKey || storedSettings.apiKey });
-	// Only HODOSSYNC_API_KEY can override the stored key; OMNIROUTE_API_KEY is
+	// Only RHODOCHROSITESYNC_API_KEY can override the stored key; OMNIROUTE_API_KEY is
 	// a different product's token and must never be trusted here.
 	const runtimeConfig = { ...next, apiKey: process.env.RHODOCHROSITESYNC_API_KEY ?? next.apiKey };
 	if (!(await checkModelsEndpoint(runtimeConfig, ctx.signal))) {
@@ -201,19 +201,19 @@ async function runSetup(ctx: FlockContext, pi: FlockPI, agentHome: string): Prom
 	}
 
 	saveConfig(agentHome, next, storedSettings);
-	const models = await registerFlockProvider(pi, agentHome, runtimeConfig, loadSettings(agentHome), ctx.signal);
+	const models = await registerSyncProvider(pi, agentHome, runtimeConfig, loadSettings(agentHome), ctx.signal);
 	ctx.ui.notify(`Saved. Synced ${models.length} model(s).`, "info");
 	return next;
 }
 
-export async function createFlockExtension(pi: FlockPI, options: AgentHomeOptions): Promise<void> {
+export async function createSyncExtension(pi: SyncPI, options: AgentHomeOptions): Promise<void> {
 	setInferenceApi(options.inferenceApi);
 	const agentHome = resolveAgentHome(options);
 	let config = loadConfig(agentHome);
 	let healthTimer: ReturnType<typeof setInterval> | undefined;
 	let healthProbeAbortController: AbortController | undefined;
 	let autoSyncTimer: ReturnType<typeof setInterval> | undefined;
-	let sessionCtx: FlockContext | undefined;
+	let sessionCtx: SyncContext | undefined;
 	let syncInFlight: Promise<number> | null = null;
 	let lastSyncCount = 0;
 	const unreachable = createUnreachableController();
@@ -222,17 +222,17 @@ export async function createFlockExtension(pi: FlockPI, options: AgentHomeOption
 	// Defer response-triggered hops until host retries have settled; the preflight probe still hops before the request.
 	let pendingRequestFailure = false;
 
-	async function maybeHop(ctx: FlockContext): Promise<void> {
+	async function maybeHop(ctx: SyncContext): Promise<void> {
 		const hop = loadHopSettings(agentHome);
 		const probeConfig = loadProbeConfig(agentHome);
 		if (hop.onUnreachable !== "host-fallback") return;
-		if (!isFlockActiveModel(ctx.model, probeConfig.providerName)) return;
+		if (!isSyncActiveModel(ctx.model, probeConfig.providerName)) return;
 		if (hopping) return;
 		hopping = true;
 		try {
 			await hopOnUnreachable(
 				{ serverUrl: probeConfig.serverUrl },
-				hopOptionsFromContext(ctx, { ...hop, flockProviderName: probeConfig.providerName }, pi.setModel?.bind(pi)),
+				hopOptionsFromContext(ctx, { ...hop, syncProviderName: probeConfig.providerName }, pi.setModel?.bind(pi)),
 			);
 		} finally {
 			hopping = false;
@@ -244,23 +244,23 @@ export async function createFlockExtension(pi: FlockPI, options: AgentHomeOption
 		return result.unreachable ? "VansRouter unreachable" : "VansRouter health check failed";
 	}
 
-	async function probeBeforeTurn(ctx: FlockContext): Promise<void> {
+	async function probeBeforeTurn(ctx: SyncContext): Promise<void> {
 		const hop = loadHopSettings(agentHome);
 		if (hop.onUnreachable !== "host-fallback") return;
 		const probeConfig = loadProbeConfig(agentHome);
-		if (!isFlockActiveModel(ctx.model, probeConfig.providerName)) return;
+		if (!isSyncActiveModel(ctx.model, probeConfig.providerName)) return;
 		const result = await unreachable.probe(probeConfig, ctx.signal, true);
 		if (result.ok || !result.unreachable) return;
-		if (ctx.hasUI) ctx.ui.setStatus("hodossync", "rhodochrosite unreachable");
+		if (ctx.hasUI) ctx.ui.setStatus("rhodochrositesync", "rhodochrosite unreachable");
 		await maybeHop(ctx);
 	}
 
-	async function sync(ctx?: FlockContext, options?: { quiet?: boolean }): Promise<number> {
+	async function sync(ctx?: SyncContext, options?: { quiet?: boolean }): Promise<number> {
 		if (syncInFlight) return syncInFlight;
 		const quiet = options?.quiet === true;
 		syncInFlight = (async () => {
 			config = loadConfig(agentHome);
-			const models = await registerFlockProvider(pi, agentHome, config, loadSettings(agentHome), ctx?.signal);
+			const models = await registerSyncProvider(pi, agentHome, config, loadSettings(agentHome), ctx?.signal);
 			const previous = lastSyncCount;
 			lastSyncCount = models.length;
 			const notifyCtx = ctx ?? sessionCtx;
@@ -280,7 +280,7 @@ export async function createFlockExtension(pi: FlockPI, options: AgentHomeOption
 		autoSyncTimer = undefined;
 	}
 
-	function startAutoSync(ctx: FlockContext): void {
+	function startAutoSync(ctx: SyncContext): void {
 		stopAutoSync();
 		sessionCtx = ctx;
 		const intervalSeconds = loadSettings(agentHome).autoSyncIntervalSeconds;
@@ -292,7 +292,7 @@ export async function createFlockExtension(pi: FlockPI, options: AgentHomeOption
 		}, intervalSeconds * 1000);
 	}
 
-	reloadFlockProvider(pi, agentHome, config);
+	reloadSyncProvider(pi, agentHome, config);
 	registerGatewayTelemetry(pi, {
 		providerName: () => config.providerName,
 		serverUrl: () => config.serverUrl,
@@ -308,14 +308,14 @@ export async function createFlockExtension(pi: FlockPI, options: AgentHomeOption
 		const settings = loadSettings(agentHome);
 		if (settings.syncOnStartup && isConfigured(agentHome) && isSyncStale(settings)) {
 			try {
-				lastSyncCount = (await registerFlockProvider(pi, agentHome, config, settings, ctx.signal)).length;
+				lastSyncCount = (await registerSyncProvider(pi, agentHome, config, settings, ctx.signal)).length;
 			} catch (error) {
 				if (ctx.hasUI) ctx.ui.notify(`rhodochrosite startup sync failed; using previous models: ${(error as Error).message}`, "warning");
 			}
 		}
 		if (!isConfigured(agentHome) && !process.env.RHODOCHROSITESYNC_URL && !process.env.OMNIROUTE_URL) {
 			if (ctx.hasUI) {
-				ctx.ui.setStatus("hodossync", "rhodochrosite unconfigured");
+				ctx.ui.setStatus("rhodochrositesync", "rhodochrosite unconfigured");
 				ctx.ui.notify("rhodochrosite loaded. Run /rhodochrositesync setup to connect.", "warning");
 			}
 			return;
@@ -326,7 +326,7 @@ export async function createFlockExtension(pi: FlockPI, options: AgentHomeOption
 		healthProbeAbortController?.abort();
 		healthProbeAbortController = new AbortController();
 		const result = await unreachable.probe(probeConfig, ctx.signal ?? healthProbeAbortController.signal);
-		ctx.ui.setStatus("hodossync", healthStatus(result));
+		ctx.ui.setStatus("rhodochrositesync", healthStatus(result));
 		if (!result.ok) {
 			const message = result.unreachable
 			? `rhodochrosite unreachable at ${probeConfig.serverUrl}. Run /rhodochrositesync sync after reconnecting.`
@@ -336,7 +336,7 @@ export async function createFlockExtension(pi: FlockPI, options: AgentHomeOption
 		if (healthTimer) clearInterval(healthTimer);
 		healthTimer = setInterval(async () => {
 			const next = await unreachable.probe(loadProbeConfig(agentHome), healthProbeAbortController?.signal).catch(() => undefined);
-			if (next) ctx.ui.setStatus("hodossync", healthStatus(next));
+			if (next) ctx.ui.setStatus("rhodochrositesync", healthStatus(next));
 		}, 60_000);
 	});
 
@@ -378,7 +378,7 @@ export async function createFlockExtension(pi: FlockPI, options: AgentHomeOption
 		if (isUnreachableHttpStatus(event.status)) {
 			pendingRequestFailure = true;
 			unreachable.reset();
-			if (ctx.hasUI) ctx.ui.setStatus("hodossync", "rhodochrosite unreachable");
+			if (ctx.hasUI) ctx.ui.setStatus("rhodochrositesync", "rhodochrosite unreachable");
 			return;
 		}
 		pendingRequestFailure = false;
@@ -405,18 +405,18 @@ export async function createFlockExtension(pi: FlockPI, options: AgentHomeOption
 		pendingRequestFailure = false;
 		const probeConfig = loadProbeConfig(agentHome);
 		if (ctx.model?.provider !== probeConfig.providerName) return;
-		if (ctx.hasUI) ctx.ui.setStatus("hodossync", "rhodochrosite unreachable");
+		if (ctx.hasUI) ctx.ui.setStatus("rhodochrositesync", "rhodochrosite unreachable");
 		unreachable.reset();
 		await maybeHop(ctx);
 	});
 
 	pi.on("model_select", (event, ctx) => {
-		if (ctx.hasUI && event.model?.id) ctx.ui.setStatus("hodossync", `→ ${event.model.id}`);
+		if (ctx.hasUI && event.model?.id) ctx.ui.setStatus("rhodochrositesync", `→ ${event.model.id}`);
 	});
 
 	pi.registerTool({
-		name: "hodossync_status",
-		label: "hodossync Status",
+		name: "rhodochrositesync_status",
+		label: "rhodochrositesync Status",
 		description: "Return rhodochrosite gateway health and provider registration status.",
 		parameters: { type: "object", properties: {} },
 		async execute(_id, _params, signal) {
@@ -446,13 +446,13 @@ export async function createFlockExtension(pi: FlockPI, options: AgentHomeOption
 
 
 	pi.registerTool({
-		name: "hodossync_sync",
-		label: "hodossync Sync",
+		name: "rhodochrositesync_sync",
+		label: "rhodochrositesync Sync",
 		description: "Fetch /v1/models from the rhodochrosite gateway and register them as a provider.",
 		parameters: { type: "object", properties: {} },
 		async execute(_id, _params, signal) {
 			const current = loadConfig(agentHome);
-			const models = await registerFlockProvider(pi, agentHome, current, loadSettings(agentHome), signal);
+			const models = await registerSyncProvider(pi, agentHome, current, loadSettings(agentHome), signal);
 			return {
 				content: [{ type: "text", text: `rhodochrosite synced ${models.length} model(s).` }],
 				details: { count: models.length, provider: current.providerName },
@@ -461,7 +461,7 @@ export async function createFlockExtension(pi: FlockPI, options: AgentHomeOption
 	});
 
 
-	pi.registerCommand("hodossync", {
+	pi.registerCommand("rhodochrositesync", {
 		description: "rhodochrosite: /rhodochrositesync [setup|sync|models|test|dashboard|config|autosync|router|help]",
 		getArgumentCompletions(prefix) {
 			return ["setup", "sync", "models", "test", "dashboard", "config", "autosync", "help"]
@@ -548,8 +548,8 @@ export async function createFlockExtension(pi: FlockPI, options: AgentHomeOption
 	pi.registerCommand("omni", {
 		description: "Alias for /rhodochrositesync (legacy OmniRoute name)",
 		async handler(args, ctx) {
-			const hodossyncCmd = pi.commands.get("hodossync");
-			if (hodossyncCmd) return hodossyncCmd.handler(args, ctx);
+			const rhodochrositesyncCmd = pi.commands.get("rhodochrositesync");
+			if (rhodochrositesyncCmd) return rhodochrositesyncCmd.handler(args, ctx);
 		},
 	});
 }
