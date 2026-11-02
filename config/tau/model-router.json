@@ -1,7 +1,7 @@
 {
  "profiles": {
   "cheap": {
-   "selector": "rhodochrosite/deepseek-v4-flash",
+   "selector": "deepseek-v4-flash",
    "profile": "cheap",
    "tier": "low",
    "thinking": "low",
@@ -10,7 +10,7 @@
    "note": "deepseek-v4-flash, freeinference lane, no auth"
   },
   "fast": {
-   "selector": "rhodochrosite/qwen3.6-35b",
+   "selector": "qwen3.6-35b",
    "profile": "fast",
    "tier": "low",
    "thinking": "low",
@@ -19,7 +19,7 @@
    "note": "qwen3.6-35b, no auth"
   },
   "balanced": {
-   "selector": "rhodochrosite/glm-5.3-flash",
+   "selector": "glm-5.3-flash",
    "profile": "balanced",
    "tier": "medium",
    "thinking": "medium",
@@ -47,8 +47,17 @@
    "note": "Retired 2026-10-02: estate-router merged into rhodochrosite :25193. Nothing listens on :25104.",
    "disabled": true
   },
-  "backup": {
-   "selector": "rhodochrosite/qwen3.6-35b",
+    "vl": {
+   "selector": "glm-5.3-flash",
+   "profile": "vl",
+   "tier": "medium",
+   "thinking": "medium",
+   "auth": "none",
+   "verified": "2026-11-02 live VL probe 200 through rhodochrosite (image->red, bare id)",
+   "note": "vision lane: freeinference glm-5.3-flash (multimodal), no auth"
+  },
+ "backup": {
+   "selector": "qwen3.6-35b",
    "profile": "backup",
    "tier": "low",
    "thinking": "low",
