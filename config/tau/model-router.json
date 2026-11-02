@@ -1,31 +1,31 @@
 {
  "profiles": {
   "cheap": {
-   "selector": "rhodochrosite/openai/gpt-oss-20b",
+   "selector": "rhodochrosite/deepseek-v4-flash",
    "profile": "cheap",
    "tier": "low",
    "thinking": "low",
    "auth": "none",
-   "verified": "2026-09-14T20:45MDT live /v1/models on 127.0.0.1:25100 (bornite), on-demand load",
-   "note": "1.2B ultralight, no auth, local"
+   "verified": "2026-11-02 live probe 200 (freeinference lane; NIM default unreachable HTTP:000)",
+   "note": "deepseek-v4-flash, freeinference lane, no auth"
   },
   "fast": {
-   "selector": "rhodochrosite/openai/gpt-oss-20b",
+   "selector": "rhodochrosite/qwen3.6-35b",
    "profile": "fast",
    "tier": "low",
    "thinking": "low",
    "auth": "none",
-   "verified": "2026-09-14T20:45MDT live /v1/models on 127.0.0.1:25100 (bornite), on-demand load",
-   "note": "low-latency local flash model, no auth"
+   "verified": "2026-11-02 live probe 200 (freeinference lane)",
+   "note": "qwen3.6-35b, no auth"
   },
   "balanced": {
-   "selector": "rhodochrosite/openai/gpt-oss-20b",
+   "selector": "rhodochrosite/glm-5.3-flash",
    "profile": "balanced",
    "tier": "medium",
    "thinking": "medium",
    "auth": "none",
-   "verified": "2026-09-20T02:55MDT MODEL-MAX sweep: 183ms TTFT p50, 191 RPM, 38.5 TPS, 3/3 burst, local bornite lane",
-   "note": "MODEL-MAX winner: 9B Qwen, 128k ctx, local, no auth"
+   "verified": "2026-11-02 live probe 200 (freeinference lane)",
+   "note": "glm-5.3-flash, no auth"
   },
   "quality": {
    "selector": "estate/free",
