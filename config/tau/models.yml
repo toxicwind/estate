@@ -23,26 +23,6 @@ providers:
     apiKey: "!cat /home/toxic/.tau/moonshot.key"
     discovery:
       type: openai-models-list
-  rhodochrosite.chalcopyrite:
-    baseUrl: http://127.0.0.1:25200/v1
-    api: openai-completions
-    apiKey: "!cat /home/toxic/.tau/rhodochrosite-chalcopyrite.key"
-    models:
-      - id: nvidia/nemotron-3.5-lightning-30b-a3b
-        contextWindow: 1048576
-      - id: nvidia/nemotron-3-ultra-550b-a55b
-        contextWindow: 1048576
-      - id: openai/gpt-oss-20b
-        contextWindow: 131072
-  rhodochrosite.secure-nim:
-    baseUrl: https://integrate.api.nvidia.com/v1
-    api: openai-completions
-    apiKey: "!cat /home/toxic/.tau/rhodochrosite-secure-nim.key"
-    models:
-      - id: nvidia/nemotron-3.5-super-vl-120b-a12b
-        contextWindow: 1048576
-      - id: nvidia/nemotron-3.5-lightning-30b-a3b
-        contextWindow: 1048576
   rhodochrosite.azurite:
     baseUrl: http://127.0.0.1:25109/gemini-eap-interactions
     api: openai-completions
@@ -50,12 +30,6 @@ providers:
     models:
       - id: models/gemini-flash-tool-retrieval
         contextWindow: 1000000
-  nvidia:
-    baseUrl: https://integrate.api.nvidia.com/v1
-    api: openai-completions
-    apiKey: "!cat /home/toxic/.tau/nvidia.key"
-    discovery:
-      type: openai-models-list
   groq:
     baseUrl: https://api.groq.com/openai/v1
     api: openai-completions
