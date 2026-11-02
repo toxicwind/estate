@@ -519,3 +519,34 @@ The lessons (do not regress):
 4. bge-m3 is free/unlimited/99.9% — embed everything; optimize routing, not embedding.
 5. Gradle: JDK choice > flags; GraalVM-25 hangs kotlin-compiler-embeddable 2.3.0.
 6. Every MD is a red herring until proven against working code; correct it, not around it.
+
+## 2026-11-02 MCP-fleet-ghost audit + build-loop unlock (tau) — verified fixes + root causes
+
+One-paragraph chain: rhodochrosite's release profile compile hung at cpu=0 because
+RUSTC_WRAPPER=sccache leaks into build scripts and the OLD cc crate (1.2.65)
+wraps C compiles as `sccache cc`, deadlocking on sccache's server pipe; updating
+cc to 1.11.0 (jobserver polling fixes) plus a release-fast profile (thin LTO + 8
+units) and mold turned the loop from a 2-5min lock into 40s incremental. The
+same session's MCP sweep found TWO ghost-path classes: scaffold-mcp hardcoded a
+dead /pens/toolkit/scaffold bin dir (eidos f141003) and the persisted thresher
+config carried 5 stale pre-reorg MCP server paths while the live gateway ran
+corrected ones (estate 2acfa7a3b7) — a two-truth that would resurrect ghosts on
+restart.
+
+Fixes:
+- rhodochrosite ec11fcd: cc 1.11.0 + release-fast profile + mold; 6m10s cold, 40s incremental.
+- eidos f141003 + 268ba24: scaffold-mcp real bin/cwd; rust-fast-build drop-in (release-fast for any Cargo project, TDD 3 green).
+- estate 2acfa7a3b7: reconstituted 5 stale MCP paths (4 repointed, 1 disabled); 0 enabled dead paths.
+- forge 57eec27 + 497f853: hf entrypoint + oracle W1-W11 + W2 firewall (stream-leak detector).
+
+New tools:
+- forge hf oracle w1..w11|all (bge-m3 black-box experiments; W9 determinism cos=1.0000, W8 fingerprint 18/18, W11 framing neutral)
+- forge hf firewall <text> (prose-vs-markup stream classifier, threshold 0.05)
+- eidos dropin/rust-fast-build-lib-dropin.ts (applyRustFastBuild: skip/noop/applied)
+
+The lessons (do not regress):
+1. RUSTC_WRAPPER in cargo config leaks into build scripts — update cc >= 1.11.0 before blaming sccache; track /proc wchan+cpu, never blind-rerun.
+2. A pen-level MCP server must reference its own product dir, never /pens/toolkit/* — audit BIN constants like configs.
+3. Gateway patches update live state; the persisted mcp_config.json is a second truth — reconcile BOTH or restarts resurrect ghosts.
+4. Named fast profile (release-fast) is the estate loop convention; fat-LTO single-unit is deploy-only.
+5. Single-sample embedding probes mislead — centroid with >= 3 samples (W8 18/18 vs single-sample "collide").
