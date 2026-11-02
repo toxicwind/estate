@@ -152,3 +152,13 @@ scans in StreamBuffer + ConditionScan were the original protection. The tau fork
 trim deleted it — so the 244-injection storm is a FORK REGRESSION, not an upstream
 design flaw. Fix restored can1357's settled semantics under tau imports
 (commit 0b189631a0).
+
+## Before/after injection evidence (2026-11-02)
+
+- Before fix: 78 sessions carried TTSR injections; total 1170; worst session
+  265 (2026-11-01T23-55-26) + 234 (2026-11-02T01-16-24) — the
+  no-output-truncation self-referential storms.
+- Fix: self-body exclusion + per-experiment isolation + fired-this-turn gates
+  (tau b45c4971d1), TDD 47/47 with real deepseek-v4-flash + bge-m3.
+- After fix (live probe): real completions fire once per turn, reminder retry
+  re-fires 0 — storm closed. Baseline scored: fires>0, retry-fires==0.
