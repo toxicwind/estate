@@ -103,7 +103,7 @@
    - A 2.0s breach is an opportunity to race a faster pattern, borrow from forge, or move work to a background daemon.
    - Sourced via `BASH_ENV` and `~/.bashrc`.
 3. **Implementation Style**:
-   - **Monadic primitives & Bun-forward**: compose pipelines as `Result`/`Ok`/`Err` or `TaskEither` chains with pure mappings. Avoid deep nested try/catch pyramids.
+   - **Monadic primitives & Bun-forward**: compose pipelines with the estate's chosen `effect` monad (see `pens/estate/docs/typescript-monadic-standard.md`). Avoid deep nested try/catch pyramids.
    - **Lock files**: on resolution anomalies, clean and rebuild (`rm bun.lock && rm -rf node_modules && bun install`).
    - **Blue-Green Deployment**: new slate (blue) built, tested, and healthchecked alongside running slate (green) before atomic swap.
 4. **Search Doctrine**:
