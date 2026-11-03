@@ -57,7 +57,7 @@ ready_cmd = "curl -sf http://127.0.0.1:25234/json/version > /dev/null"
 health_http = { url = "http://127.0.0.1:25234/", interval = "30s", timeout = "5s", retries = 3 }
 boot_start = true
 depends = ["agent-display"]
-env = { DISPLAY = ":99", XDG_RUNTIME_DIR = "/run/user/1000", CUPRITE_CDP_PORT = "25234", CUPRITE_CDP = "http://127.0.0.1:25234", KEEPER_CHROMIUM_EXECUTABLE = "/home/toxic/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome" }
+env = { DISPLAY = ":99", XDG_RUNTIME_DIR = "/run/user/1000", CUPRITE_CDP_PORT = "25234", CUPRITE_CDP = "http://127.0.0.1:25234", KEEPER_CHROMIUM_EXECUTABLE = "/home/toxic/.cache/ms-playwright/chromium-1248/chrome-linux64/chrome" }
 auto = ["start"]
 
 
