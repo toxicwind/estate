@@ -58,6 +58,23 @@ retries = 3
 [daemons.agent-viewer.env]
 PYTHONPATH = "/home/toxic/archive/home-dirs-2026/.local/lib/python3.14/site-packages"
 
+[daemons.cuprite]
+# Geode keeper lineage (ex browser-keeper/skopos; split-brain retired 2026-11-02).
+# One persistent headed Chromium + agent surface. CDP :25234 on Xvnc :99.
+port = 25234
+run = "exec /home/toxic/.bun/bin/bun run /home/toxic/pens/geode/products/cuprite/bin/cuprite.ts"
+dir = "/home/toxic/pens/geode/products/cuprite"
+mise = false
+retry = true
+ready_cmd = "curl -sf http://127.0.0.1:25234/json/version > /dev/null"
+health_http = { url = "http://127.0.0.1:25234/", interval = "30s", timeout = "5s", retries = 3 }
+boot_start = true
+depends = ["agent-display"]
+env = { DISPLAY = ":99", XDG_RUNTIME_DIR = "/run/user/1000", CUPRITE_CDP_PORT = "25234", CUPRITE_CDP = "http://127.0.0.1:25234", KEEPER_CHROMIUM_EXECUTABLE = "/home/toxic/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome" }
+auto = ["start"]
+
+
+
 [daemons.awrawr-mcp]
 run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/awrawr_mcp.py"
 auto = ["start"]
