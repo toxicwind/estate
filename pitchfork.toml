@@ -7,19 +7,6 @@ daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "matt
 [groups.agents]
 daemons = ["rig"]
 
-[daemons.thresher]
-# 2026-10-30 impostor fix: direct guarded binary (was bun launcher whose Go child
-# re-parented to systemd — tracked PID died, retries died on bolt config.db lock,
-# orphan kept the port). serve-guarded.sh kills stale thresher holders of the db
-# and :25127 first; tailscale SNI listeners are left alone, hence still no
-# reliance on the `port` pre-check.
-run = "exec /home/toxic/pens/barn/products/thresher/bin/serve-guarded.sh"
-dir = "/home/toxic/pens/barn/products/thresher"
-auto = ["start"]
-retry = true
-ready_http = "http://127.0.0.1:25127/health"
-health_http = { url = "http://127.0.0.1:25127/health", interval = "30s", timeout = "5s", retries = 3 }
-mise = false
 [daemons.agent-display]
 run = "exec Xvnc :99 -geometry 3840x2160 -depth 24 -rfbport 5900 -localhost -SecurityTypes VncAuth -rfbauth /home/toxic/.browserless/vncpasswd"
 auto = ["start"]
@@ -992,3 +979,15 @@ run = "exec bun bin/estate-map.ts && git add docs/estate-map.json docs/estate-ma
 dir = "/home/toxic/pens/estate"
 interval = "6h"
 auto = []
+
+[daemons.omp-wtf-daemon]
+run = "exec /home/toxic/.bun/bin/bun --hot /home/toxic/pens/recon/products/omp-wtf/bin/omp-wtf-daemon.ts --port 25291"
+dir = "/home/toxic/pens/recon/products/omp-wtf"
+mise = false
+retry = true
+port = 25291
+auto = ["start"]
+ready_http = "http://127.0.0.1:25291/"
+env = { OMP_WTF_PORT = "25291" }
+# PRIVATE recon surface (2026-11-03): three-way canary/diverged/ours audit +
+# three-generation velocity + weave surface audits. Binds 0.0.0.0 for Pixel LAN access.
