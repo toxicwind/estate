@@ -5,6 +5,15 @@
 > NO fix inside that account is durable. Migration is the only permanent path.
 > Evidence: `cf-hijack-evidence/` · Dossier: `p0-cf-account-owned-by-attacker.md`
 
+## ⚠️ 2026-11-03 UPDATE: RE-HIJACKED — attacker re-added all zones
+Live edge check: 7/8 zones again 301 → femboy.pp.ua (arlockworks still DNS-only
+clean). Every CF credential we held is now DEAD (master token revoked by
+attacker). Containment was NOT durable — the registrar NS never moved, so the
+attacker simply re-created the zones. Registrar cutover is THE fix and it needs
+NameCheap panel access (no API creds in keyring). Abuse report drafted →
+`cf-hijack-evidence/abuse-report-draft-20261103.md`; RDAP 8/8 landed;
+femboy.pp.ua sinkholed on this box.
+
 ## Current state (verified live)
 
 - 8 zones on the attacker-owned account: arlockworks.com, effusionlabs.com,
