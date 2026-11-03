@@ -7,8 +7,10 @@ daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "matt
 [groups.agents]
 daemons = ["rig"]
 
-[daemons.agent-display]
-run = "exec Xvnc :99 -geometry 3840x2160 -depth 24 -rfbport 5900 -localhost -SecurityTypes VncAuth -rfbauth /home/toxic/.browserless/vncpasswd"
+[daemons.kennel]
+# KENNEL = the agentMonitor — the agent's OWN desktop (Xvnc :99, the PLACE).
+# Modular family: kennel (this — walls) · waterbowl (browser) · flap (VNC door).
+run = "exec Xvnc :99 -geometry 1440x2560 -depth 24 -rfbport 5900 -localhost -SecurityTypes VncAuth -rfbauth /home/toxic/.browserless/vncpasswd"
 auto = ["start"]
 retry = true
 ready_cmd = "ss -tln | grep -q 127.0.0.1:5900"
@@ -17,8 +19,9 @@ boot_start = true
 dir = "."
 mise = true
 
-[daemons.agent-wm]
-run = "export DISPLAY=:99 LD_LIBRARY_PATH=/home/toxic/.browserless/keeper/openbox-build/lib; (tint2 </dev/null >/tmp/tint2.log 2>&1 &) ; exec /home/toxic/.browserless/keeper/openbox-build/bin/openbox >> /home/toxic/.browserless/keeper/agent-wm.log 2>&1"
+[daemons.bed]
+# BED = the kennel's WM (openbox+tint2 on :99) — where the dog rests.
+run = "export DISPLAY=:99 LD_LIBRARY_PATH=/home/toxic/.browserless/kennel/openbox-build/lib; (tint2 </dev/null >/tmp/tint2.log 2>&1 &) ; exec /home/toxic/.browserless/kennel/openbox-build/bin/openbox >> /home/toxic/.browserless/kennel/agent-wm.log 2>&1"
 auto = ["start"]
 retry = true
 ready_cmd = "DISPLAY=:99 xprop -root _NET_SUPPORTING_WM_CHECK 2>/dev/null | grep -q ."
@@ -27,7 +30,8 @@ boot_start = true
 dir = "."
 mise = true
 
-[daemons.agent-viewer]
+[daemons.flap]
+# FLAP = the kennel door (websockify noVNC :6080 → VNC :5900) — how you look in.
 run = "exec /home/toxic/.local/bin/websockify --web /home/toxic/pens/ranch/products/stable/novnc 127.0.0.1:6080 127.0.0.1:5900"
 auto = ["start"]
 retry = true
@@ -36,28 +40,28 @@ port = 6080
 boot_start = true
 dir = "."
 mise = true
-[daemons.agent-viewer.health_http]
+[daemons.flap.health_http]
 url = "http://127.0.0.1:6080/"
 interval = "30s"
 timeout = "5s"
 retries = 3
 
-[daemons.agent-viewer.env]
+[daemons.flap.env]
 PYTHONPATH = "/home/toxic/archive/home-dirs-2026/.local/lib/python3.14/site-packages"
 
-[daemons.cuprite]
-# Geode keeper lineage (ex browser-keeper/skopos; split-brain retired 2026-11-02).
-# One persistent headed Chromium + agent surface. CDP :25234 on Xvnc :99.
+[daemons.waterbowl]
+# WATERBOWL = the browser IN the kennel (chromium + CDP :25234) — agents
+# drink data here. Product: pens/kelpie/products/waterbowl (ex kennel/cuprite).
 port = 25234
-run = "exec /home/toxic/.bun/bin/bun run /home/toxic/pens/geode/products/cuprite/bin/cuprite.ts"
-dir = "/home/toxic/pens/geode/products/cuprite"
+run = "exec /home/toxic/.bun/bin/bun run /home/toxic/pens/kelpie/products/waterbowl/bin/waterbowl.ts"
+dir = "/home/toxic/pens/kelpie/products/waterbowl"
 mise = false
 retry = true
 ready_cmd = "curl -sf http://127.0.0.1:25234/json/version > /dev/null"
 health_http = { url = "http://127.0.0.1:25234/", interval = "30s", timeout = "5s", retries = 3 }
 boot_start = true
-depends = ["agent-display"]
-env = { DISPLAY = ":99", XDG_RUNTIME_DIR = "/run/user/1000", CUPRITE_CDP_PORT = "25234", CUPRITE_CDP = "http://127.0.0.1:25234", KEEPER_CHROMIUM_EXECUTABLE = "/home/toxic/.cache/ms-playwright/chromium-1248/chrome-linux64/chrome" }
+depends = ["kennel"]
+env = { DISPLAY = ":99", XDG_RUNTIME_DIR = "/run/user/1000", WATERBOWL_CDP_PORT = "25234", WATERBOWL_CDP = "http://127.0.0.1:25234", WATERBOWL_CHROMIUM_EXECUTABLE = "/home/toxic/.cache/ms-playwright/chromium-1248/chrome-linux64/chrome" }
 auto = ["start"]
 
 
