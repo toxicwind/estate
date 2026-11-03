@@ -1,0 +1,129 @@
+{
+  "arlockworks.com": {
+    "status": 200,
+    "registrar": [
+      "registrar:NameCheap, Inc."
+    ],
+    "nameservers": [
+      "MATT.NS.CLOUDFLARE.COM",
+      "PAM.NS.CLOUDFLARE.COM"
+    ],
+    "events": [
+      {
+        "eventAction": "registration",
+        "eventDate": "2025-04-26T08:47:59Z"
+      },
+      {
+        "eventAction": "expiration",
+        "eventDate": "2027-04-26T08:47:59Z"
+      }
+    ]
+  },
+  "effusionlabs.com": {
+    "status": 200,
+    "registrar": [
+      "registrar:NameCheap, Inc."
+    ],
+    "nameservers": [
+      "MATT.NS.CLOUDFLARE.COM",
+      "PAM.NS.CLOUDFLARE.COM"
+    ],
+    "events": [
+      {
+        "eventAction": "registration",
+        "eventDate": "2023-01-31T06:14:39Z"
+      },
+      {
+        "eventAction": "expiration",
+        "eventDate": "2027-01-31T06:14:39Z"
+      }
+    ]
+  },
+  "galleryeffusion.com": {
+    "status": 200,
+    "registrar": [
+      "registrar:NameCheap, Inc."
+    ],
+    "nameservers": [
+      "BRIAN.NS.CLOUDFLARE.COM",
+      "CHIN.NS.CLOUDFLARE.COM"
+    ],
+    "events": [
+      {
+        "eventAction": "registration",
+        "eventDate": "2023-10-21T16:36:13Z"
+      },
+      {
+        "eventAction": "expiration",
+        "eventDate": "2027-10-21T16:36:13Z"
+      }
+    ]
+  },
+  "mildlyawesome.com": {
+    "error": "ECONNRESET: The socket connection was closed unexpectedly. For more information,"
+  },
+  "mysticfoxmyco.com": {
+    "status": 200,
+    "registrar": [
+      "registrar:NameCheap, Inc."
+    ],
+    "nameservers": [
+      "MATT.NS.CLOUDFLARE.COM",
+      "PAM.NS.CLOUDFLARE.COM"
+    ],
+    "events": [
+      {
+        "eventAction": "registration",
+        "eventDate": "2024-02-11T21:07:32Z"
+      },
+      {
+        "eventAction": "expiration",
+        "eventDate": "2027-02-11T21:07:32Z"
+      }
+    ]
+  },
+  "patenthound.net": {
+    "status": 200,
+    "registrar": [
+      "registrar:NameCheap, Inc."
+    ],
+    "nameservers": [
+      "MATT.NS.CLOUDFLARE.COM",
+      "PAM.NS.CLOUDFLARE.COM"
+    ],
+    "events": [
+      {
+        "eventAction": "registration",
+        "eventDate": "2015-01-08T01:23:23Z"
+      },
+      {
+        "eventAction": "expiration",
+        "eventDate": "2027-01-08T01:23:23Z"
+      }
+    ]
+  },
+  "so-fabulo.us": {
+    "status": 404,
+    "events": []
+  },
+  "waverss.com": {
+    "status": 200,
+    "registrar": [
+      "registrar:NameCheap, Inc."
+    ],
+    "nameservers": [
+      "MATT.NS.CLOUDFLARE.COM",
+      "PAM.NS.CLOUDFLARE.COM"
+    ],
+    "events": [
+      {
+        "eventAction": "registration",
+        "eventDate": "2017-11-07T20:34:05Z"
+      },
+      {
+        "eventAction": "expiration",
+        "eventDate": "2026-11-07T20:34:05Z"
+      }
+    ]
+  }
+}

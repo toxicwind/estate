@@ -10,16 +10,22 @@
 - 8 zones on the attacker-owned account: arlockworks.com, effusionlabs.com,
   galleryeffusion.com, mildlyawesome.com, mysticfoxmyco.com, patenthound.net,
   so-fabulo.us, waverss.com
-- Registrar of record (mildlyawesome.com): **NameCheap** (created 2018-03-05,
-  expiry 2027-03-05, clientTransferProhibited)
+- Registrar of record: **NameCheap** for 7/8 zones (RDAP-verified 2026-11-02,
+  all matt/pam NS): arlockworks, effusionlabs, galleryeffusion, mildlyawesome,
+  mysticfoxmyco, patenthound, waverss. so-fabulo.us: RDAP unavailable (.US
+  registry endpoint dead); NS still matt/pam → same attacker CF pair.
 - All 7 proxied zones currently **301 → femboy.pp.ua** at the CF edge
-- arlockworks.com: DNS-only (proxied=false) — resolution unclear, verify first
+- arlockworks.com: DNS-only (proxied=false); live A → 172.96.160.178 (origin,
+  CLEAN) — resolution confirmed, NOT part of the redirect set
 - Origin 172.96.160.178 (DEDI_HOST): CLEAN (404 direct, valid LE cert)
 - The ONLY working CF credential: `cfat_zQe…66c5` (Zone:Read, pasted in a tau
   session, missed by the attacker's token cleanup). Treat as BURNED — the
   attacker can revoke it at any moment.
 - `CLOUDFLARE_TUNNEL_TOKEN` (keyring): valid, tunnel 921731c6… — also treat as
   burned post-migration (it belongs to the attacker's account).
+- Live resolver state (2026-11-02): so-fabulo.us → 172.67.146.128,
+  mildlyawesome.com → 172.67.147.41, waverss.com → 104.21.37.232 (all CF edge
+  = attacker account proxied); arlockworks.com → 172.96.160.178 (origin).
 
 ## Migration path (order matters)
 
@@ -27,7 +33,9 @@
 - [x] Full audit-log snapshot (18mo, 1300 events) → `cf-hijack-evidence/cf-audit-all.json`
 - [x] Attacker event detail (18) → `attacker-audit.json`
 - [x] DNS snapshot (8 zones) → `cf-zone-dns-snapshot.json`
-- [ ] Export registrar-side whois/RDAP for all 8 domains (timestamped)
+- [x] Export registrar-side RDAP for 7/8 domains (timestamped) →
+  `cf-hijack-evidence/registrar-rdap-20261102.json` (NameCheap everywhere;
+  so-fabulo.us .US registry endpoint dead — NS still matt/pam = attacker CF)
 - [ ] Screenshot CF dashboard zone list (if a logged-in session exists) —
   optional corroboration; the API audit is primary evidence.
 

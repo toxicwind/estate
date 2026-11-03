@@ -1,0 +1,6 @@
+# xerj → argos rename rules (lapidary format)
+word: xerj => argos
+word: XeroConfig => ArgosConfig
+word: xerjCfg => argosCfg
+word: XERJ_HOST => ARGOS_HOST
+substr: xerj => argos
