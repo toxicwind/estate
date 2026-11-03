@@ -445,3 +445,17 @@ bun /home/toxic/pens/estate/bin/fleet-join --name <name> --species <species> \
 - OpenFang API: `http://127.0.0.1:25196`. Uninstall:
   `DELETE /api/agents/{id}/uninstall` (removes the live dir too).
 - Spec: `docs/fleet-openfang-join-spec.md` (Sorrel, 2026-09-30).
+
+## ollama local daemon — zero-consumer waste (2026-11-03)
+- Found: ollama.service crash-looping 24,587 restarts (bind conflict with a stray
+  `ollama serve` orphan from a ~/tmp session, Nov 2). 13 GB of models
+  (qwen2.5vl:3b, llama3.2-vision:11b, moondream) under ~/.ollama/models —
+  user-session dir the system service can't even see.
+- Verified ZERO consumers: docs-mcp FTS5 sweep of all pens docs — every
+  `ollama` reference is ollama.com CLOUD (tau config ollama-cloud, mimetite
+  provider) or vendored upstream docs. Nothing points at 127.0.0.1:11434.
+- Resolution: stray killed; systemd unit now active-healthy with NO models
+  (system user's home is /usr/share/ollama). GPU: 22.5 GB free confirmed
+  via vram-mcp. Disable/mask requires polkit interactive auth — parked as
+  a one-liner for the architect: `sudo systemctl disable --now ollama`.
+  If nothing ever calls :11434 (verified), the unit is safe to remove.
