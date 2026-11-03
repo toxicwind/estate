@@ -342,6 +342,27 @@ auto = ["start"]
 retry = true
 interval = "30m"
 mise = true
+[daemons.gitleaks]
+# gitleaks — Estate-aware secret scanner (gitignore-aware, extends gitleaks defaults).
+# Runs daily scan of all pens products for hardcoded secrets.
+# Product: pens/barn/products/gitleaks; Config: pens/estate/.gitleaks.yaml
+run = "exec /home/toxic/.local/bin/gitleaks detect --source /home/toxic/pens --config /home/toxic/pens/estate/.gitleaks.yaml --verbose"
+auto = ["start"]
+retry = true
+interval = "24h"
+dir = "/home/toxic/pens"
+mise = false
+[daemons.freeinference-coordinator]
+# freeinference-coordinator — System-wide concurrency gate for freeinference.org (2 concurrent limit).
+# All freeinference traffic must acquire permit from this daemon.
+# Product: pens/barn/products/freeinference-coordinator
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/barn/products/freeinference-coordinator/src/coordinator.ts"
+auto = ["start"]
+retry = true
+ready_http = "http://127.0.0.1:25250/health"
+port = 25250
+dir = "/home/toxic/pens/barn/products/freeinference-coordinator"
+mise = false
 
 [daemons.kafka]
 run = "exec ./stack/services/kafka.sh"
@@ -998,3 +1019,13 @@ ready_http = "http://127.0.0.1:25291/"
 env = { OMP_WTF_PORT = "25291" }
 # PRIVATE recon surface (2026-11-03): three-way canary/diverged/ours audit +
 # three-generation velocity + weave surface audits. Binds 0.0.0.0 for Pixel LAN access.
+
+[daemons.argos-xerj-node]
+run = "exec /home/toxic/pens/agentic-moment/products/argos/bin/argos --insecure --port 9200 -d /home/toxic/.xerj-data -c /home/toxic/pens/agentic-moment/products/argos/ops/argos-node.toml"
+dir = "/home/toxic/pens/agentic-moment/products/argos"
+mise = false
+retry = true
+port = 9200
+auto = ["start"]
+ready_http = "http://127.0.0.1:9200/"
+# unified search engine (xerj/argos rename); bge-m3 proxy embed via ops/argos-node.toml → :25238

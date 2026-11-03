@@ -215,3 +215,22 @@ pools:
       - CLOUDFLARE_API_TOKEN
       - CF_API_TOKEN
       - CLOUDFLARE_GLOBAL_API_KEY
+  # --- freeinference: freeinference.org (added 2026-11-03) ---
+  # Unlimited free inference with bge-m3 embeddings. Concurrency limit: 2.
+  # Requires FREEINFERENCE_API_KEY in keyring (env-seed app).
+  freeinference:
+    upstream: https://freeinference.org/v1
+    health:
+      method: GET
+      path: /models
+      ok: [200]
+    fail_status: [401, 402, 429]
+    probe_timeout: 5
+    request_timeout: 180
+    cooldown:
+      401: 300
+      402: 300
+      429: 60
+      default: 120
+    keys:
+      - FREEINFERENCE_API_KEY

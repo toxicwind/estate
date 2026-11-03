@@ -1,0 +1,49 @@
+[allowlist]
+description = "Estate-specific allowlist"
+paths = [
+    ".*\\.lock$",
+    "bun\\.lock",
+    "yarn\\.lock",
+    "pnpm-lock\\.yaml",
+    "package-lock\\.json",
+    ".*\\.db$",
+    ".*\\.sqlite$",
+    ".*\\.sqlite3$",
+    ".*\\.log$",
+    ".*\\.pcap$",
+    ".*\\.pcapng$",
+    ".*\\.tar$",
+    ".*\\.tar\\.gz$",
+    ".*\\.tgz$",
+    ".*\\.zip$",
+    ".*\\.gz$",
+    ".*\\.bz2$",
+    ".*\\.xz$",
+    ".*\\.7z$",
+    ".*\\.rar$",
+    ".*\\.iso$",
+    ".*\\.img$",
+    ".*\\.bin$",
+    ".*\\.exe$",
+    ".*\\.dll$",
+    ".*\\.so$",
+    ".*\\.dylib$",
+    "node_modules/.*",
+    "\\.git/.*",
+    "target/.*",
+    "dist/.*",
+    "build/.*",
+    ".*\\.wasm$",
+    ".*\\.min\\.js$",
+    ".*\\.min\\.css$"
+]
+regexes = [
+    "github_pat_[a-zA-Z0-9_]{82}",
+    "gho_[a-zA-Z0-9]{36}"
+]
+
+[[rules]]
+id = "generic-api-key"
+regex = ""
+path = ""
+disabled = true
