@@ -56,6 +56,31 @@ const STRATEGIES: SearchStrategy[] = [
 ];
 
 async function searchGitHub(query: string, perPage: number): Promise<any[]> {
+  // BLACKBIRD-FORWARD (2026-11-02, AGENTS.md search doctrine): sanctioned
+  // engine first (github.com UI index, dual-engine, session-cookie); raw
+  // REST is the degraded fallback only.
+  try {
+    const mod = await import(
+      "/home/toxic/pens/barn/products/blackbird/packages/github-client/src/index.ts"
+    );
+    const detailed = await mod.searchGithubDetailed({
+      query,
+      categories: ["repositories"],
+      perPage,
+    });
+    const mapped = (detailed.results ?? []).map((r: Record<string, unknown>) => ({
+      full_name: r.repository ?? null,
+      stars_count: (r.stars as number) ?? 0,
+      description: (r.subtitle as string) ?? null,
+      topics: (r.topics as string[]) ?? [],
+      updated_at: (r.updated_at as string) ?? null,
+      html_url: (r.url as string) ?? null,
+      language: (r.language as string) ?? null,
+    }));
+    if (mapped.length > 0) return mapped;
+  } catch {
+    // blackbird unavailable → REST fallback below
+  }
   const url = `https://api.github.com/search/repositories?q=${encodeURIComponent(query)}&sort=stars&order=desc&per_page=${perPage}`;
   const res = await fetch(url, {
     headers: {

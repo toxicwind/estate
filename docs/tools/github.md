@@ -195,11 +195,11 @@ Push target resolution reads the `branch.<name>.ompPrHeadRef`, `pushRemote`/`rem
 | --- | --- |
 | Required fields | `op`, `query` |
 | Optional fields | `repo`, `limit` |
-| `gh` command | `gh api -X GET /search/code -f q="<query> [repo:<repo>]" -F per_page=<limit> -H "Accept: application/vnd.github.text-match+json"` |
+| `gh` command | **BLACKBIRD-FIRST (2026-11-02, AGENTS.md doctrine): route through blackbird** (`pens/barn/products/blackbird` `ghas_search_code`, dual-engine session-cookie). REST `/search/code` (`gh api -X GET /search/code …`) is the degraded fallback, never the primary lane. |
 | Batching | None |
 | Output | `# GitHub code search`, result count, then one bullet per match with path, repo, short commit SHA, URL, and first normalized text-match fragment line when present. |
 
-`repo` defaults to the current checkout's `owner/repo` as in `search_issues`. `since` and `until` are explicitly rejected for this op because GitHub code search has no supported date qualifier.
+`repo` defaults to the current checkout's `owner/repo` as in `search_issues`. `since` and `until` are explicitly rejected for this op because GitHub code search has no supported date qualifier. The raw REST form shown here is intentionally legacy: code-patterns (`providers/github.ts`, `providers/pattern-borrow.ts`), race-borrow, and repo-discovery all route through blackbird's `searchGithubDetailed` first since 2026-11-02.
 
 ### `search_commits`
 
