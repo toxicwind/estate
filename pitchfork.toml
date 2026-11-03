@@ -985,8 +985,11 @@ interval = "6h"
 auto = []
 
 [daemons.omp-wtf-daemon]
-run = "exec /home/toxic/.bun/bin/bun --hot /home/toxic/pens/recon/products/omp-wtf/bin/omp-wtf-daemon.ts --port 25291"
-dir = "/home/toxic/pens/recon/products/omp-wtf"
+# 2026-11-03: product renamed recon/products/omp-wtf → recon/products/wtf
+# (family hub: tau-wtf + kappa-wtf; omp-wtf identity retired). Bin is
+# bin/wtf-daemon.ts serving the whole hub on :25291.
+run = "exec /home/toxic/.bun/bin/bun --hot /home/toxic/pens/recon/products/wtf/bin/wtf-daemon.ts --port 25291"
+dir = "/home/toxic/pens/recon/products/wtf"
 mise = false
 retry = true
 port = 25291
