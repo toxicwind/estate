@@ -265,22 +265,9 @@ model:
     threshold: 5
 modelRoleStorage: global
 modelRoles:
-  dots: custom/dots
-  bodybuilder: custom/bodybuilder
-  smol: freeinference/glm-5.3-flash
-  slow: freeinference/deepseek-v4-flash:high
-  vision: freeinference/glm-5.3-flash
-  plan: freeinference/qwen3.6-35b
-  advisor: freeinference/qwen3.6-35b
-  judge: freeinference/qwen3.6-35b
-  task: freeinference/glm-5.3-flash
-  commit: freeinference/glm-5.3-flash
-  tiny: freeinference/glm-5.3-flash
-  memory: freeinference/glm-5.3-flash
-  verification: freeinference/glm-5.3-flash
-  fallback: freeinference/glm-5.3-flash
+  smol: freeinference/qwen3.6-35b
   web: web/exa
-  default: freeinference/deepseek-v4-flash:high
+  default: freeinference/qwen3.6-35b
 omitThinking: false
 paste:
   largeMenuThreshold: 100
@@ -376,27 +363,12 @@ recap:
 repetitionPenalty: -1
 retry:
   fallbackChains:
-    fallback:
-    - freeinference/glm-5.3-flash
-    - freeinference/deepseek-v4-flash
-    - freeinference/qwen3.6-35b
-    - google/models/gemini-flash-tool-retrieval
-    - google/models/gemini-3.8-flash
-    - google/models/gemini-2.5-flash
-    - openrouter/deepseek/deepseek-chat
-    - openrouter/google/gemini-2.5-flash
-    freeinference/*:
-    - freeinference/qwen3.6-35b
-    - freeinference/deepseek-v4-flash
-    - freeinference/glm-5.3-flash
-    - openrouter/nvidia/nemotron-3.5-lightning:free
-    openrouter/*:
-    - freeinference/glm-5.3-flash
-    - freeinference/qwen3.6-35b
-    - openrouter/nvidia/nemotron-3.5-lightning:free
     default:
     - freeinference/qwen3.6-35b
+    - freeinference/deepseek-v4-flash
     - freeinference/glm-5.3-flash
+    - google/models/gemini-flash-tool-retrieval
+    - google/models/gemini-3.8-flash
     - openrouter/nvidia/nemotron-3.5-lightning:free
     web:
     - web/tavily
@@ -405,10 +377,6 @@ retry:
     - web/parallel
     - web/synthetic
     - google-antigravity/gemini-3.8-flash
-    judge:
-    - freeinference/deepseek-v4-flash
-    - freeinference/qwen3.6-35b
-    - freeinference/glm-5.3-flash
   fallbackRevertPolicy: cooldown-expiry
   maxDelayMs: 300000
   maxRetries: 3
