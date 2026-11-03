@@ -76,8 +76,8 @@ export const ESTATE_WEB_UIS: WebUISpec[] = [
   },
   {
     id: "search-ui",
-    name: "Search UI (Seeker / GHAS)",
-    portKey: "GHAS_FRONTEND_PORT",
+    name: "Search UI (Seeker / Blackbird)",
+    portKey: "BLACKBIRD_WEB_PORT",
     defaultPort: 25114,
     path: "/",
     description: "Code intelligence, semantic search & codebase indexer",
