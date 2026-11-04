@@ -27,12 +27,16 @@ AP-side disconnects (reason=0) + flappy reassociation; client recovers
 but unbounded and unlogged (volatile journal = no history to audit).
 
 ## Hardening (installed 2026-11-04, live-verified)
-1. `/storage/.config/net-watchdog.sh` + systemd unit
+1. `/storage/.config/net-watchdog.sh` v2 + systemd unit
    `/storage/.config/system.d/net-watchdog.service` (enabled, active):
-   ping gateway 10.0.0.1 every 30s; 3 consecutive fails → bounce the
-   connman wifi service; one JSON line per state change to
+   two-tier — gateway ping every 30s (3 fails → bounce wifi) AND WAN
+   check via 1.1.1.1 (gateway up but internet dead for 6 checks →
+   bounce); one JSON line per state change to
    `/storage/log-network/watchdog.log` (persistent).
-2. Credential moved to keyring SSOT (`COREELEC_SSH_PASSWORD`, attrs
+2. Driver power mgmt verified already clean (`power_mgnt=0`,
+   `ips_mode=0`, `enusbss=0`, `low_power=0`) — no client-side power
+   cause; remaining kicks are AP-side (Xfinity gateway band steering).
+3. Credential moved to keyring SSOT (`COREELEC_SSH_PASSWORD`, attrs
    host/user) — was tribal-knowledge only.
 
 ## Contract test
