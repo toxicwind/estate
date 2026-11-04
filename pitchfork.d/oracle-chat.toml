@@ -1,7 +1,0 @@
-[daemons.oracle-chat]
-mise = true
-run = "exec /home/toxic/pens/ranch/squawk/oracle/bin/oracle_chat.py"
-dir = "/home/toxic/pens/ranch/squawk/oracle"
-retry = true
-env = { ORACLE_CHANNEL = "/home/toxic/.squawk-bus/squawk-root/bid-market" }
-auto = ["start"]

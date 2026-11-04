@@ -58,15 +58,24 @@
 
 - **P1 survey** ✅ (this doc's tables)
 - **P2 design** ✅ (target state above)
-- **P3a**: create pens-root mise.toml; drop redundant pen pins (barn/geode
-  1.4.4 → inherit; olympus/ranch/kelpie latest → inherit + keep tasks).
-- **P3b**: bump 5 stale 1.4.2 pins + phone-sentinel 1.4.3 → root default;
-  repoint doorbell-oauth-edge run cmd to mise-resolved bun.
-- **P3c**: migrate tmp/olympus-namespace daemons from estate monolith to
-  their pens; regenerate monolith via pitchfork-compose; verify
-  `pitchfork status` green after each batch.
-- **P4**: restart affected daemons, `mise resync`, commit each repo
-  straight to main, update this doc with results.
+- **P3a** ✅ DONE 2026-11-04: pens/mise.toml root created (bun 1.4.4 +
+  run/check tasks); barn/geode/olympus/ranch/kelpie pen configs now
+  inherit; verified 1.4.4 resolves in all five.
+- **P3b** ✅ DONE 2026-11-04: bun pins removed from tau, tau-verify,
+  bornite, forge/herd, metaclaw-runtime, phone-sentinel (all resolve to
+  root 1.4.4). doorbell-mcp + doorbell-oauth-edge run cmds repointed to
+  absolute bun 1.4.4 paths, `mise = true` dropped (anomaly #43), stanzas
+  now live in ranch/pitchfork.toml (concurrent writer moved them out of
+  pitchfork.d and deleted the fragments — monolith+pen-configs are the
+  surviving truth). Both daemons restarted and green.
+- **P3c** ⏸ handed to concurrent writer (they are actively migrating
+  stanzas pitchfork.d → pen configs; do not double-drive).
+- **P4** ✅ DONE 2026-11-04: all touched repos committed straight to main
+  and pushed (barn bf599ae, geode e5513ba, olympus a0165d0, ranch
+  2a0b65ad1+16c44ce87, kelpie 32fae97, tau 86e7ef7aff, bornite e4e32d3,
+  forge 90d2076, metaclaw f202d03, phone-sentinel 1eadcde, estate de6788a).
+  tau-verify was detached; fast-forwarded to main (fix was already pushed
+  from detached HEAD).
 
 ## Blast radius
 Config-only; every change reversible via git (each pen/product is a repo).

@@ -1,9 +1,0 @@
-[daemons.kimi-audit-dash]
-mise = true
-run = "exec bun --hot run /home/toxic/kimi-token-audit/dashboard/server.ts"
-dir = "/home/toxic/kimi-token-audit"
-retry = true
-ready_http = "http://127.0.0.1:25116/health"
-health_http = { url = "http://127.0.0.1:25116/health", interval = "30s", timeout = "5s", retries = 3 }
-env = { KIMI_AUDIT_DASH_PORT = "25116" }
-auto = ["start"]
