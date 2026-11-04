@@ -1,52 +1,51 @@
-# CoreELEC 246 (10.0.0.246) internet-loss audit — 2026-11-04
+# CoreELEC 246 (10.0.0.246) internet-loss audit — 2026-11-04 (corrected)
 
 ## Symptom
 Box "loses internet over and over." Perception = recurring ~14s full
-dropouts of wlan0.
+dropouts of wlan0. **User correlation: it happens when the TV loses its
+Marantz AVR connection over eARC and the box closes (suspends).**
 
-## Evidence (live probes, ssh root@10.0.0.246, pw in keyring
-COREELEC_SSH_PASSWORD)
-- wlan0 (rtl88x2cs, kernel 4.9.269) on SSID DankWifi, **5 GHz ch157
-  (5785 MHz)**, signal −41 dBm, tx 867 Mbit/s, power_save already OFF.
-- journalctl (RAM-backed, volatile): 8 `operstate 2 <DOWN>` events, all
-  today — 06:16:07 single `CTRL-EVENT-DISCONNECTED reason=0`
-  (unspecified = AP-side kick), 10:17:18–22 flap cluster (4 DOWNs within
-  seconds during reassociation), recovered 10:17:30 via connman
-  auto-reconnect (~14s gateway→online).
-- dmesg shows only 2 ADDRCONF link-up events in 4d13h uptime — kernel
-  sees far fewer events than connman/wpa layer.
-- No autoscripts, no cron, no userland toggler on the box — drops are
-  AP-side (mesh AP, locally-administered BSSID 52:bb:9f:62:8b:12) or
-  Realtek driver-side, NOT caused by the box.
-- Same SSID also broadcast on 2.4 GHz ch6 at −30 dBm (stronger), but
-  connman merges same-SSID BSSIDs into one service — no band pinning.
-- Kodi log: 0 connection-lost lines (dropouts too short to trip Kodi).
+## Root cause (CORRECTED 2026-11-04)
+**HDMI-CEC standby.** The CoreELEC box's CEC adapter config
+(`/storage/.kodi/userdata/peripheral_data/cec_CEC_Adapter.xml`) had
+`standby_pc_on_tv_standby = 13011` (enabled). When the TV drops the
+Marantz over eARC, the TV sends a CEC standby; the box follows it into
+standby/suspend → wlan0 drops → "loses internet" and the box "closes."
+The wifi "disconnects" (06:16, 10:17) were CEC power-off/suspend events,
+NOT AP kicks.
 
-## Root cause
-AP-side disconnects (reason=0) + flappy reassociation; client recovers
-but unbounded and unlogged (volatile journal = no history to audit).
+## Evidence
+- `/dev/aocec` (char 502:0) + `[cec_work]` kernel thread — Amlogic CEC
+  driver live; Kodi drives it via `/usr/lib/libcec.so` (libCEC).
+- `cec_CEC_Adapter.xml`: `standby_pc_on_tv_standby=13011` (box follows TV
+  standby), `enabled=1`, `standby_tv_on_pc_standby=1`.
+- journalctl: 8 `operstate 2 <DOWN>` events today = suspend/resume cycles.
+- Driver power mgmt clean (`power_mgnt=0`, `ips_mode=0`, `enusbss=0`).
 
-## Hardening (installed 2026-11-04, live-verified)
-1. `/storage/.config/net-watchdog.sh` v2 + systemd unit
-   `/storage/.config/system.d/net-watchdog.service` (enabled, active):
-   two-tier — gateway ping every 30s (3 fails → bounce wifi) AND WAN
-   check via 1.1.1.1 (gateway up but internet dead for 6 checks →
-   bounce); one JSON line per state change to
-   `/storage/log-network/watchdog.log` (persistent).
-2. Driver power mgmt verified already clean (`power_mgnt=0`,
-   `ips_mode=0`, `enusbss=0`, `low_power=0`) — no client-side power
-   cause; remaining kicks are AP-side (Xfinity gateway band steering).
-3. Credential moved to keyring SSOT (`COREELEC_SSH_PASSWORD`, attrs
-   host/user) — was tribal-knowledge only.
+## Fix (applied 2026-11-04, live-verified)
+1. **`standby_pc_on_tv_standby` set to `0`** in
+   `cec_CEC_Adapter.xml` — the box no longer goes to standby when the TV
+   does. This is the real root-cause fix.
+2. New headless CEC control tools in coreelec-mcp (`cec-scan`, `cec-power`,
+   `cec-key`, `cec-settings`) to drive the TV + Marantz over `/dev/aocec`
+   via libCEC without touching the live UI — committed + pushed
+   (coreelec-mcp 011c538).
+3. Credential moved to keyring SSOT (`COREELEC_SSH_PASSWORD`).
+
+## Retracted (superseded by CEC finding)
+- The net-watchdog systemd unit (ping-gateway bounce) was a band-aid for
+  the wrong diagnosis. **Disabled** (`systemctl disable net-watchdog`).
+- The connman `Frequency=2437` pin experiment caused an outage (box
+  needed a power cycle) and is not the fix — reverted by power-cycle
+  (box re-associated to 5 GHz 5785 on boot).
 
 ## Contract test
-`systemctl is-active net-watchdog` = active; watchdog.log exists and
-stays empty while pings pass; next AP kick produces a
-`{"event":"bounce"}` line within ~90s and recovery ≤ 60s after.
+`grep standby_pc_on_tv_standby cec_CEC_Adapter.xml` = value 0; TV
+dropping the Marantz over eARC no longer suspends the box (wlan0 stays
+up). `cec-scan` over coreelec-mcp enumerates TV + Marantz on the bus.
 
-## Follow-ups (not done here)
-- AP side: check mesh node logs for the 06:16/10:17 kicks; if the AP
-  supports it, prefer a non-mesh-steered channel or disable band
-  steering for this client's MAC 80:9F:9B:85:1A:5D.
-- rtl88x2cs driver params not exposed via modinfo on this build;
-  firmware/driver bump would need a CoreELEC update (out of scope).
+## Follow-ups
+- Confirm the CEC fix survives a Kodi restart (setting is read at
+  peripheral init; a Kodi reload applies it cleanly).
+- If TV/AVR control is wanted, use the new coreelec-mcp CEC tools
+  headlessly (no UI).
