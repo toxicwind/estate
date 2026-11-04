@@ -60,6 +60,13 @@
    - **Structured logs**: agent/service logs must be dedupe-friendly (stable event keys, dedupe keys) and data-framed (JSON-lines, schema-stable fields, table/parquet-ready). No free-form prose-only logs.
    - **Log helperproduct**: estate log shipping/aggregation is a real product (agentic-moment pen) chosen by evidence (compare lab), not vibes. See `pens/agentic-moment` compare fixtures.
 
+9. **Coverage doctrine — `.test.ts` is not the gate, `.live.ts` is (2026-11-04)**:
+   - The 90% coverage gate is about the **live integration tests**, not the unit tests. A `.test.ts` that only exercises mocked/unit paths proves nothing about the live behavior; the **`.live.ts`** file is the real contract test (it hits real endpoints, real binaries, real providers).
+   - **Every `.test.ts` needs a `.live.ts` twin** in the same test dir. If a module has unit tests but no live test, that is a coverage gap — add the `.live.ts`.
+   - **`.live.ts` files need ≥90% line + function coverage** of their target `src/` (or the module they exercise), enforced by a coverage gate that parses lcov and fails below target — Bun's `[coverage]` thresholds in `bunfig.toml` are decorative (they report but never fail). The gate must filter to the product's OWN src (not vendored siblings) and report line% + func% with PASS/FAIL.
+   - Audit pattern: for every product that has `.live.ts` files, run the live suite with `--coverage --coverage-reporter=lcov`, parse lcov, and fail unless ≥90% line + function. Products with `.test.ts` but no `.live.ts` get a live twin added.
+   - Reference gate: `pens/olympus/products/kairos/scripts/coverage-gate.ts` (the real enforcement pattern — parses lcov, filters to own src, exits non-zero below target).
+
 ---
 
 ## 2. Filesystem & Repository Layout
