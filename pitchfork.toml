@@ -63,23 +63,6 @@ retries = 3
 [daemons.flap.env]
 PYTHONPATH = "/home/toxic/archive/home-dirs-2026/.local/lib/python3.14/site-packages"
 
-[daemons.waterbowl]
-# WATERBOWL = the browser IN the kennel (chromium + CDP :25234) — agents
-# drink data here. Product: pens/kelpie/products/waterbowl (ex kennel/cuprite).
-port = 25234
-run = "exec /home/toxic/.bun/bin/bun run /home/toxic/pens/kelpie/products/waterbowl/bin/waterbowl.ts"
-dir = "/home/toxic/pens/kelpie/products/waterbowl"
-mise = false
-retry = true
-ready_cmd = "curl -sf http://127.0.0.1:25234/json/version > /dev/null"
-health_http = { url = "http://127.0.0.1:25234/", interval = "30s", timeout = "5s", retries = 3 }
-boot_start = true
-depends = ["kennel"]
-env = { DISPLAY = ":99", XDG_RUNTIME_DIR = "/run/user/1000", WATERBOWL_CDP_PORT = "25234", WATERBOWL_CDP = "http://127.0.0.1:25234", WATERBOWL_CHROMIUM_EXECUTABLE = "/home/toxic/.cache/ms-playwright/chromium-1248/chrome-linux64/chrome" }
-auto = ["start"]
-
-
-
 [daemons.awrawr-mcp]
 run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/awrawr_mcp.py"
 auto = ["start"]
@@ -286,21 +269,6 @@ auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25226/api/health"
 port = 25226
-[daemons.taas-telegram]
-# taas.ts — Telegram-as-a-Service (Overlord GramJS, arroyo/overlord). Died with
-# its session on 2026-10-28: thresher registration shipped without a supervisor
-# entry. Deps resolve from yote node_modules (gramjs); creds via secretsmith
-# env --app yote. Port SSOT: config/ports.env TAAS_PORT=25243.
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/ranch/products/arroyo/overlord/src/taas.ts"
-dir = "/home/toxic/pens/ranch/products/arroyo/overlord"
-auto = ["start"]
-retry = true
-port = 25243
-ready_http = "http://127.0.0.1:25243/telegram/status"
-health_http = { url = "http://127.0.0.1:25243/telegram/status", interval = "60s", timeout = "5s", retries = 3 }
-[daemons.taas-telegram.env]
-VANS_TAAS_PORT = "25243"
-
 [daemons.hf-downloader.health_http]
 url = "http://127.0.0.1:25226/health"
 interval = "30s"
@@ -366,18 +334,6 @@ retry = true
 interval = "24h"
 dir = "/home/toxic/pens"
 mise = false
-[daemons.freeinference-coordinator]
-# freeinference-coordinator — System-wide concurrency gate for freeinference.org (2 concurrent limit).
-# All freeinference traffic must acquire permit from this daemon.
-# Product: pens/barn/products/freeinference-coordinator
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/barn/products/freeinference-coordinator/src/coordinator.ts"
-auto = ["start"]
-retry = true
-ready_http = "http://127.0.0.1:25250/health"
-port = 25250
-dir = "/home/toxic/pens/barn/products/freeinference-coordinator"
-mise = false
-
 [daemons.kafka]
 run = "exec ./stack/services/kafka.sh"
 auto = ["start"]
@@ -618,32 +574,6 @@ interval = "30s"
 timeout = "5s"
 retries = 3
 
-[daemons.paper-poller-watchdog]
-run = "exec /usr/bin/python3 /home/toxic/pens/ranch/products/paper-poller/bin/watchdog.py"
-auto = ["start"]
-retry = true
-ready_http = "http://127.0.0.1:25150/health"
-port = 25150
-boot_start = true
-dir = "/home/toxic/pens/ranch/products/paper-poller"
-mise = true
-[daemons.paper-poller-watchdog.env]
-WATCHDOG_PORT = "25150"
-WATCHDOG_INTERVAL = "30"
-
-[daemons.paper-poller]
-run = "exec /usr/bin/python3 /home/toxic/pens/ranch/products/paper-poller/bin/poller.py"
-auto = ["start"]
-retry = true
-ready_http = "http://127.0.0.1:25149/ready"
-port = 25149
-boot_start = true
-dir = "/home/toxic/pens/ranch/products/paper-poller"
-mise = true
-[daemons.paper-poller.env]
-PAPER_POLLER_PORT = "25149"
-PAPER_POLLER_INTERVAL = "30"
-
 [daemons.proc-watch-audit]
 run = "exec /home/toxic/pens/ranch/products/bun-scaffold/bin/watch-procs.sh --watch=30"
 auto = ["start"]
@@ -709,24 +639,6 @@ RHODOCHROSITE_ORIGIN = "http://127.0.0.1:25193"
 # pens/products/pens-ui/src/lib/surfaces.ts; ports from config/ports.env via
 # scripts/sync-ui-ports.ts. vite dev = HMR + auto-refresh (debug mode ON).
 # ranch-ui (:25218) becomes a proxy/shim to this or retires — architect's call.
-
-[daemons.pens-ui]
-run = "exec /home/toxic/.bun/bin/bun run --cwd /home/toxic/pens/products/pens-ui dev"
-auto = ["start"]
-retry = true
-ready_http = "http://127.0.0.1:25232/"
-port = 25232
-boot_start = true
-dir = "/home/toxic/pens/products/pens-ui"
-mise = true
-[daemons.pens-ui.health_http]
-url = "http://127.0.0.1:25232/"
-interval = "30s"
-timeout = "5s"
-retries = 3
-
-[daemons.pens-ui.env]
-PENS_UI_PORT = "25232"
 
 [daemons.redis]
 run = "exec valkey-server --port 25203 --bind 127.0.0.1 --protected-mode no --save '' --appendonly no"
@@ -862,17 +774,6 @@ boot_start = true
 ready_http = "http://127.0.0.1:25147/ping"
 mise = false
 # merged from standalone repo squawk-ws (2026-10-24); canonical core/ws.py
-
-[daemons.estate-chat]
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/ranch/products/squawk/bun/index.ts"
-dir = "/home/toxic/pens/ranch/products/squawk"
-mise = false
-retry = true
-port = 25120
-auto = ["start"]
-ready_http = "http://127.0.0.1:25120/health"
-env = { SQUAWK_CHAT_PORT = "25120", SQUAWK_CHAT_TOKEN_FILE = "/home/toxic/.config/estate-chat-token" }
-# restored per chat-miscue: estate-chat/:25120 was retired (anomaly-retire) but pitchfork monolith never loaded it -> daemon permanently stopped; restored to monolith SSOT per AGENTS.md §7 anomaly #6
 
 [daemons.mbx-cache]
 run = "exec /home/toxic/pens/estate/ops/mbx-cache/run.sh"
@@ -1034,12 +935,3 @@ env = { OMP_WTF_PORT = "25291" }
 # PRIVATE recon surface (2026-11-03): three-way canary/diverged/ours audit +
 # three-generation velocity + weave surface audits. Binds 0.0.0.0 for Pixel LAN access.
 
-[daemons.argos-xerj-node]
-run = "exec /home/toxic/pens/agentic-moment/products/argos/bin/argos --insecure --port 9200 -d /home/toxic/.xerj-data -c /home/toxic/pens/agentic-moment/products/argos/ops/argos-node.toml"
-dir = "/home/toxic/pens/agentic-moment/products/argos"
-mise = false
-retry = true
-port = 9200
-auto = ["start"]
-ready_http = "http://127.0.0.1:9200/"
-# unified search engine (xerj/argos rename); bge-m3 proxy embed via ops/argos-node.toml → :25238

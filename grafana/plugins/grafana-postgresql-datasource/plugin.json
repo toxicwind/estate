@@ -23,8 +23,8 @@
             "small": "img/postgresql_logo.svg",
             "large": "img/postgresql_logo.svg"
         },
-        "version": "13.0.4",
-        "updated": "2026-09-28",
+        "version": "13.0.6",
+        "updated": "2026-10-28",
         "links": [
             {
                 "name": "Raise issue",
