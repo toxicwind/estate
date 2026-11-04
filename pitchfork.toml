@@ -10,7 +10,10 @@ daemons = ["rig"]
 [daemons.kennel]
 # KENNEL = the agentMonitor — the agent's OWN desktop (Xvnc :99, the PLACE).
 # Modular family: kennel (this — walls) · waterbowl (browser) · flap (VNC door).
-run = "exec Xvnc :99 -geometry 1440x2560 -depth 24 -rfbport 5900 -localhost -SecurityTypes VncAuth -rfbauth /home/toxic/.browserless/vncpasswd"
+# 2026-11-04: VncAuth dropped — bound to -localhost only, the password gate
+# added nothing and blocked noVNC (browser can't pass -passwd). noVNC + the
+# clip-mirror bridge are the keeper surfaces now.
+run = "exec Xvnc :99 -geometry 1440x2560 -depth 24 -rfbport 5900 -localhost -SecurityTypes None"
 auto = ["start"]
 retry = true
 ready_cmd = "ss -tln | grep -q 127.0.0.1:5900"
@@ -29,6 +32,17 @@ port = 0
 boot_start = true
 dir = "."
 mise = true
+
+[daemons.clip-mirror]
+# CLIP-MIRROR = host→keeper clipboard bridge (2026-11-03). TigerVNC vncviewer
+# under XWayland never sees wl-native clipboard ownership changes, so
+# ClientCutText never fired and paste into the keeper was empty. This polls
+# the wl clipboard and pushes changes into Xvnc :99 CLIPBOARD directly.
+run = "exec /home/toxic/pens/estate/config/clip-mirror.sh"
+auto = ["start"]
+retry = true
+ready_cmd = "pgrep -f clip-mirror.sh | grep -qv $$"
+dir = "/home/toxic/pens/estate/config"
 
 [daemons.flap]
 # FLAP = the kennel door (websockify noVNC :6080 → VNC :5900) — how you look in.
