@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<includes>
+    <include name="Custom2Widgets">
+        <include content="WidgetListLandscape">
+            <param name="content_path" value="plugin://plugin.video.eternal/?mode=build_movie_list&amp;action=trakt_collection&amp;category_name=Movies+Collection&amp;iconImage=https%3A%2F%2Fraw.githubusercontent.com%2FThe-Red-Wizard%2FTheRedWizard.github.io%2Fmain%2Fpackages%2Fmedia%2Ficons%2Ftrakt.png"/>
+            <param name="widget_header" value="Movies Collection"/>
+            <param name="widget_target" value="videos"/>
+            <param name="list_id" value="24011"/>
+        </include>
+        <include content="WidgetListLandscape">
+            <param name="content_path" value="plugin://plugin.video.eternal/?mode=build_tvshow_list&amp;action=trakt_collection&amp;category_name=TV+Shows+Collection&amp;iconImage=https%3A%2F%2Fraw.githubusercontent.com%2FThe-Red-Wizard%2FTheRedWizard.github.io%2Fmain%2Fpackages%2Fmedia%2Ficons%2Ftrakt.png"/>
+            <param name="widget_header" value="TV Shows Collection"/>
+            <param name="widget_target" value="videos"/>
+            <param name="list_id" value="24012"/>
+        </include>
+        <include content="WidgetListLandscape">
+            <param name="content_path" value="plugin://plugin.video.eternal/?mode=build_movie_list&amp;action=trakt_watchlist&amp;category_name=Movies+Watchlist&amp;iconImage=https%3A%2F%2Fraw.githubusercontent.com%2FThe-Red-Wizard%2FTheRedWizard.github.io%2Fmain%2Fpackages%2Fmedia%2Ficons%2Ftrakt.png"/>
+            <param name="widget_header" value="Movies Watchlist"/>
+            <param name="widget_target" value="videos"/>
+            <param name="list_id" value="24013"/>
+        </include>
+        <include content="WidgetListLandscape">
+            <param name="content_path" value="plugin://plugin.video.eternal/?mode=build_tvshow_list&amp;action=trakt_watchlist&amp;category_name=TV+Shows+Watchlist&amp;iconImage=https%3A%2F%2Fraw.githubusercontent.com%2FThe-Red-Wizard%2FTheRedWizard.github.io%2Fmain%2Fpackages%2Fmedia%2Ficons%2Ftrakt.png"/>
+            <param name="widget_header" value="TV Shows Watchlist"/>
+            <param name="widget_target" value="videos"/>
+            <param name="list_id" value="24014"/>
+        </include>
+        <include content="WidgetListLandscape">
+            <param name="content_path" value="plugin://plugin.video.eternal/?mode=build_movie_list&amp;action=trakt_favorites&amp;category_name=Favorite+Movies&amp;iconImage=https%3A%2F%2Fraw.githubusercontent.com%2FThe-Red-Wizard%2FTheRedWizard.github.io%2Fmain%2Fpackages%2Fmedia%2Ficons%2Ftrakt.png"/>
+            <param name="widget_header" value="Favorite Movies"/>
+            <param name="widget_target" value="videos"/>
+            <param name="list_id" value="24015"/>
+        </include>
+        <include content="WidgetListLandscape">
+            <param name="content_path" value="plugin://plugin.video.eternal/?mode=build_tvshow_list&amp;action=trakt_favorites&amp;category_name=Favorite+TV+Shows&amp;iconImage=https%3A%2F%2Fraw.githubusercontent.com%2FThe-Red-Wizard%2FTheRedWizard.github.io%2Fmain%2Fpackages%2Fmedia%2Ficons%2Ftrakt.png"/>
+            <param name="widget_header" value="Favorite TV Shows"/>
+            <param name="widget_target" value="videos"/>
+            <param name="list_id" value="24016"/>
+        </include>
+        <include content="WidgetListLandscape">
+            <param name="content_path" value="plugin://plugin.video.eternal/?mode=build_movie_list&amp;action=trakt_recommendations&amp;category_name=Recommended+Movies&amp;iconImage=https%3A%2F%2Fraw.githubusercontent.com%2FThe-Red-Wizard%2FTheRedWizard.github.io%2Fmain%2Fpackages%2Fmedia%2Ficons%2Ftrakt.png"/>
+            <param name="widget_header" value="Recommended Movies"/>
+            <param name="widget_target" value="videos"/>
+            <param name="list_id" value="24017"/>
+        </include>
+        <include content="WidgetListLandscape">
+            <param name="content_path" value="plugin://plugin.video.eternal/?mode=build_tvshow_list&amp;action=trakt_recommendations&amp;category_name=Recommended+TV+Shows&amp;iconImage=https%3A%2F%2Fraw.githubusercontent.com%2FThe-Red-Wizard%2FTheRedWizard.github.io%2Fmain%2Fpackages%2Fmedia%2Ficons%2Ftrakt.png"/>
+            <param name="widget_header" value="Recommended TV Shows"/>
+            <param name="widget_target" value="videos"/>
+            <param name="list_id" value="24018"/>
+        </include>
+        <include content="WidgetListEpisodes">
+            <param name="content_path" value="plugin://plugin.video.eternal/?mode=trakt.list.get_trakt_user_lists&amp;list_type=trending&amp;category_name=Trending+User+Lists&amp;iconImage=https%3A%2F%2Fraw.githubusercontent.com%2FThe-Red-Wizard%2FTheRedWizard.github.io%2Fmain%2Fpackages%2Fmedia%2Ficons%2Ftrakt.png"/>
+            <param name="widget_header" value="Trending"/>
+            <param name="widget_target" value="videos"/>
+            <param name="list_id" value="24019"/>
+        </include>
+        <include content="WidgetListEpisodes">
+            <param name="content_path" value="plugin://plugin.video.eternal/?mode=trakt.list.get_trakt_user_lists&amp;list_type=popular&amp;category_name=Popular+User+Lists&amp;iconImage=https%3A%2F%2Fraw.githubusercontent.com%2FThe-Red-Wizard%2FTheRedWizard.github.io%2Fmain%2Fpackages%2Fmedia%2Ficons%2Ftrakt.png"/>
+            <param name="widget_header" value="Popular"/>
+            <param name="widget_target" value="videos"/>
+            <param name="list_id" value="24020"/>
+        </include>
+    </include>
+</includes>
