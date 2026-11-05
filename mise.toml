@@ -58,11 +58,28 @@ outputs = ["packages/cli/dist/@kappacode/cli-linux-x64/bin/kappa"]
 run = """
 cd /home/toxic/pens/olympus/products/kappa/kappa-code/packages/cli && bun test --timeout 30000 2>/home/toxic/tmp/kappa-tdd-test.log
 bun run --cwd /home/toxic/pens/olympus/products/kappa/kappa-code make --single --skip-install
+pitchfork restart kappa-acp 2>/dev/null || true
 """
 description = "User-TDD loop: kappa tests then forge-cached rebuild"
 dir = "/home/toxic/pens/olympus/products/kappa/kappa-code"
 sources = ["packages/cli/src/**/*.ts", "packages/cli/test/**/*.ts", "packages/kappa-indexing/src/**/*.ts"]
 outputs = ["packages/cli/dist/@kappacode/cli-linux-x64/bin/kappa"]
+
+# tau TDD lane (2026-11-05): edit -> scoped tests -> binary rebuild -> ACP restart.
+# Mirrors kappa-tdd. Scopes to the coding-agent TS suite (the rs/py lanes are
+# slow and not touched by agent-loop changes). The restart leg reloads any
+# ACP-serving tau process on the fresh binary; interactive TUI sessions are
+# user-owned and pick the binary up on their next natural restart.
+[tasks.tau-tdd]
+run = """
+cd /home/toxic/pens/olympus/products/tau && bun test packages/coding-agent/test/ttst.test.ts packages/coding-agent/test/session-code-mode.test.ts 2>/home/toxic/tmp/tau-tdd-test.log
+bun run --cwd packages/coding-agent build
+pitchfork restart kappa-acp 2>/dev/null || true
+"""
+description = "User-TDD loop: tau tests then binary rebuild + ACP restart"
+dir = "/home/toxic/pens/olympus/products/tau"
+sources = ["packages/coding-agent/src/**/*.ts", "packages/coding-agent/test/**/*.ts"]
+outputs = ["packages/coding-agent/dist/tau"]
 
 # DelendAI — first-class maximal Bun scaffold / MCP monorepo (fork 2026-10-20).
 # Full gates + CLI; usable as the estate's scaffold/agent-runtime reference.

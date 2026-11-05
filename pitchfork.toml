@@ -74,7 +74,7 @@ dir = "/home/toxic"
 mise = true
 [daemons.awrawr-mcp.env]
 AWR_MCP_PORT = "25198"
-MCP_FUNNEL_HOST = "github-mcp-host.tailc9ac71.ts.net"
+MCP_FUNNEL_HOST = "estate.tailc9ac71.ts.net"
 
 [daemons.awrawr-ws-exec]
 run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/pens/estate/bridge/awrawr_ws_exec.py"
@@ -840,6 +840,7 @@ mise = true
 port = 25245
 ready_http = "http://127.0.0.1:25245/health"
 dir = "/home/toxic/pens/fleet/devices/android-fleet"
+env = { MOSAIC_ALLOW_INPUT = "1" }
 
 [daemons."mosaic-mcp".health_http]
 url = "http://127.0.0.1:25245/health"
@@ -851,7 +852,7 @@ timeout = "5s"
 # Runs `mise watch kappa-tdd` (estate mise.toml); the build leg rides the
 # forge remote cache so unchanged outputs are never recomputed.
 [daemons."tdd-watch"]
-run = "mise watch kappa-tdd"
+run = "exec /home/toxic/pens/estate/scripts/tdd-watch.sh"
 auto = ["start"]
 mise = true
 dir = "/home/toxic/pens/estate"
