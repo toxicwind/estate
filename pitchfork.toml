@@ -856,6 +856,19 @@ run = "exec /home/toxic/pens/estate/scripts/tdd-watch.sh"
 auto = ["start"]
 mise = true
 dir = "/home/toxic/pens/estate"
+
+# absurd-ttst (geode pen) — dark HTML surface :25292: live tau+kappa TTST
+# (time-to-second-token) gap histograms per provider/model, re-scanned from
+# session logs on each request. The hyper-obtuse instrument that proves what
+# strands the first token (per-provider reasoning stalls). Was developed but
+# never daemonized — hooked here 2026-11-05. Binds 0.0.0.0 for LAN (Pixel).
+[daemons."absurd-ttst"]
+run = "exec /home/toxic/pens/geode/products/absurd-ttst/bin/absurd-ttst-daemon.ts --port 25292"
+auto = ["start"]
+retry = true
+port = 25292
+dir = "/home/toxic/pens/geode/products/absurd-ttst"
+mise = false
 [daemons."vision-kit-mcp"]
 run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/ranch/products/vision-kit/mcp/serve.ts"
 auto = ["start"]
