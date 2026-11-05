@@ -935,3 +935,17 @@ env = { OMP_WTF_PORT = "25291" }
 # PRIVATE recon surface (2026-11-03): three-way canary/diverged/ours audit +
 # three-generation velocity + weave surface audits. Binds 0.0.0.0 for Pixel LAN access.
 
+
+[daemons.gibber-mcp]
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/ranch/products/gibber-mcp/build/index.js"
+retry = true
+ready_http = "http://127.0.0.1:25106/sse"
+port = 25106
+dir = "/home/toxic/pens/ranch/products/gibber-mcp"
+
+[daemons.pens-completions]
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/geode/products/pens-completions/server.ts"
+retry = true
+ready_http = "http://127.0.0.1:25252/mcp"
+port = 25252
+dir = "/home/toxic/pens/geode/products/pens-completions"
