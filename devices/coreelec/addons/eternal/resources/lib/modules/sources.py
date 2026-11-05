@@ -1784,13 +1784,19 @@ class Sources():
 	def get_season(self):
 		season = self.meta.get('custom_season', None) or self.meta.get('season')
 		try: season = int(season)
-		except: season = None
+		except Exception as exc:
+			if season not in (None, ''):
+				kodi_utils.logger('Eternal', 'get_season parse failed (%r): %s' % (season, exc))
+			season = None
 		return season
 
 	def get_episode(self):
 		episode = self.meta.get('custom_episode', None) or self.meta.get('episode')
 		try: episode = int(episode)
-		except: episode = None
+		except Exception as exc:
+			if episode not in (None, ''):
+				kodi_utils.logger('Eternal', 'get_episode parse failed (%r): %s' % (episode, exc))
+			episode = None
 		return episode
 
 	def get_ep_name(self):
@@ -1798,7 +1804,9 @@ class Sources():
 		if self.meta['media_type'] == 'episode':
 			ep_name = self.meta.get('ep_name')
 			try: ep_name = safe_string(remove_accents(ep_name))
-			except: ep_name = safe_string(ep_name)
+			except Exception as exc:
+				kodi_utils.logger('Eternal', 'get_ep_name sanitize failed: %s' % exc)
+				ep_name = safe_string(ep_name)
 		return ep_name
 
 	def _resolve_episode_labels(self, item=None):
