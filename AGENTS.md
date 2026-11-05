@@ -121,7 +121,49 @@
    - **Lock files**: on resolution anomalies, clean and rebuild (`rm bun.lock && rm -rf node_modules && bun install`).
    - **Blue-Green Deployment**: new slate (blue) built, tested, and healthchecked alongside running slate (green) before atomic swap.
 4. **Search Doctrine**:
-   - GitHub code search: use **blackbird** (`pens/ranch/github-search`) with session cookies in `GITHUB_SESSIONS`. Do not rely on legacy REST code search.
+- GitHub code search: use **blackbird** (`pens/ranch/github-search`) with session cookies in `GITHUB_SESSIONS`. Do not rely on legacy REST code search.
+
+## 3a. The 5-times rule (universal — permanent modular helpers)
+
+**Any code pattern detected in 5+ places MUST become a permanent, modular,
+entrypoint'd helper in `.ts`** — never copy-pasted inline. This is a standing,
+UNIVERSAL rule (not tied to any one tech): repeated inline code is a hyper
+code smell. When you spot a pattern 5+ times — whether it's an ssh call, a
+JSON-RPC helper, a file-sync, a settings generator, a string transform — you
+extract it into a helper with an entrypoint, then refactor the call sites to
+import it. The helper is the single source of truth; call sites stop drifting.
+
+Detection: any time you're about to copy the same ~5 lines of logic into a new
+file, STOP — that's the 5th use. Extract it. The helper must be:
+- **modular** (a `.ts` module with named exports),
+- **entrypoint'd** (a `bun <helper>.ts <cmd>` CLI surface, not just an import),
+- **token-friendly** (capped reads / streamed output so LLM context isn't flooded).
+
+Concrete instance: the `sshpass ... ssh` pattern appeared in fluxling,
+skin-hot-reload, skin-settings-gen, and kodi tooling (4-5+ places). Extracted
+to **`hestia-ssh`** (`pens/estate/products/estate-ops/hestia-ssh.ts`) — the one
+sshpass+ssh helper with `-T` (no "stdin is not a terminal"), token-friendly
+`read`, `exec`/`scp`, and a CLI entrypoint.
+
+## 3b. Hestia primitives (CoreELEC box 246)
+
+**hestia** (10.0.0.246, living-room CoreELEC reference box) has a canonical
+toolset built on the 5-times rule:
+
+- **`hestia-ssh`** — the sshpass+ssh helper (see 3a).
+- **`skin-hot-reload`** (`skin-hot-reload.ts`) — watches the estate
+  `skin.eternal` source, rsyncs the changed file to hestia, re-renders the live
+  Kodi home via JSON-RPC. A UX change shows on the TV ~150ms after save.
+- **`skin-settings-gen`** (`skin-settings-gen.ts`) — GENERATIVE skin settings:
+  the live `settings.xml` is generated from a schema (additive, preserves
+  values), never hand-edited.
+- **`coreelec-mcp`** (`pens/geode/products/coreelec-mcp`) — `play-tmdb`,
+  `search`, `seasons`, `episodes` via JSON-RPC `:25270`.
+- Box ports: `HESTIA_RPC_PORT=25270`, `HESTIA_SLYGUY_PORT=25272`
+  (`config/ports.env`). SSH `root:coreelec` (POSIX sh, no bash). JSON-RPC
+  `http://10.0.0.246:25270/jsonrpc`.
+- **Anti-smell**: any inline `sshpass ... ssh` in estate tooling is a defect —
+  route it through `hestia-ssh`.
 
 ---
 

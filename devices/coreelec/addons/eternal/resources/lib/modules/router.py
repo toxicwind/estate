@@ -25,7 +25,8 @@ def prepare_directory_listing(mode):
 		kodi_utils.logger('routing', 'prepare listing: %s' % e)
 
 def routing(sys):
-	params = dict(parse_qsl(sys.argv[2][1:], keep_blank_values=True))
+	from urllib.parse import unquote
+	params = dict(parse_qsl(unquote(sys.argv[2][1:]), keep_blank_values=True))
 	mode = params.get('mode', 'navigator.main')
 	try:
 		from caches.settings_cache import sync_kodi_profile_context
