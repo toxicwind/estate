@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tests for the eternal fork (kodi-fleet redlight fork) core logic.
+"""Tests for the eternal fork (kodi-fleet eternal fork) core logic.
 Rolled in-house with xbmc_stub (no npm lib exists for Kodi Python addon tests).
 Run: python3 -m unittest -v tests/test_eternal.py  (from addons/eternal)
 """

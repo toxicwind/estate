@@ -28,7 +28,7 @@
                 <top>22</top>
                 <width>800</width>
                 <height>20</height>
-                <font>font10</font> <!-- REDLIGHT_21 -->
+                <font>font10</font> <!-- ETERNAL_21 -->
                 <textcolor>FFFFFFFF</textcolor>
                 <align>left</align>
                 <aligny>center</aligny>
@@ -56,7 +56,7 @@
                 <top>800</top>
                 <width>1920</width>
                 <height>40</height>
-                <font>font14</font> <!-- REDLIGHT_33 -->
+                <font>font14</font> <!-- ETERNAL_33 -->
                 <textcolor>FFCCCCCC</textcolor>
                 <align>center</align>
                 <aligny>center</aligny>
@@ -67,7 +67,7 @@
                 <top>850</top>
                 <width>1920</width>
                 <height>36</height>
-                <font>font13</font> <!-- REDLIGHT_30 -->
+                <font>font13</font> <!-- ETERNAL_30 -->
                 <textcolor>FFB7B4BB</textcolor>
                 <align>center</align>
                 <aligny>center</aligny>
