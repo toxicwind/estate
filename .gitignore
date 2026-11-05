@@ -1538,3 +1538,7 @@ snapshots/
 
 # keyring SSOT sweep artifacts — live secrets go to secretsmith, never git
 cred-ssot-pitchfork.txt
+
+# eternal fork — local python venv + coverage output
+.venv/
+coverage/

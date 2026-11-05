@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# estate pre-commit — estate-map freshness + eternal-fork coverage gate.
+# 1. If the commit includes docs/estate-map* and the map wasn't regenerated
+#    recently, regenerate it so the committed map is never stale again.
+# 2. If the commit touches the eternal fork (devices/coreelec/addons/eternal),
+#    run its coverage gate (90% line+func). BLOCKING — the TDD gate must hold
+#    before the fork ships.
+set -euo pipefail
+ROOT="$(git rev-parse --show-toplevel)"
+if git diff --cached --name-only | grep -q "docs/estate-map"; then
+  # regenerate fresh so the staged map matches live reality
+  (cd "$ROOT" && bun bin/estate-map.ts 1>/dev/null 2>&1 || true)
+  git add docs/estate-map.json docs/estate-map.md 2>/dev/null || true
+  echo "estate-map: regenerated + staged"
+fi
+# eternal fork coverage gate (AGENTS.md §1.9: .live.ts 90% line+func)
+if git diff --cached --name-only | grep -q "devices/coreelec/addons/eternal/"; then
+  echo "eternal fork changed — running coverage gate..."
+  (cd "$ROOT/devices/coreelec/addons/eternal" && bun scripts/coverage-gate.ts)
+  echo "eternal coverage gate: met"
+fi
+exit 0

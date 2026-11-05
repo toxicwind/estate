@@ -23,11 +23,11 @@ runs from awrawr-pc (has the LAN route + SSH).
 
 | box | host | platform | access |
 |-----|------|----------|--------|
-| 246 | 10.0.0.246 | CoreELEC (living room) | SSH `root:coreelec`, JSON-RPC :8080 (no auth) |
+| 246 · **hestia** | 10.0.0.246 | CoreELEC (living room) | SSH `root:coreelec`, JSON-RPC :25270 (no auth) |
 | 225 | 10.0.0.225 | Kodi APK on Android TV (bedroom, not a physical box) | JSON-RPC :8080 only (no SSH) |
 
-Reference box is **246** ("it has correct"). Dupes go 246 -> 225, except
-tv/audio settings, which stay per-box.
+Reference box is **246 · hestia** ("it has correct"). Dupes go 246 -> 225,
+except tv/audio settings, which stay per-box.
 
 ## Tools
 

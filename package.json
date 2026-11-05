@@ -16,6 +16,7 @@
   "name": "estate",
   "scripts": {
     "health": "curl -s http://127.0.0.1:25100/v1/models | python3 -c 'import sys,json;print(len(json.load(sys.stdin)[\"data\"]),\"models\")'",
+    "postinstall": "bash .githooks/install-hooks.sh",
     "ui:check": "bun run --cwd ranch/range/ui check",
     "ui:test": "bun run --cwd ranch/range/ui test",
     "ui:build": "bun run --cwd ranch/range/ui build",

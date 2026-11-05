@@ -1,23 +1,27 @@
-# Box inventory (2026-10-30)
+# Box inventory (2026-10-30, updated 2026-11-05)
 
-## 246 — CoreELEC (living room, reference box)
+## 246 — HESTIA (CoreELEC, living room, reference box)
 
-- Host 10.0.0.246 (wlan0 only — no eth0), CoreELEC 21.3-Omega / Amlogic-ng.arm,
+- Codename **hestia** (hearth — the living-room A/V hub). Host 10.0.0.246
+  (wlan0 only — no eth0), CoreELEC 21.3-Omega / Amlogic-ng.arm,
   Kodi compiled 2025-11-04 (`/storage/.kodi`).
 - SSH: `root` / `coreelec` (user `coreelec` does NOT work; root does), port 22,
   OpenSSH 9.9, shell is POSIX sh (not bash).
-- JSON-RPC http://10.0.0.246:8080/jsonrpc, no auth (webserver on).
+- JSON-RPC http://10.0.0.246:25270/jsonrpc, no auth (webserver on). Port moved
+  from 8080 on 2026-11-05 (estate 25xxx range).
 - Hardware: Amlogic S905X3 (`sm1_s905x3_4g_1gbit` dt-id), 4× Cortex-A55
   (part 0xd05), 3.8G RAM, kernel 4.9.269 aarch64.
 - Disk: 52.6G `/storage`, 5% used (2.6G). `/storage/.kodi` 1.05G total.
 - Skin: Fen-tastic (skin.fentastic + script.fentastic.helper).
-- Audio: ALSA `AML-AUGESOUND`, passthrough on.
+- Audio: ALSA `AML-AUGESOUND`, passthrough on. HDMI → Marantz AVR.
+- CEC: locked down 2026-11-05 (was triggering TV/AVR shutdown).
 - 56 addons, all enabled.
 - Full env: `.env` (gitignored) / `.env.example` (template).
+- Identity: `docs/recon-and-codename.md`.
 
-## 225 — Android / Google TV (bedroom)
+## 225 — ATHENA (Android / Google TV, bedroom)
 
-- Host 10.0.0.225, Kodi 21.2 Android.
+- Codename **athena** (proposed). Host 10.0.0.225, Kodi 21.2 Android.
 - No SSH. JSON-RPC http://10.0.0.225:8080/jsonrpc, no auth.
 - Skin: Nimbus (+ script.nimbus.helper).
 - Audio: `AUDIOTRACK:AudioTrack` (plain PCM path; the `(RAW)` IEC device

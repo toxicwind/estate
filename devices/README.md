@@ -19,10 +19,10 @@
 flowchart TD
     D[devices/] --> K[coreelec/]
     D --> A[android/]
-    K --> KR[JSON-RPC :8080]
+    K --> KR[JSON-RPC :25270]
     A --> AA[ADB]
-    KR --> B246[246 · CoreELEC box]
-    KR --> B225[225 · Android TV APK]
+    KR --> B246[246 · hestia · CoreELEC reference]
+    KR --> B225[225 · athena · Android TV APK]
     AA --> PXL[Pixel · wireless ADB]
 ```
 
@@ -33,8 +33,9 @@ Two platforms, two shims, zero shared code: each platform folder is
 self-contained — shim + tools + docs together. If you need something from
 another platform folder, the abstraction is leaking.
 
-- **Kodi** — media boxes, driven over HTTP JSON-RPC on `:8080`. No SSH needed.
-  Covers the CoreELEC living-room box *and* the Kodi APK on the bedroom Android TV.
+- **Kodi** — media boxes, driven over HTTP JSON-RPC. hestia (246) is the
+  CoreELEC living-room reference box on `:25270`; athena (225) is the Kodi APK
+  on the bedroom Android TV on `:8080`. See `coreelec/docs/recon-and-codename.md`.
 - **Android** — phones and tablets, driven over ADB (wireless debugging).
   APK installs, shell, file pull/push all go through the ADB shim.
 
@@ -48,7 +49,7 @@ devices/
 │   ├── .env.example   # template with secrets blanked
 │   ├── README.md      # box inventory (246=CoreELEC, 225=APK on Android TV)
 │   ├── docs/          # box-inventory, menu-latency
-│   ├── addons/        # lasso, manifold-upstream
+│   ├── addons/        # eternal (kodi-fleet redlight fork), manifold-upstream
 │   ├── forensics/
 │   └── tests/
 └── android/           # Android fleet: ADB-based tooling
@@ -61,8 +62,8 @@ devices/
 
 | Platform | Shim type | Access | Devices |
 |----------|-----------|--------|---------|
-| Kodi (CoreELEC) | JSON-RPC `:8080` | HTTP, no auth | `10.0.0.246` — living room box |
-| Kodi (Android TV) | JSON-RPC `:8080` | HTTP, no auth | `10.0.0.225` — bedroom, Kodi APK (not a physical box) |
+| Kodi (CoreELEC) | JSON-RPC `:25270` | HTTP, no auth | `10.0.0.246` — **hestia**, living-room reference box |
+| Kodi (Android TV) | JSON-RPC `:8080` | HTTP, no auth | `10.0.0.225` — **athena**, bedroom Kodi APK (not a physical box) |
 | Android | ADB | Wireless debugging | Pixel (`10.0.0.77`), etc. |
 
 Notes:
