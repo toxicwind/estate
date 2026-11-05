@@ -1,0 +1,10 @@
+# acctmgr -> eternalmgr fork (2026-11-05)
+# Flat format (matches the working redlight-to-lasso.lapidary).
+substr: script.module.acctmgr => script.module.eternalmgr
+word: acctmgr => eternalmgr
+word: ACCTMGR => ETERNALMGR
+word: AcctMgr => EternalMgr
+substr: Red Light => Eternal
+substr: red light => eternal
+substr: RedLight => Eternal
+substr: redlight => eternal

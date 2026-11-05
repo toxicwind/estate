@@ -441,13 +441,13 @@ if __name__ == '__main__':
 		import xbmc
 		import xbmcaddon
 
-		if not xbmc.getCondVisibility('System.HasAddon(script.module.acctmgr)'):
+		if not xbmc.getCondVisibility('System.HasAddon(script.module.eternalmgr)'):
 			return False
 
 		waited = 0
 		while waited < timeout:
 			try:
-				am = xbmcaddon.Addon('script.module.acctmgr')
+				am = xbmcaddon.Addon('script.module.eternalmgr')
 				ready = am.getSetting('am_trakt_ready')
 				last_prepare = am.getSetting('am_last_prepare')
 				if ready == 'true' and last_prepare:
