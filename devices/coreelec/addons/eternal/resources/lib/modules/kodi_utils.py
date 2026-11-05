@@ -283,8 +283,8 @@ def addon_fanart():
 		or 'special://home/addons/plugin.video.eternal/resources/media/fanart.jpg'
 	)
 
-MEDIA_REMOTE_BASE = 'https://repo.redwizard.xyz/images/eternal/media'
-MEDIA_REMOTE_FALLBACK_BASE = 'https://zeus-768.com/eternal/media'
+MEDIA_REMOTE_BASE = 'https://repo.redwizard.xyz/images/redlight/media'
+MEDIA_REMOTE_FALLBACK_BASE = 'https://zeus-768.com/redlight/media'
 _MEDIA_REMOTE_BASES = (MEDIA_REMOTE_BASE, MEDIA_REMOTE_FALLBACK_BASE)
 _MEDIA_BASE_PROPERTY = 'eternal.media_remote_base'
 # Old GitHub raw hosts — remap stored shortcut/menu URLs onto the live media host.
