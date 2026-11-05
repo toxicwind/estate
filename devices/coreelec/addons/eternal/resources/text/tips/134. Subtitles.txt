@@ -23,7 +23,7 @@ This needs a SubMaker manifest and/or an OpenSubtitles account, otherwise the op
 
 Note: this follows the subtitle file's cues, not the on-screen credits, so timing can vary between releases.
 
-WHAT RED LIGHT DOES NOT DO
+WHAT ETERNAL DOES NOT DO
 
 Eternal has no in-addon subtitle browser. For manual choice, use Kodi's own player subtitle menu. Eternal does not pull subtitles from other addons.
 
