@@ -2161,4 +2161,71 @@
 	<include name="MenuTopPosition">
 		<top>$PARAM[top]</top>
 	</include>
+
+	<!-- Netflix-style hero banner: large backdrop + title + play button.
+	     Shown on the home screen when a widget item is focused. The red
+	     accent (#E50914) is the Netflix brand. -->
+	<include name="NetflixHero">
+		<definition>
+			<control type="group">
+				<visible>!Player.HasMedia + Control.HasFocus(9000) + !Skin.HasSetting(no_netflix_hero)</visible>
+				<left>0</left>
+				<top>0</top>
+				<width>1920</width>
+				<height>1080</height>
+				<!-- Backdrop: the focused item's fanart, dimmed for legibility. -->
+				<control type="image">
+					<left>0</left>
+					<top>0</top>
+					<width>1920</width>
+					<height>1080</height>
+					<aspectratio>scale</aspectratio>
+					<fadetime>400</fadetime>
+					<texture background="true" colordiffuse="90FFFFFF">$INFO[Container(9000).ListItem.Art(fanart)]</texture>
+				</control>
+				<!-- Gradient overlay for the bottom text zone. -->
+				<control type="image">
+					<left>0</left>
+					<top>620</top>
+					<width>1920</width>
+					<height>460</height>
+					<texture>gradients/netflix_gradient.png</texture>
+				</control>
+				<!-- Title -->
+				<control type="label">
+					<left>80</left>
+					<top>700</top>
+					<width>1400</width>
+					<height>80</height>
+					<font>font34</font>
+					<textcolor>FFFFFFFF</textcolor>
+					<shadowcolor>FF000000</shadowcolor>
+					<label>$INFO[Container(9000).ListItem.Title]</label>
+					<scroll>true</scroll>
+				</control>
+				<!-- Play button (Netflix red) -->
+				<control type="button" id="9901">
+					<left>80</left>
+					<top>800</top>
+					<width>220</width>
+					<height>56</height>
+					<texturefocus colordiffuse="FFE50914">buttons/button_focus.png</texturefocus>
+					<texturenofocus colordiffuse="33FFFFFF">buttons/button_nofocus.png</texturenofocus>
+					<label>► Play</label>
+					<font>font14</font>
+					<textcolor>FF000000</textcolor>
+					<onclick>PlayMedia($INFO[Container(9000).ListItem.FileNameAndPath])</onclick>
+				</control>
+				<!-- Trailer autoplay plays in the hero when idle. -->
+				<control type="image">
+					<left>320</left>
+					<top>800</top>
+					<width>220</width>
+					<height>56</height>
+					<texture colordiffuse="33FFFFFF">buttons/button_nofocus.png</texture>
+					<visible>Skin.String(TrailerPlaying)</visible>
+				</control>
+			</control>
+		</definition>
+	</include>
 </includes>
