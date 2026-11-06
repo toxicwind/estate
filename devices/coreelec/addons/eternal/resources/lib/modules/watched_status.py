@@ -208,6 +208,13 @@ def active_tvshows_information(status_type):
 	progress_location = settings.tv_progress_location()
 	if status_type == 'watched': include_other = progress_location in (0, 2)
 	else: include_other = progress_location in (1, 2)
+	# Cap the in-progress metadata load so a large trakt history doesn't spawn a
+	# TaskPool of tvshow_meta fetches that CPU-starves Kodi (video freezes — the
+	# decoder decodes but the renderer gets 0 KB while the home widget hammers
+	# metadata). Estate fix 2026-11-06: home shows the most recent 20; the full
+	# list is still reachable via the In-Progress menu.
+	if status_type == 'progress' and len(data) > 20:
+		data = sorted(data, key=lambda x: x.get('last_played', ''), reverse=True)[:20]
 	threads = TaskPool().tasks(_process, data, min(len(data), settings.max_threads()))
 	[i.join() for i in threads]
 	return results
