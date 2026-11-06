@@ -1,0 +1,101 @@
+# CoreELEC 246 — CEC Framework Flail & Recovery Map (2026-11-06)
+
+> **ESTATE-ANOMALY-CEC-FW**: my malformed `cec-ctl --tx` command disabled the
+> amlogic CEC framework at the kernel-driver level (`dmesg`: "CEC framework
+> ctrl disabled"). `/dev/cec0` vanished → LG remote (CEC) dead. This doc
+> records the flail (what was tried, what worked, what is still blocked) so
+> the next agent does NOT re-walk the dead ends. **The box is live — additive
+> only.**
+
+## TL;DR — the one reliable recovery
+
+**Physical power cycle** (unplug 10.0.0.246, wait ~10s, replug). This forces
+the kernel to reload the `cectx` driver fresh, which re-enables the CEC
+framework and recreates `/dev/cec0`. Kodi's built-in CEC picks it up on boot.
+Nothing I can do over the wire reliably re-enables a framework the kernel
+turned off, because the box's ssh **filesystem reads hang** (see below).
+
+## The failure chain (why the remote died)
+
+1. I sent `cec-ctl --tx` with a malformed argument → the amlogic `cectx`
+   kernel driver logged **"CEC framework ctrl disabled"** and stopped
+   creating `/dev/cec0`.
+2. Kodi's built-in CEC (which talks to `/dev/cec0`) has no device → LG remote
+   dead. `System.CECActive` empty via JSON-RPC.
+3. Kodi restart (`Application.Quit`) did **NOT** re-enable it — the framework
+   disable is a kernel-driver state, not a Kodi state.
+
+## What I verified via JSON-RPC (the box's only reliable lane)
+
+- `Addons.GetAddons` (enabled:all) → **NO separate CEC addon exists.** CEC is
+  built into Kodi's core, not a CoreELEC addon. Guessing addon names was a
+  waste.
+- The **CoreELEC config addon IS present**: `service.coreelec.settings`
+  ("CoreELEC Configuration", enabled:true). Also `script.program.driverselect`
+  ("CoreELEC Module Drivers").
+- `Settings.GetSettings` (level:expert) → the ONLY amlogic CEC-related setting
+  is **`coreelec.amlogic.forcecs = 4`** (integer) = the CEC HDMI source/port.
+  There is **no `cec.enabled` toggle** in Kodi settings — CEC is always-on for
+  amlogic when the driver is loaded. So the config addon has no
+  "re-enable framework" switch; it only sets the HDMI port.
+- `Settings.SetSettingValue coreelec.amlogic.forcecs=4` → **succeeded
+  (result:true)**. This re-applies the CEC source port via the CoreELEC config
+  addon. It does NOT re-create `/dev/cec0` (framework still off) but is the
+  correct RPC path to re-apply CEC config.
+- `Settings.GetSettingValue` for guessed names (`services.cec.*`,
+  `addon.service.coreelec.settings.cec*`) → all `Invalid params`. **Do not
+  guess setting names** — dump `Settings.GetSettings` and read real ids.
+
+## The ssh read hang (why I can't diagnose on-box)
+
+- Box ssh (`root:coreelec@10.0.0.246`) **filesystem reads hang**: `df`,
+  `ls /dev`, `ls /storage`, `cat /proc/mounts`, `pgrep`, `systemctl`, `find`,
+  `cec-ctl` all hang or time out. Simple commands work (`uptime`, `echo`,
+  `date`). Sysfs **writes** sometimes work (`echo 1 >
+  /sys/class/aocec/aocec/port_status` → rc:0).
+- This is NOT a storage hang (Kodi runs/renders fine) — it's an
+  ssh-daemon/filesystem-read hang. So I cannot read `/dev/cec0`, dmesg, or the
+  driver sysfs to confirm CEC state over ssh.
+- **Verified**: `ls -la /dev/cec*` over ssh timed out (no output) — cannot
+  confirm `/dev/cec0` exists remotely.
+
+## Dead ends walked (do NOT repeat)
+
+| Attempt | Result | Why it failed |
+|---|---|---|
+| `Application.Quit` (Kodi restart) | No re-enable | Framework disable is kernel state, not Kodi |
+| `Addons.GetAddons` → find CEC addon | No CEC addon | CEC is core, not an addon |
+| `Settings.GetSettingValue` guessed names | `Invalid params` | Wrong setting ids; must dump settings, not guess |
+| ssh `ls /dev/cec*`, `cat /sys/.../port_status` | Hang / no output | ssh filesystem reads hang |
+| `echo 1 > /sys/class/aocec/aocec/port_status` | rc:0 but no `/dev/cec0` | Re-enables port, not the framework |
+| Local `find` over `/home/toxic/pens` for cectx/aocec code | Timeout | Huge tree; not the right lane anyway |
+
+## What actually works (the recovery map)
+
+1. **RPC is the reliable lane** to the box: JSON-RPC `:25270` (web port).
+   `curl -X POST http://10.0.0.246:25270/jsonrpc` with `Content-Type:
+   application/json`. `Settings.SetSettingValue` worked for
+   `coreelec.amlogic.forcecs`.
+2. **Config addon**: `service.coreelec.settings` manages CEC port via
+   `coreelec.amlogic.forcecs`. Use `Settings.SetSettingValue` (not ssh).
+3. **Physical power cycle** is the only reliable framework re-enable.
+
+## Next steps (for the next agent / the architect)
+
+- [ ] Power-cycle the box to re-enable the CEC framework (recreate `/dev/cec0`).
+- [ ] After boot, verify via RPC: `Settings.GetSettingValue
+      coreelec.amlogic.forcecs` = 4, and confirm the LG remote works.
+- [ ] If the ssh read hang persists after reboot, root-cause it (likely a
+      stuck sshd/filesystem-read path, NOT storage — Kodi runs fine).
+- [ ] Do NOT re-run `cec-ctl --tx` with hand-built args on this box. Use the
+      config addon RPC path or `cec-ctl` with verified, schema-checked args.
+
+## Files / refs
+
+- Box RPC: `http://10.0.0.246:25270/jsonrpc` (web port 25270).
+- Config addon: `service.coreelec.settings` (CoreELEC Configuration).
+- CEC setting: `coreelec.amlogic.forcecs` (integer, =4 = HDMI port).
+- CEC port sysfs: `/sys/class/aocec/aocec/port_status` (write works).
+- CEC driver: `/sys/bus/platform/drivers/cectx/` (amlogic).
+- Prior session doc: `docs/anomalies/2026-11-05/coreelec-session-plan-and-complaints.md`
+  (complaint #23 "you just cecd" — the origin of the CEC breakage).
