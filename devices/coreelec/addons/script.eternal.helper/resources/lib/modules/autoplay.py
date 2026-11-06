@@ -48,8 +48,18 @@ def _get_trailer(item_id, item_type):
 
 
 def autoplay_trailer(item_id=None, item_type=None):
-    """Play the focused item's trailer if it has one; stop on focus loss."""
+    """Play the focused item's trailer if it has one; stop on focus loss.
+
+    Buffering guard: NEVER interrupt an active full playback (movie/episode).
+    The trailer autoplay only runs when Kodi is idle (nothing playing) or a
+    trailer is already playing. This is what keeps the Netflix hero from
+    breaking the user's video — PlayMedia would otherwise yank focus and
+    stall the buffer.
+    """
     player = xbmc.Player()
+    # Buffering guard: if real content is playing (not a trailer), do nothing.
+    if player.isPlaying() and xbmc.getInfoLabel("Skin.String(TrailerPlaying)") != "true":
+        return
     # If a trailer is already playing, don't restart it.
     if player.isPlaying() and xbmc.getInfoLabel("Skin.String(TrailerPlaying)") == "true":
         return

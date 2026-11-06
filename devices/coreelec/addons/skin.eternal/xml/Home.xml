@@ -887,6 +887,8 @@
 						<movement>7</movement>
 						<focusposition>0</focusposition>
 						<onfocus>ClearProperty(listposition,home)</onfocus>
+						<onfocus>RunScript(script.eternal.helper,mode=autoplay_trailer&amp;item_id=$INFO[Container(9000).ListItem.Property(id)]&amp;type=$INFO[Container(9000).ListItem.Property(type)])</onfocus>
+						<onunfocus>RunScript(script.eternal.helper,mode=stop_trailer)</onunfocus>
 						<onright>SetFocus($INFO[Container(9000).ListItem.Property(menu_id)])</onright>
 						<onup>700</onup>
 						<ondown>700</ondown>
