@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <includes>
     <include name="MovieWidgets">
-        <include content="WidgetListCategory">
-            <param name="content_path" value="plugin://plugin.video.umbrella/?action=movieGenres&amp;url=tmdb_genre&amp;folderName=Genres+%28TMDb%29"/>
-            <param name="widget_header" value="Genres "/>
-            <param name="widget_target" value="videos"/>
-            <param name="list_id" value="19011"/>
-        </include>
         <include content="WidgetListBigPoster">
             <param name="content_path" value="plugin://plugin.video.umbrella/?action=movies&amp;url=tmdbrecentweek&amp;folderName=Trending+this+Week+%28TMDB%29"/>
             <param name="widget_header" value="Trending this Week"/>
@@ -18,12 +12,6 @@
             <param name="widget_header" value="Recommended"/>
             <param name="widget_target" value="videos"/>
             <param name="list_id" value="19013"/>
-        </include>
-        <include content="WidgetListCategory">
-            <param name="content_path" value="plugin://plugin.video.umbrella/?action=movieYears&amp;url=tmdb_year&amp;folderName=Year+%28TMDb%29"/>
-            <param name="widget_header" value="Year"/>
-            <param name="widget_target" value="videos"/>
-            <param name="list_id" value="19014"/>
         </include>
     </include>
 </includes>
