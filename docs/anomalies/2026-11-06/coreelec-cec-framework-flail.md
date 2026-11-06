@@ -15,6 +15,44 @@ framework and recreates `/dev/cec0`. Kodi's built-in CEC picks it up on boot.
 Nothing I can do over the wire reliably re-enables a framework the kernel
 turned off, because the box's ssh **filesystem reads hang** (see below).
 
+## MAJOR CORRECTION (2026-11-06, from full source comparison) — the box does NOT use /dev/cec0
+
+Pulled the full CoreELEC source for **21.3-Omega** (box's build) and
+**coreelec-22** (nightly) and compared the CEC code. The earlier `/dev/cec0`
+framing was WRONG:
+
+- **`CEC_FRAMEWORK_SUPPORT="no"`** in CoreELEC (both Omega and 22). So
+  `HAVE_LINUX_API=0` → **the Linux CEC framework (`/dev/cec0`) is NOT built**.
+- The box's CEC is entirely via **`HAVE_AOCEC_API=1`** → libcec's **AOCEC
+  adapter**, which opens **`CEC_AOCEC_PATH = "/dev/aocec"`** (defined in
+  `include/cectypes.h:297`).
+- **"CEC framework ctrl disabled"** (the dmesg I blamed) comes from the
+  AOCEC adapter's `Close()` sending `CEC_IOC_SET_OPTION_SYS_CTRL` with
+  `enable=0` (see `AOCECAdapterCommunication.cpp:105-110`). It is triggered
+  when Kodi's CEC peripheral closes `/dev/aocec` — NOT by anything `cec-ctl`
+  (a Linux-framework tool) does, since this box has no `/dev/cec0`.
+- **The re-enable mechanism**: Kodi/libcec re-opens `/dev/aocec` and sends
+  `CEC_IOC_SET_OPTION_SYS_CTRL` with `enable=1` (the "enabled" message).
+  This happens when Kodi's CEC peripheral re-initializes (Kodi restart or
+  CEC peripheral rescan). `Application.Quit` did NOT do it → likely needs a
+  full `System.Reboot` or a CEC peripheral rescan.
+
+### Source comparison (Omega 21.3 vs coreelec-22 nightly)
+
+| File | 21.3-Omega | coreelec-22 |
+|---|---|---|
+| libcec version | **6.0.2** | **8.1.7** (major upgrade) |
+| `HAVE_AOCEC_API` | `1` only if `KODIPLAYER_DRIVER=libamcodec` (box: yes) | `1` always |
+| `CEC_FRAMEWORK_SUPPORT` | `no` | `no` |
+| AOCEC hotplug patch | absent | **NEW** `libcec-aocec-report-physical-address-changes.patch` (2026-11-05) |
+| Kodi cec-framework patch | `kodi-100.17-...` | `0001-...` (same content) |
+
+The **new 22.x AOCEC patch** (dated 2026-11-05) fixes EXACTLY the class of
+problem we may have: the AOCEC adapter reads the physical address only on
+open; if the box starts without a TV, the address stays invalid and the TV
+doesn't route remote keys to the box. This is a strong candidate upgrade for
+the box (Omega → 22.x) if the remote issue persists after reboot.
+
 ## The failure chain (why the remote died)
 
 1. I sent `cec-ctl --tx` with a malformed argument → the amlogic `cectx`
@@ -95,7 +133,15 @@ turned off, because the box's ssh **filesystem reads hang** (see below).
 - Box RPC: `http://10.0.0.246:25270/jsonrpc` (web port 25270).
 - Config addon: `service.coreelec.settings` (CoreELEC Configuration).
 - CEC setting: `coreelec.amlogic.forcecs` (integer, =4 = HDMI port).
+- **CEC device: `/dev/aocec`** (NOT `/dev/cec0`) — libcec AOCEC adapter path.
 - CEC port sysfs: `/sys/class/aocec/aocec/port_status` (write works).
 - CEC driver: `/sys/bus/platform/drivers/cectx/` (amlogic).
+- Source: `Pulse-Eight/libcec@libcec-6.0.2` → `include/cectypes.h:297`
+  (`CEC_AOCEC_PATH="/dev/aocec"`), `AOCECAdapterCommunication.cpp` (Open/Close
+  send `CEC_IOC_SET_OPTION_SYS_CTRL` enable 1/0).
+- CoreELEC source: `CoreELEC/CoreELEC` tags `21.3-Omega` + branch
+  `coreelec-22`, cloned at `/tmp/kilo/coreelec-src`; libcec 6.0.2 at
+  `/tmp/kilo/libcec-6`. The new AOCEC hotplug patch:
+  `projects/Amlogic-ce/patches/libcec/libcec-aocec-report-physical-address-changes.patch`.
 - Prior session doc: `docs/anomalies/2026-11-05/coreelec-session-plan-and-complaints.md`
   (complaint #23 "you just cecd" — the origin of the CEC breakage).
