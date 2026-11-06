@@ -43,6 +43,17 @@
 4. **Git safety & diverged main**:
    - Back up origin main as `backup/main-<date>` first, then merge, then push. Never force-push main without that backup.
    - **NEVER ALLOW destructive resets**: `git reset --hard`, `git checkout -- .`, `git clean -f` are forbidden. Recover by backing up current HEAD/branches (reflog, stash, backup refs), then merge or cherry-pick forward.
+5. **Pens-wide pre-commit hook (single source, 2026-11-06)**: every pen repo
+   sets `core.hooksPath -> pens/estate/hooks` so one tracked `pre-commit`
+   serves the whole estate. It is scope-aware and runs checks in REVERSE order
+   (most specific first): PRODUCT (`.live.ts` coverage gate) → PEN (bin-verify,
+   report-only until the 15 pre-existing FAILs are fixed) → PENS (pens.yaml
+   freshness), plus gitleaks no-secrets at every scope. gitleaks is a
+   **kryptos-migration correctness check**: if all keys live in the keyring it
+   is always clean AND fast — a hit means a key was never moved to kryptos.
+   Never edit a pen's `.git/hooks/pre-commit` directly; edit
+   `pens/estate/hooks/pre-commit` (the shared source) and re-point
+   `core.hooksPath` if a repo is missing it.
 5. **Docs lie; code is absolute.** If a `.md` contradicts working code, fix the doc.
    - **LSP diagnostics are contracts, never noise.** Every diagnostic is a defect to fix MAXIMALLY at its root via AST-level changes. `bun x tsc --noEmit` green is the acceptance bar; never `@ts-ignore` or cast-to-silence.
 6. **Collaboration contract**:
