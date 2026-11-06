@@ -3,8 +3,8 @@
  * pattern-borrow.ts — thin delegate to the canonical pattern-forge borrower.
  *
  * The 10-factor GitHub-wide ranker + multi-source borrower (arxiv/hf/openalex/
- * s2/dblp/github/local) lives ONCE in azurite's code-patterns product
- * (`skills/04_code_intelligence/code-patterns/`). This file is the estate
+ * s2/dblp/github/local) lives ONCE in flux's code-patterns product (pattern-forge)
+ * (`/home/toxic/pens/flux/products/code-patterns/`). This file is the estate
  * PATH contract (AGENTS.md: pattern-borrow is a first-class verification
  * subtask) and forwards everything to the canonical CLI unchanged.
  *
@@ -18,7 +18,7 @@ import { spawnSync } from "node:child_process";
 
 const CANONICAL =
   process.env.PATTERN_BORROW_BIN ??
-  "/home/toxic/pens/geode/products/azurite/skills/04_code_intelligence/code-patterns/bin/pattern-borrow.ts";
+  "/home/toxic/pens/flux/products/code-patterns/bin/pattern-borrow.ts";
 
 const res = spawnSync("bun", [CANONICAL, ...Bun.argv.slice(2)], {
   stdio: "inherit",
