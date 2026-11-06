@@ -117,7 +117,7 @@
     <setting id="defaultfanartbrightness" type="string">Medium</setting>
     <setting id="MovieGenreFanart.path" type="string"></setting>
     <setting id="MenuCustom3LabelDB" type="string">Custom 3</setting>
-    <setting id="backup_directory" type="string">special://home/backups/FENtastic_Plus/</setting>
+    <setting id="backup_directory" type="string">special://home/backups/Eternal_Plus/</setting>
     <setting id="stackedwidgetitemlimit" type="string">20</setting>
     <setting id="osdautoclosetime" type="string"></setting>
     <setting id="MovieGenreFanart.ext" type="string"></setting>

@@ -41,14 +41,14 @@
 					<include>DefaultSettingButton</include>
 					<selected>Skin.HasSetting(NoIconMainMenu)</selected>
 					<onclick>Skin.ToggleSetting(NoIconMainMenu)</onclick>
-					<visible>!Skin.HasSetting(ClassicFENtastic)</visible>
+					<visible>!Skin.HasSetting(ClassicEternal)</visible>
 				</control>
 				<control type="radiobutton" id="622">
 					<label>Enable Main Menu Highlights</label>
 					<include>DefaultSettingButton</include>
 					<selected>!Skin.HasSetting(NoHighlightMainMenu)</selected>
 					<onclick>Skin.ToggleSetting(NoHighlightMainMenu)</onclick>
-					<visible>!Skin.HasSetting(ClassicFENtastic) + Skin.HasSetting(NoIconMainMenu)</visible>
+					<visible>!Skin.HasSetting(ClassicEternal) + Skin.HasSetting(NoIconMainMenu)</visible>
 				</control>
 				<!-- SEPARATOR -->
 				<control type="button" id="623">
@@ -60,7 +60,7 @@
 					<texturefocus>dialogs/separator-grey.png</texturefocus>
 					<aligny>center</aligny>
 					<onclick>noop</onclick>
-					<visible>!Skin.HasSetting(ClassicFENtastic)</visible>
+					<visible>!Skin.HasSetting(ClassicEternal)</visible>
 				</control>
 				<!-- REMAKE MENUS & WIDGETS -->
 				<control type="button" id="624">
@@ -790,7 +790,7 @@
 					<texturefocus>dialogs/separator-grey.png</texturefocus>
 					<aligny>center</aligny>
 					<onclick>noop</onclick>
-					<visible>!Skin.HasSetting(ClassicFENtastic)</visible>
+					<visible>!Skin.HasSetting(ClassicEternal)</visible>
 				</control>
 				<!-- SET BACKUP DIRECTORY -->
 				<control type="button" id="63708">
@@ -803,7 +803,7 @@
 				<control type="button" id="63709">
 					<label>Reset Backup Directory</label>
 					<include>DefaultSettingButton</include>
-					<onclick>Skin.SetString(backup_directory,special://home/backups/FENtastic_Plus/)</onclick>
+					<onclick>Skin.SetString(backup_directory,special://home/backups/Eternal_Plus/)</onclick>
 					<onclick>Notification(Eternal Plus,Backup directory reset to default,3000)</onclick>
 				</control>
 			</control>
@@ -1170,8 +1170,8 @@
 				<control type="button" id="604">
 					<label>   - Restore default logo</label>
 					<include>DefaultSettingButton</include>
-					<onclick condition="!Skin.HasSetting(ClassicFENtastic)">Skin.SetString(CustomLogo,special://skin/extras/logos/eternal.png)</onclick>
-					<onclick condition="Skin.HasSetting(ClassicFENtastic)">Skin.SetString(CustomLogo,special://skin/extras/logos/kodi_logo.png)</onclick>
+					<onclick condition="!Skin.HasSetting(ClassicEternal)">Skin.SetString(CustomLogo,special://skin/extras/logos/eternal.png)</onclick>
+					<onclick condition="Skin.HasSetting(ClassicEternal)">Skin.SetString(CustomLogo,special://skin/extras/logos/kodi_logo.png)</onclick>
 					<visible>!String.IsEmpty(Skin.String(CustomLogo))</visible>
 				</control>
 				<control type="button" id="605">

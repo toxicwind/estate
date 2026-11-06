@@ -898,7 +898,7 @@
 							<!-- Eternal Plus focused layout -->
 							<!-- Eternal Plus focused layout -->
 							<control type="group">
-								<visible>!Skin.HasSetting(ClassicFENtastic)</visible>
+								<visible>!Skin.HasSetting(ClassicEternal)</visible>
 								<left>2</left>
 								<top>50</top>
 								<!-- Highlight BG -->
@@ -980,7 +980,7 @@
 							</control>
 							<!-- Classic Eternal focused layout -->
 							<control type="group">
-								<visible>Skin.HasSetting(ClassicFENtastic)</visible>
+								<visible>Skin.HasSetting(ClassicEternal)</visible>
 								<control type="label">
 									<include>FocusBounce</include>
 									<left>65</left>
@@ -1012,7 +1012,7 @@
 						<itemlayout height="95">
 							<!-- Eternal Plus item layout -->
 							<control type="group">
-								<visible>!Skin.HasSetting(ClassicFENtastic)</visible>
+								<visible>!Skin.HasSetting(ClassicEternal)</visible>
 								<left>2</left>
 								<top>50</top>
 								<control type="image">
@@ -1038,7 +1038,7 @@
 							</control>
 							<!-- Classic Eternal item layout -->
 							<control type="group">
-								<visible>Skin.HasSetting(ClassicFENtastic)</visible>
+								<visible>Skin.HasSetting(ClassicEternal)</visible>
 								<control type="label">
 									<left>65</left>
 									<top>0</top>
@@ -1372,7 +1372,7 @@
 					<width>365</width>
 					<height>85</height>
 					<texture colordiffuse="button_focus" fallback="special://skin/extras/logos/eternal.png">$VAR[CustomLogoImage]</texture>
-					<visible>!Skin.HasSetting(ClassicFENtastic)</visible>
+					<visible>!Skin.HasSetting(ClassicEternal)</visible>
 				</control>
 				<control type="image">
 					<left>5</left>
@@ -1380,7 +1380,7 @@
 					<width>400</width>
 					<height>4</height>
 					<texture>masks/divider.png</texture>
-					<visible>!Skin.HasSetting(ClassicFENtastic)</visible>
+					<visible>!Skin.HasSetting(ClassicEternal)</visible>
 				</control>
 				<!-- Class Eternal Artwork -->
 				<control type="image">
@@ -1390,7 +1390,7 @@
 					<width>365</width>
 					<height>85</height>
 					<texture colordiffuse="button_focus" fallback="special://skin/extras/logos/kodi_logo.png">$VAR[CustomLogoImage]</texture>
-					<visible>Skin.HasSetting(ClassicFENtastic) + !String.IsEmpty(Skin.String(customlogo))</visible>
+					<visible>Skin.HasSetting(ClassicEternal) + !String.IsEmpty(Skin.String(customlogo))</visible>
 				</control>
 				<control type="image">
 					<left>19</left>
@@ -1399,7 +1399,7 @@
 					<width>130</width>
 					<height>56</height>
 					<texture colordiffuse="button_focus" fallback="special://skin/media/logos/K-logo.png">$VAR[CustomLogoImage]</texture>
-					<visible>Skin.HasSetting(ClassicFENtastic) + String.IsEmpty(Skin.String(customlogo)) + !String.IsEqual(Skin.String(CurrentSkinColor),Classic Eternal)</visible>
+					<visible>Skin.HasSetting(ClassicEternal) + String.IsEmpty(Skin.String(customlogo)) + !String.IsEqual(Skin.String(CurrentSkinColor),Classic Eternal)</visible>
 				</control>
 				<control type="image">
 					<left>19</left>
@@ -1408,7 +1408,7 @@
 					<width>130</width>
 					<height>56</height>
 					<texture colordiffuse="accent_color" fallback="special://skin/media/logos/K-logo.png">$VAR[CustomLogoImage]</texture>
-					<visible>Skin.HasSetting(ClassicFENtastic) + String.IsEmpty(Skin.String(customlogo)) + String.IsEqual(Skin.String(CurrentSkinColor),Classic Eternal)</visible>
+					<visible>Skin.HasSetting(ClassicEternal) + String.IsEmpty(Skin.String(customlogo)) + String.IsEqual(Skin.String(CurrentSkinColor),Classic Eternal)</visible>
 				</control>
 				<control type="image">
 					<left>59</left>
@@ -1417,7 +1417,7 @@
 					<width>192</width>
 					<height>56</height>
 					<texture colordiffuse="unfocused_text" fallback="special://skin/media/logos/letters.png">$VAR[CustomLogoImage]</texture>
-					<visible>Skin.HasSetting(ClassicFENtastic) + String.IsEmpty(Skin.String(customlogo))</visible>
+					<visible>Skin.HasSetting(ClassicEternal) + String.IsEmpty(Skin.String(customlogo))</visible>
 				</control>
 			</control>
 		</control>

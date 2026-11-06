@@ -1275,7 +1275,7 @@
 	</variable>
 	<!-- Classic Eternal & Eternal Plus Look & Feel Experience -->
 	<variable name="LookFeelLabel">
-		<value condition="Skin.HasSetting(ClassicFENtastic)">Classic Eternal</value>
+		<value condition="Skin.HasSetting(ClassicEternal)">Classic Eternal</value>
 		<value>Eternal Plus</value>
 	</variable>
 </includes>

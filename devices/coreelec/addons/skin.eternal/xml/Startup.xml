@@ -8,7 +8,7 @@
 	<onload condition="String.IsEmpty(Skin.String(DefaultBackgroundBrightness))">Skin.SetString(DefaultBackgroundBrightness,Medium)</onload>
 	<onload condition="String.IsEmpty(Skin.String(DefaultFanartBrightness))">Skin.SetString(DefaultFanartBrightness,Medium)</onload>
 	<onload condition="String.IsEmpty(Skin.String(DefaultRainDropBrightness))">Skin.SetString(DefaultRainDropBrightness,Medium)</onload>
-	<onload condition="String.IsEmpty(Skin.String(backup_directory))">Skin.SetString(backup_directory,special://home/backups/FENtastic_Plus/)</onload>
+	<onload condition="String.IsEmpty(Skin.String(backup_directory))">Skin.SetString(backup_directory,special://home/backups/Eternal_Plus/)</onload>
 	<onload>ReplaceWindow($INFO[System.StartupWindow])</onload>
 	<controls/>
 </window>
