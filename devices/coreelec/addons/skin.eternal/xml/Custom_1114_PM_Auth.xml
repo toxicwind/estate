@@ -54,7 +54,7 @@
 						<label>ResolveURL Settings</label>
 						<visible>System.HasAddon(script.module.resolverurl)</visible>
 						<onclick>Dialog.Close(all)</onclick>
-						<onclick>RunScript(script.fentastic.helper,rurl_settings_pm)</onclick>
+						<onclick>RunScript(script.eternal.helper,rurl_settings_pm)</onclick>
 					</item>
 				</content>
 			</control>

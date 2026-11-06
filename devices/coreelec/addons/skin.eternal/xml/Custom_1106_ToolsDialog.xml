@@ -44,7 +44,7 @@
     						<label>Pre-Made Configs</label>
     						<visible>[System.HasAddon(plugin.video.themoviedb.helper) | System.HasAddon(plugin.video.fenlight) | System.HasAddon(plugin.video.umbrella) | System.HasAddon(plugin.video.pov) | System.HasAddon(plugin.video.gears) | System.HasAddon(plugin.video.eternal) | System.HasAddon(plugin.video.scrubsv2)] + !Skin.HasSetting(Enable.PreMadeConfigs)</visible>
     						<onclick>Dialog.Close(all)</onclick>
-    						<onclick>RunScript(script.fentastic.helper,mode=pre_config)</onclick>
+    						<onclick>RunScript(script.eternal.helper,mode=pre_config)</onclick>
 					</item>
 					<item>
 						<label>Backup & Restore</label>
@@ -54,7 +54,7 @@
 					<item>
 						<label>Video Cache Config</label>
 						<onclick>Dialog.Close(all)</onclick>
-						<onclick>RunScript(script.fentastic.helper,mode=advanced_set)</onclick>
+						<onclick>RunScript(script.eternal.helper,mode=advanced_set)</onclick>
 					</item>
 				</content>
 			</control>

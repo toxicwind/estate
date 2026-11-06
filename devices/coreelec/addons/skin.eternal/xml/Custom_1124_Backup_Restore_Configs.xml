@@ -23,12 +23,12 @@
 					<item>
 						<label>Backup Config</label>
 						<onclick>Dialog.Close(all)</onclick>
-						<onclick>RunScript(script.fentastic.helper,mode=backup_config)</onclick>
+						<onclick>RunScript(script.eternal.helper,mode=backup_config)</onclick>
 					</item>
 					<item>
 						<label>Restore Config</label>
 						<onclick>Dialog.Close(all)</onclick>
-						<onclick>RunScript(script.fentastic.helper,mode=restore_config)</onclick>
+						<onclick>RunScript(script.eternal.helper,mode=restore_config)</onclick>
 					</item>
 					<item>
 						<label>Set Backup Directory</label>

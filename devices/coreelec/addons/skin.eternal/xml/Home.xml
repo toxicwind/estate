@@ -2,18 +2,18 @@
 <window>
 	<defaultcontrol>9000</defaultcontrol>
 	<backgroundcolor>background</backgroundcolor>
-	<onload>RunScript(script.fentastic.helper,mode=check_for_update&amp;skin_id=skin.fentastic)</onload>
+	<onload>RunScript(script.eternal.helper,mode=check_for_update&amp;skin_id=skin.eternal)</onload>
 	<onload condition="String.IsEmpty(Skin.String(PowerButtonMode))">Skin.SetString(PowerButtonMode,Show Shutdown Menu)</onload>
 	<onload condition="String.IsEmpty(Skin.String(SearchBehavior))">Skin.SetString(SearchBehavior,1)</onload>
 	<onload condition="!Skin.HasSetting(Defaults.Initialized)">Skin.SetBool(Enable.MaintenanceTools)</onload>
 	<onload condition="!Skin.HasSetting(Defaults.Initialized)">Skin.SetBool(NoIconMainMenu)</onload>
 	<onload condition="!Skin.HasSetting(Defaults.Initialized)">Skin.SetBool(Defaults.Initialized)</onload>
 	<onload condition="!Skin.HasSetting(firsttimerun)">ActivateWindow(1112)</onload>
-	<onload>RunScript(script.fentastic.helper,mode=check_for_profile_change&amp;skin_id=skin.fentastic)</onload>
-	<onload condition="String.IsEmpty(Window(Home).Property(fentastic.starting_widgets))">RunScript(script.fentastic.helper,mode=starting_widgets)</onload>
-	<onload condition="String.IsEmpty(Window(Home).Property(fentastic.starting_widgets))">SetProperty(fentastic.starting_widgets,true)</onload>
-	<onload>RunScript(script.fentastic.helper,mode=modify_keymap)</onload>
-	<onload>RunScript(script.fentastic.helper,mode=fix_black_screen)</onload>
+	<onload>RunScript(script.eternal.helper,mode=check_for_profile_change&amp;skin_id=skin.eternal)</onload>
+	<onload condition="String.IsEmpty(Window(Home).Property(eternal.starting_widgets))">RunScript(script.eternal.helper,mode=starting_widgets)</onload>
+	<onload condition="String.IsEmpty(Window(Home).Property(eternal.starting_widgets))">SetProperty(eternal.starting_widgets,true)</onload>
+	<onload>RunScript(script.eternal.helper,mode=modify_keymap)</onload>
+	<onload>RunScript(script.eternal.helper,mode=fix_black_screen)</onload>
 	<controls>
 		<include>DefaultBackground</include>
 		<!-- Fanart -->
@@ -878,7 +878,7 @@
 					<animation effect="slide" time="300" start="-492,0" end="0,0" tween="sine" easing="inout">VisibleChange</animation>
 					<visible allowhiddenfocus="true">![String.IsEqual(ListItem.DBtype,movie) | String.IsEqual(ListItem.DBtype,tvshow) | String.IsEqual(ListItem.DBtype,season) | String.IsEqual(ListItem.DBtype,episode)]</visible>
 					<!-- TODO Add sideblade panel for direct editing of widgets, hiding sections, other shortcuts -->
-					<!-- FENtastic Main Menu -->
+					<!-- Eternal Main Menu -->
 					<control type="fixedlist" id="9000">
 						<left>25</left>
 						<top>240</top>
@@ -895,8 +895,8 @@
 							<control type="group">
 								<animation effect="fade" start="100" end="0" time="0">UnFocus</animation>
 							</control>
-							<!-- FENtastic Plus focused layout -->
-							<!-- FENtastic Plus focused layout -->
+							<!-- Eternal Plus focused layout -->
+							<!-- Eternal Plus focused layout -->
 							<control type="group">
 								<visible>!Skin.HasSetting(ClassicFENtastic)</visible>
 								<left>2</left>
@@ -908,7 +908,7 @@
 									<width>422</width>
 									<height>95</height>
 									<texture colordiffuse="button_focus">masks/banner.png</texture>
-									<visible>Skin.HasSetting(NoIconMainMenu) + !Skin.HasSetting(NoHighlightMainMenu) + !String.IsEqual(Skin.String(CurrentSkinColor),Classic FENtastic) + !ControlGroup(700).HasFocus</visible>
+									<visible>Skin.HasSetting(NoIconMainMenu) + !Skin.HasSetting(NoHighlightMainMenu) + !String.IsEqual(Skin.String(CurrentSkinColor),Classic Eternal) + !ControlGroup(700).HasFocus</visible>
 								</control>
 								<!-- SideMenu Focused Icon -->
 								<control type="image">
@@ -925,7 +925,7 @@
 									<width>95</width>
 									<height>95</height>
 									<texture colordiffuse="51FFFFFF">masks/icon_mainmenu.png</texture>
-									<visible>Skin.HasSetting(NoIconMainMenu) + !Skin.HasSetting(NoHighlightMainMenu) + !String.IsEqual(Skin.String(CurrentSkinColor),Classic FENtastic) + !ControlGroup(700).HasFocus</visible>
+									<visible>Skin.HasSetting(NoIconMainMenu) + !Skin.HasSetting(NoHighlightMainMenu) + !String.IsEqual(Skin.String(CurrentSkinColor),Classic Eternal) + !ControlGroup(700).HasFocus</visible>
 								</control>
 								<!-- Focused Label with Icons Enabled -->
 								<control type="label">
@@ -978,7 +978,7 @@
 									<visible>ControlGroup(700).HasFocus</visible>
 								</control>
 							</control>
-							<!-- Classic FENtastic focused layout -->
+							<!-- Classic Eternal focused layout -->
 							<control type="group">
 								<visible>Skin.HasSetting(ClassicFENtastic)</visible>
 								<control type="label">
@@ -1010,7 +1010,7 @@
 							</control>
 						</focusedlayout>
 						<itemlayout height="95">
-							<!-- FENtastic Plus item layout -->
+							<!-- Eternal Plus item layout -->
 							<control type="group">
 								<visible>!Skin.HasSetting(ClassicFENtastic)</visible>
 								<left>2</left>
@@ -1036,7 +1036,7 @@
 									<textcolor>unfocused_text</textcolor>
 								</control>
 							</control>
-							<!-- Classic FENtastic item layout -->
+							<!-- Classic Eternal item layout -->
 							<control type="group">
 								<visible>Skin.HasSetting(ClassicFENtastic)</visible>
 								<control type="label">
@@ -1178,7 +1178,7 @@
 						<!-- Force Close -->
 						<include content="IconButton" condition="String.IsEqual(Skin.String(PowerButtonMode),Force Close)">
 							<param name="control_id" value="801"/>
-							<param name="onclick" value="RunScript(script.fentastic.helper,mode=force_close)"/>
+							<param name="onclick" value="RunScript(script.eternal.helper,mode=force_close)"/>
 							<param name="icon" value="icons/power.png"/>
 							<param name="label" value="$LOCALIZE[33060]"/>
 						</include>
@@ -1206,14 +1206,14 @@
 						<!-- Search: Open Keyboard -->
 						<include content="IconButton" condition="String.IsEqual(Skin.String(SearchBehavior),1)">
 							<param name="control_id" value="805"/>
-							<param name="onclick" value="RunScript(script.fentastic.helper,mode=search_input)"/>
+							<param name="onclick" value="RunScript(script.eternal.helper,mode=search_input)"/>
 							<param name="icon" value="icons/search.png"/>
 							<param name="label" value="$LOCALIZE[137]"/>
 						</include>
 						<!-- Search: Open Search Window -->
 						<include content="IconButton" condition="String.IsEqual(Skin.String(SearchBehavior),2)">
 							<param name="control_id" value="806"/>
-							<param name="onclick" value="RunScript(script.fentastic.helper,mode=open_search_window)"/>
+							<param name="onclick" value="RunScript(script.eternal.helper,mode=open_search_window)"/>
 							<param name="icon" value="icons/search.png"/>
 							<param name="label" value="$LOCALIZE[137]"/>
 						</include>
@@ -1364,14 +1364,14 @@
 				<animation effect="fade" start="100" end="0" time="200">WindowClose</animation>
 				<top>35</top>
 				<left>35</left>
-				<!-- FENtastic Plus Artwork -->
+				<!-- Eternal Plus Artwork -->
 				<control type="image">
 					<left>24</left>
 					<top>-4</top>
 					<!-- <aspectratio>keep</aspectratio> -->
 					<width>365</width>
 					<height>85</height>
-					<texture colordiffuse="button_focus" fallback="special://skin/extras/logos/fentastic.png">$VAR[CustomLogoImage]</texture>
+					<texture colordiffuse="button_focus" fallback="special://skin/extras/logos/eternal.png">$VAR[CustomLogoImage]</texture>
 					<visible>!Skin.HasSetting(ClassicFENtastic)</visible>
 				</control>
 				<control type="image">
@@ -1382,7 +1382,7 @@
 					<texture>masks/divider.png</texture>
 					<visible>!Skin.HasSetting(ClassicFENtastic)</visible>
 				</control>
-				<!-- Class FENtastic Artwork -->
+				<!-- Class Eternal Artwork -->
 				<control type="image">
 					<left>24</left>
 					<top>-4</top>
@@ -1399,7 +1399,7 @@
 					<width>130</width>
 					<height>56</height>
 					<texture colordiffuse="button_focus" fallback="special://skin/media/logos/K-logo.png">$VAR[CustomLogoImage]</texture>
-					<visible>Skin.HasSetting(ClassicFENtastic) + String.IsEmpty(Skin.String(customlogo)) + !String.IsEqual(Skin.String(CurrentSkinColor),Classic FENtastic)</visible>
+					<visible>Skin.HasSetting(ClassicFENtastic) + String.IsEmpty(Skin.String(customlogo)) + !String.IsEqual(Skin.String(CurrentSkinColor),Classic Eternal)</visible>
 				</control>
 				<control type="image">
 					<left>19</left>
@@ -1408,7 +1408,7 @@
 					<width>130</width>
 					<height>56</height>
 					<texture colordiffuse="accent_color" fallback="special://skin/media/logos/K-logo.png">$VAR[CustomLogoImage]</texture>
-					<visible>Skin.HasSetting(ClassicFENtastic) + String.IsEmpty(Skin.String(customlogo)) + String.IsEqual(Skin.String(CurrentSkinColor),Classic FENtastic)</visible>
+					<visible>Skin.HasSetting(ClassicFENtastic) + String.IsEmpty(Skin.String(customlogo)) + String.IsEqual(Skin.String(CurrentSkinColor),Classic Eternal)</visible>
 				</control>
 				<control type="image">
 					<left>59</left>

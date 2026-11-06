@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <includes>
 	<include name="Changelog">
-		<label>[B][COLOR accent_color]Version $INFO[System.AddonVersion(skin.fentastic)] by Zaxxon709[/COLOR][/B]
+		<label>[B][COLOR accent_color]Version $INFO[System.AddonVersion(skin.eternal)] by Zaxxon709[/COLOR][/B]
 - Fixed Kodi prompting to install missing add-ons when disabled menu sections contained paths to uninstalled add-ons
 - Added a setting to enable or disable a top bar shortcut for the Add-on Browser
 - Included Torbox authorization shortcuts in the tools menu
@@ -37,9 +37,9 @@
 
 [B][COLOR accent_color]Version 100.0.30a[/COLOR][/B]
 - Added Eternal (FLAM fork by Red Wizard) to the list of search providers 
-- Added a first-run setup wizard to choose your preferred FENtastic experience:
-  1. Classic FENtastic
-  2. FENtastic Plus
+- Added a first-run setup wizard to choose your preferred Eternal experience:
+  1. Classic Eternal
+  2. Eternal Plus
 - Don’t worry, if you’re unhappy with your selection, you can change it at any time under Skin Settings → Options → Look and Feel
 - Improved the search window Switch Provider option. When changing providers, the previously searched title is now automatically re-run using the newly selected provider.
 - Fixed search history re-search functionality
@@ -125,7 +125,7 @@
 - When creating main menus there is now has an additional 'No Path' option listed in the dialog. This allows the creation of main menus that have no action when selected. The user can still label the menu as per normal.
 - Fixed bug that caused Landscape/Landscape Big view type icons to be covered/diffused when focused
 - Added pre-configured menu/widget setups for supported addons
-- Changed the name of the skin to FENtastic Plus. Kept the same plugin name 'skin.fentastic'
+- Changed the name of the skin to Eternal Plus. Kept the same plugin name 'skin.eternal'
 - Enjoy! Credit to ivarbrandt for this skin!
 
 [B][COLOR accent_color]Version 1.0.25[/COLOR][/B]
@@ -186,7 +186,7 @@
 - Added optional color studio logos
 - Added custom background and fanart brightness
 - Added custom version of AutoCompletion for virtual keyboard to repo (only try if you are having issues with your version)
-- Added optional FENtastic Audio Suite to repo
+- Added optional Eternal Audio Suite to repo
 - Reorganized skin settings
 - Fixed WideWall view
 - Removed color themes
@@ -358,9 +358,9 @@ Main changes from default Estuary include:
     </label>
 	</include>
 	<include name="SetupGuide">
-		<label>[B][COLOR accent_color]Welcome to the FENtastic Setup Guide[/COLOR][/B]
+		<label>[B][COLOR accent_color]Welcome to the Eternal Setup Guide[/COLOR][/B]
 
-FENtastic Plus is a skin specifically designed for TMDbH, Fen Light, Umbrella and POV users. It can display movie, tvshow, and episode widgets as well as submenu widgets. It can also set paths for main menu items (more on this later). Here in this guide I will show you how these work and how to set them up.
+Eternal Plus is a skin specifically designed for TMDbH, Fen Light, Umbrella and POV users. It can display movie, tvshow, and episode widgets as well as submenu widgets. It can also set paths for main menu items (more on this later). Here in this guide I will show you how these work and how to set them up.
 
 On first install the home screen should be empty. This means that the Movie and Show sections should be missing from the main menu on the left.
 
@@ -379,7 +379,7 @@ Click a menu item to toggle the display of a section on and off. This will show 
 
 That's it! You're all set to go. Enjoy the skin!
 
-If you would like to see a more detailed version of this Setup Guide, please visit my Github repo at https://github.com/ivarbrandt/skin.fentastic
+If you would like to see a more detailed version of this Setup Guide, please visit my Github repo at https://github.com/ivarbrandt/skin.eternal
     </label>
 	</include>
 </includes>

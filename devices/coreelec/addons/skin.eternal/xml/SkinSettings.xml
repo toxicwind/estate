@@ -2,10 +2,10 @@
 <window>
 	<defaultcontrol always="true">9000</defaultcontrol>
 	<onload condition="String.IsEqual(Skin.String(current_search_provider),0) + String.IsEqual(Skin.String(SearchBehavior),2)">Skin.SetString(SearchBehavior,1)</onload>
-	<onload>ClearProperty(fentastic.results)</onload>
+	<onload>ClearProperty(eternal.results)</onload>
 	<onload>SetFocus(9000)</onload>
-	<onload>ClearProperty(fentastic.results)</onload>
-	<onunload>ClearProperty(fentastic.results)</onunload>
+	<onload>ClearProperty(eternal.results)</onload>
+	<onunload>ClearProperty(eternal.results)</onunload>
 	<backgroundcolor>background</backgroundcolor>
 	<controls>
 		<include>DefaultBackground</include>
@@ -66,7 +66,7 @@
 				<control type="button" id="624">
 					<label>Remake menus and widgets</label>
 					<include>DefaultSettingButton</include>
-					<onclick>RunScript(script.fentastic.helper,mode=remake_all_cpaths)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=remake_all_cpaths)</onclick>
 				</control>
 				<!-- MOVIES -->
 				<control type="radiobutton" id="625">
@@ -74,24 +74,24 @@
 					<include>DefaultSettingButton</include>
 					<selected>!Skin.HasSetting(HomeMenuNoMoviesButton)</selected>
 					<onclick>Skin.ToggleSetting(HomeMenuNoMoviesButton)</onclick>
-					<onclick>RunScript(script.fentastic.helper,mode=remake_all_cpaths&amp;silent=true)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=remake_all_cpaths&amp;silent=true)</onclick>
 				</control>
 				<control type="button" id="6251">
 					<label>   - Set main menu name / path</label>
 					<include>DefaultSettingButton</include>
-					<onclick>RunScript(script.fentastic.helper,mode=manage_main_menu_path&amp;cpath_setting=movie.main_menu)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=manage_main_menu_path&amp;cpath_setting=movie.main_menu)</onclick>
 					<visible>!Skin.HasSetting(HomeMenuNoMoviesButton)</visible>
 				</control>
 				<control type="button" id="6252">
 					<label>   - Set widgets</label>
 					<include>DefaultSettingButton</include>
-					<onclick>RunScript(script.fentastic.helper,mode=manage_widgets&amp;cpath_setting=movie.widget)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=manage_widgets&amp;cpath_setting=movie.widget)</onclick>
 					<visible>!Skin.HasSetting(HomeMenuNoMoviesButton)</visible>
 				</control>
 				<control type="button" id="6253">
 					<label>   - Manage main menu icon</label>
 					<include>DefaultSettingButton</include>
-					<onclick>RunScript(script.fentastic.helper,mode=manage_main_menu_icon&amp;cpath_setting=movie.main_menu_icon)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=manage_main_menu_icon&amp;cpath_setting=movie.main_menu_icon)</onclick>
 					<visible>!Skin.HasSetting(HomeMenuNoMoviesButton) + Skin.HasSetting(NoIconMainMenu)</visible>
 				</control>
 				<!-- TV SHOWS -->
@@ -100,24 +100,24 @@
 					<include>DefaultSettingButton</include>
 					<selected>!Skin.HasSetting(HomeMenuNoTVShowsButton)</selected>
 					<onclick>Skin.ToggleSetting(HomeMenuNoTVShowsButton)</onclick>
-					<onclick>RunScript(script.fentastic.helper,mode=remake_all_cpaths&amp;silent=true)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=remake_all_cpaths&amp;silent=true)</onclick>
 				</control>
 				<control type="button" id="6260">
 					<label>   - Set main menu name / path</label>
 					<include>DefaultSettingButton</include>
-					<onclick>RunScript(script.fentastic.helper,mode=manage_main_menu_path&amp;cpath_setting=tvshow.main_menu)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=manage_main_menu_path&amp;cpath_setting=tvshow.main_menu)</onclick>
 					<visible>!Skin.HasSetting(HomeMenuNoTVShowsButton)</visible>
 				</control>
 				<control type="button" id="6261">
 					<label>   - Set widgets</label>
 					<include>DefaultSettingButton</include>
-					<onclick>RunScript(script.fentastic.helper,mode=manage_widgets&amp;cpath_setting=tvshow.widget)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=manage_widgets&amp;cpath_setting=tvshow.widget)</onclick>
 					<visible>!Skin.HasSetting(HomeMenuNoTVShowsButton)</visible>
 				</control>
 				<control type="button" id="6263">
 					<label>   - Manage main menu icon</label>
 					<include>DefaultSettingButton</include>
-					<onclick>RunScript(script.fentastic.helper,mode=manage_main_menu_icon&amp;cpath_setting=tvshow.main_menu_icon)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=manage_main_menu_icon&amp;cpath_setting=tvshow.main_menu_icon)</onclick>
 					<visible>!Skin.HasSetting(HomeMenuNoTVShowsButton) + Skin.HasSetting(NoIconMainMenu)</visible>
 				</control>
 				<!-- CUSTOM 1 -->
@@ -126,24 +126,24 @@
 					<include>DefaultSettingButton</include>
 					<selected>!Skin.HasSetting(HomeMenuNoCustom1Button)</selected>
 					<onclick>Skin.ToggleSetting(HomeMenuNoCustom1Button)</onclick>
-					<onclick>RunScript(script.fentastic.helper,mode=remake_all_cpaths&amp;silent=true)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=remake_all_cpaths&amp;silent=true)</onclick>
 				</control>
 				<control type="button" id="6270">
 					<label>   - Set main menu name / path</label>
 					<include>DefaultSettingButton</include>
-					<onclick>RunScript(script.fentastic.helper,mode=manage_main_menu_path&amp;cpath_setting=custom1.main_menu)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=manage_main_menu_path&amp;cpath_setting=custom1.main_menu)</onclick>
 					<visible>!Skin.HasSetting(HomeMenuNoCustom1Button)</visible>
 				</control>
 				<control type="button" id="6271">
 					<label>   - Set widgets</label>
 					<include>DefaultSettingButton</include>
-					<onclick>RunScript(script.fentastic.helper,mode=manage_widgets&amp;cpath_setting=custom1.widget)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=manage_widgets&amp;cpath_setting=custom1.widget)</onclick>
 					<visible>!Skin.HasSetting(HomeMenuNoCustom1Button)</visible>
 				</control>
 				<control type="button" id="6273">
 					<label>   - Manage main menu icon</label>
 					<include>DefaultSettingButton</include>
-					<onclick>RunScript(script.fentastic.helper,mode=manage_main_menu_icon&amp;cpath_setting=custom1.main_menu_icon)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=manage_main_menu_icon&amp;cpath_setting=custom1.main_menu_icon)</onclick>
 					<visible>!Skin.HasSetting(HomeMenuNoCustom1Button) + Skin.HasSetting(NoIconMainMenu)</visible>
 				</control>
 				<!-- CUSTOM 2 -->
@@ -152,24 +152,24 @@
 					<include>DefaultSettingButton</include>
 					<selected>!Skin.HasSetting(HomeMenuNoCustom2Button)</selected>
 					<onclick>Skin.ToggleSetting(HomeMenuNoCustom2Button)</onclick>
-					<onclick>RunScript(script.fentastic.helper,mode=remake_all_cpaths&amp;silent=true)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=remake_all_cpaths&amp;silent=true)</onclick>
 				</control>
 				<control type="button" id="6280">
 					<label>   - Set main menu name / path</label>
 					<include>DefaultSettingButton</include>
-					<onclick>RunScript(script.fentastic.helper,mode=manage_main_menu_path&amp;cpath_setting=custom2.main_menu)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=manage_main_menu_path&amp;cpath_setting=custom2.main_menu)</onclick>
 					<visible>!Skin.HasSetting(HomeMenuNoCustom2Button)</visible>
 				</control>
 				<control type="button" id="6281">
 					<label>   - Set widgets</label>
 					<include>DefaultSettingButton</include>
-					<onclick>RunScript(script.fentastic.helper,mode=manage_widgets&amp;cpath_setting=custom2.widget)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=manage_widgets&amp;cpath_setting=custom2.widget)</onclick>
 					<visible>!Skin.HasSetting(HomeMenuNoCustom2Button)</visible>
 				</control>
 				<control type="button" id="6283">
 					<label>   - Manage main menu icon</label>
 					<include>DefaultSettingButton</include>
-					<onclick>RunScript(script.fentastic.helper,mode=manage_main_menu_icon&amp;cpath_setting=custom2.main_menu_icon)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=manage_main_menu_icon&amp;cpath_setting=custom2.main_menu_icon)</onclick>
 					<visible>!Skin.HasSetting(HomeMenuNoCustom2Button) + Skin.HasSetting(NoIconMainMenu)</visible>
 				</control>
 				<!-- CUSTOM 3 -->
@@ -178,24 +178,24 @@
 					<include>DefaultSettingButton</include>
 					<selected>!Skin.HasSetting(HomeMenuNoCustom3Button)</selected>
 					<onclick>Skin.ToggleSetting(HomeMenuNoCustom3Button)</onclick>
-					<onclick>RunScript(script.fentastic.helper,mode=remake_all_cpaths&amp;silent=true)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=remake_all_cpaths&amp;silent=true)</onclick>
 				</control>
 				<control type="button" id="6290">
 					<label>   - Set main menu name / path</label>
 					<include>DefaultSettingButton</include>
-					<onclick>RunScript(script.fentastic.helper,mode=manage_main_menu_path&amp;cpath_setting=custom3.main_menu)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=manage_main_menu_path&amp;cpath_setting=custom3.main_menu)</onclick>
 					<visible>!Skin.HasSetting(HomeMenuNoCustom3Button)</visible>
 				</control>
 				<control type="button" id="6291">
 					<label>   - Set widgets</label>
 					<include>DefaultSettingButton</include>
-					<onclick>RunScript(script.fentastic.helper,mode=manage_widgets&amp;cpath_setting=custom3.widget)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=manage_widgets&amp;cpath_setting=custom3.widget)</onclick>
 					<visible>!Skin.HasSetting(HomeMenuNoCustom3Button)</visible>
 				</control>
 				<control type="button" id="6293">
 					<label>   - Manage main menu icon</label>
 					<include>DefaultSettingButton</include>
-					<onclick>RunScript(script.fentastic.helper,mode=manage_main_menu_icon&amp;cpath_setting=custom3.main_menu_icon)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=manage_main_menu_icon&amp;cpath_setting=custom3.main_menu_icon)</onclick>
 					<visible>!Skin.HasSetting(HomeMenuNoCustom3Button) + Skin.HasSetting(NoIconMainMenu)</visible>
 				</control>
 				<!-- CUSTOM 4 -->
@@ -204,24 +204,24 @@
 					<include>DefaultSettingButton</include>
 					<selected>!Skin.HasSetting(HomeMenuNoCustom4Button)</selected>
 					<onclick>Skin.ToggleSetting(HomeMenuNoCustom4Button)</onclick>
-					<onclick>RunScript(script.fentastic.helper,mode=remake_all_cpaths&amp;silent=true)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=remake_all_cpaths&amp;silent=true)</onclick>
 				</control>
 				<control type="button" id="6301">
 					<label>   - Set main menu name / path</label>
 					<include>DefaultSettingButton</include>
-					<onclick>RunScript(script.fentastic.helper,mode=manage_main_menu_path&amp;cpath_setting=custom4.main_menu)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=manage_main_menu_path&amp;cpath_setting=custom4.main_menu)</onclick>
 					<visible>!Skin.HasSetting(HomeMenuNoCustom4Button)</visible>
 				</control>
 				<control type="button" id="6302">
 					<label>   - Set widgets</label>
 					<include>DefaultSettingButton</include>
-					<onclick>RunScript(script.fentastic.helper,mode=manage_widgets&amp;cpath_setting=custom4.widget)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=manage_widgets&amp;cpath_setting=custom4.widget)</onclick>
 					<visible>!Skin.HasSetting(HomeMenuNoCustom4Button)</visible>
 				</control>
 				<control type="button" id="6303">
 					<label>   - Manage main menu icon</label>
 					<include>DefaultSettingButton</include>
-					<onclick>RunScript(script.fentastic.helper,mode=manage_main_menu_icon&amp;cpath_setting=custom4.main_menu_icon)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=manage_main_menu_icon&amp;cpath_setting=custom4.main_menu_icon)</onclick>
 					<visible>!Skin.HasSetting(HomeMenuNoCustom4Button) + Skin.HasSetting(NoIconMainMenu)</visible>
 				</control>
 				<!-- CUSTOM 5 -->
@@ -230,24 +230,24 @@
 					<include>DefaultSettingButton</include>
 					<selected>!Skin.HasSetting(HomeMenuNoCustom5Button)</selected>
 					<onclick>Skin.ToggleSetting(HomeMenuNoCustom5Button)</onclick>
-					<onclick>RunScript(script.fentastic.helper,mode=remake_all_cpaths&amp;silent=true)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=remake_all_cpaths&amp;silent=true)</onclick>
 				</control>
 				<control type="button" id="6310">
 					<label>   - Set main menu name / path</label>
 					<include>DefaultSettingButton</include>
-					<onclick>RunScript(script.fentastic.helper,mode=manage_main_menu_path&amp;cpath_setting=custom5.main_menu)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=manage_main_menu_path&amp;cpath_setting=custom5.main_menu)</onclick>
 					<visible>!Skin.HasSetting(HomeMenuNoCustom5Button)</visible>
 				</control>
 				<control type="button" id="6311">
 					<label>   - Set widgets</label>
 					<include>DefaultSettingButton</include>
-					<onclick>RunScript(script.fentastic.helper,mode=manage_widgets&amp;cpath_setting=custom5.widget)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=manage_widgets&amp;cpath_setting=custom5.widget)</onclick>
 					<visible>!Skin.HasSetting(HomeMenuNoCustom5Button)</visible>
 				</control>
 				<control type="button" id="6313">
 					<label>   - Manage main menu icon</label>
 					<include>DefaultSettingButton</include>
-					<onclick>RunScript(script.fentastic.helper,mode=manage_main_menu_icon&amp;cpath_setting=custom5.main_menu_icon)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=manage_main_menu_icon&amp;cpath_setting=custom5.main_menu_icon)</onclick>
 					<visible>!Skin.HasSetting(HomeMenuNoCustom5Button) + Skin.HasSetting(NoIconMainMenu)</visible>
 				</control>
 				<!-- CUSTOM 6 -->
@@ -256,24 +256,24 @@
 					<include>DefaultSettingButton</include>
 					<selected>!Skin.HasSetting(HomeMenuNoCustom6Button)</selected>
 					<onclick>Skin.ToggleSetting(HomeMenuNoCustom6Button)</onclick>
-					<onclick>RunScript(script.fentastic.helper,mode=remake_all_cpaths&amp;silent=true)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=remake_all_cpaths&amp;silent=true)</onclick>
 				</control>
 				<control type="button" id="6320">
 					<label>   - Set main menu name / path</label>
 					<include>DefaultSettingButton</include>
-					<onclick>RunScript(script.fentastic.helper,mode=manage_main_menu_path&amp;cpath_setting=custom6.main_menu)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=manage_main_menu_path&amp;cpath_setting=custom6.main_menu)</onclick>
 					<visible>!Skin.HasSetting(HomeMenuNoCustom6Button)</visible>
 				</control>
 				<control type="button" id="6321">
 					<label>   - Set widgets</label>
 					<include>DefaultSettingButton</include>
-					<onclick>RunScript(script.fentastic.helper,mode=manage_widgets&amp;cpath_setting=custom6.widget)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=manage_widgets&amp;cpath_setting=custom6.widget)</onclick>
 					<visible>!Skin.HasSetting(HomeMenuNoCustom6Button)</visible>
 				</control>
 				<control type="button" id="6323">
 					<label>   - Manage main menu icon</label>
 					<include>DefaultSettingButton</include>
-					<onclick>RunScript(script.fentastic.helper,mode=manage_main_menu_icon&amp;cpath_setting=custom6.main_menu_icon)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=manage_main_menu_icon&amp;cpath_setting=custom6.main_menu_icon)</onclick>
 					<visible>!Skin.HasSetting(HomeMenuNoCustom6Button) + Skin.HasSetting(NoIconMainMenu)</visible>
 				</control>
 				<!-- SEPARATOR -->
@@ -737,7 +737,7 @@
 					<label2>$VAR[PowerButtonModeVar]</label2>
 					<include>DefaultSettingButton</include>
 					<!-- Open select dialog via script (reliable method) -->
-					<onclick>RunScript(script.fentastic.helper,mode=power_mode_select)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=power_mode_select)</onclick>
 				</control>
 				<!-- FAVOURITES -->
 				<control type="radiobutton" id="63702">
@@ -776,9 +776,9 @@
 					<!-- Toggle the setting -->
 					<onclick>Skin.ToggleSetting(NoSplash)</onclick>
 					<!-- Run splash_off when enabled -->
-					<onclick condition="!Skin.HasSetting(NoSplash)">RunScript(script.fentastic.helper,mode=splash_off)</onclick>
+					<onclick condition="!Skin.HasSetting(NoSplash)">RunScript(script.eternal.helper,mode=splash_off)</onclick>
 					<!-- Run splash_on when disabled -->
-					<onclick condition="Skin.HasSetting(NoSplash)">RunScript(script.fentastic.helper,mode=splash_on)</onclick>
+					<onclick condition="Skin.HasSetting(NoSplash)">RunScript(script.eternal.helper,mode=splash_on)</onclick>
 				</control>
 				<!-- SEPARATOR -->
 				<control type="button" id="63707">
@@ -797,14 +797,14 @@
 					<label>Set Backup Directory</label>
 					<label2>$INFO[Skin.String(backup_directory)]</label2>
 					<include>DefaultSettingButton</include>
-					<onclick>RunScript(script.fentastic.helper,mode=set_backup_directory)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=set_backup_directory)</onclick>
 				</control>
 				<!-- RESET BACKUP DIRECTORY -->
 				<control type="button" id="63709">
 					<label>Reset Backup Directory</label>
 					<include>DefaultSettingButton</include>
 					<onclick>Skin.SetString(backup_directory,special://home/backups/FENtastic_Plus/)</onclick>
-					<onclick>Notification(FENtastic Plus,Backup directory reset to default,3000)</onclick>
+					<onclick>Notification(Eternal Plus,Backup directory reset to default,3000)</onclick>
 				</control>
 			</control>
 			<control type="grouplist" id="647">
@@ -970,7 +970,7 @@
 				<control type="button" id="64718">
 					<label>Clear search history</label>
 					<include>DefaultSettingButton</include>
-					<onclick>RunScript(script.fentastic.helper,mode=remove_all_spaths)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=remove_all_spaths)</onclick>
 					<visible>!Skin.HasSetting(NoSearchResultsWindow)</visible>
 				</control>
 			</control>
@@ -990,7 +990,7 @@
 					<label>Enter MDbList API Key</label>
 					<label2>$INFO[Skin.String(mdblist_api_key)]</label2>
 					<include>DefaultSettingButton</include>
-					<onclick>RunScript(script.fentastic.helper, mode=set_api_key)</onclick>
+					<onclick>RunScript(script.eternal.helper, mode=set_api_key)</onclick>
 				</control>
 				<control type="radiobutton" id="64801">
 					<label>Enable one-click trailers (long press play/pause button or 't' key on keyboard)</label>
@@ -1064,7 +1064,7 @@
 				<control type="button" id="64811">
 					<label>Clear ratings cache</label>
 					<include>DefaultSettingButton</include>
-					<onclick>RunScript(script.fentastic.helper,mode=delete_all_ratings)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=delete_all_ratings)</onclick>
 					<visible>!String.IsEmpty(Skin.String(mdblist_api_key))</visible>
 				</control>
 			</control>
@@ -1078,12 +1078,12 @@
 				<onup>700</onup>
 				<ondown>700</ondown>
 				<visible>Container(9000).HasFocus(5)</visible>
-				<!-- Classic FENtastic & FENtastic PLus Experience-->
+				<!-- Classic Eternal & Eternal PLus Experience-->
 				<control type="button" id="701">
 					<label>Look &amp; Feel</label>
 					<label2>$VAR[LookFeelLabel]</label2>
 					<include>DefaultSettingButton</include>
-					<onclick>RunScript(script.fentastic.helper,mode=choose_lookfeel)</onclick>
+					<onclick>RunScript(script.eternal.helper,mode=choose_lookfeel)</onclick>
 				</control>
 				<control type="radiobutton" id="702">
 					<label>$LOCALIZE[31158]</label>
@@ -1165,12 +1165,12 @@
 					<label>Choose home screen logo</label>
 					<label2>$INFO[Skin.String(CustomLogo)]</label2>
 					<include>DefaultSettingButton</include>
-					<onclick>RunScript(script.fentastic.helper, mode=set_image_logo)</onclick>
+					<onclick>RunScript(script.eternal.helper, mode=set_image_logo)</onclick>
 				</control>
 				<control type="button" id="604">
 					<label>   - Restore default logo</label>
 					<include>DefaultSettingButton</include>
-					<onclick condition="!Skin.HasSetting(ClassicFENtastic)">Skin.SetString(CustomLogo,special://skin/extras/logos/fentastic.png)</onclick>
+					<onclick condition="!Skin.HasSetting(ClassicFENtastic)">Skin.SetString(CustomLogo,special://skin/extras/logos/eternal.png)</onclick>
 					<onclick condition="Skin.HasSetting(ClassicFENtastic)">Skin.SetString(CustomLogo,special://skin/extras/logos/kodi_logo.png)</onclick>
 					<visible>!String.IsEmpty(Skin.String(CustomLogo))</visible>
 				</control>
@@ -1178,7 +1178,7 @@
 					<label>Choose default background</label>
 					<label2>$INFO[Skin.String(CustomBackground)]</label2>
 					<include>DefaultSettingButton</include>
-					<onclick>RunScript(script.fentastic.helper, mode=set_image)</onclick>
+					<onclick>RunScript(script.eternal.helper, mode=set_image)</onclick>
 				</control>
 				<control type="button" id="606">
 					<label>   - Restore default background</label>
@@ -1315,7 +1315,7 @@
 					<label>Configure Skin Colour</label>
 					<label2>$INFO[Skin.String(CurrentSkinColor)]</label2>
 					<include>DefaultSettingButton</include>
-					<onclick>RunScript(script.fentastic.helper, mode=set_color)</onclick>
+					<onclick>RunScript(script.eternal.helper, mode=set_color)</onclick>
 				</control>
 			</control>
 			<control type="grouplist" id="622">
@@ -1357,9 +1357,9 @@
 				<visible>Container(9000).HasFocus(10)</visible>
 				<control type="button" id="6230">
 					<include>DefaultSettingButton</include>
-					<label>[B]CHANGELOG: $INFO[System.AddonTitle(skin.fentastic)][/B]</label>
+					<label>[B]CHANGELOG: $INFO[System.AddonTitle(skin.eternal)][/B]</label>
 					<onclick>SetProperty(Changelog,True)</onclick>
-					<onclick>SetProperty(TextViewerHeader,[B]CHANGELOG: $INFO[System.AddonTitle(skin.fentastic)] v$INFO[System.AddonVersion(skin.fentastic)][/B],Home)</onclick>
+					<onclick>SetProperty(TextViewerHeader,[B]CHANGELOG: $INFO[System.AddonTitle(skin.eternal)] v$INFO[System.AddonVersion(skin.eternal)][/B],Home)</onclick>
 					<onclick>ActivateWindow(1119)</onclick>
 				</control>
 				<control type="button" id="6231">

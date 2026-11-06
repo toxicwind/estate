@@ -28,32 +28,32 @@
 					<item>
 						<label>Backup Favourites</label>
 						<onclick>Dialog.Close(all)</onclick>
-						<onclick>RunScript(script.fentastic.helper,mode=backup_favs)</onclick>
+						<onclick>RunScript(script.eternal.helper,mode=backup_favs)</onclick>
 					</item>
 					<item>
 						<label>Restore Favourites</label>
 						<onclick>Dialog.Close(all)</onclick>
-						<onclick>RunScript(script.fentastic.helper,mode=restore_favs)</onclick>
+						<onclick>RunScript(script.eternal.helper,mode=restore_favs)</onclick>
 					</item>
 					<item>
 						<label>Backup GUI Settings</label>
 						<onclick>Dialog.Close(all)</onclick>
-						<onclick>RunScript(script.fentastic.helper,mode=backup_gui)</onclick>
+						<onclick>RunScript(script.eternal.helper,mode=backup_gui)</onclick>
 					</item>
 					<item>
 						<label>Restore GUI Settings</label>
 						<onclick>Dialog.Close(all)</onclick>
-						<onclick>RunScript(script.fentastic.helper,mode=restore_gui)</onclick>
+						<onclick>RunScript(script.eternal.helper,mode=restore_gui)</onclick>
 					</item>
 					<item>
 						<label>Restore Default GUI Settings</label>
 						<onclick>Dialog.Close(all)</onclick>
-						<onclick>RunScript(script.fentastic.helper,mode=restore_gui_dflt)</onclick>
+						<onclick>RunScript(script.eternal.helper,mode=restore_gui_dflt)</onclick>
 					</item>
 					<item>
 						<label>Restore Default Skin Settings</label>
 						<onclick>Dialog.Close(all)</onclick>
-						<onclick>RunScript(script.fentastic.helper,mode=restore_skin_dflt)</onclick>
+						<onclick>RunScript(script.eternal.helper,mode=restore_skin_dflt)</onclick>
 					</item>
 				</content>
 			</control>

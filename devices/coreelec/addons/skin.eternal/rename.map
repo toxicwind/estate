@@ -1,0 +1,277 @@
+[
+  {
+    "from": "FENtastic",
+    "to": "Eternal",
+    "file": "LICENSE.txt"
+  },
+  {
+    "from": "FENtastic",
+    "to": "Eternal",
+    "file": "README.md"
+  },
+  {
+    "from": "fentastic",
+    "to": "eternal",
+    "file": "README.md"
+  },
+  {
+    "from": "fentastic",
+    "to": "eternal",
+    "file": "resources/gui_skin_dflt/K21/guisettings.xml"
+  },
+  {
+    "from": "fentastic",
+    "to": "eternal",
+    "file": "resources/gui_skin_dflt/K22/guisettings.xml"
+  },
+  {
+    "from": "script.fentastic.helper",
+    "to": "script.eternal.helper",
+    "file": "resources/pre_configs/Fen_Light_Anime/menus_widgets/script-fentastic-search_history.xml"
+  },
+  {
+    "from": "script.fentastic.helper",
+    "to": "script.eternal.helper",
+    "file": "resources/pre_configs/Fen_Light_Basic/menus_widgets/script-fentastic-search_history.xml"
+  },
+  {
+    "from": "script.fentastic.helper",
+    "to": "script.eternal.helper",
+    "file": "resources/pre_configs/Fen_Light_Trakt/menus_widgets/script-fentastic-search_history.xml"
+  },
+  {
+    "from": "script.fentastic.helper",
+    "to": "script.eternal.helper",
+    "file": "resources/pre_configs/POV_Anime/menus_widgets/script-fentastic-search_history.xml"
+  },
+  {
+    "from": "script.fentastic.helper",
+    "to": "script.eternal.helper",
+    "file": "resources/pre_configs/POV_Basic/menus_widgets/script-fentastic-search_history.xml"
+  },
+  {
+    "from": "script.fentastic.helper",
+    "to": "script.eternal.helper",
+    "file": "resources/pre_configs/POV_Trakt/menus_widgets/script-fentastic-search_history.xml"
+  },
+  {
+    "from": "script.fentastic.helper",
+    "to": "script.eternal.helper",
+    "file": "resources/pre_configs/TMDbH/menus_widgets/script-fentastic-search_history.xml"
+  },
+  {
+    "from": "script.fentastic.helper",
+    "to": "script.eternal.helper",
+    "file": "resources/pre_configs/The_Gears_Basic/menus_widgets/script-fentastic-search_history.xml"
+  },
+  {
+    "from": "script.fentastic.helper",
+    "to": "script.eternal.helper",
+    "file": "resources/pre_configs/The_Gears_Trakt/menus_widgets/script-fentastic-search_history.xml"
+  },
+  {
+    "from": "script.fentastic.helper",
+    "to": "script.eternal.helper",
+    "file": "resources/pre_configs/Umbrella_Basic/menus_widgets/script-fentastic-search_history.xml"
+  },
+  {
+    "from": "script.fentastic.helper",
+    "to": "script.eternal.helper",
+    "file": "resources/pre_configs/Umbrella_Trakt/menus_widgets/script-fentastic-search_history.xml"
+  },
+  {
+    "from": "script.fentastic.helper",
+    "to": "script.eternal.helper",
+    "file": "xml/Custom_1106_ToolsDialog.xml"
+  },
+  {
+    "from": "script.fentastic.helper",
+    "to": "script.eternal.helper",
+    "file": "xml/Custom_1111_Authorization.xml"
+  },
+  {
+    "from": "script.fentastic.helper",
+    "to": "script.eternal.helper",
+    "file": "xml/Custom_1112_StartHelp.xml"
+  },
+  {
+    "from": "FENtastic",
+    "to": "Eternal",
+    "file": "xml/Custom_1112_StartHelp.xml"
+  },
+  {
+    "from": "script.fentastic.helper",
+    "to": "script.eternal.helper",
+    "file": "xml/Custom_1113_RD_Auth.xml"
+  },
+  {
+    "from": "script.fentastic.helper",
+    "to": "script.eternal.helper",
+    "file": "xml/Custom_1114_PM_Auth.xml"
+  },
+  {
+    "from": "script.fentastic.helper",
+    "to": "script.eternal.helper",
+    "file": "xml/Custom_1115_AD_Auth.xml"
+  },
+  {
+    "from": "script.fentastic.helper",
+    "to": "script.eternal.helper",
+    "file": "xml/Custom_1116_TB_Auth.xml"
+  },
+  {
+    "from": "script.fentastic.helper",
+    "to": "script.eternal.helper",
+    "file": "xml/Custom_1120_Maintenance.xml"
+  },
+  {
+    "from": "script.fentastic.helper",
+    "to": "script.eternal.helper",
+    "file": "xml/Custom_1121_SearchResults.xml"
+  },
+  {
+    "from": "fentastic",
+    "to": "eternal",
+    "file": "xml/Custom_1121_SearchResults.xml"
+  },
+  {
+    "from": "script.fentastic.helper",
+    "to": "script.eternal.helper",
+    "file": "xml/Custom_1123_Backup_Restore.xml"
+  },
+  {
+    "from": "script.fentastic.helper",
+    "to": "script.eternal.helper",
+    "file": "xml/Custom_1124_Backup_Restore_Configs.xml"
+  },
+  {
+    "from": "script.fentastic.helper",
+    "to": "script.eternal.helper",
+    "file": "xml/Custom_1125_Import_Export_Configs.xml"
+  },
+  {
+    "from": "script.fentastic.helper",
+    "to": "script.eternal.helper",
+    "file": "xml/Custom_1150_LookFeel.xml"
+  },
+  {
+    "from": "FENtastic",
+    "to": "Eternal",
+    "file": "xml/Custom_1150_LookFeel.xml"
+  },
+  {
+    "from": "fentastic",
+    "to": "eternal",
+    "file": "xml/Custom_1150_LookFeel.xml"
+  },
+  {
+    "from": "script.fentastic.helper",
+    "to": "script.eternal.helper",
+    "file": "xml/Home.xml"
+  },
+  {
+    "from": "FENtastic",
+    "to": "Eternal",
+    "file": "xml/Home.xml"
+  },
+  {
+    "from": "fentastic",
+    "to": "eternal",
+    "file": "xml/Home.xml"
+  },
+  {
+    "from": "script-fentastic",
+    "to": "script-eternal",
+    "file": "xml/Includes.xml"
+  },
+  {
+    "from": "fentastic",
+    "to": "eternal",
+    "file": "xml/Includes.xml"
+  },
+  {
+    "from": "FENtastic",
+    "to": "Eternal",
+    "file": "xml/Includes_ExtraInfoContent.xml"
+  },
+  {
+    "from": "fentastic",
+    "to": "eternal",
+    "file": "xml/Includes_ExtraInfoContent.xml"
+  },
+  {
+    "from": "script.fentastic.helper",
+    "to": "script.eternal.helper",
+    "file": "xml/Includes_Home.xml"
+  },
+  {
+    "from": "fentastic",
+    "to": "eternal",
+    "file": "xml/Includes_Home.xml"
+  },
+  {
+    "from": "script.fentastic.helper",
+    "to": "script.eternal.helper",
+    "file": "xml/SkinSettings.xml"
+  },
+  {
+    "from": "FENtastic",
+    "to": "Eternal",
+    "file": "xml/SkinSettings.xml"
+  },
+  {
+    "from": "fentastic",
+    "to": "eternal",
+    "file": "xml/SkinSettings.xml"
+  },
+  {
+    "from": "FENtastic",
+    "to": "Eternal",
+    "file": "xml/Variables.xml"
+  },
+  {
+    "from": "fentastic",
+    "to": "eternal",
+    "file": "xml/View_50_List.xml"
+  },
+  {
+    "from": "script.fentastic.helper",
+    "to": "script.eternal.helper",
+    "file": "xml/script-fentastic-search_history.xml"
+  },
+  {
+    "from": "script.fentastic.helper",
+    "to": "script.eternal.helper",
+    "file": "fentastic-to-eternal.lapidary"
+  },
+  {
+    "from": "script-fentastic",
+    "to": "script-eternal",
+    "file": "fentastic-to-eternal.lapidary"
+  },
+  {
+    "from": "FENtastic",
+    "to": "Eternal",
+    "file": "fentastic-to-eternal.lapidary"
+  },
+  {
+    "from": "FENtasticPlus",
+    "to": "Eternal",
+    "file": "fentastic-to-eternal.lapidary"
+  },
+  {
+    "from": "fentastic",
+    "to": "eternal",
+    "file": "fentastic-to-eternal.lapidary"
+  },
+  {
+    "from": "Fentastic",
+    "to": "Eternal",
+    "file": "fentastic-to-eternal.lapidary"
+  },
+  {
+    "from": "fentastic_plus",
+    "to": "eternal_plus",
+    "file": "fentastic-to-eternal.lapidary"
+  }
+]

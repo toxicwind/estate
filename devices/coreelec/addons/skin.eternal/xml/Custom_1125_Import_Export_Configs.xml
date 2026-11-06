@@ -23,12 +23,12 @@
 					<item>
 						<label>Import Config</label>
 						<onclick>Dialog.Close(all)</onclick>
-						<onclick>RunScript(script.fentastic.helper,mode=import_config)</onclick>
+						<onclick>RunScript(script.eternal.helper,mode=import_config)</onclick>
 					</item>
 					<item>
 						<label>Export Config</label>
 						<onclick>Dialog.Close(all)</onclick>
-						<onclick>RunScript(script.fentastic.helper,mode=export_config)</onclick>
+						<onclick>RunScript(script.eternal.helper,mode=export_config)</onclick>
 					</item>
 				</content>
 			</control>

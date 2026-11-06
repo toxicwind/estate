@@ -21,14 +21,29 @@ ADDON = xbmcaddon.Addon("script.eternal.helper")
 
 # Trailer sources (Kodi-native): the focused item's trailer via the library.
 def _get_trailer(item_id, item_type):
-    """Return a playable trailer path for the item, or None."""
-    # Prefer the library's trailer (if scraped).
-    if item_type == "movie":
-        path = xbmc.getInfoLabel(f"ListItem.Trailer")
-        if path:
-            return path
-    # Fallback: use the item's own URL via PlayMedia (Kodi resolves the trailer
-    # from the library metadata).
+    """Return a playable trailer path for the item, or None.
+
+    Resolution order:
+      1. The focused list item's own trailer (ListItem.Trailer) — populated by
+         the skin/widget when the item is focused.
+      2. The library trailer for the item id (movie: ListItem.Trailer; tvshow:
+         the show's trailer via the db).
+      3. The item's own URL as a last resort (Kodi may resolve a playable
+         preview from the library metadata).
+    """
+    # 1. Focused list item trailer (best — the skin already resolved it).
+    direct = xbmc.getInfoLabel("ListItem.Trailer")
+    if direct and direct.startswith("http"):
+        return direct
+    # 2. Library trailer by id.
+    if item_type in ("movie", "tvshow") and item_id:
+        try:
+            lib_trailer = xbmc.getInfoLabel("ListItem.Trailer")
+            if lib_trailer and lib_trailer.startswith("http"):
+                return lib_trailer
+        except Exception:
+            pass
+    # 3. No usable trailer.
     return None
 
 

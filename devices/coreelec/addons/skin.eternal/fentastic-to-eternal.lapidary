@@ -1,0 +1,21 @@
+# eternal -> eternal rename pairs - Eternal skin/helper -> Eternal
+# word: OLD => NEW (whole word \bOLD\b, case-sensitive)
+# substr: OLD => NEW (substring)
+
+# Addon ids (substr — the dotted id)
+substr: script.eternal.helper => script.eternal.helper
+substr: script-eternal => script-eternal
+
+# Brand names (word)
+word: Eternal => Eternal
+word: Eternal Plus => Eternal
+word: Eternal => Eternal
+word: eternal => eternal
+word: Eternal => Eternal
+
+# Skin dirs / paths
+substr: skin.eternal => skin.eternal
+substr: default_colors/eternal => default_colors/eternal
+substr: optional_colors/eternal => optional_colors/eternal
+substr: eternal_plus => eternal_plus
+substr: eternal-plus => eternal-plus

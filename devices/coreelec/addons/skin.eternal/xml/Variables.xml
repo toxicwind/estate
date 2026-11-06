@@ -1273,9 +1273,9 @@
                       + String.IsEqual(Skin.String(current_search_provider),0)">true</value>
 		<value>false</value>
 	</variable>
-	<!-- Classic FENtastic & FENtastic Plus Look & Feel Experience -->
+	<!-- Classic Eternal & Eternal Plus Look & Feel Experience -->
 	<variable name="LookFeelLabel">
-		<value condition="Skin.HasSetting(ClassicFENtastic)">Classic FENtastic</value>
-		<value>FENtastic Plus</value>
+		<value condition="Skin.HasSetting(ClassicFENtastic)">Classic Eternal</value>
+		<value>Eternal Plus</value>
 	</variable>
 </includes>

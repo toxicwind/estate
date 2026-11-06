@@ -47,12 +47,12 @@
 					</item>
 					<item>
 						<label>Set Skin MDbList API Key</label>
-						<onclick>RunScript(script.fentastic.helper,mode=set_api_key)</onclick>
+						<onclick>RunScript(script.eternal.helper,mode=set_api_key)</onclick>
 					</item>
 					<item>
 						<label>Set TMDbH MDbList API Key</label>
 						<visible>System.HasAddon(plugin.video.themoviedb.helper)</visible>
-						<onclick>RunScript(script.fentastic.helper,tmdbh_mdblist_api)</onclick>
+						<onclick>RunScript(script.eternal.helper,tmdbh_mdblist_api)</onclick>
 					</item>
 					<item>
 						<label>YouTube Sign-In</label>
