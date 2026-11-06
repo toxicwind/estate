@@ -1,0 +1,26 @@
+# fentastic -> eternal rename pairs - FENtastic skin/helper -> Eternal
+# word: OLD => NEW (whole word \bOLD\b, case-sensitive)
+# substr: OLD => NEW (substring)
+
+# Addon ids (substr — the dotted id)
+substr: script.fentastic.helper => script.eternal.helper
+substr: script-fentastic => script-eternal
+
+# Brand names (word)
+word: FENtastic => Eternal
+word: FENtastic Plus => Eternal
+word: fentastic => eternal
+word: Fentastic => Eternal
+
+# Compound identifiers (substr — camelCase/underscore don't split on \b)
+substr: ClassicFENtastic => ClassicEternal
+substr: FENtastic_Plus => Eternal_Plus
+substr: FENtasticPlus => EternalPlus
+substr: FENtastic_ => Eternal_
+
+# Skin dirs / paths
+substr: skin.fentastic => skin.eternal
+substr: default_colors/fentastic => default_colors/eternal
+substr: optional_colors/fentastic => optional_colors/eternal
+substr: fentastic_plus => eternal_plus
+substr: fentastic-plus => eternal-plus
