@@ -118,6 +118,29 @@ the box (Omega → 22.x) if the remote issue persists after reboot.
    `coreelec.amlogic.forcecs`. Use `Settings.SetSettingValue` (not ssh).
 3. **Physical power cycle** is the only reliable framework re-enable.
 
+## Device tree / chip (the "do we even have right DTB" question)
+
+- Box build: **`Amlogic-ne.aarch64-21.3-Omega`** (the "newer" amlogic project in
+  Omega). `Amlogic-ne` ships DTBs for: BuzzTV HD5 (S905Y4), Ugoos AM8 (S928X),
+  X96 X10 (S928X), BuzzTV X5 (S905X4), SEI SMB280 (S905X4), Beelink GT King II
+  (A311D2) — see `projects/Amlogic-ce/devices/Amlogic-ne/bootloader/dtb.conf`.
+- Box MAC OUI `80:9f:9b` = **Sichuan AI-Link Technology Co., Ltd.** — a generic
+  amlogic TV-box ODM. So the box is a generic S905X4-class box (likely the
+  generic `sc2_s905x4_*` DTB), NOT a named brand device.
+- The box boots and renders Kodi (Home window 10000), so the loaded DTB is
+  functional. The CEC issue is separate from the DTB.
+- Full DTB list: `https://coreelec.org/dtb/` (device → SoC → DTB name).
+
+## Status (2026-11-06, after RPC reboot)
+
+- Box rebooted via `System.Reboot` (result OK), back up ~24s, Kodi on Home.
+- On boot, libcec's AOCEC adapter re-opens `/dev/aocec` and sends
+  `CEC_IOC_SET_OPTION_SYS_CTRL enable=1` → CEC framework re-enabled.
+- `coreelec.amlogic.forcecs` still = 4 (CEC HDMI port) — config intact.
+- **Verify the LG remote works now.** If it does not, the box likely needs the
+  22.x AOCEC hotplug patch (physical-address-only-read-on-open bug) → upgrade
+  to 22.0-Piers or apply the patch.
+
 ## Next steps (for the next agent / the architect)
 
 - [ ] Power-cycle the box to re-enable the CEC framework (recreate `/dev/cec0`).
