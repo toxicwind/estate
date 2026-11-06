@@ -40,7 +40,7 @@
 			<animation effect="fade" start="100" end="0" time="200" tween="sine" condition="$EXP[infodialog_active]">Conditional</animation>
 			<!-- WIDGETS GROUP -->
 			<control type="group" id="2000">
-				<left>462</left>
+				<left>330</left>
 				<include>OpenClose_Right</include>
 				<visible>!Skin.HasSetting(TrailerPlaying)</visible>
 				<animation effect="slide" time="700" start="1380,0" end="0,0" tween="sine" easing="inout">VisibleChange</animation>
@@ -880,9 +880,9 @@
 					<!-- TODO Add sideblade panel for direct editing of widgets, hiding sections, other shortcuts -->
 					<!-- Eternal Main Menu -->
 					<control type="fixedlist" id="9000">
-						<left>25</left>
+						<left>30</left>
 						<top>240</top>
-						<width>492</width>
+						<width>300</width>
 						<bottom>-10</bottom>
 						<movement>7</movement>
 						<focusposition>0</focusposition>
@@ -893,91 +893,33 @@
 						<onup>700</onup>
 						<ondown>700</ondown>
 						<scrolltime tween="cubic" easing="out">500</scrolltime>
-						<focusedlayout height="95">
+						<focusedlayout height="52">
 							<control type="group">
 								<animation effect="fade" start="100" end="0" time="0">UnFocus</animation>
 							</control>
-							<!-- Eternal Plus focused layout -->
-							<!-- Eternal Plus focused layout -->
+							<!-- Netflix-style focused layout: red accent bar + clean label -->
 							<control type="group">
 								<visible>!Skin.HasSetting(ClassicEternal)</visible>
-								<left>2</left>
-								<top>50</top>
-								<!-- Highlight BG -->
+								<!-- Red accent bar (Netflix #E50914) -->
 								<control type="image">
 									<left>0</left>
-									<top>0</top>
-									<width>422</width>
-									<height>95</height>
-									<texture colordiffuse="button_focus">masks/banner.png</texture>
-									<visible>Skin.HasSetting(NoIconMainMenu) + !Skin.HasSetting(NoHighlightMainMenu) + !String.IsEqual(Skin.String(CurrentSkinColor),Classic Eternal) + !ControlGroup(700).HasFocus</visible>
+									<top>8</top>
+									<width>6</width>
+									<height>36</height>
+									<texture colordiffuse="FFE50914">masks/banner.png</texture>
 								</control>
-								<!-- SideMenu Focused Icon -->
-								<control type="image">
-									<left>-8</left>
-									<top>-9</top>
-									<width>110</width>
-									<height>110</height>
-									<texture>$INFO[ListItem.Art(thumb)]</texture>
-									<visible>Skin.HasSetting(NoIconMainMenu) + !ControlGroup(700).HasFocus</visible>
-								</control>
-								<control type="image">
-									<left>0</left>
-									<top>0</top>
-									<width>95</width>
-									<height>95</height>
-									<texture colordiffuse="51FFFFFF">masks/icon_mainmenu.png</texture>
-									<visible>Skin.HasSetting(NoIconMainMenu) + !Skin.HasSetting(NoHighlightMainMenu) + !String.IsEqual(Skin.String(CurrentSkinColor),Classic Eternal) + !ControlGroup(700).HasFocus</visible>
-								</control>
-								<!-- Focused Label with Icons Enabled -->
+								<!-- Clean focused label -->
 								<control type="label">
 									<include>FocusBounce</include>
-									<left>104</left>
+									<left>20</left>
 									<top>0</top>
-									<height>95</height>
-									<width>355</width>
+									<height>52</height>
+									<width>280</width>
 									<aligny>center</aligny>
 									<font>font37</font>
 									<label>$INFO[ListItem.Label]</label>
 									<shadowcolor>text_shadow</shadowcolor>
 									<textcolor>FFFFFFFF</textcolor>
-									<visible>Skin.HasSetting(NoIconMainMenu) + !ControlGroup(700).HasFocus</visible>
-								</control>
-								<!-- Focused Label with Icons Disabled -->
-								<control type="label">
-									<include>FocusBounce</include>
-									<left>104</left>
-									<top>0</top>
-									<height>95</height>
-									<width>355</width>
-									<aligny>center</aligny>
-									<font>font45_title</font>
-									<label>$INFO[ListItem.Label]</label>
-									<shadowcolor>text_shadow</shadowcolor>
-									<textcolor>FFFFFFFF</textcolor>
-									<visible>!Skin.HasSetting(NoIconMainMenu) + !ControlGroup(700).HasFocus</visible>
-								</control>
-								<!-- Top bar fallback icon -->
-								<control type="image">
-									<left>5</left>
-									<top>1</top>
-									<width>95</width>
-									<height>95</height>
-									<texture colordiffuse="44FFFFFF">$INFO[ListItem.Art(thumb)]</texture>
-									<visible>Skin.HasSetting(NoIconMainMenu) + ControlGroup(700).HasFocus</visible>
-								</control>
-								<!-- Top bar fallback label -->
-								<control type="label">
-									<left>104</left>
-									<top>0</top>
-									<height>95</height>
-									<width>355</width>
-									<aligny>center</aligny>
-									<font>font37</font>
-									<label>$INFO[ListItem.Label]</label>
-									<shadowcolor>text_shadow</shadowcolor>
-									<textcolor>unfocused_text</textcolor>
-									<visible>ControlGroup(700).HasFocus</visible>
 								</control>
 							</control>
 							<!-- Classic Eternal focused layout -->
