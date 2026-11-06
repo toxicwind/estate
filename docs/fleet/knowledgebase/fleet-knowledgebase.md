@@ -517,7 +517,7 @@ The lessons (do not regress):
 2. Rule engines match raw ARG text, not executed commands — never put banned-token examples in a rule body.
 3. Session files are ledgers, not the model's view — audit what the model SAW, not row counts.
 4. bge-m3 is free/unlimited/99.9% — embed everything; optimize routing, not embedding.
-5. Gradle: JDK choice > flags; GraalVM-25 hangs kotlin-compiler-embeddable 2.3.0.
+5. Gradle: JDK choice > flags. **CORRECTED 2026-11-06 (kappa): anomaly #93 does NOT reproduce** — livetv-symbiont (kotlin 2.0.21, gradle 8.13) builds in 8s under GraalVM-25 with JVMCI ON (`--rerun-tasks`, lg-fleet 5e9aa45); web search finds no upstream GraalVM-25/kotlin-compiler-embeddable hang. The 10min nuvio-tv-fleet build was more likely cold-daemon warmup or resource contention misattributed to JVMCI. GraalVM-25 is USABLE for Kotlin builds on this box; JDK 21 remains a fine fallback, but "GraalVM hangs Kotlin" is over-broad — re-probe before avoiding it.
 6. Every MD is a red herring until proven against working code; correct it, not around it.
 
 ## 2026-11-02 MCP-fleet-ghost audit + build-loop unlock (tau) — verified fixes + root causes
