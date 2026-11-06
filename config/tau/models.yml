@@ -11,10 +11,58 @@ discovery:
   llama.cpp: true
 
 providers:
+  moonshot:
+    baseUrl: https://api.moonshot.ai/v1
+    api: openai-completions
+    apiKey: MOONSHOT_API_KEY
+    discovery:
+      type: openai-models-list
+  nvidia:
+    baseUrl: https://integrate.api.nvidia.com/v1
+    api: openai-completions
+    apiKey: NVIDIA_API_KEY
+    discovery:
+      type: openai-models-list
+  groq:
+    baseUrl: https://api.groq.com/openai/v1
+    api: openai-completions
+    apiKey: GROQ_API_KEY
+    discovery:
+      type: openai-models-list
+  cerebras:
+    baseUrl: https://api.cerebras.ai/v1
+    api: openai-completions
+    apiKey: CEREBRAS_API_KEY
+    discovery:
+      type: openai-models-list
+  deepseek:
+    baseUrl: https://api.deepseek.com
+    api: openai-completions
+    apiKey: DEEPSEEK_API_KEY
+    discovery:
+      type: openai-models-list
   freeinference:
     baseUrl: http://127.0.0.1:25193/v1
     api: openai-completions
-    apiKey: FREEINFERENCE_API_KEY
+    apiKey: RHODOCHROSITE_API_KEY
+    discovery:
+      type: openai-models-list
+  zen:
+    baseUrl: https://opencode.ai/zen/v1
+    api: openai-completions
+    apiKey: OPENCODE_API_KEY
+    discovery:
+      type: openai-models-list
+  chutes:
+    baseUrl: https://inference.chutes.ai/v1
+    api: openai-completions
+    apiKey: CHUTES_API_KEY
+    discovery:
+      type: openai-models-list
+  cohere:
+    baseUrl: https://api.cohere.com/compatibility/v1
+    api: openai-completions
+    apiKey: COHERE_API_KEY
     discovery:
       type: openai-models-list
   google:
@@ -38,3 +86,15 @@ providers:
         contextWindow: 1000000
       - id: models/gemini-2.5-flash
         contextWindow: 1000000
+  parasail:
+    baseUrl: https://api.parasail.io/v1
+    api: openai-completions
+    apiKey: PARASAIL_API_KEY
+    discovery:
+      type: openai-models-list
+  openrouter:
+    baseUrl: https://openrouter.ai/api/v1
+    api: openai-completions
+    apiKey: OPENROUTER_API_KEY
+    discovery:
+      type: openai-models-list
