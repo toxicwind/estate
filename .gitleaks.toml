@@ -41,9 +41,3 @@ regexes = [
     "github_pat_[a-zA-Z0-9_]{82}",
     "gho_[a-zA-Z0-9]{36}"
 ]
-
-[[rules]]
-id = "generic-api-key"
-regex = ""
-path = ""
-disabled = true
