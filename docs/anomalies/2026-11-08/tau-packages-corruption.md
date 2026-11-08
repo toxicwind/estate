@@ -228,6 +228,17 @@ PAPER-TASK for the estate→pens rename + verify PAPER-RESULT lands.
 
 ---
 
+## The recursive-semantic-VCS doctrine this session proved
+
+This 157→0 purge **was** the recursive VCS run by hand (architect concept,
+`pens/docs/additions/2026-11-08-fluid-recursive-semantic-vcs.md`):
+embed (bge-m3) → re-index (argos/xerj) → ripple (mimetite d.ts → catalog
+`file:` copy → otel dup → test API drift) → fluxling-prove (0 stale refs) →
+commit → recurse. **One absolute**: any temporary fallover to direct
+freeinference is echoed as `FIX-THIS` on `~/.shingle/directives.md` and must
+be reacted to (mimetite-only egress restored). This session emitted that echo
+for the tmp doc-hunt client.
+
 ## Verification commands
 
 ```bash
