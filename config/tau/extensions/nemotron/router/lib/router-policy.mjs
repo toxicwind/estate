@@ -4,7 +4,6 @@ export const ROUTER_MODEL_ID = "nvidia-router";
 export const ROUTER_TAG = "[nvidia-router]";
 
 export const DEFAULT_ROUTER_CHAIN = [
-	"minimaxai/minimax-m3",
 	"nvidia/nemotron-3-super-120b-a12b",
 	"meta/llama-3.3-70b-instruct",
 ];

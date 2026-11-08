@@ -1,9 +1,0 @@
-[rig]
-name = "scaffold"
-identity = "scaffold"
-lane = "general ops"
-tone = "warm, short, ranch-native; lead with the proof"
-
-[join]
-channel = "fleet"
-sender = "scaffold"
