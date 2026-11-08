@@ -632,7 +632,7 @@ RANCH_UI_PORT = "25218"
 # overrode ranch-ui.ts's own DIST_CANDIDATES self-healing. The service
 # resolves the real build (range/apps/delendai-control-plane/dist) itself.
 BORNITE_ORIGIN = "http://127.0.0.1:25100"
-RHODOCHROSITE_ORIGIN = "http://127.0.0.1:25193"
+MIMETITE_ORIGIN = "http://127.0.0.1:25193"
 
 # pens-ui — THE master dashboard (architect directive 2026-10-27T20:1xZ):
 # one app, every surface as an iframe tab. Surfaces registry:
@@ -827,6 +827,16 @@ mise = true
 
 [daemons."pixel-adb-keepalive"]
 run = "exec /home/toxic/pens/fleet/devices/android-fleet/bin/pixel-adb-keepalive.sh"
+auto = ["start"]
+retry = true
+mise = true
+dir = "/home/toxic/pens/fleet/devices/android-fleet"
+
+[daemons."hisense-shizuku-keeper"]
+# Event-driven (ip monitor neighbor — NO sleep polling): restarts the Shizuku
+# server on the wuyishan TV after every TV boot. v13.6 start contract:
+# <apkdir>/lib/arm/libshizuku.so --apk=<apk> (rikka.shizuku.server.ShizukuService).
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/pens/fleet/devices/android-fleet/src/hisense-shizuku-keeper.ts"
 auto = ["start"]
 retry = true
 mise = true
