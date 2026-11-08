@@ -59,7 +59,17 @@ import time
 from datetime import datetime, timezone
 
 sys.path.insert(0, os.path.expanduser("~"))
-from awrawr_mcp import _policy_check, _audit  # noqa: E402  (single policy/audit impl)
+try:
+    from awrawr_mcp import _policy_check, _audit  # noqa: E402  (single policy/audit impl)
+except ImportError as exc:
+    # STARTUP CONTRACT (2026-11-08): refuse to start with one loud FATAL and a
+    # supervisor-visible exit, instead of crash-looping under pitchfork. A dead
+    # exec lane must be visible, not inferred from a 502 two hops away.
+    sys.stderr.write(
+        "FATAL: awrawr_mcp missing/unimportable from ~ (restore ~/awrawr_mcp.py; "
+        "checksum pinned in ~/.awrawr_mcp.sha256). import error: %s\n" % exc
+    )
+    raise SystemExit(78)  # EX_CONFIG
 
 WS_GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
 WS_PATH = "/exec-ws"
@@ -665,6 +675,28 @@ async def handle_client(reader, writer):
               and headers.get("sec-websocket-version") == "13"
               and "sec-websocket-key" in headers)
         if not ok:
+            # Lane-level health (2026-11-08, Thread 1): a plain GET to
+            # /health-lanes returns auth/gateway/backend as INDEPENDENT fields,
+            # so a dead exec lane is visible as backend: down, not inferred
+            # from a 502 two hops away. auth = token file present; backend =
+            # this process is up (it only runs when awrawr_mcp imported).
+            if parts[0] == "GET" and len(parts) >= 2 and parts[1] == "/health-lanes":
+                tok_ok = os.path.exists(TOKEN_FILE) and os.path.getsize(TOKEN_FILE) > 0
+                body = json.dumps({
+                    "ok": True,
+                    "service": "awrawr-ws-exec",
+                    "lanes": {
+                        "auth": {"ok": tok_ok, "token_file": TOKEN_FILE},
+                        "gateway": {"ok": True, "port": PORT, "path": WS_PATH},
+                        "backend": {"ok": True, "last_error": None, "checked_at": None},
+                    },
+                }).encode()
+                writer.write(b"HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n"
+                             b"Content-Length: " + str(len(body)).encode() +
+                             b"\r\nConnection: close\r\n\r\n" + body)
+                await writer.drain()
+                writer.close()
+                return
             writer.write(b"HTTP/1.1 400 Bad Request\r\nContent-Length: 0\r\n"
                          b"Connection: close\r\n\r\n")
             await writer.drain()
