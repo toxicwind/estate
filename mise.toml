@@ -10,7 +10,7 @@
 #   mise/conf.d/*.toml fragments, loaded alphabetically (mise's own convention)
 #   mise/tasks/<name>  one executable file per task
 #   config/ports.env   the numeric port SSOT, injected from [env] below
-#   config/rhodochrosite-ssot/route.env  non-secret rhodochrosite route (port, model, base URL)
+#   config/ports.env                   non-secret rhodochrosite route (port, model, base URL)
 #
 # Keep mise tasks as hand-authored project workflows. Pitchfork owns daemon
 # lifecycle directly; do not mirror its start/stop/restart/health subcommands.
@@ -25,8 +25,8 @@
 
 [env]
 # Ports are injected estate-wide. See mise/conf.d/10-env.toml for why nothing
-# else declares a *_PORT. route.env carries the rhodochrosite model and base URL.
-_.file = ["config/ports.env", "config/rhodochrosite-ssot/route.env"]
+# else declares a *_PORT. Ports come from config/ports.env only.
+_.file = ["config/ports.env"]
 
 # Forge remote build cache — first-class nativelink-backed cache at :25148
 # (:25148 IS mbx-cache, product ranch/products/mr-boxington-cache, Rust REAPI
@@ -107,23 +107,6 @@ run = "bun run build"
 dir = "/home/toxic/pens/geode/products/mimetite"
 description = "Regenerate + live-sync mimetite provider catalog (5 artifacts + tau/kappa installed slices). Rerunnable."
 
-# rhodochrosite hot-reload dev lane (2026-11-08): `mise watch rhodo:dev` rebuilds
-# the release binary on any Rust source change and restarts the pitchfork daemon
-# so :25193 serves the fresh build. Mirrors kappa-tdd/tau-tdd. Uses release-fast
-# profile (thin LTO, 8 units) per anomaly #97.
-[tasks.rhodo-dev]
-run = """
-cd /home/toxic/pens/geode/products/rhodochrosite/proxy && cargo build --release --profile release-fast
-pitchfork restart geode/rhodochrosite 2>/dev/null || true
-"""
-description = "Hot-reload rhodochrosite: rebuild release-fast + restart :25193 daemon"
-dir = "/home/toxic/pens/geode/products/rhodochrosite/proxy"
-sources = ["src/**/*.rs", "Cargo.toml", "Cargo.lock"]
-outputs = ["target/release/rhodochrosite"]
-
-# mimetite hot-reload dev lane (2026-11-08): `mise watch mimetite:dev` rebuilds
-# the Bun dist + typecheck on any src change. mimetite is a Bun/TS product; the
-# daemon serving it is restarted so consumers pick up the fresh build.
 [tasks.mimetite-dev]
 run = """
 bun run build

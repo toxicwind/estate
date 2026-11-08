@@ -227,9 +227,9 @@ advice; it is NOT the concurrent writer of agent trees.
   ownership contract are documented at `pens/barn/products/loom/docs/visor-lane.md`
 *  (arc 20261030T231137Z). **Stencil (ex-forge) owns pattern/paper borrow**:
 *  `estate/bin/pattern-borrow` → `estate/scripts/pattern-borrow.ts` (delegate) →
-*  azurite code-patterns canonical CLI. The barn forge build-triad product keeps
-*  the forge brand (live estate infra); the emergent paper-borrow seam points at
-*  canonical pens paths (2026-11-02).
+*  canonical CLI = `forge borrow|pattern-borrow` at flux
+*  `/home/toxic/pens/flux/products/code-patterns` (azurite copy is a stale
+*  mirror — doctor --borrow all-PASS 2026-11-08). Barn forge keeps the brand.
 
 ---
 

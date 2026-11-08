@@ -352,14 +352,14 @@ dir = "/home/toxic/pens/estate"
 mise = true
 
 [daemons.keypool]
-run = "exec /bin/sh -c 'eval $(/home/toxic/pens/olympus/products/kryptos/bin/secretsmith env --app keypool) && exec /home/toxic/.bun/bin/bun /home/toxic/pens/olympus/products/kryptos/keypool/src/index.ts'"
+run = "exec /bin/sh -c 'eval $(/home/toxic/pens/olympus/products/kryptos/kryptos.ts env) && exec /home/toxic/.bun/bin/bun /home/toxic/pens/olympus/products/kryptos/keypool/src/index.ts'"
 auto = ["start"]
 retry = true
 ready_http = "http://127.0.0.1:25109/health"
 port = 25109
 boot_start = true
 dir = "/home/toxic/pens/estate"
-mise = true
+mise = false
 [daemons.keypool.health_http]
 url = "http://127.0.0.1:25109/health"
 interval = "30s"
@@ -368,6 +368,7 @@ retries = 3
 
 [daemons.keypool.env]
 KEYPOOL_PORT = "25109"
+KEYPOOL_RACE_KEYS = "1"
 
 [daemons.kimi-audit-dash]
 run = "exec bun --hot run /home/toxic/archive/detached-2026/kimi-token-audit/dashboard/server.ts"
@@ -639,6 +640,39 @@ MIMETITE_ORIGIN = "http://127.0.0.1:25193"
 # pens/products/pens-ui/src/lib/surfaces.ts; ports from config/ports.env via
 # scripts/sync-ui-ports.ts. vite dev = HMR + auto-refresh (debug mode ON).
 # ranch-ui (:25218) becomes a proxy/shim to this or retires — architect's call.
+
+[daemons.mimetite]
+run = "exec bash /home/toxic/pens/geode/products/mimetite/router/proxy/serve.sh"
+auto = ["start"]
+retry = true
+ready_http = "http://127.0.0.1:25193/health"
+port = 25193
+boot_start = true
+dir = "/home/toxic/pens/geode/products/mimetite/router/proxy"
+mise = false
+[daemons.mimetite.env]
+MIMETITE_PORT = "25193"
+DATA_DIR = "/home/toxic/.mimetite-data"
+
+[daemons.freeinference-coordinator]
+run = "exec bun /home/toxic/pens/barn/products/freeinference-coordinator/src/coordinator.ts"
+auto = ["start"]
+retry = true
+ready_http = "http://127.0.0.1:25250/health"
+port = 25250
+boot_start = true
+dir = "/home/toxic/pens/barn/products/freeinference-coordinator"
+mise = false
+
+[daemons.aistreams]
+run = "exec bash /home/toxic/pens/ranch/products/aiostreams/serve.sh"
+auto = ["start"]
+retry = true
+ready_http = "http://127.0.0.1:25280/health"
+port = 25280
+boot_start = true
+dir = "/home/toxic/pens/ranch/products/aiostreams"
+mise = false
 
 [daemons.redis]
 run = "exec valkey-server --port 25203 --bind 127.0.0.1 --protected-mode no --save '' --appendonly no"

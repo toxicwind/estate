@@ -219,13 +219,13 @@ pools:
   # Unlimited free inference with bge-m3 embeddings. Concurrency limit: 2.
   # Requires FREEINFERENCE_API_KEY in keyring (env-seed app).
   freeinference:
-    upstream: https://freeinference.org/v1
+    upstream: https://freeinference.org
     health:
       method: GET
-      path: /models
+      path: /v1/models
       ok: [200]
     fail_status: [401, 402, 429]
-    probe_timeout: 5
+    probe_timeout: 30
     request_timeout: 180
     cooldown:
       401: 300
