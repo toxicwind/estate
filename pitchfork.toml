@@ -7,6 +7,18 @@ daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "matt
 [groups.agents]
 daemons = ["rig"]
 
+[daemons.paper-poller]
+run = "exec /home/toxic/.local/share/mise/installs/python/3/bin/python3 /home/toxic/pens/ranch/products/paper-poller/bin/poller.py"
+auto = ["start"]
+retry = true
+dir = "/home/toxic/pens/ranch/products/paper-poller"
+ready_http = "http://127.0.0.1:25149/health"
+[daemons.paper-poller.health_http]
+url = "http://127.0.0.1:25149/health"
+interval = "30s"
+timeout = "5s"
+retries = 3
+
 [daemons.kennel]
 # KENNEL = the agentMonitor — the agent's OWN desktop (Xvnc :99, the PLACE).
 # Modular family: kennel (this — walls) · waterbowl (browser) · flap (VNC door).
@@ -664,7 +676,7 @@ boot_start = true
 dir = "/home/toxic/pens/barn/products/freeinference-coordinator"
 mise = false
 
-[daemons.aistreams]
+[daemons.aiostreams]
 run = "exec bash /home/toxic/pens/ranch/products/aiostreams/serve.sh"
 auto = ["start"]
 retry = true
